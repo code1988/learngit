@@ -11,10 +11,9 @@
 #include "utility.h"
 #include "et850_data.h"
 
-#define SAVE_TIMER_ID				601
 
 #define Funcweight 130
-#define Funcheight 47
+#define Funcheight 49
 
 static HWND		hMainWnd = NULL;
 
@@ -27,9 +26,10 @@ static int	old_x = 0;
 static int	pos_x = 0;
 
 
-static int save_timer_id = 0;
 static int message[32];
-static char function[6];
+static int function[6];
+
+static char F[6][4] = {"WFT","WFP","PLM","BY1","BY2","BY3"};
 //待填数字坐标
 static int pos[2] = { 277,20};
 					
@@ -108,6 +108,7 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	HDC			hDC;
 	RECT		rect;
 	HBRUSH	hBrush;	
+	int i = 0;
 	hDC = GetDC(hWnd);
 		hBrush = CreateSolidBrush(RGB(255, 255, 255));
 	hBgMemDC = CreateCompatibleDC(hDC);													//创建兼容HDC
@@ -125,7 +126,14 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	ReleaseDC(hWnd, hDC);
 	
 	message[0] = '\0';
-	
+	function[0] = upload_param_load(F[0], 120);
+	function[1] = upload_param_load(F[1], 200);
+	for(i = 2;i<6;i++)
+	{
+
+		function[i] = upload_param_load(F[i], 0);
+
+	}
 	return 0;
 }
 
@@ -186,26 +194,12 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-static int OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
-{
-	switch(wParam) {
-		case SAVE_TIMER_ID:
-				if (save_timer_id)
-					KillTimer(hWnd, SAVE_TIMER_ID);
-				save_timer_id = 0;
-				message[0] = '\0';
-				InvalidateRect(hWnd, NULL, FALSE);
-				break;
-		default:
-				break;
-	}
-	return 0;
-}
-
 static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	int min[6]={60,1,0,0,0,1};
 	int  max[6]={600,1000,2,1,2,5,4};
+	int i = 0;
+	int function1[6];
 	pos_x = old_x;
 	switch(wParam) {
 		case VK_F1:     //right
@@ -215,23 +209,33 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			old_x = pos_x;
 			break;
 		case VK_F2:    //up
-			if(function[pos_x]<max[pos_x])
+			if(function[pos_x]<(max[pos_x]-10)&&pos_x<2)
 				function[pos_x]+=10;	
 			refresh_keytable(hWnd,old_x,pos_x,0);
 			old_x = pos_x;
 			break;
 		case VK_F3:       //down
-			if(function[pos_x]<max[pos_x])
+			if((function[pos_x]<(max[pos_x]-100))&&(pos_x<2))
 				function[pos_x]+=100;	
 			refresh_keytable(hWnd,old_x,pos_x,0);
 			old_x = pos_x;
 			break;
 		case VK_F4:       //return
 			if(pos_x<5)
+			{
 				pos_x++;
+				refresh_keytable(hWnd,old_x,pos_x,1);
+
+			}
+				
 			else if(pos_x>=5)
+			{
 				pos_x = 0;
-			refresh_keytable(hWnd,old_x,pos_x,1);
+				refresh_keytable(hWnd,old_x,pos_x,1);
+
+			}
+				
+			
 			old_x = pos_x;
 			break;	
 		case VK_F5:     //模式
@@ -241,37 +245,34 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			old_x = pos_x;
 			break;
 		case VK_F6:    //累加
-			if(function[pos_x]>min[pos_x])
+			if(function[pos_x]>(min[pos_x]+10)&&pos_x<2)
 				function[pos_x]-=10;
 			refresh_keytable(hWnd,old_x,pos_x,0);
 			old_x = pos_x;
 			break;
 		case VK_F7: 
-			if(function[pos_x]>min[pos_x])
+			if(function[pos_x]>(min[pos_x]+100)&&pos_x<2)
 				function[pos_x]-=100;
 			refresh_keytable(hWnd,old_x,pos_x,0);
 			old_x = pos_x;
 			break;
 		case VK_F8:     //查询键 保存
-			//printf("pos_x = %d\n",pos_x);   //debug
-			//if (datetime_set_f(year, months, day,  hour,  minute, second)==0)
-			//	strcpy(message, "保存成功");
-			//else 
-			//	strcpy(message, "保存失败");
-			
-			if (save_timer_id)
-				KillTimer(hWnd, save_timer_id);
-						
-			refresh_keytable(hWnd,old_x,pos_x,0);
-			
-			save_timer_id = SetTimer(hWnd, SAVE_TIMER_ID, 5000, NULL);
+			for(i = 0;i<6;i++)
+			{
+				upload_param_save(F[i],function[i]);
+				printf("%d\n",function[i]);
+
+			}
+				
 			pos_x = 0;
+			old_x = 0;
 			spi_keyalert();
 			DestroyWindow(hWnd);
 			SetFocus(GetParent(hWnd));
 			break;
 		case VK_F9:       //save
 			pos_x = 0;
+			old_x = 0;
 			spi_keyalert();
 			DestroyWindow(hWnd);
 			SetFocus(GetParent(hWnd));
@@ -279,7 +280,6 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			break;
 		
 		default:
-			pos_x = 0;
 			break;
 	}
 	return 0;

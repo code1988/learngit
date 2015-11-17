@@ -161,32 +161,40 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	switch(wParam) {
 		case VK_F1:     //left
-			number += 100;
+			if(number<9899)
+				number += 100;
 			InvalidateRect(hWnd, NULL, FALSE);
 			break;
 		case VK_F2:    //right
-			number += 10;
+			if(number<9989)
+				number += 10;
 			InvalidateRect(hWnd, NULL, FALSE);
 			break;
 		case VK_F3:       //up
-			number++;
+			if(number<9998)
+				number++;
 			InvalidateRect(hWnd, NULL, FALSE);
 			break;
 		case VK_F4:     //±£´æ²¢·µ»Ø
-		
+			if(number>0)
+				preset_value_set(number);
+			number = 0;
 			spi_keyalert();
 			DestroyWindow(hWnd);
 			SetFocus(GetParent(hWnd));
 			break;
 		case VK_F5:    //clear
+			if(number>=100)
 			number -= 100;
 			InvalidateRect(hWnd, NULL, FALSE);
 			break;
 		case VK_F6:     //yes
+			if(number>=10)
 			number -= 10;
 			InvalidateRect(hWnd, NULL, FALSE);
 			break;
 		case VK_F7:       //save
+			if(number>=1)
 			number--;
 			InvalidateRect(hWnd, NULL, FALSE);
 			break;

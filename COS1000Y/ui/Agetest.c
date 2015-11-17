@@ -175,6 +175,7 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			break;
 		case VK_F5:    //clear  //开相应位置的老化
 			test_on = 1;
+			mcu_mode_set(MCU_BURN_IN_MODE);
 			InvalidateRect(hWnd, NULL, FALSE);
 			break;
 		case VK_F6:     //yes   关相应位置的老化

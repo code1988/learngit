@@ -28,7 +28,6 @@ static int OnCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
 int parasetwin_create(HWND hWnd)
 {
-	MSG msg;
 	WNDCLASS	wndclass;
 
 

@@ -126,6 +126,7 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	switch(wParam) {
 		case VK_F1:
+			picdistinguishwin_create(hWnd);
 			break;
 		case VK_F2:
 			break;

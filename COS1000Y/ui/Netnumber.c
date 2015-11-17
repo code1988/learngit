@@ -20,7 +20,9 @@ static HDC		hBgMemDC = NULL;
 static HDC		hfocusMemDC = NULL;
 static HBITMAP	hBgBitmap, hOldBgBitmap;
 static HBITMAP	hfocusBitmap, hOldfocusBitmap;
-static char	keynum[15];
+static char	keynum[40];
+static char branch[40];
+
 static char x = 0;
 static char y = 0;
 
@@ -106,6 +108,7 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	HDC			hDC;
 	RECT		rect;
 	HBRUSH	hBrush;
+	int state;
 	
 	hDC = GetDC(hWnd);
 	hBgMemDC = CreateCompatibleDC(hDC);													//创建兼容HDC
@@ -131,8 +134,17 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	
 	keynum[0] = '\0';
 	message[0] = '\0';
-	
-//	flash_timer_id = SetTimer(hWnd, FLASH_TIMER_ID, 10, NULL);
+	branch[0] = '\0';
+	printf("message1 = %d\n",strlen(message));
+					printf("message1\n");
+					
+	state = device_organize_get(branch,keynum);
+	printf("branch = %d\n",strlen(branch));
+	printf("message = %d\n",strlen(message));				
+	printf("keynum = %d\n",strlen(keynum));
+	if(state!=0)
+		printf("there is not netnumber");
+		
 	return 0;
 }
 
@@ -170,9 +182,11 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				hOldFont = SelectObject(hMemDC, (HFONT)GetFont32Handle());
 					SetBkColor(hMemDC, RGB(0, 255, 0));
 					SetBkMode(hMemDC, TRANSPARENT);
-					SetTextColor(hMemDC, RGB(255, 0, 0));			
-					TextOut(hMemDC, 165, 255, message, -1);
-					
+					SetTextColor(hMemDC, RGB(255, 0, 0));	
+					if(strlen(message)!=0)
+						TextOut(hMemDC, 165, 255, message,strlen(message));
+					printf("message = %d\n",strlen(message));
+					printf("message\n");
 					SetTextColor(hMemDC, RGB(255, 255, 255));
 					TextOut(hMemDC, 125, 255, keynum, -1);
 					TextOut(hMemDC, 154, 7, "网点号码输入", -1);
@@ -269,7 +283,7 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			InvalidateRect(hWnd, NULL, FALSE);
 			break;
 		case VK_F7:       //save
-			if(device_organize_set( keynum,keynum)==0)
+			if(device_organize_set( branch,keynum)==0)
 				strcpy(message, "保存成功");
 			else 
 				strcpy(message, "保存失败");
@@ -278,9 +292,11 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				KillTimer(hWnd, save_timer_id);			
 			keynum[0] = '\0';
 			InvalidateRect(hWnd, NULL, FALSE);
-			save_timer_id = SetTimer(hWnd, SAVE_TIMER_ID, 5000, NULL);
+			save_timer_id = SetTimer(hWnd, SAVE_TIMER_ID, 1000, NULL);
 			break;
 		case VK_F8:       //return
+			keynum[0] = '\0';
+			message[0] = '\0';
 			spi_keyalert();
 			DestroyWindow(hWnd);
 			SetFocus(GetParent(hWnd));

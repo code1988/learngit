@@ -22,7 +22,8 @@ static HBITMAP	hfocusBitmap, hOldfocusBitmap;
 static char	keynum[15];
 static char x = 0;
 static char y = 3;
-
+static s32_t serverIP;
+static u16_t serverPort;
 static char		character[] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
 														  'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
 														  'W', 'X', 'Y' ,'Z', '.', '*', '_', '\\','/', ' ', ' ',
@@ -121,7 +122,8 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	ReleaseDC(hWnd, hDC);
 	
 	keynum[0] = '\0';
-	
+	tcpfsn_upload_port_get(&serverIP,&serverPort);
+	sprintf(keynum,"%d",serverPort);
 	return 0;
 }
 
@@ -181,8 +183,7 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	s32_t serverIP;
-	u16_t serverPort;
+	
 	s8_t len = 0; 
 	len = strlen(keynum);
 	switch(wParam) {

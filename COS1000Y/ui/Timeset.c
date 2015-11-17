@@ -167,7 +167,7 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	PAINTSTRUCT		ps;
 	HBRUSH			hBrush;
 	RECT			rect;
-	HFONT			hFont, hOldFont;
+	HFONT			hOldFont;
     char			yearbuf[10];
 	char			monthsbuf[10];
 	char			daybuf[10];

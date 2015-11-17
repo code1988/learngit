@@ -22,7 +22,7 @@ static HBITMAP	hfocusBitmap, hOldfocusBitmap;
 static char	keynum[15]={0};
 static char x = 0;
 static char y = 3;
-
+static u16_t myPort;
 static char		character[] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
 														  'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
 														  'W', 'X', 'Y' ,'Z', '.', '*', '_', '\\','/', ' ', ' ',
@@ -121,7 +121,8 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	ReleaseDC(hWnd, hDC);
 	
 	keynum[0] = '\0';
-	
+	tcpmonitor_cntl_port_get(&myPort);
+	sprintf(keynum,"%d",myPort);
 	return 0;
 }
 
@@ -146,7 +147,6 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	HBITMAP	hBitmap, hOldBitmap;
 	PAINTSTRUCT		ps;
 	HFONT			hOldFont;
-	s8_t            i = 0;
 	hDC = BeginPaint(hWnd, &ps);
 	hMemDC = CreateCompatibleDC(hDC);
 	hBitmap = CreateCompatibleBitmap(hMemDC, 480, 320);
@@ -183,7 +183,7 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	u16_t myPort;
+	
 	s8_t len = 0; 
 	len = strlen(keynum);
 	switch(wParam) {

@@ -22,6 +22,8 @@ static HBITMAP	hfocusBitmap, hOldfocusBitmap;
 static char	keynum[15];
 static char x = 0;
 static char y = 0;
+static s32_t serverIP;
+static u16_t serverPort;
 
 static char		character[] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
 														  'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
@@ -97,7 +99,7 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	HDC			hDC;
 	RECT		rect;
 	HBRUSH	hBrush;
-	
+	int temp;
 	hDC = GetDC(hWnd);
 	hBgMemDC = CreateCompatibleDC(hDC);													//创建兼容HDC
 	hBgBitmap = CreateCompatibleBitmap(hBgMemDC, 480, 320);						    //创建兼容位图
@@ -121,7 +123,20 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	ReleaseDC(hWnd, hDC);
 	
 	keynum[0] = '\0';
+	tcpfsn_upload_port_get(&serverIP,&serverPort);
+	temp = (serverIP & 0xFF);	
+	sprintf(keynum,"%3d",temp);
 	
+	temp  = (serverIP>>8) & 0xFF;
+	sprintf(keynum+3,"%3d",temp);
+	
+	temp  = (serverIP>>16) & 0xFF;
+	sprintf(keynum+6,"%3d",temp);
+	
+	temp  = (serverIP>>24) & 0xFF;
+	sprintf(keynum+9,"%3d",temp);
+	
+	printf("%s\n",keynum);
 	return 0;
 }
 
@@ -190,8 +205,7 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	s32_t serverIP;
-	u16_t serverPort;
+	
 	s8_t len = 0; 
 	len = strlen(keynum);
 	switch(wParam) {

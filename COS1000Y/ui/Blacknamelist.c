@@ -14,17 +14,23 @@ static HWND		hMainWnd = NULL;
 
 static HDC		hBgMemDC = NULL;
 static HBITMAP	hBgBitmap, hOldBgBitmap;
-static int levelpos[2] = {198,59};
-static char focus[3]={0,0,0};
+static u32_t    totalname= 0;
+static char  blacknames[7][16];
+
+static char disp_total = -1;
+static char pages = 1;
+static char focus = 0; 
+
 static LRESULT CALLBACK MainProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam);
 static int OnDestroy(HWND hWnd, WPARAM wParam, LPARAM lParam);
 static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam);
 static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
-int levelsetwin_create(HWND hWnd)
+int Blacknamelist_create(HWND hWnd)
 {
 	WNDCLASS	wndclass;
+
 
 	/* register menu windows */
 	wndclass.style          = CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW;
@@ -36,12 +42,13 @@ int levelsetwin_create(HWND hWnd)
 	wndclass.hCursor        = 0;
 	wndclass.hbrBackground  = NULL;
 	wndclass.lpszMenuName   = NULL;
-	wndclass.lpszClassName  = (LPCSTR)"LEVELSETWIN";
+	wndclass.lpszClassName  = (LPCSTR)"BLACKNAMELIST";
 	RegisterClass(&wndclass);
+	
 
 	/* create menu window */
 	hMainWnd = CreateWindowEx(0L,
-							  (LPCSTR)"LEVELSETWIN",
+							  (LPCSTR)"BLACKNAMELIST",
 							  (LPCSTR)"ET850",
 							  WS_CHILD | WS_VISIBLE,
 							  0,
@@ -82,8 +89,6 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	HDC			hDC;
 	RECT		rect;
 	HBRUSH		hBrush;
-	int i,sensitive_level;
-
 	
 	hDC = GetDC(hWnd);
 	hBgMemDC = CreateCompatibleDC(hDC);
@@ -93,11 +98,11 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	rect.left = 0; rect.right = 480; rect.top = 0; rect.bottom = 320;
 	FillRect(hBgMemDC, &rect, hBrush);
 	DeleteObject(hBrush);
-	GdDrawImageFromFile(hBgMemDC->psd, 0, 0, 480, 320, "/bmp/fota/levelsetwin.bmp", 0);
+	GdDrawImageFromFile(hBgMemDC->psd, 0, 0, 480, 320, "/bmp/fota/guanzihwin.bmp", 0);
 	ReleaseDC(hWnd, hDC);
-	sensitive_level = sensitive_level_get();
-	for(i=0;i<3;i++)
-		focus[i]=sensitive_level;
+	totalname = black_count_get(1);
+	printf("%d\n",totalname);
+	
 	return 0;
 }
 
@@ -112,49 +117,93 @@ static int OnDestroy(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam) 
 {
-	
 	HDC				hDC, hMemDC;
-	HBITMAP	hBitmap, hOldBitmap;
+	HBITMAP			hBitmap, hOldBitmap;
+	HFONT			hOldFont;
+	HBRUSH			hBrush;
+	RECT			rect;
 	PAINTSTRUCT		ps;
-	HFONT			 hOldFont;
-	char buf[2];
-	char i = 0,j = 0;
+	int			    j;
+	//unsigned char	*ptr;
+	char			buf[17];
+	int datetime,year,months,day,hour,minute,second;
+	datetime = time(NULL);
+	datetime_separate_f(datetime, &year, &months, &day, &hour, &minute, &second);
 	hDC = BeginPaint(hWnd, &ps);
 	hMemDC = CreateCompatibleDC(hDC);
 	hBitmap = CreateCompatibleBitmap(hMemDC, 480, 320);
 	hOldBitmap = SelectObject(hMemDC, hBitmap);
+	hOldFont = SelectObject(hMemDC, GetFont24Handle());
 	BitBlt(hMemDC, 0, 0, 480, 320, hBgMemDC, 0, 0, SRCCOPY);
 	
-	hOldFont = SelectObject(hMemDC, (HFONT)GetFont32Handle());
-	SetBkColor(hMemDC, RGB(0, 255, 1));		// ±³¾°ÑÕÉ«
+	hBrush = CreateSolidBrush(RGB(255,0,0));
+		rect.left = 9;
+		rect.right = 70;
+		rect.top = 57+focus*34;
+		rect.bottom = 86+focus*34;
+		FillRect(hMemDC, &rect, hBrush);
+	DeleteObject(hBrush);
+
+
+
 	SetBkMode(hMemDC, TRANSPARENT);
-									
-	for(j = 0;j<3;j++)
-	{
-
-		for(i = 0;i<3;i++)
-		{		
-				if (focus[j] == i)
-					SetTextColor(hMemDC, RGB(255, 0, 0));
-				else
-					SetTextColor(hMemDC, RGB(255, 255, 255));	
-				sprintf(buf, "%d", (i+1-j/2));
-				TextOut(hMemDC, levelpos[0]-6+i*86, levelpos[1]+j*56,buf , -1);  
-		}
-
-
+	SetBkColor(hMemDC, RGB(0, 0, 0));
+	SetTextColor(hMemDC, RGB(255, 255, 255));
+	disp_total = black_select(blacknames[0],(pages-1)*7,7,1 );
+		
+	for (j = 0; j < 7; j++) {
+		int		index;
+		index = j + 1 + (pages-1)*7;
+		printf("j = %d\n",j);
+		if (index > totalname)
+			continue;
+		printf("index = %d\n",index);
+		//memset(blacknames[j],0,sizeof(blacknames[j]));
+		//disp_total = black_select(blacknames[j],j+(pages-1)*7,1,1 );
+		//printf("%s\n",blacknames[j]);
+		//printf("disp_total =%d\n",disp_total );
+		
+		memset(buf,0,17);
+		sprintf(buf, "%04d", index);				
+		TextOut(hMemDC, 39-strlen(buf)*6, 56 + (j)*34, buf, -1);   //xuhao
+		
+		memset(buf,0,17);
+		TextOut(hMemDC, 110-2*6, 56 + (j)*34,"NC", -1); //banben		
+		
+		
+		//memset(buf,0,17);
+		//TextOut(hMemDC, 302-strlen(blacknames[j])*6, 56 + (j)*34 ,blacknames[j], strlen(blacknames[j]));  //heimingdan
+		TextOut(hMemDC, 302-10*6, 56 + (j)*34 ,blacknames[j], 10);  //heimingdan
+		printf("%s\n",blacknames[j]);
+		
+		TextOut(hMemDC, 448, 56 + (j)*34 ,"N", -1);  //N
+		
 	}
-	
-	
+	sprintf(buf, "%04d", year);
+	buf[4] = '_';
+	sprintf(buf+5, "%02d", months);
+	buf[7] = '_';
+	sprintf(buf+8, "%02d", day);
+	buf[10] = ' ';
+	sprintf(buf+11, "%02d", hour);
+	buf[13] = ':';
+	sprintf(buf+14, "%02d", minute);
+	TextOut(hMemDC, 7, 294, buf, -1);
 
-	BitBlt(hDC, 0, 0, 480, 320,hMemDC, 0, 0, SRCCOPY);
+	memset(buf,0,17);
+	sprintf(buf, "%02d", pages);
+	buf[2] = '/';
+	sprintf(buf+3, "%02d", (totalname+6)/7);
+	TextOut(hMemDC, 407, 294, buf, -1);
+
+	printf("totalpage = %d\n",(totalname+6)/7);
+	
+	BitBlt(hDC, 0, 0, 480, 320, hMemDC, 0, 0, SRCCOPY);
 	SelectObject(hMemDC, hOldFont);
-
 	SelectObject(hMemDC, hOldBitmap);
 	DeleteObject(hBitmap);
-	DeleteDC(hMemDC);	
+	DeleteDC(hMemDC);
 	EndPaint(hWnd, &ps);
-	
 	return 0;
 }
 
@@ -162,39 +211,48 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	switch(wParam) {
 		case VK_F1:
-			if(focus[0]>0)
-				focus[0]--;
-			InvalidateRect(hWnd, NULL, FALSE);
+			
 			break;
 		case VK_F2:
-			if(focus[1]>0)
-				focus[1]--;
+			if(focus>0)
+				focus--;
 			InvalidateRect(hWnd, NULL, FALSE);
 			break;
 		case VK_F3:
-			if(focus[2]>0)
-				focus[2]--;
+			if(focus<6&&focus<(totalname%7-1))
+				focus++;
 			InvalidateRect(hWnd, NULL, FALSE);
 			break;
 		case VK_F4:
-			sensitive_level_set(focus[1]);
+			
 			break;
 		case VK_F5:
-			if(focus[0]<2)
-				focus[0]++;
+			printf("focus1 = %d\n",focus );
+			black_delete(blacknames[focus]);
+			if((focus+1)==totalname%7&&focus>0)
+				focus--;
+			printf("totalname%7 = %d\n",totalname%7 );
+			printf("focus2 = %d\n",focus );
+			totalname = black_count_get(1);
 			InvalidateRect(hWnd, NULL, FALSE);
 			break;
 		case VK_F6:
-			if(focus[1]<2)
-				focus[1]++;
-			InvalidateRect(hWnd, NULL, FALSE);
-			break;
+			 blacklist_clear(1);
+			 focus = 0;
+			 totalname = black_count_get(1);
+			 InvalidateRect(hWnd, NULL, FALSE);
+			 break;
 		case VK_F7:
-			if(focus[2]<2)
-				focus[2]++;
+			if (pages < (totalname+6)/7)
+				pages++;
+			else
+				pages = 1;
 			InvalidateRect(hWnd, NULL, FALSE);
 			break;
 		case VK_F8:
+			totalname = 0;
+			pages = 1;
+			focus = 0;
 			spi_keyalert();
 			DestroyWindow(hWnd);
 			SetFocus(GetParent(hWnd));

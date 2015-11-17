@@ -14,12 +14,16 @@ static HWND		hMainWnd = NULL;
 
 static HDC		hBgMemDC = NULL;
 static HBITMAP	hBgBitmap, hOldBgBitmap;
+static STATICDEBUG_S Static;
+static u32_t 	timer_cmd_s 	= 0;	// 纸币信息定时器
+#define 		ID_TIMER_CMD2 	402	
 
 static LRESULT CALLBACK MainProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam);
 static int OnDestroy(HWND hWnd, WPARAM wParam, LPARAM lParam);
 static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam);
 static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam);
+static int OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
 int staticwin_create(HWND hWnd)
 {
@@ -70,6 +74,9 @@ static LRESULT CALLBACK MainProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lPa
 		case WM_DESTROY:
 			OnDestroy(hWnd, wParam, lParam);
 			break;
+		case WM_TIMER:
+			OnTimer(hWnd, wParam, lParam);
+			break;	
 		default:
 			return DefWindowProc(hWnd, iMsg, wParam, lParam);
 	}
@@ -92,6 +99,9 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	DeleteObject(hBrush);
 	GdDrawImageFromFile(hBgMemDC->psd, 0, 0, 480, 320, "/bmp/fota/staticwin.bmp", 0);
 	ReleaseDC(hWnd, hDC);
+	//debugstatic_read((u8_t *)(&static),debugstatic_count_get() - 1,1);
+	
+	timer_cmd_s = SetTimer(hWnd,ID_TIMER_CMD2,1000,NULL);
 	return 0;
 }
 
@@ -106,11 +116,63 @@ static int OnDestroy(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam) 
 {
-	HDC				hDC;
+	HDC				hDC, hMemDC;
+	HBITMAP	hBitmap, hOldBitmap;
 	PAINTSTRUCT		ps;
-
+	HFONT			hOldFont;
+	u8_t			i;
+	
 	hDC = BeginPaint(hWnd, &ps);
-	BitBlt(hDC, 0, 0, 480, 320, hBgMemDC, 0, 0, SRCCOPY);
+
+	hMemDC = CreateCompatibleDC(hDC);
+	hBitmap = CreateCompatibleBitmap(hMemDC, 480, 320);
+	hOldBitmap = SelectObject(hMemDC, hBitmap);
+	BitBlt(hMemDC, 0, 0, 480, 320, hBgMemDC, 0, 0, SRCCOPY);
+
+	hOldFont = SelectObject(hMemDC, (HFONT)GetFont24Handle());
+	SetBkColor(hMemDC, RGB(0, 255, 0));
+	SetBkMode(hMemDC, TRANSPARENT);
+	SetTextColor(hMemDC, RGB(255, 255, 255));
+
+	s8_t buf[8];
+
+	
+	for(i=0;i<8;i++)
+	{
+		memset(buf,0,8);
+		sprintf(buf,"%03d",Static.ir[i]);
+		TextOut(hMemDC, 58, 72 + 28*i,buf, strlen(buf));
+	}
+
+	for(i=0;i<6;i++)
+	{
+		memset(buf,0,8);
+		sprintf(buf,"%03d",Static.tape[i]);
+		TextOut(hMemDC, 126, 72 + 28*i, buf, strlen(buf));
+	}
+
+	for(i=0;i<4;i++)
+	{
+		memset(buf,0,8);
+		sprintf(buf,"%03d",Static.fluore[i]);
+		TextOut(hMemDC, 270, 72 + 28*i, buf, strlen(buf));
+	}
+
+	
+	for(i=0;i<4;i++)
+	{
+		memset(buf,0,8);
+		sprintf(buf,"%03d",Static.magnetic[i]);
+		TextOut(hMemDC, 400, 72 + 28*i, buf, strlen(buf));
+	}
+
+	BitBlt(hDC, 0, 0, 480, 320, hMemDC, 0, 0, SRCCOPY);
+
+	SelectObject(hDC, hOldFont);
+	SelectObject(hMemDC, hOldBitmap);
+	DeleteObject(hBitmap);
+	DeleteDC(hMemDC);
+	
 	EndPaint(hWnd, &ps);
 	return 0;
 }
@@ -133,12 +195,41 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		case VK_F7:
 			break;
 		case VK_F8:
-			spi_keyalert();
-			DestroyWindow(hWnd);
-			SetFocus(GetParent(hWnd));
+			mcu_mode_set(MCU_NORMAL_MODE);
 			break;
 		default:
 			break;
+	}
+	return 0;
+}
+static int OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	switch(wParam) 
+	{
+		case ID_TIMER_CMD2:
+			if(timer_cmd_s)
+			{
+				s32_t mode;
+
+				mode = mcu_mode_get();
+				if(!mode)
+				{
+					KillTimer(hWnd, ID_TIMER_CMD2);
+					timer_cmd_s = 0;
+					DestroyWindow(hWnd);
+					SetFocus(GetParent(hWnd));
+				}
+
+				debugstatic_read((u8_t *)(&Static),debugstatic_count_get() - 1,1);
+				printf("pulse:%d %d %d %d %d %d\n",Static.fluore[0],Static.fluore[1],Static.fluore[2],Static.fluore[3],Static.fluore[4],Static.fluore[5]);
+				printf("ir:%d %d %d %d %d %d\n",Static.ir[0],Static.ir[1],Static.ir[2],Static.ir[3],Static.ir[4],Static.ir[5]);
+				printf("tape:%d %d %d %d %d %d\n",Static.tape[0],Static.tape[1],Static.tape[2],Static.tape[3],Static.tape[4],Static.tape[5]);
+				
+				InvalidateRect(hWnd, NULL, FALSE);
+			}
+			break;
+		default:
+				break;
 	}
 	return 0;
 }

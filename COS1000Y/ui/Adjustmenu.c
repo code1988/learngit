@@ -199,7 +199,8 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			break;
 		case VK_F6:    
 			break;
-		case VK_F7:       
+		case VK_F7:  
+			CISadjust_create(hWnd);
 			break;
 		case VK_F8:       //return
 			if(timer_cmd_s)

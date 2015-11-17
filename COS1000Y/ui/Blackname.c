@@ -161,9 +161,7 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	HDC				hDC, hMemDC;
 	HBITMAP	hBitmap, hOldBitmap;
 	PAINTSTRUCT		ps;
-	HBRUSH			hBrush;
-	RECT			rect;
-	HFONT			hFont, hOldFont;
+	HFONT		    hOldFont;
 
 	hDC = BeginPaint(hWnd, &ps);
 		hMemDC = CreateCompatibleDC(hDC);

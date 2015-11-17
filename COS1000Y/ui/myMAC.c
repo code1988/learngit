@@ -121,7 +121,8 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	ReleaseDC(hWnd, hDC);
 	
 	keynum[0] = '\0';
-	
+	net1_mac_get(keynum);
+	printf("keynum =%s\n",keynum);
 	return 0;
 }
 
@@ -163,12 +164,12 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	
 	for(i=0;i<j/2;i++)
 	{
-		TextOut(hMemDC, 77+36*i, 283, keynum+3*i, 3);	
+		TextOut(hMemDC, 77+50*i, 283, keynum+2*i, 2);	
 		if(i<5)
-			TextOut(hMemDC, 125+36*i, 283, ".", 1);
+			TextOut(hMemDC, 110+50*i, 283, "-", 1);
 		
 	}
-	TextOut(hMemDC, 77+36*(j/2), 283, keynum+3*i, j%2);	
+	TextOut(hMemDC, 77+50*(j/2), 283, keynum+2*i, j%2);	
 	
 	
 	
@@ -256,7 +257,7 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			net1_mac_get(mac);
 			printf("old local mac:%s\n",mac);
 			
-			net1_mac_set(mac);
+			net1_mac_set(keynum);
 			keynum[0] = '\0';
 			InvalidateRect(hWnd, NULL, FALSE);
 			break;

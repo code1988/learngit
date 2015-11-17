@@ -24,6 +24,10 @@ static HBITMAP	hBgNumBitmap,hOldBgNumBitmap;
 static HDC 		hLtNumMemDC = NULL;
 static HBITMAP	hLtNumBitmap,hOldLtNumBitmap;
 
+static HDC 		hKyNumMemDC = NULL;
+static HBITMAP	hKyNumBitmap,hOldKyNumBitmap;
+
+
 static HDC		hSDMemDC = NULL;
 static HBITMAP	hSDBitmap,hOldSDBitmap;
 
@@ -36,6 +40,10 @@ static HBITMAP	h4Bitmap,hOld4Bitmap;
 static HDC		hIncmptMemDC = NULL;
 static HBITMAP	hIncmptBitmap,hOldIncmptBitmap;
 
+static HDC		hwarningMemDC = NULL;
+static HBITMAP	hwarningBitmap,hOldwarningBitmap;
+
+static u8_t olderror_id = 0;
 
 static s8_t 	modNo = 0;		// 模式切换0-智能 1-混点 2-计数3-分版
 static u8_t		addSW = 0;		// 累加开关
@@ -176,11 +184,11 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	// 大数字黑底图
 	hBgNumMemDC = CreateCompatibleDC(hDC);
-	hBgNumBitmap = CreateCompatibleBitmap(hBgNumMemDC, 480, 120);
+	hBgNumBitmap = CreateCompatibleBitmap(hBgNumMemDC, 480, 100);
 	hOldBgNumBitmap = SelectObject(hBgNumMemDC, hBgNumBitmap); 
-	rect.left = 0; rect.right = 480; rect.top = 0; rect.bottom = 120;
+	rect.left = 0; rect.right = 480; rect.top = 0; rect.bottom = 100;
 	FillRect(hBgNumMemDC, &rect, hBrush);
-	GdDrawImageFromFile(hBgNumMemDC->psd, 0, 0, 480, 120, "/bmp/fota/zongzhangshu.bmp", 0);
+	GdDrawImageFromFile(hBgNumMemDC->psd, 0, 0, 480, 100, "/bmp/fota/zongzhangshu.bmp", 0);
 
 	// 小数字黑底图
 	hLtNumMemDC = CreateCompatibleDC(hDC);
@@ -189,6 +197,15 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	rect.left = 0; rect.right = 410; rect.top = 0; rect.bottom = 57;
 	FillRect(hLtNumMemDC, &rect, hBrush);
 	GdDrawImageFromFile(hLtNumMemDC->psd, 0, 0, 410, 57, "/bmp/fota/zongjinewin.bmp", 0);
+
+	// 可疑币黑底图
+	hKyNumMemDC = CreateCompatibleDC(hDC);
+	hKyNumBitmap = CreateCompatibleBitmap(hKyNumMemDC, 320, 44);
+	hOldKyNumBitmap = SelectObject(hKyNumMemDC, hKyNumBitmap); 
+	rect.left = 0; rect.right = 320; rect.top = 0; rect.bottom = 44;
+	FillRect(hKyNumMemDC, &rect, hBrush);
+	GdDrawImageFromFile(hKyNumMemDC->psd, 0, 0, 320, 44, "/bmp/fota/keyibiwin.bmp", 0);
+
 
 	// SD标志
 	hSDMemDC = CreateCompatibleDC(hDC);
@@ -223,6 +240,15 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	GdDrawImageFromFile(hIncmptMemDC->psd, 0, 0, 34, 35, "/bmp/fota/canbiwin.bmp", 0);
 
 
+	//报警标志
+	hwarningMemDC = CreateCompatibleDC(hDC);
+	hwarningBitmap = CreateCompatibleBitmap(hwarningMemDC, 220, 45);
+	hOldwarningBitmap = SelectObject(hwarningMemDC, hwarningBitmap); 
+	rect.left = 0; rect.right = 220; rect.top = 0; rect.bottom = 45;
+	FillRect(hwarningMemDC, &rect, hBrush);
+	GdDrawImageFromFile(hwarningMemDC->psd, 0, 0, 220, 45, "/bmp/fota/kaijibaojingwin.bmp", 0);
+
+
 	timer_paper_info_s = SetTimer(hWnd,ID_TIMER_PAPER_INFO,10,NULL);
 	
 	DeleteObject(hBrush);
@@ -236,6 +262,43 @@ static int OnDestroy(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	SelectObject(hBgMemDC, hOldBgBitmap);
 	DeleteObject(hBgBitmap);
 	DeleteDC(hBgMemDC);
+	
+	SelectObject(hModMemDC, hOldModBitmap);
+	DeleteObject(hModBitmap);
+	DeleteDC(hModMemDC);
+
+	SelectObject(hBgNumMemDC, hOldBgNumBitmap);
+	DeleteObject(hBgNumBitmap);
+	DeleteDC(hBgNumMemDC);
+
+	SelectObject(hLtNumMemDC, hOldLtNumBitmap);
+	DeleteObject(hLtNumBitmap);
+	DeleteDC(hLtNumMemDC);
+
+	SelectObject(hKyNumMemDC, hOldKyNumBitmap);
+	DeleteObject(hKyNumBitmap);
+	DeleteDC(hKyNumMemDC);
+
+	SelectObject(hSDMemDC, hOldSDBitmap);
+	DeleteObject(hSDBitmap);
+	DeleteDC(hSDMemDC);
+
+	SelectObject(hNetMemDC, hOldNetBitmap);
+	DeleteObject(hNetBitmap);
+	DeleteDC(hNetMemDC);
+
+	SelectObject(h4MemDC, hOld4Bitmap);
+	DeleteObject(h4Bitmap);
+	DeleteDC(h4MemDC);
+
+	SelectObject(hIncmptMemDC, hOldIncmptBitmap);
+	DeleteObject(hIncmptBitmap);
+	DeleteDC(hIncmptMemDC);
+
+	SelectObject(hwarningMemDC, hOldwarningBitmap);
+	DeleteObject(hwarningBitmap);
+	DeleteDC(hwarningMemDC);
+			
 
 	if (timer_paper_info_s > 0)
 	{
@@ -272,10 +335,10 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			BitBlt(hMemDC,30 ,275 , 70, 40, hModMemDC, 40, 255, SRCCOPY);
 			break;
 		case 1:
-			BitBlt(hMemDC,30 ,275 , 70, 40, hModMemDC, 40, 255 - 52, SRCCOPY);
+			BitBlt(hMemDC,28 ,275 , 72, 40, hModMemDC, 36, 255 - 52, SRCCOPY);
 			break;
 		case 3:
-			BitBlt(hMemDC,30 ,275 , 70, 40, hModMemDC, 40, 255 - 52*2, SRCCOPY);
+			BitBlt(hMemDC,28 ,275 , 72, 40, hModMemDC, 36, 255 - 52*2, SRCCOPY);
 			break;
 		default:
 			break;
@@ -290,7 +353,7 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	len = strlen(buf);
 	for(i=0;i<len;i++)
 	{
-		BitBlt(hMemDC,110 + i*41,10 , 41, 57, hLtNumMemDC, (buf[i] - '0')*41, 0, SRCCOPY);			
+		BitBlt(hMemDC,110 + i*32,10 , 32, 44, hKyNumMemDC, (buf[i] - '0')*32, 0, SRCCOPY);			
 	}
 
 	// 真张
@@ -299,7 +362,7 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	len = strlen(buf);
 	for(i=0;i<len;i++)
 	{
-		BitBlt(hMemDC,345 + i*41 ,10 , 41, 57, hLtNumMemDC, (buf[i] - '0')*41, 0, SRCCOPY);			
+		BitBlt(hMemDC,345 + i*32 ,10 , 32, 44, hKyNumMemDC, (buf[i] - '0')*32, 0, SRCCOPY);			
 	}
 
 	// 总金额
@@ -317,7 +380,7 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	len = strlen(buf);
 	for(i=0;i<len;i++)
 	{
-		BitBlt(hMemDC,440 - (len - i)*48,65 , 48, 120, hBgNumMemDC, (buf[i] - '0')*48, 0, SRCCOPY);			
+		BitBlt(hMemDC,440 - (len - i)*48,75 , 48, 100, hBgNumMemDC, (buf[i] - '0')*48, 0, SRCCOPY);			
 	}
 
 	// 面额值
@@ -326,7 +389,7 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	len = strlen(buf);
 	for(i=0;i<len;i++)
 	{
-		BitBlt(hMemDC,280 + i*41,267 , 41, 57, hLtNumMemDC, (buf[i] - '0')*41, 0, SRCCOPY);			
+		BitBlt(hMemDC,280 + i*32,272 , 32, 44, hKyNumMemDC, (buf[i] - '0')*32, 0, SRCCOPY);			
 	}
 	
 	// 网发
@@ -357,40 +420,89 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 static int OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	static u32_t tot_count,value,amount,doubt,real;
-	u8_t buf[10];
+	u8_t buf[64];
 	s32_t len;
-	u8_t i;
-	HDC				hDC;
+	u8_t i,error_id;
 	
+	HDC				hDC,hMemDC;
+	HBITMAP	hBitmap, hOldBitmap;
+	HFONT			 hOldFont;
+	s8_t	*errptr;
+
 	switch(wParam) 
 	{
 		case ID_TIMER_PAPER_INFO:
 			if(moneydisp_info_status())
 			{
 				moneydisp_info_get(&monenyInfo);
-				printf("curpages:%d , prepages:%d ,money_sum:%d\n",monenyInfo.curpages,monenyInfo.prepages,monenyInfo.money_sum);
-				printf("crown:%s\n",monenyInfo.crown);
-				printf("errcode:%d , enomination:%d\n",monenyInfo.errcode,monenyInfo.enomination);
-				printf("errnum:%d, Valuta:%d, total_sum:%d\n",monenyInfo.errnum,monenyInfo.Valuta[2],monenyInfo.total_sum);
 
 				hDC = GetDC(hWnd);
+
+				
 				
 				// 总张数
 				if(tot_count != monenyInfo.curpages)
 				{	
 					memset(buf,0,sizeof(buf));
 					sprintf(buf,"%d",monenyInfo.curpages);
+				
 					len = strlen(buf);
+					if(tot_count>monenyInfo.curpages)
+					{
+						
+						for(;i<5;i++)
+						{
+							BitBlt(hDC,440 - (i+1)*48,75 , 48, 100, hBgMemDC, 440 - (5 - i)*48,75, SRCCOPY);
+						}
+
+					}
+					
+					error_id = moneyerror_id_get();				
+				
+					if(error_id)  //报警信息
+					{
+						errptr = moneyerror_str_get(error_id);
+
+						olderror_id = error_id;
+
+						printf("%s\n",errptr);					
+										
+						hMemDC = CreateCompatibleDC(hDC);
+						hBitmap = CreateCompatibleBitmap(hMemDC, 220, 45);
+						hOldBitmap = SelectObject(hMemDC, hBitmap);
+							BitBlt(hMemDC, 0, 0, 220, 45, hwarningMemDC, 0, 0, SRCCOPY);
+							hOldFont = SelectObject(hMemDC, (HFONT)GetFont32Handle());
+								SetBkColor(hMemDC, RGB(0, 255, 0));
+								SetBkMode(hMemDC, TRANSPARENT);;							
+								SetTextColor(hMemDC,RGB(255,0 , 0));
+								
+								if (errptr == NULL) 
+								{
+									sprintf(buf, "错误代码 0x%02x", olderror_id);
+									TextOut(hMemDC, 47, 10, buf, -1);
+								}
+								else
+									TextOut(hMemDC, 47, 10, errptr, -1);
+
+								
+								BitBlt(hDC, 170, 110, 220,45,hMemDC, 0, 0, SRCCOPY);
+							SelectObject(hMemDC, hOldFont);
+					
+						SelectObject(hMemDC, hOldBitmap);
+						DeleteObject(hBitmap);
+						DeleteDC(hMemDC);
+
+					}	
+					else if(error_id == 0 && error_id!=olderror_id)
+					{
+						olderror_id = error_id;
+						BitBlt(hDC, 170, 110, 220,45,hBgMemDC, 170, 110, SRCCOPY);
+					}
 					
 					for(i=0;i<len;i++)
 					{
-						BitBlt(hDC,440 - (len - i)*48,65 , 48, 120, hBgNumMemDC, (buf[i] - '0')*48, 0, SRCCOPY);			
+						BitBlt(hDC,440 - (len - i)*48,75 , 48, 120, hBgNumMemDC, (buf[i] - '0')*48, 0, SRCCOPY);			
 					}
-					for(;i<5;i++)
-					{
-						BitBlt(hDC,440 - (5 - i)*48,65 , 48, 120, hBgMemDC, 440 - (5 - i)*48,65, SRCCOPY);
-					}
-					
 					tot_count = monenyInfo.curpages;
 				}
 
@@ -399,16 +511,24 @@ static int OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				{
 					memset(buf,0,sizeof(buf));
 					sprintf(buf,"%d",monenyInfo.total_sum);
+					printf("totalsum= %d\n",monenyInfo.total_sum);
 					len = strlen(buf);
 
 					for(i=0;i<len;i++)
 					{
 						BitBlt(hDC,440 - (len - i)*41 ,200 , 41, 57, hLtNumMemDC, (buf[i] - '0')*41, 0, SRCCOPY);				
 					}
-					for(;i<6;i++)
+					printf("i=%d\n",i);
+					if(amount>monenyInfo.total_sum)
 					{
-						BitBlt(hDC,440 - (5 - i)*41,200 , 41, 57, hBgMemDC, 440 - (5 - i)*41,200, SRCCOPY);
+						for(;i<6;i++)
+						{
+							BitBlt(hDC,440 - (i+1)*41,200 , 41, 57, hBgMemDC, 440 - (5 - i)*41,200, SRCCOPY);
+						}
+
+
 					}
+					
 					
 					amount = monenyInfo.total_sum;	
 				}
@@ -422,11 +542,11 @@ static int OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
 					
 					for(i=0;i<len;i++)
 					{
-						BitBlt(hDC,280 + i*41,267 , 41, 57, hLtNumMemDC, (buf[i] - '0')*41, 0, SRCCOPY);				
+						BitBlt(hDC,280 + i*32,272 , 32, 44, hKyNumMemDC, (buf[i] - '0')*32, 0, SRCCOPY);				
 					}
 					for(;i<3;i++)
 					{
-						BitBlt(hDC,280 + i*41,267 , 41, 57, hBgMemDC, 280 + i*41,267, SRCCOPY);
+						BitBlt(hDC,280 + i*32,272 , 32, 44, hBgMemDC, 280 + i*32,267, SRCCOPY);
 					}
 					
 					value = monenyInfo.enomination;
@@ -441,11 +561,11 @@ static int OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
 					
 					for(i=0;i<len;i++)
 					{
-						BitBlt(hDC,110 + i*41,10 , 41, 57, hLtNumMemDC, (buf[i] - '0')*41, 0, SRCCOPY);				
+						BitBlt(hDC,110 + i*32,10 , 32, 44, hKyNumMemDC, (buf[i] - '0')*32, 0, SRCCOPY);				
 					}
 					for(;i<5;i++)
 					{
-						BitBlt(hDC,110 + i*41,10 , 41, 57, hBgMemDC,110 + i*41,10, SRCCOPY);
+						BitBlt(hDC,110 + i*32,10 , 32, 44, hBgMemDC,110 + i*32,10, SRCCOPY);
 					}
 					
 					doubt = monenyInfo.errnum;	
@@ -460,11 +580,11 @@ static int OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
 					
 					for(i=0;i<len;i++)
 					{
-						BitBlt(hDC,345 + i*41,10 , 41, 57, hLtNumMemDC, (buf[i] - '0')*41, 0, SRCCOPY);					
+						BitBlt(hDC,345 + i*32,10 , 32, 44, hKyNumMemDC, (buf[i] - '0')*32, 0, SRCCOPY);					
 					}
 					for(;i<5;i++)
 					{
-						BitBlt(hDC,345 + i*41,10 , 41, 57, hBgMemDC,345 + i*41,10, SRCCOPY);
+						BitBlt(hDC,345 + i*32,10 , 32, 44, hBgMemDC,345 + i*32,10, SRCCOPY);
 					}
 					
 					real = monenyInfo.curpages - monenyInfo.errnum;	
@@ -473,12 +593,13 @@ static int OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				
 				ReleaseDC(hWnd, hDC);
 			}
-
+		
 			if(modNo != function_type_get())
 			{
 				hDC = GetDC(hWnd);
 
 				modNo = function_type_get();
+			
 				switch(modNo)
 				{
 					case 2:
@@ -488,19 +609,19 @@ static int OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
 						BitBlt(hDC,30 ,275 , 70, 40, hModMemDC, 40, 255, SRCCOPY);
 						break;
 					case 1:
-						BitBlt(hDC,30 ,275 , 70, 40, hModMemDC, 40, 255 - 52, SRCCOPY);
+						BitBlt(hDC,28 ,275 , 72, 40, hModMemDC, 36, 255 - 52, SRCCOPY);
 						break;
 					case 3:
-						BitBlt(hDC,30 ,275 , 70, 40, hModMemDC, 40, 255 - 52*2, SRCCOPY);
+						BitBlt(hDC,28 ,275 , 72, 40, hModMemDC, 36, 255 - 52*2, SRCCOPY);
 						break;
 					default:
 						break;
 				}
-
-					
+				printf("modNo = %d\n",modNo);
 
 				ReleaseDC(hWnd, hDC);
 			}
+
 			break;
 		case ID_TIMER_LONG_KEY:
 			if (timer_long_key_s > 0)
@@ -523,6 +644,7 @@ static int OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				}
 			}
 			InvalidateRect(hWnd, NULL, FALSE);
+
 			break;
 		default:
 			break;
@@ -573,14 +695,18 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				timer_long_key_s = SetTimer(hWnd,ID_TIMER_LONG_KEY,1000,NULL);
 				Switch[1][1] = 1;
 			}
-			guanzihaowin_create(hWnd);
+			printf("modNo = %d\n",modNo);
+			if(modNo == 1)
+				mixquery_window_create(hWnd);
+			else
+				guanzihaowin_create(hWnd);
+			
 			break;
 		case VK_F8:
 			memset(&monenyInfo,0,sizeof(MONEYDISP_S));
 			InvalidateRect(hWnd, NULL, FALSE);
 			break;
 		default:
-			identifywin_create(hWnd);
 			break;
 	}
 	return 0;

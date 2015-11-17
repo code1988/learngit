@@ -11,30 +11,31 @@
 #include "utility.h"
 #include "et850_data.h"
 
-#define SAVE_TIMER_ID				601
 
-#define Uploadimgweight 52
-#define Uploadimgheight 38
+#define Uploadimgweight 55
+#define Uploadimgheight 42
 
 static HWND		hMainWnd = NULL;
 
 static HDC		hBgMemDC = NULL;
 static HBITMAP	hBgBitmap, hOldBgBitmap;
 
-
+static char Upload[21][4]={ "H11","M11","H12","M12","H21","M21","H22",\
+							"M22","H31","M31","H32","M32","H41","M41",\
+							"H42","M42","SW1","FMG","DKA","SSM","SDK"\
+							};
 
 static int	old_x = 0;
 static int	pos_x = 0;
 
 
-static int save_timer_id = 0;
 static int message[32];
 static char uploadimg[21];
-//å¾…å¡«æ•°å­—åæ ‡
-static int pos[2] = { 71,98};
+//´ıÌîÊı×Ö×ø±ê
+static int pos[2] = { 70,100};
 					
-//å•å…ƒæ ¼åæ ‡					
-static int rectpos[2] = {44,98 };							
+//Ñ¡ÖĞµ¥Ôª¸ñ×ø±ê					
+static int rectpos[2] = {43,97 };							
 						   
 
 static  char	uploadimgbuf[21][10];
@@ -107,6 +108,7 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	HDC			hDC;
 	RECT		rect;
 	HBRUSH	hBrush;	
+	int i= 0;
 	hDC = GetDC(hWnd);
 		hBrush = CreateSolidBrush(RGB(255, 255, 255));
 	hBgMemDC = CreateCompatibleDC(hDC);													//åˆ›å»ºå…¼å®¹HDC
@@ -124,7 +126,12 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	ReleaseDC(hWnd, hDC);
 	
 	message[0] = '\0';
-	
+	for(i = 0;i<21;i++)
+	{
+
+		uploadimg[i] = upload_param_load(Upload[i], 1);
+
+	}
 	return 0;
 }
 
@@ -157,7 +164,7 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 						rect.left = rectpos[0];
 						rect.right = rectpos[0]+Uploadimgweight ;
 						rect.top = rectpos[1];
-						rect.bottom = rectpos[1]+Uploadimgheight*(pos_x+1);
+						rect.bottom = rectpos[1]+Uploadimgheight;
 						FillRect(hMemDC, &rect, hBrush);
 					DeleteObject(hBrush);
 					
@@ -172,7 +179,7 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 					SetTextColor(hMemDC,RGB(255, 255, 255));
 					for(i = 0;i<21;i++)
 					{						
-						TextOut(hMemDC, pos[0]-strlen(uploadimgbuf[i])*6+i%7*(Uploadimgweight+i%7-1), pos[1]+i/7*2*(Uploadimgheight+i/7), uploadimgbuf[i], -1);  
+						TextOut(hMemDC, pos[0]-strlen(uploadimgbuf[i])*6+i%7*(Uploadimgweight), pos[1]+i/7*2*(Uploadimgheight), uploadimgbuf[i], -1);  
 					}
 					BitBlt(hDC, 0, 0, 480, 320,hMemDC, 0, 0, SRCCOPY);
 				SelectObject(hMemDC, hOldFont);
@@ -185,38 +192,32 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-static int OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
-{
-	switch(wParam) {
-		case SAVE_TIMER_ID:
-				if (save_timer_id)
-					KillTimer(hWnd, SAVE_TIMER_ID);
-				save_timer_id = 0;
-				message[0] = '\0';
-				InvalidateRect(hWnd, NULL, FALSE);
-				break;
-		default:
-				break;
-	}
-	return 0;
-}
 
 static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	int min=0;
+	int min=0,i = 0;
 	int  max[21]={24,59,24,59,24,59,24,59,24,59,24,59,100,10,24,59,1,255,255,255,255};
 	pos_x = old_x;
 	switch(wParam) {
 		case VK_F1:     //ÓÒÒÆ
 			if(pos_x<20)
+			{
 				pos_x++;	
-			refresh_keytable(hWnd,old_x,pos_x,1);
+				refresh_keytable(hWnd,old_x,pos_x,1);
+
+			}
+				
 			old_x = pos_x;
 			break;
 		case VK_F2:    //×óÒÆ
 			if(pos_x>0)
+			{
+
 				pos_x--;	
-			refresh_keytable(hWnd,old_x,pos_x,1);
+				refresh_keytable(hWnd,old_x,pos_x,1);
+
+			}
+				
 			old_x = pos_x;
 			break;
 		case VK_F3:       //down
@@ -238,30 +239,21 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			old_x = pos_x;
 			break;
 		case VK_F7: 
-			//if (datetime_set_f(year, months, day,  hour,  minute, second)==0)
-			//	strcpy(message, "±£´æ³É¹¦");
-			//else 
-			//	strcpy(message, "±£´æÊ§°Ü");
-			
-			if (save_timer_id)
-				KillTimer(hWnd, save_timer_id);
-						
-			refresh_keytable(hWnd,old_x,pos_x,0);
-			
-			save_timer_id = SetTimer(hWnd, SAVE_TIMER_ID, 5000, NULL);
 			spi_keyalert();
 			DestroyWindow(hWnd);
 			SetFocus(GetParent(hWnd));
 			break;
 		case VK_F8:     //±£´æ²¢·µ»Ø
-			
+			for(i = 0;i<21;i++)
+			{
+				upload_param_save(Upload[i],uploadimg[i]);
+			}
 			break;
 		case VK_F9:       //save
 			pos_x = 0;
 			spi_keyalert();
 			DestroyWindow(hWnd);
-			SetFocus(GetParent(hWnd));
-			//printf("blacknum = %d\n", black_count_get(1));   //debug			
+			SetFocus(GetParent(hWnd));	
 			break;
 		
 		default:
@@ -290,7 +282,7 @@ static void refresh_keytable(HWND hWnd,int Oldx,int Posx ,int flag)
 		hMemDC = CreateCompatibleDC(hDC);
 			hBitmap = CreateCompatibleBitmap(hMemDC, Uploadimgweight, Uploadimgheight);
 			hOldBitmap = SelectObject(hMemDC, hBitmap);
-				BitBlt(hMemDC, 0, 0, Uploadimgweight, Uploadimgheight, hBgMemDC, rectpos[0]+Posx%7*(Uploadimgweight+Posx%7-1), rectpos[1]+Posx/7*2*(Uploadimgheight+Posx/7), SRCCOPY);
+				BitBlt(hMemDC, 0, 0, Uploadimgweight, Uploadimgheight, hBgMemDC, rectpos[0]+Posx%7*(Uploadimgweight+1), rectpos[1]+Posx/7*2*(Uploadimgheight), SRCCOPY);
 				hOldFont = SelectObject(hMemDC, (HFONT)GetFont32Handle());	
 					hBrush = CreateSolidBrush(RGB(255,0,0));
 						rect.left = 0;
@@ -302,9 +294,9 @@ static void refresh_keytable(HWND hWnd,int Oldx,int Posx ,int flag)
 					SetBkColor(hMemDC, RGB(0, 255, 0));
 					SetBkMode(hMemDC, TRANSPARENT);						
 					SetTextColor(hMemDC, RGB(255, 255, 255));
-					TextOut(hMemDC,Uploadimgweight/2+Posx-strlen(uploadimgbuf[Posx])*6, 0,uploadimgbuf[Posx], -1);
+					TextOut(hMemDC,Uploadimgweight/2-strlen(uploadimgbuf[Posx])*6, 0,uploadimgbuf[Posx], -1);
 					
-					BitBlt(hDC,rectpos[0]+Posx%7*(Uploadimgweight+Posx%7-1), rectpos[1]+Posx/7*2*(Uploadimgheight+Posx/7), Uploadimgweight, Uploadimgheight,hMemDC, 0, 0, SRCCOPY);
+					BitBlt(hDC,rectpos[0]+Posx%7*(Uploadimgweight+1), rectpos[1]+Posx/7*2*(Uploadimgheight), Uploadimgweight, Uploadimgheight,hMemDC, 0, 0, SRCCOPY);
 				SelectObject(hMemDC, hOldFont);	
 			SelectObject(hMemDC, hOldBitmap);
 			DeleteObject(hBitmap);
@@ -312,13 +304,13 @@ static void refresh_keytable(HWND hWnd,int Oldx,int Posx ,int flag)
 	{
 			hBitmap = CreateCompatibleBitmap(hMemDC, Uploadimgweight, Uploadimgheight);
 			hOldBitmap = SelectObject(hMemDC, hBitmap);
-				BitBlt(hMemDC, 0, 0, Uploadimgweight, Uploadimgheight, hBgMemDC, rectpos[0]+Oldx%7*(Uploadimgweight+Oldx%7-1), rectpos[1]+Oldx/7*2*(Uploadimgheight+Oldx/7), SRCCOPY);
+				BitBlt(hMemDC, 0, 0, Uploadimgweight, Uploadimgheight, hBgMemDC, rectpos[0]+Oldx%7*(Uploadimgweight+1), rectpos[1]+Oldx/7*2*(Uploadimgheight), SRCCOPY);
 				hOldFont = SelectObject(hMemDC, (HFONT)GetFont32Handle());				
 					SetBkColor(hMemDC, RGB(0, 255, 0));
 					SetBkMode(hMemDC, TRANSPARENT); 					
 					SetTextColor(hMemDC, RGB(255, 255, 255));									
-					TextOut(hMemDC,Uploadimgweight/2-strlen(uploadimgbuf[Oldx])*6+Oldx, 0,uploadimgbuf[Oldx], -1);					
-					BitBlt(hDC,rectpos[0]+Oldx%7*(Uploadimgweight+Oldx%7-1), rectpos[1]+Oldx/7*2*(Uploadimgheight+Oldx/7), Uploadimgweight, Uploadimgheight,hMemDC, 0, 0, SRCCOPY);
+					TextOut(hMemDC,Uploadimgweight/2-strlen(uploadimgbuf[Oldx])*6, 0,uploadimgbuf[Oldx], -1);					
+					BitBlt(hDC,rectpos[0]+Oldx%7*(Uploadimgweight+1), rectpos[1]+Oldx/7*2*(Uploadimgheight), Uploadimgweight, Uploadimgheight,hMemDC, 0, 0, SRCCOPY);
 				SelectObject(hMemDC, hOldFont); 
 			SelectObject(hMemDC, hOldBitmap);
 			DeleteObject(hBitmap);
