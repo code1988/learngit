@@ -1,6 +1,7 @@
 #ifndef _ET850_DATA_H_
 #define _ET850_DATA_H_
 
+
 #include "utility.h"
 
 /********************************************************************************/
@@ -95,6 +96,7 @@ s32_t user_select_get(s8_t *ptr, u32_t start, s32_t size);
 #define MCU_CONFIG_LOGIN_INDEX					0xA10C
 #define MCU_CONFIG_STANDBY_INDEX				0xF100
 #define MCU_CONFIG_FACTORY_INDEX				0xF101
+#define MCU_CONFIG_DAMAGED_INDEX				0xF102
 typedef struct tagMcuParamSetS {
 	u32_t			key;
 	u32_t			type;
@@ -116,8 +118,10 @@ status_t mcu_param_getex(u32_t key, MCU_PARAMSET_S *h);
 /********************************************************************************/
 #define BUSINESS_TYPE_MIN		0
 #define BUSINESS_TYPE_MAX		2
+/* 0：为智能 1：混点 2：计数 3：版别清分 4：套别清分 5：残钞清分 */
 #define FUNCTION_TYPE_MIN		0
 #define FUNCTION_TYPE_MAX		5
+
 #define SENSITIVE_LEVEL_MIN		1
 #define SENSITIVE_LEVEL_MAX		4
 #define PRESET_VALUE_MIN		-1
@@ -132,7 +136,7 @@ u16_t function_type_get(void);
 void sensitive_level_set(u16_t level);
 u16_t sensitive_level_get(void);
 void preset_value_set(s16_t value);
-u16_t preset_value_get(void);
+s16_t preset_value_get(void);
 status_t device_name_get(s8_t *name);
 status_t device_name_set(s8_t *name);
 status_t device_organize_get(s8_t *branch, s8_t *branch_net);
@@ -209,12 +213,13 @@ bool_t moneydisp_info_status(void);
 /********************************************************************************/
 void deverror_id_set(u8_t id);
 u8_t deverror_id_get(void);
+s8_t* deverror_str_get(u8_t id);
+
 void moneyerror_id_set(u8_t id);
 u8_t moneyerror_id_get(void);
 s8_t* moneyerror_str_get(u8_t id);
-s8_t* deverror_str_get(u8_t id);
 
-status_t mcu_upgrade_create(void);
+status_t mcu_upgrade_create(s8_t *filename);
 status_t mcu_upgrade_destroy(void);
 status_t mcu_upgrade_request(void);
 status_t mcu_upgrade_start(void);
@@ -251,7 +256,7 @@ typedef struct tagDynamicDebugInfoS {
 	u8_t		ir[6];
 	u8_t		count[2];
 	u8_t		tape[6];
-	u8_t		magnetic[4];	// 磁性
+	u8_t		magnetic[4];
 	u8_t		face;
 	u8_t		version;
 	u16_t		width;
@@ -290,6 +295,7 @@ status_t imageinfo_open(void);
 status_t imageinfo_close(void);
 status_t imageinfo_write(u8_t *ptr);
 status_t imageinfo_read(u8_t *ptr);
+status_t imageinfo_refresh(void);
 
 /********************************************************************************/
 /* $describer:			mcu_dsp通信调试管理接口									*/
@@ -353,7 +359,6 @@ status_t data_analyze(u16_t cmd, u8_t *buf, u16_t size);
 status_t fsn_message_init(void);
 status_t fsn_message_release(void);
 status_t fsn_message_send(s8_t *ptr, u32_t size);
-
 
 /********************************************************************************/
 /*						fsn数据库管理接口函数									*/
@@ -420,8 +425,8 @@ status_t fsnfile_create(s8_t *direct, s8_t *filename);
 status_t fsnfile_destroy(s8_t *filename);
 status_t fsnfile_insert(s8_t *direct, s8_t *filename, s8_t *username);
 status_t fsnfile_delete(u32_t id);
-u32_t fsnfile_count_get(void);
-u32_t fsnfile_read(FSN_UNIT_S *ptr, u32_t start, u32_t size);
+u32_t fsnfile_count_get(s32_t upload, s32_t write);
+u32_t fsnfile_read(FSN_UNIT_S *ptr, u32_t start, u32_t size, s32_t upload, s32_t write);
 status_t fsnfile_write_get(FSN_UNIT_S *hFSN);
 
 /********************************************************************************/
@@ -505,10 +510,82 @@ typedef struct tagMoneyUnitInfoS {
 status_t moneybunch_init(void);
 status_t moneybunch_release(void);
 status_t moneybunch_add(u8_t *ptr);
+status_t moneybunch_free(void);
 u32_t moneybunch_count_get(void);
 status_t moneybunch_get(u32_t index, MONEY_UNITINFO_S *pData);
 
+#define MAX_NAME_SIZE       80
+
+typedef struct _KEY_VALUE {
+	int 				intval;
+	char 				key[MAX_NAME_SIZE];
+	char				value[BUFSIZ];
+	struct _KEY_VALUE	*prev;
+	struct _KEY_VALUE	*next;
+}KEY_VALUE, *PKEY_VALUE;
+
+typedef struct _SECTION {
+	char 				name[MAX_NAME_SIZE];
+	struct _SECTION		*prev;
+	struct _SECTION		*next;
+	KEY_VALUE			*head;
+}SECTION, *PSECTION;
+
+
+status_t upload_param_save(s8_t *name, s32_t value);
+s32_t upload_param_load(s8_t *name, s32_t def);
+
+typedef struct tagUpgradeStatusS {
+	s32_t		arm;
+	s32_t		param;
+	s32_t		dsp;
+	s32_t		fpga;
+	s32_t		module;
+	s32_t		mcu;
+	s32_t		total;
+}UPGRADE_STATUS_S;
+status_t upgrade_create(s8_t *direct);
+status_t upgrade_status_get(UPGRADE_STATUS_S *h);
+
+u8_t motor_status_get(void);
+void fota_reset_factory(void);
+status_t fota_startstop(void);
+status_t fota_clearzero(void);
+int fota_paramsave(u8_t value);
+
+
+u8_t fota_sensitive_normal_get(void);
+status_t fota_sensitive_normal_set(u8_t level);
+status_t fota_sensitive_image_set(u8_t level);
+u8_t fota_sensitive_image_get(void);
+status_t fota_sensitive_tape_set(u8_t level);
+u8_t fota_sensitive_tape_get(void);
+
+status_t fota_money4_support_set(u8_t level);
+u8_t fota_money4_support_get(void);
+status_t fota_damaged_support_set(u8_t level);
+u8_t fota_damaged_support_get(void);
+
+status_t image_transport_open(void);
+status_t image_transport_close(void);
+status_t image_transport_clear(void);
+s32_t image_transport_status(u8_t *total, u8_t *curnum);
+
+status_t image_identify_export(void);
+status_t image_identify_import(void);
+status_t image_identify_init(void);
+status_t image_identify_release(void);
+u8_t* image_identify_ptr_get(u8_t *h, u8_t level, u8_t ver, u8_t type, u8_t dir);
+u8_t* image_identify_load(void);
+status_t image_identify_unload(u8_t *h);
+status_t image_identify_save(u8_t *h);
+status_t image_identify_sync(void);
+
+
+
+
 #endif
+
 
 
 

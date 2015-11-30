@@ -64,6 +64,8 @@ typedef struct tagMonitorAnalyzeS {
 #define DYNAMIC_SEND_F			0x22
 
 
+status_t monitor_initialize(void);
+status_t monitor_release(void);
 int monitor_init_f(u16_t port, ANALYZE_S *h);
 int monitor_release_f(void);
 status_t mv1_data_analyze(void_t *d_s, void_t *hsock);
