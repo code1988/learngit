@@ -9,9 +9,18 @@
 #include <time.h>
 #include <fcntl.h>
 #include "utility.h"
-#include "et850_data.h"
+//#include "et850_data.h"
+//#include "device.h"
+#include "fotawin.h"
 
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+static struct in_addr stInAddr;
 
+#define SAVE_TIMER_ID				601
+static int save_timer_id = 0;
+static char message[32];
 
 static HWND		hMainWnd = NULL;
 
@@ -22,7 +31,10 @@ static HBITMAP	hfocusBitmap, hOldfocusBitmap;
 static char	keynum[15];
 static char x = 0;
 static char y = 0;
-static s32_t myIPnum, myMask,myGate,myType;
+static s32_t myIP,myMask,myGate,myType;
+static u8_t point;			// '.'数量
+static u8_t segment[4];		// 段长，上限3字符
+
 
 static char		character[] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
 														  'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
@@ -35,6 +47,8 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam);
 static int OnDestroy(HWND hWnd, WPARAM wParam, LPARAM lParam);
 static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam);
 static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam);
+static int OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
 static void refresh_keytable(HWND hWnd, char old_x, char old_y, char pos_x, char pos_y);
 
 int myGatewin_create(HWND hWnd)
@@ -58,8 +72,8 @@ int myGatewin_create(HWND hWnd)
 							  WS_CHILD | WS_VISIBLE,
 							  0,
 							  0,
-							  480,
-							  320,
+							  WINDOW_WIDTH,
+							  WINDOW_HEIGHT,
 							  hWnd,
 							  NULL,
 							  NULL,
@@ -82,7 +96,7 @@ static LRESULT CALLBACK MainProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lPa
 			OnKeyDown(hWnd, wParam, lParam);
 			break;
 		case WM_TIMER:
-			//OnTimer(hWnd, wParam, lParam);
+			OnTimer(hWnd, wParam, lParam);
 			break;
 		case WM_DESTROY:
 			OnDestroy(hWnd, wParam, lParam);
@@ -98,49 +112,64 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	HDC			hDC;
 	RECT		rect;
 	HBRUSH	hBrush;
-	int temp;
-	hDC = GetDC(hWnd);
-	hBgMemDC = CreateCompatibleDC(hDC);													//创建兼容HDC
-	hBgBitmap = CreateCompatibleBitmap(hBgMemDC, 480, 320);						    //创建兼容位图
-	hOldBgBitmap = SelectObject(hBgMemDC, hBgBitmap);
-	hBrush = CreateSolidBrush(RGB(255, 255, 255));
-	rect.left = 0;
-	rect.right = 480;
-	rect.top = 0;
-	rect.bottom = 320;
-	FillRect(hBgMemDC, &rect, hBrush);                                           //绘图之前进行位图清除
 	
-	GdDrawImageFromFile(hBgMemDC->psd, 0, 0, 480, 320, "/bmp/fota/keyboardwin.bmp", 0);     //显示	网点号白色字样图
+	char *ipaddr = NULL;
+	
+	hDC = GetDC(hWnd);
+	hBrush = CreateSolidBrush(RGB(255, 255, 255));
+	hBgMemDC = CreateCompatibleDC(hDC);													//创建兼容HDC
+	hBgBitmap = CreateCompatibleBitmap(hBgMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);						    //创建兼容位图
+	hOldBgBitmap = SelectObject(hBgMemDC, hBgBitmap);
+	
+	rect.left = 0;rect.right = WINDOW_WIDTH;rect.top = 0;rect.bottom = WINDOW_HEIGHT;
+	FillRect(hBgMemDC, &rect, hBrush);                                           //绘图之前进行位图清除
+	GdDrawImageFromFile(hBgMemDC->psd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, "/bmp/fota/keyboardwin.bmp", 0);     //显示	网点号白色字样图
 
 	hfocusMemDC = CreateCompatibleDC(hDC);
-	hfocusBitmap = CreateCompatibleBitmap(hfocusMemDC, 480, 320);
+	hfocusBitmap = CreateCompatibleBitmap(hfocusMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);
 	hOldfocusBitmap = SelectObject(hfocusMemDC, hfocusBitmap);	
 	FillRect(hfocusMemDC, &rect, hBrush);
-	GdDrawImageFromFile(hfocusMemDC->psd, 0, 0, 480, 320, "/bmp/fota/keyboard1win.bmp", 0);     //	网点号黄色字样图
+	GdDrawImageFromFile(hfocusMemDC->psd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, "/bmp/fota/keyboard1win.bmp", 0);     //	网点号黄色字样图
 
 	DeleteObject(hBrush);
 	ReleaseDC(hWnd, hDC);
-	
+	message[0] = '\0';
 	keynum[0] = '\0';
-	net1_interface_get(&myType,&myIPnum,&myMask,&myGate);
-	temp = (myGate & 0xFF);	
-	sprintf(keynum,"%3d",temp);
-	
-	temp  = (myGate>>8) & 0xFF;
-	sprintf(keynum+3,"%3d",temp);
-	
-	temp  = (myGate>>16) & 0xFF;
-	sprintf(keynum+6,"%3d",temp);
-	
-	temp  = (myGate>>24) & 0xFF;
-	sprintf(keynum+9,"%3d",temp);
-	
+	net1_interface_get(&myType,&myIP,&myMask,&myGate);
+	stInAddr.s_addr = myGate;
+	ipaddr = inet_ntoa(stInAddr);
+	strcpy(keynum,ipaddr);
 	printf("%s\n",keynum);
+
+	u8_t i=0;
+	point = 0;
+	memset(segment,0,sizeof(segment));
+	do
+	{
+		if(keynum[i++] == '.')
+		{
+			
+			if(point == 3)
+			{
+				printf("point is out of range 3!\n");
+				break;
+			}
+			point++;
+
+		}
+		else
+		{
+			segment[point]++;
+		}
+	}while(keynum[i]);	
 	return 0;
 }
 
 static int OnDestroy(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
+	if (save_timer_id)
+			KillTimer(hWnd, SAVE_TIMER_ID);
+		save_timer_id = 0;
 
 	SelectObject(hBgMemDC, hOldBgBitmap);
 	DeleteObject(hBgBitmap);
@@ -154,44 +183,53 @@ static int OnDestroy(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
+static int OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	switch(wParam) {
+		case SAVE_TIMER_ID:
+				if (save_timer_id)
+					KillTimer(hWnd, SAVE_TIMER_ID);
+				save_timer_id = 0;
+				message[0] = '\0';
+				InvalidateRect(hWnd, NULL, FALSE);
+				break;
+		default:
+				break;
+	}
+	return 0;
+}
+
 static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam) 
 {
 	HDC				hDC, hMemDC;
 	HBITMAP	hBitmap, hOldBitmap;
 	PAINTSTRUCT		ps;
 	HFONT			hOldFont;
-	s8_t            i = 0,j=0;
+	s8_t            j=0;
+	
 	hDC = BeginPaint(hWnd, &ps);
 	hMemDC = CreateCompatibleDC(hDC);
-	hBitmap = CreateCompatibleBitmap(hMemDC, 480, 320);
+	hBitmap = CreateCompatibleBitmap(hMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);
 	hOldBitmap = SelectObject(hMemDC, hBitmap);
-	BitBlt(hMemDC, 0, 0, 480, 320, hBgMemDC, 0, 0, SRCCOPY);
+	BitBlt(hMemDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hBgMemDC, 0, 0, SRCCOPY);
 	hOldFont = SelectObject(hMemDC, (HFONT)GetFont32Handle());
 	SetBkColor(hMemDC, RGB(0, 255, 0));
 	SetBkMode(hMemDC, TRANSPARENT);
 	SetTextColor(hMemDC, RGB(255, 0, 0));			
-	
+	if(strlen(message)!=0)
+		TextOut(hMemDC, 165, 225, message,strlen(message));
+	printf("message = %d\n",strlen(message));
 	SetTextColor(hMemDC, RGB(255, 255, 255));
 	TextOut(hMemDC, 77, 240, "My Gate Addr", -1);
 	j = strlen(keynum);
 	
-	for(i=0;i<j/3;i++)
-	{
-		TextOut(hMemDC, 77+55*i, 283, keynum+3*i, 3);	
-		if(i<3)
-			TextOut(hMemDC, 125+55*i, 283, ".", 1);
-		
-	}
-	TextOut(hMemDC, 77+55*(j/3), 283, keynum+3*i, j%3);	
 	
-	
-	
-	
+	TextOut(hMemDC, 77, 283, keynum, j);		
 	TextOut(hMemDC, 155, 7, "机器网关输入", -1);
 
 	
 	BitBlt(hMemDC, 65+30*x, 47+42*y, 30, 42,hfocusMemDC, 65+30*x, 47+42*y, SRCCOPY);
-	BitBlt(hDC, 0, 0, 480, 320, hMemDC, 0, 0, SRCCOPY);
+	BitBlt(hDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hMemDC, 0, 0, SRCCOPY);
 	SelectObject(hDC, hOldFont);
 	
 	SelectObject(hMemDC, hOldBitmap);
@@ -204,8 +242,8 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-
-	s8_t len = 0; 
+	int ret = 0;
+	u8_t len = 0; 
 	len = strlen(keynum);
 	switch(wParam) {
 		
@@ -250,37 +288,70 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			}
 			break;
 		case VK_F5:    //clear
-			if (len <= 0)
-					break;
-			if (len > 0) {
-				keynum[len - 1 ] =  '\0';
+			if (!len)
+				break;
+			if (len) 
+			{
+				if(keynum[len - 1 ] == '.')
+				{
+					point--;
+				}
+				else
+				{
+					segment[point]--;
+				}
+				
+				keynum[len - 1 ] =	'\0';
 				len--;
 			}
 			InvalidateRect(hWnd, NULL, FALSE);
 			break;
-		case VK_F6:     //yes
-			if (len >= 12)
+		case VK_F6: 	//yes
+			// 字符合法性判断
+			if(character[y*11+x] == '.')
+			{
+				// '.'号上限3个
+				if(point == 3)
+					break;
+				
+				point++;
+			}
+			else if(character[y*11+x] >= '0' && character[y*11+x] <= '9')
+			{
+				// 段长上限3个字符
+				if(segment[point] == 3)
+					break;
+
+				segment[point]++;
+			}
+			else
+			{
+				// 其余字符非法
 				break;
+			}
+						
 			keynum[len] = character[y*11+x];
 			keynum[len+1] = '\0';
 			InvalidateRect(hWnd, NULL, FALSE);
 			break;
-		case VK_F7:       //save
-			printf("new local gate:%s\n",keynum);
-			net1_interface_get(&myType,&myIPnum,&myMask,&myGate);
-			printf("old local gate:%d\n",myGate);
-			myGate = ((atoi(keynum+9) & 0xFF) << 24) ;
-			keynum[9] = '\0';
-			myGate |= ((atoi(keynum+6) & 0xFF) << 16);
-			keynum[6] = '\0';
-			myGate |= ((atoi(keynum+3) & 0xFF) << 8);
-			keynum[3] = '\0';
-			myGate |= (atoi(keynum) & 0xFF);
-			net1_interface_save(myType,myIPnum,myMask,myGate);
+		case VK_F7: 	  //save
+			inet_aton(keynum,&stInAddr);
+			myGate = stInAddr.s_addr;
+			ret  = net1_interface_save(myType,myIP,myMask,myGate);
 			printf("%x\n",myGate);
-				
-			keynum[0] = '\0';
+
+			
+			if(ret==0)
+				strcpy(message, "保存成功");
+			else 
+				strcpy(message, "保存失败");
+			 
+			printf("message = %s\n", message);   //debug
+			if (save_timer_id)
+				KillTimer(hWnd, save_timer_id);	
+			
 			InvalidateRect(hWnd, NULL, FALSE);
+			save_timer_id = SetTimer(hWnd, SAVE_TIMER_ID, 1000, NULL);
 			break;
 		case VK_F8:  	
 			DestroyWindow(hWnd);
@@ -289,7 +360,6 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		default:	
 			spi_keyalert();
 			DestroyWindow(hWnd);
-			SetFocus(GetParent(hWnd));
 			break;
 	}
 	return 0;

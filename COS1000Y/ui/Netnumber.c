@@ -9,7 +9,9 @@
 #include <time.h>
 #include <fcntl.h>
 #include "utility.h"
-#include "et850_data.h"
+//#include "et850_data.h"
+//#include "device.h"
+#include "fotawin.h"
 
 #define SAVE_TIMER_ID				601
 
@@ -27,7 +29,7 @@ static char x = 0;
 static char y = 0;
 
 static int save_timer_id = 0;
-static int message[32];
+static char  message[32];
 static char		character[] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
 														  'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
 														  'W', 'X', 'Y' ,'Z', '.', '*', '_', '\\','/', ' ', ' ',
@@ -68,8 +70,8 @@ int netnumber_window_create(HWND hWnd)
 							  WS_CHILD | WS_VISIBLE,
 							  0,
 							  0,
-							  480,
-							  320,
+							  WINDOW_WIDTH,
+							  WINDOW_HEIGHT,
 							  hWnd,
 							  NULL,
 							  NULL,
@@ -111,23 +113,24 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	int state;
 	
 	hDC = GetDC(hWnd);
+	hBrush = CreateSolidBrush(RGB(255, 255, 255));
 	hBgMemDC = CreateCompatibleDC(hDC);													//创建兼容HDC
-		hBgBitmap = CreateCompatibleBitmap(hBgMemDC, 480, 320);						    //创建兼容位图
+		hBgBitmap = CreateCompatibleBitmap(hBgMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);						    //创建兼容位图
 		hOldBgBitmap = SelectObject(hBgMemDC, hBgBitmap);
-		hBrush = CreateSolidBrush(RGB(255, 255, 255));
+		
 			rect.left = 0;
-			rect.right = 480;
+			rect.right = WINDOW_WIDTH;
 			rect.top = 0;
-			rect.bottom = 320;
+			rect.bottom = WINDOW_HEIGHT;
 			FillRect(hBgMemDC, &rect, hBrush);                                           //绘图之前进行位图清除
 			
-			GdDrawImageFromFile(hBgMemDC->psd, 0, 0, 480, 320, "/bmp/fota/keyboardwin.bmp", 0);     //显示	网点号白色字样图
+			GdDrawImageFromFile(hBgMemDC->psd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, "/bmp/fota/keyNETwin.bmp", 0);     //显示	网点号白色字样图
 		
 	hfocusMemDC = CreateCompatibleDC(hDC);
-		hfocusBitmap = CreateCompatibleBitmap(hfocusMemDC, 480, 320);
+		hfocusBitmap = CreateCompatibleBitmap(hfocusMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);
 		hOldfocusBitmap = SelectObject(hfocusMemDC, hfocusBitmap);	
 			FillRect(hfocusMemDC, &rect, hBrush);
-				GdDrawImageFromFile(hfocusMemDC->psd, 0, 0, 480, 320, "/bmp/fota/keyboard1win.bmp", 0);     //	网点号黄色字样图
+				GdDrawImageFromFile(hfocusMemDC->psd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, "/bmp/fota/keyboard1win.bmp", 0);     //	网点号黄色字样图
 	
 		DeleteObject(hBrush);
 	ReleaseDC(hWnd, hDC);
@@ -139,9 +142,9 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 					printf("message1\n");
 					
 	state = device_organize_get(branch,keynum);
-	printf("branch = %d\n",strlen(branch));
-	printf("message = %d\n",strlen(message));				
-	printf("keynum = %d\n",strlen(keynum));
+	printf("branch = %s\n",(branch));
+				
+	printf("keynum = %s\n",(keynum));
 	if(state!=0)
 		printf("there is not netnumber");
 		
@@ -160,6 +163,9 @@ static int OnDestroy(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	if (flash_timer_id > 0)
 		KillTimer(hWnd, FLASH_TIMER_ID);
 	flash_timer_id = 0;
+	if (save_timer_id)
+		KillTimer(hWnd, SAVE_TIMER_ID);
+	save_timer_id = 0;
 	hMainWnd = NULL;
 
 	return 0;
@@ -176,15 +182,15 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	hDC = BeginPaint(hWnd, &ps);
 		hMemDC = CreateCompatibleDC(hDC);
-			hBitmap = CreateCompatibleBitmap(hMemDC, 480, 320);
+			hBitmap = CreateCompatibleBitmap(hMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);
 			hOldBitmap = SelectObject(hMemDC, hBitmap);
-				BitBlt(hMemDC, 0, 0, 480, 320, hBgMemDC, 0, 0, SRCCOPY);
+				BitBlt(hMemDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hBgMemDC, 0, 0, SRCCOPY);
 				hOldFont = SelectObject(hMemDC, (HFONT)GetFont32Handle());
 					SetBkColor(hMemDC, RGB(0, 255, 0));
 					SetBkMode(hMemDC, TRANSPARENT);
 					SetTextColor(hMemDC, RGB(255, 0, 0));	
 					if(strlen(message)!=0)
-						TextOut(hMemDC, 165, 255, message,strlen(message));
+						TextOut(hMemDC, 165, 225, message,strlen(message));
 					printf("message = %d\n",strlen(message));
 					printf("message\n");
 					SetTextColor(hMemDC, RGB(255, 255, 255));
@@ -193,7 +199,7 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				
 				
 					BitBlt(hMemDC, 65+30*x, 47+42*y, 30, 42,hfocusMemDC, 65+30*x, 47+42*y, SRCCOPY);
-					BitBlt(hDC, 0, 0, 480, 320, hMemDC, 0, 0, SRCCOPY);
+					BitBlt(hDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hMemDC, 0, 0, SRCCOPY);
 				SelectObject(hDC, hOldFont);
 		
 		SelectObject(hMemDC, hOldBitmap);
@@ -222,7 +228,8 @@ static int OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	char len = 0; 
+	u8_t len = 0; 
+	u8_t ret = 0;
 	len = strlen(keynum);
 	switch(wParam) {
 		
@@ -283,23 +290,33 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			InvalidateRect(hWnd, NULL, FALSE);
 			break;
 		case VK_F7:       //save
-			if(device_organize_set( branch,keynum)==0)
+			ret = device_organize_set( branch,keynum);
+			if(ret==0)
 				strcpy(message, "保存成功");
 			else 
 				strcpy(message, "保存失败");
-			//printf("blacknum = %d\n", black_count_get(1));   //debug
+			printf("blacknum = %s\n", keynum);   //debug
+			printf("branch = %s\n", branch);   //debug
+			printf("message = %s\n", message);   //debug
 			if (save_timer_id)
 				KillTimer(hWnd, save_timer_id);			
-			keynum[0] = '\0';
 			InvalidateRect(hWnd, NULL, FALSE);
 			save_timer_id = SetTimer(hWnd, SAVE_TIMER_ID, 1000, NULL);
+
+			//device_organize_get(branch,keynum);
+	
 			break;
 		case VK_F8:       //return
 			keynum[0] = '\0';
 			message[0] = '\0';
 			spi_keyalert();
 			DestroyWindow(hWnd);
-			SetFocus(GetParent(hWnd));
+			break;
+		case VK_F9:       //return
+			keynum[0] = '\0';
+			message[0] = '\0';
+			spi_keyalert();
+			DestroyWindow(GetMenuWinHwnd());
 			break;
 		default:
 			break;

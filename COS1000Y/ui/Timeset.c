@@ -9,25 +9,32 @@
 #include <time.h>
 #include <fcntl.h>
 #include "utility.h"
-#include "et850_data.h"
+//#include "et850_data.h"
+//#include "device.h"
+#include "fotawin.h"
+
 
 #define SAVE_TIMER_ID				601
+#define LONG_KEY_TIMER_ID  506
+
+static char long_key_timer_id = 0;
+
+static int	press_flag = 0;
+static int	press_key = 0;
 
 
 static HWND		hMainWnd = NULL;
 
 static HDC		hBgMemDC = NULL;
-//static HDC		hfocusMemDC = NULL;
 static HBITMAP	hBgBitmap, hOldBgBitmap;
-//static HBITMAP	hfocusBitmap, hOldfocusBitmap;
-//static char	blackname[11];
+
 
 static int	old_x = 0;
 static int	pos_x = 0;
-
+static int max= 0 ,min = 0;
 
 static int save_timer_id = 0;
-static int message[32];
+static char message[32];
 static int pos[6][4] = {   {72,80,86,43},  {211,80,65,43} , {320,80,65,43},
 						   {82,190,65,43}, {193,190,65,43}, {302,190,65,43}};
 					
@@ -47,7 +54,16 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam);
 static int OnDestroy(HWND hWnd, WPARAM wParam, LPARAM lParam);
 static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam);
 static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam);
+static int OnKeyUp(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
 static int OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam);
+static int vk_f5_keydown(HWND hWnd);
+static int vk_f5_keyup(HWND hWnd);
+static int vk_f6_keydown(HWND hWnd);
+static int vk_f6_keyup(HWND hWnd);
+static int focus_value_add(HWND hWnd, unsigned char value,int max);
+static int focus_value_sub(HWND hWnd, unsigned char value,int min);
+
 static void refresh_keytable(HWND hWnd, int oldx, int oldy, int posx, int posy,int weight0,int height0);
 
 
@@ -72,8 +88,8 @@ int timeset_window_create(HWND hWnd)
 							  WS_CHILD | WS_VISIBLE,
 							  0,
 							  0,
-							  480,
-							  320,
+							  WINDOW_WIDTH,
+							  WINDOW_HEIGHT,
 							  hWnd,
 							  NULL,
 							  NULL,
@@ -95,6 +111,9 @@ static LRESULT CALLBACK MainProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lPa
 			break;
 		case WM_KEYDOWN:
 			OnKeyDown(hWnd, wParam, lParam);
+			break;
+		case WM_KEYUP:
+			OnKeyUp(hWnd, wParam, lParam);
 			break;
 		case WM_TIMER:
 			OnTimer(hWnd, wParam, lParam);
@@ -118,21 +137,17 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	hDC = GetDC(hWnd);
 		hBrush = CreateSolidBrush(RGB(255, 255, 255));
 	hBgMemDC = CreateCompatibleDC(hDC);													//创建兼容HDC
-		hBgBitmap = CreateCompatibleBitmap(hBgMemDC, 480, 320);						    //创建兼容位图
+		hBgBitmap = CreateCompatibleBitmap(hBgMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);						    //创建兼容位图
 		hOldBgBitmap = SelectObject(hBgMemDC, hBgBitmap);
 			rect.left = 0;
-			rect.right = 480;
+			rect.right = WINDOW_WIDTH;
 			rect.top = 0;
-			rect.bottom = 320;
+			rect.bottom = WINDOW_HEIGHT;
 			FillRect(hBgMemDC, &rect, hBrush);                                           //绘图之前进行位图清除
 			
-			GdDrawImageFromFile(hBgMemDC->psd, 0, 0, 480, 320, "/bmp/fota/timesetwin.bmp", 0);     //显示	时间设置界面白色字样图
+			GdDrawImageFromFile(hBgMemDC->psd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, "/bmp/fota/timesetwin.bmp", 0);     //显示	时间设置界面白色字样图
 		
-	//hfocusMemDC = CreateCompatibleDC(hDC);
-	//	hfocusBitmap = CreateCompatibleBitmap(hfocusMemDC, 480, 320);
-	//	hOldfocusBitmap = SelectObject(hfocusMemDC, hfocusBitmap);	
-	//		FillRect(hfocusMemDC, &rect, hBrush);
-	//			GdDrawImageFromFile(hfocusMemDC->psd, 0, 0, 480, 320, "/bmp/fota/timeset1win.bmp", 0);     //	时间设置界面红色字样图
+
 	
 		DeleteObject(hBrush);
 	ReleaseDC(hWnd, hDC);
@@ -140,22 +155,24 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	datetime_separate_f(datetime, &year, &months, &day, &hour, &minute, &second);
 	message[0] = '\0';
 	
-//	flash_timer_id = SetTimer(hWnd, FLASH_TIMER_ID, 10, NULL);
 	return 0;
 }
 
 static int OnDestroy(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	//printf("%s\n", __func__);
+	if (save_timer_id)
+		KillTimer(hWnd, SAVE_TIMER_ID);
+	save_timer_id = 0;
 	if (flash_timer_id > 0)
 		KillTimer(hWnd, FLASH_TIMER_ID);
 	flash_timer_id = 0;
+	if (long_key_timer_id > 0)
+		KillTimer(hWnd, LONG_KEY_TIMER_ID); 
+	long_key_timer_id = 0;
 	SelectObject(hBgMemDC, hOldBgBitmap);
 	DeleteObject(hBgBitmap);
 	DeleteDC(hBgMemDC);
-	//SelectObject(hfocusMemDC, hOldfocusBitmap);
-	//DeleteObject(hfocusBitmap);
-	//DeleteDC(hfocusMemDC);
+	
 	hMainWnd = NULL;
 	return 0;
 }
@@ -176,9 +193,9 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	char			secondbuf[10];
 	hDC = BeginPaint(hWnd, &ps);
 		hMemDC = CreateCompatibleDC(hDC);
-			hBitmap = CreateCompatibleBitmap(hMemDC, 480, 320);
+			hBitmap = CreateCompatibleBitmap(hMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);
 			hOldBitmap = SelectObject(hMemDC, hBitmap);
-				BitBlt(hMemDC, 0, 0, 480, 320, hBgMemDC, 0, 0, SRCCOPY);
+				BitBlt(hMemDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hBgMemDC, 0, 0, SRCCOPY);
 				hOldFont = SelectObject(hMemDC, (HFONT)GetFont32Handle());
 					hBrush = CreateSolidBrush(RGB(255,0,0));
 						rect.left = pos[pos_x][0]+1;
@@ -200,14 +217,13 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 					
 					SetTextColor(hMemDC, RGB(255, 255, 255));
 											
-					//BitBlt(hMemDC, pos[pos_x][0], pos[pos_x][1], pos[pos_x][2], pos[pos_x][3],hfocusMemDC, pos[pos_x][0], pos[pos_x][1], SRCCOPY);
 					TextOut(hMemDC, timepos[0][0]-strlen(yearbuf)*6, timepos[0][1], yearbuf, -1);  
 					TextOut(hMemDC, timepos[1][0]-strlen(monthsbuf)*6, timepos[1][1], monthsbuf, -1);
 					TextOut(hMemDC, timepos[2][0]-strlen(daybuf)*6, timepos[2][1], daybuf, -1);
 					TextOut(hMemDC, timepos[3][0]-strlen(hourbuf)*6, timepos[3][1], hourbuf, -1);
 					TextOut(hMemDC, timepos[4][0]-strlen(minutebuf)*6, timepos[4][1], minutebuf, -1);
 					TextOut(hMemDC, timepos[5][0]-strlen(secondbuf)*6, timepos[5][1], secondbuf, -1);
-					BitBlt(hDC, 0, 0, 480, 320,			 hMemDC, 0, 0, SRCCOPY);
+					BitBlt(hDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT,			 hMemDC, 0, 0, SRCCOPY);
 				SelectObject(hMemDC, hOldFont);
 		
 			SelectObject(hMemDC, hOldBitmap);
@@ -228,15 +244,28 @@ static int OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				message[0] = '\0';
 				InvalidateRect(hWnd, NULL, FALSE);
 				break;
-		default:
+		case LONG_KEY_TIMER_ID:
+			 {
+				if (press_key == 5) 
+				{
+					focus_value_add(hWnd, 10,max);
+					press_flag = 1;
+				}
+				else if (press_key == 6) 
+				{
+					focus_value_sub(hWnd, 10,min);
+					press_flag = 1;
+				}
+			}
 				break;
+		default:
+					break;
 	}
 	return 0;
 }
 
 static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	
 	pos_x = old_x;
 	switch(wParam) {
 		case VK_F1:     //right
@@ -253,7 +282,6 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				pos_x++;
 			}		
 			refresh_keytable(hWnd, pos[old_x][0] , pos[old_x][1], pos[pos_x][0], pos[pos_x][1],old_x,pos_x);
-			//InvalidateRect(hWnd, NULL, FALSE);
 			old_x = pos_x;
 			break;
 		case VK_F2:    //up
@@ -262,7 +290,6 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				pos_x = old_x-3;
 			}
 			refresh_keytable(hWnd, pos[old_x][0] , pos[old_x][1], pos[pos_x][0], pos[pos_x][1],old_x,pos_x);
-			//InvalidateRect(hWnd, NULL, FALSE);
 			old_x = pos_x;
 			break;
 		case VK_F3:       //down
@@ -271,19 +298,18 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				pos_x = old_x+3;
 			}
 			refresh_keytable(hWnd, pos[old_x][0] , pos[old_x][1], pos[pos_x][0], pos[pos_x][1],old_x,pos_x);
-			//InvalidateRect(hWnd, NULL, FALSE);
 			old_x = pos_x;
 			break;
 		case VK_F5:     //模式
 			switch(pos_x)
 			{
-				case 0:
-					if(year<2200)
-						year++;
+				case 0:					
+					max = 2200;
+					
 					break;
 				case 1:
-					if(months<12)
-						months++;
+					max = 12;
+					
 					break;
 				case 2:
 					if((year%4==0&&year%100!=0)||(year%400==0)) //闰年
@@ -295,37 +321,37 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 					{	
 						Day[1] = 28;
 					}
-					if(day<Day[months-1])
-						day++;
+					max = Day[months-1];
+					
 					break;
 				case 3:
-					if(hour<24)
-						hour++;
+					max = 24;
+					
 					break;
 				case 4:
-					if(minute<60)
-						minute++;
+					max = 60;
+					
 					break;
 				case 5:
-					if(second<60)
-						second++;
+					max = 60;
+				
 					break;
 				default:
 					break;
 			}
-			InvalidateRect(hWnd, NULL, FALSE);
+			vk_f5_keydown(hWnd);
+			printf("aaa");
 			break;
 		case VK_F6:    //累加
-			//printf("pos_x = %d\n",pos_x);   //debug
 			switch(pos_x)
 			{
 				case 0:
-					if(year>0)
-						year--;
+					min = 2015;
+					
 					break;
 				case 1:
-					if(months>1)
-						months--;
+					min = 1;
+					
 					break;
 				case 2:
 					if((year%4==0&&year%100!=0)||(year%400==0)) //闰年
@@ -337,66 +363,206 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 					{	
 						Day[1] = 28;
 					}
-					if(day>1)
-						day--;
+					min = 1;
+					
 					break;
 				case 3:
-					if(hour>0)
-					hour--;
+					min = 0;
+					
 					break;
 				case 4:
-					if(minute>0)
-					minute--;
+					min = 0;
+					
 					break;
 				case 5:
-					if(second>0)
-					second--;
+					min = 0;
+					
 					break;
 				default:
 					break;
 			}
-			InvalidateRect(hWnd, NULL, FALSE);
+			printf("bbb");
+			vk_f6_keydown(hWnd);
+			//InvalidateRect(hWnd, NULL, FALSE);
 			break;
 		case VK_F7:     //查询键 保存
-			//printf("pos_x = %d\n",pos_x);   //debug
 			if (datetime_set_f(year, months, day,  hour,  minute, second)==0)
 				strcpy(message, "保存成功");
 			else 
 				strcpy(message, "保存失败");
 			
 			if (save_timer_id)
-				KillTimer(hWnd, save_timer_id);
-						
-			InvalidateRect(hWnd, NULL, FALSE);
-			
-			save_timer_id = SetTimer(hWnd, SAVE_TIMER_ID, 5000, NULL);
+			{
+				KillTimer(hWnd, SAVE_TIMER_ID);
+				save_timer_id = 0;
+
+			}
+										
+			InvalidateRect(hWnd, NULL, FALSE);		
+			save_timer_id = SetTimer(hWnd, SAVE_TIMER_ID, 3000, NULL);
 			break;
 		case VK_F8:       //save
 			pos_x = 0;
+			old_x = 0;
 			spi_keyalert();
-			DestroyWindow(hWnd);
-			SetFocus(GetParent(hWnd));
-			//printf("blacknum = %d\n", black_count_get(1));   //debug			
+			DestroyWindow(hWnd);	
 			break;
 		case VK_F4:       //return
 			pos_x = 0;
+			old_x = 0;
 			spi_keyalert();
 			DestroyWindow(hWnd);
-			SetFocus(GetParent(hWnd));
+			break;
+		case VK_F9:       //save
+			pos_x = 0;
+			old_x = 0;
+			spi_keyalert();
+			DestroyWindow(GetMenuWinHwnd());	
 			break;
 		default:
-			pos_x = 0;
 			break;
 	}
 	return 0;
 }
+
+static int OnKeyUp(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	switch(wParam) {
+		case VK_F5:
+			vk_f5_keyup(hWnd);
+			break;
+		case VK_F6:
+			vk_f6_keyup(hWnd);
+			break;
+	}
+	return 0;
+}
+
+int vk_f5_keydown(HWND hWnd)
+{
+	printf("ccc");
+	long_key_timer_id = SetTimer(hWnd, LONG_KEY_TIMER_ID, 500, NULL);
+	press_flag = 0;
+	press_key = 5;
+	return 0;
+}
+static int vk_f5_keyup(HWND hWnd)
+{
+
+	if (press_key != 5)
+		return 0;
+	if (press_flag == 0)
+		focus_value_add(hWnd, 1,max);
+	if (long_key_timer_id > 0)
+		KillTimer(hWnd, LONG_KEY_TIMER_ID);
+	long_key_timer_id = 0;
+	press_flag = 0;
+	press_key = 0;
+	return 0;
+}
+static int vk_f6_keydown(HWND hWnd)
+{
+	
+	printf("eee");
+
+	long_key_timer_id = SetTimer(hWnd, LONG_KEY_TIMER_ID, 500, NULL);
+	press_flag = 0;
+	press_key = 6;
+	return 0;
+}
+
+static int vk_f6_keyup(HWND hWnd)
+{
+
+	if (press_key != 6)
+		return 0;
+	if (press_flag == 0)
+		focus_value_sub(hWnd, 1,min);
+	if (long_key_timer_id > 0)
+		KillTimer(hWnd, LONG_KEY_TIMER_ID); 
+	long_key_timer_id = 0;
+	press_flag = 0;
+	press_key = 0;
+	return 0;
+}
+
+static int focus_value_add(HWND hWnd, unsigned char value,int max)
+{	
+	int *ptr=NULL;
+	switch(pos_x)
+	{
+		case 0:
+			ptr = &year;
+			break;
+		case 1:
+			ptr = &months;
+			break;
+		case 2:
+			
+			ptr = & day;
+			break;
+		case 3:
+			ptr = &hour;
+			break;
+		case 4:
+			ptr = &minute;
+			break;
+		case 5:
+			ptr = &second;
+			break;
+		default:
+			break;
+
+	}
+	if (*ptr <= (max- value))
+		*ptr = *ptr + value;
+	InvalidateRect(hWnd, NULL, FALSE);
+	return 0;
+}
+
+
+static int focus_value_sub(HWND hWnd, unsigned char value,int min)
+{
+
+	int *ptr = NULL;
+	switch(pos_x)
+	{
+		case 0:
+			ptr = &year;
+			break;
+		case 1:
+			ptr = &months;
+			break;
+		case 2:
+			
+			ptr = & day;
+			break;
+		case 3:
+			ptr = &hour;
+			break;
+		case 4:
+			ptr = &minute;
+			break;
+		case 5:
+			ptr = &second;
+			break;
+		default:
+			break;
+
+	}
+	if (*ptr>= min+value)
+		*ptr = *ptr - value;
+	InvalidateRect(hWnd, NULL, FALSE);
+	return 0;
+}
+
 
 
 static void refresh_keytable(HWND hWnd, int oldx, int oldy, int posx, int posy,int Oldx,int Posx)
 {
 	HDC				hDC, hMemDC;
 	HBITMAP	hBitmap, hOldBitmap;
-	HFONT			hFont, hOldFont;
+	HFONT		 hOldFont;
 	RECT		rect;
 	HBRUSH			hBrush;
 

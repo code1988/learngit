@@ -9,7 +9,9 @@
 #include <time.h>
 #include <fcntl.h>
 #include "utility.h"
-#include "et850_data.h"
+//#include "et850_data.h"
+//#include "device.h"
+#include "fotawin.h"
 
 #define Mixqueryheight    40
 
@@ -22,8 +24,8 @@ static HBITMAP	hBgBitmap, hOldBgBitmap;
 static MONEYDISP_S monenyInfo;	// Ö½±ÒÐÅÏ¢
 
 
-static char papernum[7];
-static int papersum[7];
+static u32_t papernum[7];
+static u32_t papersum[7];
 
 static int papernumpos[2] = {240,46};
 static int papersumpos[2] = {395,46};
@@ -33,8 +35,7 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam);
 static int OnDestroy(HWND hWnd, WPARAM wParam, LPARAM lParam);
 static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam);
 static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam);
-static int OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam);
-static void refresh_keytable(HWND hWnd,int Oldx,int Posx);
+//static void refresh_keytable(HWND hWnd,int Oldx,int Posx);
 
 
 int mixquery_window_create(HWND hWnd)
@@ -58,8 +59,8 @@ int mixquery_window_create(HWND hWnd)
 							  WS_VISIBLE | WS_CHILD,
 							  0,
 							  0,
-							  480,
-							  320,
+							  WINDOW_WIDTH,
+							  WINDOW_HEIGHT,
 							  hWnd,
 							  NULL,
 							  NULL,
@@ -100,15 +101,15 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	hDC = GetDC(hWnd);
 		hBrush = CreateSolidBrush(RGB(255, 255, 255));
 	hBgMemDC = CreateCompatibleDC(hDC);													
-		hBgBitmap = CreateCompatibleBitmap(hBgMemDC, 480, 320);						    
+		hBgBitmap = CreateCompatibleBitmap(hBgMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);						    
 		hOldBgBitmap = SelectObject(hBgMemDC, hBgBitmap);
 			rect.left = 0;
-			rect.right = 480;
+			rect.right = WINDOW_WIDTH;
 			rect.top = 0;
-			rect.bottom = 320;
+			rect.bottom = WINDOW_HEIGHT;
 			FillRect(hBgMemDC, &rect, hBrush);                                           
 			
-			GdDrawImageFromFile(hBgMemDC->psd, 0, 0, 480, 320, "/bmp/fota/mixquerywi.bmp", 0);     
+			GdDrawImageFromFile(hBgMemDC->psd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, "/bmp/fota/mixquerywi.bmp", 0);     
 			
 		DeleteObject(hBrush);
 	ReleaseDC(hWnd, hDC);
@@ -129,7 +130,7 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	papersum[3]=papernum[3]*20;
 	papersum[4]=papernum[4]*50;
 	papersum[5]=papernum[5]*100;
-	papersum[6]=monenyInfo.total_sum;
+	papersum[6]=papersum[0]+papersum[1]+papersum[2]+papersum[3]+papersum[4]+papersum[5];
 
 	for(i = 0;i<7;i++)
 	{
@@ -157,16 +158,16 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	HBITMAP	hBitmap, hOldBitmap;
 	PAINTSTRUCT		ps;
 	HFONT			 hOldFont;
-	char i = 0;
+	u8_t i = 0;
 	char papernumbuf[7][10];
     char papersumbuf[7][10];
 
 
 	hDC = BeginPaint(hWnd, &ps);
 		hMemDC = CreateCompatibleDC(hDC);
-			hBitmap = CreateCompatibleBitmap(hMemDC, 480, 320);
+			hBitmap = CreateCompatibleBitmap(hMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);
 			hOldBitmap = SelectObject(hMemDC, hBitmap);
-				BitBlt(hMemDC, 0, 0, 480, 320, hBgMemDC, 0, 0, SRCCOPY);
+				BitBlt(hMemDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hBgMemDC, 0, 0, SRCCOPY);
 				hOldFont = SelectObject(hMemDC, (HFONT)GetFont32Handle());
 			
 					SetBkColor(hMemDC, RGB(0, 255, 0));
@@ -193,7 +194,7 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 						TextOut(hMemDC, papersumpos[0]-strlen(papersumbuf[i])*6, papersumpos[1]+i*(Mixqueryheight), papersumbuf[i], -1);
 					}
 					//TextOut(hMemDC, papersumpos[0]-strlen(papersumbuf[6])*6, papersumpos[1]+6*(Mixqueryheight), papersumbuf[6], -1);
-					BitBlt(hDC, 0, 0, 480, 320,hMemDC, 0, 0, SRCCOPY);
+					BitBlt(hDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT,hMemDC, 0, 0, SRCCOPY);
 				SelectObject(hMemDC, hOldFont);
 		
 			SelectObject(hMemDC, hOldBitmap);
@@ -225,9 +226,12 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			break;
 		case VK_F8:       //save
 			spi_keyalert();
-			SetFocus(GetParent(hWnd));
 			DestroyWindow(hWnd);
-			break;		
+			break;
+		case VK_F9:       //save
+			spi_keyalert();
+			DestroyWindow(hWnd);
+			break;
 		default:
 			break;
 	}

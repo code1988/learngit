@@ -9,15 +9,18 @@
 #include <time.h>
 #include <fcntl.h>
 #include "utility.h"
-#include "et850_data.h"
+//#include "et850_data.h"
+#include "fotawin.h"
 
-static int number = 0;
+static s16_t 	number = 0;		// ÅúÁ¿Öµ
 static HWND		hMainWnd = NULL;
 
 static HDC		hBgMemDC = NULL;
-static HDC		hfocusMemDC = NULL;
 static HBITMAP	hBgBitmap, hOldBgBitmap;
+
+static HDC		hfocusMemDC = NULL;
 static HBITMAP	hfocusBitmap, hOldfocusBitmap;
+
 static LRESULT CALLBACK MainProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam);
 static int OnDestroy(HWND hWnd, WPARAM wParam, LPARAM lParam);
@@ -47,8 +50,8 @@ int batchset_window_create(HWND hWnd)
 							  WS_CHILD | WS_VISIBLE,
 							  0,
 							  0,
-							  480,
-							  320,
+							  WINDOW_WIDTH,
+							  WINDOW_HEIGHT,
 							  hWnd,
 							  NULL,
 							  NULL,
@@ -85,33 +88,35 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	HDC			hDC;
 	RECT		rect;
-	HBRUSH	hBrush;
-	hDC = GetDC(hWnd);
-	hBgMemDC = CreateCompatibleDC(hDC);													//åˆ›å»ºå…¼å®¹HDC
-		hBgBitmap = CreateCompatibleBitmap(hBgMemDC, 480, 320);						    //åˆ›å»ºå…¼å®¹ä½å›¾
-		hOldBgBitmap = SelectObject(hBgMemDC, hBgBitmap);
-		hBrush = CreateSolidBrush(RGB(255, 255, 255));
-			rect.left = 0;
-			rect.right = 480;
-			rect.top = 0;
-			rect.bottom = 320;
-			FillRect(hBgMemDC, &rect, hBrush);                                           //ç»˜å›¾ä¹‹å‰è¿›è¡Œä½å›¾æ¸…é™¤
-			
-			GdDrawImageFromFile(hBgMemDC->psd, 0, 0, 480, 320, "/bmp/fota/bat.bmp", 0);     //æ˜¾ç¤º	è€åŒ–ç•Œé¢åº•å›¾
-		
-	hfocusMemDC = CreateCompatibleDC(hDC);
-		hfocusBitmap = CreateCompatibleBitmap(hfocusMemDC, 450, 79);
-		hOldfocusBitmap = SelectObject(hfocusMemDC, hfocusBitmap);	
-		rect.left = 0;
-		rect.right = 450;
-		rect.top = 0;
-		rect.bottom = 79;
-			FillRect(hfocusMemDC, &rect, hBrush);
-				GdDrawImageFromFile(hfocusMemDC->psd, 0, 0, 450, 79, "/bmp/fota/batnum.bmp", 0);     //	è€åŒ–ç•Œé¢ç„¦ç‚¹å›¾
+	HBRUSH		hBrush;
 	
-		DeleteObject(hBrush);
+	hDC = GetDC(hWnd);
+	hBrush = CreateSolidBrush(RGB(255, 255, 255));
+	hBgMemDC = CreateCompatibleDC(hDC);													
+	hBgBitmap = CreateCompatibleBitmap(hBgMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);						   
+	hOldBgBitmap = SelectObject(hBgMemDC, hBgBitmap);
+
+	rect.left = 0;rect.right = WINDOW_WIDTH;rect.top = 0;rect.bottom = WINDOW_HEIGHT;
+	FillRect(hBgMemDC, &rect, hBrush);                                           
+	GdDrawImageFromFile(hBgMemDC->psd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, "/bmp/fota/bat.bmp", 0);     
+
+	hfocusMemDC = CreateCompatibleDC(hDC);
+	hfocusBitmap = CreateCompatibleBitmap(hfocusMemDC, 450, 79);
+	hOldfocusBitmap = SelectObject(hfocusMemDC, hfocusBitmap);	
+	rect.left = 0;rect.right = 450;rect.top = 0;rect.bottom = 79;
+	FillRect(hfocusMemDC, &rect, hBrush);
+	GdDrawImageFromFile(hfocusMemDC->psd, 0, 0, 450, 79, "/bmp/fota/batnum.bmp", 0);     
+
+	DeleteObject(hBrush);
 	ReleaseDC(hWnd, hDC);
-//	number[0] = '\0';
+
+	// ½øÈëÅúÁ¿½çÃæºóÊ×ÏÈ»ñÈ¡Ò»ÏÂµ±Ç°µÄÅúÁ¿Öµ
+	// preset_value_getº¯Êý·µ»ØÖµ: >0 - ÅúÁ¿Öµ£»0 - ÀÛ¼Ó×´Ì¬£»-1 - Õý³£×´Ì¬
+	number =  preset_value_get();
+	if(number == -1)
+		number = 0;
+	printf("number = %d",number);
+	
 	return 0;
 }
 
@@ -130,27 +135,29 @@ static int OnDestroy(HWND hWnd, WPARAM wParam, LPARAM lParam)
 static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam) 
 {
 	HDC				hDC, hMemDC;
-	HBITMAP	hBitmap, hOldBitmap;
+	HBITMAP			hBitmap, hOldBitmap;
 	PAINTSTRUCT		ps;
-	HFONT			hFont, hOldFont;
-	int						i, len = 0;
-	char					buf[10];
+	int				i, len = 0;
+	char			buf[5];
+	
 	hDC = BeginPaint(hWnd, &ps);
-		hMemDC = CreateCompatibleDC(hDC);
-			hBitmap = CreateCompatibleBitmap(hMemDC, 480, 320);
-			hOldBitmap = SelectObject(hMemDC, hBitmap);
-				BitBlt(hMemDC, 0, 0, 480, 320, hBgMemDC, 0, 0, SRCCOPY);
-				sprintf(buf, "%d", number);														
-					len = strlen(buf);
-					for (i = 0; i < len; i++) 
-					{
-						BitBlt(hMemDC, 343 - (len-i)*45, 150, 45, 79, hfocusMemDC, (buf[i] - '0') * 45, 0, SRCCOPY);
-					}
-					BitBlt(hDC, 0, 0, 480, 320, hMemDC, 0, 0, SRCCOPY);
-		
-		SelectObject(hMemDC, hOldBitmap);
-		DeleteObject(hBitmap);
-		DeleteDC(hMemDC);	
+	hMemDC = CreateCompatibleDC(hDC);
+	hBitmap = CreateCompatibleBitmap(hMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);
+	hOldBitmap = SelectObject(hMemDC, hBitmap);
+	BitBlt(hMemDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hBgMemDC, 0, 0, SRCCOPY);
+
+	// ÏÔÊ¾ÅúÁ¿Öµ£¬µ±Ç°ÅúÁ¿ÉÏÏÞ9999ÕÅ
+	sprintf(buf, "%d", number);														
+	len = strlen(buf);
+	for (i = 0; i < len; i++) 
+	{
+		BitBlt(hMemDC, 343 - (len-i)*45, 150, 45, 79, hfocusMemDC, (buf[i] - '0') * 45, 0, SRCCOPY);
+	}
+	BitBlt(hDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hMemDC, 0, 0, SRCCOPY);
+
+	SelectObject(hMemDC, hOldBitmap);
+	DeleteObject(hBitmap);
+	DeleteDC(hMemDC);	
 	EndPaint(hWnd, &ps);
 	
 	return 0;
@@ -158,7 +165,6 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-
 	switch(wParam) {
 		case VK_F1:     //left
 			if(number<9899)
@@ -177,11 +183,20 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			break;
 		case VK_F4:     //±£´æ²¢·µ»Ø
 			if(number>0)
+			{
+				// ÅúÁ¿Öµ´óÓÚ0Ê±£¬±£´æÅúÁ¿Öµ
 				preset_value_set(number);
-			number = 0;
+			}
+			else if(number == 0)
+			{
+				//ÅúÁ¿ÖµÎª0Ê±£¬ÇÐ»»µ½Õý³£×´Ì¬£¬Í¨ÖªÖ÷½çÃæ
+				preset_value_set(-1);
+				
+			}
+			//SendMessage(GetParent(hWnd), WM_COMMAND, (WPARAM)0xF0F1, (LPARAM)0);
+
 			spi_keyalert();
 			DestroyWindow(hWnd);
-			SetFocus(GetParent(hWnd));
 			break;
 		case VK_F5:    //clear
 			if(number>=100)
@@ -198,15 +213,24 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			number--;
 			InvalidateRect(hWnd, NULL, FALSE);
 			break;
-		case VK_F8:       //return
+		case VK_F8:       // ÇåÁã²¢·µ»Ø
+			// ÅúÁ¿ÖµÇåÁã£¬·µ»ØÕý³£×´Ì¬£¬Í¨ÖªÖ÷½çÃæ
 			number = 0;
-			InvalidateRect(hWnd, NULL, FALSE);
-			break;
-		case VK_F9:       //return
-			number = 0;
+			preset_value_set(-1);
+			//SendMessage(GetParent(hWnd), WM_COMMAND, (WPARAM)0xF0F1, (LPARAM)0);
+		    //moneydisp_info_clear();
+		   // fota_clearzero();
 			spi_keyalert();
 			DestroyWindow(hWnd);
-			SetFocus(GetParent(hWnd));
+			break;
+		case VK_F9:       //return
+			// Í¨¹ýÅÐ¶Ïpreset_value_getµÄ·µ»ØÖµ£¬¾ö¶¨½øÈëµ½ÄÄÖÖ×´Ì¬
+			//number =  preset_value_get();
+			//if(number == -1)
+				//SendMessage(GetParent(hWnd), WM_COMMAND, (WPARAM)0xF0F1, (LPARAM)0);
+			
+			spi_keyalert();
+			DestroyWindow(hWnd);
 			break;
 		default:
 			break;

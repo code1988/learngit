@@ -9,7 +9,9 @@
 #include <time.h>
 #include <fcntl.h>
 #include "utility.h"
-#include "et850_data.h"
+//#include "et850_data.h"
+//#include "device.h"
+#include "fotawin.h"
 
 static char number[10];
 static HWND		hMainWnd = NULL;
@@ -48,8 +50,8 @@ int password_window_create(HWND hWnd)
 							  WS_CHILD | WS_VISIBLE,
 							  0,
 							  0,
-							  480,
-							  320,
+							  WINDOW_WIDTH,
+							  WINDOW_HEIGHT,
 							  hWnd,
 							  NULL,
 							  NULL,
@@ -89,17 +91,17 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	HBRUSH		hBrush;
 	
 	hDC = GetDC(hWnd);
-	
-	hBgMemDC = CreateCompatibleDC(hDC);													
-	hBgBitmap = CreateCompatibleBitmap(hBgMemDC, 480, 320);						    
-	hOldBgBitmap = SelectObject(hBgMemDC, hBgBitmap);
 	hBrush = CreateSolidBrush(RGB(255, 255, 255));
+	hBgMemDC = CreateCompatibleDC(hDC);													
+	hBgBitmap = CreateCompatibleBitmap(hBgMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);						    
+	hOldBgBitmap = SelectObject(hBgMemDC, hBgBitmap);
+	
 	rect.left = 0;
-	rect.right = 480;
+	rect.right = WINDOW_WIDTH;
 	rect.top = 0;
-	rect.bottom = 320;
+	rect.bottom = WINDOW_HEIGHT;
 	FillRect(hBgMemDC, &rect, hBrush);                                           
-	GdDrawImageFromFile(hBgMemDC->psd, 0, 0, 480, 320, "/bmp/fota/passwordwin.bmp", 0);     
+	GdDrawImageFromFile(hBgMemDC->psd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, "/bmp/fota/passwordwin.bmp", 0);     
 
 	hfocusMemDC = CreateCompatibleDC(hDC);
 	hfocusBitmap = CreateCompatibleBitmap(hfocusMemDC, 450, 79);
@@ -139,15 +141,15 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	int				i, len = 0;
 	hDC = BeginPaint(hWnd, &ps);
 	hMemDC = CreateCompatibleDC(hDC);
-	hBitmap = CreateCompatibleBitmap(hMemDC, 480, 320);
+	hBitmap = CreateCompatibleBitmap(hMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);
 	hOldBitmap = SelectObject(hMemDC, hBitmap);
-	BitBlt(hMemDC, 0, 0, 480, 320, hBgMemDC, 0, 0, SRCCOPY);													
+	BitBlt(hMemDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hBgMemDC, 0, 0, SRCCOPY);													
 	len = strlen(number);
 	for (i = 0; i < len; i++) 
 	{
 		BitBlt(hMemDC, 333 - (len-i)*45, 139, 45, 79, hfocusMemDC, (number[i] - '0') * 45, 3, SRCCOPY);
 	}
-	BitBlt(hDC, 0, 0, 480, 320, hMemDC, 0, 0, SRCCOPY);
+	BitBlt(hDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hMemDC, 0, 0, SRCCOPY);
 
 	SelectObject(hMemDC, hOldBitmap);
 	DeleteObject(hBitmap);
@@ -160,7 +162,7 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 
-	char len = 0; 
+	u8_t len = 0; 
 	len = strlen(number);
 	switch(wParam) {
 		case VK_F1:     //left
@@ -236,14 +238,9 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		case VK_F9:       //return
 			number[0] = '\0';
 			spi_keyalert();
-			DestroyWindow(hWnd);
-			SetFocus(GetParent(hWnd)); 
+			DestroyWindow(GetMenuWinHwnd());
 			break;
 		default:
-			number[0] = '\0';
-			spi_keyalert();
-			DestroyWindow(hWnd);
-			SetFocus(GetParent(hWnd)); 
 			break;
 	}
 	return 0;

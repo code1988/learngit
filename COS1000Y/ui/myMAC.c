@@ -9,7 +9,9 @@
 #include <time.h>
 #include <fcntl.h>
 #include "utility.h"
-#include "et850_data.h"
+//#include "et850_data.h"
+//#include "device.h"
+#include "fotawin.h"
 
 
 
@@ -23,10 +25,10 @@ static char	keynum[15] = {0};
 static char x = 0;
 static char y = 0;
 
-static char		character[] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
-														  'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
-														  'W', 'X', 'Y' ,'Z', '.', '*', '_', '\\','/', ' ', ' ',
-														'0', '1', '2','3', '4', '5', '6', '7', '8', '9', ' ' };
+//static char		character[] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
+//														  'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
+//														  'W', 'X', 'Y' ,'Z', '.', '*', '_', '\\','/', ' ', ' ',
+//														'0', '1', '2','3', '4', '5', '6', '7', '8', '9', ' ' };
  
 
 static LRESULT CALLBACK MainProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
@@ -34,7 +36,7 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam);
 static int OnDestroy(HWND hWnd, WPARAM wParam, LPARAM lParam);
 static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam);
 static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam);
-static void refresh_keytable(HWND hWnd, char old_x, char old_y, char pos_x, char pos_y);
+//static void refresh_keytable(HWND hWnd, char old_x, char old_y, char pos_x, char pos_y);
 
 int myMACwin_create(HWND hWnd)
 {
@@ -57,8 +59,8 @@ int myMACwin_create(HWND hWnd)
 							  WS_CHILD | WS_VISIBLE,
 							  0,
 							  0,
-							  480,
-							  320,
+							  WINDOW_WIDTH,
+							  WINDOW_HEIGHT,
 							  hWnd,
 							  NULL,
 							  NULL,
@@ -97,32 +99,54 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	HDC			hDC;
 	RECT		rect;
 	HBRUSH	hBrush;
-	
+	s8_t mac[6];
 	hDC = GetDC(hWnd);
 	hBgMemDC = CreateCompatibleDC(hDC);													//创建兼容HDC
-	hBgBitmap = CreateCompatibleBitmap(hBgMemDC, 480, 320);						    //创建兼容位图
+	hBgBitmap = CreateCompatibleBitmap(hBgMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);						    //创建兼容位图
 	hOldBgBitmap = SelectObject(hBgMemDC, hBgBitmap);
 	hBrush = CreateSolidBrush(RGB(255, 255, 255));
 	rect.left = 0;
-	rect.right = 480;
+	rect.right = WINDOW_WIDTH;
 	rect.top = 0;
-	rect.bottom = 320;
+	rect.bottom = WINDOW_HEIGHT;
 	FillRect(hBgMemDC, &rect, hBrush);                                           //绘图之前进行位图清除
 	
-	GdDrawImageFromFile(hBgMemDC->psd, 0, 0, 480, 320, "/bmp/fota/keyboardwin.bmp", 0);     //显示	网点号白色字样图
+	GdDrawImageFromFile(hBgMemDC->psd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, "/bmp/fota/keyboardwin.bmp", 0);     //显示	网点号白色字样图
 
 	hfocusMemDC = CreateCompatibleDC(hDC);
-	hfocusBitmap = CreateCompatibleBitmap(hfocusMemDC, 480, 320);
+	hfocusBitmap = CreateCompatibleBitmap(hfocusMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);
 	hOldfocusBitmap = SelectObject(hfocusMemDC, hfocusBitmap);	
 	FillRect(hfocusMemDC, &rect, hBrush);
-	GdDrawImageFromFile(hfocusMemDC->psd, 0, 0, 480, 320, "/bmp/fota/keyboard1win.bmp", 0);     //	网点号黄色字样图
+	GdDrawImageFromFile(hfocusMemDC->psd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, "/bmp/fota/keyboard1win.bmp", 0);     //	网点号黄色字样图
 
 	DeleteObject(hBrush);
 	ReleaseDC(hWnd, hDC);
 	
 	keynum[0] = '\0';
-	net1_mac_get(keynum);
-	printf("keynum =%s\n",keynum);
+	//net1_mac_get(keynum);
+	
+	ifmac_get_f("eth0", mac);
+	
+	printf("x0 =%x\n",mac[0]);
+	printf("x1 =%x\n",mac[1]);
+	printf("x2 =%x\n",mac[2]);
+	printf("x3 =%x\n",mac[3]);
+	printf("x4 =%x\n",mac[4]);
+	printf("x5 =%x\n",mac[5]);
+
+	
+		sprintf(keynum,"%02x",mac[0]);
+		sprintf(keynum+2,"%02x",mac[1]);
+	
+	
+		sprintf(keynum+4,"%02x",mac[2]);
+	
+		sprintf(keynum+6,"%02x",mac[3]);
+	
+		sprintf(keynum+8,"%02x",mac[4]);
+	
+		sprintf(keynum+10,"%02x",mac[5]);
+	printf("%s\n",keynum);
 	return 0;
 }
 
@@ -148,11 +172,12 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	PAINTSTRUCT		ps;
 	HFONT			hOldFont;
 	s8_t            i = 0,j=0;
+	
 	hDC = BeginPaint(hWnd, &ps);
 	hMemDC = CreateCompatibleDC(hDC);
-	hBitmap = CreateCompatibleBitmap(hMemDC, 480, 320);
+	hBitmap = CreateCompatibleBitmap(hMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);
 	hOldBitmap = SelectObject(hMemDC, hBitmap);
-	BitBlt(hMemDC, 0, 0, 480, 320, hBgMemDC, 0, 0, SRCCOPY);
+	BitBlt(hMemDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hBgMemDC, 0, 0, SRCCOPY);
 	hOldFont = SelectObject(hMemDC, (HFONT)GetFont32Handle());
 	SetBkColor(hMemDC, RGB(0, 255, 0));
 	SetBkMode(hMemDC, TRANSPARENT);
@@ -178,7 +203,7 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	
 	BitBlt(hMemDC, 65+30*x, 47+42*y, 30, 42,hfocusMemDC, 65+30*x, 47+42*y, SRCCOPY);
-	BitBlt(hDC, 0, 0, 480, 320, hMemDC, 0, 0, SRCCOPY);
+	BitBlt(hDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hMemDC, 0, 0, SRCCOPY);
 	SelectObject(hDC, hOldFont);
 	
 	SelectObject(hMemDC, hOldBitmap);
@@ -191,76 +216,21 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	s8_t mac[6];
-	s8_t len = 0; 
-	len = strlen(keynum);
 	switch(wParam) {
 		
 		case VK_F1:    //right
-		  if(x == 10) {
-		  	x = 0;
-				refresh_keytable(hWnd, 10, y, x, y);
-		  }
-		  else {
-		  	x++;
-				refresh_keytable(hWnd, x-1, y, x, y);
-			}
 			break;
-		case VK_F2:     //left
-		if(x == 0) {
-			x = 10;
-			refresh_keytable(hWnd, 0, y, x, y);
-		}
-		else {
-			x--;
-			refresh_keytable(hWnd, x+1, y, x, y);
-		}
-		break;
-		case VK_F3:       //up
-	    if(y == 0) {
-	   		y = 3;
-				refresh_keytable(hWnd, x, 0, x, y);
-	   	}
-	   	else {
-	    	y--;
-				refresh_keytable(hWnd, x, y+1, x, y);
-			}
+		case VK_F2:     //left		
 			break;
-		case VK_F4:     //down
-			if(y == 3) {
-				y = 0;
-				refresh_keytable(hWnd, x, 3, x, y);
-			}
-			else {
-				y++;
-				refresh_keytable(hWnd, x, y-1, x, y);
-			}
+		case VK_F3:       //up	   
 			break;
-		case VK_F5:    //clear
-			if (len <= 0)
-					break;
-			if (len > 0) {
-				keynum[len - 1 ] =  '\0';
-				len--;
-			}
-			InvalidateRect(hWnd, NULL, FALSE);
+		case VK_F4:     //down			
 			break;
-		case VK_F6:     //yes
-			if (len >= 12)
-				break;
-			keynum[len] = character[y*11+x];
-			keynum[len+1] = '\0';
-			InvalidateRect(hWnd, NULL, FALSE);
+		case VK_F5:    //clear			
+			break;
+		case VK_F6:     //yes			
 			break;
 		case VK_F7:       //save
-			printf("new local mac:%s\n",keynum);
-			net1_mac_get(mac);
-			printf("old local mac:%s\n",mac);
-			
-			net1_mac_set(keynum);
-			keynum[0] = '\0';
-			InvalidateRect(hWnd, NULL, FALSE);
-			break;
 		case VK_F8:   	
 			spi_keyalert();
 			DestroyWindow(hWnd);
@@ -269,13 +239,12 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		default:
 			spi_keyalert();
 			DestroyWindow(hWnd);
-			SetFocus(GetParent(hWnd));
 			break;
 	}
 	return 0;
 }
 
-
+/*
 static void refresh_keytable(HWND hWnd, char old_x, char old_y, char pos_x, char pos_y)
 {
 	HDC				hDC;
@@ -288,4 +257,5 @@ static void refresh_keytable(HWND hWnd, char old_x, char old_y, char pos_x, char
 	
 	ReleaseDC(hWnd, hDC);
 }
+*/
 

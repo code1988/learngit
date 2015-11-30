@@ -9,7 +9,9 @@
 #include <time.h>
 #include <fcntl.h>
 #include "utility.h"
-#include "et850_data.h"
+//#include "et850_data.h"
+//#include "device.h"
+#include "fotawin.h"
 
 #define Weight  130
 #define Height  55 
@@ -51,8 +53,8 @@ int agetest_window_create(HWND hWnd)
 							  WS_CHILD | WS_VISIBLE,
 							  0,
 							  0,
-							  480,
-							  320,
+							  WINDOW_WIDTH,
+							  WINDOW_HEIGHT,
 							  hWnd,
 							  NULL,
 							  NULL,
@@ -91,25 +93,22 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	RECT		rect;
 	HBRUSH	hBrush;
 	hDC = GetDC(hWnd);
-	hBgMemDC = CreateCompatibleDC(hDC);													//创建兼容HDC
-		hBgBitmap = CreateCompatibleBitmap(hBgMemDC, 480, 320);						    //创建兼容位图
+	hBrush = CreateSolidBrush(RGB(255, 255, 255));
+		hBgMemDC = CreateCompatibleDC(hDC);													//创建兼容HDC
+		hBgBitmap = CreateCompatibleBitmap(hBgMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);						    //创建兼容位图
 		hOldBgBitmap = SelectObject(hBgMemDC, hBgBitmap);
-		hBrush = CreateSolidBrush(RGB(255, 255, 255));
-			rect.left = 0;
-			rect.right = 480;
-			rect.top = 0;
-			rect.bottom = 320;
-			FillRect(hBgMemDC, &rect, hBrush);                                           //绘图之前进行位图清除
-			
-			GdDrawImageFromFile(hBgMemDC->psd, 0, 0, 480, 320, "/bmp/fota/agetestwin.bmp", 0);     //显示	老化界面底图
 		
-	hfocusMemDC = CreateCompatibleDC(hDC);
-		hfocusBitmap = CreateCompatibleBitmap(hfocusMemDC, 480, 320);
+		rect.left = 0;rect.right = WINDOW_WIDTH;rect.top = 0;rect.bottom = WINDOW_HEIGHT;
+		FillRect(hBgMemDC, &rect, hBrush);                                           //绘图之前进行位图清除		
+		GdDrawImageFromFile(hBgMemDC->psd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, "/bmp/fota/agetestwin.bmp", 0);     //显示	老化界面底图
+		
+		hfocusMemDC = CreateCompatibleDC(hDC);
+		hfocusBitmap = CreateCompatibleBitmap(hfocusMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);
 		hOldfocusBitmap = SelectObject(hfocusMemDC, hfocusBitmap);	
-			FillRect(hfocusMemDC, &rect, hBrush);
-				GdDrawImageFromFile(hfocusMemDC->psd, 0, 0, 480, 320, "/bmp/fota/agetest1win.bmp", 0);     //	老化界面焦点图
+		FillRect(hfocusMemDC, &rect, hBrush);
+		GdDrawImageFromFile(hfocusMemDC->psd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, "/bmp/fota/agetest1win.bmp", 0);     //	老化界面焦点图
 	
-		DeleteObject(hBrush);
+	DeleteObject(hBrush);
 	ReleaseDC(hWnd, hDC);
 	return 0;
 }
@@ -135,15 +134,15 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	hDC = BeginPaint(hWnd, &ps);
 	
 		hMemDC = CreateCompatibleDC(hDC);
-			hBitmap = CreateCompatibleBitmap(hMemDC, 480, 320);
+			hBitmap = CreateCompatibleBitmap(hMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);
 			hOldBitmap = SelectObject(hMemDC, hBitmap);
-				BitBlt(hMemDC, 0, 0, 480, 320, hBgMemDC, 0, 0, SRCCOPY);
+				BitBlt(hMemDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hBgMemDC, 0, 0, SRCCOPY);
 						
 								
 				BitBlt(hMemDC, 160, 57+pos*Height, Weight, Height,hfocusMemDC, 160, 57+pos*Height, SRCCOPY);
 				if(test_on)
 					BitBlt(hMemDC,  294, 57+pos*Height, 40, 57,hfocusMemDC, 294, 57, SRCCOPY);	
-				BitBlt(hDC, 0, 0, 480, 320, hMemDC, 0, 0, SRCCOPY);
+				BitBlt(hDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hMemDC, 0, 0, SRCCOPY);
 			
 		
 		SelectObject(hMemDC, hOldBitmap);
@@ -190,8 +189,13 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			test_on = 0;
 			spi_keyalert();
 			DestroyWindow(hWnd);
-			SetFocus(GetParent(hWnd));
 			break;
+		case VK_F9:       //return
+			pos = 0;
+			test_on = 0;
+			spi_keyalert();
+			DestroyWindow(GetMenuWinHwnd());
+			break;	
 		default:
 			break;
 	}

@@ -9,7 +9,12 @@
 #include <time.h>
 #include <fcntl.h>
 #include "utility.h"
-#include "et850_data.h"
+//#include "et850_data.h"
+#include "fotawin.h"
+
+#define SAVE_TIMER_ID				601
+static int save_timer_id = 0;
+static char  message[32];
 
 
 
@@ -35,6 +40,9 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam);
 static int OnDestroy(HWND hWnd, WPARAM wParam, LPARAM lParam);
 static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam);
 static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+static int OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
 static void refresh_keytable(HWND hWnd, char old_x, char old_y, char pos_x, char pos_y);
 
 int serverPortwin_create(HWND hWnd)
@@ -58,8 +66,8 @@ int serverPortwin_create(HWND hWnd)
 							  WS_CHILD | WS_VISIBLE,
 							  0,
 							  0,
-							  480,
-							  320,
+							  WINDOW_WIDTH,
+							  WINDOW_HEIGHT,
 							  hWnd,
 							  NULL,
 							  NULL,
@@ -82,7 +90,7 @@ static LRESULT CALLBACK MainProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lPa
 			OnKeyDown(hWnd, wParam, lParam);
 			break;
 		case WM_TIMER:
-			//OnTimer(hWnd, wParam, lParam);
+			OnTimer(hWnd, wParam, lParam);
 			break;
 		case WM_DESTROY:
 			OnDestroy(hWnd, wParam, lParam);
@@ -100,27 +108,28 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	HBRUSH	hBrush;
 	
 	hDC = GetDC(hWnd);
-	hBgMemDC = CreateCompatibleDC(hDC);													//创建兼容HDC
-	hBgBitmap = CreateCompatibleBitmap(hBgMemDC, 480, 320);						    //创建兼容位图
-	hOldBgBitmap = SelectObject(hBgMemDC, hBgBitmap);
 	hBrush = CreateSolidBrush(RGB(255, 255, 255));
+	hBgMemDC = CreateCompatibleDC(hDC);													//创建兼容HDC
+	hBgBitmap = CreateCompatibleBitmap(hBgMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);						    //创建兼容位图
+	hOldBgBitmap = SelectObject(hBgMemDC, hBgBitmap);
+	
 	rect.left = 0;
-	rect.right = 480;
+	rect.right = WINDOW_WIDTH;
 	rect.top = 0;
-	rect.bottom = 320;
+	rect.bottom = WINDOW_HEIGHT;
 	FillRect(hBgMemDC, &rect, hBrush);                                           //绘图之前进行位图清除
 	
-	GdDrawImageFromFile(hBgMemDC->psd, 0, 0, 480, 320, "/bmp/fota/keyboardwin.bmp", 0);     //显示	网点号白色字样图
+	GdDrawImageFromFile(hBgMemDC->psd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, "/bmp/fota/keyboardwin.bmp", 0);     //显示	网点号白色字样图
 
 	hfocusMemDC = CreateCompatibleDC(hDC);
-	hfocusBitmap = CreateCompatibleBitmap(hfocusMemDC, 480, 320);
+	hfocusBitmap = CreateCompatibleBitmap(hfocusMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);
 	hOldfocusBitmap = SelectObject(hfocusMemDC, hfocusBitmap);	
 	FillRect(hfocusMemDC, &rect, hBrush);
-	GdDrawImageFromFile(hfocusMemDC->psd, 0, 0, 480, 320, "/bmp/fota/keyboard1win.bmp", 0);     //	网点号黄色字样图
+	GdDrawImageFromFile(hfocusMemDC->psd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, "/bmp/fota/keyboard1win.bmp", 0);     //	网点号黄色字样图
 
 	DeleteObject(hBrush);
 	ReleaseDC(hWnd, hDC);
-	
+	message[0] = '\0';
 	keynum[0] = '\0';
 	tcpfsn_upload_port_get(&serverIP,&serverPort);
 	sprintf(keynum,"%d",serverPort);
@@ -129,6 +138,10 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 static int OnDestroy(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
+
+	if (save_timer_id)
+			KillTimer(hWnd, SAVE_TIMER_ID);
+		save_timer_id = 0;
 
 	SelectObject(hBgMemDC, hOldBgBitmap);
 	DeleteObject(hBgBitmap);
@@ -142,35 +155,50 @@ static int OnDestroy(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
+static int OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	switch(wParam) {
+		case SAVE_TIMER_ID:
+				if (save_timer_id)
+					KillTimer(hWnd, SAVE_TIMER_ID);
+				save_timer_id = 0;
+				message[0] = '\0';
+				InvalidateRect(hWnd, NULL, FALSE);
+				break;
+		default:
+				break;
+	}
+	return 0;
+}
+
 static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam) 
 {
 	HDC				hDC, hMemDC;
 	HBITMAP	hBitmap, hOldBitmap;
 	PAINTSTRUCT		ps;
 	HFONT			hOldFont;
+
 	hDC = BeginPaint(hWnd, &ps);
 	hMemDC = CreateCompatibleDC(hDC);
-	hBitmap = CreateCompatibleBitmap(hMemDC, 480, 320);
+	hBitmap = CreateCompatibleBitmap(hMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);
 	hOldBitmap = SelectObject(hMemDC, hBitmap);
-	BitBlt(hMemDC, 0, 0, 480, 320, hBgMemDC, 0, 0, SRCCOPY);
+	BitBlt(hMemDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hBgMemDC, 0, 0, SRCCOPY);
 	hOldFont = SelectObject(hMemDC, (HFONT)GetFont32Handle());
 	SetBkColor(hMemDC, RGB(0, 255, 0));
 	SetBkMode(hMemDC, TRANSPARENT);
 	SetTextColor(hMemDC, RGB(255, 0, 0));			
-	
+	if(strlen(message)!=0)
+		TextOut(hMemDC, 165, 225, message,strlen(message));
+	printf("message = %d\n",strlen(message));	
 	SetTextColor(hMemDC, RGB(255, 255, 255));
 	TextOut(hMemDC, 77, 240, "Server Port No", -1);
 
-	TextOut(hMemDC, 77, 283, keynum, 5);	
-	
-	
-	
-	
+	TextOut(hMemDC, 77, 283, keynum, 5);		
 	TextOut(hMemDC, 155, 7, "服务器端口输入", -1);
 
 	
 	BitBlt(hMemDC, 65+30*x, 47+42*y, 30, 42,hfocusMemDC, 65+30*x, 47+42*y, SRCCOPY);
-	BitBlt(hDC, 0, 0, 480, 320, hMemDC, 0, 0, SRCCOPY);
+	BitBlt(hDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hMemDC, 0, 0, SRCCOPY);
 	SelectObject(hDC, hOldFont);
 	
 	SelectObject(hMemDC, hOldBitmap);
@@ -183,8 +211,8 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	
-	s8_t len = 0; 
+	int ret = 0;
+	u8_t len = 0; 
 	len = strlen(keynum);
 	switch(wParam) {
 		
@@ -234,8 +262,21 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			printf("old server port:%d\n",serverPort);
 			serverPort= atoi(keynum);
 			printf("%d\n",serverPort);
-			tcpfsn_upload_port_set(serverIP,serverPort);
+			ret = tcpfsn_upload_port_set(serverIP,serverPort);
+			printf("ret = %d\n",ret);
+
+
+			if(ret==0)
+				strcpy(message, "保存成功");
+			else 
+				strcpy(message, "保存失败");
+			 
+			printf("message = %s\n", message);   //debug
+			if (save_timer_id)
+				KillTimer(hWnd, save_timer_id);	
+			
 			InvalidateRect(hWnd, NULL, FALSE);
+			save_timer_id = SetTimer(hWnd, SAVE_TIMER_ID, 1000, NULL);
 			break;
 		case VK_F8:     
 			spi_keyalert();
@@ -245,7 +286,6 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		default:	
 			spi_keyalert();
 			DestroyWindow(hWnd);
-			SetFocus(GetParent(hWnd));
 			break;
 	}
 	return 0;

@@ -9,6 +9,7 @@
 #include <time.h>
 #include <fcntl.h>
 #include "fotawin.h"
+//#include "device.h"
 
 static HWND		hMainWnd = NULL;
 
@@ -71,7 +72,7 @@ static LRESULT CALLBACK MainProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lPa
 			OnDestroy(hWnd, wParam, lParam);
 			break;
 		case WM_COMMAND:
-			if(wParam = 0xF0F0)
+			if(wParam == 0xF0F0)
 			{
 				printf("password ok,enter debug ui\n");
 				adjustmenu_window_create(hWnd);	
@@ -91,13 +92,13 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	
 	hDC = GetDC(hWnd);
 	hBgMemDC = CreateCompatibleDC(hDC);
-	hBgBitmap = CreateCompatibleBitmap(hBgMemDC, 480, 320);
+	hBgBitmap = CreateCompatibleBitmap(hBgMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);
 	hOldBgBitmap = SelectObject(hBgMemDC, hBgBitmap); 
 	hBrush = CreateSolidBrush(RGB(255, 255, 255));
-	rect.left = 0; rect.right = 480; rect.top = 0; rect.bottom = 320;
+	rect.left = 0; rect.right = WINDOW_WIDTH; rect.top = 0; rect.bottom = WINDOW_HEIGHT;
 	FillRect(hBgMemDC, &rect, hBrush);
 	DeleteObject(hBrush);
-	GdDrawImageFromFile(hBgMemDC->psd, 0, 0, 480, 320, "/bmp/fota/menuwin.bmp", 0);
+	GdDrawImageFromFile(hBgMemDC->psd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, "/bmp/fota/menuwin.bmp", 0);
 	ReleaseDC(hWnd, hDC);
 	return 0;
 }
@@ -117,7 +118,7 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	PAINTSTRUCT		ps;
 
 	hDC = BeginPaint(hWnd, &ps);
-	BitBlt(hDC, 0, 0, 480, 320, hBgMemDC, 0, 0, SRCCOPY);
+	BitBlt(hDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hBgMemDC, 0, 0, SRCCOPY);
 	EndPaint(hWnd, &ps);
 	return 0;
 }
@@ -128,7 +129,8 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		case VK_F1:
 			picdistinguishwin_create(hWnd);
 			break;
-		case VK_F2:
+		case VK_F2:  
+			
 			break;
 		case VK_F3:
 			printf("press password:\n");
@@ -149,7 +151,10 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		case VK_F8:
 			spi_keyalert();
 			DestroyWindow(hWnd);
-			SetFocus(GetParent(hWnd));
+			break;
+		case VK_F9:
+			spi_keyalert();
+			DestroyWindow(hWnd);
 			break;
 		default:
 			break;

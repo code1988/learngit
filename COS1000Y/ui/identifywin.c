@@ -8,7 +8,9 @@
 #include <stdlib.h>
 #include <time.h>
 #include <fcntl.h>
-#include "et850_data.h"
+//#include "et850_data.h"
+//#include "device.h"
+#include "fotawin.h"
 
 static HWND		hMainWnd = NULL;
 
@@ -74,8 +76,8 @@ int identifywin_create(HWND hWnd)
 							  WS_CHILD | WS_VISIBLE,
 							  0,
 							  0,
-							  480,
-							  320,
+							  WINDOW_WIDTH,
+							  WINDOW_HEIGHT,
 							  hWnd,
 							  NULL,
 							  NULL,
@@ -130,13 +132,13 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	key_timer_id = 0;
 	hDC = GetDC(hWnd);
 	hBgMemDC = CreateCompatibleDC(hDC);
-	hBgBitmap = CreateCompatibleBitmap(hBgMemDC, 480, 320);
+	hBgBitmap = CreateCompatibleBitmap(hBgMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);
 	hOldBgBitmap = SelectObject(hBgMemDC, hBgBitmap); 
 	hBrush = CreateSolidBrush(RGB(255, 255, 255));
-	rect.left = 0; rect.right = 480; rect.top = 0; rect.bottom = 320;
+	rect.left = 0; rect.right = WINDOW_WIDTH; rect.top = 0; rect.bottom = WINDOW_HEIGHT;
 	FillRect(hBgMemDC, &rect, hBrush);
 	DeleteObject(hBrush);
-	GdDrawImageFromFile(hBgMemDC->psd, 0, 0, 480, 320, "/bmp/fota/picdistinguishwin.bmp", 0);
+	GdDrawImageFromFile(hBgMemDC->psd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, "/bmp/fota/picdistinguishwin.bmp", 0);
 	ReleaseDC(hWnd, hDC);
 	return 0;
 }
@@ -178,10 +180,10 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	hDC = BeginPaint(hWnd, &ps);
 	hMemDC = CreateCompatibleDC(hDC);
-	hBitmap = CreateCompatibleBitmap(hMemDC, 480, 320);
+	hBitmap = CreateCompatibleBitmap(hMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);
 	hOldBitmap = SelectObject(hMemDC, hBitmap);
 	hOldFont = SelectObject(hMemDC, GetFont24Handle());
-	BitBlt(hMemDC, 0, 0, 480, 320, hBgMemDC, 0, 0, SRCCOPY);
+	BitBlt(hMemDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hBgMemDC, 0, 0, SRCCOPY);
 	hBrush = CreateSolidBrush(RGB(255, 0, 0));
 	i = focus/10;
 	j = focus%10;
@@ -202,9 +204,9 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	SetTextColor(hMemDC, RGB(255, 255, 255));
 
 	if (dir/2)
-		sprintf(buf, "%dA", typevalue[type]);
-	else
 		sprintf(buf, "%dB", typevalue[type]);
+	else
+		sprintf(buf, "%dA", typevalue[type]);
 	TextOut(hMemDC, 6, 10, buf, -1);
 	sprintf(buf, "%dV%02d", level, vervalue[ver]);
 	TextOut(hMemDC, 432, 10, buf, -1);
@@ -229,7 +231,7 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		}
 	}
 
-	BitBlt(hDC, 0, 0, 480, 320, hMemDC, 0, 0, SRCCOPY);
+	BitBlt(hDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hMemDC, 0, 0, SRCCOPY);
 	SelectObject(hMemDC, hOldFont);
 	SelectObject(hMemDC, hOldBitmap);
 	DeleteObject(hBitmap);
@@ -299,7 +301,7 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			InvalidateRect(hWnd, NULL, FALSE);
 			break;
 		case VK_F9:
-			DestroyWindow(hWnd);
+			DestroyWindow(GetMenuWinHwnd());
 			break;
 		default:
 			break;
@@ -439,6 +441,7 @@ static int focus_value_add(HWND hWnd, unsigned char value)
 	else
 		*(ptr+offset) += value;
 	InvalidateRect(hWnd, NULL, FALSE);
+	return 0;
 }
 
 

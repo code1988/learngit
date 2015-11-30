@@ -9,7 +9,9 @@
 #include <time.h>
 #include <fcntl.h>
 #include "utility.h"
-#include "et850_data.h"
+//#include "et850_data.h"
+//#include "device.h"
+#include "fotawin.h"
 
 #define SAVE_TIMER_ID				601
 
@@ -25,18 +27,12 @@ static char x = 0;
 static char y = 0;
 
 static int save_timer_id = 0;
-static int message[32];
+static char message[32];
 static char getblack[34];
 static char		character[] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
 														  'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
 														  'W', 'X', 'Y' ,'Z', '.', '*', '_', '\\','/', ' ', ' ',
 														'0', '1', '2','3', '4', '5', '6', '7', '8', '9', ' ' };
- 
-
-
-
-#define FLASH_TIMER_ID			600
-static int		flash_timer_id = 0;
 
 static LRESULT CALLBACK MainProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam);
@@ -67,8 +63,8 @@ int blackname_window_create(HWND hWnd)
 							  WS_CHILD | WS_VISIBLE,
 							  0,
 							  0,
-							  480,
-							  320,
+							  WINDOW_WIDTH,
+							  WINDOW_HEIGHT,
 							  hWnd,
 							  NULL,
 							  NULL,
@@ -109,48 +105,43 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	HBRUSH	hBrush;
 	
 	hDC = GetDC(hWnd);
-	hBgMemDC = CreateCompatibleDC(hDC);													//创建兼容HDC
-		hBgBitmap = CreateCompatibleBitmap(hBgMemDC, 480, 320);						    //创建兼容位图
+	hBrush = CreateSolidBrush(RGB(255, 255, 255));
+		hBgMemDC = CreateCompatibleDC(hDC);													//创建兼容HDC
+		hBgBitmap = CreateCompatibleBitmap(hBgMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);						    //创建兼容位图
 		hOldBgBitmap = SelectObject(hBgMemDC, hBgBitmap);
-		hBrush = CreateSolidBrush(RGB(255, 255, 255));
-			rect.left = 0;
-			rect.right = 480;
-			rect.top = 0;
-			rect.bottom = 320;
-			FillRect(hBgMemDC, &rect, hBrush);                                           //绘图之前进行位图清除
-			
-			GdDrawImageFromFile(hBgMemDC->psd, 0, 0, 480, 320, "/bmp/fota/keyboardwin.bmp", 0);     //显示	黑名单白色字样图
 		
-	hfocusMemDC = CreateCompatibleDC(hDC);
-		hfocusBitmap = CreateCompatibleBitmap(hfocusMemDC, 480, 320);
+		rect.left = 0;rect.right = WINDOW_WIDTH;rect.top = 0;rect.bottom = WINDOW_HEIGHT;
+		FillRect(hBgMemDC, &rect, hBrush);                                           //绘图之前进行位图清除
+		
+		GdDrawImageFromFile(hBgMemDC->psd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, "/bmp/fota/keyNETwin.bmp", 0);     //显示	黑名单白色字样图
+		
+		hfocusMemDC = CreateCompatibleDC(hDC);
+		hfocusBitmap = CreateCompatibleBitmap(hfocusMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);
 		hOldfocusBitmap = SelectObject(hfocusMemDC, hfocusBitmap);	
-			FillRect(hfocusMemDC, &rect, hBrush);
-				GdDrawImageFromFile(hfocusMemDC->psd, 0, 0, 480, 320, "/bmp/fota/keyboard1win.bmp", 0);     //	黑名单黄色字样图
+		FillRect(hfocusMemDC, &rect, hBrush);
+		GdDrawImageFromFile(hfocusMemDC->psd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, "/bmp/fota/keyboard1win.bmp", 0);     //	黑名单黄色字样图
 	
-		DeleteObject(hBrush);
+	DeleteObject(hBrush);
 	ReleaseDC(hWnd, hDC);
 	
 	blackname[0] = '\0';
 	message[0] = '\0';
 	getblack[34] = '\0';
-	//strcpy(tital, "黑名单设置界面");
 	
-//	flash_timer_id = SetTimer(hWnd, FLASH_TIMER_ID, 10, NULL);
 	return 0;
 }
 
 static int OnDestroy(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	//printf("%s\n", __func__);
 	SelectObject(hBgMemDC, hOldBgBitmap);
 	DeleteObject(hBgBitmap);
 	DeleteDC(hBgMemDC);
 	SelectObject(hfocusMemDC, hOldfocusBitmap);
 	DeleteObject(hfocusBitmap);
 	DeleteDC(hfocusMemDC);
-	if (flash_timer_id > 0)
-		KillTimer(hWnd, FLASH_TIMER_ID);
-	flash_timer_id = 0;
+	if (save_timer_id)
+		KillTimer(hWnd, SAVE_TIMER_ID);	
+	save_timer_id = 0;
 	hMainWnd = NULL;
 
 	return 0;
@@ -165,9 +156,9 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	hDC = BeginPaint(hWnd, &ps);
 		hMemDC = CreateCompatibleDC(hDC);
-			hBitmap = CreateCompatibleBitmap(hMemDC, 480, 320);
+			hBitmap = CreateCompatibleBitmap(hMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);
 			hOldBitmap = SelectObject(hMemDC, hBitmap);
-				BitBlt(hMemDC, 0, 0, 480, 320, hBgMemDC, 0, 0, SRCCOPY);
+				BitBlt(hMemDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hBgMemDC, 0, 0, SRCCOPY);
 				hOldFont = SelectObject(hMemDC, (HFONT)GetFont32Handle());
 					SetBkColor(hMemDC, RGB(0, 255, 0));
 					SetBkMode(hMemDC, TRANSPARENT);
@@ -180,7 +171,7 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				
 				
 					BitBlt(hMemDC, 65+30*x, 47+42*y, 30, 42,hfocusMemDC, 65+30*x, 47+42*y, SRCCOPY);
-					BitBlt(hDC, 0, 0, 480, 320, hMemDC, 0, 0, SRCCOPY);
+					BitBlt(hDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hMemDC, 0, 0, SRCCOPY);
 				SelectObject(hDC, hOldFont);
 		
 		SelectObject(hMemDC, hOldBitmap);
@@ -209,7 +200,8 @@ static int OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	char len = 0; 
+	static u8_t wildcard = 0;	// 通配符使能标志位
+	u8_t len = 0; 
 	len = strlen(blackname);
 	switch(wParam) {
 		
@@ -256,7 +248,11 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		case VK_F5:    //clear
 			if (len <= 0)
 					break;
-			if (len > 0) {
+			if (len > 0) 
+			{
+				if(blackname[len - 1] == '*' && blackname[len - 2] != '*')
+					wildcard = 0;
+				
 				blackname[len - 1 ] =  '\0';
 				len--;
 			}
@@ -265,27 +261,62 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		case VK_F6:     //yes
 			if (len >= 10)
 				break;
+
+			// 字符合法性判断
+			if(character[y*11+x] == '*' && !wildcard)
+			{
+			}
+			else if((character[y*11+x] >= '0' && character[y*11+x] <= '9') 
+				|| (character[y*11+x] >= 'A' && character[y*11+x] <= 'Z'))
+			{
+				if(blackname[len - 1] == '*')
+					wildcard = 1;
+			}
+			else
+			{
+				// 其余字符非法
+				break;
+			}
+
 			blackname[len] = character[y*11+x];
 			blackname[len+1] = '\0';
+			
 			InvalidateRect(hWnd, NULL, FALSE);
 			break;
 		case VK_F7:       //save
-			//black_insert( blackname, 1);
-			if(black_insert( blackname, 1)==0)
-				strcpy(message, "保存成功");
-			else 
-				strcpy(message, "保存失败");
-			//printf("blacknum = %d\n", black_count_get(1));   //debug
+			if(len == 10)
+			{
+				if(strcmp(blackname,"**********"))
+				{
+					if(black_insert( blackname, 1)==0)
+					{
+						FotaBlackIndication();
+						strcpy(message, "保存成功");
+					}
+					else 
+						strcpy(message, "保存失败");
+				}
+				else
+					strcpy(message, "保存失败");
+			}
+			else
+				strcpy(message, "保存失败");	
+			
 			if (save_timer_id)
-				KillTimer(hWnd, save_timer_id);			
+				KillTimer(hWnd, SAVE_TIMER_ID);			
 			blackname[0] = '\0';
 			InvalidateRect(hWnd, NULL, FALSE);
-			save_timer_id = SetTimer(hWnd, SAVE_TIMER_ID, 5000, NULL);
+			save_timer_id = SetTimer(hWnd, SAVE_TIMER_ID, 3000, NULL);
 			break;
 		case VK_F8:       //return
+			
 			spi_keyalert();
 			DestroyWindow(hWnd);
-			SetFocus(GetParent(hWnd));
+			break;
+		case VK_F9:       //return
+			
+			spi_keyalert();
+			DestroyWindow(GetMenuWinHwnd());
 			break;
 		default:
 			break;

@@ -9,6 +9,7 @@
 #include <time.h>
 #include <fcntl.h>
 #include "fotawin.h"
+//#include "device.h"
 
 static HWND		hMainWnd = NULL;
 
@@ -91,13 +92,13 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	
 	hDC = GetDC(hWnd);
 	hBgMemDC = CreateCompatibleDC(hDC);
-	hBgBitmap = CreateCompatibleBitmap(hBgMemDC, 480, 320);
+	hBgBitmap = CreateCompatibleBitmap(hBgMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);
 	hOldBgBitmap = SelectObject(hBgMemDC, hBgBitmap); 
 	hBrush = CreateSolidBrush(RGB(255, 255, 255));
-	rect.left = 0; rect.right = 480; rect.top = 0; rect.bottom = 320;
+	rect.left = 0; rect.right = WINDOW_WIDTH; rect.top = 0; rect.bottom = WINDOW_HEIGHT;
 	FillRect(hBgMemDC, &rect, hBrush);
 	DeleteObject(hBrush);
-	GdDrawImageFromFile(hBgMemDC->psd, 0, 0, 480, 320, "/bmp/fota/staticwin.bmp", 0);
+	GdDrawImageFromFile(hBgMemDC->psd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, "/bmp/fota/staticwin.bmp", 0);
 	ReleaseDC(hWnd, hDC);
 	//debugstatic_read((u8_t *)(&static),debugstatic_count_get() - 1,1);
 	
@@ -111,6 +112,9 @@ static int OnDestroy(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	DeleteObject(hBgBitmap);
 	DeleteDC(hBgMemDC);
 	hMainWnd = NULL;
+	if(timer_cmd_s)
+		KillTimer(hWnd, ID_TIMER_CMD2);
+	timer_cmd_s = 0;
 	return 0;
 }
 
@@ -125,9 +129,9 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	hDC = BeginPaint(hWnd, &ps);
 
 	hMemDC = CreateCompatibleDC(hDC);
-	hBitmap = CreateCompatibleBitmap(hMemDC, 480, 320);
+	hBitmap = CreateCompatibleBitmap(hMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);
 	hOldBitmap = SelectObject(hMemDC, hBitmap);
-	BitBlt(hMemDC, 0, 0, 480, 320, hBgMemDC, 0, 0, SRCCOPY);
+	BitBlt(hMemDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hBgMemDC, 0, 0, SRCCOPY);
 
 	hOldFont = SelectObject(hMemDC, (HFONT)GetFont24Handle());
 	SetBkColor(hMemDC, RGB(0, 255, 0));
@@ -166,7 +170,7 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		TextOut(hMemDC, 400, 72 + 28*i, buf, strlen(buf));
 	}
 
-	BitBlt(hDC, 0, 0, 480, 320, hMemDC, 0, 0, SRCCOPY);
+	BitBlt(hDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hMemDC, 0, 0, SRCCOPY);
 
 	SelectObject(hDC, hOldFont);
 	SelectObject(hMemDC, hOldBitmap);
@@ -197,6 +201,9 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		case VK_F8:
 			mcu_mode_set(MCU_NORMAL_MODE);
 			break;
+		case VK_F9:
+			mcu_mode_set(MCU_NORMAL_MODE);
+			break;
 		default:
 			break;
 	}
@@ -217,7 +224,6 @@ static int OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam)
 					KillTimer(hWnd, ID_TIMER_CMD2);
 					timer_cmd_s = 0;
 					DestroyWindow(hWnd);
-					SetFocus(GetParent(hWnd));
 				}
 
 				debugstatic_read((u8_t *)(&Static),debugstatic_count_get() - 1,1);

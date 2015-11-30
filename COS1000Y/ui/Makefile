@@ -36,13 +36,13 @@ LIBS := $(LIBPATH)/microwin/libmwin.a \
 
 INC_PATH = -I$(DVRPATH)/include/microwin \
 		-I$(DVRPATH)/include/app
-TARGET = ./fotawin
+TARGET = ./appwin
 
-SRC = main.c Menu.c Paraset.c myIP.c myMask.c myPort.c myMAC.c myGate.c serverIP.c serverPort.c \
-	  countmodewin.c Netnumber.c Password.c Timeset.c Blackname.c Batchset.c Agetest.c \
-	  identifywin.c levelsetwin.c Version.c Adjustmenu.c guanzihaowin.c Functionset.c Uploadimg.c \
-	  Datamanage.c dynamicwin.c staticwin.c
-
+SRC = main.c Adjustmenu.c Agetest.c  Blackname.c Batchset.c countmodewin.c Datamanage.c Functionset.c  guanzihaowin.c  \
+	   identifywin.c levelsetwin.c  Menu.c  myIP.c myMask.c myPort.c myMAC.c myGate.c  Netnumber.c  picdistinguishwin.c \
+	     Paraset.c Password.c serverPort.c    serverIP.c Timeset.c  Uploadimg.c  Version.c  \
+		dynamicwin.c staticwin.c Mixquery.c Blacknamelist.c CISadjust.c
+ 
 
 OBJS = $(patsubst %.c, %.o, $(patsubst %.cpp, %.o, $(SRC)))
 
@@ -56,7 +56,8 @@ $(TARGET):$(OBJS)
 
 	chmod a+x $(TARGET)
 	@rm *~ -f
-	cp fotawin /tftpboot/
+	cp appwin ../release/
+	cp appwin /tftpboot/
 clean:
 	rm -f $(TARGET) $(OBJS)
 

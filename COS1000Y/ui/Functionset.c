@@ -9,7 +9,9 @@
 #include <time.h>
 #include <fcntl.h>
 #include "utility.h"
-#include "et850_data.h"
+//#include "et850_data.h"
+//#include "device.h"
+#include "fotawin.h"
 
 
 #define Funcweight 130
@@ -26,10 +28,10 @@ static int	old_x = 0;
 static int	pos_x = 0;
 
 
-static int message[32];
+static char message[32];
 static int function[6];
 
-static char F[6][4] = {"WFT","WFP","PLM","BY1","BY2","BY3"};
+static char F[6][9] = {"网发时间","网发张数","批量模式","备用1111","网发开关","备用3333"};
 //待填数字坐标
 static int pos[2] = { 277,20};
 					
@@ -44,7 +46,7 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam);
 static int OnDestroy(HWND hWnd, WPARAM wParam, LPARAM lParam);
 static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam);
 static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam);
-static int OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam);
+//static int OnTimer(HWND hWnd, WPARAM wParam, LPARAM lParam);
 static void  refresh_keytable(HWND hWnd,int Oldx,int Posx,int flag);
 
 
@@ -70,8 +72,8 @@ int function_window_create(HWND hWnd)
 							  WS_CHILD | WS_VISIBLE,
 							  0,
 							  0,
-							  480,
-							  320,
+							  WINDOW_WIDTH,
+							  WINDOW_HEIGHT,
 							  hWnd,
 							  NULL,
 							  NULL,
@@ -108,19 +110,18 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	HDC			hDC;
 	RECT		rect;
 	HBRUSH	hBrush;	
-	int i = 0;
 	hDC = GetDC(hWnd);
 		hBrush = CreateSolidBrush(RGB(255, 255, 255));
 	hBgMemDC = CreateCompatibleDC(hDC);													//创建兼容HDC
-		hBgBitmap = CreateCompatibleBitmap(hBgMemDC, 480, 320);						    //创建兼容位图
+		hBgBitmap = CreateCompatibleBitmap(hBgMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);						    //创建兼容位图
 		hOldBgBitmap = SelectObject(hBgMemDC, hBgBitmap);
 			rect.left = 0;
-			rect.right = 480;
+			rect.right = WINDOW_WIDTH;
 			rect.top = 0;
-			rect.bottom = 320;
+			rect.bottom = WINDOW_HEIGHT;
 			FillRect(hBgMemDC, &rect, hBrush);                                           //绘图之前进行位图清除
 			
-			GdDrawImageFromFile(hBgMemDC->psd, 0, 0, 480, 320, "/bmp/fota/functionwin.bmp", 0);     //灵敏度调节1图
+			GdDrawImageFromFile(hBgMemDC->psd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, "/bmp/fota/functionwin.bmp", 0);     //灵敏度调节1图
 			
 		DeleteObject(hBrush);
 	ReleaseDC(hWnd, hDC);
@@ -128,12 +129,10 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	message[0] = '\0';
 	function[0] = upload_param_load(F[0], 120);
 	function[1] = upload_param_load(F[1], 200);
-	for(i = 2;i<6;i++)
-	{
-
-		function[i] = upload_param_load(F[i], 0);
-
-	}
+	function[2] = upload_param_load(F[2], 0);
+	function[3] = upload_param_load(F[3], 0);
+	function[4] = upload_param_load(F[4], 1);
+	function[5] = upload_param_load(F[5], 1);
 	return 0;
 }
 
@@ -154,12 +153,12 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	HBRUSH			hBrush;
 	RECT			rect;
 	HFONT			 hOldFont;
-	char i = 0;
+	u8_t i = 0;
 	hDC = BeginPaint(hWnd, &ps);
 		hMemDC = CreateCompatibleDC(hDC);
-			hBitmap = CreateCompatibleBitmap(hMemDC, 480, 320);
+			hBitmap = CreateCompatibleBitmap(hMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);
 			hOldBitmap = SelectObject(hMemDC, hBitmap);
-				BitBlt(hMemDC, 0, 0, 480, 320, hBgMemDC, 0, 0, SRCCOPY);
+				BitBlt(hMemDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hBgMemDC, 0, 0, SRCCOPY);
 				hOldFont = SelectObject(hMemDC, (HFONT)GetFont32Handle());
 				//  当前选中单元格显示红色
 					hBrush = CreateSolidBrush(RGB(255,0,0));
@@ -183,7 +182,7 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 					{						
 						TextOut(hMemDC, pos[0]-strlen(functionbuf[i])*6, pos[1]+Funcheight*i, functionbuf[i], -1);  
 					}
-					BitBlt(hDC, 0, 0, 480, 320,hMemDC, 0, 0, SRCCOPY);
+					BitBlt(hDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT,hMemDC, 0, 0, SRCCOPY);
 				SelectObject(hMemDC, hOldFont);
 		
 			SelectObject(hMemDC, hOldBitmap);
@@ -196,10 +195,9 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	int min[6]={60,1,0,0,0,1};
-	int  max[6]={600,1000,2,1,2,5,4};
+	int min[6]={60,1,0,0,1,1};
+	int  max[6]={600,1000,2,1,3,2};
 	int i = 0;
-	int function1[6];
 	pos_x = old_x;
 	switch(wParam) {
 		case VK_F1:     //right
@@ -210,13 +208,17 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			break;
 		case VK_F2:    //up
 			if(function[pos_x]<(max[pos_x]-10)&&pos_x<2)
-				function[pos_x]+=10;	
+				function[pos_x]+=10;
+			else if(pos_x<2)
+				function[pos_x]= max[pos_x];
 			refresh_keytable(hWnd,old_x,pos_x,0);
 			old_x = pos_x;
 			break;
 		case VK_F3:       //down
 			if((function[pos_x]<(max[pos_x]-100))&&(pos_x<2))
-				function[pos_x]+=100;	
+				function[pos_x]+=100;
+			else if(pos_x<2)
+				function[pos_x]=max[pos_x];
 			refresh_keytable(hWnd,old_x,pos_x,0);
 			old_x = pos_x;
 			break;
@@ -247,12 +249,16 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		case VK_F6:    //累加
 			if(function[pos_x]>(min[pos_x]+10)&&pos_x<2)
 				function[pos_x]-=10;
+			else if(pos_x<2)
+				function[pos_x]=min[pos_x];
 			refresh_keytable(hWnd,old_x,pos_x,0);
 			old_x = pos_x;
 			break;
 		case VK_F7: 
 			if(function[pos_x]>(min[pos_x]+100)&&pos_x<2)
 				function[pos_x]-=100;
+			else if(pos_x<2)
+				function[pos_x]=min[pos_x];
 			refresh_keytable(hWnd,old_x,pos_x,0);
 			old_x = pos_x;
 			break;
@@ -263,20 +269,46 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				printf("%d\n",function[i]);
 
 			}
+			if(function[2]==0)
+			{
+				preset_value_set(200);
+				//SendMessage(GetParent(hWnd), WM_COMMAND, (WPARAM)0xF0F1, (LPARAM)0);
+
+			}
+					
+			else if(function[2]==1)
+			{
+				preset_value_set(100);
+				//SendMessage(GetParent(hWnd), WM_COMMAND, (WPARAM)0xF0F1, (LPARAM)0);
+
+			}
+			else if(function[2]==2)
+				preset_value_set(-1);
+			if(function[3]==0)
+			{
+				fota_money4_support_set(0); //close
+				fota_paramsave(1);
+
+			}
+				
+			else if(function[3]==1)
+			{
+				fota_money4_support_set(1); //open
+				fota_paramsave(1);
+
+			}
+				
 				
 			pos_x = 0;
 			old_x = 0;
 			spi_keyalert();
 			DestroyWindow(hWnd);
-			SetFocus(GetParent(hWnd));
 			break;
 		case VK_F9:       //save
 			pos_x = 0;
 			old_x = 0;
 			spi_keyalert();
-			DestroyWindow(hWnd);
-			SetFocus(GetParent(hWnd));
-					
+			DestroyWindow(GetMenuWinHwnd());					
 			break;
 		
 		default:

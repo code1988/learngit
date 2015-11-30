@@ -9,6 +9,7 @@
 #include <time.h>
 #include <fcntl.h>
 #include "fotawin.h"
+//#include "device.h"
 
 #define CISADJUST_TIMER_ID				602
 
@@ -93,14 +94,16 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	HBRUSH		hBrush;
 	int state;
 	hDC = GetDC(hWnd);
-	hBgMemDC = CreateCompatibleDC(hDC);
-	hBgBitmap = CreateCompatibleBitmap(hBgMemDC, 480, 320);
-	hOldBgBitmap = SelectObject(hBgMemDC, hBgBitmap); 
 	hBrush = CreateSolidBrush(RGB(255, 255, 255));
-	rect.left = 0; rect.right = 480; rect.top = 0; rect.bottom = 320;
+	hBgMemDC = CreateCompatibleDC(hDC);
+	hBgBitmap = CreateCompatibleBitmap(hBgMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);
+	hOldBgBitmap = SelectObject(hBgMemDC, hBgBitmap); 
+	
+	rect.left = 0; rect.right = WINDOW_WIDTH; rect.top = 0; rect.bottom = WINDOW_HEIGHT;
 	FillRect(hBgMemDC, &rect, hBrush);
+	
+	GdDrawImageFromFile(hBgMemDC->psd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, "/bmp/fota/CISadjust1win.bmp", 0);
 	DeleteObject(hBrush);
-	GdDrawImageFromFile(hBgMemDC->psd, 0, 0, 480, 320, "/bmp/fota/CISadjust1win.bmp", 0);
 	ReleaseDC(hWnd, hDC);
 	
 	state  =  image_verification_start();
@@ -195,15 +198,15 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	HFONT			 hOldFont;
 	hDC = BeginPaint(hWnd, &ps);
 		hMemDC = CreateCompatibleDC(hDC);
-			hBitmap = CreateCompatibleBitmap(hMemDC, 480, 320);
+			hBitmap = CreateCompatibleBitmap(hMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);
 			hOldBitmap = SelectObject(hMemDC, hBitmap);
-				BitBlt(hMemDC, 0, 0, 480, 320, hBgMemDC, 0, 0, SRCCOPY);
+				BitBlt(hMemDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hBgMemDC, 0, 0, SRCCOPY);
 				hOldFont = SelectObject(hMemDC, (HFONT)GetFont32Handle());
 					SetBkColor(hMemDC, RGB(0, 255, 0));
 					SetBkMode(hMemDC, TRANSPARENT);;							
 					SetTextColor(hMemDC,RGB(255, 255, 255));
 					TextOut(hMemDC, 113, 91, message, -1); 
-					BitBlt(hDC, 0, 0, 480, 320,hMemDC, 0, 0, SRCCOPY);
+					BitBlt(hDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT,hMemDC, 0, 0, SRCCOPY);
 				SelectObject(hMemDC, hOldFont);
 		
 			SelectObject(hMemDC, hOldBitmap);
@@ -235,7 +238,10 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		case VK_F8:
 			spi_keyalert();
 			DestroyWindow(hWnd);
-			SetFocus(GetParent(hWnd));
+			break;
+		case VK_F9:
+			spi_keyalert();
+			DestroyWindow(GetMenuWinHwnd());
 			break;
 		default:
 			break;

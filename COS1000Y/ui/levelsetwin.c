@@ -9,6 +9,7 @@
 #include <time.h>
 #include <fcntl.h>
 #include "fotawin.h"
+//#include "device.h"
 
 static HWND		hMainWnd = NULL;
 
@@ -82,22 +83,28 @@ static int OnCreate(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	HDC			hDC;
 	RECT		rect;
 	HBRUSH		hBrush;
-	int i,sensitive_level;
+	int i;
 
 	
 	hDC = GetDC(hWnd);
 	hBgMemDC = CreateCompatibleDC(hDC);
-	hBgBitmap = CreateCompatibleBitmap(hBgMemDC, 480, 320);
+	hBgBitmap = CreateCompatibleBitmap(hBgMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);
 	hOldBgBitmap = SelectObject(hBgMemDC, hBgBitmap); 
 	hBrush = CreateSolidBrush(RGB(255, 255, 255));
-	rect.left = 0; rect.right = 480; rect.top = 0; rect.bottom = 320;
+	rect.left = 0; rect.right = WINDOW_WIDTH; rect.top = 0; rect.bottom = WINDOW_HEIGHT;
 	FillRect(hBgMemDC, &rect, hBrush);
 	DeleteObject(hBrush);
-	GdDrawImageFromFile(hBgMemDC->psd, 0, 0, 480, 320, "/bmp/fota/levelsetwin.bmp", 0);
+	GdDrawImageFromFile(hBgMemDC->psd, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, "/bmp/fota/levelsetwin.bmp", 0);
 	ReleaseDC(hWnd, hDC);
-	sensitive_level = sensitive_level_get();
-	for(i=0;i<3;i++)
-		focus[i]=sensitive_level;
+
+	focus[0] = fota_sensitive_image_get();
+	focus[1] = fota_sensitive_normal_get();
+	focus[2] = fota_sensitive_tape_get();
+	for(i = 0;i<3;i++)
+	{
+
+printf("focus = %d\n",focus[i]);
+	}
 	return 0;
 }
 
@@ -118,12 +125,12 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	PAINTSTRUCT		ps;
 	HFONT			 hOldFont;
 	char buf[2];
-	char i = 0,j = 0;
+	u8_t i = 0,j = 0;
 	hDC = BeginPaint(hWnd, &ps);
 	hMemDC = CreateCompatibleDC(hDC);
-	hBitmap = CreateCompatibleBitmap(hMemDC, 480, 320);
+	hBitmap = CreateCompatibleBitmap(hMemDC, WINDOW_WIDTH, WINDOW_HEIGHT);
 	hOldBitmap = SelectObject(hMemDC, hBitmap);
-	BitBlt(hMemDC, 0, 0, 480, 320, hBgMemDC, 0, 0, SRCCOPY);
+	BitBlt(hMemDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, hBgMemDC, 0, 0, SRCCOPY);
 	
 	hOldFont = SelectObject(hMemDC, (HFONT)GetFont32Handle());
 	SetBkColor(hMemDC, RGB(0, 255, 1));		// ±³¾°ÑÕÉ«
@@ -134,7 +141,7 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 		for(i = 0;i<3;i++)
 		{		
-				if (focus[j] == i)
+				if (focus[j] == (i+1-j/2))
 					SetTextColor(hMemDC, RGB(255, 0, 0));
 				else
 					SetTextColor(hMemDC, RGB(255, 255, 255));	
@@ -147,7 +154,7 @@ static int OnPaint(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	
 	
 
-	BitBlt(hDC, 0, 0, 480, 320,hMemDC, 0, 0, SRCCOPY);
+	BitBlt(hDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT,hMemDC, 0, 0, SRCCOPY);
 	SelectObject(hMemDC, hOldFont);
 
 	SelectObject(hMemDC, hOldBitmap);
@@ -162,12 +169,12 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	switch(wParam) {
 		case VK_F1:
-			if(focus[0]>0)
+			if(focus[0]>1)
 				focus[0]--;
 			InvalidateRect(hWnd, NULL, FALSE);
 			break;
 		case VK_F2:
-			if(focus[1]>0)
+			if(focus[1]>1)
 				focus[1]--;
 			InvalidateRect(hWnd, NULL, FALSE);
 			break;
@@ -177,15 +184,21 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			InvalidateRect(hWnd, NULL, FALSE);
 			break;
 		case VK_F4:
-			sensitive_level_set(focus[1]);
+			fota_sensitive_image_set(focus[0]);
+			fota_sensitive_normal_set(focus[1]);
+			fota_sensitive_tape_set(focus[2]);
+			printf("focus0 = %d, focus1 = %d ,focus2 = %d\n",focus[0],focus[1],focus[2]);	
+			fota_paramsave(1);	
+			spi_keyalert();
+			DestroyWindow(hWnd);
 			break;
 		case VK_F5:
-			if(focus[0]<2)
+			if(focus[0]<3)
 				focus[0]++;
 			InvalidateRect(hWnd, NULL, FALSE);
 			break;
 		case VK_F6:
-			if(focus[1]<2)
+			if(focus[1]<3)
 				focus[1]++;
 			InvalidateRect(hWnd, NULL, FALSE);
 			break;
@@ -197,7 +210,10 @@ static int OnKeyDown(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		case VK_F8:
 			spi_keyalert();
 			DestroyWindow(hWnd);
-			SetFocus(GetParent(hWnd));
+			break;
+		case VK_F9:
+			spi_keyalert();
+			DestroyWindow(hWnd);
 			break;
 		default:
 			break;
