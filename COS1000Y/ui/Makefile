@@ -38,10 +38,7 @@ INC_PATH = -I$(DVRPATH)/include/microwin \
 		-I$(DVRPATH)/include/app
 TARGET = ./appwin
 
-SRC = main.c Adjustmenu.c Agetest.c  Blackname.c Batchset.c countmodewin.c Datamanage.c Functionset.c  guanzihaowin.c  \
-	   identifywin.c levelsetwin.c  Menu.c  myIP.c myMask.c myPort.c myMAC.c myGate.c  Netnumber.c  picdistinguishwin.c \
-	     Paraset.c Password.c serverPort.c    serverIP.c Timeset.c  Uploadimg.c  Version.c  \
-		dynamicwin.c staticwin.c Mixquery.c Blacknamelist.c CISadjust.c
+SRC = $(wildcard *.c)
  
 
 OBJS = $(patsubst %.c, %.o, $(patsubst %.cpp, %.o, $(SRC)))
