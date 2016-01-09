@@ -1,9 +1,3 @@
-										makefile»ù±¾¸ñÊ½£º
-/***************************************************************************************************
-	Ä¿±êÎÄ¼ş£ºÒÀÀµÎÄ¼ş
-		ÃüÁî				//tab¼ü²»¿ÉÉÙ
-***************************************************************************************************/
-
 										"="¡¢":="¡¢"?="ÈıÖÖ¸³Öµ·ûºÅµÄÓÃ·¨
 /***************************************************************************************************
 "="ÓÃ·¨£º»á½«Õû¸öMakefileÕ¹¿ªºó£¬ÔÙ¾ö¶¨±äÁ¿µÄÖµ£¬¼´±äÁ¿µÄÖµ½«»áÊÇÕû¸ömakefieÖĞ×îºó±»Ö¸¶¨µÄÖµ¡£
@@ -33,38 +27,42 @@
 	´ËÊ±xµÄÖµÎª¿Õ
 ***************************************************************************************************/
 
-										makefile³£ÓÃÍ¨Åä·û
+										makefileÖĞµÄ±äÁ¿
 /***************************************************************************************************
-makefileÀïÓĞ3¸ö³£ÓÃ±äÁ¿
-	$@	Ä¿±êÎÄ¼ş
-	$^	ËùÓĞÒÀÀµÎÄ¼ş
-	$<	µÚÒ»¸öÒÀÀµÎÄ¼ş
-makefileÄ£°å£¨mmu/leds£©£º
-	objs := head.o init.o leds.o						#±äÁ¿objs¸³Öµ
-	
-	mmu.bin : $(objs)									#Ä¿±êÎÄ¼ş£º¶ş½øÖÆÉÕĞ´ÎÄ¼ş£¬ÒÀÀµÎÄ¼ş£º$(objs)
-		arm-linux-ld -Tmmu.lds -o mmu_elf $^			#arm-linux-ld¸ºÔğ½«¶à¸ö*.oµÄÄ¿±êÎÄ¼şÁ´½Ó³Éelf¿ÉÖ´ĞĞÎÄ¼ş¡£-T*.lds/-T*¸ñÊ½ÓÃÓÚÌí¼ÓÁ´½Ó½Å±¾/Ö±½ÓÖ¸¶¨´úÂë¶Î¡¢Êı¾İ¶Î¡¢BSS¶ÎÆğÊ¼µØÖ·£¬Á´½Ó½Å±¾Ê¾Àı£ºL57
-														#arm-linux-ld -Ttext=0x30000000 led.o -o led_elf  ÆäÖĞtext´úÂë¶ÎÔÚled.sÆô¶¯ÎÄ¼şÀï¶¨Òå
-		arm-linux-objcopy -O binary -S mmu_elf $@		#arm-linux-objcopy¸ºÔğ½«elf×ª»»ÎªbinÎÄ¼ş£¬-OÖ¸Ã÷Êä³ö¸ñÊ½£ºbinary
-		arm-linux-objdump -D -m arm mmu_elf > mmu.dis	#arm-linux-objdump¸ºÔğ½«elf·´»ã±à£¬-DÏÔÊ¾»ã±àĞÅÏ¢£¬-m armÖ¸Ã÷arm¼Ü¹¹£¬>·´»ã±àÎÄ¼şÖØ¶¨Ïòµ½Ö¸¶¨ÎÄ¼ş
-		
-	%.o:%.c
-		arm-linux-gcc -Wall -O2 -c -o $@ $<				#-c±íÊ¾Ö»±àÒë²»Á´½Ó£¬Éú²ú¶ÔÓ¦ÎÄ¼şÃûµÄ.oÄ¿±êÎÄ¼ş£¬-O2Ö¸Ã÷±àÒëÆ÷Ê¹ÄÜ2¼¶±àÒëÓÅ»¯Ñ¡Ïî
-	
-	%.o:%.S
-		arm-linux-gcc -Wall -O2 -c -o $@ $<
-	
-	clean:
-		rm -f mmu.bin mmu_elf mmu.dis *.o		
-	
+makefileÖĞµÄ±äÁ¿´óĞ¡Ğ´Ãô¸Ğ£¬·ÖÎªÓÃ»§×Ô¶¨Òå±äÁ¿¡¢Ô¤¶¨Òå±äÁ¿¡¢×Ô¶¯±äÁ¿¡¢»·¾³±äÁ¿
 
-mmu.ldsÄÚÈİ£º
-	SECTION{										//ÒÔÏÂµØÖ·ÔÚÕâ¸ö¹¤³ÌÀï¶¼ÊÇĞéÄâµØÖ·
-		first  0x00000000 : {head.o init.o}			//½«head.oºÍinit.oÁ½¸öÄ¿±êÎÄ¼şÖ¸¶¨ÆğÊ¼µØÖ·Îª0x00000000
-		second 0xB0004000 : AT(2048){leds.o}				//½«leds.oÄ¿±êÎÄ¼şÖ¸¶¨ÆğÊ¼µØÖ·Îª0B0004000
-	}	
-***************************************************************************************************/
+1. ÓÃ»§×Ô¶¨Òå±äÁ¿Í¨³£Ê¹ÓÃĞ¡Ğ´×ÖÄ¸×÷Îª±äÁ¿Ãû
+
+2. ³£¼ûµÄÔ¤¶¨Òå±äÁ¿
+	CC			-	C±àÒëÆ÷µÄÃû³Æ£¬Ä¬ÈÏÖµcc
+	CPP			-	CÔ¤±àÒëÆ÷µÄÃû³Æ£¬Ä¬ÈÏÖµ$(CC) -E
+	CXX			-	C++±àÒëÆ÷µÄÃû³Æ£¬Ä¬ÈÏÖµg++
+	RM			- 	ÎÄ¼şÉ¾³ı³ÌĞòµÄÃû³Æ£¬Ä¬ÈÏÖµrm -f
+	CFLAGS		-	C±àÒëÆ÷µÄÑ¡Ïî£¬ÎŞÄ¬ÈÏÖµ
+	CPPFLAGS	- 	CÔ¤±àÒëµÄÑ¡Ïî£¬ÎŞÄ¬ÈÏÖµ
+	CXXFLAGS	-	C++±àÒëÆ÷µÄÑ¡Ïî£¬ÎŞÄ¬ÈÏÖµ
 	
+3. ³£¼ûµÄ×Ô¶¯±äÁ¿
+	$@	-	Ä¿±êÎÄ¼şµÄÍêÕûÃû³Æ
+	$<	-	µÚÒ»¸öÒÀÀµÎÄ¼şµÄÃû³Æ
+	$^	-	ËùÓĞ²»ÖØ¸´µÄÒÀÀµÎÄ¼ş£¬ÒÔ¿Õ¸ñ·Ö¿ª
+
+4. makefileÔÚÆô¶¯Ê±»á×Ô¶¯¶ÁÈ¡µ±Ç°ÏµÍ³ÖĞµÄ»·¾³±äÁ¿		
+***************************************************************************************************/
+
+										makefileÖĞµÄ¶îÍâ¹æÔò
+/***************************************************************************************************
+1. ÒşÊ½¹æÔò
+	ËùÓĞ¡°.o¡±ÎÄ¼ş¶¼¿É×Ô¶¯ÓÉ¡°.c¡±ÎÄ¼şÊ¹ÓÃÃüÁî¡°$(CC) $(CPPFLAGS) $(CFLAGS) -c file.c -o file.o¡±Éú³É
+	ÕâÌõÒşÊ½¹æÔòÖ»ÄÜ²éÕÒÏàÍ¬ÎÄ¼şÃûµÄ²»Í¬ºó×ºÃûÎÄ¼ş£¬Èça.oÎÄ¼ş±ØĞëÓÉa.cÎÄ¼şÉú³É£¬ÕâÊÇÆä¾ÖÏŞĞÔ
+
+2. Ä£Ê½¹æÔò
+	%.o:%.c
+		$(CC) $(CFLAGS) -c $< -o $@ 
+	ÕâÌõÄ£Ê½¹æÔò±íÊ¾Ã¿¸ö¡°.o¡±ÎÄ¼ş¶¼»áÓÉµÚÒ»¸öÒÀÀµµÄ¡°.c¡±ÎÄ¼şÉú³É
+
+***************************************************************************************************/
+											
 										makefileº¯Êı
 /***************************************************************************************************
 makefileÀïµÄº¯ÊıÊ¹ÓÃ£¬ºÍÊ¹ÓÃ±äÁ¿ÀàËÆ£¬Ò²ÊÇ¡°$()¡±¸ñÊ½£¬À¨ºÅÀïÃæÊÇº¯ÊıÃûºÍĞÎ²Î£¬ĞÎ²ÎÖ®¼äÒ»°ãÓÃ¡°,¡±¸ô¿ª
@@ -82,73 +80,139 @@ makefileÀïµÄº¯ÊıÊ¹ÓÃ£¬ºÍÊ¹ÓÃ±äÁ¿ÀàËÆ£¬Ò²ÊÇ¡°$()¡±¸ñÊ½£¬À¨ºÅÀïÃæÊÇº¯ÊıÃûºÍĞÎ²Î£¬Ğ
 	ÊÍÒå£º	½«DIRÖĞËùÓĞ½áÎ²ÊÇc×Ö·ûµÄ±äÁ¿Ìæ»»³Éo×Ö·û£¬ÕâÀï»¹ÓĞÁíÍâÒ»ÖÖÌæ»»·½·¨£¬Æä¸ñÊ½ÊÇ¡°$(var:a=b)/${var:a=b}¡±£¬º¬ÒåÍ¬patsubst
 ***************************************************************************************************/	
 
-										´«ËµÖĞµÄÍòÄÜmakefile
+										Éú³É¿ÉÖ´ĞĞÎÄ¼şµÄmakefile
 /***************************************************************************************************
-#¡¡Èç¹ûĞèÒª£¬Õ{ÕûÏÂÃæµÄ–|Î÷¡£¡¡EXECUTABLE¡¡ÊÇÄ¿˜ËµÄ¿ÉˆÌĞĞÎÄ¼şÃû£¬¡¡LIBS 
-#¡¡ÊÇÒ»‚€ĞèÒªßB½ÓµÄ³ÌĞò°üÁĞ±í£¨ÀıÈç¡¡alleg,¡¡stdcx,¡¡iostr¡¡µÈµÈ£©¡£®”È»Äã 
-#¡¡¿ÉÒÔÔÚ¡¡make¡¡µÄÃüÁîĞĞ¸²ÉwËü‚ƒ£¬ÄãîŠÒâ¾Í›]†–î}¡£ 
-#¡¡ 
-
-EXECUTABLE¡¡:=¡¡mushroom.exe 
-LIBS¡¡:=¡¡alleg 
-
-#¡¡Now¡¡alter¡¡any¡¡implicit¡¡rules'¡¡variables¡¡if¡¡you¡¡like,¡¡e.g.: 
-# 
-#¡¡¬FÔÚí¸Ä×ƒÈÎºÎÄãÏë¸Ä„ÓµÄë[º¬Ò„tÖĞµÄ×ƒÁ¿£¬ÀıÈç 
-
-CFLAGS¡¡:=¡¡-g¡¡-Wall¡¡-O3¡¡-m486 
-CXXFLAGS¡¡:=¡¡$(CFLAGS) 
-
-#¡¡ÏÂÃæÏÈ™z²éÄãµÄ¡¡djgpp¡¡ÃüÁîÄ¿ä›ÏÂÓĞ›]ÓĞ¡¡rm¡¡ÃüÁî£¬Èç¹û›]ÓĞ£¬ÎÒ‚ƒÊ¹ÓÃ 
-#¡¡del¡¡ÃüÁîí´úÌæ£¬µ«ÓĞ¿ÉÄÜ½oÎÒ‚ƒ¡¡'File¡¡not¡¡found'¡¡ß@‚€åeÕ`ĞÅÏ¢£¬ß@›] 
-#¡¡Ê²´óµK¡£Èç¹ûÄã²»ÊÇÓÃ¡¡DOS¡¡£¬°ÑËüÔO¶¨³ÉÒ»‚€„hÎÄ¼ş¶ø²»UÔ’µÄÃüÁî¡£ 
-#¡¡£¨ÆäŒß@Ò»²½ÔÚ¡¡UNIX¡¡îµÄÏµ½yÉÏÊÇ¶àÓàµÄ£¬Ö»ÊÇ·½±ã¡¡DOS¡¡ÓÃ‘ô¡£¡¡UNIX 
-#¡¡ÓÃ‘ô¿ÉÒÔ„h³ıß@£µĞĞÃüÁî¡££© 
-
-ifneq¡¡($(wildcard¡¡$(DJDIR)/bin/rm.exe),) 
-RM-F¡¡:=¡¡rm¡¡-f 
-else 
-RM-F¡¡:=¡¡del 
-endif 
-
-#¡¡You¡¡shouldn't¡¡need¡¡to¡¡change¡¡anything¡¡below¡¡this¡¡point. 
-# 
-#¡¡Äß@Ñeé_Ê¼£¬Äã‘ªÔ“²»ĞèÒª¸Ä„ÓÈÎºÎ–|Î÷¡££¨ÎÒÊÇ²»Ì«ÏàĞÅ£¬Ì«£Î£ÂÁË£¡£© 
-
-SOURCE¡¡:=¡¡$(wildcard¡¡*.c)¡¡$(wildcard¡¡*.cc) 
-OBJS¡¡:=¡¡$(patsubst¡¡%.c,%.o,$(patsubst¡¡%.cc,%.o,$(SOURCE))) 
-DEPS¡¡:=¡¡$(patsubst¡¡%.o,%.d,$(OBJS)) 
-MISSING_DEPS¡¡:=¡¡$(filter-out¡¡$(wildcard¡¡$(DEPS)),$(DEPS)) 
-MISSING_DEPS_SOURCES¡¡:=¡¡$(wildcard¡¡$(patsubst¡¡%.d,%.c,$(MISSING_DEPS))¡¡\ 
-$(patsubst¡¡%.d,%.cc,$(MISSING_DEPS))) 
-CPPFLAGS¡¡+=¡¡-MD 
-
-.PHONY¡¡:¡¡everything¡¡deps¡¡objs¡¡clean¡¡veryclean¡¡rebuild 
-
-everything¡¡:¡¡$(EXECUTABLE) 
-
-deps¡¡:¡¡$(DEPS) 
-
-objs¡¡:¡¡$(OBJS) 
-
-clean¡¡: 
-¡¡¡¡@$(RM-F)¡¡*.o 
-¡¡¡¡@$(RM-F)¡¡*.d 
-
-veryclean:¡¡clean 
-¡¡¡¡@$(RM-F)¡¡$(EXECUTABLE) 
-
-rebuild:¡¡veryclean¡¡everything 
-
-ifneq¡¡($(MISSING_DEPS),) 
-$(MISSING_DEPS)¡¡: 
-¡¡¡¡@$(RM-F)¡¡$(patsubst¡¡%.d,%.o,$@) 
-endif 
-
--include¡¡$(DEPS) 
-
-$(EXECUTABLE)¡¡:¡¡$(OBJS) 
-¡¡¡¡gcc¡¡-o¡¡$(EXECUTABLE)¡¡$(OBJS)¡¡$(addprefix¡¡-l,$(LIBS)) 
-###
+#source file
+# Ô´ÎÄ¼ş£¬×Ô¶¯ÕÒËùÓĞ .c ºÍ .cpp ÎÄ¼ş£¬²¢½«Ä¿±ê¶¨ÒåÎªÍ¬Ãû .o ÎÄ¼ş
+SOURCE  := $(wildcard *.c) $(wildcard *.cpp)
+OBJS    := $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCE)))
+ 
+#target you can change test to what you want
+# Ä¿±êÎÄ¼şÃû£¬ÊäÈëÈÎÒâÄãÏëÒªµÄÖ´ĞĞÎÄ¼şÃû
+TARGET  := test
+ 
+#compile and lib parameter
+# ±àÒë²ÎÊı
+CC      := gcc
+LIBS    :=
+LDFLAGS:= 
+DEFINES:=
+INCLUDE:= -I.
+CFLAGS  := -g -Wall -O3 $(DEFINES) $(INCLUDE)
+CXXFLAGS:= $(CFLAGS) -DHAVE_CONFIG_H
+ 
+ 
+#i think you should do anything here
+# ÏÂÃæµÄ»ù±¾ÉÏ²»ĞèÒª×öÈÎºÎ¸Ä¶¯ÁË
+.PHONY : everything objs clean veryclean rebuild
+ 
+everything : $(TARGET)
+ 
+all : $(TARGET)
+ 
+objs : $(OBJS)
+ 
+rebuild: veryclean everything
+               
+clean :
+    rm -fr *.so
+    rm -fr *.o
+   
+veryclean : clean
+    rm -fr $(TARGET)
+ 
+$(TARGET) : $(OBJS) 
+    $(CC) $(CXXFLAGS) -o $@ $(OBJS) $(LDFLAGS) $(LIBS)
 ***************************************************************************************************/	
-												
+
+										Éú³É¾²Ì¬Á´½Ó¿âµÄmakefile
+/***************************************************************************************************
+#target you can change test to what you want
+# ¹²Ïí¿âÎÄ¼şÃû£¬ lib*.a
+TARGET  := libtest.a
+ 
+#compile and lib parameter
+# ±àÒë²ÎÊı
+CC      := gcc
+AR      = ar
+RANLIB  = ranlib
+LIBS    :=
+LDFLAGS:= 
+DEFINES:=
+INCLUDE:= -I.
+CFLAGS  := -g -Wall -O3 $(DEFINES) $(INCLUDE)
+CXXFLAGS:= $(CFLAGS) -DHAVE_CONFIG_H
+ 
+#i think you should do anything here
+# ÏÂÃæµÄ»ù±¾ÉÏ²»ĞèÒª×öÈÎºÎ¸Ä¶¯ÁË
+ 
+#source file
+# Ô´ÎÄ¼ş£¬×Ô¶¯ÕÒËùÓĞ .c ºÍ .cpp ÎÄ¼ş£¬²¢½«Ä¿±ê¶¨ÒåÎªÍ¬Ãû .o ÎÄ¼ş
+SOURCE  := $(wildcard *.c) $(wildcard *.cpp)
+OBJS    := $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCE)))
+ 
+.PHONY : everything objs clean veryclean rebuild
+ 
+everything : $(TARGET)
+ 
+all : $(TARGET)
+ 
+objs : $(OBJS)
+ 
+rebuild: veryclean everything
+               
+clean :
+    rm -fr *.o
+   
+veryclean : clean
+    rm -fr $(TARGET)
+ 
+$(TARGET) : $(OBJS) 
+    $(AR) cru $(TARGET) $(OBJS)
+    $(RANLIB) $(TARGET)
+***************************************************************************************************/		
+
+										Éú³É¶¯Ì¬Á´½Ó¿âµÄmakefile
+/***************************************************************************************************
+#target you can change test to what you want
+# ¹²Ïí¿âÎÄ¼şÃû£¬ lib*.so
+TARGET  := libtest.so
+ 
+#compile and lib parameter
+# ±àÒë²ÎÊı
+CC      := gcc
+LIBS    :=
+LDFLAGS:= 
+DEFINES:=
+INCLUDE:= -I.
+CFLAGS  := -g -Wall -O3 $(DEFINES) $(INCLUDE)
+CXXFLAGS:= $(CFLAGS) -DHAVE_CONFIG_H
+SHARE   := -fPIC -shared -o
+ 
+#i think you should do anything here
+# ÏÂÃæµÄ»ù±¾ÉÏ²»ĞèÒª×öÈÎºÎ¸Ä¶¯ÁË
+ 
+#source file
+# Ô´ÎÄ¼ş£¬×Ô¶¯ÕÒËùÓĞ .c ºÍ .cpp ÎÄ¼ş£¬²¢½«Ä¿±ê¶¨ÒåÎªÍ¬Ãû .o ÎÄ¼ş
+SOURCE  := $(wildcard *.c) $(wildcard *.cpp)
+OBJS    := $(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SOURCE)))
+ 
+.PHONY : everything objs clean veryclean rebuild
+ 
+everything : $(TARGET)
+ 
+all : $(TARGET)
+ 
+objs : $(OBJS)
+ 
+rebuild: veryclean everything
+               
+clean :
+    rm -fr *.o
+   
+veryclean : clean
+    rm -fr $(TARGET)
+ 
+$(TARGET) : $(OBJS) 
+    $(CC) $(CXXFLAGS) $(SHARE) $@ $(OBJS) $(LDFLAGS) $(LIBS)
+***************************************************************************************************/												
