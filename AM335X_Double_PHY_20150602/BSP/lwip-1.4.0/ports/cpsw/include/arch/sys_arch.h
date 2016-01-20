@@ -53,7 +53,11 @@
 
 #define LWIP_START_PRIO	  LWIP_TASK_START_PRIO		//first prio of lwip tasks in uC/OS-II
 
+#if 0 /*hxj amend,date 2015-11-13 7:46*/
 #define MAX_QUEUES        10	// 邮箱(消息队列)的最大数量
+#else
+#define MAX_QUEUES        20	// 邮箱(消息队列)的最大数量
+#endif
 #define MAX_QUEUE_ENTRIES 20	// 每个邮箱(消息队列)的最大消息数
 
 #define SYS_MBOX_NULL (void *)0

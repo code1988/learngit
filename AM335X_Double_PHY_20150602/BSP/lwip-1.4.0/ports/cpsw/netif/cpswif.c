@@ -1576,55 +1576,61 @@ cpswif_autoneg_config(u32_t inst_num, u32_t port_num) {
  * @return  None
  */
 static void
-cpswif_rxbd_alloc(struct cpswinst *cpswinst) {
-  struct rxch *rxch = &(cpswinst->rxch);
-  struct pbuf *p;
-  volatile struct cpdma_rx_bd *curr_bd, *last_bd, *recv_tail, *recv_head;
-  u32_t saved_free_num;
+cpswif_rxbd_alloc(struct cpswinst *cpswinst) 
+{
+    struct rxch *rxch = &(cpswinst->rxch);
+    struct pbuf *p;
+    volatile struct cpdma_rx_bd *curr_bd, *last_bd, *recv_tail, *recv_head;
+    u32_t saved_free_num;
 
-  /* Start from the free head of the chain */
-  curr_bd = rxch->free_head;
+    /* Start from the free head of the chain */
+    curr_bd = rxch->free_head;
 
-  /* Note down the current positions */
-  recv_head = rxch->free_head;
-  recv_tail = rxch->recv_tail;
-  saved_free_num = rxch->free_num;
-  last_bd = rxch->recv_tail;
+    /* Note down the current positions */
+    recv_head = rxch->free_head;
+    recv_tail = rxch->recv_tail;
+    saved_free_num = rxch->free_num;
+    last_bd = rxch->recv_tail;
 
-  while(rxch->free_num) {
-    /**
-     * Try to get a pbuf of max. length. This shall be cache line aligned if
-     * cache is enabled.
-     */
-    p = pbuf_alloc(PBUF_RAW, PBUF_LEN_MAX, PBUF_POOL);
+    while(rxch->free_num) 
+    {
+        /**
+         * Try to get a pbuf of max. length. This shall be cache line aligned if
+         * cache is enabled.
+         */
+        p = pbuf_alloc(PBUF_RAW, PBUF_LEN_MAX, PBUF_POOL);
 
-    /**
-     * Allocate bd's if p is not NULL. This allocation doesnt support
-     * pbuf chaining.
-     */
-    if(p != NULL) {
+        /**
+         * Allocate bd's if p is not NULL. This allocation doesnt support
+         * pbuf chaining.
+         */
+        if(p != NULL) 
+        {
 #ifdef LWIP_CACHE_ENABLED
-      /**
-       * Clean the pbuf structure info. This is needed to prevent losing
-       * pbuf structure info when we invalidate the pbuf on rx interrupt
-       */
-      CacheDataCleanBuff((u32_t)(p), (u32_t)(SIZEOF_STRUCT_PBUF));
+            /**
+            * Clean the pbuf structure info. This is needed to prevent losing
+            * pbuf structure info when we invalidate the pbuf on rx interrupt
+            */
+            CacheDataCleanBuff((u32_t)(p), (u32_t)(SIZEOF_STRUCT_PBUF));
 #endif
-      curr_bd->bufptr = (u32_t)(p->payload);
-      curr_bd->bufoff_len = p->len;
-      curr_bd->flags_pktlen = CPDMA_BUF_DESC_OWNER;
+            curr_bd->bufptr = (u32_t)(p->payload);
+            curr_bd->bufoff_len = p->len;
+            curr_bd->flags_pktlen = CPDMA_BUF_DESC_OWNER;
 
-      /* Save the pbuf */
-      curr_bd->pbuf = p;
-      last_bd = curr_bd;
-      curr_bd = curr_bd->next;
-      rxch->free_num--;
-    } else {
-      break;
+            /* Save the pbuf */
+            curr_bd->pbuf = p;
+            last_bd = curr_bd;
+            curr_bd = curr_bd->next;
+            rxch->free_num--;
+        } 
+        else 
+        {
+            break;
+        }
     }
-  }
 
-  if(saved_free_num == rxch->free_num) {
+  if(saved_free_num == rxch->free_num) 
+  {
     /* No bd's were allocated. Go back. */
     return;
   }
@@ -1906,7 +1912,9 @@ cpswif_port_init(struct netif *netif)
 	struct cpswportif *cpswif = (struct cpswportif*)(netif->state);
 	u32_t temp;
 	err_t err;
+#ifndef CPSW_DUAL_MAC_MODE
     err_t err1=1;
+#endif
     //err_t err2=1;
 
 #ifdef CPSW_DUAL_MAC_MODE
@@ -1985,7 +1993,7 @@ cpswif_cpdma_init(struct cpswinst *cpswinst) {
   txch = &(cpswinst->txch);
 
   /* Initialize the CPDMA memory. Only Channel 0 is supported */
-  txch->free_head = (volatile struct cpdma_tx_bd*)(cpswinst->cppi_ram_base);
+  txch->free_head = (volatile struct cpdma_tx_bd*)(cpswinst->cppi_ram_base);    //cppi_ram_base - 0x4a102000
   txch->send_head = txch->free_head;
   txch->send_tail = NULL;
 
@@ -1998,14 +2006,15 @@ cpswif_cpdma_init(struct cpswinst *cpswinst) {
   curr_txbd = txch->free_head;
 
   /* Initialize all the TX buffer descriptors ring */
-  while(num_bd) {
-    curr_txbd->next = curr_txbd + 1;
-    curr_txbd->flags_pktlen = 0;
-    last_txbd = curr_txbd;
-    curr_txbd = curr_txbd->next;
-    num_bd--;
-  }
-  last_txbd->next = txch->free_head;
+    while(num_bd) 
+    {
+        curr_txbd->next = curr_txbd + 1;
+        curr_txbd->flags_pktlen = 0;
+        last_txbd = curr_txbd;
+        curr_txbd = curr_txbd->next;
+        num_bd--;
+    }
+    last_txbd->next = txch->free_head;
 
   /* Initialize the descriptors for the RX channel */
   rxch = &(cpswinst->rxch);

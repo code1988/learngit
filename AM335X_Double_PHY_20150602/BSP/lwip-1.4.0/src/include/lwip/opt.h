@@ -1423,7 +1423,7 @@
     #ifdef sys_bios_ind_sdk
         #define LWIP_TCP_KEEPALIVE              1
     #else
-        #define LWIP_TCP_KEEPALIVE              0
+        #define LWIP_TCP_KEEPALIVE              1
     #endif
 #endif
 

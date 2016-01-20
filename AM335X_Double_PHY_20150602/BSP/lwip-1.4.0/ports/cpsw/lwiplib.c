@@ -547,7 +547,7 @@ unsigned int my_lwIPInit(LWIP_IF *lwipIf,int *ret_code)
     SetHostName(host_name);
     DBG_NET("in lwIPInit 5_1:call SetHostName()   end \r\n");
 
-
+/*
     DBG_NET("in lwIPInit 6_0:call SsdpInit() start \r\n");
     SsdpInit(&cpswNetIF[ifNum]);
     DBG_NET("in lwIPInit 6_1:call SsdpInit()   end \r\n");
@@ -556,7 +556,7 @@ unsigned int my_lwIPInit(LWIP_IF *lwipIf,int *ret_code)
     DBG_NET("in lwIPInit 7_0:call LlmnrInit() start \r\n");
     LlmnrInit(&cpswNetIF[ifNum]);
     DBG_NET("in lwIPInit 7_0:call LlmnrInit()   end \r\n");
-
+*/
 
 
     DBG_NET("in lwIPInit 100: \r\n");
