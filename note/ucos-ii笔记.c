@@ -233,7 +233,16 @@
 		4. 对取出的OS_Q内成员进行初始化，对取出的ECB内成员进行初始化，特别是将OSEventPtr指向取出的OS_Q控制块
 		5. 对等待任务列表是通过调用系统自带函数完成清0初始化
 
-
+	INT8U OSQQuery(OS_EVENT *pevent,OS_Q_DATA *p_q_data)：获取指定消息队列的当前信息，存入OS_Q_DATA结构体
+	typedef struct os_q_data{
+		void 	*OSMsg;							// 指向消息队列中取出下一条消息的位置的指针，从*OS_Q->OSQOut获取
+		INT16U  OSNMsgs;						// 消息队列中当前消息数，从OS_Q->OSQEntries获取
+		INT16U  OSQSize;						// 消息队列中可容纳的总的消息数，从OS_Q->OSQSize获取
+		OS_PRIO OSEventTbl[OS_EVENT_TBL_SIZE];	// 等待列表，下同
+		OS_PRIO OSEventGrp;
+	}OS_Q_DATA;
+	备注：OSQQuery函数通常用于中断/任务调用OSQPost之前，来确保当前该消息队列的消息空间是有空余的
+	
 /***********************************************************************************************************************
 **
 *												任务调度		

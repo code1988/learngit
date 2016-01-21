@@ -184,137 +184,140 @@ pbuf_pool_is_empty(void)
 struct pbuf *
 pbuf_alloc(pbuf_layer layer, u16_t length, pbuf_type type)
 {
-  struct pbuf *p, *q, *r;
-  u16_t offset;
-  s32_t rem_len; /* remaining length */
-  LWIP_DEBUGF(PBUF_DEBUG | LWIP_DBG_TRACE, ("pbuf_alloc(length=%"U16_F")\n", length));
+    struct pbuf *p, *q, *r;
+    u16_t offset;
+    s32_t rem_len; /* remaining length */
+    LWIP_DEBUGF(PBUF_DEBUG | LWIP_DBG_TRACE, ("pbuf_alloc(length=%"U16_F")\n", length));
 
-  /* determine header offset */
-  offset = 0;
-  switch (layer) {
-  case PBUF_TRANSPORT:
-    /* add room for transport (often TCP) layer header */
-    offset += PBUF_TRANSPORT_HLEN;
-    /* FALLTHROUGH */
-  case PBUF_IP:
-    /* add room for IP layer header */
-    offset += PBUF_IP_HLEN;
-    /* FALLTHROUGH */
-  case PBUF_LINK:
-    /* add room for link layer header */
-    offset += PBUF_LINK_HLEN;
-    break;
-  case PBUF_RAW:
-    break;
-  default:
-    LWIP_ASSERT("pbuf_alloc: bad pbuf layer", 0);
-    return NULL;
-  }
-
-  switch (type) {
-  case PBUF_POOL:
-    /* allocate head of pbuf chain into p */
-    p = (struct pbuf *)memp_malloc(MEMP_PBUF_POOL);
-    LWIP_DEBUGF(PBUF_DEBUG | LWIP_DBG_TRACE, ("pbuf_alloc: allocated pbuf %p\n", (void *)p));
-    if (p == NULL) {
-      PBUF_POOL_IS_EMPTY();
-      return NULL;
-    }
-    p->type = type;
-    p->next = NULL;
-
-    /* make the payload pointer point 'offset' bytes into pbuf data memory */
-    p->payload = LWIP_MEM_ALIGN((void *)((u8_t *)p + (SIZEOF_STRUCT_PBUF + offset)));
-    LWIP_ASSERT("pbuf_alloc: pbuf p->payload properly aligned",
-            ((mem_ptr_t)p->payload % MEM_ALIGNMENT) == 0);
-    /* the total length of the pbuf chain is the requested size */
-    p->tot_len = length;
-    /* set the length of the first pbuf in the chain */
-    p->len = LWIP_MIN(length, PBUF_POOL_BUFSIZE_ALIGNED - LWIP_MEM_ALIGN_SIZE(offset));
-    LWIP_ASSERT("check p->payload + p->len does not overflow pbuf",
-                ((u8_t*)p->payload + p->len <=
-                 (u8_t*)p + SIZEOF_STRUCT_PBUF + PBUF_POOL_BUFSIZE_ALIGNED));
-    LWIP_ASSERT("PBUF_POOL_BUFSIZE must be bigger than MEM_ALIGNMENT",
-      (PBUF_POOL_BUFSIZE_ALIGNED - LWIP_MEM_ALIGN_SIZE(offset)) > 0 );
-    /* set reference count (needed here in case we fail) */
-    p->ref = 1;
-
-    /* now allocate the tail of the pbuf chain */
-
-    /* remember first pbuf for linkage in next iteration */
-    r = p;
-    /* remaining length to be allocated */
-    rem_len = length - p->len;
-    /* any remaining pbufs to be allocated? */
-    while (rem_len > 0) {
-      q = (struct pbuf *)memp_malloc(MEMP_PBUF_POOL);
-      if (q == NULL) {
-        PBUF_POOL_IS_EMPTY();
-        /* free chain so far allocated */
-        pbuf_free(p);
-        /* bail out unsuccesfully */
+    /* determine header offset */
+    offset = 0;
+    switch (layer) 
+    {
+        case PBUF_TRANSPORT:
+        /* add room for transport (often TCP) layer header */
+        offset += PBUF_TRANSPORT_HLEN;
+        /* FALLTHROUGH */
+        case PBUF_IP:
+        /* add room for IP layer header */
+        offset += PBUF_IP_HLEN;
+        /* FALLTHROUGH */
+        case PBUF_LINK:
+        /* add room for link layer header */
+        offset += PBUF_LINK_HLEN;
+        break;
+        case PBUF_RAW:
+        break;
+        default:
+        LWIP_ASSERT("pbuf_alloc: bad pbuf layer", 0);
         return NULL;
-      }
-      q->type = type;
-      q->flags = 0;
-      q->next = NULL;
-      /* make previous pbuf point to this pbuf */
-      r->next = q;
-      /* set total length of this pbuf and next in chain */
-      LWIP_ASSERT("rem_len < max_u16_t", rem_len < 0xffff);
-      q->tot_len = (u16_t)rem_len;
-      /* this pbuf length is pool size, unless smaller sized tail */
-      q->len = LWIP_MIN((u16_t)rem_len, PBUF_POOL_BUFSIZE_ALIGNED);
-      q->payload = (void *)((u8_t *)q + SIZEOF_STRUCT_PBUF);
-      LWIP_ASSERT("pbuf_alloc: pbuf q->payload properly aligned",
-              ((mem_ptr_t)q->payload % MEM_ALIGNMENT) == 0);
-      LWIP_ASSERT("check p->payload + p->len does not overflow pbuf",
-                  ((u8_t*)p->payload + p->len <=
-                   (u8_t*)p + SIZEOF_STRUCT_PBUF + PBUF_POOL_BUFSIZE_ALIGNED));
-      q->ref = 1;
-      /* calculate remaining length to be allocated */
-      rem_len -= q->len;
-      /* remember this pbuf for linkage in next iteration */
-      r = q;
     }
-    /* end of chain */
-    /*r->next = NULL;*/
+
+    switch (type) 
+    {
+        case PBUF_POOL:
+        /* allocate head of pbuf chain into p */
+        p = (struct pbuf *)memp_malloc(MEMP_PBUF_POOL);
+        LWIP_DEBUGF(PBUF_DEBUG | LWIP_DBG_TRACE, ("pbuf_alloc: allocated pbuf %p\n", (void *)p));
+        if (p == NULL) {
+          PBUF_POOL_IS_EMPTY();
+          return NULL;
+        }
+        p->type = type;
+        p->next = NULL;
+
+        /* make the payload pointer point 'offset' bytes into pbuf data memory */
+        p->payload = LWIP_MEM_ALIGN((void *)((u8_t *)p + (SIZEOF_STRUCT_PBUF + offset)));
+        LWIP_ASSERT("pbuf_alloc: pbuf p->payload properly aligned",
+                ((mem_ptr_t)p->payload % MEM_ALIGNMENT) == 0);
+        /* the total length of the pbuf chain is the requested size */
+        p->tot_len = length;
+        /* set the length of the first pbuf in the chain */
+        p->len = LWIP_MIN(length, PBUF_POOL_BUFSIZE_ALIGNED - LWIP_MEM_ALIGN_SIZE(offset));
+        LWIP_ASSERT("check p->payload + p->len does not overflow pbuf",
+                    ((u8_t*)p->payload + p->len <=
+                     (u8_t*)p + SIZEOF_STRUCT_PBUF + PBUF_POOL_BUFSIZE_ALIGNED));
+        LWIP_ASSERT("PBUF_POOL_BUFSIZE must be bigger than MEM_ALIGNMENT",
+          (PBUF_POOL_BUFSIZE_ALIGNED - LWIP_MEM_ALIGN_SIZE(offset)) > 0 );
+        /* set reference count (needed here in case we fail) */
+        p->ref = 1;
+
+        /* now allocate the tail of the pbuf chain */
+
+        /* remember first pbuf for linkage in next iteration */
+        r = p;
+        /* remaining length to be allocated */
+        rem_len = length - p->len;
+        /* any remaining pbufs to be allocated? */
+        while (rem_len > 0) 
+        {
+            q = (struct pbuf *)memp_malloc(MEMP_PBUF_POOL);
+            if (q == NULL) {
+            PBUF_POOL_IS_EMPTY();
+            /* free chain so far allocated */
+            pbuf_free(p);
+            /* bail out unsuccesfully */
+            return NULL;
+            }
+            q->type = type;
+            q->flags = 0;
+            q->next = NULL;
+            /* make previous pbuf point to this pbuf */
+            r->next = q;
+            /* set total length of this pbuf and next in chain */
+            LWIP_ASSERT("rem_len < max_u16_t", rem_len < 0xffff);
+            q->tot_len = (u16_t)rem_len;
+            /* this pbuf length is pool size, unless smaller sized tail */
+            q->len = LWIP_MIN((u16_t)rem_len, PBUF_POOL_BUFSIZE_ALIGNED);
+            q->payload = (void *)((u8_t *)q + SIZEOF_STRUCT_PBUF);
+            LWIP_ASSERT("pbuf_alloc: pbuf q->payload properly aligned",
+                  ((mem_ptr_t)q->payload % MEM_ALIGNMENT) == 0);
+            LWIP_ASSERT("check p->payload + p->len does not overflow pbuf",
+                      ((u8_t*)p->payload + p->len <=
+                       (u8_t*)p + SIZEOF_STRUCT_PBUF + PBUF_POOL_BUFSIZE_ALIGNED));
+            q->ref = 1;
+            /* calculate remaining length to be allocated */
+            rem_len -= q->len;
+            /* remember this pbuf for linkage in next iteration */
+            r = q;
+        }
+        /* end of chain */
+        /*r->next = NULL;*/
 
     break;
-  case PBUF_RAM:
-    /* If pbuf is to be allocated in RAM, allocate memory for it. */
-    p = (struct pbuf*)mem_malloc(LWIP_MEM_ALIGN_SIZE(SIZEOF_STRUCT_PBUF + offset) + LWIP_MEM_ALIGN_SIZE(length));
-    if (p == NULL) {
-      return NULL;
-    }
-    /* Set up internal structure of the pbuf. */
-    p->payload = LWIP_MEM_ALIGN((void *)((u8_t *)p + SIZEOF_STRUCT_PBUF + offset));
-    p->len = p->tot_len = length;
-    p->next = NULL;
-    p->type = type;
+    case PBUF_RAM:
+        /* If pbuf is to be allocated in RAM, allocate memory for it. */
+        p = (struct pbuf*)mem_malloc(LWIP_MEM_ALIGN_SIZE(SIZEOF_STRUCT_PBUF + offset) + LWIP_MEM_ALIGN_SIZE(length));
+        if (p == NULL) {
+          return NULL;
+        }
+        /* Set up internal structure of the pbuf. */
+        p->payload = LWIP_MEM_ALIGN((void *)((u8_t *)p + SIZEOF_STRUCT_PBUF + offset));
+        p->len = p->tot_len = length;
+        p->next = NULL;
+        p->type = type;
 
-    LWIP_ASSERT("pbuf_alloc: pbuf->payload properly aligned",
-           ((mem_ptr_t)p->payload % MEM_ALIGNMENT) == 0);
+        LWIP_ASSERT("pbuf_alloc: pbuf->payload properly aligned",
+               ((mem_ptr_t)p->payload % MEM_ALIGNMENT) == 0);
     break;
-  /* pbuf references existing (non-volatile static constant) ROM payload? */
-  case PBUF_ROM:
-  /* pbuf references existing (externally allocated) RAM payload? */
-  case PBUF_REF:
-    /* only allocate memory for the pbuf structure */
-    p = (struct pbuf *)memp_malloc(MEMP_PBUF);
-    if (p == NULL) {
-      LWIP_DEBUGF(PBUF_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-                  ("pbuf_alloc: Could not allocate MEMP_PBUF for PBUF_%s.\n",
-                  (type == PBUF_ROM) ? "ROM" : "REF"));
-      return NULL;
-    }
-    /* caller must set this field properly, afterwards */
-    p->payload = NULL;
-    p->len = p->tot_len = length;
-    p->next = NULL;
-    p->type = type;
+    /* pbuf references existing (non-volatile static constant) ROM payload? */
+    case PBUF_ROM:
+    /* pbuf references existing (externally allocated) RAM payload? */
+    case PBUF_REF:
+        /* only allocate memory for the pbuf structure */
+        p = (struct pbuf *)memp_malloc(MEMP_PBUF);
+        if (p == NULL) {
+          LWIP_DEBUGF(PBUF_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+                      ("pbuf_alloc: Could not allocate MEMP_PBUF for PBUF_%s.\n",
+                      (type == PBUF_ROM) ? "ROM" : "REF"));
+          return NULL;
+        }
+        /* caller must set this field properly, afterwards */
+        p->payload = NULL;
+        p->len = p->tot_len = length;
+        p->next = NULL;
+        p->type = type;
     break;
-  default:
+    default:
     LWIP_ASSERT("pbuf_alloc: erroneous type", 0);
     return NULL;
   }
@@ -390,7 +393,7 @@ pbuf_alloced_custom(pbuf_layer l, u16_t length, pbuf_type type, struct pbuf_cust
 
 /**
  * Shrink a pbuf chain to a desired length.
- *  截断得到所需长度数据包
+ *  截断得到所需长度的完整数据包
  * @param p pbuf to shrink.
  * @param new_len desired new length of pbuf chain
  *
@@ -400,67 +403,73 @@ pbuf_alloced_custom(pbuf_layer l, u16_t length, pbuf_type type, struct pbuf_cust
  *
  * @note If the pbuf is ROM/REF, only the ->tot_len and ->len fields are adjusted.
  * @note May not be called on a packet queue.
- *
+ *  一张pbuf链表只会保存了一个完整的以太网数据包
+    该函数通过IP包头的数据长度，遍历链表，截取一个完整的IP数据包
  * @note Despite its name, pbuf_realloc cannot grow the size of a pbuf (chain).
  */
 void
 pbuf_realloc(struct pbuf *p, u16_t new_len)
 {
-  struct pbuf *q;
-  u16_t rem_len; /* remaining length */
-  s32_t grow;
+    struct pbuf *q;
+    u16_t rem_len; /* remaining length */
+    s32_t grow;
 
-  LWIP_ASSERT("pbuf_realloc: p != NULL", p != NULL);
-  LWIP_ASSERT("pbuf_realloc: sane p->type", p->type == PBUF_POOL ||
+    LWIP_ASSERT("pbuf_realloc: p != NULL", p != NULL);
+    LWIP_ASSERT("pbuf_realloc: sane p->type", p->type == PBUF_POOL ||
               p->type == PBUF_ROM ||
               p->type == PBUF_RAM ||
               p->type == PBUF_REF);
 
-  /* desired length larger than current length? *///只能收缩不能增加;针对 所有的 TYPES
-  if (new_len >= p->tot_len) {
-    /* enlarging not yet supported */
-    return;
-  }
+    /* desired length larger than current length? */
+    // 必须确保真正需要的长度小于pbuf链表里有的数据长度
+    if (new_len >= p->tot_len) 
+    {
+        /* enlarging not yet supported */
+        return;
+    }
 
-  /* the pbuf chain grows by (new_len - p->tot_len) bytes
-   * (which may be negative in case of shrinking) */
-  grow = new_len - p->tot_len;
+    /* the pbuf chain grows by (new_len - p->tot_len) bytes
+    * (which may be negative in case of shrinking) */
+    grow = new_len - p->tot_len;
 
-  /* first, step over any pbufs that should remain in the chain */
-  rem_len = new_len;
-  q = p;
-  /* should this pbuf be kept? *///此循环针对于CHAIN
-  while (rem_len > q->len) {
-    /* decrease remaining length by pbuf length */
-    rem_len -= q->len;
-    /* decrease total length indicator */
-    LWIP_ASSERT("grow < max_u16_t", grow < 0xffff);
-    q->tot_len += (u16_t)grow;
-    /* proceed to next pbuf in chain */
-    q = q->next;
-    LWIP_ASSERT("pbuf_realloc: q != NULL", q != NULL);
-  }
-  /* we have now reached the new last pbuf (in q) */
-  /* rem_len == desired length for pbuf q */
+    /* first, step over any pbufs that should remain in the chain */
+    rem_len = new_len;
+    q = p;
 
-  /* shrink allocated memory for PBUF_RAM */
-  /* (other types merely adjust their length fields */
-  if ((q->type == PBUF_RAM) && (rem_len != q->len)) {
-    /* reallocate and adjust the length of the pbuf that will be split */
-    q = (struct pbuf *)mem_trim(q, (u16_t)((u8_t *)q->payload - (u8_t *)q) + rem_len);
-    LWIP_ASSERT("mem_trim returned q == NULL", q != NULL);
-  }
-  /* adjust length fields for new last pbuf */
-  q->len = rem_len;
-  q->tot_len = q->len;
+    // 遍历pbuf链表，找到最后一个有效的pbuf单元
+    while (rem_len > q->len) 
+    {
+        /* decrease remaining length by pbuf length */
+        rem_len -= q->len;
+        /* decrease total length indicator */
+        q->tot_len += (u16_t)grow;
+        /* proceed to next pbuf in chain */
+        q = q->next;
+    }
+    /* we have now reached the new last pbuf (in q) */
+    /* rem_len == desired length for pbuf q */
 
-  /* any remaining pbufs in chain? */
-  if (q->next != NULL) {
-    /* free remaining pbufs in chain */
-    pbuf_free(q->next);
-  }
-  /* q is last packet in chain */
-  q->next = NULL;
+    // 截断最后一个有效单元中的无效部分，并更新相应信息
+    /* shrink allocated memory for PBUF_RAM */
+    /* (other types merely adjust their length fields */
+    if ((q->type == PBUF_RAM) && (rem_len != q->len)) 
+    {
+        /* reallocate and adjust the length of the pbuf that will be split */
+        q = (struct pbuf *)mem_trim(q, (u16_t)((u8_t *)q->payload - (u8_t *)q) + rem_len);
+        LWIP_ASSERT("mem_trim returned q == NULL", q != NULL);
+    }
+    /* adjust length fields for new last pbuf */
+    q->len = rem_len;
+    q->tot_len = q->len;
+
+    // 释放pbuf链表上多余的无效单元占用的动态内存
+    if (q->next != NULL) 
+    {
+        /* free remaining pbufs in chain */
+        pbuf_free(q->next);
+    }
+    /* q is last packet in chain */
+    q->next = NULL;
 
 }
 

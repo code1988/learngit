@@ -187,8 +187,8 @@ struct cpdma_tx_bd {
 /* RX Buffer descriptor data structure */
 struct cpdma_rx_bd {
   volatile struct cpdma_rx_bd *next;
-  volatile u32_t bufptr;
-  volatile u32_t bufoff_len;
+  volatile u32_t bufptr;        // 指向接收的网络包中的数据
+  volatile u32_t bufoff_len;    // 网络包中数据长度
   volatile u32_t flags_pktlen;
 
   /* helper to know which pbuf this rx bd corresponds to */
@@ -247,9 +247,10 @@ struct cpswport{
 
 /**
  * CPSW instance information
+    CPSW模块控制结构体,包含了子模块的总线地址，两网口PHY芯片信息，收发通道控制块
  */
 struct cpswinst{
-  /* Base addresses */
+  // 子模块的总线地址
   u32_t ss_base;
   u32_t mdio_base;
   u32_t wrpr_base;
@@ -258,10 +259,10 @@ struct cpswinst{
   u32_t cppi_ram_base;
   u32_t host_port_base;
 
-  /* Slave port information */
+  // 两网口PHY芯片相关信息
   struct cpswport port[MAX_SLAVEPORT_PER_INST];
 
-  /* The tx/rx channels for the interface */
+  // 收发通道控制块
   struct txch txch;
   struct rxch rxch;
 }cpswinst;
@@ -1978,34 +1979,36 @@ cpswif_port_init(struct netif *netif)
  * This function intializes the CPDMA.
  * The CPPI RAM will be initialized for transmit and receive
  * buffer descriptor rings.
- *
+ * 初始化CPDMA模块，这里是A8寄存器级别的网络收发包通道
  * @param cpswinst   The CPSW instance structure pointer
  * @return None
  */
 static void
-cpswif_cpdma_init(struct cpswinst *cpswinst) {
-  u32_t num_bd;
-  volatile struct cpdma_tx_bd *curr_txbd, *last_txbd;
-  volatile struct cpdma_rx_bd *curr_rxbd, *last_rxbd;
-  struct txch *txch;
-  struct rxch *rxch;
+cpswif_cpdma_init(struct cpswinst *cpswinst) 
+{
+    u32_t num_bd;
+    volatile struct cpdma_tx_bd *curr_txbd, *last_txbd;
+    volatile struct cpdma_rx_bd *curr_rxbd, *last_rxbd;
+    struct txch *txch;
+    struct rxch *rxch;
 
-  txch = &(cpswinst->txch);
+    // 发送通道初始化
+    txch = &(cpswinst->txch);
 
-  /* Initialize the CPDMA memory. Only Channel 0 is supported */
-  txch->free_head = (volatile struct cpdma_tx_bd*)(cpswinst->cppi_ram_base);    //cppi_ram_base - 0x4a102000
-  txch->send_head = txch->free_head;
-  txch->send_tail = NULL;
+    /* Initialize the CPDMA memory. Only Channel 0 is supported */
+    txch->free_head = (volatile struct cpdma_tx_bd*)(cpswinst->cppi_ram_base);    //cppi_ram_base - 0x4a102000
+    txch->send_head = txch->free_head;
+    txch->send_tail = NULL;
 
-  /* Allocate half of the CPPI RAM for TX buffer descriptors */
-  num_bd = (SIZE_CPPI_RAM >> 1) / sizeof(cpdma_tx_bd);
+    /* Allocate half of the CPPI RAM for TX buffer descriptors */
+    num_bd = (SIZE_CPPI_RAM >> 1) / sizeof(cpdma_tx_bd);
 
-  /* All buffer descriptors are free to send */
-  txch->free_num = num_bd;
+    /* All buffer descriptors are free to send */
+    txch->free_num = num_bd;
 
-  curr_txbd = txch->free_head;
+    curr_txbd = txch->free_head;
 
-  /* Initialize all the TX buffer descriptors ring */
+    /* Initialize all the TX buffer descriptors ring */
     while(num_bd) 
     {
         curr_txbd->next = curr_txbd + 1;
@@ -2016,25 +2019,25 @@ cpswif_cpdma_init(struct cpswinst *cpswinst) {
     }
     last_txbd->next = txch->free_head;
 
-  /* Initialize the descriptors for the RX channel */
-  rxch = &(cpswinst->rxch);
-  rxch->free_head = (volatile struct cpdma_rx_bd*)(cpswinst->cppi_ram_base +
+    // 接收通道初始化
+    rxch = &(cpswinst->rxch);
+    rxch->free_head = (volatile struct cpdma_rx_bd*)(cpswinst->cppi_ram_base +
                                                    (SIZE_CPPI_RAM >> 1));
 
-  /* Allocate half of the CPPI RAM available for RX buffer dscriptors */
-  num_bd = (SIZE_CPPI_RAM >> 1) / sizeof(cpdma_rx_bd);
-  rxch->free_num = num_bd;
+    /* Allocate half of the CPPI RAM available for RX buffer dscriptors */
+    num_bd = (SIZE_CPPI_RAM >> 1) / sizeof(cpdma_rx_bd);
+    rxch->free_num = num_bd;
 
-  curr_rxbd = rxch->free_head;
+    curr_rxbd = rxch->free_head;
 
-  /* Create the rx ring of buffer descriptors */
-  while(num_bd) {
+    /* Create the rx ring of buffer descriptors */
+    while(num_bd) {
     curr_rxbd->next = curr_rxbd + 1;
     curr_rxbd->flags_pktlen = CPDMA_BUF_DESC_OWNER;
     last_rxbd = curr_rxbd;
     curr_rxbd = curr_rxbd->next;
     num_bd--;
-  }
+    }
 
   last_rxbd->next = rxch->free_head;
 
@@ -2209,110 +2212,114 @@ cpswif_init(struct netif *netif)
  * @return none
  */
 void
-cpswif_rx_inthandler(u32_t inst_num, struct netif * netif_arr) {
-  struct cpswinst *cpswinst = &cpsw_inst_data[inst_num];
-  struct rxch *rxch;
-  volatile struct cpdma_rx_bd *curr_bd;
-  volatile struct pbuf *pbuf;
-  u32_t tot_len, if_num;
+cpswif_rx_inthandler(u32_t inst_num, struct netif * netif_arr) 
+{
+    struct cpswinst *cpswinst = &cpsw_inst_data[inst_num];
+    struct rxch *rxch;
+    volatile struct cpdma_rx_bd *curr_bd;
+    volatile struct pbuf *pbuf;
+    u32_t tot_len, if_num;
 
 #ifdef CPSW_DUAL_MAC_MODE
-  u32_t from_port;
+    u32_t from_port;
 #endif
 
-  /* Get the rx channel pointer */
-  rxch = &(cpswinst->rxch);
+    /* Get the rx channel pointer */
+    rxch = &(cpswinst->rxch);
 
-  /* Get the bd which contains the earliest filled data */
-  curr_bd = rxch->recv_head;
+    /* Get the bd which contains the earliest filled data */
+    curr_bd = rxch->recv_head;
 
-  /**
-   * Process the receive buffer descriptors. When the DMA completes
-   * reception, OWNERSHIP flag will be cleared.
-   */
-  while((curr_bd->flags_pktlen & CPDMA_BUF_DESC_OWNER)
-           != CPDMA_BUF_DESC_OWNER) {
-
-#ifdef CPSW_DUAL_MAC_MODE
     /**
-     * From which slave port the packet came from ?
-     * We will use this to decide to which netif the packet
-     * is to be forwarded to.
-     */
-    from_port = ((curr_bd->flags_pktlen) & CPDMA_BUF_DESC_FROM_PORT)
-                 >> CPDMA_BUF_DESC_FROM_PORT_SHIFT;
+    * Process the receive buffer descriptors. When the DMA completes
+    * reception, OWNERSHIP flag will be cleared.
+    */
+    // 遍历CPPI RAM中的接收包链表，取出DMA接收完毕的包
+    while((curr_bd->flags_pktlen & CPDMA_BUF_DESC_OWNER) != CPDMA_BUF_DESC_OWNER) 
+    {
+
+#ifdef CPSW_DUAL_MAC_MODE
+        /**
+         * From which slave port the packet came from ?
+         * We will use this to decide to which netif the packet
+         * is to be forwarded to.
+         */
+        from_port = ((curr_bd->flags_pktlen) & CPDMA_BUF_DESC_FROM_PORT)
+                     >> CPDMA_BUF_DESC_FROM_PORT_SHIFT;
 #endif
 
-    /* Get the total length of the packet */
-    tot_len = (curr_bd->flags_pktlen) & CPDMA_BD_PKTLEN_MASK;
+        /* Get the total length of the packet */
+        tot_len = (curr_bd->flags_pktlen) & CPDMA_BD_PKTLEN_MASK;
 
-    /* Get the pbuf which is associated with the current bd */
-    pbuf = curr_bd->pbuf;
+        /* Get the pbuf which is associated with the current bd */
+        pbuf = curr_bd->pbuf;
 #ifdef LWIP_CACHE_ENABLED
-    /**
-     * Invalidate the cache lines of the pbuf including payload. Because
-     * the memory contents got changed by DMA.
-     */
-    CacheDataInvalidateBuff((u32_t)pbuf, (PBUF_LEN_MAX + SIZEOF_STRUCT_PBUF));
+        /**
+         * Invalidate the cache lines of the pbuf including payload. Because
+         * the memory contents got changed by DMA.
+         */
+        CacheDataInvalidateBuff((u32_t)pbuf, (PBUF_LEN_MAX + SIZEOF_STRUCT_PBUF));
 #endif
 
-    /* Update the len and tot_len fields for the pbuf in the chain */
-    pbuf->len = (u16_t)(tot_len);
-    pbuf->tot_len = (u16_t)(tot_len);
+        /* Update the len and tot_len fields for the pbuf in the chain */
+        pbuf->len = (u16_t)(tot_len);
+        pbuf->tot_len = (u16_t)(tot_len);
 
-    //DBG_ARP("in cpswif_rx_inthandler 2:len=%d\r\n",pbuf->len);
+        //DBG_ARP("in cpswif_rx_inthandler 2:len=%d\r\n",pbuf->len);
 
-    curr_bd->flags_pktlen = CPDMA_BUF_DESC_OWNER;
+        curr_bd->flags_pktlen = CPDMA_BUF_DESC_OWNER;
 
-    /* Adjust the link statistics */
-    LINK_STATS_INC(link.recv);
+        /* Adjust the link statistics */
+        LINK_STATS_INC(link.recv);
 
 #ifdef CPSW_DUAL_MAC_MODE
-    if_num = (inst_num * MAX_SLAVEPORT_PER_INST) + from_port - 1;
+        if_num = (inst_num * MAX_SLAVEPORT_PER_INST) + from_port - 1;
 #else
-    if_num = inst_num;
+        if_num = inst_num;
 #endif
 
 /* Process the packet */
 #if !NO_SYS//使用RTOS系统
-    if(tcpip_input((struct pbuf *)pbuf, netif_arr + if_num) != ERR_OK) {
-        pbuf_free((struct pbuf *)pbuf);
-        /* Adjust the link statistics */
-        LINK_STATS_INC(link.memerr);
-        LINK_STATS_INC(link.drop);
-    }
+        if(tcpip_input((struct pbuf *)pbuf, netif_arr + if_num) != ERR_OK) 
+        {
+            pbuf_free((struct pbuf *)pbuf);
+            /* Adjust the link statistics */
+            LINK_STATS_INC(link.memerr);
+            LINK_STATS_INC(link.drop);
+        }
 #else
-     if(ethernet_input((struct pbuf *)pbuf, netif_arr + if_num) != ERR_OK) {
-        /* Adjust the link statistics */
-        LINK_STATS_INC(link.memerr);
-        LINK_STATS_INC(link.drop);
-    }
+         if(ethernet_input((struct pbuf *)pbuf, netif_arr + if_num) != ERR_OK) {
+            /* Adjust the link statistics */
+            LINK_STATS_INC(link.memerr);
+            LINK_STATS_INC(link.drop);
+        }
 #endif
 
 
-    /* Acknowledge that this packet is processed */
-    CPSWCPDMARxCPWrite(cpswinst->cpdma_base, 0, (unsigned int)curr_bd);
+        /* Acknowledge that this packet is processed */
+        CPSWCPDMARxCPWrite(cpswinst->cpdma_base, 0, (unsigned int)curr_bd);
 
-    curr_bd = curr_bd->next;
+        curr_bd = curr_bd->next;
 
-    /* One more buffer descriptor is free now */
-    rxch->free_num++;
+        /* One more buffer descriptor is free now */
+        rxch->free_num++;
 
-    /**
-     * If the DMA engine took the NULL pointer, we dont have any bd to
-     * process until new bd's are allocated.
-     */
-    if(curr_bd == NULL) {
-      rxch->recv_head = rxch->free_head;
-      break;
+        /**
+         * If the DMA engine took the NULL pointer, we dont have any bd to
+         * process until new bd's are allocated.
+         */
+        if(curr_bd == NULL) 
+        {
+          rxch->recv_head = rxch->free_head;
+          break;
+        }
+        rxch->recv_head = curr_bd;
     }
-    rxch->recv_head = curr_bd;
-  }
 
-  CPSWCPDMAEndOfIntVectorWrite(cpswinst->cpdma_base, CPSW_EOI_RX_PULSE);
+    CPSWCPDMAEndOfIntVectorWrite(cpswinst->cpdma_base, CPSW_EOI_RX_PULSE);
 
-  /* We got some bd's freed; Allocate them */
-  cpswif_rxbd_alloc(cpswinst);
+    /* We got some bd's freed; Allocate them */
+    cpswif_rxbd_alloc(cpswinst);
 }
 
 /**

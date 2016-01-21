@@ -168,7 +168,7 @@ tcpip_thread(void *arg)
 
 /**
  * Pass a received packet to tcpip_thread for input processing
- * CSPW接收中断子程序，用于向tcpip_input任务发送从网卡接收到的数据包
+ * CSPW接收中断子程序，用于向tcpip_thread任务发送从网卡接收到的数据包
  * @param p the received packet, p->payload pointing to the Ethernet header or
  *          to an IP header (if inp doesn't have NETIF_FLAG_ETHARP or
  *          NETIF_FLAG_ETHERNET flags)
@@ -198,23 +198,26 @@ tcpip_input(struct pbuf *p, struct netif *inp)
 #else /* LWIP_TCPIP_CORE_LOCKING_INPUT */
   struct tcpip_msg *msg;
 
-  if (sys_mbox_valid(&mbox)) {
-  	// 从TCPIP内存池中取出链表表头
-    msg = (struct tcpip_msg *)memp_malloc(MEMP_TCPIP_MSG_INPKT);
-    if (msg == NULL) {
-      return ERR_MEM;
-    }
+    if (sys_mbox_valid(&mbox)) 
+    {
+      	// 从TCPIP内存池中取出链表表头
+        msg = (struct tcpip_msg *)memp_malloc(MEMP_TCPIP_MSG_INPKT);
+        if (msg == NULL) 
+        {
+            return ERR_MEM;
+        }
 
-    msg->type = TCPIP_MSG_INPKT;
-    msg->msg.inp.p = p;
-    msg->msg.inp.netif = inp;
+        msg->type = TCPIP_MSG_INPKT;
+        msg->msg.inp.p = p;
+        msg->msg.inp.netif = inp;
 
-	// 邮箱发送数据包给tcpip_input任务
-    if (sys_mbox_trypost(&mbox, msg) != ERR_OK) {
-      memp_free(MEMP_TCPIP_MSG_INPKT, msg);
-      return ERR_MEM;
-    }
-    return ERR_OK;
+    	// 邮箱发送数据包给tcpip_input任务
+        if (sys_mbox_trypost(&mbox, msg) != ERR_OK) 
+        {
+            memp_free(MEMP_TCPIP_MSG_INPKT, msg);
+            return ERR_MEM;
+        }
+        return ERR_OK;
   }
   return ERR_VAL;
 #endif /* LWIP_TCPIP_CORE_LOCKING_INPUT */

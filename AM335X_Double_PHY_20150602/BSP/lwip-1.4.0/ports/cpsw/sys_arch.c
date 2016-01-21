@@ -47,7 +47,7 @@ INT8U     pcQueueMemoryPool[MAX_QUEUES * sizeof(TQ_DESCR)];
 #pragma data_alignment=4
 OS_STK    LwIP_Task_Stk[LWIP_TASK_MAX*LWIP_STK_SIZE];
 
-INT8U     LwIP_task_priopity_stask[LWIP_TASK_MAX];
+INT8U     LwIP_task_priopity_stask[LWIP_TASK_MAX];      // 8个任务优先级
 
 struct mem_leaks *MemoryLeaks = NULL;
 int       MaxUserMemory=0;

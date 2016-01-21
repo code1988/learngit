@@ -121,32 +121,37 @@ enum tcpip_msg_type {
   TCPIP_MSG_CALLBACK
 };
 
-struct tcpip_msg {
-  enum tcpip_msg_type type;
-  sys_sem_t *sem;
-  union {
+struct tcpip_msg 
+{
+    enum tcpip_msg_type type;
+    sys_sem_t *sem;
+    union 
+    {
 #if LWIP_NETCONN
-    struct api_msg *apimsg;
+        struct api_msg *apimsg;
 #endif /* LWIP_NETCONN */
 #if LWIP_NETIF_API
-    struct netifapi_msg *netifapimsg;
+        struct netifapi_msg *netifapimsg;
 #endif /* LWIP_NETIF_API */
-    struct {
-      struct pbuf *p;
-      struct netif *netif;
-    } inp;
-    struct {
-      tcpip_callback_fn function;
-      void *ctx;
-    } cb;
+        struct 
+        {
+            struct pbuf *p;
+            struct netif *netif;
+        } inp;
+        struct 
+        {
+            tcpip_callback_fn function;
+            void *ctx;
+        } cb;
 #if LWIP_TCPIP_TIMEOUT
-    struct {
-      u32_t msecs;
-      sys_timeout_handler h;
-      void *arg;
-    } tmo;
+        struct 
+        {
+            u32_t msecs;
+            sys_timeout_handler h;
+            void *arg;
+        } tmo;
 #endif /* LWIP_TCPIP_TIMEOUT */
-  } msg;
+    } msg;
 };
 
 #ifdef __cplusplus
