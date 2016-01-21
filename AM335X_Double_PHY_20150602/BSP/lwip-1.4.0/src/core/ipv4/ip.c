@@ -412,18 +412,19 @@ err_t ip_input(struct pbuf *p, struct netif *inp)
     if (check_ip_src && current_iphdr_src.addr == IPADDR_ANY)
 #endif /* IP_ACCEPT_LINK_LAYER_ADDRESSING */
 	// 如果该数据包中的源IP地址是广播IP，则直接丢弃
-  { if ((ip_addr_isbroadcast(&current_iphdr_src, inp)) || (ip_addr_ismulticast(&current_iphdr_src))) 
-	{
-		/* packet source is not valid */
-		LWIP_DEBUGF(IP_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_LEVEL_WARNING, ("ip_input: packet source is not valid.\n"));
-		/* free (drop) packet pbufs */
-		pbuf_free(p);
-		IP_STATS_INC(ip.drop);
-		snmp_inc_ipinaddrerrors();
-		snmp_inc_ipindiscards();
-		return ERR_OK;
-	}
-  }
+    { 
+        if ((ip_addr_isbroadcast(&current_iphdr_src, inp)) || (ip_addr_ismulticast(&current_iphdr_src))) 
+        {
+        	/* packet source is not valid */
+        	LWIP_DEBUGF(IP_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_LEVEL_WARNING, ("ip_input: packet source is not valid.\n"));
+        	/* free (drop) packet pbufs */
+        	pbuf_free(p);
+        	IP_STATS_INC(ip.drop);
+        	snmp_inc_ipinaddrerrors();
+        	snmp_inc_ipindiscards();
+        	return ERR_OK;
+        }
+    }
 
   	// 遍历完成以后，如果依旧没有找到匹配的netif结构体，说明该数据包不是给本机的，转发或丢弃
   	if (netif == NULL) 

@@ -475,31 +475,31 @@ freepbuf:
 struct pbuf *
 ip_reass(struct pbuf *p)
 {
-  struct pbuf *r;
-  struct ip_hdr *fraghdr;
-  struct ip_reassdata *ipr;
-  struct ip_reass_helper *iprh;
-  u16_t offset, len;
-  u8_t clen;
-  struct ip_reassdata *ipr_prev = NULL;
+    struct pbuf *r;
+    struct ip_hdr *fraghdr;
+    struct ip_reassdata *ipr;
+    struct ip_reass_helper *iprh;
+    u16_t offset, len;
+    u8_t clen;
+    struct ip_reassdata *ipr_prev = NULL;
 
-  IPFRAG_STATS_INC(ip_frag.recv);
-  snmp_inc_ipreasmreqds();
+    IPFRAG_STATS_INC(ip_frag.recv);
+    snmp_inc_ipreasmreqds();
 
-  fraghdr = (struct ip_hdr*)p->payload;
+    fraghdr = (struct ip_hdr*)p->payload;
 
-  if ((IPH_HL(fraghdr) * 4) != IP_HLEN) {
+    if ((IPH_HL(fraghdr) * 4) != IP_HLEN) {
     LWIP_DEBUGF(IP_REASS_DEBUG,("ip_reass: IP options currently not supported!\n"));
     IPFRAG_STATS_INC(ip_frag.err);
     goto nullreturn;
-  }
+    }
 
-  offset = (ntohs(IPH_OFFSET(fraghdr)) & IP_OFFMASK) * 8;
-  len = ntohs(IPH_LEN(fraghdr)) - IPH_HL(fraghdr) * 4;
+    offset = (ntohs(IPH_OFFSET(fraghdr)) & IP_OFFMASK) * 8;
+    len = ntohs(IPH_LEN(fraghdr)) - IPH_HL(fraghdr) * 4;
 
-  /* Check if we are allowed to enqueue more datagrams. */
-  clen = pbuf_clen(p);
-  if ((ip_reass_pbufcount + clen) > IP_REASS_MAX_PBUFS) {
+    /* Check if we are allowed to enqueue more datagrams. */
+    clen = pbuf_clen(p);
+    if ((ip_reass_pbufcount + clen) > IP_REASS_MAX_PBUFS) {
 #if IP_REASS_FREE_OLDEST
     if (!ip_reass_remove_oldest_datagram(fraghdr, clen) ||
         ((ip_reass_pbufcount + clen) > IP_REASS_MAX_PBUFS))

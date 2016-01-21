@@ -191,7 +191,7 @@ struct tcp_pcb {
   /* the rest of the fields are in host byte order
      as we have to do some math with them */
   /* receiver variables */
-  u32_t rcv_nxt;   // 期望接收的下一个序号，也即是接收端向发送端ACK的序号
+  u32_t rcv_nxt;   // 期望接收的下一个序号，也即是本地将要反馈给对方的ACK的序号
   u16_t rcv_wnd;   // 当前可用接收窗口大小，会随着数据的接收与递交动态变化
   u16_t rcv_ann_wnd; // 将向对方通告的接收窗口大小，也会随着数据的接收与递交动态变化
   u32_t rcv_ann_right_edge; /* announced right edge of window */
@@ -222,7 +222,7 @@ struct tcp_pcb {
   u16_t ssthresh;
 
   /* sender variables */
-  u32_t snd_nxt;   // 下一个将要发送的序号
+  u32_t snd_nxt;   // 下一个将要发送的序号，跟上次发送的数据长度有关
   u16_t snd_wnd;  // 当前发送窗口大小
   u32_t snd_wl1, snd_wl2; // 上次窗口更新时收到的数据序号seqno和确认号ackno
   u32_t snd_lbb;       /* Sequence number of next byte to be buffered. */

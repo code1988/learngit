@@ -131,13 +131,13 @@ tcp_input(struct pbuf *p, struct netif *inp)
 	}
 
 	// 不处理输入的广播包
-	if (ip_addr_isbroadcast(&current_iphdr_dest, inp) ||
-	  ip_addr_ismulticast(&current_iphdr_dest)) {
-	TCP_STATS_INC(tcp.proterr);
-	TCP_STATS_INC(tcp.drop);
-	snmp_inc_tcpinerrs();
-	pbuf_free(p);
-	return;
+	if (ip_addr_isbroadcast(&current_iphdr_dest, inp) || ip_addr_ismulticast(&current_iphdr_dest)) 
+    {
+    	TCP_STATS_INC(tcp.proterr);
+    	TCP_STATS_INC(tcp.drop);
+    	snmp_inc_tcpinerrs();
+    	pbuf_free(p);
+    	return;
 	}
 
 #if CHECKSUM_CHECK_TCP
@@ -329,19 +329,19 @@ tcp_input(struct pbuf *p, struct netif *inp)
 			// 判断处理recv函数的处理结果，成功refused_data指针清空，继续往下执行tcp_process
 			if (err == ERR_OK) 
 			{
-			pcb->refused_data = NULL;
+			    pcb->refused_data = NULL;
 			} 
 			// 失败意味着tcp_pcb都被占用满，丢弃接收包不再处理，直接返回
 			else if ((err == ERR_ABRT) || (tcplen > 0)) 
 			{
-			/* if err == ERR_ABRT, 'pcb' is already deallocated */
-			/* Drop incoming packets because pcb is "full" (only if the incoming
-			   segment contains data). */
-			LWIP_DEBUGF(TCP_INPUT_DEBUG, ("tcp_input: drop incoming packets, because pcb is \"full\"\n"));
-			TCP_STATS_INC(tcp.drop);
-			snmp_inc_tcpinerrs();
-			pbuf_free(p);
-			return;
+    			/* if err == ERR_ABRT, 'pcb' is already deallocated */
+    			/* Drop incoming packets because pcb is "full" (only if the incoming
+    			   segment contains data). */
+    			LWIP_DEBUGF(TCP_INPUT_DEBUG, ("tcp_input: drop incoming packets, because pcb is \"full\"\n"));
+    			TCP_STATS_INC(tcp.drop);
+    			snmp_inc_tcpinerrs();
+    			pbuf_free(p);
+    			return;
 			}
 	    }
     	tcp_input_pcb = pcb;	// 记录处理当前报文的控制块
@@ -1041,7 +1041,7 @@ tcp_receive(struct tcp_pcb *pcb)
 
     	/* Clause 1 */
 		// 判断是否是一个重复的ACK
-    	if (TCP_SEQ_LEQ(ackno, pcb->lastack)) 						// 如果ackno小于lastack，即没有确认新数据
+    	if (TCP_SEQ_LEQ(ackno, pcb->lastack)) 						// 如果ackno小于等于lastack，即没有确认新数据
 		{
 	      	pcb->acked = 0;		// 被当前报文确认的已发送长度清0
 	      	/* Clause 2 */
@@ -1293,7 +1293,7 @@ tcp_receive(struct tcp_pcb *pcb)
 	       segment is larger than rcv_nxt. */
 	    /*    if (TCP_SEQ_LT(seqno, pcb->rcv_nxt)){
 	          if (TCP_SEQ_LT(pcb->rcv_nxt, seqno + tcplen)) {*/
-	    // 如果seqno+1 <= rcv_nxt <= seqno + tcplen-1，意味着需要截断数据头(对比注释，这里存在疑问)
+	    // 如果seqno+1 <= rcv_nxt <= seqno + tcplen-1，意味着收到的数据区域头部有无效数据，需要截断数据头
 		if (TCP_SEQ_BETWEEN(pcb->rcv_nxt, seqno + 1, seqno + tcplen - 1))
 		{
 	  /* Trimming the first edge is done by pushing the payload
@@ -1573,7 +1573,7 @@ tcp_receive(struct tcp_pcb *pcb)
 				tcp_ack(pcb);
 
 			}
-			// 如果该报文数据不处于接收起始位置，意味着该报文是不是有序的
+			// 如果该报文数据不处于接收起始位置，意味着该报文不是有序的
 			else 
 			{
 		        /* We get here if the incoming segment is out-of-sequence. */

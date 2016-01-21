@@ -367,7 +367,7 @@ lwip´ÓÂß¼­ÉÏ¿´Ò²ÊÇ·ÖÎª4²ã£ºÁ´Â·²ã£¨ARP¡¢RARP£©¡¢ÍøÂç²ã(IP¡¢£¨ICMP¡¢IGMPÕâÁ½¸öÐ­Ò
 													#define TF_NAGLEMEMERR	0x80	// ±¾µØ»º³åÇøÒç³ö
 													
 													// ½ÓÊÕÏà¹Ø×Ö¶Î
-													u32_t rcv_nxt;				// ÆÚÍû½ÓÊÕµÄÏÂÒ»¸öÐòºÅ£¬Ò²¼´ÊÇ½ÓÊÕ¶ËÏò·¢ËÍ¶ËACKµÄÐòºÅ
+													u32_t rcv_nxt;				// ÆÚÍû½ÓÊÕµÄÏÂÒ»¸öÐòºÅ£¬Ò²¼´ÊÇ±¾µØ½«Òª·´À¡¸ø¶Ô·½µÄACKµÄÐòºÅ£¬Ò²ÊÇ±¾µØ½ÓÊÕ´°¿ÚµÄ×ó±ß½ç
 													u16_t rcv_wnd;				// µ±Ç°½ÓÊÕ´°¿Ú´óÐ¡£¬»áËæ×ÅÊý¾ÝµÄ½ÓÊÕÓëµÝ½»¶¯Ì¬±ä»¯
 													u16_t rcv_ann_wnd;			// ½«Ïò¶Ô·½Í¨¸æµÄ´°¿Ú´óÐ¡£¬Ò²»áËæ×ÅÊý¾ÝµÄ½ÓÊÕÓëµÝ½»¶¯Ì¬±ä»¯
 													u32_t rcv_ann_right_edge;	// ÉÏÒ»´Î´°¿ÚÍ¨¸æÊ±´°¿ÚµÄÓÒ±ß½çÖµ
@@ -433,14 +433,6 @@ lwip´ÓÂß¼­ÉÏ¿´Ò²ÊÇ·ÖÎª4²ã£ºÁ´Â·²ã£¨ARP¡¢RARP£©¡¢ÍøÂç²ã(IP¡¢£¨ICMP¡¢IGMPÕâÁ½¸öÐ­Ò
 													void *callback_arg;	
 													tcp_accept_fn accept;		
 													u16_t local_port;
-													IP_PCB;						// ¸ÃºêÃèÊöÁËÁ¬½ÓµÄIPÏà¹ØÐÅÏ¢£¬Ö÷Òª°üº¬Ô´IP¡¢Ä¿µÄIPÁ½¸öÖØÒª×Ö¶Î	
-													
-													// Õâ²¿·ÖÊÇ2ÖÖÀàÐÍTCP¿ØÖÆ¿é¶¼¾ßÓÐµÄ×Ö¶Î										
-													struct tcp_pcb *next;		// Ö¸ÏòÏÂÒ»¸ötcp_pcb¿ØÖÆ¿éµÄÁ´±íÖ¸Õë
-													enum tcp_state state;		// TCPÁ¬½ÓµÄ×´Ì¬
-													u8_t prio;					// ¸Ã¿ØÖÆ¿éµÄÓÅÏÈ¼¶£¬¿ÉÓÃÓÚ»ØÊÕµÍÓÅÏÈ¼¶¿ØÖÆ¿é
-													void *callback_arg;			// Ö¸ÏòÓÃ»§×Ô¶¨ÒåÊý¾Ý£¬ÔÚº¯Êý»Øµ÷Ê±Ê¹ÓÃ
-													u16_t local_port;			// °ó¶¨µÄ±¾µØ¶Ë¿Ú
 												}
 			×¢£º#define IP_PCB 	ip_addr_t local_ip;		// ±¾µØIP
 								ip_addr_t remote_ip;	// Ä¿µÄIP
@@ -506,7 +498,7 @@ lwip´ÓÂß¼­ÉÏ¿´Ò²ÊÇ·ÖÎª4²ã£ºÁ´Â·²ã£¨ARP¡¢RARP£©¡¢ÍøÂç²ã(IP¡¢£¨ICMP¡¢IGMPÕâÁ½¸öÐ­Ò
 			flags = TCPH_FLAGS(tcphdr);						// 6Î»±êÖ¾Î»
 			tcplen = p->tot_len + ((flags & (TCP_FIN | TCP_SYN)) ? 1 : 0);	// TCPÊý¾Ý°üÖÐÊý¾ÝµÄ×Ü³¤¶È£¬¶ÔÓÚÓÐFIN»òSYN±êÖ¾µÄÊý¾Ý°ü£¬¸Ã³¤¶ÈÒª¼Ó1
 			
-			// ÒÔÏÂ¾ÍÊÇ¶Ô½ÓÊÕµ½µÄÊý¾Ý°ü½øÐÐ·ÖÀà´¦Àí£¬Ò²¾ÍÊÇÑ°ÕÒºÏÊÊµÄ½Ó¿Ú£¬¸ù¾Ýaddr£¬port
+			// ÒÔÏÂ¾ÍÊÇ¶Ô½ÓÊÕµ½µÄÊý¾Ý°ü½øÐÐ·ÖÀà´¦Àí£¬Ò²¾ÍÊÇÑ°ÕÒºÏÊÊµÄ½Ó¿Ú£¬¸ù¾ÝIP£¬port
 			// Ê×ÏÈÔÚtcp_active_pcbs Á´±í³ØÖÐÕÒ£¬ÓÐÃ»ÓÐÆ¥ÅäµÄtcp_pcb
 			prev = NULL;
 			for(pcb = tcp_active_pcbs; pcb != NULL; pcb = pcb->next)
@@ -520,8 +512,9 @@ lwip´ÓÂß¼­ÉÏ¿´Ò²ÊÇ·ÖÎª4²ã£ºÁ´Â·²ã£¨ARP¡¢RARP£©¡¢ÍøÂç²ã(IP¡¢£¨ICMP¡¢IGMPÕâÁ½¸öÐ­Ò
 						pcb->next = tcp_active_pcbs;
 						tcp_active_pcbs = pcb;
 					}	
-					prev = pcb;
+					break;
 				}	
+				prev = pcb;
 			}
 			
 			// Èç¹ûÔÚtcp_active_pcbsÖÐÃ»ÓÐÕÒµ½£¬¼ÌÐøÔÚtcp_tw_pcbs ºÍtcp_listen_pcbsÖÐÕÒ
@@ -720,7 +713,7 @@ lwip´ÓÂß¼­ÉÏ¿´Ò²ÊÇ·ÖÎª4²ã£ºÁ´Â·²ã£¨ARP¡¢RARP£©¡¢ÍøÂç²ã(IP¡¢£¨ICMP¡¢IGMPÕâÁ½¸öÐ­Ò
 			struct tcp_pcb *npcb;
 			err_t rc;
 			
-			// ¶Ôº¬ÓÐACK±êÖ¾µÄÊäÈë±¨ÎÄ·µ»ØÒ»¸öRST±¨ÎÄ
+			// ´¦ÓÚlisten×´Ì¬µÄpcbÖ»ÄÜÏìÓ¦SYNÎÕÊÖ°ü£¬¶Ôº¬ÓÐACK±êÖ¾µÄÊäÈë±¨ÎÄ·µ»ØÒ»¸öRST±¨ÎÄ
 			if (flags & TCP_ACK) 
 			{
 				tcp_rst(ackno + 1, seqno + tcplen,ip_current_dest_addr(), ip_current_src_addr(),tcphdr->dest, tcphdr->src);
@@ -735,7 +728,7 @@ lwip´ÓÂß¼­ÉÏ¿´Ò²ÊÇ·ÖÎª4²ã£ºÁ´Â·²ã£¨ARP¡¢RARP£©¡¢ÍøÂç²ã(IP¡¢£¨ICMP¡¢IGMPÕâÁ½¸öÐ­Ò
 	    		if (npcb == NULL) 
 	    		{
 	    			TCP_STATS_INC(tcp.memerr);
-	      			return ERR_MEM;
+	      			  ERR_MEM;
 	    		}
 	    		
 	    		// ÎªÕâ¸öÐÂ½¨µÄtcp_pcbÌî³ä³ÉÔ±
@@ -1067,7 +1060,7 @@ lwip´ÓÂß¼­ÉÏ¿´Ò²ÊÇ·ÖÎª4²ã£ºÁ´Â·²ã£¨ARP¡¢RARP£©¡¢ÍøÂç²ã(IP¡¢£¨ICMP¡¢IGMPÕâÁ½¸öÐ­Ò
 			// Ê×ÏÈ¼ì²â±¨ÎÄÊÇ·ñ°üº¬ACK±êÖ¾
 			if (flags & TCP_ACK) 
 			{
-				right_wnd_edge = pcb->snd_wnd + pcb->snd_wl2;	// »ñÈ¡±¾µØ·¢ËÍ´°¿ÚÓÒ±ß½ç
+				right_wnd_edge = pcb->snd_wl2 + pcb->snd_wnd;	// »ñÈ¡±¾µØ·¢ËÍ´°¿ÚÓÒ±ß½ç
 				
 				// ÓÐ3ÖÖÇé¿ö¿ÉÒÔµ¼ÖÂ±¾µØ·¢ËÍ´°¿Ú¸üÐÂ
 				if (TCP_SEQ_LT(pcb->snd_wl1, seqno)||								// snd_wl1Ð¡ÓÚÐÂseqno£¬ËµÃ÷¶Ô·½ÓÐ·¢À´Êý¾Ý
@@ -1086,7 +1079,7 @@ lwip´ÓÂß¼­ÉÏ¿´Ò²ÊÇ·ÖÎª4²ã£ºÁ´Â·²ã£¨ARP¡¢RARP£©¡¢ÍøÂç²ã(IP¡¢£¨ICMP¡¢IGMPÕâÁ½¸öÐ­Ò
 				}
 				
 				// ÅÐ¶ÏÊÇ·ñÊÇÒ»¸öÖØ¸´µÄACK£¬ÐèÒªÂú×ã5¸öÌõ¼þ
-				// 1.Èç¹ûacknoÐ¡ÓÚlastack£¬¼´Ã»ÓÐÈ·ÈÏÐÂÊý¾Ý
+				// 1.Èç¹ûacknoÐ¡ÓÚµÈÓÚlastack£¬¼´Ã»ÓÐÈ·ÈÏÐÂÊý¾Ý
 				if (TCP_SEQ_LEQ(ackno, pcb->lastack)) 						
 				{
 					pcb->acked = 0;		// Ã»ÓÐÈ·ÈÏÐÂÊý¾Ý£¬ÄÇÃ´ackedÎª0
@@ -1237,7 +1230,7 @@ lwip´ÓÂß¼­ÉÏ¿´Ò²ÊÇ·ÖÎª4²ã£ºÁ´Â·²ã£¨ARP¡¢RARP£©¡¢ÍøÂç²ã(IP¡¢£¨ICMP¡¢IGMPÕâÁ½¸öÐ­Ò
 			// Èç¹û¸ÃÊäÈë±¨ÎÄ»¹°üº¬ÁËÊý¾Ý£¬ÔòÒª¼ÌÐø¶ÔÊý¾Ý½øÐÐ´¦Àí
 			if (tcplen > 0) 
 			{
-				// Èç¹ûseqno <= rcv_nxt <= seqno + tcplen£¬ÒâÎ¶×ÅÊý¾ÝÍ·°üº¬ÖØ¸´Êý¾Ý£¬ÐèÒª½Ø¶Ï(¶Ô±È×¢ÊÍ£¬ÕâÀï´æÔÚÒÉÎÊ)
+				// Èç¹ûseqno + 1 <= rcv_nxt <= seqno + tcplen - 1£¬ÒâÎ¶×ÅÊÕµ½µÄÊý¾ÝÇøÓòÍ·²¿ÓÐÎÞÐ§Êý¾Ý£¨ÊÕµ½µÄÊý¾ÝÓÐ²¿·Ö´¦ÓÚ±¾µØ×ó²à½ÓÊÕ´°¿ÚÍâ£©£¬ÐèÒª½Ø¶ÏÊý¾ÝÍ·
 				if (TCP_SEQ_BETWEEN(pcb->rcv_nxt, seqno + 1, seqno + tcplen - 1))
 				{
 					off = pcb->rcv_nxt - seqno;							// ÐèÒª½ØµôµÄÊý¾Ý³¤¶È
@@ -1271,14 +1264,14 @@ lwip´ÓÂß¼­ÉÏ¿´Ò²ÊÇ·ÖÎª4²ã£ºÁ´Â·²ã£¨ARP¡¢RARP£©¡¢ÍøÂç²ã(IP¡¢£¨ICMP¡¢IGMPÕâÁ½¸öÐ­Ò
 				}
 				else 
 				{
-					// Èç¹ûseqno < rcv_nxt£¬ÒâÎ¶×Åseqno+tcplen-1 < rcv_nxt£¬ËµÃ÷ÕâÊÇ¸öÖØ¸´µÄ±¨ÎÄ¶Î
+					// Èç¹ûseqno < rcv_nxt£¬ÒâÎ¶×Åseqno+tcplen-1 < rcv_nxt£¬ËµÃ÷ÕâÊÇ¸öÍêÈ«ÖØ¸´µÄ±¨ÎÄ¶Î
 					if (TCP_SEQ_LT(seqno, pcb->rcv_nxt))
 					{
 						tcp_ack_now(pcb);		// Ö»»Ø¸´Ò»¸öACK¸ø¶Ô·½(ÕâÀïÊÇ·ñÓ¦¸ÃÖ±½Ó·µ»Ø²»ÔÙÔËÐÐÏÂÈ¥)
 					}
 				}
 				
-				// Èç¹ûÊý¾ÝÆðÊ¼±àºÅÔÚ½ÓÊÕ·¶Î§ÄÚ
+				// Èç¹ûÊý¾ÝÆðÊ¼±àºÅÔÚ½ÓÊÕ´°¿ÚÄÚ
 			    if (TCP_SEQ_BETWEEN(seqno, pcb->rcv_nxt, pcb->rcv_nxt + pcb->rcv_wnd - 1))
 		        {
 		        	// Èç¹û¸Ã±¨ÎÄÊý¾Ý´¦ÓÚ½ÓÊÕÆðÊ¼Î»ÖÃ£¬ÒâÎ¶×Å¸Ã±¨ÎÄÊÇÁ¬Ðøµ½À´µÄ
@@ -1357,7 +1350,7 @@ lwip´ÓÂß¼­ÉÏ¿´Ò²ÊÇ·ÖÎª4²ã£ºÁ´Â·²ã£¨ARP¡¢RARP£©¡¢ÍøÂç²ã(IP¡¢£¨ICMP¡¢IGMPÕâÁ½¸öÐ­Ò
 							}
 						}
 						
-						pcb->rcv_nxt = seqno + tcplen;	// ¸üÐÂÏÂÒ»¸öÆÚÍû½ÓÊÕµ½µÄÐòºÅ
+						pcb->rcv_nxt = seqno + tcplen;	// ¸üÐÂÏÂÒ»¸öÆÚÍû½ÓÊÕµ½µÄÐòºÅ£¬Ò²¾ÍÊÇ½ÓÊÕ´°¿Ú×ó±ß½ç
 						pcb->rcv_wnd -= tcplen;			// ¸üÐÂµ±Ç°¿ÉÓÃ½ÓÊÕ´°¿Ú
 
 		        		tcp_update_rcv_ann_wnd(pcb);	// ¸üÐÂ¹«¸æ´°¿Ú
@@ -1421,7 +1414,7 @@ lwip´ÓÂß¼­ÉÏ¿´Ò²ÊÇ·ÖÎª4²ã£ºÁ´Â·²ã£¨ARP¡¢RARP£©¡¢ÍøÂç²ã(IP¡¢£¨ICMP¡¢IGMPÕâÁ½¸öÐ­Ò
 						// ÒÔÉÏ¶¼Ö´ÐÐÍê±Ïºó£¬ÏòÔ´¶Ë·µ»ØÒ»¸öACK£¬´Ë´¦ÆäÊµÖ»ÊÇÏÈÔÚTCP¿ØÖÆ¿éÖÐÌí¼ÓACK±êÖ¾
 						tcp_ack(pcb);
 					}
-					// Èç¹û¸Ã±¨ÎÄÊý¾Ý²»´¦ÓÚ½ÓÊÕÆðÊ¼Î»ÖÃ£¬ÒâÎ¶×Å¸Ã±¨ÎÄÊÇ²»ÊÇÓÐÐòµÄ
+					// Èç¹û¸Ã±¨ÎÄÊý¾Ý²»´¦ÓÚ½ÓÊÕÆðÊ¼Î»ÖÃ£¬ÒâÎ¶×Å¸Ã±¨ÎÄ²»ÊÇÓÐÐòµÄ
 					else 
 					{
 						// Ê×ÏÈÏòÔ´¶Ë·µ»ØÒ»¸öÁ¢¼´ACK

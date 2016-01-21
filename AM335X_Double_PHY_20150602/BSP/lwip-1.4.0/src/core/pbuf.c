@@ -393,7 +393,7 @@ pbuf_alloced_custom(pbuf_layer l, u16_t length, pbuf_type type, struct pbuf_cust
 
 /**
  * Shrink a pbuf chain to a desired length.
- *  截断得到所需长度的完整数据包
+ *  将pbuf链表上保存的数据截断成指定长度 
  * @param p pbuf to shrink.
  * @param new_len desired new length of pbuf chain
  *
@@ -403,8 +403,7 @@ pbuf_alloced_custom(pbuf_layer l, u16_t length, pbuf_type type, struct pbuf_cust
  *
  * @note If the pbuf is ROM/REF, only the ->tot_len and ->len fields are adjusted.
  * @note May not be called on a packet queue.
- *  一张pbuf链表只会保存了一个完整的以太网数据包
-    该函数通过IP包头的数据长度，遍历链表，截取一个完整的IP数据包
+ * 
  * @note Despite its name, pbuf_realloc cannot grow the size of a pbuf (chain).
  */
 void
