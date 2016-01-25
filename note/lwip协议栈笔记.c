@@ -35,6 +35,7 @@ lwip´ÓÂß¼­ÉÏ¿´Ò²ÊÇ·ÖÎª4²ã£ºÁ´Â·²ã£¨ARP¡¢RARP£©¡¢ÍøÂç²ã(IP¡¢£¨ICMP¡¢IGMPÕâÁ½¸öÐ­Ò
 	Íê³É³õÊ¼»¯ºóµÄnet_if½á¹¹Ìå»á±»Á´ÈëÁ´±í£¬Ð­ÒéÕ»Ê¹ÓÃ2¸öÈ«¾Ö±äÁ¿¹ÜÀíÕâÕÅÁ´±í£ºnetif_listÖ¸ÏòÁ´±í±íÍ·£¬netif_defaultÖ¸ÏòÈ±Ê¡µÄnet_if½á¹¹Ìå¡£
 	
 	ÒÔÌ«ÍøÊý¾Ý°ü»ù±¾¸ñÊ½£º		Ä¿µÄMACµØÖ·£¨6×Ö½Ú£©	+ Ô´MACµØÖ·£¨6×Ö½Ú£© 	+ ÀàÐÍ£¨2×Ö½Ú£© 	+ Êý¾Ý£¨46-1500×Ö½Ú£© 	+ Ð£Ñé£¨4×Ö½Ú£©
+	ÒÔÌ«ÍøÊý¾Ý°ü×î´óÖ¡³¤1518×Ö½Ú£¬×îÐ¡Ö¡³¤64×Ö½Ú£¬µ±ÎÞ·¨Âú×ã×îÐ¡64×Ö½Úºó£¬Ä©Î²ÓÃtrailer×Ö¶ÎÀ´Ìî³ä²¹×ã64×Ö½Ú
 	lwipÊ¹ÓÃÒ»¸öeth_hdrµÄ½á¹¹ÌåÀ´ÃèÊöÒÔÌ«ÍøÊý¾Ý°ü°üÍ·µÄ14¸ö×Ö½Ú£º
 																struct eth_hdr{
 																	struct eth_addr dest;	// Ä¿µÄMACµØÖ·
