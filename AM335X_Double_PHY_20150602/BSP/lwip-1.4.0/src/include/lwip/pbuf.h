@@ -43,8 +43,8 @@ extern "C" {
  * of IP_FRAG */
 #define LWIP_SUPPORT_CUSTOM_PBUF (IP_FRAG && !IP_FRAG_USES_STATIC_BUF && !LWIP_NETIF_TX_SINGLE_PBUF)
 
-#define PBUF_TRANSPORT_HLEN 20
-#define PBUF_IP_HLEN        20
+#define PBUF_TRANSPORT_HLEN 20		// TCP首部长度
+#define PBUF_IP_HLEN        20		// 不带任何选项字段的IP首部长度
 
 typedef enum {
   PBUF_TRANSPORT,

@@ -159,7 +159,7 @@
 /*****************************************************************************
 **                           PBUF  Options
 *****************************************************************************/
-#define PBUF_LINK_HLEN                  14
+#define PBUF_LINK_HLEN                  14				// 链路层首部长度
 #define PBUF_POOL_BUFSIZE               1520//1520         /* + size of struct pbuf
                                                        // shall be cache line
                                                        // aligned be enabled */

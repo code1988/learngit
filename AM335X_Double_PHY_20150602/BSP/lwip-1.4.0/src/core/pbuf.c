@@ -152,14 +152,17 @@ pbuf_pool_is_empty(void)
 
 /**
  * Allocates a pbuf of the given type (possibly a chain for PBUF_POOL type).
- *
+ *	数据包申请函数
  * The actual memory allocated for the pbuf is determined by the
  * layer at which the pbuf is allocated and the requested size
  * (from the size parameter).
  *
  * @param layer flag to define header size
+ 		指定该pbuf数据所处的层次，申请函数根据该值在pbuf数据区预留出首部空间
  * @param length size of the pbuf's payload
+ 		需要申请的数据区长度
  * @param type this parameter decides how and where the pbuf
+ 		需要申请的pbuf类型
  * should be allocated as follows:
  *
  * - PBUF_RAM: buffer memory for pbuf is allocated as one large
@@ -189,49 +192,53 @@ pbuf_alloc(pbuf_layer layer, u16_t length, pbuf_type type)
     s32_t rem_len; /* remaining length */
     LWIP_DEBUGF(PBUF_DEBUG | LWIP_DBG_TRACE, ("pbuf_alloc(length=%"U16_F")\n", length));
 
-    /* determine header offset */
-    offset = 0;
+    // 根据层次的不同，计算预留长度
+    offset = 0;		
     switch (layer) 
     {
         case PBUF_TRANSPORT:
-        /* add room for transport (often TCP) layer header */
+        // 传输层，预留出TCP首部长度
         offset += PBUF_TRANSPORT_HLEN;
         /* FALLTHROUGH */
         case PBUF_IP:
-        /* add room for IP layer header */
+        // 网络层或以上各层，预留出IP首部长度
         offset += PBUF_IP_HLEN;
         /* FALLTHROUGH */
         case PBUF_LINK:
-        /* add room for link layer header */
+        // 链路层或以上各层，预留出链路层首部长度
         offset += PBUF_LINK_HLEN;
         break;
         case PBUF_RAW:
+		// 如果是原始层，则不预留任何空间(常用于数据包接收)
         break;
         default:
         LWIP_ASSERT("pbuf_alloc: bad pbuf layer", 0);
         return NULL;
     }
 
+	// 根据pbuf类型，来分配对应的内存空间
     switch (type) 
     {
-        case PBUF_POOL:
-        /* allocate head of pbuf chain into p */
+        case PBUF_POOL:		// 这种类型的pbuf，意味着可能需要分配几个POOL
+        // 分配第一个POOL作为pbuf链表头
         p = (struct pbuf *)memp_malloc(MEMP_PBUF_POOL);
         LWIP_DEBUGF(PBUF_DEBUG | LWIP_DBG_TRACE, ("pbuf_alloc: allocated pbuf %p\n", (void *)p));
         if (p == NULL) {
           PBUF_POOL_IS_EMPTY();
           return NULL;
         }
+
+		// 分配成功之后，初始化各个pbuf各字段
         p->type = type;
         p->next = NULL;
 
-        /* make the payload pointer point 'offset' bytes into pbuf data memory */
+        //作为链表头的第一个pbuf，payload指向的数据起始区域，需要预留出首部空间
         p->payload = LWIP_MEM_ALIGN((void *)((u8_t *)p + (SIZEOF_STRUCT_PBUF + offset)));
         LWIP_ASSERT("pbuf_alloc: pbuf p->payload properly aligned",
                 ((mem_ptr_t)p->payload % MEM_ALIGNMENT) == 0);
         /* the total length of the pbuf chain is the requested size */
         p->tot_len = length;
-        /* set the length of the first pbuf in the chain */
+        //作为链表头的第一个pbuf，len的取值也需要考虑到首部空间
         p->len = LWIP_MIN(length, PBUF_POOL_BUFSIZE_ALIGNED - LWIP_MEM_ALIGN_SIZE(offset));
         LWIP_ASSERT("check p->payload + p->len does not overflow pbuf",
                     ((u8_t*)p->payload + p->len <=
