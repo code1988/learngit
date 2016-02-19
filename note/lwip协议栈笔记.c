@@ -7,17 +7,6 @@ lwip´ÓÂß¼­ÉÏ¿´Ò²ÊÇ·ÖÎª4²ã£ºÁ´Â·²ã£¨ARP¡¢RARP£©¡¢ÍøÂç²ã(IP¡¢£¨ICMP¡¢IGMPÕâÁ½¸öĞ­Ò
 	²ÉÓÃucos-iiÄÚ´æ¹ÜÀíÏµÍ³£¬¼´ÉêÇëÒ»¿éÄÚ´æ£¬·Ö¸î³ÉÕûÊı¸ö´óĞ¡ÏàÍ¬µÄÄÚ´æ¿é
 	
 Ò».	Á´Â·²ã
-
-	
-	Í¨¹ıµ÷ÓÃnetif_addº¯ÊıÍê³Énet_if½á¹¹ÌåµÄ³õÊ¼»¯£º
-						/* Function Name: struct netif *netif_add(struct netif *netif,ip_addr *ipaddr,ip_addr *netmask,ip_addr *gw,void *state,err_t (* init)(struct netif *netif),err_t (*input)(struct pbuf *p,struct netif *inp))
-						/* Input		: *state 											- ´«ÈëcpswportifµØÖ·
-						**				  err_t (* init)(struct netif *netif) 				- ´«Èëcpswif_init£¬µ×²ã½Ó¿ÚÇı¶¯³õÊ¼»¯º¯Êı
-						**				  err_t (*input)(struct pbuf *p,struct netif *inp)	- ´«Èëtcpip_input£¬µ×²ãÍø¿¨ÏòIP²ãÌá½»Êı¾İ°üµÄº¯Êı
-						*/
-	
-	Íê³É³õÊ¼»¯ºóµÄnet_if½á¹¹Ìå»á±»Á´ÈëÁ´±í£¬Ğ­ÒéÕ»Ê¹ÓÃ2¸öÈ«¾Ö±äÁ¿¹ÜÀíÕâÕÅÁ´±í£ºnetif_listÖ¸ÏòÁ´±í±íÍ·£¬netif_defaultÖ¸ÏòÈ±Ê¡µÄnet_if½á¹¹Ìå¡£
-	
 	ÒÔÌ«ÍøÊı¾İ°ü»ù±¾¸ñÊ½£º		Ä¿µÄMACµØÖ·£¨6×Ö½Ú£©	+ Ô´MACµØÖ·£¨6×Ö½Ú£© 	+ ÀàĞÍ£¨2×Ö½Ú£© 	+ Êı¾İ£¨46-1500×Ö½Ú£© 	+ Ğ£Ñé£¨4×Ö½Ú£©
 	ÒÔÌ«ÍøÊı¾İ°ü×î´óÖ¡³¤1518×Ö½Ú£¬×îĞ¡Ö¡³¤64×Ö½Ú£¬µ±ÎŞ·¨Âú×ã×îĞ¡64×Ö½Úºó£¬Ä©Î²ÓÃtrailer×Ö¶ÎÀ´Ìî³ä²¹×ã64×Ö½Ú
 	lwipÊ¹ÓÃÒ»¸öeth_hdrµÄ½á¹¹ÌåÀ´ÃèÊöÒÔÌ«ÍøÊı¾İ°ü°üÍ·µÄ14¸ö×Ö½Ú£º

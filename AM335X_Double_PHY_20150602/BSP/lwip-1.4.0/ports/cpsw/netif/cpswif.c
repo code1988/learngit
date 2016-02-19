@@ -2137,10 +2137,6 @@ cpswif_inst_init(struct cpswportif *cpswif){
 err_t
 cpswif_init(struct netif *netif)
 {
-
-    DBG_NET("in cpswif_init 0:\r\n");
-
-
 	struct cpswportif *cpswif = (struct cpswportif*)(netif->state);
 	static u32_t inst_init_flag = 0;
 	u32_t inst_num = cpswif->inst_num;
@@ -2171,10 +2167,10 @@ cpswif_init(struct netif *netif)
 	* from it if you have to do some checks before sending (e.g. if link
 	* is available...)
 	*/
-	netif->output = etharp_output;//被IP模块调用的，向以太网上发送一个数据包，函数要先通过IP地址获得解决硬件地址，然后发包。
-	netif->linkoutput = cpswif_output;//直接发送数据包的接口
-	//硬件初始化
-	//BSP_EtherInit();
+	netif->output = etharp_output;      //注册IP层数据包输出函数
+	netif->linkoutput = cpswif_output;  //注册链路层数据包输出函数
+
+    // 以下就是网卡底层初始化部分
 	/**
 	* Initialize an instance only once. Port initialization will be
 	* done separately.

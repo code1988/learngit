@@ -126,7 +126,7 @@ netif_init(void)
 
 /**
  * Add a network interface to the list of lwIP netifs.
- * 初始化网络接口结构体 netif
+ * 向Lwip内核注册一个网络接口结构
  * @param netif a pre-allocated netif structure
  * @param ipaddr IP address for the new netif
  * @param netmask network mask for the new netif
@@ -142,59 +142,47 @@ struct netif *
 netif_add(struct netif *netif, ip_addr_t *ipaddr, ip_addr_t *netmask,
   ip_addr_t *gw, void *state, netif_init_fn init, netif_input_fn input)
 {
+    static u8_t netifnum = 0;
 
-  DBG_NET("in netif_add 0:\r\n");
-
-
-  static u8_t netifnum = 0;
-
-  LWIP_ASSERT("No init function given", init != NULL);
-
-  if(NULL==init)
-  {
-      DBG_NET("in netif_add 1:No init function given\r\n");
-  }
-
-
-  /* reset new interface configuration state */
-  ip_addr_set_zero(&netif->ip_addr);
-  ip_addr_set_zero(&netif->netmask);
-  ip_addr_set_zero(&netif->gw);
-  netif->flags = 0;
+    // 复位netif结构的各字段
+    ip_addr_set_zero(&netif->ip_addr);
+    ip_addr_set_zero(&netif->netmask);
+    ip_addr_set_zero(&netif->gw);
+    netif->flags = 0;
 #if LWIP_DHCP
-  /* netif not under DHCP control by default */
-  netif->dhcp = NULL;
+    /* netif not under DHCP control by default */
+    netif->dhcp = NULL;
 #endif /* LWIP_DHCP */
 #if LWIP_AUTOIP
-  /* netif not under AutoIP control by default */
-  netif->autoip = NULL;
+    /* netif not under AutoIP control by default */
+    netif->autoip = NULL;
 #endif /* LWIP_AUTOIP */
 #if LWIP_NETIF_STATUS_CALLBACK
-  netif->status_callback = NULL;
+    netif->status_callback = NULL;
 #endif /* LWIP_NETIF_STATUS_CALLBACK */
 #if LWIP_NETIF_LINK_CALLBACK
-  netif->link_callback = NULL;
+    netif->link_callback = NULL;
 #endif /* LWIP_NETIF_LINK_CALLBACK */
 #if LWIP_IGMP
-  netif->igmp_mac_filter = NULL;
+    netif->igmp_mac_filter = NULL;
 #endif /* LWIP_IGMP */
 #if ENABLE_LOOPBACK
-  netif->loop_first = NULL;
-  netif->loop_last = NULL;
+    netif->loop_first = NULL;
+    netif->loop_last = NULL;
 #endif /* ENABLE_LOOPBACK */
 
-  /* remember netif specific state information data */
-  netif->state = state;
-  netif->num = netifnum++;
-  netif->input = input;//被驱动调用的,传递一个数据包给TCP/IP栈。
+    /* remember netif specific state information data */
+    netif->state = state;
+    netif->num = netifnum++;
+    netif->input = input;//被驱动调用的,传递一个数据包给TCP/IP栈。
 #if LWIP_NETIF_HWADDRHINT
-  netif->addr_hint = NULL;
+    netif->addr_hint = NULL;
 #endif /* LWIP_NETIF_HWADDRHINT*/
 #if ENABLE_LOOPBACK && LWIP_LOOPBACK_MAX_PBUFS
-  netif->loop_cnt_current = 0;
+    netif->loop_cnt_current = 0;
 #endif /* ENABLE_LOOPBACK && LWIP_LOOPBACK_MAX_PBUFS */
 
-  netif_set_addr(netif, ipaddr, netmask, gw);
+    netif_set_addr(netif, ipaddr, netmask, gw);
 
     // 自定义的底层接口初始化函数
     if (init(netif) != ERR_OK)
@@ -203,11 +191,11 @@ netif_add(struct netif *netif, ip_addr_t *ipaddr, ip_addr_t *netmask,
         return NULL;
     }
 
-  // 将初始化后的节点插入链表
-  netif->next = netif_list;
-  // 调整表头
-  netif_list = netif;
-  snmp_inc_iflist();
+    // 将初始化成功的netif结构插入链表头
+    netif->next = netif_list;
+    // 更新表头
+    netif_list = netif;
+    snmp_inc_iflist();
 
 #if LWIP_IGMP
   /* start IGMP processing */
@@ -215,37 +203,6 @@ netif_add(struct netif *netif, ip_addr_t *ipaddr, ip_addr_t *netmask,
     igmp_start(netif);
   }
 #endif /* LWIP_IGMP */
-
-  LWIP_DEBUGF(NETIF_DEBUG, ("netif: added interface %c%c IP addr ",
-    netif->name[0], netif->name[1]));
-  ip_addr_debug_print(NETIF_DEBUG, ipaddr);
-
-
-  DBG_NET("netif: added interface %d,%d\r\n",netif->name[0], netif->name[1]);
-
-  DBG_NET(" IP: \r\n");
-  my_ip_addr_debug_print(NETIF_DEBUG, ipaddr);
-
-
-  LWIP_DEBUGF(NETIF_DEBUG, (" netmask "));
-  ip_addr_debug_print(NETIF_DEBUG, netmask);
-
-
-  DBG_NET(" netmask: \r\n");
-  my_ip_addr_debug_print(NETIF_DEBUG, netmask);
-
-
-  LWIP_DEBUGF(NETIF_DEBUG, (" gw "));
-  ip_addr_debug_print(NETIF_DEBUG, gw);
-
-  DBG_NET(" gw: \r\n");
-  my_ip_addr_debug_print(NETIF_DEBUG, gw);
-
-  LWIP_DEBUGF(NETIF_DEBUG, ("\n"));
-
-
-
-  DBG_NET("in netif_add 100: netif=0x%08x\r\n",(uint32)netif);
 
   return netif;
 }
@@ -400,13 +357,9 @@ void
 netif_set_addr(struct netif *netif, ip_addr_t *ipaddr, ip_addr_t *netmask,
     ip_addr_t *gw)
 {
-
-    DBG_NET("in netif_set_addr 0:\r\n");
-
-
-  netif_set_ipaddr(netif, ipaddr);
-  netif_set_netmask(netif, netmask);
-  netif_set_gw(netif, gw);
+    netif_set_ipaddr(netif, ipaddr);
+    netif_set_netmask(netif, netmask);
+    netif_set_gw(netif, gw);
 }
 
 /**

@@ -218,6 +218,7 @@ static void LwIP_DHCP_task(void *arg)
   }
   tcpip_timeout(1000, LwIP_DHCP_task, arg);
 }
+
 /**
  *
  * \brief Initializes the lwIP TCP/IP stack.
@@ -232,7 +233,7 @@ static void LwIP_DHCP_task(void *arg)
  * @param arg the semaphore to be signaled
  */
 //void  (*ETH_PostSem)(void) = NULL;
-unsigned int lwIPInit(LWIP_IF *lwipIf)
+unsigned int lwIPInit(LWIP_IF *lwipIf,int *ret_code)
 {
 
     DBG_NET("in lwIPInit 0:\r\n");
@@ -245,12 +246,6 @@ unsigned int lwIPInit(LWIP_IF *lwipIf)
     static unsigned int lwipInitFlag = 0;
     unsigned int ifNum;
     unsigned int temp;
-//    INT8U err;
-
-    DBG_NET("in lwIPInit 1_0:call tcpip_init() start \r\n");
-    tcpip_init(NULL, NULL);
-    DBG_NET("in lwIPInit 1_1:call tcpip_init()   end \r\n");
-
 
     /* Setup the network address values. */
     if(lwipIf->ipMode == IPADDR_USE_STATIC)
@@ -272,9 +267,7 @@ unsigned int lwIPInit(LWIP_IF *lwipIf)
     ifNum = lwipIf->instNum;
 #endif
 
-    DBG_NET("in lwIPInit 10:ifNum=%d\r\n",ifNum);
 
-	// 以下就是完成cpswPortIf[ifNum]结构体的填充
     cpswPortIf[ifNum].inst_num = lwipIf->instNum;
     cpswPortIf[ifNum].port_num = lwipIf->slvPortNum;
 
@@ -290,36 +283,13 @@ unsigned int lwIPInit(LWIP_IF *lwipIf)
     ** default settings.  ip_input should be used to send packets directly to
     ** the stack. The lwIP will internaly call the cpswif_init function.
     */
-
-
-     DBG_NET("in lwIPInit 2_0:call netif_add() start \r\n");
-
-
-	// netif_add函数就是为了完成对cpswNetIF[ifNum]结构体的初始化
-    if(NULL ==
-       netif_add(&cpswNetIF[ifNum], &ipaddr, &netmask, &gwaddr,
-                 &cpswPortIf[ifNum], cpswif_init, tcpip_input))//ip_input))//cpswif_init硬件初始化也放在这里
-    {
-//        LWIP_PRINTF("\n\rUnable to add interface for interface %d", ifNum);
-
-        DBG_NET("in lwIPInit 2_2: Unable to add interface for interface \r\n");
-
-        return 0;
-    }
-
-
-    DBG_NET("in lwIPInit 2_1:call netif_add()   end \r\n");
-
-	// 以下就是在设置缺省的网络接口cpswNetIF，双网卡在这里只运行1次
+    //ip_input))//cpswif_init硬件初始化也放在这里
+    netif_add(&cpswNetIF[ifNum], &ipaddr, &netmask, &gwaddr,&cpswPortIf[ifNum], cpswif_init, tcpip_input);
+    
     if(0 == lwipInitFlag)
     {
-
-        DBG_NET("in lwIPInit 3_0:call netif_set_default() start \r\n");
-    	//初始化缺省网络接口
+    	// 设置系统的缺省网络接口
         netif_set_default(&cpswNetIF[ifNum]);
-        DBG_NET("in lwIPInit 3_1:call netif_set_default()   end \r\n");
-
-
         lwipInitFlag = 1;
     }
 
@@ -339,15 +309,10 @@ unsigned int lwIPInit(LWIP_IF *lwipIf)
     }
 #endif
 
-    if((lwipIf->ipMode == IPADDR_USE_STATIC)
-       ||(lwipIf->ipMode == IPADDR_USE_AUTOIP))
+    if((lwipIf->ipMode == IPADDR_USE_STATIC) ||(lwipIf->ipMode == IPADDR_USE_AUTOIP))
     {
-
-        DBG_NET("in lwIPInit 4_0:call netif_set_up() start \r\n");
         // 使能网络接口
         netif_set_up(&cpswNetIF[ifNum]);
-        DBG_NET("in lwIPInit 4_1:call netif_set_up()   end \r\n");
-
 
     }
     ipAddrPtr = (unsigned int*)&(cpswNetIF[ifNum].ip_addr);
@@ -360,180 +325,6 @@ unsigned int lwIPInit(LWIP_IF *lwipIf)
     dhcp_start(&cpswNetIF[ifNum]);
     tcpip_timeout(1000, LwIP_DHCP_task, (void*)0);
 #endif
-
-
-    DBG_NET("in lwIPInit 5_0:call SetHostName() start \r\n");
-    SetHostName("AM335X");
-    DBG_NET("in lwIPInit 5_1:call SetHostName()   end \r\n");
-
-
-    DBG_NET("in lwIPInit 6_0:call SsdpInit() start \r\n");
-    SsdpInit(&cpswNetIF[ifNum]);
-    DBG_NET("in lwIPInit 6_1:call SsdpInit()   end \r\n");
-
-
-    DBG_NET("in lwIPInit 7_0:call LlmnrInit() start \r\n");
-    LlmnrInit(&cpswNetIF[ifNum]);
-    DBG_NET("in lwIPInit 7_0:call LlmnrInit()   end \r\n");
-
-
-
-    DBG_NET("in lwIPInit 100: \r\n");
-
-    return (*ipAddrPtr);
-}
-
-
-/**
- *
- * \brief Initializes the lwIP TCP/IP stack.
- *
- * \param lwipIf  The interface structure for lwIP
- *
- * \return IP Address.
-*/
-/**
- * @brief TcpipInitDone wait for tcpip init being done
- *
- * @param arg the semaphore to be signaled
- */
-//void  (*ETH_PostSem)(void) = NULL;
-unsigned int my_lwIPInit(LWIP_IF *lwipIf,int *ret_code)
-{
-
-    DBG_NET("in lwIPInit 0:\r\n");
-
-
-    struct ip_addr ipaddr;
-    struct ip_addr netmask;
-    struct ip_addr gwaddr;
-    unsigned int *ipAddrPtr;
-    static unsigned int lwipInitFlag = 0;
-    unsigned int ifNum;
-    unsigned int temp;
-//    INT8U err;
-    int tmp_ret_code=0;
-
-
-
-
-
-    /* Setup the network address values. */
-    if(lwipIf->ipMode == IPADDR_USE_STATIC)
-    {
-        ipaddr.addr = htonl(lwipIf->ipAddr);
-        netmask.addr = htonl(lwipIf->netMask);
-        gwaddr.addr = htonl(lwipIf->gwAddr);
-    }
-    else
-    {
-        ipaddr.addr = 0;
-        netmask.addr = 0;
-        gwaddr.addr = 0;
-    }
-
-#ifdef CPSW_DUAL_MAC_MODE
-    ifNum = (lwipIf->instNum * MAX_SLAVEPORT_PER_INST) + lwipIf->slvPortNum - 1;
-#else
-    ifNum = lwipIf->instNum;
-#endif
-
-    DBG_NET("in lwIPInit 10:ifNum=%d\r\n",ifNum);
-
-    cpswPortIf[ifNum].inst_num = lwipIf->instNum;
-    cpswPortIf[ifNum].port_num = lwipIf->slvPortNum;
-
-    /* set MAC hardware address */
-    for(temp = 0; temp < LEN_MAC_ADDRESS; temp++)
-    {
-        cpswPortIf[ifNum].eth_addr[temp] =
-                         lwipIf->macArray[(LEN_MAC_ADDRESS - 1) - temp];
-    }
-     //add loop interface //set local loop-interface 127.0.0.1
-    /*
-    ** Create, configure and add the Ethernet controller interface with
-    ** default settings.  ip_input should be used to send packets directly to
-    ** the stack. The lwIP will internaly call the cpswif_init function.
-    */
-
-
-    DBG_NET("in lwIPInit 2_0:call my_netif_add() start \r\n");
-
-    //ip_input))//cpswif_init硬件初始化也放在这里
-    my_netif_add(&cpswNetIF[ifNum], &ipaddr, &netmask, &gwaddr,&cpswPortIf[ifNum], cpswif_init, tcpip_input,&tmp_ret_code);
-    if(tmp_ret_code<0)
-    {
-        *ret_code=1;
-        DBG_NET("in lwIPInit 2_2: Unable to add interface for interface \r\n");
-        return 0;
-    }
-    else if(2==tmp_ret_code)
-    {
-        *ret_code=2;
-        DBG_NET("in lwIPInit 2_3: not connect RJ45 \r\n");
-    }
-    else
-    {
-        *ret_code=3;
-    }
-
-
-    DBG_NET("in lwIPInit 2_1:call my_netif_add()   end \r\n");
-
-
-    if(0 == lwipInitFlag)
-    {
-
-        DBG_NET("in lwIPInit 3_0:call netif_set_default() start \r\n");
-    	//初始化缺省网络接口
-        netif_set_default(&cpswNetIF[ifNum]);
-        DBG_NET("in lwIPInit 3_1:call netif_set_default()   end \r\n");
-        lwipInitFlag = 1;
-    }
-
-    /* Start DHCP, if enabled. */
-#if LWIP_DHCP
-    if(lwipIf->ipMode == IPADDR_USE_DHCP)
-    {
-        lwIPDHCPComplete(ifNum);
-    }
-#endif
-
-    /* Start AutoIP, if enabled and DHCP is not. */
-#if LWIP_AUTOIP
-    if(lwipIf->ipMode == IPADDR_USE_AUTOIP)
-    {
-        autoip_start(&cpswNetIF[ifNum]);
-    }
-#endif
-
-    if((lwipIf->ipMode == IPADDR_USE_STATIC)
-       ||(lwipIf->ipMode == IPADDR_USE_AUTOIP))
-    {
-
-        if(2!=tmp_ret_code)
-        {
-
-            DBG_NET("in lwIPInit 4_0:call netif_set_up() start \r\n");
-            // 使能网络接口
-            netif_set_up(&cpswNetIF[ifNum]);
-            DBG_NET("in lwIPInit 4_1:call netif_set_up()   end \r\n");
-        }
-
-    }
-    ipAddrPtr = (unsigned int*)&(cpswNetIF[ifNum].ip_addr);
-
-    /*  Creates a new DHCP client for this interface on the first call.
-    Note: you must call dhcp_fine_tmr() and dhcp_coarse_tmr() at
-    the predefined regular intervals after starting the client.
-    You can peek in the netif->dhcp struct for the actual DHCP status.*/
-#if LWIP_DHCP
-    dhcp_start(&cpswNetIF[ifNum]);
-    tcpip_timeout(1000, LwIP_DHCP_task, (void*)0);
-#endif
-
-
-    DBG_NET("in lwIPInit 5_0:call SetHostName() start \r\n");
 
     char host_name[64]={0};
     sprintf(host_name,"AM335X_%02X_%02X_%02X_%02X_%02X_%02X"
