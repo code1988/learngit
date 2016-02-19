@@ -440,6 +440,7 @@
 #endif
 
 /**
+    数据包缓冲队列使能位,应用于ARP模块，一般情况下可以不使能
  * ARP_QUEUEING==1: Multiple outgoing packets are queued during hardware address
  * resolution. By default, only the most recent packet is queued per IP address.
  * This is sufficient for most protocols and mainly reduces TCP connection
@@ -494,6 +495,7 @@
 
 /** ETHARP_SUPPORT_STATIC_ENTRIES==1: enable code to support static ARP table
  * entries (using etharp_add_static_entry/etharp_remove_static_entry).
+    静态ARP缓存表使能位,一般使用动态方式，所以这里不使能
  */
 #ifndef ETHARP_SUPPORT_STATIC_ENTRIES
 #define ETHARP_SUPPORT_STATIC_ENTRIES   1

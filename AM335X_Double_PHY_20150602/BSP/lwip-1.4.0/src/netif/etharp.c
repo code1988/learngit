@@ -74,12 +74,13 @@ const struct eth_addr ethzero = {{0,0,0,0,0,0}};
 /** the time an ARP entry stays valid after its last update,
  *  for ARP_TMR_INTERVAL = 5000, this is
  *  (240 * 5) seconds = 20 minutes.
+    处于稳定状态下的ARP缓存表项最大生存时间计数值
  */
 #define ARP_MAXAGE 240
 /** the time an ARP entry stays pending after first request,
  *  for ARP_TMR_INTERVAL = 5000, this is
  *  (2 * 5) seconds = 10 seconds.
- *
+ *  处于pending状态下的ARP缓存表项最大生存时间计数值
  *  @internal Keep this number at least 2, otherwise it might
  *  run out instantly if the timeout occurs directly after a request.
  */
@@ -93,26 +94,28 @@ enum etharp_state {
   ETHARP_STATE_STABLE
 };
 
+// ARP缓存表项
 struct etharp_entry {
 #if ARP_QUEUEING
   /** Pointer to queue of pending outgoing packets on this ARP entry. */
-  struct etharp_q_entry *q;
+  struct etharp_q_entry *q; // IP数据包缓冲队列指针，一般情况下可以不使能
 #else /* ARP_QUEUEING */
   /** Pointer to a single pending outgoing packet on this ARP entry. */
-  struct pbuf *q;
+  struct pbuf *q;           // 单个IP数据包缓冲指针
 #endif /* ARP_QUEUEING */
-  ip_addr_t ipaddr;
-  struct eth_addr ethaddr;
+  ip_addr_t ipaddr;         // 存储一对IP地址和MAC地址，这是ARP缓存表项的核心部分
+  struct eth_addr ethaddr;  
 #if LWIP_SNMP
   struct netif *netif;
 #endif /* LWIP_SNMP */
-  u8_t state;
-  u8_t ctime;
+  u8_t state;               // 描述该缓存表项的状态，在etharp_state中定义
+  u8_t ctime;               // 该缓存表项的计数器，判断ARP超时用
 #if ETHARP_SUPPORT_STATIC_ENTRIES
   u8_t static_entry;
 #endif /* ETHARP_SUPPORT_STATIC_ENTRIES */
 };
 
+// ARP缓存表
 static struct etharp_entry arp_table[ARP_TABLE_SIZE];
 
 #if !LWIP_NETIF_HWADDRHINT
@@ -199,42 +202,47 @@ free_entry(int i)
 
 /**
  * Clears expired entries in the ARP table.
- *
+ *  这个函数以5秒为周期被调用，用来处理超时的ARP缓存表项
  * This function should be called every ETHARP_TMR_INTERVAL milliseconds (5 seconds),
  * in order to expire entries in the ARP table.
  */
 void
 etharp_tmr(void)
 {
-  u8_t i;
+    u8_t i;
 
-  LWIP_DEBUGF(ETHARP_DEBUG, ("etharp_timer\n"));
-  /* remove expired entries from the ARP table */
-  for (i = 0; i < ARP_TABLE_SIZE; ++i) {
-    u8_t state = arp_table[i].state;
-    if (state != ETHARP_STATE_EMPTY
+    LWIP_DEBUGF(ETHARP_DEBUG, ("etharp_timer\n"));
+    // 遍历整个ARP缓存表，删除那些超时的ARP缓存表项
+    for (i = 0; i < ARP_TABLE_SIZE; ++i) 
+    {
+        u8_t state = arp_table[i].state;
+        if (state != ETHARP_STATE_EMPTY
 #if ETHARP_SUPPORT_STATIC_ENTRIES
-      && (arp_table[i].static_entry == 0)
+    && (arp_table[i].static_entry == 0)
 #endif /* ETHARP_SUPPORT_STATIC_ENTRIES */
       ) {
-      arp_table[i].ctime++;
-      if ((arp_table[i].ctime >= ARP_MAXAGE) ||
+            // 先将每个缓存表项的计数值加1
+            arp_table[i].ctime++;
+
+            // 判断是否超时
+            if ((arp_table[i].ctime >= ARP_MAXAGE) ||
           ((arp_table[i].state == ETHARP_STATE_PENDING)  &&
-           (arp_table[i].ctime >= ARP_MAXPENDING))) {
-        /* pending or stable entry has become old! */
-        LWIP_DEBUGF(ETHARP_DEBUG, ("etharp_timer: expired %s entry %"U16_F".\n",
-             arp_table[i].state == ETHARP_STATE_STABLE ? "stable" : "pending", (u16_t)i));
-        /* clean up entries that have just been expired */
-        free_entry(i);
-      }
+           (arp_table[i].ctime >= ARP_MAXPENDING))) 
+            {
+                /* pending or stable entry has become old! */
+                LWIP_DEBUGF(ETHARP_DEBUG, ("etharp_timer: expired %s entry %"U16_F".\n",
+                     arp_table[i].state == ETHARP_STATE_STABLE ? "stable" : "pending", (u16_t)i));
+                /* clean up entries that have just been expired */
+                free_entry(i);
+            }
 #if ARP_QUEUEING
-      /* still pending entry? (not expired) */
-      if (arp_table[i].state == ETHARP_STATE_PENDING) {
-        /* resend an ARP query here? */
-      }
+            /* still pending entry? (not expired) */
+            if (arp_table[i].state == ETHARP_STATE_PENDING) {
+            /* resend an ARP query here? */
+            }
 #endif /* ARP_QUEUEING */
+        }
     }
-  }
 }
 
 /**

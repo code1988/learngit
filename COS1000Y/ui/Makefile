@@ -35,7 +35,7 @@ all: $(TARGET)
 	$(CC) $(CFLAGS) $(INC_PATH) -c $< -o $@
 
 $(TARGET):$(OBJS)
-	$(CC) $(CFLAGS) -lpthread -lm -lrt -ldl -o $@ $^ $(LDFLAGS) $(LIBS) -lpthread -lm
+	$(CC) $(CFLAGS) -lpthread -lm -lrt -ldl -o $@ $^ $(LIBS) -lpthread -lm
 
 	chmod a+x $(TARGET)
 	@rm *~ -f

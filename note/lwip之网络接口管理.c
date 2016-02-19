@@ -86,7 +86,14 @@ err_t cpswif_init(struct netif *netif)
 	return ERR_OK;
 }
 
-环回接口的网络接口初始化函数如下：
+环回接口的网络接口初始化函数如下：(最重要的操作就是注册IP层数据包输出函数netif_loop_output)
+err_t netif_loopif_init(struct netif *netif)
+{
+  netif->name[0] = 'l';
+  netif->name[1] = 'o';
+  netif->output = netif_loop_output;
+  return ERR_OK;
+}
 
 完成初始化后的net_if结构体会被链入链表，协议栈使用2个全局变量管理这张链表：netif_list指向链表表头，netif_default指向缺省的net_if结构体
 *****************************************************************************************************************/
