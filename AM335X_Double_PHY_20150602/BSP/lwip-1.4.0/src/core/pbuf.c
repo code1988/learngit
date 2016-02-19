@@ -220,7 +220,7 @@ pbuf_alloc(pbuf_layer layer, u16_t length, pbuf_type type)
     switch (type) 
     {
         case PBUF_POOL:		// 这种类型的pbuf，意味着可能需要分配几个POOL
-        // 分配第一个POOL作为pbuf链表头
+        // 分配一个POOL作为pbuf链表头
         p = (struct pbuf *)memp_malloc(MEMP_PBUF_POOL);
         LWIP_DEBUGF(PBUF_DEBUG | LWIP_DBG_TRACE, ("pbuf_alloc: allocated pbuf %p\n", (void *)p));
         if (p == NULL) {
@@ -228,7 +228,7 @@ pbuf_alloc(pbuf_layer layer, u16_t length, pbuf_type type)
           return NULL;
         }
 
-		// 分配成功之后，初始化各个pbuf各字段
+		// 分配成功之后，初始化pbuf各字段
         p->type = type;
         p->next = NULL;
 
@@ -246,25 +246,29 @@ pbuf_alloc(pbuf_layer layer, u16_t length, pbuf_type type)
         LWIP_ASSERT("PBUF_POOL_BUFSIZE must be bigger than MEM_ALIGNMENT",
           (PBUF_POOL_BUFSIZE_ALIGNED - LWIP_MEM_ALIGN_SIZE(offset)) > 0 );
         /* set reference count (needed here in case we fail) */
-        p->ref = 1;
+        //p->ref = 1;
 
         /* now allocate the tail of the pbuf chain */
 
         /* remember first pbuf for linkage in next iteration */
         r = p;
-        /* remaining length to be allocated */
+        // 检查已分配的POOL是否满足长度要求，不满足则继续分配
         rem_len = length - p->len;
         /* any remaining pbufs to be allocated? */
         while (rem_len > 0) 
         {
+            // 分配一个新的POOL
             q = (struct pbuf *)memp_malloc(MEMP_PBUF_POOL);
-            if (q == NULL) {
-            PBUF_POOL_IS_EMPTY();
-            /* free chain so far allocated */
-            pbuf_free(p);
-            /* bail out unsuccesfully */
-            return NULL;
+            if (q == NULL) 
+            {
+                PBUF_POOL_IS_EMPTY();
+                /* free chain so far allocated */
+                pbuf_free(p);
+                /* bail out unsuccesfully */
+                return NULL;
             }
+
+            // 分配成功之后，初始化pbuf各字段,并将新的pbuf链接进链表
             q->type = type;
             q->flags = 0;
             q->next = NULL;
@@ -274,6 +278,7 @@ pbuf_alloc(pbuf_layer layer, u16_t length, pbuf_type type)
             LWIP_ASSERT("rem_len < max_u16_t", rem_len < 0xffff);
             q->tot_len = (u16_t)rem_len;
             /* this pbuf length is pool size, unless smaller sized tail */
+            // 除了作为链表头的pbuf，其余pbuf的数据区域都不需要预留首部，所以payload直接指向pbuf结构之后，len最大可取POOL尺寸
             q->len = LWIP_MIN((u16_t)rem_len, PBUF_POOL_BUFSIZE_ALIGNED);
             q->payload = (void *)((u8_t *)q + SIZEOF_STRUCT_PBUF);
             LWIP_ASSERT("pbuf_alloc: pbuf q->payload properly aligned",
@@ -282,7 +287,8 @@ pbuf_alloc(pbuf_layer layer, u16_t length, pbuf_type type)
                       ((u8_t*)p->payload + p->len <=
                        (u8_t*)p + SIZEOF_STRUCT_PBUF + PBUF_POOL_BUFSIZE_ALIGNED));
             q->ref = 1;
-            /* calculate remaining length to be allocated */
+
+            // 更新还要申请的长度
             rem_len -= q->len;
             /* remember this pbuf for linkage in next iteration */
             r = q;
@@ -291,13 +297,14 @@ pbuf_alloc(pbuf_layer layer, u16_t length, pbuf_type type)
         /*r->next = NULL;*/
 
     break;
-    case PBUF_RAM:
+    case PBUF_RAM:      // 这种类型的pbuf直接在内存堆中申请
         /* If pbuf is to be allocated in RAM, allocate memory for it. */
         p = (struct pbuf*)mem_malloc(LWIP_MEM_ALIGN_SIZE(SIZEOF_STRUCT_PBUF + offset) + LWIP_MEM_ALIGN_SIZE(length));
         if (p == NULL) {
           return NULL;
         }
-        /* Set up internal structure of the pbuf. */
+
+        // 分配成功之后，初始化pbuf各字段
         p->payload = LWIP_MEM_ALIGN((void *)((u8_t *)p + SIZEOF_STRUCT_PBUF + offset));
         p->len = p->tot_len = length;
         p->next = NULL;
@@ -307,7 +314,7 @@ pbuf_alloc(pbuf_layer layer, u16_t length, pbuf_type type)
                ((mem_ptr_t)p->payload % MEM_ALIGNMENT) == 0);
     break;
     /* pbuf references existing (non-volatile static constant) ROM payload? */
-    case PBUF_ROM:
+    case PBUF_ROM:      // 对于PBUF_ROM和PBUF_REF类型的pbuf，只分配pbuf结构
     /* pbuf references existing (externally allocated) RAM payload? */
     case PBUF_REF:
         /* only allocate memory for the pbuf structure */
@@ -318,7 +325,8 @@ pbuf_alloc(pbuf_layer layer, u16_t length, pbuf_type type)
                       (type == PBUF_ROM) ? "ROM" : "REF"));
           return NULL;
         }
-        /* caller must set this field properly, afterwards */
+
+        // 分配成功之后，初始化pbuf各字段,注意这两种类型的pbuf在初始化时payload字段首先置空
         p->payload = NULL;
         p->len = p->tot_len = length;
         p->next = NULL;
@@ -328,7 +336,8 @@ pbuf_alloc(pbuf_layer layer, u16_t length, pbuf_type type)
     LWIP_ASSERT("pbuf_alloc: erroneous type", 0);
     return NULL;
   }
-  /* set reference count */
+
+  // 到这里，pbuf申请成功，设置剩余字段，返回pbuf指针
   p->ref = 1;
   /* set flags */
   p->flags = 0;
@@ -455,9 +464,8 @@ pbuf_realloc(struct pbuf *p, u16_t new_len)
     /* we have now reached the new last pbuf (in q) */
     /* rem_len == desired length for pbuf q */
 
-    // 截断最后一个有效单元中的无效部分，并更新相应信息
-    /* shrink allocated memory for PBUF_RAM */
-    /* (other types merely adjust their length fields */
+    // 截断最后一个有效pbuf节点中的无效数据，并更新相应信息
+    // 注意，最后一个有效pbuf节点，只有是PBUF_RAM类型时，才需要释放无效数据的内存空间
     if ((q->type == PBUF_RAM) && (rem_len != q->len)) 
     {
         /* reallocate and adjust the length of the pbuf that will be split */
@@ -468,7 +476,7 @@ pbuf_realloc(struct pbuf *p, u16_t new_len)
     q->len = rem_len;
     q->tot_len = q->len;
 
-    // 释放pbuf链表上多余的无效单元占用的动态内存
+    // 释放pbuf链表上多余的作废pbuf节点,其实就是针对PBUF_POOL类型
     if (q->next != NULL) 
     {
         /* free remaining pbufs in chain */
@@ -529,54 +537,63 @@ pbuf_header(struct pbuf *p, s16_t header_size_increment)
 #endif
   }
 
-  type = p->type;
-  /* remember current payload pointer */
-  payload = p->payload;
+    type = p->type;
+    /* remember current payload pointer */
+    payload = p->payload;
 
-  /* pbuf types containing payloads? */
-  if (type == PBUF_RAM || type == PBUF_POOL) {
-    /* set new payload pointer */
-    p->payload = (u8_t *)p->payload - header_size_increment;
-    /* boundary check fails? */
-    if ((u8_t *)p->payload < (u8_t *)p + SIZEOF_STRUCT_PBUF) {
-      LWIP_DEBUGF( PBUF_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
-        ("pbuf_header: failed as %p < %p (not enough space for new header size)\n",
-        (void *)p->payload, (void *)(p + 1)));
-      /* restore old payload pointer */
-      p->payload = payload;
-      /* bail out unsuccesfully */
-      return 1;
-    }
-  /* pbuf types refering to external payloads? */
-  } else if (type == PBUF_REF || type == PBUF_ROM) {
-    /* hide a header in the payload? */
-    if ((header_size_increment < 0) && (increment_magnitude <= p->len)) {
-      /* increase payload pointer */
-      p->payload = (u8_t *)p->payload - header_size_increment;
-    } else {
-      /* cannot expand payload to front (yet!)
-       * bail out unsuccesfully */
-      return 1;
-    }
-  } else {
+    /* pbuf types containing payloads? */
+    if (type == PBUF_RAM || type == PBUF_POOL) 
+    {
+        /* set new payload pointer */
+        p->payload = (u8_t *)p->payload - header_size_increment;
+        /* boundary check fails? */
+        if ((u8_t *)p->payload < (u8_t *)p + SIZEOF_STRUCT_PBUF) 
+        {
+            LWIP_DEBUGF( PBUF_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
+            ("pbuf_header: failed as %p < %p (not enough space for new header size)\n",
+            (void *)p->payload, (void *)(p + 1)));
+            /* restore old payload pointer */
+            p->payload = payload;
+            /* bail out unsuccesfully */
+            return 1;
+        }
+        /* pbuf types refering to external payloads? */
+    } 
+    else if (type == PBUF_REF || type == PBUF_ROM) 
+    {
+        /* hide a header in the payload? */
+        if ((header_size_increment < 0) && (increment_magnitude <= p->len)) 
+        {
+          /* increase payload pointer */
+          p->payload = (u8_t *)p->payload - header_size_increment;
+        } 
+        else 
+        {
+          /* cannot expand payload to front (yet!)
+           * bail out unsuccesfully */
+          return 1;
+        }
+    } 
+    else 
+    {
     /* Unknown type */
     LWIP_ASSERT("bad pbuf type", 0);
     return 1;
-  }
-  /* modify pbuf length fields */
-  p->len += header_size_increment;
-  p->tot_len += header_size_increment;
+    }
+    /* modify pbuf length fields */
+    p->len += header_size_increment;
+    p->tot_len += header_size_increment;
 
-  LWIP_DEBUGF(PBUF_DEBUG | LWIP_DBG_TRACE, ("pbuf_header: old %p new %p (%"S16_F")\n",
+    LWIP_DEBUGF(PBUF_DEBUG | LWIP_DBG_TRACE, ("pbuf_header: old %p new %p (%"S16_F")\n",
     (void *)payload, (void *)p->payload, header_size_increment));
 
-  return 0;
+    return 0;
 }
 
 /**
  * Dereference a pbuf chain or queue and deallocate any no-longer-used
  * pbufs at the head of this chain or queue.
- *
+ *  数据包释放函数
  * Decrements the pbuf reference count. If it reaches zero, the pbuf is
  * deallocated.
  *
@@ -631,58 +648,68 @@ pbuf_free(struct pbuf *p)
   count = 0;
   /* de-allocate all consecutive pbufs from the head of the chain that
    * obtain a zero reference count after decrementing*/
-  while (p != NULL) {
-    u16_t ref;
-    SYS_ARCH_DECL_PROTECT(old_level);
-    /* Since decrementing ref cannot be guaranteed to be a single machine operation
-     * we must protect it. We put the new ref into a local variable to prevent
-     * further protection. */
-    SYS_ARCH_PROTECT(old_level);
-    /* all pbufs in a chain are referenced at least once */
-    LWIP_ASSERT("pbuf_free: p->ref > 0", p->ref > 0);
-    /* decrease reference count (number of pointers to pbuf) */
-    ref = --(p->ref);
-    SYS_ARCH_UNPROTECT(old_level);
-    /* this pbuf is no longer referenced to? */
-    if (ref == 0) {
-      /* remember next pbuf in chain for next iteration */
-      q = p->next;
-      LWIP_DEBUGF( PBUF_DEBUG | LWIP_DBG_TRACE, ("pbuf_free: deallocating %p\n", (void *)p));
-      type = p->type;
+    while (p != NULL) 
+    {
+        u16_t ref;
+        SYS_ARCH_DECL_PROTECT(old_level);
+        /* Since decrementing ref cannot be guaranteed to be a single machine operation
+         * we must protect it. We put the new ref into a local variable to prevent
+         * further protection. */
+        SYS_ARCH_PROTECT(old_level);
+        /* all pbufs in a chain are referenced at least once */
+        LWIP_ASSERT("pbuf_free: p->ref > 0", p->ref > 0);
+        /* decrease reference count (number of pointers to pbuf) */
+        ref = --(p->ref);   // 该pbuf引用次数减1
+        SYS_ARCH_UNPROTECT(old_level);
+        // 判断该pbuf的引用次数是否为0,为0则删除该pbuf，不为0则不删除
+        if (ref == 0) 
+        {
+            /* remember next pbuf in chain for next iteration */
+            q = p->next;
+            LWIP_DEBUGF( PBUF_DEBUG | LWIP_DBG_TRACE, ("pbuf_free: deallocating %p\n", (void *)p));
+            type = p->type;
 #if LWIP_SUPPORT_CUSTOM_PBUF
-      /* is this a custom pbuf? */
-      if ((p->flags & PBUF_FLAG_IS_CUSTOM) != 0) {
-        struct pbuf_custom *pc = (struct pbuf_custom*)p;
-        LWIP_ASSERT("pc->custom_free_function != NULL", pc->custom_free_function != NULL);
-        pc->custom_free_function(p);
-      } else
+            /* is this a custom pbuf? */
+            if ((p->flags & PBUF_FLAG_IS_CUSTOM) != 0) {
+            struct pbuf_custom *pc = (struct pbuf_custom*)p;
+            LWIP_ASSERT("pc->custom_free_function != NULL", pc->custom_free_function != NULL);
+            pc->custom_free_function(p);
+            } else
 #endif /* LWIP_SUPPORT_CUSTOM_PBUF */
-      {
-        /* is this a pbuf from the pool? */
-        if (type == PBUF_POOL) {
-          memp_free(MEMP_PBUF_POOL, p);
-        /* is this a ROM or RAM referencing pbuf? */
-        } else if (type == PBUF_ROM || type == PBUF_REF) {
-          memp_free(MEMP_PBUF, p);
-        /* type == PBUF_RAM */
-        } else {
-          mem_free(p);
+            {
+                // 判读要删除的pbuf类型,调用相应的内存管理函数删除
+                if (type == PBUF_POOL) 
+                {
+                  memp_free(MEMP_PBUF_POOL, p);
+                /* is this a ROM or RAM referencing pbuf? */
+                } 
+                else if (type == PBUF_ROM || type == PBUF_REF) 
+                {
+                  memp_free(MEMP_PBUF, p);
+                /* type == PBUF_RAM */
+                } 
+                else 
+                {
+                  mem_free(p);
+                }
+            }
+            count++;    // 更新删除的pbuf数量
+            /* proceed to next pbuf */
+            p = q;
+            /* p->ref > 0, this pbuf is still referenced to */
+            /* (and so the remaining pbufs in chain as well) */
+        } 
+        else 
+        {
+            LWIP_DEBUGF( PBUF_DEBUG | LWIP_DBG_TRACE, ("pbuf_free: %p has ref %"U16_F", ending here.\n", (void *)p, ref));
+            /* stop walking through the chain */
+            p = NULL;
         }
-      }
-      count++;
-      /* proceed to next pbuf */
-      p = q;
-    /* p->ref > 0, this pbuf is still referenced to */
-    /* (and so the remaining pbufs in chain as well) */
-    } else {
-      LWIP_DEBUGF( PBUF_DEBUG | LWIP_DBG_TRACE, ("pbuf_free: %p has ref %"U16_F", ending here.\n", (void *)p, ref));
-      /* stop walking through the chain */
-      p = NULL;
     }
-  }
-  PERF_STOP("pbuf_free");
-  /* return number of de-allocated pbufs */
-  return count;
+    PERF_STOP("pbuf_free");
+
+    // 返回成功删除的pbuf个数
+    return count;
 }
 
 /**

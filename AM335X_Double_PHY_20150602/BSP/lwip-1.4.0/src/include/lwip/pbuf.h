@@ -71,10 +71,10 @@ typedef enum {
 
 struct pbuf {
   /** next pbuf in singly linked pbuf chain */
-  struct pbuf *next;
+  struct pbuf *next;        // 指向下一个pbuf结构    
 
   /** pointer to the actual data in the buffer */
-  void *payload;
+  void *payload;            // 数据指针，指向该pbuf所记录的数据区域
 
   /**
    * total length of this buffer and all next buffers in chain
@@ -83,23 +83,23 @@ struct pbuf {
    * For non-queue packet chains this is the invariant:
    * p->tot_len == p->len + (p->next? p->next->tot_len: 0)
    */
-  u16_t tot_len;
+  u16_t tot_len;            // 当前pbuf和后续所有pbuf中包含的数据总长
 
   /** length of this buffer */
-  u16_t len;
+  u16_t len;                // 当前pbuf单元记录的数据长度
 
   /** pbuf_type as u8_t instead of enum to save space */
-  u8_t /*pbuf_type*/ type;
+  u8_t /*pbuf_type*/ type;  // 当前pbuf单元的类型
 
   /** misc flags */
-  u8_t flags;
+  u8_t flags;               // 状态位，未用到
 
   /**
    * the reference count always equals the number of pointers
    * that refer to this pbuf. This can be pointers from an application,
    * the stack itself, or pbuf->next pointers from a chain.
    */
-  u16_t ref;
+  u16_t ref;                // 指向该pbuf的指针数，即该pbuf被引用的次数
 };
 
 #if LWIP_SUPPORT_CUSTOM_PBUF

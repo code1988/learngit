@@ -7,23 +7,7 @@ lwip´ÓÂß¼­ÉÏ¿´Ò²ÊÇ·ÖÎª4²ã£ºÁ´Â·²ã£¨ARP¡¢RARP£©¡¢ÍøÂç²ã(IP¡¢£¨ICMP¡¢IGMPÕâÁ½¸öĞ­Ò
 	²ÉÓÃucos-iiÄÚ´æ¹ÜÀíÏµÍ³£¬¼´ÉêÇëÒ»¿éÄÚ´æ£¬·Ö¸î³ÉÕûÊı¸ö´óĞ¡ÏàÍ¬µÄÄÚ´æ¿é
 	
 Ò».	Á´Â·²ã
-	¸Ã²ã×îºËĞÄµÄ½á¹¹Ìå:	struct netif{
-							struct netif *next;			// Ö¸ÏòÏÂÒ»¸önetif½á¹¹ÌåÖ¸Õë,Ë«Íø¿¨Çı¶¯ÕâÀï¾ÍĞèÒªÖ¸ÏòÁíÒ»¿éÍø¿¨µÄnetif½á¹¹Ìå
-							struct ip_addr ip_addr;		// IP
-							struct ip_addr netmask;		// ×ÓÍøÑÚÂë
-							struct ip_addr gw;			// Íø¹Ø
-							err_t (*input)(struct pbuf *p,struct netif *inp);							// µ÷ÓÃinputº¯Êı¿ÉÒÔ´ÓÍø¿¨ÉÏÈ¡µÃÒ»¸öÊı¾İ°ü,Ìá½»¸øIP²ã
-							err_t (*output)(struct netif *netif,struct pbuf *p,struct ip_addr *ipaddr);	// IP²ãµ÷ÓÃoutputº¯Êı¿ÉÒÔÏòÍø¿¨·¢ËÍÒ»¸öÊı¾İ°ü
-							err_t (*linkoutput)(struct netif *netif,struct pbuf *p);					// ARPÄ£¿éµ÷ÓÃlinkoutputº¯Êı¿ÉÒÔÏòÍø¿¨·¢ËÍÒ»¸öÊı¾İ°ü,outputº¯Êı×îÖÕÒ²ÊÇµ÷ÓÃlinkoutput·¢Êı¾İ°üµÄ
-							void *status;						// ÓÃ»§×Ô¶¨ÒåÖ¸Õë£¬ÏÖÓÃÓÚÖ¸Ïòcpswportif½á¹¹Ìå£¬±£´æÁËAM3352µÄCPSWÄ£¿éºÅ£¨Ö»ÓĞÒ»¸ö0ºÅÄ£¿é£©¡¢Íø¿ÚºÅ£¨ÓĞ1ºÅ¡¢2ºÅÁ½¸öÍø¿Ú£©¡¢MACµØÖ·
-							u8_t hwaddr_len;					// MACµØÖ·³¤¶È£¬¹Ì¶¨6×Ö½Ú
-							u8_t hwaddr[NETIF_MAX_HWADDR_LEN];	// MACµØÖ·
-							u16_t mtu;							// ÍøÂç´«Êä×î´óµ¥Ôª£¬Ò»°ãÊÇ¹Ì¶¨Öµ1500
-							u8_t flags;							// Íø¿¨×´Ì¬¿ØÖÆ×Ö¶Î£¬°üÀ¨NETIF_FLAG_BROADCAST - Íø¿¨¹ã²¥Ê¹ÄÜ£¬NETIF_FLAG_ETHARP - ARP¹¦ÄÜÊ¹ÄÜ£¬NETIF_FLAG_LINK_UP - Ó²¼şÁ´Â·Á¬½ÓÊ¹ÄÜ£¬NETIF_FLAG_UP - Íø¿¨¹¦ÄÜÊ¹ÄÜ
-							char name[2];						// ÍøÂçÉè±¸Çı¶¯ÀàĞÍ,ÔİÊ±Î´ÓÃµ½
-							u8_t num;							// netifµÄ±àºÅ£¬Ë«Íø¿¨µÄ»°¾ÍÊÇ1¡¢2
-						}
-						netif½á¹¹ÌåÓÃÀ´ÃèÊöÒ»¸öÓ²¼şÍøÂç½Ó¿Ú
+
 	
 	Í¨¹ıµ÷ÓÃnetif_addº¯ÊıÍê³Énet_if½á¹¹ÌåµÄ³õÊ¼»¯£º
 						/* Function Name: struct netif *netif_add(struct netif *netif,ip_addr *ipaddr,ip_addr *netmask,ip_addr *gw,void *state,err_t (* init)(struct netif *netif),err_t (*input)(struct pbuf *p,struct netif *inp))
