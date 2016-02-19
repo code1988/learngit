@@ -451,7 +451,7 @@ etharp_send_ip(struct netif *netif, struct pbuf *p, struct eth_addr *src, struct
 
 /**
  * Update (or insert) a IP/MAC address pair in the ARP cache.
- *
+ *  在ARP缓存表中更新/插入指定的IP/MAC地址对
  * If a pending entry is resolved, any queued packets will be sent
  * at this point.
  *
@@ -470,28 +470,21 @@ etharp_send_ip(struct netif *netif, struct pbuf *p, struct eth_addr *src, struct
 static err_t
 update_arp_entry(struct netif *netif, ip_addr_t *ipaddr, struct eth_addr *ethaddr, u8_t flags)
 {
+    s8_t i;
 
-    DBG_ARP("in update_arp_entry 0:\r\n");
-
-  s8_t i;
-  LWIP_ASSERT("netif->hwaddr_len == ETHARP_HWADDR_LEN", netif->hwaddr_len == ETHARP_HWADDR_LEN);
-  LWIP_DEBUGF(ETHARP_DEBUG | LWIP_DBG_TRACE, ("update_arp_entry: %"U16_F".%"U16_F".%"U16_F".%"U16_F" - %02"X16_F":%02"X16_F":%02"X16_F":%02"X16_F":%02"X16_F":%02"X16_F"\n",
-    ip4_addr1_16(ipaddr), ip4_addr2_16(ipaddr), ip4_addr3_16(ipaddr), ip4_addr4_16(ipaddr),
-    ethaddr->addr[0], ethaddr->addr[1], ethaddr->addr[2],
-    ethaddr->addr[3], ethaddr->addr[4], ethaddr->addr[5]));
-  /* non-unicast address? */
-  if (ip_addr_isany(ipaddr) ||
+    /* non-unicast address? */
+    if (ip_addr_isany(ipaddr) ||
       ip_addr_isbroadcast(ipaddr, netif) ||
       ip_addr_ismulticast(ipaddr)) {
     LWIP_DEBUGF(ETHARP_DEBUG | LWIP_DBG_TRACE, ("update_arp_entry: will not add non-unicast IP address to ARP cache\n"));
     return ERR_ARG;
-  }
-  /* find or create ARP entry */
-  i = find_entry(ipaddr, flags);
-  /* bail out if no entry could be found */
-  if (i < 0) {
+    }
+    /* find or create ARP entry */
+    i = find_entry(ipaddr, flags);
+    /* bail out if no entry could be found */
+    if (i < 0) {
     return (err_t)i;
-  }
+    }
 
 #if ETHARP_SUPPORT_STATIC_ENTRIES
   if (flags & ETHARP_FLAG_STATIC_ENTRY) {
@@ -500,22 +493,22 @@ update_arp_entry(struct netif *netif, ip_addr_t *ipaddr, struct eth_addr *ethadd
   }
 #endif /* ETHARP_SUPPORT_STATIC_ENTRIES */
 
-  /* mark it stable */
-  arp_table[i].state = ETHARP_STATE_STABLE;
+    /* mark it stable */
+    arp_table[i].state = ETHARP_STATE_STABLE;
 
 #if LWIP_SNMP
   /* record network interface */
   arp_table[i].netif = netif;
 #endif /* LWIP_SNMP */
-  /* insert in SNMP ARP index tree */
-  snmp_insert_arpidx_tree(netif, &arp_table[i].ipaddr);
+    /* insert in SNMP ARP index tree */
+    snmp_insert_arpidx_tree(netif, &arp_table[i].ipaddr);
 
-  LWIP_DEBUGF(ETHARP_DEBUG | LWIP_DBG_TRACE, ("update_arp_entry: updating stable entry %"S16_F"\n", (s16_t)i));
-  /* update address */
-  ETHADDR32_COPY(&arp_table[i].ethaddr, ethaddr);
-  /* reset time stamp */
-  arp_table[i].ctime = 0;
-  /* this is where we will send out queued packets! */
+    LWIP_DEBUGF(ETHARP_DEBUG | LWIP_DBG_TRACE, ("update_arp_entry: updating stable entry %"S16_F"\n", (s16_t)i));
+    /* update address */
+    ETHADDR32_COPY(&arp_table[i].ethaddr, ethaddr);
+    /* reset time stamp */
+    arp_table[i].ctime = 0;
+    /* this is where we will send out queued packets! */
 #if ARP_QUEUEING
   while (arp_table[i].q != NULL) {
     struct pbuf *p;
@@ -528,20 +521,18 @@ update_arp_entry(struct netif *netif, ip_addr_t *ipaddr, struct eth_addr *ethadd
     /* now queue entry can be freed */
     memp_free(MEMP_ARP_QUEUE, q);
 #else /* ARP_QUEUEING */
-  if (arp_table[i].q != NULL) {
-    struct pbuf *p = arp_table[i].q;
-    arp_table[i].q = NULL;
+    if (arp_table[i].q != NULL) 
+    {
+        struct pbuf *p = arp_table[i].q;
+        arp_table[i].q = NULL;
 #endif /* ARP_QUEUEING */
-    /* send the queued IP packet */
+        /* send the queued IP packet */
 
-
-    DBG_BUF_ARP(p->payload,p->len,"int update_arp_entry 2:send the queued IP packet");
-
-    etharp_send_ip(netif, p, (struct eth_addr*)(netif->hwaddr), ethaddr);
-    /* free the queued IP packet */
-    pbuf_free(p);
-  }
-  return ERR_OK;
+        etharp_send_ip(netif, p, (struct eth_addr*)(netif->hwaddr), ethaddr);
+        /* free the queued IP packet */
+        pbuf_free(p);
+    }
+    return ERR_OK;
 }
 
 #if ETHARP_SUPPORT_STATIC_ENTRIES
@@ -637,7 +628,7 @@ etharp_find_addr(struct netif *netif, ip_addr_t *ipaddr,
 #if ETHARP_TRUST_IP_MAC
 /**
  * Updates the ARP table using the given IP packet.
- *
+ *  使用收到的IP包更新ARP缓存表
  * Uses the incoming IP packet's source address to update the
  * ARP cache for the local network. The function does not alter
  * or free the packet. This function must be called before the
@@ -670,7 +661,7 @@ etharp_ip_input(struct netif *netif, struct pbuf *p)
 
   ip_addr_copy(iphdr_src, iphdr->src);
 
-  /* source is not on the local network? */
+  // 如果对方IP与本地IP在不同网段，则直接返回
   if (!ip_addr_netcmp(&iphdr_src, &(netif->ip_addr), &(netif->netmask))) {
     /* do nothing */
     return;
@@ -680,7 +671,8 @@ etharp_ip_input(struct netif *netif, struct pbuf *p)
   /* update the source IP address in the cache, if present */
   /* @todo We could use ETHARP_FLAG_TRY_HARD if we think we are going to talk
    * back soon (for example, if the destination IP address is ours. */
-  update_arp_entry(netif, &iphdr_src, &(ethhdr->src), ETHARP_FLAG_FIND_ONLY);
+    // 只有与本地IP在同网段的IP才会更新ARP缓存表
+    update_arp_entry(netif, &iphdr_src, &(ethhdr->src), ETHARP_FLAG_FIND_ONLY);
 }
 #endif /* ETHARP_TRUST_IP_MAC */
 
@@ -702,65 +694,56 @@ etharp_ip_input(struct netif *netif, struct pbuf *p)
 static void
 etharp_arp_input(struct netif *netif, struct eth_addr *ethaddr, struct pbuf *p)
 {
-
-  DBG_ARP("in etharp_arp_input 0:\r\n");
-
-
-  struct etharp_hdr *hdr;
-  struct eth_hdr *ethhdr;
-  /* these are aligned properly, whereas the ARP header fields might not be */
-  ip_addr_t sipaddr, dipaddr;
-  u8_t for_us;
+    struct etharp_hdr *hdr;
+    struct eth_hdr *ethhdr;
+    /* these are aligned properly, whereas the ARP header fields might not be */
+    ip_addr_t sipaddr, dipaddr;
+    u8_t for_us;  // 标记该ARP包是否是给本机的
 #if LWIP_AUTOIP
   const u8_t * ethdst_hwaddr;
 #endif /* LWIP_AUTOIP */
 
-  LWIP_ERROR("netif != NULL", (netif != NULL), return;);
+    LWIP_ERROR("netif != NULL", (netif != NULL), return;);
 
-  /* drop short ARP packets: we have to check for p->len instead of p->tot_len here
+    /* drop short ARP packets: we have to check for p->len instead of p->tot_len here
      since a struct etharp_hdr is pointed to p->payload, so it musn't be chained! */
      //SIZEOF_ETHARP_PACKET=42
-  if (p->len < SIZEOF_ETHARP_PACKET) {
-    LWIP_DEBUGF(ETHARP_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_LEVEL_WARNING,
-      ("etharp_arp_input: packet dropped, too short (%"S16_F"/%"S16_F")\n", p->tot_len,
-      (s16_t)SIZEOF_ETHARP_PACKET));
-    ETHARP_STATS_INC(etharp.lenerr);
-    ETHARP_STATS_INC(etharp.drop);
-    pbuf_free(p);
-    DBG_ARP("in etharp_arp_input 1:recv arp frame err\r\n");
-    return;
-  }
+     // 整个ARP包必须放在一个pbuf中，否则丢弃
+    if (p->len < SIZEOF_ETHARP_PACKET) 
+    {
+        LWIP_DEBUGF(ETHARP_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_LEVEL_WARNING,
+          ("etharp_arp_input: packet dropped, too short (%"S16_F"/%"S16_F")\n", p->tot_len,
+          (s16_t)SIZEOF_ETHARP_PACKET));
+        ETHARP_STATS_INC(etharp.lenerr);
+        ETHARP_STATS_INC(etharp.drop);
+        pbuf_free(p);
+        return;
+    }
 
-
-    DBG_ARP("in etharp_arp_input 2:recv arp frame len=%d,tot_len=%d \r\n",p->len,p->tot_len);
-    DBG_BUF_ARP(p->payload, p->len, "in etharp_arp_input 3:recv arp frame");
-
-
-  ethhdr = (struct eth_hdr *)p->payload;
-  hdr = (struct etharp_hdr *)((u8_t*)ethhdr + SIZEOF_ETH_HDR); //SIZEOF_ETH_HDR=14
+    ethhdr = (struct eth_hdr *)p->payload;                      // 获取以太网协议首部       
+    hdr = (struct etharp_hdr *)((u8_t*)ethhdr + SIZEOF_ETH_HDR);// 获取ARP协议首部
 #if ETHARP_SUPPORT_VLAN
   if (ethhdr->type == PP_HTONS(ETHTYPE_VLAN)) {
     hdr = (struct etharp_hdr *)(((u8_t*)ethhdr) + SIZEOF_ETH_HDR + SIZEOF_VLAN_HDR);
   }
 #endif /* ETHARP_SUPPORT_VLAN */
 
-  /* RFC 826 "Packet Reception": */
-  if ((hdr->hwtype != PP_HTONS(HWTYPE_ETHERNET)) ||
+    // ARP包的合法性检测，丢弃那些类型、长度不合法的ARP包
+    if ((hdr->hwtype != PP_HTONS(HWTYPE_ETHERNET)) ||
       (hdr->hwlen != ETHARP_HWADDR_LEN) ||
       (hdr->protolen != sizeof(ip_addr_t)) ||
-      (hdr->proto != PP_HTONS(ETHTYPE_IP)))  {
-    LWIP_DEBUGF(ETHARP_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_LEVEL_WARNING,
-      ("etharp_arp_input: packet dropped, wrong hw type, hwlen, proto, protolen or ethernet type (%"U16_F"/%"U16_F"/%"U16_F"/%"U16_F")\n",
-      hdr->hwtype, hdr->hwlen, hdr->proto, hdr->protolen));
-    ETHARP_STATS_INC(etharp.proterr);
-    ETHARP_STATS_INC(etharp.drop);
+      (hdr->proto != PP_HTONS(ETHTYPE_IP)))  
+    {
+        LWIP_DEBUGF(ETHARP_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_LEVEL_WARNING,
+          ("etharp_arp_input: packet dropped, wrong hw type, hwlen, proto, protolen or ethernet type (%"U16_F"/%"U16_F"/%"U16_F"/%"U16_F")\n",
+          hdr->hwtype, hdr->hwlen, hdr->proto, hdr->protolen));
+        ETHARP_STATS_INC(etharp.proterr);
+        ETHARP_STATS_INC(etharp.drop);
 
-
-    DBG_ARP("in etharp_arp_input 4:recv arp frame err \r\n");
-    pbuf_free(p);
-    return;
-  }
-  ETHARP_STATS_INC(etharp.recv);
+        pbuf_free(p);
+        return;
+    }
+    ETHARP_STATS_INC(etharp.recv);
 
 #if LWIP_AUTOIP
   /* We have to check if a host already has configured our random
@@ -769,117 +752,117 @@ etharp_arp_input(struct netif *netif, struct eth_addr *ethaddr, struct pbuf *p)
   autoip_arp_reply(netif, hdr);
 #endif /* LWIP_AUTOIP */
 
-  /* Copy struct ip_addr2 to aligned ip_addr, to support compilers without
-   * structure packing (not using structure copy which breaks strict-aliasing rules). */
-  IPADDR2_COPY(&sipaddr, &hdr->sipaddr);
-  IPADDR2_COPY(&dipaddr, &hdr->dipaddr);
+    /* Copy struct ip_addr2 to aligned ip_addr, to support compilers without
+    * structure packing (not using structure copy which breaks strict-aliasing rules). */
+    IPADDR2_COPY(&sipaddr, &hdr->sipaddr);
+    IPADDR2_COPY(&dipaddr, &hdr->dipaddr);
 
-  /* this interface is not configured? */
-  if (ip_addr_isany(&netif->ip_addr)) {
-    for_us = 0;
-  } else {
-    /* ARP packet directed to us? */
-    for_us = (u8_t)ip_addr_cmp(&dipaddr, &(netif->ip_addr));
-  }
+    // 判断该ARP包是否是发给本机的
+    if (ip_addr_isany(&netif->ip_addr)) 
+    {
+        // 如果网卡地址未配置则肯定不是给本机的
+        for_us = 0;
+    } 
+    else 
+    {
+        // 如果ARP包中的目的IP跟本地IP相等，则该ARP是给本机的
+        for_us = (u8_t)ip_addr_cmp(&dipaddr, &(netif->ip_addr));
+    }
 
-  /* ARP message directed to us?
+    /* ARP message directed to us?
       -> add IP address in ARP cache; assume requester wants to talk to us,
          can result in directly sending the queued packets for this host.
      ARP message not directed to us?
       ->  update the source IP address in the cache, if present */
-  update_arp_entry(netif, &sipaddr, &(hdr->shwaddr),
+    // 不管该ARP是否是给本机的，都需要更新ARP缓存表
+    update_arp_entry(netif, &sipaddr, &(hdr->shwaddr),
                    for_us ? ETHARP_FLAG_TRY_HARD : ETHARP_FLAG_FIND_ONLY);
 
-  /* now act on the message itself */
-  switch (hdr->opcode) {
-  /* ARP request? */
-  case PP_HTONS(ARP_REQUEST):
-    /* ARP request. If it asked for our address, we send out a
-     * reply. In any case, we time-stamp any existing ARP entry,
-     * and possiby send out an IP packet that was queued on it. */
-
-    LWIP_DEBUGF (ETHARP_DEBUG | LWIP_DBG_TRACE, ("etharp_arp_input: incoming ARP request\n"));
-    DBG_ARP("in etharp_arp_input 5:etharp_arp_input: incoming ARP request\r\n");
-
-    /* ARP request for our address? */
-    if (for_us)
+    // 区分ARP请求包、应答包，做相应处理
+    switch (hdr->opcode) 
     {
+        /* ARP request? */
+        case PP_HTONS(ARP_REQUEST): // 如果是ARP请求包
+            /* ARP request. If it asked for our address, we send out a
+             * reply. In any case, we time-stamp any existing ARP entry,
+             * and possiby send out an IP packet that was queued on it. */
 
-      LWIP_DEBUGF(ETHARP_DEBUG | LWIP_DBG_TRACE, ("etharp_arp_input: replying to ARP request for our IP address\n"));
+            LWIP_DEBUGF (ETHARP_DEBUG | LWIP_DBG_TRACE, ("etharp_arp_input: incoming ARP request\n"));
 
-      DBG_ARP("in etharp_arp_input 6:etharp_arp_input: replying to ARP request for our IP address\r\n");
+            // 如果是发给本机的ARP请求包
+            if (for_us)
+            {
 
+                LWIP_DEBUGF(ETHARP_DEBUG | LWIP_DBG_TRACE, ("etharp_arp_input: replying to ARP request for our IP address\n"));
 
-      /* Re-use pbuf to send ARP reply.
-         Since we are re-using an existing pbuf, we can't call etharp_raw since
-         that would allocate a new pbuf. */
-      hdr->opcode = htons(ARP_REPLY);
+                /* Re-use pbuf to send ARP reply.
+                 Since we are re-using an existing pbuf, we can't call etharp_raw since
+                 that would allocate a new pbuf. */
+                // 重复利用该ARP请求包的数据空间，生成ARP响应包 
+                hdr->opcode = htons(ARP_REPLY);                 // 设置ARP响应类型
 
-      IPADDR2_COPY(&hdr->dipaddr, &hdr->sipaddr);
-      IPADDR2_COPY(&hdr->sipaddr, &netif->ip_addr);
+                IPADDR2_COPY(&hdr->dipaddr, &hdr->sipaddr);     // 设置目的IP
+                IPADDR2_COPY(&hdr->sipaddr, &netif->ip_addr);   // 设置源IP
 
-      LWIP_ASSERT("netif->hwaddr_len must be the same as ETHARP_HWADDR_LEN for etharp!",
-                  (netif->hwaddr_len == ETHARP_HWADDR_LEN));
+                LWIP_ASSERT("netif->hwaddr_len must be the same as ETHARP_HWADDR_LEN for etharp!",
+                          (netif->hwaddr_len == ETHARP_HWADDR_LEN));
 
-        if(netif->hwaddr_len != ETHARP_HWADDR_LEN)
-        {
-            DBG_ALARM("in etharp_arp_input 7:etharp_arp_input: netif->hwaddr_len must be the same as ETHARP_HWADDR_LEN for etharp\r\n");
-        }
+                if(netif->hwaddr_len != ETHARP_HWADDR_LEN)
+                {
+                    DBG_ALARM("in etharp_arp_input 7:etharp_arp_input: netif->hwaddr_len must be the same as ETHARP_HWADDR_LEN for etharp\r\n");
+                }
 
 
 
 #if LWIP_AUTOIP
-      /* If we are using Link-Local, all ARP packets that contain a Link-Local
-       * 'sender IP address' MUST be sent using link-layer broadcast instead of
-       * link-layer unicast. (See RFC3927 Section 2.5, last paragraph) */
-      ethdst_hwaddr = ip_addr_islinklocal(&netif->ip_addr) ? (u8_t*)(ethbroadcast.addr) : hdr->shwaddr.addr;
+          /* If we are using Link-Local, all ARP packets that contain a Link-Local
+           * 'sender IP address' MUST be sent using link-layer broadcast instead of
+           * link-layer unicast. (See RFC3927 Section 2.5, last paragraph) */
+          ethdst_hwaddr = ip_addr_islinklocal(&netif->ip_addr) ? (u8_t*)(ethbroadcast.addr) : hdr->shwaddr.addr;
 #endif /* LWIP_AUTOIP */
 
-      ETHADDR16_COPY(&hdr->dhwaddr, &hdr->shwaddr);
+          ETHADDR16_COPY(&hdr->dhwaddr, &hdr->shwaddr);     // 设置ARP首部中的目的MAC
 #if LWIP_AUTOIP
-      ETHADDR16_COPY(&ethhdr->dest, ethdst_hwaddr);
+          ETHADDR16_COPY(&ethhdr->dest, ethdst_hwaddr);
 #else  /* LWIP_AUTOIP */
-      ETHADDR16_COPY(&ethhdr->dest, &hdr->shwaddr);
+          ETHADDR16_COPY(&ethhdr->dest, &hdr->shwaddr);     // 设置以太网首部中的目的MAC
 #endif /* LWIP_AUTOIP */
-      ETHADDR16_COPY(&hdr->shwaddr, ethaddr);
-      ETHADDR16_COPY(&ethhdr->src, ethaddr);
+          ETHADDR16_COPY(&hdr->shwaddr, ethaddr);           // 设置ARP首部中的源MAC
+          ETHADDR16_COPY(&ethhdr->src, ethaddr);            // 设置以太网首部中的源MAC
 
-      /* hwtype, hwaddr_len, proto, protolen and the type in the ethernet header
-         are already correct, we tested that before */
+          /* hwtype, hwaddr_len, proto, protolen and the type in the ethernet header
+             are already correct, we tested that before */
 
-      /* return ARP reply */
-
-      DBG_ARP("in etharp_arp_input 8:len=%d,tot_len=%d\r\n",p->len,p->tot_len);
+          /* return ARP reply */
 
 #if 0 /*hxj amend,date 2014-12-22 12:45*/
-      if( (64 == p->len) &&(64 == p->tot_len))
-      {
-        p->len=60;
-        p->tot_len=60;
-        DBG_ARP("in etharp_arp_input 81:len=64->60, tot_len=64->60\r\n");
-      }
+          if( (64 == p->len) &&(64 == p->tot_len))
+          {
+            p->len=60;
+            p->tot_len=60;
+            DBG_ARP("in etharp_arp_input 81:len=64->60, tot_len=64->60\r\n");
+          }
 #endif
-
-      DBG_BUF_ARP(p->payload,p->len,"in etharp_arp_input 9:arp_send:");
-
-      netif->linkoutput(netif, p);
-    /* we are not configured? */
-    } else if (ip_addr_isany(&netif->ip_addr)) {
-      /* { for_us == 0 and netif->ip_addr.addr == 0 } */
-      LWIP_DEBUGF(ETHARP_DEBUG | LWIP_DBG_TRACE, ("etharp_arp_input: we are unconfigured, ARP request ignored.\n"));
-       DBG_ARP("in etharp_arp_input 10:we are unconfigured, ARP request ignored \r\n");
-    /* request was not directed to us */
-    } else {
-      /* { for_us == 0 and netif->ip_addr.addr != 0 } */
-      LWIP_DEBUGF(ETHARP_DEBUG | LWIP_DBG_TRACE, ("etharp_arp_input: ARP request was not for us.\n"));
-      DBG_ARP("in etharp_arp_input 11:ARP request was not for us \r\n");
-    }
-    break;
-  case PP_HTONS(ARP_REPLY):
-    /* ARP reply. We already updated the ARP cache earlier. */
-    LWIP_DEBUGF(ETHARP_DEBUG | LWIP_DBG_TRACE, ("etharp_arp_input: incoming ARP reply\n"));
-
-    DBG_ARP("in etharp_arp_input 12:incoming ARP reply \r\n");
+                // 直接调用链路层输出函数发送ARP包
+                netif->linkoutput(netif, p);
+                /* we are not configured? */
+            }
+            else if (ip_addr_isany(&netif->ip_addr)) 
+            {
+                /* { for_us == 0 and netif->ip_addr.addr == 0 } */
+                LWIP_DEBUGF(ETHARP_DEBUG | LWIP_DBG_TRACE, ("etharp_arp_input: we are unconfigured, ARP request ignored.\n"));
+                /* request was not directed to us */
+            } 
+            else 
+            {
+                /* { for_us == 0 and netif->ip_addr.addr != 0 } */
+                LWIP_DEBUGF(ETHARP_DEBUG | LWIP_DBG_TRACE, ("etharp_arp_input: ARP request was not for us.\n"));
+            }
+            break;
+    case PP_HTONS(ARP_REPLY):       // 如果是ARP应答包
+        /* ARP reply. We already updated the ARP cache earlier. */
+        LWIP_DEBUGF(ETHARP_DEBUG | LWIP_DBG_TRACE, ("etharp_arp_input: incoming ARP reply\n"));
+        // 因为前面已经更新了ARP缓存表，所以这里不作任何处理
 
 
 #if (LWIP_DHCP && DHCP_DOES_ARP_CHECK)
@@ -889,21 +872,16 @@ etharp_arp_input(struct netif *netif, struct eth_addr *ethaddr, struct pbuf *p)
      * @todo How should we handle redundant (fail-over) interfaces? */
     dhcp_arp_reply(netif, &sipaddr);
 #endif /* (LWIP_DHCP && DHCP_DOES_ARP_CHECK) */
-    break;
-  default:
-    LWIP_DEBUGF(ETHARP_DEBUG | LWIP_DBG_TRACE, ("etharp_arp_input: ARP unknown opcode type %"S16_F"\n", htons(hdr->opcode)));
-
-    DBG_ARP("in etharp_arp_input 13:etharp_arp_input: ARP unknown opcode type \r\n");
+        break;
+    default:
+        LWIP_DEBUGF(ETHARP_DEBUG | LWIP_DBG_TRACE, ("etharp_arp_input: ARP unknown opcode type %"S16_F"\n", htons(hdr->opcode)));
 
 
-    ETHARP_STATS_INC(etharp.err);
-    break;
-  }
-  /* free ARP packet */
-  pbuf_free(p);
-
-    DBG_ARP("in etharp_arp_input 100: \r\n");
-
+        ETHARP_STATS_INC(etharp.err);
+        break;
+    }
+    /* free ARP packet */
+    pbuf_free(p);
 
 }
 
@@ -1425,7 +1403,7 @@ ethernet_input(struct pbuf *p, struct netif *netif)
                 goto free_and_return;
             }
 #if ETHARP_TRUST_IP_MAC
-            /* update ARP table */
+            // 使用收到的IP包更新ARP缓存表
             etharp_ip_input(netif, p);
 #endif /* ETHARP_TRUST_IP_MAC */
             // 调整pbuf包中的数据指针，使略过MAC头

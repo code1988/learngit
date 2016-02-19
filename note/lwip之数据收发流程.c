@@ -7,26 +7,7 @@ lwip´ÓÂß¼­ÉÏ¿´Ò²ÊÇ·ÖÎª4²ã£ºÁ´Â·²ã¡¢ÍøÂç²ã(IP¡¢ARP¡¢£¨ICMP¡¢IGMPÕâÁ½¸öĞ­ÒéÊÇÍøÂç²
 	²ÉÓÃucos-iiÄÚ´æ¹ÜÀíÏµÍ³£¬¼´ÉêÇëÒ»¿éÄÚ´æ£¬·Ö¸î³ÉÕûÊı¸ö´óĞ¡ÏàÍ¬µÄÄÚ´æ¿é
 	
 Ò».	Á´Â·²ã
-	ÒÔÌ«ÍøÊı¾İ°ü»ù±¾¸ñÊ½£º		Ä¿µÄMACµØÖ·£¨6×Ö½Ú£©	+ Ô´MACµØÖ·£¨6×Ö½Ú£© 	+ ÀàĞÍ£¨2×Ö½Ú£© 	+ Êı¾İ£¨46-1500×Ö½Ú£© 	+ Ğ£Ñé£¨4×Ö½Ú£©
-	ÒÔÌ«ÍøÊı¾İ°ü×î´óÖ¡³¤1518×Ö½Ú£¬×îĞ¡Ö¡³¤64×Ö½Ú£¬µ±ÎŞ·¨Âú×ã×îĞ¡64×Ö½Úºó£¬Ä©Î²ÓÃtrailer×Ö¶ÎÀ´Ìî³ä²¹×ã64×Ö½Ú
-	lwipÊ¹ÓÃÒ»¸öeth_hdrµÄ½á¹¹ÌåÀ´ÃèÊöÒÔÌ«ÍøÊı¾İ°ü°üÍ·µÄ14¸ö×Ö½Ú£º
-																struct eth_hdr{
-																	struct eth_addr dest;	// Ä¿µÄMACµØÖ·
-																	struct eth_addr src;	// Ô´MACµØÖ·
-																	u16_t type;				// ÀàĞÍ£¬Ö÷ÒªÓÃµ½2ÖÖ£º0x0800 - IP	0x0806 - ARP
-																}
-	lwipÊ¹ÓÃÒ»¸öetharp_hdrµÄ½á¹¹ÌåÀ´ÃèÊöARPĞ­Òé°üÍ·£º
-													struct etharp_hdr{
-														u16_t hwtype;				// Ó²¼ş½Ó¿ÚÀàĞÍ	£¬ÒÔÌ«Íø¹Ì¶¨Îª0x0001
-														u16_t proto;				// ¸ßÒ»²ãĞ­ÒéÀàĞÍ£¬IP¹Ì¶¨Îª0x0800
-														u8_t  hwlen;				// Ó²¼şµØÖ·£¨MAC£©³¤¶È£¬¹Ì¶¨Öµ6
-														u8_t  protolen;				// ¸ßÒ»²ãĞ­ÒéµØÖ·£¨IP£©³¤¶È£¬¹Ì¶¨Öµ4
-														u16_t opcode;				// ²Ù×÷Âë£¬1 - ARPÇëÇó	2 - ARP»Ø¸´
-														struct eth_addr shwaddr;	// Ô´MAC
-														struct ip_addr2 sipaddr;	// Ô´IP
-														struct eth_addr dhwaddr;	// Ä¿µÄMAC
-														struct ip_addr2 dipaddr;	// Ä¿µÄIP
-													}
+	
 																						
 	µ±Ö÷»úAÒªÓëÖ÷»úBÍ¨ĞÅÊ±£¬ARPĞ­Òé¿ÉÒÔ½«Ö÷»úBµÄIPµØÖ·½âÎö³ÉÖ÷»úBµÄMACµØÖ·£¬¹¤×÷Á÷³ÌÈçÏÂ£º	
 		µÚÒ»²½£ºÖ÷»úAÏÈ¼ì²é×Ô¼ºµÄARP»º³å£¬¿´ÊÇ·ñ´æÔÚÖ÷»úBÆ¥ÅäµÄMACµØÖ·£¬Èç¹ûÃ»ÓĞ£¬¾Í»áÏòÍâ¹ã²¥Ò»¸öARPÇëÇó°ü
@@ -76,11 +57,11 @@ lwip´ÓÂß¼­ÉÏ¿´Ò²ÊÇ·ÖÎª4²ã£ºÁ´Â·²ã¡¢ÍøÂç²ã(IP¡¢ARP¡¢£¨ICMP¡¢IGMPÕâÁ½¸öĞ­ÒéÊÇÍøÂç²
 			switch(type)
 			{
 				case ETHTYPE_IP:												// IPÊı¾İ°ü
-					etharp_ip_input(netif,p);									// ¸üĞÂARP±í
+					etharp_ip_input(netif,p);									// Ê¹ÓÃÊÕµ½µÄIP°ü¸üĞÂARP»º´æ±í£¬Ïê¼û¡¶lwipÖ®ARPĞ­Òé¡·
 					pbuf_header(p, -ip_hdr_offset);								// µ÷ÕûÒÔÌ«ÍøÊı¾İ°üÖ¸Õë£¬Ê¹ÂÓ¹ı°üÍ·£¬Ö¸ÏòIPĞ­Òé°üÍ·
 					ip_input(p,netif);											// Ìá½»IP²ã£¬ip_inputÎªIP²ãÖ÷Òªº¯Êı£¬½âÎö¼ûÏÂÎÄ
 				case ETHTYPE_ARP:												// ARPÊı¾İ°ü
-					etharp_arp_input(netif,(struct eth_addr *)netif->hwaddr,p);	// ARPÊı¾İ°ü´¦Àí£¬µÚ¶ş¸öĞÎ²ÎÊÇ±¾»úMAC
+					etharp_arp_input(netif,(struct eth_addr *)netif->hwaddr,p);	// ARPÊı¾İ°ü´¦Àí£¬µÚ¶ş¸öĞÎ²ÎÊÇ±¾»úMAC£¬Ïê¼û¡¶lwipÖ®ARPĞ­Òé¡·
 					break;
 				default:
 					break;

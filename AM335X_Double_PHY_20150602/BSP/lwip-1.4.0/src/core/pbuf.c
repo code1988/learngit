@@ -510,21 +510,23 @@ pbuf_realloc(struct pbuf *p, u16_t new_len)
 u8_t
 pbuf_header(struct pbuf *p, s16_t header_size_increment)
 {
-  u16_t type;
-  void *payload;
-  u16_t increment_magnitude;
+    u16_t type;
+    void *payload;
+    u16_t increment_magnitude;
 
-  LWIP_ASSERT("p != NULL", p != NULL);
-  if ((header_size_increment == 0) || (p == NULL)) {
+    LWIP_ASSERT("p != NULL", p != NULL);
+    // 入参合法性检测
+    if ((header_size_increment == 0) || (p == NULL)) {
     return 0;
-  }
- 
-  if (header_size_increment < 0){
-    increment_magnitude = -header_size_increment;
-    /* Check that we aren't going to move off the end of the pbuf */
-    LWIP_ERROR("increment_magnitude <= p->len", (increment_magnitude <= p->len), return 1;);
-  } else {
-    increment_magnitude = header_size_increment;
+    }
+    // 获取指针偏移值，非负的，注意入参header_size_increment为正表示指针前移，为负表示指针后移
+    if (header_size_increment < 0)
+    {
+        increment_magnitude = -header_size_increment;
+    } 
+    else 
+    {
+        increment_magnitude = header_size_increment;
 #if 0
     /* Can't assert these as some callers speculatively call
          pbuf_header() to see if it's OK.  Will return 1 below instead. */
@@ -535,18 +537,19 @@ pbuf_header(struct pbuf *p, s16_t header_size_increment)
     LWIP_ASSERT("p->payload - increment_magnitude >= p + SIZEOF_STRUCT_PBUF",
                 (u8_t *)p->payload - increment_magnitude >= (u8_t *)p + SIZEOF_STRUCT_PBUF);
 #endif
-  }
+    }
 
+    // 根据pbuf类型不同，采用相应的偏移策略	
     type = p->type;
     /* remember current payload pointer */
     payload = p->payload;
 
     /* pbuf types containing payloads? */
-    if (type == PBUF_RAM || type == PBUF_POOL) 
+    if (type == PBUF_RAM || type == PBUF_POOL)      // 跟数据区域连续的pbuf类型，允许前后偏移
     {
-        /* set new payload pointer */
+        // 设置新的payload指针
         p->payload = (u8_t *)p->payload - header_size_increment;
-        /* boundary check fails? */
+        // 检测新的payload指针是否越界
         if ((u8_t *)p->payload < (u8_t *)p + SIZEOF_STRUCT_PBUF) 
         {
             LWIP_DEBUGF( PBUF_DEBUG | LWIP_DBG_LEVEL_SERIOUS,
@@ -559,7 +562,7 @@ pbuf_header(struct pbuf *p, s16_t header_size_increment)
         }
         /* pbuf types refering to external payloads? */
     } 
-    else if (type == PBUF_REF || type == PBUF_ROM) 
+    else if (type == PBUF_REF || type == PBUF_ROM)  // 跟数据区域分离的pbuf类型，只允许往后偏移 
     {
         /* hide a header in the payload? */
         if ((header_size_increment < 0) && (increment_magnitude <= p->len)) 
@@ -576,11 +579,12 @@ pbuf_header(struct pbuf *p, s16_t header_size_increment)
     } 
     else 
     {
-    /* Unknown type */
-    LWIP_ASSERT("bad pbuf type", 0);
-    return 1;
+        /* Unknown type */
+        LWIP_ASSERT("bad pbuf type", 0);
+        return 1;
     }
-    /* modify pbuf length fields */
+
+    // 更新pbuf字段	
     p->len += header_size_increment;
     p->tot_len += header_size_increment;
 

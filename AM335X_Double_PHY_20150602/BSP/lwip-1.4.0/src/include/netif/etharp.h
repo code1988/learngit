@@ -68,6 +68,7 @@ PACK_STRUCT_END
 #endif
 PACK_STRUCT_BEGIN
 /** Ethernet header */
+// 以太网数据包首部
 struct eth_hdr {
 #if ETH_PAD_SIZE
   PACK_STRUCT_FIELD(u8_t padding[ETH_PAD_SIZE]);
@@ -112,6 +113,7 @@ PACK_STRUCT_END
 #endif
 PACK_STRUCT_BEGIN
 /** the ARP message, see RFC 826 ("Packet format") */
+//  ARP数据包首部
 struct etharp_hdr {
   PACK_STRUCT_FIELD(u16_t hwtype);
   PACK_STRUCT_FIELD(u16_t proto);
@@ -128,7 +130,7 @@ PACK_STRUCT_END
 #  include "arch/epstruct.h"
 #endif
 
-#define SIZEOF_ETHARP_HDR 28
+#define SIZEOF_ETHARP_HDR 28    // ARP协议首部长
 #define SIZEOF_ETHARP_PACKET (SIZEOF_ETH_HDR + SIZEOF_ETHARP_HDR)   //14+28=42
 
 /** 5 seconds period */

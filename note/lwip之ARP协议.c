@@ -53,6 +53,59 @@ void etharp_tmr(void)
 
 											ARP报文
 /*****************************************************************************************************************
-					
+lwip使用一个eth_hdr的结构体来描述以太网数据帧首部的14个字节：
+															struct eth_hdr{
+																struct eth_addr dest;	// 目的MAC地址
+																struct eth_addr src;	// 源MAC地址
+																u16_t type;				// 类型，主要用到2种：0x0800 - IP	0x0806 - ARP
+															}
+以太网数据包最大帧长1518字节，最小帧长64字节，当无法满足最小64字节后，末尾用trailer字段来填充补足64字节
+
+ARP和IP是两个独立的协议，都属于网络层，都依赖以太网数据帧来传输自身的协议数据															
+lwip使用一个etharp_hdr的结构体来描述ARP协议包头：
+												struct etharp_hdr{
+													u16_t hwtype;				// 硬件接口类型	，以太网固定为0x0001
+													u16_t proto;				// 高一层协议类型，IP固定为0x0800
+													u8_t  hwlen;				// 硬件地址（MAC）长度，固定值6
+													u8_t  protolen;				// 高一层协议地址（IP）长度，固定值4
+													u16_t opcode;				// 操作码，1 - ARP请求	2 - ARP回复
+													struct eth_addr shwaddr;	// 源MAC
+													struct ip_addr2 sipaddr;	// 源IP
+													struct eth_addr dhwaddr;	// 目的MAC
+													struct ip_addr2 dipaddr;	// 目的IP
+												}			
 *****************************************************************************************************************/
-											
+
+											ARP层数据包输入
+/*****************************************************************************************************************
+ARP层数据包的输入由2部分组成：
+1. 如果输入的是IP包，对于同网段的IP/MAC地址对，需要更新ARP缓存表
+void etharp_ip_input(struct netif *netif, struct pbuf *p)
+{
+	struct eth_hdr *ethhdr;
+  	struct ip_hdr *iphdr;
+  	ip_addr_t iphdr_src;
+  	
+  	ethhdr = (struct eth_hdr *)p->payload;						// 获取以太网协议首部
+  	iphdr = (struct ip_hdr *)((u8_t*)ethhdr + SIZEOF_ETH_HDR);	// 获取IP协议首部
+  	
+  	// 如果对方IP与本地IP在不同网段，则直接返回
+  	ip_addr_copy(iphdr_src, iphdr->src);
+	if (!ip_addr_netcmp(&iphdr_src, &(netif->ip_addr), &(netif->netmask)))
+		return;
+	
+	// 只有与本地IP在同网段的IP才会更新ARP缓存表
+    update_arp_entry(netif, &iphdr_src, &(ethhdr->src), ETHARP_FLAG_FIND_ONLY);
+}
+
+2. 如果输入的是ARP包，则处理ARP数据包，更新ARP缓存表，对ARP请求进行应答
+static void etharp_arp_input(struct netif *netif, struct eth_addr *ethaddr, struct pbuf *p)
+{
+	struct etharp_hdr *hdr;
+	struct eth_hdr *ethhdr;
+	ip_addr_t sipaddr, dipaddr;
+  	u8_t for_us;
+	
+}
+*****************************************************************************************************************/
+																						
