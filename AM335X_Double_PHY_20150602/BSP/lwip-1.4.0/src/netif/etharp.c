@@ -247,7 +247,7 @@ etharp_tmr(void)
 
 /**
  * Search the ARP table for a matching or new entry.
- *
+ *  为IP寻找一个匹配的表项或建立一个新的表项
  * If an IP address is given, return a pending or stable ARP entry that matches
  * the address. If no match is found, create a new entry with this address set,
  * but in state ETHARP_EMPTY. The caller must check and possibly change the
@@ -451,13 +451,15 @@ etharp_send_ip(struct netif *netif, struct pbuf *p, struct eth_addr *src, struct
 
 /**
  * Update (or insert) a IP/MAC address pair in the ARP cache.
- *  在ARP缓存表中更新/插入指定的IP/MAC地址对
+ *  更新ARP缓存表项
  * If a pending entry is resolved, any queued packets will be sent
  * at this point.
- *
+ *  如果表项由pending进入stable，发送该表项内的数据包
  * @param netif netif related to this entry (used for NETIF_ADDRHINT)
- * @param ipaddr IP address of the inserted ARP entry.
+ * @param ipaddr IP address of the inserted ARP entry.  
+    匹配的IP地址
  * @param ethaddr Ethernet address of the inserted ARP entry.
+    匹配的MAC地址
  * @param flags @see definition of ETHARP_FLAG_*
  *
  * @return
@@ -472,14 +474,16 @@ update_arp_entry(struct netif *netif, ip_addr_t *ipaddr, struct eth_addr *ethadd
 {
     s8_t i;
 
-    /* non-unicast address? */
+    // 过滤掉非单播IP
     if (ip_addr_isany(ipaddr) ||
       ip_addr_isbroadcast(ipaddr, netif) ||
-      ip_addr_ismulticast(ipaddr)) {
-    LWIP_DEBUGF(ETHARP_DEBUG | LWIP_DBG_TRACE, ("update_arp_entry: will not add non-unicast IP address to ARP cache\n"));
-    return ERR_ARG;
+      ip_addr_ismulticast(ipaddr)) 
+    {
+        LWIP_DEBUGF(ETHARP_DEBUG | LWIP_DBG_TRACE, ("update_arp_entry: will not add non-unicast IP address to ARP cache\n"));
+        return ERR_ARG;
     }
-    /* find or create ARP entry */
+
+    // 根据IP查找或新建一个ARP缓存表项,返回索引值
     i = find_entry(ipaddr, flags);
     /* bail out if no entry could be found */
     if (i < 0) {
@@ -493,7 +497,7 @@ update_arp_entry(struct netif *netif, ip_addr_t *ipaddr, struct eth_addr *ethadd
   }
 #endif /* ETHARP_SUPPORT_STATIC_ENTRIES */
 
-    /* mark it stable */
+    // 索引值合法前提下，将对应表项状态改为stable
     arp_table[i].state = ETHARP_STATE_STABLE;
 
 #if LWIP_SNMP
@@ -504,10 +508,9 @@ update_arp_entry(struct netif *netif, ip_addr_t *ipaddr, struct eth_addr *ethadd
     snmp_insert_arpidx_tree(netif, &arp_table[i].ipaddr);
 
     LWIP_DEBUGF(ETHARP_DEBUG | LWIP_DBG_TRACE, ("update_arp_entry: updating stable entry %"S16_F"\n", (s16_t)i));
-    /* update address */
-    ETHADDR32_COPY(&arp_table[i].ethaddr, ethaddr);
-    /* reset time stamp */
-    arp_table[i].ctime = 0;
+
+    ETHADDR32_COPY(&arp_table[i].ethaddr, ethaddr); // 更新缓存表项中的MAC地址
+    arp_table[i].ctime = 0;                         // 复位计数器
     /* this is where we will send out queued packets! */
 #if ARP_QUEUEING
   while (arp_table[i].q != NULL) {
@@ -521,6 +524,7 @@ update_arp_entry(struct netif *netif, ip_addr_t *ipaddr, struct eth_addr *ethadd
     /* now queue entry can be freed */
     memp_free(MEMP_ARP_QUEUE, q);
 #else /* ARP_QUEUEING */
+    // 如果该ARP表项上有未发送数据包，则发送
     if (arp_table[i].q != NULL) 
     {
         struct pbuf *p = arp_table[i].q;
