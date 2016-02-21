@@ -57,49 +57,32 @@ cdev结构有2种初始化定义方式：动态、静态
 	
 /*****************************************************************************************************************
 										注册字符设备驱动
-*****************************************************************************************************************/				 						
+*****************************************************************************************************************/	
+// 参数*p 		cdev结构的指针
+// 参数dev		起始设备编号
+// 参数count	设备编号范围		 						
 int cdev_add(struct cdev *p, dev_t dev, unsigned count)
 {
 	p->dev = dev;
 	p->count = count;
+	
+	// 把字符设备编号和cdev一起保存到cdev_map散列表里
 	return kobj_map(cdev_map, dev, count, NULL, exact_match, exact_lock, p);
 }
 
-										
-										注销字符设备编号
+备注：
+	对系统而言，成功调用了cdev_add之后，就意味着一个字符设备对象已经加入到了系统，在需要的时候，系统就可以找到它
+	对用户态的程序而言，成功调用了cdev_add之后，就已经可以通过文件系统的接口呼叫到驱动程序
+	
+	
 /*****************************************************************************************************************
-相应的，内核提供了两个注销字符设备编号范围的函数，分别如下：
-1.新式注销函数
-void unregister_chrdev_region(dev_t from,unsigned int count)
+										注销字符设备驱动
+*****************************************************************************************************************/	
+void cdev_del(struct cdev *p)
 {
-	dev_t to = from + count;
-	dev_t n,next;
-	
-	for(n=from;n<to;n=next)
-	{
-		next = MKDEV(MAJOR(n) + 1,0);
-		
-		if(next > to)
-		{
-			next = to;
-		}
-		
-		kfree(__unregister_chrdev_region(MAJOR(n),MINOR(n),next - n));
-	}
-}
+	cdev_unmap(p->dev, p->count);	// 释放cdev_map散列表里的当前对象
+	kobject_put(&p->kobj);			// 释放cdev结构本身
+}								
+										
 
-2.老式注销函数
-void unregister_chrdev(unsigned int major,const *name)
-{
-	struct char_device_struct cd;
-	
-	cd = __unregister_chrdev_region(major,0,256);
-	
-	if(cd & cd->cdev)
-		cdev_del(cd->cdev);
-		
-	kfree(cd);
-}
 
-备注：两个注销函数最终都调用了__unregister_chrdev_region()函数，该函数暂略
-*****************************************************************************************************************/

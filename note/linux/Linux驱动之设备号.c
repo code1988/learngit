@@ -217,3 +217,41 @@ out:
 	kfree(cd);
 	return ERR_PTR(ret);
 }
+
+/*****************************************************************************************************************
+										注销字符设备编号
+*****************************************************************************************************************/
+相应的，内核提供了两个注销字符设备编号范围的函数，分别如下：
+1.新式注销函数
+void unregister_chrdev_region(dev_t from,unsigned int count)
+{
+	dev_t to = from + count;
+	dev_t n,next;
+	
+	for(n=from;n<to;n=next)
+	{
+		next = MKDEV(MAJOR(n) + 1,0);
+		
+		if(next > to)
+		{
+			next = to;
+		}
+		
+		kfree(__unregister_chrdev_region(MAJOR(n),MINOR(n),next - n));
+	}
+}
+
+2.老式注销函数
+void unregister_chrdev(unsigned int major,const *name)
+{
+	struct char_device_struct cd;
+	
+	cd = __unregister_chrdev_region(major,0,256);
+	
+	if(cd & cd->cdev)
+		cdev_del(cd->cdev);
+		
+	kfree(cd);
+}
+
+备注：两个注销函数最终都调用了__unregister_chrdev_region()函数
