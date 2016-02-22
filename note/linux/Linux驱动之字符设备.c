@@ -6,7 +6,7 @@ struct cdev{
 	struct kobject kobj;				// 嵌入了一个操作内核对象的通用接口
 	struct module *owner;				// 所属模块
 	const struct file_operations *ops;	// 定义了一组文件操作的函数指针，实现了跟该设备通信的具体操作
-	struct list_head list;				// 嵌入一个链表模块以实现链表操作，linux链表模块另作分析
+	struct list_head list;				// 嵌入一个双向循环链表模块以实现链表操作，linux链表模块另作分析
 	dev_t dev;							// 设备号
 	unsigned int count;					// 设备号范围
 };
@@ -31,7 +31,7 @@ cdev结构有2种初始化定义方式：动态、静态
 	void cdev_init(struct cdev *cdev, const struct file_operations *fops)
 	{
 		memset(cdev, 0, sizeof *cdev);					// cdev内存区清零
-		INIT_LIST_HEAD(&cdev->list);					
+		INIT_LIST_HEAD(&cdev->list);					// 生成一个双向循环链表头节点
 		kobject_init(&cdev->kobj, &ktype_cdev_default);	// 初始化kobject结构
 		cdev->ops = fops;								// 建立file_operations与cdev的连接
 	}	
@@ -47,7 +47,7 @@ cdev结构有2种初始化定义方式：动态、静态
 		struct cdev *p = kzalloc(sizeof(struct cdev), GFP_KERNEL);
 		if (p) 
 		{
-			INIT_LIST_HEAD(&p->list);
+			INIT_LIST_HEAD(&p->list);						// 生成一个双向循环链表头节点
 			kobject_init(&p->kobj, &ktype_cdev_dynamic);	// 建立file_operations与cdev的连接
 		}
 		
