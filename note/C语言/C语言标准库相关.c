@@ -73,4 +73,10 @@ sprintf将某一类型的数据写入某个字符串缓冲区中。
 	格式：int sprintf(char *buffer,const char *format,...)	//字符串缓冲区+固定形参+可变形参
 fprintf将某一类型的数据写入流文件中，即输出对象是文件。
 	格式：int fprintf(FILE *stream,const char *format,...)	//流文件（实质是存储文件信息的结构体指针）+固定形参+可变形参
-		
+	
+/*
+ *********************      getopt()函数用法 
+*/    
+getopt定义在unistd.h中，用来分析命令行参数，定义如下：
+int getopt(int argc,char * const argv[],const char *optstring); // 参数argc和argv是由main传入的参数个数和参数内容
+                                                                // 参数optstring是要处理的选项字符串
