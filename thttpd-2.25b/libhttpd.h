@@ -88,20 +88,21 @@ typedef struct {
     } httpd_server;
 
 /* A connection. */
+// 定义了客户端连接的http层控制块
 typedef struct {
     int initialized;
     httpd_server* hs;
     httpd_sockaddr client_addr;
-    char* read_buf;
-    size_t read_size, read_idx, checked_idx;
-    int checked_state;
+    char* read_buf;					// 指向接收缓冲
+    size_t read_size, read_idx, checked_idx;	// 接收缓存尺寸，接收缓冲中未读数据长度，未读数据已经被查阅过的长度
+    int checked_state;				// 请求头的状态
     int method;
     int status;
     off_t bytes_to_send;
     off_t bytes_sent;
     char* encodedurl;
     char* decodedurl;
-    char* protocol;
+    char* protocol;					// http协议版本
     char* origfilename;
     char* expnfilename;
     char* encodings;
@@ -114,7 +115,7 @@ typedef struct {
     char* acceptl;
     char* cookie;
     char* contenttype;
-    char* reqhost;
+    char* reqhost;					// 指向保存url的内存空间
     char* hdrhost;
     char* hostdir;
     char* authorization;
@@ -151,10 +152,11 @@ typedef struct {
 #define METHOD_POST 3
 
 /* States for checked_state. */
-#define CHST_FIRSTWORD 0
-#define CHST_FIRSTWS 1
-#define CHST_SECONDWORD 2
-#define CHST_SECONDWS 3
+// 检查请求头时的状态
+#define CHST_FIRSTWORD 0	
+#define CHST_FIRSTWS 1		
+#define CHST_SECONDWORD 2	
+#define CHST_SECONDWS 3		
 #define CHST_THIRDWORD 4
 #define CHST_THIRDWS 5
 #define CHST_LINE 6
@@ -208,9 +210,9 @@ extern int httpd_get_conn( httpd_server* hs, int listen_fd, httpd_conn* hc );
 ** complete request, or there won't be a valid request due to a syntax error.
 */
 extern int httpd_got_request( httpd_conn* hc );
-#define GR_NO_REQUEST 0
-#define GR_GOT_REQUEST 1
-#define GR_BAD_REQUEST 2
+#define GR_NO_REQUEST 0		// 没有请求
+#define GR_GOT_REQUEST 1	// 正确的请求
+#define GR_BAD_REQUEST 2	// 错误的请求
 
 /* Parses the request in hc->read_buf.  Fills in lots of fields in hc,
 ** like the URL and the various headers.

@@ -247,13 +247,13 @@ tmr_mstimeout( struct timeval* nowP )
 
 void
 tmr_run( struct timeval* nowP )
-    {
-    int h;
-    Timer* t;
-    Timer* next;
+{
+	int h;
+	Timer* t;
+	Timer* next;
 
-    for ( h = 0; h < HASH_SIZE; ++h )
-	for ( t = timers[h]; t != (Timer*) 0; t = next )
+	for ( h = 0; h < HASH_SIZE; ++h )
+		for ( t = timers[h]; t != (Timer*) 0; t = next )
 	    {
 	    next = t->next;
 	    /* Since the lists are sorted, as soon as we find a timer
@@ -279,7 +279,7 @@ tmr_run( struct timeval* nowP )
 	    else
 		tmr_cancel( t );
 	    }
-    }
+}
 
 
 void

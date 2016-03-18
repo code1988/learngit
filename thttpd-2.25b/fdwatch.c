@@ -70,9 +70,9 @@
 #endif /* !FD_SET */
 #endif /* HAVE_SELECT */
 
-static int nfiles;
+static int nfiles;		// 当前进程操作文件的最大数量
 static long nwatches;
-static int* fd_rw;
+static int* fd_rw;		// 文件描述符存储空间
 static void** fd_data;
 static int nreturned, next_ridx;
 
@@ -158,6 +158,7 @@ static int select_get_fd( int ridx );
 /* Figure out how many file descriptors the system allows, and
 ** initialize the fdwatch data structures.  Returns -1 on failure.
 */
+// 设置当前进程允许操作的最大文件数
 int
 fdwatch_get_nfiles( void )
     {
@@ -169,7 +170,7 @@ fdwatch_get_nfiles( void )
     /* Figure out how many fd's we can have. */
     nfiles = getdtablesize();
 #ifdef RLIMIT_NOFILE
-    /* If we have getrlimit(), use that, and attempt to raise the limit. */
+    // 获取当前进程系统资源的限制使用量(这里是文件资源)
     if ( getrlimit( RLIMIT_NOFILE, &rl ) == 0 )
 	{
 	nfiles = rl.rlim_cur;
@@ -177,6 +178,8 @@ fdwatch_get_nfiles( void )
 	    rl.rlim_cur = 8192;         /* arbitrary */
 	else if ( rl.rlim_max > rl.rlim_cur )
 	    rl.rlim_cur = rl.rlim_max;
+
+	// 设置当前进程系统资源的限制使用量(这里是文件资源)
 	if ( setrlimit( RLIMIT_NOFILE, &rl ) == 0 )
 	    nfiles = rl.rlim_cur;
 	}
@@ -193,8 +196,10 @@ fdwatch_get_nfiles( void )
     fd_data = (void**) malloc( sizeof(void*) * nfiles );
     if ( fd_rw == (int*) 0 || fd_data == (void**) 0 )
 	return -1;
+
+	// 文件描述符全部初始化为-1
     for ( i = 0; i < nfiles; ++i )
-	fd_rw[i] = -1;
+		fd_rw[i] = -1;
     if ( INIT( nfiles ) == -1 )
 	return -1;
 
@@ -237,12 +242,12 @@ fdwatch_del_fd( int fd )
 */
 int
 fdwatch( long timeout_msecs )
-    {
-    ++nwatches;
-    nreturned = WATCH( timeout_msecs );
-    next_ridx = 0;
-    return nreturned;
-    }
+{
+	++nwatches;
+	nreturned = WATCH( timeout_msecs );
+	next_ridx = 0;
+	return nreturned;
+}
 
 
 /* Check if a descriptor was ready. */
@@ -547,10 +552,10 @@ devpoll_get_fd( int ridx )
 
 #  ifdef HAVE_POLL
 
-static struct pollfd* pollfds;
-static int npoll_fds;
-static int* poll_fdidx;
-static int* poll_rfdidx;
+static struct pollfd* pollfds;	// poll结构体数组指针
+static int npoll_fds;			
+static int* poll_fdidx;			// 存储poll索引号
+static int* poll_rfdidx;		
 
 
 static int

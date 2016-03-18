@@ -378,6 +378,7 @@
 ** one for dup()ing at connection startup time, one for reading the file,
 ** one for syslog, and possibly one for the regular log file, which is
 ** five, plus a factor of two for who knows what.
+  	留作他用的文件描述符数量
 */
 #define SPARE_FDS 10
 

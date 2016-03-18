@@ -702,27 +702,29 @@ send_mime( httpd_conn* hc, int status, char* title, char* encodings, char* extra
 
 
 static int str_alloc_count = 0;
-static size_t str_alloc_size = 0;
+static size_t str_alloc_size = 0;	// 保存url的内存空间的大小
 
+// 为url重新分配内存空间
 void
 httpd_realloc_str( char** strP, size_t* maxsizeP, size_t size )
-    {
+{
     if ( *maxsizeP == 0 )
 	{
-	*maxsizeP = MAX( 200, size + 100 );
-	*strP = NEW( char, *maxsizeP + 1 );
-	++str_alloc_count;
-	str_alloc_size += *maxsizeP;
+		*maxsizeP = MAX( 200, size + 100 );
+		*strP = NEW( char, *maxsizeP + 1 );
+		++str_alloc_count;
+		str_alloc_size += *maxsizeP;
 	}
     else if ( size > *maxsizeP )
 	{
-	str_alloc_size -= *maxsizeP;
-	*maxsizeP = MAX( *maxsizeP * 2, size * 5 / 4 );
-	*strP = RENEW( *strP, char, *maxsizeP + 1 );
-	str_alloc_size += *maxsizeP;
+		str_alloc_size -= *maxsizeP;
+		*maxsizeP = MAX( *maxsizeP * 2, size * 5 / 4 );
+		*strP = RENEW( *strP, char, *maxsizeP + 1 );
+		str_alloc_size += *maxsizeP;
 	}
     else
-	return;
+		return;
+	
     if ( *strP == (char*) 0 )
 	{
 	syslog(
@@ -730,7 +732,7 @@ httpd_realloc_str( char** strP, size_t* maxsizeP, size_t size )
 	    *maxsizeP );
 	exit( 1 );
 	}
-    }
+}
 
 
 static void
@@ -1764,185 +1766,192 @@ httpd_get_conn( httpd_server* hs, int listen_fd, httpd_conn* hc )
 /* Checks hc->read_buf to see whether a complete request has been read so far;
 ** either the first line has two words (an HTTP/0.9 request), or the first
 ** line has three words and there's a blank line present.
-**
+** 获取http请求行
+	请求行格式:
+		请求方法 + 请求的URI + 协议的版本(http/0.9不带该选项)
 ** hc->read_idx is how much has been read in; hc->checked_idx is how much we
 ** have checked so far; and hc->checked_state is the current state of the
 ** finite state machine.
 */
 int
 httpd_got_request( httpd_conn* hc )
-    {
-    char c;
+{
+	char c;
 
-    for ( ; hc->checked_idx < hc->read_idx; ++hc->checked_idx )
+	// 请求行合法性检查
+	for ( ; hc->checked_idx < hc->read_idx; ++hc->checked_idx )
 	{
-	c = hc->read_buf[hc->checked_idx];
-	switch ( hc->checked_state )
+		c = hc->read_buf[hc->checked_idx];
+		switch ( hc->checked_state )
 	    {
-	    case CHST_FIRSTWORD:
-	    switch ( c )
-		{
-		case ' ': case '\t':
-		hc->checked_state = CHST_FIRSTWS;
-		break;
-		case '\012': case '\015':
-		hc->checked_state = CHST_BOGUS;
-		return GR_BAD_REQUEST;
-		}
-	    break;
-	    case CHST_FIRSTWS:
-	    switch ( c )
-		{
-		case ' ': case '\t':
-		break;
-		case '\012': case '\015':
-		hc->checked_state = CHST_BOGUS;
-		return GR_BAD_REQUEST;
-		default:
-		hc->checked_state = CHST_SECONDWORD;
-		break;
-		}
-	    break;
-	    case CHST_SECONDWORD:
-	    switch ( c )
-		{
-		case ' ': case '\t':
-		hc->checked_state = CHST_SECONDWS;
-		break;
-		case '\012': case '\015':
-		/* The first line has only two words - an HTTP/0.9 request. */
-		return GR_GOT_REQUEST;
-		}
-	    break;
-	    case CHST_SECONDWS:
-	    switch ( c )
-		{
-		case ' ': case '\t':
-		break;
-		case '\012': case '\015':
-		hc->checked_state = CHST_BOGUS;
-		return GR_BAD_REQUEST;
-		default:
-		hc->checked_state = CHST_THIRDWORD;
-		break;
-		}
-	    break;
-	    case CHST_THIRDWORD:
-	    switch ( c )
-		{
-		case ' ': case '\t':
-		hc->checked_state = CHST_THIRDWS;
-		break;
-		case '\012':
-		hc->checked_state = CHST_LF;
-		break;
-		case '\015':
-		hc->checked_state = CHST_CR;
-		break;
-		}
-	    break;
-	    case CHST_THIRDWS:
-	    switch ( c )
-		{
-		case ' ': case '\t':
-		break;
-		case '\012':
-		hc->checked_state = CHST_LF;
-		break;
-		case '\015':
-		hc->checked_state = CHST_CR;
-		break;
-		default:
-		hc->checked_state = CHST_BOGUS;
-		return GR_BAD_REQUEST;
-		}
-	    break;
-	    case CHST_LINE:
-	    switch ( c )
-		{
-		case '\012':
-		hc->checked_state = CHST_LF;
-		break;
-		case '\015':
-		hc->checked_state = CHST_CR;
-		break;
-		}
-	    break;
-	    case CHST_LF:
-	    switch ( c )
-		{
-		case '\012':
-		/* Two newlines in a row - a blank line - end of request. */
-		return GR_GOT_REQUEST;
-		case '\015':
-		hc->checked_state = CHST_CR;
-		break;
-		default:
-		hc->checked_state = CHST_LINE;
-		break;
-		}
-	    break;
-	    case CHST_CR:
-	    switch ( c )
-		{
-		case '\012':
-		hc->checked_state = CHST_CRLF;
-		break;
-		case '\015':
-		/* Two returns in a row - end of request. */
-		return GR_GOT_REQUEST;
-		default:
-		hc->checked_state = CHST_LINE;
-		break;
-		}
-	    break;
-	    case CHST_CRLF:
-	    switch ( c )
-		{
-		case '\012':
-		/* Two newlines in a row - end of request. */
-		return GR_GOT_REQUEST;
-		case '\015':
-		hc->checked_state = CHST_CRLFCR;
-		break;
-		default:
-		hc->checked_state = CHST_LINE;
-		break;
-		}
-	    break;
-	    case CHST_CRLFCR:
-	    switch ( c )
-		{
-		case '\012': case '\015':
-		/* Two CRLFs or two CRs in a row - end of request. */
-		return GR_GOT_REQUEST;
-		default:
-		hc->checked_state = CHST_LINE;
-		break;
-		}
-	    break;
-	    case CHST_BOGUS:
-	    return GR_BAD_REQUEST;
+		    case CHST_FIRSTWORD:
+		    	switch ( c )
+				{
+					case ' ': case '\t':		// 空格 tab	- 进入CHST_FIRSTWS状态
+					hc->checked_state = CHST_FIRSTWS;
+					break;
+					case '\012': case '\015':	// 换行 回车	- 返回错误的请求头
+					hc->checked_state = CHST_BOGUS;
+					return GR_BAD_REQUEST;
+				}
+		    	break;
+		    case CHST_FIRSTWS:
+		    	switch ( c )
+				{
+					case ' ': case '\t':		// 空格 tab	- 忽略	
+					break;
+					case '\012': case '\015':	// 换行 回车	- 返回错误的请求头
+					hc->checked_state = CHST_BOGUS;
+					return GR_BAD_REQUEST;
+					default:					// 其余字符	- 进入CHST_SECONDWORD状态
+					hc->checked_state = CHST_SECONDWORD;
+					break;
+				}
+		    break;
+		    case CHST_SECONDWORD:
+		    	switch ( c )
+				{
+					case ' ': case '\t':		// 空格 tab	- 进入CHST_SECONDWS状态
+					hc->checked_state = CHST_SECONDWS;
+					break;
+					case '\012': case '\015':	// 换行 回车	- 成功获取请求头(1行只有2个单词，说明这是http0.9版本的请求头)
+					/* The first line has only two words - an HTTP/0.9 request. */
+					return GR_GOT_REQUEST;
+				}
+		    break;
+		    case CHST_SECONDWS:
+		    	switch ( c )
+				{
+					case ' ': case '\t':		// 空格 tab	- 忽略	
+					break;
+					case '\012': case '\015':	// 换行 回车	- 返回错误的请求头
+					hc->checked_state = CHST_BOGUS;
+					return GR_BAD_REQUEST;
+					default:					// 其余字符	- 进入CHST_THIRDWORD状态
+					hc->checked_state = CHST_THIRDWORD;
+					break;
+				}
+		    break;
+		    case CHST_THIRDWORD:
+		    	switch ( c )
+				{
+					case ' ': case '\t':			// 空格 tab	- 进入CHST_THIRDWS状态
+					hc->checked_state = CHST_THIRDWS;
+					break;
+					case '\012':					// 换行		- 进入CHST_LF
+					hc->checked_state = CHST_LF;
+					break;
+					case '\015':					// 回车		- 进入CHST_CR
+					hc->checked_state = CHST_CR;
+					break;
+				}
+		    break;
+		    case CHST_THIRDWS:
+		    	switch ( c )
+				{
+					case ' ': case '\t':			// 空格 tab	- 忽略	
+					break;
+					case '\012':					// 换行		- 进入CHST_LF
+					hc->checked_state = CHST_LF;
+					break;
+					case '\015':					// 回车		- 进入CHST_CR
+					hc->checked_state = CHST_CR;
+					break;
+					default:						// 其余字符	- 返回错误的请求头
+					hc->checked_state = CHST_BOGUS;
+					return GR_BAD_REQUEST;
+				}
+		    break;
+		    case CHST_LINE:
+		    	switch ( c )
+				{
+					case '\012':					// 换行		- 进入CHST_LF
+					hc->checked_state = CHST_LF;
+					break;
+					case '\015':					// 回车		- 进入CHST_CR
+					hc->checked_state = CHST_CR;
+					break;
+				}
+		    break;
+		    case CHST_LF:
+		    	switch ( c )
+				{
+					case '\012':					// 换行		- 连续2个换行符意味着成功获取请求头
+					/* Two newlines in a row - a blank line - end of request. */
+					return GR_GOT_REQUEST;
+					case '\015':					// 回车		- 进入CHST_CR 
+					hc->checked_state = CHST_CR;
+					break;
+					default:
+					hc->checked_state = CHST_LINE;	// 其余字符	- 进入CHST_LINE
+					break;
+				}
+		    break;
+		    case CHST_CR:
+		    	switch ( c )
+				{
+					case '\012':					// 换行		- 回车 + 换行 进入CHST_CRLF
+					hc->checked_state = CHST_CRLF;
+					break;
+					case '\015':					// 回车		- 连续2个回车符意味着成功获取请求头
+					/* Two returns in a row - end of request. */
+					return GR_GOT_REQUEST;
+					default:						// 其余字符	- 进入CHST_LINE
+					hc->checked_state = CHST_LINE;
+					break;
+				}
+		    break;
+		    case CHST_CRLF:
+		    	switch ( c )
+				{
+					case '\012':					// 换行		- 回车 + 换行 + 换行 意味着成功获取请求头
+					/* Two newlines in a row - end of request. */
+					return GR_GOT_REQUEST;
+					case '\015':					// 回车		- 进入CHST_CRLFCR
+					hc->checked_state = CHST_CRLFCR;
+					break;
+					default:
+					hc->checked_state = CHST_LINE;	// 其余字符	- 进入CHST_LINE
+					break;
+				}
+		    break;
+		    case CHST_CRLFCR:
+		    	switch ( c )
+				{
+					case '\012': case '\015':		// 换行 回车	- 意味着成功获取请求头
+					/* Two CRLFs or two CRs in a row - end of request. */
+					return GR_GOT_REQUEST;
+					default:						// 其余字符	- 进入CHST_LINE
+					hc->checked_state = CHST_LINE;
+					break;
+				}
+		    break;
+		    case CHST_BOGUS:
+		    return GR_BAD_REQUEST;
 	    }
 	}
-    return GR_NO_REQUEST;
-    }
+return GR_NO_REQUEST;
+}
 
-
+// 分析请求行
 int
 httpd_parse_request( httpd_conn* hc )
-    {
+{
     char* buf;
-    char* method_str;
-    char* url;
-    char* protocol;
-    char* reqhost;
+    char* method_str;	// 指向请求方法
+    char* url;			// 指向请求的url
+    char* protocol;		// 指向协议版本
+    char* reqhost;		// 指向url网址部分
     char* eol;
     char* cp;
     char* pi;
 
     hc->checked_idx = 0;	/* reset */
+
+	// 获取请求方法
     method_str = bufgets( hc );
+
+	// 获取请求的url
     url = strpbrk( method_str, " \t\012\015" );
     if ( url == (char*) 0 )
 	{
@@ -1951,6 +1960,8 @@ httpd_parse_request( httpd_conn* hc )
 	}
     *url++ = '\0';
     url += strspn( url, " \t\012\015" );
+
+	// 获取协议版本
     protocol = strpbrk( url, " \t\012\015" );
     if ( protocol == (char*) 0 )
 	{
@@ -1959,43 +1970,46 @@ httpd_parse_request( httpd_conn* hc )
 	}
     else
 	{
-	*protocol++ = '\0';
-	protocol += strspn( protocol, " \t\012\015" );
-	if ( *protocol != '\0' )
-	    {
-	    eol = strpbrk( protocol, " \t\012\015" );
-	    if ( eol != (char*) 0 )
-		*eol = '\0';
-	    if ( strcasecmp( protocol, "HTTP/1.0" ) != 0 )
-		hc->one_one = 1;
-	    }
+		*protocol++ = '\0';
+		protocol += strspn( protocol, " \t\012\015" );
+		if ( *protocol != '\0' )
+		    {
+		    eol = strpbrk( protocol, " \t\012\015" );
+		    if ( eol != (char*) 0 )
+			*eol = '\0';
+		    if ( strcasecmp( protocol, "HTTP/1.0" ) != 0 )
+			hc->one_one = 1;
+		    }
 	}
     hc->protocol = protocol;
 
     /* Check for HTTP/1.1 absolute URL. */
+	// 处理url中的主机网址部分
     if ( strncasecmp( url, "http://", 7 ) == 0 )
 	{
-	if ( ! hc->one_one )
-	    {
-	    httpd_send_err( hc, 400, httpd_err400title, "", httpd_err400form, "" );
-	    return -1;
-	    }
-	reqhost = url + 7;
-	url = strchr( reqhost, '/' );
-	if ( url == (char*) 0 )
-	    {
-	    httpd_send_err( hc, 400, httpd_err400title, "", httpd_err400form, "" );
-	    return -1;
-	    }
-	*url = '\0';
-	if ( strchr( reqhost, '/' ) != (char*) 0 || reqhost[0] == '.' )
-	    {
-	    httpd_send_err( hc, 400, httpd_err400title, "", httpd_err400form, "" );
-	    return -1;
-	    }
-	httpd_realloc_str( &hc->reqhost, &hc->maxreqhost, strlen( reqhost ) );
-	(void) strcpy( hc->reqhost, reqhost );
-	*url = '/';
+		if ( ! hc->one_one )
+		    {
+		    httpd_send_err( hc, 400, httpd_err400title, "", httpd_err400form, "" );
+		    return -1;
+		    }
+		reqhost = url + 7;				// 获取url的起始指针
+		url = strchr( reqhost, '/' );
+		if ( url == (char*) 0 )
+		    {
+		    httpd_send_err( hc, 400, httpd_err400title, "", httpd_err400form, "" );
+		    return -1;
+		    }
+		*url = '\0';					// '/'字符处截断url
+		if ( strchr( reqhost, '/' ) != (char*) 0 || reqhost[0] == '.' )
+		    {
+		    httpd_send_err( hc, 400, httpd_err400title, "", httpd_err400form, "" );
+		    return -1;
+		    }
+
+		// 调整存储url的内存空间,并完成拷贝
+		httpd_realloc_str( &hc->reqhost, &hc->maxreqhost, strlen( reqhost ) );
+		(void) strcpy( hc->reqhost, reqhost );
+		*url = '/';						// 取消截断
 	}
 
     if ( *url != '/' )
@@ -2357,33 +2371,39 @@ httpd_parse_request( httpd_conn* hc )
 	}
 
     return 0;
-    }
+}
 
-
+// 获取一行数据
 static char*
 bufgets( httpd_conn* hc )
-    {
-    int i;
-    char c;
+{
+	int i;
+	char c;
 
-    for ( i = hc->checked_idx; hc->checked_idx < hc->read_idx; ++hc->checked_idx )
+	for ( i = hc->checked_idx; hc->checked_idx < hc->read_idx; ++hc->checked_idx )
 	{
-	c = hc->read_buf[hc->checked_idx];
-	if ( c == '\012' || c == '\015' )
+		c = hc->read_buf[hc->checked_idx];
+
+		// 查找换行符和回车符,用'\0'代替
+		if ( c == '\012' || c == '\015' )
 	    {
-	    hc->read_buf[hc->checked_idx] = '\0';
-	    ++hc->checked_idx;
-	    if ( c == '\015' && hc->checked_idx < hc->read_idx &&
-		 hc->read_buf[hc->checked_idx] == '\012' )
-		{
-		hc->read_buf[hc->checked_idx] = '\0';
-		++hc->checked_idx;
-		}
-	    return &(hc->read_buf[i]);
+		    hc->read_buf[hc->checked_idx] = '\0';
+		    ++hc->checked_idx;
+
+			// 判断是否是	\r\n
+		    if ( c == '\015' && hc->checked_idx < hc->read_idx &&
+			 hc->read_buf[hc->checked_idx] == '\012' )
+			{
+			hc->read_buf[hc->checked_idx] = '\0';
+			++hc->checked_idx;
+			}
+
+			// 返回一行数据的指针
+		    return &(hc->read_buf[i]);
 	    }
 	}
-    return (char*) 0;
-    }
+	return (char*) 0;
+}
 
 
 static void
