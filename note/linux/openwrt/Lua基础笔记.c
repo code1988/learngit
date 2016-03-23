@@ -18,8 +18,6 @@
         number  - 双精度类型的实浮点数
         string  - 字符串，由一对“”或‘’来，也可以用"[[]]"来表示一块字符串
                   对一个数字字符串进行算术操作时，首先会将这个字符串转成数字
-                  ..用于字符串之间的连接
-                  #用于计算字符串的长度
         function- 由C或lua编写的函数
         userdata- 任意存储在变量中的C数据结构
         thread  - lua里，最主要的线程是协同程序coroutine
@@ -46,3 +44,44 @@
 7. lua中函数默认为全局函数，头部加local表示为局部函数
    lua函数可以返回多个值，以逗号隔开
 
+8. lua的算术运算符和关系运算符基本类C，唯一区别：~= 表示不等于
+   lua的逻辑运算符：    and - 逻辑与操作符
+                        or  - 逻辑或操作符
+                        not - 逻辑非操作符
+   其他运算符：         ..  - 连接两个字符串
+                        #   - 返回字符串或表的长度
+
+9. lua自带的字符串操作库函数:
+    string.upper(str)               -- 字符串全部转为大写字母
+    string.lower(str)               -- 字符串全部转为小写字母
+    string.gsub(str1,str2,str3,n)   -- 字符串中替换
+                                       str1为将要替换的字符串集合
+                                       str2为str1中实际要被替换的部分，可以是字符串/字符
+                                       str3为要替换成为的字符串/字符
+                                       n为可选参数，表示准备替换的次数，缺省为全部替换
+                                       函数有2个返回值，ret1为替换完成后的整个字符串，ret2为实际替换次数
+    string.find(str1,str2,index)    -- 字符串搜索
+                                       str1为搜索的目标字符串
+                                       str2为搜索的内容
+                                       index为可选参数，表示搜索的起始索引，缺省为1
+                                       搜索成功返回2个值，ret1为搜索的内容在目标字符串中的起始索引，ret2为结束索引;搜索失败返回nil
+    string.reverse(str)             -- 字符串反转
+    string.formate(...)             -- 类printf，返回一个格式化字符串
+    string.char(arg)                -- 整形转字符并连接，arg参数个数不限，范围为ASCII
+    string.byte(str,index)          -- 字符转整形
+                                       str为目标字符串，index为可选参数，表示指定索引，缺省为1,可取负值，表示从后往前数
+    string.len(str)                 -- 计算字符串长度
+    string.rep(str,n)               -- 返回字符串的n个拷贝
+
+10. lua自带的table操作库函数：
+    table.concat(table,str,s_i,e_i) -- 连接table中的元素
+                                       str，可选，为元素间插入的连接符，缺省则无连接符
+                                       s_i，可选，为起始索引号，缺省则连接所有元素
+                                       e_i，可选，为结束索引号，缺省则连接s_i后所有元素
+    table.insert(table,index,val)   -- 在table中的指定位置插入一个元素
+                                       index，可选，缺省插入到table末尾
+                                       val，插入元素
+    table.remove(table,index)       -- 移除table中指定位置的元素
+                                       index，可选，缺省则移除最后一个
+    table.sort(table)               -- 对table按首字母进行升序排序
+                                       
