@@ -1,0 +1,73 @@
+1. ${parameter=default},${parameter:=default}详解
+	${parameter=default}	- 如果parameter没有被声明，那么返回的结果就是default，同时parameter的值设为default
+	${parameter:=default}	- 如果parameter没有被设置，那么返回的结果就是default，同时parameter的值设为default
+	备注：null是指该变量已经存在（内存地址上），但其值是空的，也就是已经被声明，但没有被设置
+		  unset是删除变量（连同内存地址都释放），也就是该变量不存在了
+		  "被声明"的触发点显然要比"被设置"低
+	例.
+		# parameter属于unset那种情况，意味着没有被声明，更谈不上被设置
+		$ var=${str=1}			$ var=${str:=1}
+		$ echo $str $var		$ echo $str $var
+		# 这种情况下，"="和":="两种处理方式都被触发，所以str和var都被设为1
+		$	1 1					$	1 1		
+
+		# parameter属于null那种情况，意味着被声明但没有被设置
+		$ str=					$ str=
+		$ var=${str=1}			$ var=${str:=1}
+		$ echo $str $var		$ echo $str $var
+		# 因为str被声明所以"="情况没有被触发，又因为str没有被设置所以":="被触发
+		$						$	1 1
+	
+		# parameter属于非空值那种情况
+		$ str=2					$ str=2
+		$ var=${str=1}			$ var=${str:=1}
+		$ echo $str $var		$ echo $str $var
+		# 因为str被赋值，所以"="和":="两种处理方式都不会被触发
+		$	2 2					$	2 2
+	
+2. ${parameter-default},${parameter:-default}详解
+	${parameter-default}	- 如果parameter没有被声明，那么返回的结果就是default(parameter的值不会被改变!)
+	${parameter:-default}	- 如果parameter没有被设置，那么返回的结果就是default(parameter的值不会被改变!)
+	
+	备注："-"/":-"和"="/":="两组符号返回的结果遵循相同的语法，区别在于parameter的值是否会被改变
+
+3. ${parameter+alt_value},${parameter:+alt_value}详解
+	${parameter+alt_value}	- 如果parameter被声明，那么返回的结果就是alt_value,否则返回null(parameter的值不会被改变!)
+	${parameter:+alt_value}	- 如果parameter被设置，那么返回的结果就是alt_value,否则返回null(parameter的值不会被改变!)
+	
+4. ${parameter?err_msg},${parameter:?err_msg}详解
+	${parameter+err_msg}	- 如果parameter被声明，那么返回设置值，否则打印err_msg错误信息
+	${parameter:+err_msg}	- 如果parameter被设置，那么返回设置值，否则打印err_msg错误信息
+
+	备注：省略err_msg时，${parameter?}这种结构经常用于检查脚本中变量的设置情况
+
+综上，带":"的会比不带的多一个条件判断 —— 在声明的基础上判断是否被设置
+
+
+5. ${#var} 变量长度计算
+	返回字符串长度（变量$var的字符个数），对于数组来说，${#array}表示数组中第一个元素的长度
+	例外情况暂略
+
+6. 字符串处理中的"掐头去尾法"
+	${var#pattern},${var##pattern}	- 键盘上#在$前面，所以这代表掐头，#表示最小匹配，##表示最大匹配
+	${var%pattern},${var%%pattern}	- 键盘上%在$后面，所以这代表去尾，%表示最小匹配，%%表示最大匹配
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
