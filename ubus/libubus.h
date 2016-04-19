@@ -34,9 +34,10 @@ struct ubus_event_handler;
 struct ubus_subscriber;
 struct ubus_notify_request;
 
+// 消息控制块
 struct ubus_msghdr_buf {
-	struct ubus_msghdr hdr;
-	struct blob_attr *data;
+	struct ubus_msghdr hdr; // 消息头
+	struct blob_attr *data; // 指向分配的消息空间
 };
 
 typedef void (*ubus_lookup_handler_t)(struct ubus_context *ctx,
@@ -87,37 +88,40 @@ typedef void (*ubus_connect_handler_t)(struct ubus_context *ctx);
 #define UBUS_METHOD_NOARG(_name, _handler)		\
 	{ __UBUS_METHOD_NOARG(_name, _handler) }
 
+// 方法
 struct ubus_method {
-	const char *name;
-	ubus_handler_t handler;
+	const char *name;       // 方法名
+	ubus_handler_t handler; // 对应的处理函数
 
 	unsigned long mask;
 	const struct blobmsg_policy *policy;
 	int n_policy;
 };
 
+// 对象类型
 struct ubus_object_type {
-	const char *name;
+	const char *name;   // 对象名
 	uint32_t id;
 
-	const struct ubus_method *methods;
-	int n_methods;
+	const struct ubus_method *methods;  // 指向方法
+	int n_methods;      // 记录方法的数量
 };
 
+// 对象
 struct ubus_object {
 	struct avl_node avl;
 
-	const char *name;
+	const char *name;   // 对象名
 	uint32_t id;
 
 	const char *path;
-	struct ubus_object_type *type;
+	struct ubus_object_type *type;  // 对象类型
 
 	ubus_state_handler_t subscribe_cb;
 	bool has_subscribers;
 
-	const struct ubus_method *methods;
-	int n_methods;
+	const struct ubus_method *methods;  // 指向方法
+	int n_methods;      // 记录方法的数量
 };
 
 struct ubus_subscriber {
@@ -133,12 +137,13 @@ struct ubus_event_handler {
 	ubus_event_handler_t cb;
 };
 
+// ubus客户端控制块
 struct ubus_context {
 	struct list_head requests;
 	struct avl_tree objects;
 	struct list_head pending;
 
-	struct uloop_fd sock;
+	struct uloop_fd sock;           // 需要被epoll监听的fd控制块
 	struct uloop_timeout pending_timer;
 
 	uint32_t local_id;
@@ -147,8 +152,8 @@ struct ubus_context {
 
 	void (*connection_lost)(struct ubus_context *ctx);
 
-	struct ubus_msghdr_buf msgbuf;
-	uint32_t msgbuf_data_len;
+	struct ubus_msghdr_buf msgbuf;  // 消息控制块
+	uint32_t msgbuf_data_len;       // 记录消息空间大小
 	int msgbuf_reduction_counter;
 };
 
@@ -159,6 +164,7 @@ struct ubus_object_data {
 	struct blob_attr *signature;
 };
 
+// ubus请求数据控制块
 struct ubus_request_data {
 	uint32_t object;
 	uint32_t peer;
@@ -215,8 +221,10 @@ void ubus_free(struct ubus_context *ctx);
 
 const char *ubus_strerror(int error);
 
+// 客户端注册fd到epoll
 static inline void ubus_add_uloop(struct ubus_context *ctx)
 {
+    // 客户端注册fd到epoll（阻塞模式、读触发）
 	uloop_fd_add(&ctx->sock, ULOOP_BLOCKING | ULOOP_READ);
 }
 
@@ -287,6 +295,7 @@ static inline void ubus_defer_request(struct ubus_context *ctx,
     req->deferred = true;
 }
 
+// 设置请求的fd（目前发现该fd来自管道创建）
 static inline void ubus_request_set_fd(struct ubus_context *ctx,
 				       struct ubus_request_data *req, int fd)
 {

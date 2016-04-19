@@ -265,27 +265,31 @@ int ubus_send_event(struct ubus_context *ctx, const char *id,
 	return ubus_complete_request(ctx, &req, 0);
 }
 
+// 缺省的ubus连接丢失回调函数
 static void ubus_default_connection_lost(struct ubus_context *ctx)
 {
 	if (ctx->sock.registered)
 		uloop_end();
 }
 
+// 创建客户端并发起连接(四层封装)
 static int _ubus_connect(struct ubus_context *ctx, const char *path)
 {
-	ctx->sock.fd = -1;
-	ctx->sock.cb = ubus_handle_data;
-	ctx->connection_lost = ubus_default_connection_lost;
-	ctx->pending_timer.cb = ubus_process_pending_msg;
+	ctx->sock.fd = -1;              // 复位客户端fd
+	ctx->sock.cb = ubus_handle_data;// 注册客户端回调函数
+	ctx->connection_lost = ubus_default_connection_lost;    // 注册客户端连接丢失回调函数
+	ctx->pending_timer.cb = ubus_process_pending_msg;       // 注册客户端等待超时后的回调函数
 
-	ctx->msgbuf.data = calloc(UBUS_MSG_CHUNK_SIZE, sizeof(char));
+	ctx->msgbuf.data = calloc(UBUS_MSG_CHUNK_SIZE, sizeof(char));   // 申请消息空间并清零
 	if (!ctx->msgbuf.data)
 		return -1;
-	ctx->msgbuf_data_len = UBUS_MSG_CHUNK_SIZE;
+	ctx->msgbuf_data_len = UBUS_MSG_CHUNK_SIZE;                     // 记录消息空间长度
 
-	INIT_LIST_HEAD(&ctx->requests);
-	INIT_LIST_HEAD(&ctx->pending);
-	avl_init(&ctx->objects, ubus_cmp_id, false, NULL);
+	INIT_LIST_HEAD(&ctx->requests);     // 初始化requests链表
+	INIT_LIST_HEAD(&ctx->pending);      // 初始化pending链表
+	avl_init(&ctx->objects, ubus_cmp_id, false, NULL);      // 初始化avl树
+
+    // 创建客户端并发起连接（三层封装）
 	if (ubus_reconnect(ctx, path)) {
 		free(ctx->msgbuf.data);
 		return -1;
@@ -333,14 +337,17 @@ void ubus_auto_connect(struct ubus_auto_conn *conn)
 	ubus_auto_connect_cb(&conn->timer);
 }
 
+// 创建客户端并发起连接（五层封装）
 struct ubus_context *ubus_connect(const char *path)
 {
 	struct ubus_context *ctx;
-
+    
+    // 申请客户端控制块空间
 	ctx = calloc(1, sizeof(*ctx));
 	if (!ctx)
 		return NULL;
 
+    // 创建客户端并发起连接（四层封装）
 	if (_ubus_connect(ctx, path)) {
 		free(ctx);
 		ctx = NULL;

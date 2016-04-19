@@ -187,9 +187,12 @@ void ubus_complete_deferred_request(struct ubus_context *ctx, struct ubus_reques
 	blob_buf_init(&b, 0);
 	blob_put_int32(&b, UBUS_ATTR_STATUS, ret);
 	blob_put_int32(&b, UBUS_ATTR_OBJID, req->object);
+
+    // 发送ubus消息接口（顶层封装）
 	ubus_send_msg(ctx, req->seq, b.head, UBUS_MSG_STATUS, req->peer, req->fd);
 }
 
+// ubus发送回应
 int ubus_send_reply(struct ubus_context *ctx, struct ubus_request_data *req,
 		    struct blob_attr *msg)
 {
@@ -198,6 +201,8 @@ int ubus_send_reply(struct ubus_context *ctx, struct ubus_request_data *req,
 	blob_buf_init(&b, 0);
 	blob_put_int32(&b, UBUS_ATTR_OBJID, req->object);
 	blob_put(&b, UBUS_ATTR_DATA, blob_data(msg), blob_len(msg));
+
+    // 发送ubus消息接口（顶层封装）
 	ret = ubus_send_msg(ctx, req->seq, b.head, UBUS_MSG_DATA, req->peer, -1);
 	if (ret < 0)
 		return UBUS_STATUS_NO_DATA;

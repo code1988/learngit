@@ -122,6 +122,7 @@ static int writev_retry(int fd, struct iovec *iov, int iov_len, int sock_fd)
 	return -1;
 }
 
+// ubus发送消息（I/O层面）
 int __hidden ubus_send_msg(struct ubus_context *ctx, uint32_t seq,
 			   struct blob_attr *msg, int cmd, uint32_t peer, int fd)
 {
@@ -216,6 +217,7 @@ static int recv_retry(int fd, struct iovec *iov, bool wait, int *recv_fd)
 	return total;
 }
 
+// 消息头合法性检测
 static bool ubus_validate_hdr(struct ubus_msghdr *hdr)
 {
 	struct blob_attr *data = (struct blob_attr *) (hdr + 1);
@@ -299,9 +301,10 @@ static bool get_next_msg(struct ubus_context *ctx, int *recv_fd)
 	return true;
 }
 
+// 客户端回调函数
 void __hidden ubus_handle_data(struct uloop_fd *u, unsigned int events)
 {
-	struct ubus_context *ctx = container_of(u, struct ubus_context, sock);
+	struct ubus_context *ctx = container_of(u, struct ubus_context, sock);  // 根据成员名sock获取父结构ubus_context地址
 	int recv_fd = -1;
 
 	while (get_next_msg(ctx, &recv_fd)) {
@@ -338,7 +341,7 @@ ubus_refresh_state(struct ubus_context *ctx)
 			obj->type->id = 0;
 
 	/* push out all objects again */
-	objs = alloca(ctx->objects.count * sizeof(*objs));
+   	objs = alloca(ctx->objects.count * sizeof(*objs));
 	avl_remove_all_elements(&ctx->objects, obj, avl, tmp) {
 		objs[i++] = obj;
 		obj->id = 0;
@@ -348,6 +351,7 @@ ubus_refresh_state(struct ubus_context *ctx)
 		ubus_add_object(ctx, objs[i]);
 }
 
+// 创建客户端(三层封装)
 int ubus_reconnect(struct ubus_context *ctx, const char *path)
 {
 	struct {
@@ -357,29 +361,40 @@ int ubus_reconnect(struct ubus_context *ctx, const char *path)
 	struct blob_attr *buf;
 	int ret = UBUS_STATUS_UNKNOWN_ERROR;
 
+    // 如果本地socket文件未定义，赋缺省值
 	if (!path)
 		path = UBUS_UNIX_SOCKET;
 
-	if (ctx->sock.fd >= 0) {
+    // 如果客户端fd是否已经打开，需要先关闭fd
+	if (ctx->sock.fd >= 0) 
+    {
+        // 如果客户端fd控制块已经注册，则还需要删除这个fd控制块
 		if (ctx->sock.registered)
 			uloop_fd_delete(&ctx->sock);
 
+        // 关闭fd
 		close(ctx->sock.fd);
 	}
 
+    // 创建客户端（二层封装）
 	ctx->sock.fd = usock(USOCK_UNIX, path, NULL);
 	if (ctx->sock.fd < 0)
 		return UBUS_STATUS_CONNECTION_FAILED;
 
+    // 到这里意味着客户端已经服务器端,并且fd是非阻塞的
+    // 从fd读取sizeof(hdr)个字节
 	if (read(ctx->sock.fd, &hdr, sizeof(hdr)) != sizeof(hdr))
 		goto out_close;
 
+    // 消息头合法性检测
 	if (!ubus_validate_hdr(&hdr.hdr))
 		goto out_close;
 
+    // 客户端和服务器连接成功后的握手消息固定为UBUS_MSG_HELLO
 	if (hdr.hdr.type != UBUS_MSG_HELLO)
 		goto out_close;
 
+    // 拷贝消息内容到新申请的内存
 	buf = calloc(1, blob_raw_len(&hdr.data));
 	if (!buf)
 		goto out_close;
@@ -392,7 +407,10 @@ int ubus_reconnect(struct ubus_context *ctx, const char *path)
 	if (!ctx->local_id)
 		goto out_free;
 
+    // 到这里意味着连接握手成功
 	ret = UBUS_STATUS_OK;
+
+    // fd设置为非阻塞和close-on-exec
 	fcntl(ctx->sock.fd, F_SETFL, fcntl(ctx->sock.fd, F_GETFL) | O_NONBLOCK | O_CLOEXEC);
 
 	ubus_refresh_state(ctx);

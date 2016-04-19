@@ -18,24 +18,27 @@
 #include "libubus.h"
 #include "count.h"
 
-static struct ubus_context *ctx;
+static struct ubus_context *ctx;    // 指向注册服务到ubusd的客户端的总控制块
 static struct ubus_subscriber test_event;
-static struct blob_buf b;
+static struct blob_buf b;           // 定义一个静态全局BLOB控制块
 
+// 对象hello的参数枚举
 enum {
 	HELLO_ID,
 	HELLO_MSG,
 	__HELLO_MAX
 };
 
+// 对象hello的策略
 static const struct blobmsg_policy hello_policy[] = {
 	[HELLO_ID] = { .name = "id", .type = BLOBMSG_TYPE_INT32 },
 	[HELLO_MSG] = { .name = "msg", .type = BLOBMSG_TYPE_STRING },
 };
 
+// 对象hello的请求控制块
 struct hello_request {
-	struct ubus_request_data req;
-	struct uloop_timeout timeout;
+	struct ubus_request_data req;   // ubus请求控制块
+	struct uloop_timeout timeout;   // 给对象hello的请求控制块定义一个超时控制块
 	int fd;
 	int idx;
 	char data[];
@@ -57,20 +60,22 @@ static void test_hello_fd_reply(struct uloop_timeout *t)
 	uloop_timeout_set(&req->timeout, 1000);
 }
 
+// 对象hello请求超时后的回调函数
 static void test_hello_reply(struct uloop_timeout *t)
 {
-	struct hello_request *req = container_of(t, struct hello_request, timeout);
+	struct hello_request *req = container_of(t, struct hello_request, timeout); // 通过偏移定时器控制块地址获取父结构helle请求控制块地址
 	int fds[2];
 
-	blob_buf_init(&b, 0);
-	blobmsg_add_string(&b, "message", req->data);
-	ubus_send_reply(ctx, &req->req, b.head);
+	blob_buf_init(&b, 0);                           // BLOB控制块初始化
+	blobmsg_add_string(&b, "message", req->data);   // 添加一条string类型消息：key="message",value=req->data
+	ubus_send_reply(ctx, &req->req, b.head);        // 发送回应
 
+    // 创建管道
 	if (pipe(fds) == -1) {
 		fprintf(stderr, "Failed to create pipe\n");
 		return;
 	}
-	ubus_request_set_fd(ctx, &req->req, fds[0]);
+	ubus_request_set_fd(ctx, &req->req, fds[0]);    // 设置请求控制块中的fd
 	ubus_complete_deferred_request(ctx, &req->req, 0);
 	req->fd = fds[1];
 
@@ -78,6 +83,7 @@ static void test_hello_reply(struct uloop_timeout *t)
 	test_hello_fd_reply(t);
 }
 
+// 方法名“hello”对应的处理函数
 static int test_hello(struct ubus_context *ctx, struct ubus_object *obj,
 		      struct ubus_request_data *req, const char *method,
 		      struct blob_attr *msg)
@@ -87,26 +93,55 @@ static int test_hello(struct ubus_context *ctx, struct ubus_object *obj,
 	const char *format = "%s received a message: %s";
 	const char *msgstr = "(unknown)";
 
+    printf(">>>>>>>>>>>>>>> method: %s\n",method);
+    printf("msg->id_len: %08x, blob_len(msg): %d\n",msg->id_len,blob_len(msg));
+    // 解析消息，根据预先设置的策略过滤
 	blobmsg_parse(hello_policy, ARRAY_SIZE(hello_policy), tb, blob_data(msg), blob_len(msg));
 
-	if (tb[HELLO_MSG])
-		msgstr = blobmsg_data(tb[HELLO_MSG]);
+	if (tb[HELLO_ID])
+    {
+        printf("tb[HELLO_ID]->id_len: %08x\n",tb[HELLO_ID]->id_len);
+	    struct blobmsg_hdr *hdr = (struct blobmsg_hdr *) blob_data(tb[HELLO_ID]);
+        printf("blobmsg_hdr_len: %d, name: %s\n",hdr->namelen,hdr->name);
+        printf("actual name len: %d\n",BLOBMSG_PADDING(sizeof(struct blobmsg_hdr) + be16_to_cpu(hdr->namelen) + 1));
 
+        // 获取"id"的值
+		msgstr = blobmsg_data(tb[HELLO_ID]);
+        printf("msgstr: %d\n",*(int *)msgstr);
+    }
+	if (tb[HELLO_MSG])
+    {
+        printf("tb[HELLO_MSG]->id_len: %08x\n",tb[HELLO_MSG]->id_len);
+	    struct blobmsg_hdr *hdr = (struct blobmsg_hdr *) blob_data(tb[HELLO_MSG]);
+        printf("blobmsg_hdr_len: %d, name: %s\n",hdr->namelen,hdr->name);
+        printf("actual name len: %d\n",BLOBMSG_PADDING(sizeof(struct blobmsg_hdr) + be16_to_cpu(hdr->namelen) + 1));
+
+        // 获取"msg"的值
+		msgstr = blobmsg_data(tb[HELLO_MSG]);
+        printf("msgstr: %s\n",msgstr);
+    }
+
+    // 回复的字符串组织
 	hreq = calloc(1, sizeof(*hreq) + strlen(format) + strlen(obj->name) + strlen(msgstr) + 1);
 	sprintf(hreq->data, format, obj->name, msgstr);
+    printf("hello request data: %s\n",hreq->data);   // "test received a message: code"
+
+    // ubus延迟请求设置
 	ubus_defer_request(ctx, req, &hreq->req);
-	hreq->timeout.cb = test_hello_reply;
-	uloop_timeout_set(&hreq->timeout, 1000);
+	hreq->timeout.cb = test_hello_reply;        // 注册请求超时后的回调函数
+	uloop_timeout_set(&hreq->timeout, 3000);    // 设置请求超时时间
 
 	return 0;
 }
 
+// 对象watch的参数枚举
 enum {
 	WATCH_ID,
 	WATCH_COUNTER,
 	__WATCH_MAX
 };
 
+// 对象watch的策略
 static const struct blobmsg_policy watch_policy[__WATCH_MAX] = {
 	[WATCH_ID] = { .name = "id", .type = BLOBMSG_TYPE_INT32 },
 	[WATCH_COUNTER] = { .name = "counter", .type = BLOBMSG_TYPE_INT32 },
@@ -142,9 +177,35 @@ static int test_watch(struct ubus_context *ctx, struct ubus_object *obj,
 	struct blob_attr *tb[__WATCH_MAX];
 	int ret;
 
+    printf(">>>>>>>>>>>>>>> method: %s\n",method);
 	blobmsg_parse(watch_policy, __WATCH_MAX, tb, blob_data(msg), blob_len(msg));
 	if (!tb[WATCH_ID])
 		return UBUS_STATUS_INVALID_ARGUMENT;
+
+    char *msgstr;
+	if (tb[WATCH_ID])
+    {
+        printf("tb[WATCH_ID]->id_len: %08x\n",tb[WATCH_ID]->id_len);
+	    struct blobmsg_hdr *hdr = (struct blobmsg_hdr *) blob_data(tb[WATCH_ID]);
+        printf("blobmsg_hdr_len: %d, name: %s\n",hdr->namelen,hdr->name);
+        printf("actual name len: %d\n",BLOBMSG_PADDING(sizeof(struct blobmsg_hdr) + be16_to_cpu(hdr->namelen) + 1));
+
+        // 获取"id"的值
+		msgstr = blobmsg_data(tb[WATCH_ID]);
+        printf("msgstr: %d\n",*(int *)msgstr);
+    }
+
+	if (tb[WATCH_COUNTER])
+    {
+        printf("tb[WATCH_COUNTER]->id_len: %08x\n",tb[WATCH_COUNTER]->id_len);
+	    struct blobmsg_hdr *hdr = (struct blobmsg_hdr *) blob_data(tb[WATCH_COUNTER]);
+        printf("blobmsg_hdr_len: %d, name: %s\n",hdr->namelen,hdr->name);
+        printf("actual name len: %d\n",BLOBMSG_PADDING(sizeof(struct blobmsg_hdr) + be16_to_cpu(hdr->namelen) + 1));
+
+        // 获取"id"的值
+		msgstr = blobmsg_data(tb[WATCH_COUNTER]);
+        printf("msgstr: %d\n",*(int *)msgstr);
+    }
 
 	test_event.remove_cb = test_handle_remove;
 	test_event.cb = test_notify;
@@ -172,6 +233,7 @@ static int test_count(struct ubus_context *ctx, struct ubus_object *obj,
 	char *s1, *s2;
 	uint32_t num;
 
+    printf(">>>>>>>>>>>>>>> method: %s\n",method);
 	blobmsg_parse(count_policy, __COUNT_MAX, tb, blob_data(msg), blob_len(msg));
 	if (!tb[COUNT_TO] || !tb[COUNT_STRING])
 		return UBUS_STATUS_INVALID_ARGUMENT;
@@ -191,15 +253,18 @@ static int test_count(struct ubus_context *ctx, struct ubus_object *obj,
 	return 0;
 }
 
+// 测试例子-对象的方法
 static const struct ubus_method test_methods[] = {
 	UBUS_METHOD("hello", test_hello, hello_policy),
 	UBUS_METHOD("watch", test_watch, watch_policy),
 	UBUS_METHOD("count", test_count, count_policy),
 };
 
+// 测试例子-对象的类型
 static struct ubus_object_type test_object_type =
 	UBUS_OBJECT_TYPE("test", test_methods);
 
+// 测试例子-对象
 static struct ubus_object test_object = {
 	.name = "test",
 	.type = &test_object_type,
@@ -207,6 +272,7 @@ static struct ubus_object test_object = {
 	.n_methods = ARRAY_SIZE(test_methods),
 };
 
+// 客户端注册服务
 static void server_main(void)
 {
 	int ret;
@@ -227,6 +293,7 @@ int main(int argc, char **argv)
 	const char *ubus_socket = NULL;
 	int ch;
 
+    // 获取命令行参数
 	while ((ch = getopt(argc, argv, "cs:")) != -1) {
 		switch (ch) {
 		case 's':
@@ -240,17 +307,20 @@ int main(int argc, char **argv)
 	argc -= optind;
 	argv += optind;
 
-	uloop_init();
-	signal(SIGPIPE, SIG_IGN);
+	uloop_init();               // 创建epoll句柄
+	signal(SIGPIPE, SIG_IGN);   // 防止对端关闭后本端程序退出
 
+    // 创建客户端（五层封装）
 	ctx = ubus_connect(ubus_socket);
 	if (!ctx) {
 		fprintf(stderr, "Failed to connect to ubus\n");
 		return -1;
 	}
 
+    // 客户端注册fd到epoll
 	ubus_add_uloop(ctx);
 
+    // 客户端注册服务
 	server_main();
 
 	ubus_free(ctx);
