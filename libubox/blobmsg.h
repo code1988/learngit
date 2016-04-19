@@ -20,13 +20,14 @@
 #include "blob.h"
 
 #define BLOBMSG_ALIGN	2
-#define BLOBMSG_PADDING(len) (((len) + (1 << BLOBMSG_ALIGN) - 1) & ~((1 << BLOBMSG_ALIGN) - 1))
+#define BLOBMSG_PADDING(len) (((len) + (1 << BLOBMSG_ALIGN) - 1) & ~((1 << BLOBMSG_ALIGN) - 1)) // 4字节对齐
 
+// 消息类型定义
 enum blobmsg_type {
-	BLOBMSG_TYPE_UNSPEC,
-	BLOBMSG_TYPE_ARRAY,
-	BLOBMSG_TYPE_TABLE,
-	BLOBMSG_TYPE_STRING,
+	BLOBMSG_TYPE_UNSPEC,    // 未指定,如果策略中采用这种消息类型，意味着不对消息类型作过滤
+	BLOBMSG_TYPE_ARRAY,     // 数组
+	BLOBMSG_TYPE_TABLE,     // table
+	BLOBMSG_TYPE_STRING,    // 字符串
 	BLOBMSG_TYPE_INT64,
 	BLOBMSG_TYPE_INT32,
 	BLOBMSG_TYPE_INT16,
@@ -36,39 +37,46 @@ enum blobmsg_type {
 	BLOBMSG_TYPE_BOOL = BLOBMSG_TYPE_INT8,
 };
 
+// 消息头(位于属性空间数据区的头部,即blob_attr->data的位置)
 struct blobmsg_hdr {
 	uint16_t namelen;
 	uint8_t name[];
 } __packed;
 
+// 消息策略
 struct blobmsg_policy {
-	const char *name;
-	enum blobmsg_type type;
+	const char *name;       // 策略名称
+	enum blobmsg_type type; // 策略类型
 };
 
+// 返回消息头长度（包含消息头、key-value中的key、字符串结尾符），4字节对齐
 static inline int blobmsg_hdrlen(int namelen)
 {
 	return BLOBMSG_PADDING(sizeof(struct blobmsg_hdr) + namelen + 1);
 }
 
+// 返回消息名（key-value中的key）
 static inline const char *blobmsg_name(const struct blob_attr *attr)
 {
 	struct blobmsg_hdr *hdr = (struct blobmsg_hdr *) blob_data(attr);
 	return (const char *) hdr->name;
 }
 
+// 返回消息类型ID
 static inline int blobmsg_type(const struct blob_attr *attr)
 {
 	return blob_id(attr);
 }
 
+// 获取最终的消息值(对应key-value中的value)
 static inline void *blobmsg_data(const struct blob_attr *attr)
 {
-	struct blobmsg_hdr *hdr = (struct blobmsg_hdr *) blob_data(attr);
-	char *data = blob_data(attr);
+	struct blobmsg_hdr *hdr = (struct blobmsg_hdr *) blob_data(attr);   // 获取消息头
+	char *data = blob_data(attr);                                       // 获取整条消息
 
+    // 判断扩展标记
 	if (blob_is_extended(attr))
-		data += blobmsg_hdrlen(be16_to_cpu(hdr->namelen));
+		data += blobmsg_hdrlen(be16_to_cpu(hdr->namelen));              // 掠过消息名，获取最终的消息内容
 
 	return data;
 }
@@ -125,6 +133,7 @@ blobmsg_add_u64(struct blob_buf *buf, const char *name, uint64_t val)
 	return blobmsg_add_field(buf, BLOBMSG_TYPE_INT64, name, &val, 8);
 }
 
+// 添加一条字符串类型的消息(key-value中的value为string类型)
 static inline int
 blobmsg_add_string(struct blob_buf *buf, const char *name, const char *string)
 {
@@ -197,6 +206,7 @@ static inline uint64_t blobmsg_get_u64(struct blob_attr *attr)
 	return tmp;
 }
 
+// 获取一条字符串类型的消息
 static inline char *blobmsg_get_string(struct blob_attr *attr)
 {
 	return blobmsg_data(attr);

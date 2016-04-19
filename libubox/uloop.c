@@ -342,6 +342,7 @@ static void uloop_gettime(struct timeval *tv)
 	tv->tv_usec = ts.tv_nsec / 1000;
 }
 
+// 给指定的定时器控制块设置一个超时值（ms单位）,内部封装了将节点插入链表的动作
 int uloop_timeout_set(struct uloop_timeout *timeout, int msecs)
 {
 	struct timeval *time = &timeout->time;
@@ -359,6 +360,7 @@ int uloop_timeout_set(struct uloop_timeout *timeout, int msecs)
 		time->tv_usec %= 1000000;
 	}
 
+    // 将设置好超时值的定时器节点插入定时器链表
 	return uloop_timeout_add(timeout);
 }
 

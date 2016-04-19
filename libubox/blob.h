@@ -30,6 +30,7 @@
 
 #define BLOB_COOKIE		0x01234567
 
+// 顶层消息类型
 enum {
 	BLOB_ATTR_UNSPEC,
 	BLOB_ATTR_NESTED,
@@ -42,16 +43,18 @@ enum {
 	BLOB_ATTR_LAST
 };
 
-#define BLOB_ATTR_ID_MASK  0x7f000000
+#define BLOB_ATTR_ID_MASK  0x7f000000   // 属性空间ID号，24～30位
 #define BLOB_ATTR_ID_SHIFT 24
-#define BLOB_ATTR_LEN_MASK 0x00ffffff
+#define BLOB_ATTR_LEN_MASK 0x00ffffff   // 属性空间数据区长度，低0～23位
 #define BLOB_ATTR_ALIGN    4
-#define BLOB_ATTR_EXTENDED 0x80000000
+#define BLOB_ATTR_EXTENDED 0x80000000   // 属性空间扩展标志，31位
 
-// BLOB属性空间
+// BLOB属性空间(blob_attr是消息的顶层封装)
+// data指向消息的底层封装：根据顶层封装中的扩展标记位，判断底层封装中是否存在消息头blobmsg_hdr
+// 以hello对象为例：id_len=0x83000011,17=4+8+5
 struct blob_attr {
-	uint32_t id_len;
-	char data[];        // 指向属性数据区(通过强制转换就是指向下一个BLOB属性空间，类似链表手法)
+	uint32_t id_len;    // [0-23]:数据区长度;[24-30]:ID;[31]:扩展标志
+	char data[];        // 指向数据区  
 } __packed;
 
 struct blob_attr_info {
@@ -61,7 +64,7 @@ struct blob_attr_info {
 	bool (*validate)(const struct blob_attr_info *, struct blob_attr *);
 };
 
-// BLOB模块控制块
+// BLOB模块控制块(这是消息传输的最终载体)
 struct blob_buf {
 	struct blob_attr *head; // BLOB属性头，指向属性空间
 	bool (*grow)(struct blob_buf *buf, int minlen); // 指向BLOB数据区容量调整函数
@@ -81,6 +84,7 @@ blob_data(const struct blob_attr *attr)
 
 /*
  * blob_id: returns the id of an attribute
+ * 返回BLOB属性ID(即消息类型)
  */
 static inline unsigned int
 blob_id(const struct blob_attr *attr)
@@ -89,6 +93,7 @@ blob_id(const struct blob_attr *attr)
 	return id;
 }
 
+// 判断BLOB是否存在扩展区
 static inline bool
 blob_is_extended(const struct blob_attr *attr)
 {
@@ -97,6 +102,7 @@ blob_is_extended(const struct blob_attr *attr)
 
 /*
  * blob_len: returns the length of the attribute's payload
+ * 返回BLOB属性空间有效长度（即底层封装消息总长，不含顶层封装头）
  */
 static inline unsigned int
 blob_len(const struct blob_attr *attr)
@@ -126,12 +132,14 @@ blob_pad_len(const struct blob_attr *attr)
 	return len;
 }
 
+// 获取1字节属性数据区字符
 static inline uint8_t
 blob_get_u8(const struct blob_attr *attr)
 {
 	return *((uint8_t *) attr->data);
 }
 
+// 获取2字节属性数据区字符
 static inline uint16_t
 blob_get_u16(const struct blob_attr *attr)
 {
@@ -139,6 +147,7 @@ blob_get_u16(const struct blob_attr *attr)
 	return be16_to_cpu(*tmp);
 }
 
+// 获取4字节属性数据区字符
 static inline uint32_t
 blob_get_u32(const struct blob_attr *attr)
 {
@@ -185,6 +194,7 @@ blob_get_string(const struct blob_attr *attr)
 	return attr->data;
 }
 
+// 获取下一个blob_attr指针(多个blob_attr是以数组形式排列的)
 static inline struct blob_attr *
 blob_next(const struct blob_attr *attr)
 {

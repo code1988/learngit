@@ -39,7 +39,7 @@ static void usock_set_flags(int sock, unsigned int type)
 		fcntl(sock, F_SETFL, fcntl(sock, F_GETFL) | O_NONBLOCK);
 }
 
-// 服务器创建工作的真正位置
+// 服务器/客户端创建（底层封装）,支持unix socket、inet socket
 static int usock_connect(struct sockaddr *sa, int sa_len, int family, int socktype, bool server)
 {
 	int sock;
@@ -50,6 +50,7 @@ static int usock_connect(struct sockaddr *sa, int sa_len, int family, int sockty
 
 	if (server) 
     {
+        // 创建服务器
 		const int one = 1;
 		setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
 
@@ -59,6 +60,7 @@ static int usock_connect(struct sockaddr *sa, int sa_len, int family, int sockty
 	} 
     else 
     {
+        // 创建客户端
 		if (!connect(sock, sa, sa_len) || errno == EINPROGRESS)
 			return sock;
 	}
@@ -67,18 +69,19 @@ static int usock_connect(struct sockaddr *sa, int sa_len, int family, int sockty
 	return -1;
 }
 
-// 创建unix类型的服务器,带主机名(这种方法不传入IP，而是通过主机名寻找IP)
+// 创建unix socket,
 static int usock_unix(const char *host, int socktype, bool server)
 {
 	struct sockaddr_un sun = {.sun_family = AF_UNIX};
 
-    // host合法性检测
+    // 本地socket文件合法性检测
 	if (strlen(host) >= sizeof(sun.sun_path)) {
 		errno = EINVAL;
 		return -1;
 	}
 	strcpy(sun.sun_path, host);
 
+    // 服务器/客户端创建(底层封装)
 	return usock_connect((struct sockaddr*)&sun, sizeof(sun), AF_UNIX, socktype, server);
 }
 
@@ -108,18 +111,17 @@ static int usock_inet(int type, const char *host, const char *service, int sockt
 	return sock;
 }
 
-// 创建服务器，这里是unix风格的tcp服务器
+// 创建服务器/客户端(二层封装)
 int usock(int type, const char *host, const char *service) 
 {
 	int socktype = ((type & 0xff) == USOCK_TCP) ? SOCK_STREAM : SOCK_DGRAM;
 	bool server = !!(type & USOCK_SERVER);
 	int sock;
 
-    // 这里是unix类型
 	if (type & USOCK_UNIX)
-		sock = usock_unix(host, socktype, server);  // host:ubus_socket socktype:SOCK_STREAM server:1
+		sock = usock_unix(host, socktype, server);                  // unix socket(即本地socket)
 	else
-		sock = usock_inet(type, host, service, socktype, server);
+		sock = usock_inet(type, host, service, socktype, server);   // inet socket(即网络socket)
 
 	if (sock < 0)
 		return -1;

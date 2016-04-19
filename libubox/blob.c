@@ -191,6 +191,7 @@ static const int blob_type_minlen[BLOB_ATTR_LAST] = {
 	[BLOB_ATTR_INT64] = sizeof(uint64_t),
 };
 
+// 顶层消息类型合法性检测
 bool
 blob_check_type(const void *ptr, int len, int type)
 {

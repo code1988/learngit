@@ -15,6 +15,7 @@
  */
 #include "blobmsg.h"
 
+// 顶层、底层消息类型转换
 static const int blob_type[__BLOBMSG_TYPE_LAST] = {
 	[BLOBMSG_TYPE_INT8] = BLOB_ATTR_INT8,
 	[BLOBMSG_TYPE_INT16] = BLOB_ATTR_INT16,
@@ -24,12 +25,14 @@ static const int blob_type[__BLOBMSG_TYPE_LAST] = {
 	[BLOBMSG_TYPE_UNSPEC] = BLOB_ATTR_BINARY,
 };
 
+// 获取消息名长度(key-value中的key长度)
 static uint16_t
 blobmsg_namelen(const struct blobmsg_hdr *hdr)
 {
 	return be16_to_cpu(hdr->namelen);
 }
 
+// 消息顶层封装、底层封装中，各种成员合法性检测
 bool blobmsg_check_attr(const struct blob_attr *attr, bool name)
 {
 	const struct blobmsg_hdr *hdr;
@@ -116,17 +119,21 @@ int blobmsg_parse_array(const struct blobmsg_policy *policy, int policy_len,
 	return 0;
 }
 
-
+// 解析BLOBMSG，根据指定的消息策略过滤，通过的消息存储到指定数组tb
 int blobmsg_parse(const struct blobmsg_policy *policy, int policy_len,
                   struct blob_attr **tb, void *data, int len)
 {
 	struct blobmsg_hdr *hdr;
 	struct blob_attr *attr;
-	uint8_t *pslen;
+	uint8_t *pslen;         // 存储策略名长度 
 	int i;
 
 	memset(tb, 0, policy_len * sizeof(*tb));
+
+    // 申请的空间用于记录每个策略名称的长度
 	pslen = alloca(policy_len);
+
+    // 消息策略名称合法性检测,记录策略名长度
 	for (i = 0; i < policy_len; i++) {
 		if (!policy[i].name)
 			continue;
@@ -134,28 +141,38 @@ int blobmsg_parse(const struct blobmsg_policy *policy, int policy_len,
 		pslen[i] = strlen(policy[i].name);
 	}
 
-	__blob_for_each_attr(attr, data, len) {
+    // 遍历blob_attr结构，根据策略中的规则进行过滤
+	__blob_for_each_attr(attr, data, len) 
+    {
+        // 获取blob_attr数据区指针
 		hdr = blob_data(attr);
-		for (i = 0; i < policy_len; i++) {
+		for (i = 0; i < policy_len; i++) 
+        {
+            // 判断策略名是否存在
 			if (!policy[i].name)
 				continue;
-
+            
+            // 判断消息类型是否符合策略
 			if (policy[i].type != BLOBMSG_TYPE_UNSPEC &&
 			    blob_id(attr) != policy[i].type)
 				continue;
 
+            // 判断消息名长度是否符合策略
 			if (blobmsg_namelen(hdr) != pslen[i])
 				continue;
 
+            // 消息顶层封装、底层封装中，各种成员合法性检测
 			if (!blobmsg_check_attr(attr, true))
 				return -1;
 
 			if (tb[i])
 				continue;
 
+            // 判断消息名是否匹配
 			if (strcmp(policy[i].name, (char *) hdr->name) != 0)
 				continue;
 
+            // 将过滤之后通过的消息指针目标数组
 			tb[i] = attr;
 		}
 	}
