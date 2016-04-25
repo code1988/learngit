@@ -224,7 +224,7 @@ static int sysinfo_handler(struct ubus_context *ctx, struct ubus_object *obj,
         if (blobmsg_type(_cur) == BLOBMSG_TYPE_STRING) {
             struct jw_switch_policy *jw_sysinfo_p = NULL;
             name = blobmsg_get_string(_cur);
-            jw_sysinfo_p = (struct jw_sysinfo_policy *)jw_switchd_get_context(name, sysinfo_tbl, __SYSINFO_MAX);
+            jw_sysinfo_p = (struct jw_switch_policy *)jw_switchd_get_context(name, sysinfo_tbl, __SYSINFO_MAX);
             if (jw_sysinfo_p && jw_sysinfo_p->get_handler) {
                 printf("%s[%d]: invoke get_handler\n", __func__, __LINE__);
                 jw_sysinfo_p->get_handler(&b, 0);

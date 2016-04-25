@@ -157,7 +157,7 @@ static int jw_port_mirror_parse_port_cfg_get(struct blob_attr *tb, struct blob_b
 
     hdr = blob_data(tb);
 
-    pidx = strstr(hdr->name, "idx-");
+    pidx = strstr((char *)hdr->name, "idx-");
     if (pidx) {
         printf("[%s][%d], pidx = [%s]\n", __func__, __LINE__, pidx);
         port_idx = atoi(pidx + 4);
@@ -173,14 +173,14 @@ static int jw_port_mirror_parse_port_cfg_get(struct blob_attr *tb, struct blob_b
     void *msg_array = NULL;
     void *msg_table = NULL;
     
-    msg_table = blobmsg_open_table(buf, hdr->name);
-    msg_array = blobmsg_open_array(buf, hdr->name);
+    msg_table = blobmsg_open_table(buf, (char *)hdr->name);
+    msg_array = blobmsg_open_array(buf, (char *)hdr->name);
 
     blobmsg_for_each_attr(cur, tb, rem) {
         if (blobmsg_type(cur) == BLOBMSG_TYPE_STRING) {
             array_var = blobmsg_get_string(cur);
             printf("%s[%d]: array value = %s\n", __func__, __LINE__, array_var);
-            jw_port_mirror_p = (struct jw_port_mirror_policy *)jw_switchd_get_context(array_var, port_mirror_tbl, __SWITCH_PORT_MIRROR_GET_TBL_MAX);
+            jw_port_mirror_p = (struct jw_switch_policy *)jw_switchd_get_context(array_var, port_mirror_tbl, __SWITCH_PORT_MIRROR_GET_TBL_MAX);
             if (jw_port_mirror_p && jw_port_mirror_p->get_handler) {
                 jw_port_mirror_p->get_handler(buf, port_idx);
             } else {
@@ -194,7 +194,6 @@ static int jw_port_mirror_parse_port_cfg_get(struct blob_attr *tb, struct blob_b
 
     return 0;
 }
-
 
 static int jw_port_mirror_parse_port_cfg_set(struct blob_attr *tb, struct blob_buf *buf)
 {
@@ -210,7 +209,7 @@ static int jw_port_mirror_parse_port_cfg_set(struct blob_attr *tb, struct blob_b
 
     hdr = blob_data(tb);
 
-    pidx = strstr(hdr->name, "idx-");
+    pidx = strstr((char *)hdr->name, "idx-");
     if (pidx) {
         printf("[%s][%d], pidx = [%s]\n", __func__, __LINE__, pidx);
         port_idx = atoi(pidx + 4);
@@ -226,10 +225,10 @@ static int jw_port_mirror_parse_port_cfg_set(struct blob_attr *tb, struct blob_b
     blobmsg_for_each_attr(cur, tb, rem) {
         if (blobmsg_type(cur) == BLOBMSG_TYPE_TABLE) {
             struct blob_attr *t = blobmsg_data(cur);
-            name = ((struct blobmsg_hdr *)blob_data(t))->name;
+            name = (char *)((struct blobmsg_hdr *)blob_data(t))->name;
             v = blobmsg_get_u32(t);
             printf("%s[%d]: BLOBMSG_TYPE_TABLE, hdr name = [%s], var = [%d]\n", __func__, __LINE__, name, v);
-            jw_port_mirror_p = (struct jw_port_mirror_policy *)jw_switchd_get_context(name, port_mirror_tbl, __SWITCH_PORT_MIRROR_SET_TBL_MAX);
+            jw_port_mirror_p = (struct jw_switch_policy *)jw_switchd_get_context(name, port_mirror_tbl, __SWITCH_PORT_MIRROR_SET_TBL_MAX);
             if (jw_port_mirror_p && jw_port_mirror_p->set_handler) {
                 jw_port_mirror_p->set_handler(port_idx, (void *)&v);
             } else {
@@ -279,7 +278,7 @@ static int port_mirror_get_handler(struct ubus_context *ctx, struct ubus_object 
             //int v = -1;
             struct jw_switch_policy *jw_port_mirror_p = NULL;
             name = blobmsg_get_string(_cur);
-            jw_port_mirror_p = (struct jw_port_mirror_policy *)jw_switchd_get_context(name, port_mirror_tbl, __SWITCH_PORT_MIRROR_GET_TBL_MAX);
+            jw_port_mirror_p = (struct jw_switch_policy *)jw_switchd_get_context(name, port_mirror_tbl, __SWITCH_PORT_MIRROR_GET_TBL_MAX);
             if (jw_port_mirror_p && jw_port_mirror_p->get_handler) {
                 jw_port_mirror_p->get_handler(&b, 0);
             } else {

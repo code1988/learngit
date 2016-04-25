@@ -55,10 +55,11 @@ ubus_connect_cb(struct uloop_timeout *timeout)
 	DEBUG(2, "Connected to ubus, id=%08x\n", ctx->local_id);
 	ubus_add_uloop(ctx);
 
-	ubus_init_sysinfo(ctx);
-    ubus_init_switch(ctx);
-    ubus_init_rate_limit(ctx);
-    ubus_init_port_mirror(ctx);
+	ubus_init_sysinfo(ctx);     // MIB - jwsDevGeneral
+    ubus_init_port_config(ctx); // MIB - jwsIfExtPortInfo
+    ubus_init_rate_limit(ctx);  // MIB - jwsPriRateLimitGroup
+    ubus_init_port_mirror(ctx); // MIB - jwsMirrorConfigGroup
+    ubus_init_eth_stats(ctx);    // MIB - jwsIfExtEthStats
 	//switchd_state_ubus_connect();
 }
 

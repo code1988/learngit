@@ -12,8 +12,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef __SWITCHD_H
-#define __SWITCHD_H
+#ifndef _SWITCHD_H_
+#define _SWITCHD_H_
 
 #include <libubox/uloop.h>
 #include <libubox/utils.h>
@@ -36,7 +36,8 @@ struct jw_switch_policy {
     int(*set_handler)(int port_idx, void *var);
 };
 
-void jw_switch_get_context(char *name, struct jw_switch_policy *policy_tbl, int item_max);
+//void *jw_switch_get_context(char *, struct jw_switch_policy *, int );
+const void *jw_switchd_get_context(char *name, const struct jw_switch_policy *policy_tbl, int item_max);
 
 void switchd_connect_ubus(void);
 void switchd_reconnect_ubus(int reconnect);
@@ -47,5 +48,13 @@ void switchd_state_next(void);
 //void switchd_shutdown(int event);
 void switchd_signal(void);
 void switchd_signal_preinit(void);
+
+void ubus_init_eth_stats(struct ubus_context *ctx);
+void ubus_init_port_config(struct ubus_context *ctx);
+void ubus_init_port_mirror(struct ubus_context *ctx);
+void ubus_init_rate_limit(struct ubus_context *ctx);
+void ubus_init_sysinfo(struct ubus_context *ctx);
+
+
 
 #endif

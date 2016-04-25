@@ -58,11 +58,6 @@ enum {
 };
 
 
-static int jw_rate_limit_set_admin_mode(int port_idx, void *p);
-static int jw_rate_limit_set_physical_mode(int port_idx, void *p);
-static int jw_rate_limit_set_flow_control_mode(int port_idx, void *p);
-
-
 static int jw_rate_limit_get_ingress_rate_ctrl_mode(struct blob_buf *buf, int port_idx)
 {
     int ircm = 0;
@@ -163,7 +158,7 @@ static int jw_rate_limitd_parse_port_cfg_get(struct blob_attr *tb, struct blob_b
 
     hdr = blob_data(tb);
 
-    pidx = strstr(hdr->name, "idx-");
+    pidx = strstr((char *)hdr->name, "idx-");
     if (pidx) {
         printf("[%s][%d], pidx = [%s]\n", __func__, __LINE__, pidx);
         port_idx = atoi(pidx + 4);
@@ -179,14 +174,14 @@ static int jw_rate_limitd_parse_port_cfg_get(struct blob_attr *tb, struct blob_b
     void *msg_array = NULL;
     void *msg_table = NULL;
     
-    msg_table = blobmsg_open_table(buf, hdr->name);
-    msg_array = blobmsg_open_array(buf, hdr->name);
+    msg_table = blobmsg_open_table(buf, (char *)hdr->name);
+    msg_array = blobmsg_open_array(buf, (char *)hdr->name);
 
     blobmsg_for_each_attr(cur, tb, rem) {
         if (blobmsg_type(cur) == BLOBMSG_TYPE_STRING) {
             array_var = blobmsg_get_string(cur);
             printf("%s[%d]: array value = %s\n", __func__, __LINE__, array_var);
-            jw_rate_limit_p = (struct jw_rate_limit_policy *)jw_switchd_get_context(array_var, rate_limit_get_tbl, __SWITCH_RATE_LIMIT_GET_TBL_MAX);
+            jw_rate_limit_p = (struct jw_switch_policy *)jw_switchd_get_context(array_var, rate_limit_get_tbl, __SWITCH_RATE_LIMIT_GET_TBL_MAX);
             if (jw_rate_limit_p && jw_rate_limit_p->get_handler) {
                 jw_rate_limit_p->get_handler(buf, port_idx);
             } else {
@@ -207,14 +202,13 @@ static int jw_rate_limitd_parse_port_cfg_set(struct blob_attr *tb, struct blob_b
     int port_idx = -1;
     int rem = 0;
     struct blob_attr *cur = NULL;
-    char *array_var = NULL;
     struct blobmsg_hdr *hdr = NULL;
     char *pidx = NULL;
     struct jw_switch_policy *jw_rate_limit_p = NULL;
 
     hdr = blob_data(tb);
 
-    pidx = strstr(hdr->name, "idx-");
+    pidx = strstr((char *)hdr->name, "idx-");
     if (pidx) {
         printf("[%s][%d], pidx = [%s]\n", __func__, __LINE__, pidx);
         port_idx = atoi(pidx + 4);
@@ -233,10 +227,10 @@ static int jw_rate_limitd_parse_port_cfg_set(struct blob_attr *tb, struct blob_b
             struct blob_attr *t = blobmsg_data(cur);
             int v = -1;
             char *name = NULL;
-            name = ((struct blobmsg_hdr *)blob_data(t))->name;
+            name = (char *)((struct blobmsg_hdr *)blob_data(t))->name;
             v = blobmsg_get_u32(t);
             printf("%s[%d]: BLOBMSG_TYPE_TABLE, hdr name = [%s], var = [%d]\n", __func__, __LINE__, name, v);
-            jw_rate_limit_p = (struct jw_rate_limit_policy *)jw_switchd_get_context(name, rate_limit_set_tbl, __SWITCH_RATE_LIMIT_SET_TBL_MAX);
+            jw_rate_limit_p = (struct jw_switch_policy *)jw_switchd_get_context(name, rate_limit_set_tbl, __SWITCH_RATE_LIMIT_SET_TBL_MAX);
             if (jw_rate_limit_p && jw_rate_limit_p->set_handler) {
                 jw_rate_limit_p->set_handler(port_idx, (void *)&v);
             } else {
@@ -325,7 +319,6 @@ static int rate_limit_set_handler(struct ubus_context *ctx, struct ubus_object *
     struct blob_attr *cur = NULL;
     struct blob_attr *_cur = NULL;
     int rem = 0;
-    char *array_val = NULL;
 
     cur = tb[SWITCH_RATE_LIMIT_SET_ARRAY];
     if (blobmsg_type(cur) != BLOBMSG_TYPE_ARRAY) {

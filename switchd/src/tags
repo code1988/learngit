@@ -6,36 +6,62 @@
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
 DEBUG	log.h	20;"	d
 ERROR	log.h	26;"	d
+JW_EthStatsHandle	eth_stats_table.c	/^static int JW_EthStatsHandle(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_object *obj, struct ubus_request_data *req, const char *method, struct blob_attr *msg)
+JW_EthStatsHandle	eth_stats_table.c	/^static int JW_EthStatsHandle(struct ubus_context *ctx, struct ubus_object *obj,$/;"	p	file:	signature:(struct ubus_context *ctx, struct ubus_object *obj, struct ubus_request_data *req, const char *method, struct blob_attr *msg)
+JW_GetRxBcastPkts	eth_stats_table.c	/^static int JW_GetRxBcastPkts(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
+JW_GetRxBcastPkts	eth_stats_table.c	/^static int JW_GetRxBcastPkts(struct blob_buf *buf, int port_idx);$/;"	p	file:	signature:(struct blob_buf *buf, int port_idx)
+JW_GetRxBytes	eth_stats_table.c	/^static int JW_GetRxBytes(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
+JW_GetRxBytes	eth_stats_table.c	/^static int JW_GetRxBytes(struct blob_buf *buf, int port_idx);$/;"	p	file:	signature:(struct blob_buf *buf, int port_idx)
+JW_GetRxMcastPkts	eth_stats_table.c	/^static int JW_GetRxMcastPkts(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
+JW_GetRxMcastPkts	eth_stats_table.c	/^static int JW_GetRxMcastPkts(struct blob_buf *buf, int port_idx);$/;"	p	file:	signature:(struct blob_buf *buf, int port_idx)
+JW_GetRxPausePkts	eth_stats_table.c	/^static int JW_GetRxPausePkts(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
+JW_GetRxPausePkts	eth_stats_table.c	/^static int JW_GetRxPausePkts(struct blob_buf *buf, int port_idx);$/;"	p	file:	signature:(struct blob_buf *buf, int port_idx)
+JW_GetRxUcastPkts	eth_stats_table.c	/^static int JW_GetRxUcastPkts(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
+JW_GetRxUcastPkts	eth_stats_table.c	/^static int JW_GetRxUcastPkts(struct blob_buf *buf, int port_idx);$/;"	p	file:	signature:(struct blob_buf *buf, int port_idx)
+JW_GetTxBcastPkts	eth_stats_table.c	/^static int JW_GetTxBcastPkts(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
+JW_GetTxBcastPkts	eth_stats_table.c	/^static int JW_GetTxBcastPkts(struct blob_buf *buf, int port_idx);$/;"	p	file:	signature:(struct blob_buf *buf, int port_idx)
+JW_GetTxBytes	eth_stats_table.c	/^static int JW_GetTxBytes(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
+JW_GetTxBytes	eth_stats_table.c	/^static int JW_GetTxBytes(struct blob_buf *buf, int port_idx);$/;"	p	file:	signature:(struct blob_buf *buf, int port_idx)
+JW_GetTxMcastPkts	eth_stats_table.c	/^static int JW_GetTxMcastPkts(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
+JW_GetTxMcastPkts	eth_stats_table.c	/^static int JW_GetTxMcastPkts(struct blob_buf *buf, int port_idx);$/;"	p	file:	signature:(struct blob_buf *buf, int port_idx)
+JW_GetTxPausePkts	eth_stats_table.c	/^static int JW_GetTxPausePkts(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
+JW_GetTxPausePkts	eth_stats_table.c	/^static int JW_GetTxPausePkts(struct blob_buf *buf, int port_idx);$/;"	p	file:	signature:(struct blob_buf *buf, int port_idx)
+JW_GetTxUcastPkts	eth_stats_table.c	/^static int JW_GetTxUcastPkts(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
+JW_GetTxUcastPkts	eth_stats_table.c	/^static int JW_GetTxUcastPkts(struct blob_buf *buf, int port_idx);$/;"	p	file:	signature:(struct blob_buf *buf, int port_idx)
+JW_ParsePortEthStatsGet	eth_stats_table.c	/^static int JW_ParsePortEthStatsGet(struct blob_attr *lvl3, struct blob_buf *buf)$/;"	f	file:	signature:(struct blob_attr *lvl3, struct blob_buf *buf)
+LIBS	Makefile	/^LIBS = -lubox -lubus -lblobmsg_json$/;"	m
 LOG	log.h	25;"	d
-OBJS	Makefile	/^OBJS = utils.o switchd.o ubus.o sysinfo.o signal.o $(SW_OBJS)$/;"	m
-SWITCH_PORT_CFG_GET_KEYS	port_config_table.c	/^    SWITCH_PORT_CFG_GET_KEYS,$/;"	e	enum:__anon7	file:
-SWITCH_PORT_CFG_GET_TBL_ADMIN_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_ADMIN_MODE,$/;"	e	enum:__anon8	file:
-SWITCH_PORT_CFG_GET_TBL_FLOW_CONTROL_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_FLOW_CONTROL_MODE,$/;"	e	enum:__anon8	file:
-SWITCH_PORT_CFG_GET_TBL_LINK_STATUS	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_LINK_STATUS,$/;"	e	enum:__anon8	file:
-SWITCH_PORT_CFG_GET_TBL_LINK_TRAP_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_LINK_TRAP_MODE,$/;"	e	enum:__anon8	file:
-SWITCH_PORT_CFG_GET_TBL_PHYSICAL_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_PHYSICAL_MODE,$/;"	e	enum:__anon8	file:
-SWITCH_PORT_CFG_GET_TBL_PHYSICAL_STATUS	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_PHYSICAL_STATUS,$/;"	e	enum:__anon8	file:
-SWITCH_PORT_CFG_GET_TBL_RX_THRESHOLD_VALUE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_RX_THRESHOLD_VALUE,$/;"	e	enum:__anon8	file:
-SWITCH_PORT_CFG_GET_TBL_STATE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_STATE,$/;"	e	enum:__anon8	file:
-SWITCH_PORT_CFG_GET_TBL_THRESHOLD_TRAP_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_THRESHOLD_TRAP_MODE,$/;"	e	enum:__anon8	file:
-SWITCH_PORT_CFG_GET_TBL_TX_THRESHOLD_VALUE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_TX_THRESHOLD_VALUE,$/;"	e	enum:__anon8	file:
-SWITCH_PORT_CFG_GET_TBL_TYPE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_TYPE,$/;"	e	enum:__anon8	file:
-SWITCH_PORT_CFG_SET_ARRAY	port_config_table.c	/^    SWITCH_PORT_CFG_SET_ARRAY,$/;"	e	enum:__anon9	file:
-SWITCH_PORT_CFG_SET_TBL_ADMIN_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_ADMIN_MODE,$/;"	e	enum:__anon10	file:
-SWITCH_PORT_CFG_SET_TBL_FLOW_CONTROL_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_FLOW_CONTROL_MODE,$/;"	e	enum:__anon10	file:
-SWITCH_PORT_CFG_SET_TBL_LINK_TRAP_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_LINK_TRAP_MODE,$/;"	e	enum:__anon10	file:
-SWITCH_PORT_CFG_SET_TBL_PHYSICAL_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_PHYSICAL_MODE,$/;"	e	enum:__anon10	file:
-SWITCH_PORT_CFG_SET_TBL_RX_THRESHOLD_VALUE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_RX_THRESHOLD_VALUE,$/;"	e	enum:__anon10	file:
-SWITCH_PORT_CFG_SET_TBL_THRESHOLD_TRAP_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_THRESHOLD_TRAP_MODE,$/;"	e	enum:__anon10	file:
-SWITCH_PORT_CFG_SET_TBL_TX_THRESHOLD_VALUE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_TX_THRESHOLD_VALUE,$/;"	e	enum:__anon10	file:
-SWITCH_PORT_MIRROR_GET_ARRAY	port_mirror.c	/^    SWITCH_PORT_MIRROR_GET_ARRAY,$/;"	e	enum:__anon11	file:
-SWITCH_PORT_MIRROR_GET_TBL_ADMIN_MODE	port_mirror.c	/^    SWITCH_PORT_MIRROR_GET_TBL_ADMIN_MODE,$/;"	e	enum:__anon12	file:
-SWITCH_PORT_MIRROR_GET_TBL_DESTINATION_PORT	port_mirror.c	/^    SWITCH_PORT_MIRROR_GET_TBL_DESTINATION_PORT,$/;"	e	enum:__anon12	file:
-SWITCH_PORT_MIRROR_GET_TBL_DIRECTION	port_mirror.c	/^    SWITCH_PORT_MIRROR_GET_TBL_DIRECTION,$/;"	e	enum:__anon12	file:
-SWITCH_PORT_MIRROR_SET_ARRAY	port_mirror.c	/^    SWITCH_PORT_MIRROR_SET_ARRAY,$/;"	e	enum:__anon13	file:
-SWITCH_PORT_MIRROR_SET_TBL_ADMIN_MODE	port_mirror.c	/^    SWITCH_PORT_MIRROR_SET_TBL_ADMIN_MODE,$/;"	e	enum:__anon14	file:
-SWITCH_PORT_MIRROR_SET_TBL_DESTINATION_PORT	port_mirror.c	/^    SWITCH_PORT_MIRROR_SET_TBL_DESTINATION_PORT,$/;"	e	enum:__anon14	file:
-SWITCH_PORT_MIRROR_SET_TBL_DIRECTION	port_mirror.c	/^    SWITCH_PORT_MIRROR_SET_TBL_DIRECTION,$/;"	e	enum:__anon14	file:
+OBJS	Makefile	/^OBJS = $(patsubst %c,%o,$(SRC))$/;"	m
+SRC	Makefile	/^SRC = $(notdir $(wildcard *.c))$/;"	m
+SWITCH_ETH_STATS_GET_ARRAY	eth_stats_table.c	/^    SWITCH_ETH_STATS_GET_ARRAY,$/;"	e	enum:__anon5	file:
+SWITCH_PORT_CFG_GET_KEYS	port_config_table.c	/^    SWITCH_PORT_CFG_GET_KEYS,$/;"	e	enum:__anon9	file:
+SWITCH_PORT_CFG_GET_TBL_ADMIN_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_ADMIN_MODE,$/;"	e	enum:__anon10	file:
+SWITCH_PORT_CFG_GET_TBL_FLOW_CONTROL_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_FLOW_CONTROL_MODE,$/;"	e	enum:__anon10	file:
+SWITCH_PORT_CFG_GET_TBL_LINK_STATUS	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_LINK_STATUS,$/;"	e	enum:__anon10	file:
+SWITCH_PORT_CFG_GET_TBL_LINK_TRAP_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_LINK_TRAP_MODE,$/;"	e	enum:__anon10	file:
+SWITCH_PORT_CFG_GET_TBL_PHYSICAL_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_PHYSICAL_MODE,$/;"	e	enum:__anon10	file:
+SWITCH_PORT_CFG_GET_TBL_PHYSICAL_STATUS	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_PHYSICAL_STATUS,$/;"	e	enum:__anon10	file:
+SWITCH_PORT_CFG_GET_TBL_RX_THRESHOLD_VALUE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_RX_THRESHOLD_VALUE,$/;"	e	enum:__anon10	file:
+SWITCH_PORT_CFG_GET_TBL_STATE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_STATE,$/;"	e	enum:__anon10	file:
+SWITCH_PORT_CFG_GET_TBL_THRESHOLD_TRAP_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_THRESHOLD_TRAP_MODE,$/;"	e	enum:__anon10	file:
+SWITCH_PORT_CFG_GET_TBL_TX_THRESHOLD_VALUE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_TX_THRESHOLD_VALUE,$/;"	e	enum:__anon10	file:
+SWITCH_PORT_CFG_GET_TBL_TYPE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_TYPE,$/;"	e	enum:__anon10	file:
+SWITCH_PORT_CFG_SET_ARRAY	port_config_table.c	/^    SWITCH_PORT_CFG_SET_ARRAY,$/;"	e	enum:__anon11	file:
+SWITCH_PORT_CFG_SET_TBL_ADMIN_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_ADMIN_MODE,$/;"	e	enum:__anon12	file:
+SWITCH_PORT_CFG_SET_TBL_FLOW_CONTROL_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_FLOW_CONTROL_MODE,$/;"	e	enum:__anon12	file:
+SWITCH_PORT_CFG_SET_TBL_LINK_TRAP_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_LINK_TRAP_MODE,$/;"	e	enum:__anon12	file:
+SWITCH_PORT_CFG_SET_TBL_PHYSICAL_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_PHYSICAL_MODE,$/;"	e	enum:__anon12	file:
+SWITCH_PORT_CFG_SET_TBL_RX_THRESHOLD_VALUE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_RX_THRESHOLD_VALUE,$/;"	e	enum:__anon12	file:
+SWITCH_PORT_CFG_SET_TBL_THRESHOLD_TRAP_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_THRESHOLD_TRAP_MODE,$/;"	e	enum:__anon12	file:
+SWITCH_PORT_CFG_SET_TBL_TX_THRESHOLD_VALUE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_TX_THRESHOLD_VALUE,$/;"	e	enum:__anon12	file:
+SWITCH_PORT_MIRROR_GET_ARRAY	port_mirror.c	/^    SWITCH_PORT_MIRROR_GET_ARRAY,$/;"	e	enum:__anon13	file:
+SWITCH_PORT_MIRROR_GET_TBL_ADMIN_MODE	port_mirror.c	/^    SWITCH_PORT_MIRROR_GET_TBL_ADMIN_MODE,$/;"	e	enum:__anon14	file:
+SWITCH_PORT_MIRROR_GET_TBL_DESTINATION_PORT	port_mirror.c	/^    SWITCH_PORT_MIRROR_GET_TBL_DESTINATION_PORT,$/;"	e	enum:__anon14	file:
+SWITCH_PORT_MIRROR_GET_TBL_DIRECTION	port_mirror.c	/^    SWITCH_PORT_MIRROR_GET_TBL_DIRECTION,$/;"	e	enum:__anon14	file:
+SWITCH_PORT_MIRROR_SET_ARRAY	port_mirror.c	/^    SWITCH_PORT_MIRROR_SET_ARRAY,$/;"	e	enum:__anon15	file:
+SWITCH_PORT_MIRROR_SET_TBL_ADMIN_MODE	port_mirror.c	/^    SWITCH_PORT_MIRROR_SET_TBL_ADMIN_MODE,$/;"	e	enum:__anon16	file:
+SWITCH_PORT_MIRROR_SET_TBL_DESTINATION_PORT	port_mirror.c	/^    SWITCH_PORT_MIRROR_SET_TBL_DESTINATION_PORT,$/;"	e	enum:__anon16	file:
+SWITCH_PORT_MIRROR_SET_TBL_DIRECTION	port_mirror.c	/^    SWITCH_PORT_MIRROR_SET_TBL_DIRECTION,$/;"	e	enum:__anon16	file:
 SWITCH_RATE_LIMIT_GET_ARRAY	rate_limite_table.c	/^    SWITCH_RATE_LIMIT_GET_ARRAY,$/;"	e	enum:__anon1	file:
 SWITCH_RATE_LIMIT_GET_TBL_EGRESS_RATE_LIMIT_VALUE	rate_limite_table.c	/^    SWITCH_RATE_LIMIT_GET_TBL_EGRESS_RATE_LIMIT_VALUE,$/;"	e	enum:__anon2	file:
 SWITCH_RATE_LIMIT_GET_TBL_INGRESS_RATE_CTRL_MODE	rate_limite_table.c	/^    SWITCH_RATE_LIMIT_GET_TBL_INGRESS_RATE_CTRL_MODE,$/;"	e	enum:__anon2	file:
@@ -44,39 +70,51 @@ SWITCH_RATE_LIMIT_SET_ARRAY	rate_limite_table.c	/^    SWITCH_RATE_LIMIT_SET_ARRA
 SWITCH_RATE_LIMIT_SET_TBL_EGRESS_RATE_LIMIT_VALUE	rate_limite_table.c	/^    SWITCH_RATE_LIMIT_SET_TBL_EGRESS_RATE_LIMIT_VALUE,$/;"	e	enum:__anon4	file:
 SWITCH_RATE_LIMIT_SET_TBL_INGRESS_RATE_CTRL_MODE	rate_limite_table.c	/^    SWITCH_RATE_LIMIT_SET_TBL_INGRESS_RATE_CTRL_MODE,$/;"	e	enum:__anon4	file:
 SWITCH_RATE_LIMIT_SET_TBL_INGRESS_RATE_LIMIT_VALUE	rate_limite_table.c	/^    SWITCH_RATE_LIMIT_SET_TBL_INGRESS_RATE_LIMIT_VALUE,$/;"	e	enum:__anon4	file:
-SW_LIBS	Makefile	/^SW_LIBS = -lubox -lubus -lblobmsg_json$/;"	m
-SW_OBJS	Makefile	/^SW_OBJS = port_config_table.o rate_limite_table.o port_mirror.o$/;"	m
-SYSINFO_BOOTLOADER_VERSION	sysinfo.c	/^    SYSINFO_BOOTLOADER_VERSION,$/;"	e	enum:__anon6	file:
-SYSINFO_DESCRIPTION	sysinfo.c	/^    SYSINFO_DESCRIPTION,$/;"	e	enum:__anon6	file:
-SYSINFO_FIRMWARE_VERSION	sysinfo.c	/^    SYSINFO_FIRMWARE_VERSION,$/;"	e	enum:__anon6	file:
-SYSINFO_GET_ARRAY	sysinfo.c	/^    SYSINFO_GET_ARRAY,$/;"	e	enum:__anon5	file:
-SYSINFO_HARDWARE_VERSION	sysinfo.c	/^    SYSINFO_HARDWARE_VERSION,$/;"	e	enum:__anon6	file:
-SYSINFO_MAC_ADDRESS	sysinfo.c	/^    SYSINFO_MAC_ADDRESS,$/;"	e	enum:__anon6	file:
-SYSINFO_MODEL_NAME	sysinfo.c	/^    SYSINFO_MODEL_NAME,$/;"	e	enum:__anon6	file:
-SYSINFO_SYS_LOCATION	sysinfo.c	/^    SYSINFO_SYS_LOCATION,$/;"	e	enum:__anon6	file:
-SYSINFO_SYS_NAME	sysinfo.c	/^    SYSINFO_SYS_NAME,$/;"	e	enum:__anon6	file:
-SYSINFO_UNIQUE_ID	sysinfo.c	/^    SYSINFO_UNIQUE_ID,$/;"	e	enum:__anon6	file:
+SWITCH_RX_BCAST_PKTS	eth_stats_table.c	/^    SWITCH_RX_BCAST_PKTS,$/;"	e	enum:__anon6	file:
+SWITCH_RX_BYTES	eth_stats_table.c	/^    SWITCH_RX_BYTES,$/;"	e	enum:__anon6	file:
+SWITCH_RX_MCAST_PKTS	eth_stats_table.c	/^    SWITCH_RX_MCAST_PKTS,$/;"	e	enum:__anon6	file:
+SWITCH_RX_PAUSE_PKTS	eth_stats_table.c	/^    SWITCH_RX_PAUSE_PKTS,$/;"	e	enum:__anon6	file:
+SWITCH_RX_UCAST_PKTS	eth_stats_table.c	/^    SWITCH_RX_UCAST_PKTS,$/;"	e	enum:__anon6	file:
+SWITCH_TX_BCAST_PKTS	eth_stats_table.c	/^    SWITCH_TX_BCAST_PKTS,$/;"	e	enum:__anon6	file:
+SWITCH_TX_BYTES	eth_stats_table.c	/^    SWITCH_TX_BYTES,$/;"	e	enum:__anon6	file:
+SWITCH_TX_MCAST_PKTS	eth_stats_table.c	/^    SWITCH_TX_MCAST_PKTS,$/;"	e	enum:__anon6	file:
+SWITCH_TX_PAUSE_PKTS	eth_stats_table.c	/^    SWITCH_TX_PAUSE_PKTS,$/;"	e	enum:__anon6	file:
+SWITCH_TX_UCAST_PKTS	eth_stats_table.c	/^    SWITCH_TX_UCAST_PKTS,$/;"	e	enum:__anon6	file:
+SYSINFO_BOOTLOADER_VERSION	sysinfo.c	/^    SYSINFO_BOOTLOADER_VERSION,$/;"	e	enum:__anon8	file:
+SYSINFO_DESCRIPTION	sysinfo.c	/^    SYSINFO_DESCRIPTION,$/;"	e	enum:__anon8	file:
+SYSINFO_FIRMWARE_VERSION	sysinfo.c	/^    SYSINFO_FIRMWARE_VERSION,$/;"	e	enum:__anon8	file:
+SYSINFO_GET_ARRAY	sysinfo.c	/^    SYSINFO_GET_ARRAY,$/;"	e	enum:__anon7	file:
+SYSINFO_HARDWARE_VERSION	sysinfo.c	/^    SYSINFO_HARDWARE_VERSION,$/;"	e	enum:__anon8	file:
+SYSINFO_MAC_ADDRESS	sysinfo.c	/^    SYSINFO_MAC_ADDRESS,$/;"	e	enum:__anon8	file:
+SYSINFO_MODEL_NAME	sysinfo.c	/^    SYSINFO_MODEL_NAME,$/;"	e	enum:__anon8	file:
+SYSINFO_SYS_LOCATION	sysinfo.c	/^    SYSINFO_SYS_LOCATION,$/;"	e	enum:__anon8	file:
+SYSINFO_SYS_NAME	sysinfo.c	/^    SYSINFO_SYS_NAME,$/;"	e	enum:__anon8	file:
+SYSINFO_UNIQUE_ID	sysinfo.c	/^    SYSINFO_UNIQUE_ID,$/;"	e	enum:__anon8	file:
 __LOG_H	log.h	16;"	d
 __SWITCHD_H	switchd.h	16;"	d
-__SWITCH_PORT_CFG_GET_MAX	port_config_table.c	/^    __SWITCH_PORT_CFG_GET_MAX$/;"	e	enum:__anon7	file:
-__SWITCH_PORT_CFG_GET_TBL_MAX	port_config_table.c	/^    __SWITCH_PORT_CFG_GET_TBL_MAX,$/;"	e	enum:__anon8	file:
-__SWITCH_PORT_CFG_SET_MAX	port_config_table.c	/^    __SWITCH_PORT_CFG_SET_MAX$/;"	e	enum:__anon9	file:
-__SWITCH_PORT_CFG_SET_TBL_MAX	port_config_table.c	/^    __SWITCH_PORT_CFG_SET_TBL_MAX,$/;"	e	enum:__anon10	file:
-__SWITCH_PORT_MIRROR_GET_MAX	port_mirror.c	/^    __SWITCH_PORT_MIRROR_GET_MAX$/;"	e	enum:__anon11	file:
-__SWITCH_PORT_MIRROR_GET_TBL_MAX	port_mirror.c	/^    __SWITCH_PORT_MIRROR_GET_TBL_MAX,$/;"	e	enum:__anon12	file:
-__SWITCH_PORT_MIRROR_SET_MAX	port_mirror.c	/^    __SWITCH_PORT_MIRROR_SET_MAX,$/;"	e	enum:__anon13	file:
-__SWITCH_PORT_MIRROR_SET_TBL_MAX	port_mirror.c	/^    __SWITCH_PORT_MIRROR_SET_TBL_MAX,$/;"	e	enum:__anon14	file:
+__SWITCH_ETH_STATS_GET_MAX	eth_stats_table.c	/^    __SWITCH_ETH_STATS_GET_MAX$/;"	e	enum:__anon5	file:
+__SWITCH_ETH_STATS_MAX	eth_stats_table.c	/^    __SWITCH_ETH_STATS_MAX,$/;"	e	enum:__anon6	file:
+__SWITCH_PORT_CFG_GET_MAX	port_config_table.c	/^    __SWITCH_PORT_CFG_GET_MAX$/;"	e	enum:__anon9	file:
+__SWITCH_PORT_CFG_GET_TBL_MAX	port_config_table.c	/^    __SWITCH_PORT_CFG_GET_TBL_MAX,$/;"	e	enum:__anon10	file:
+__SWITCH_PORT_CFG_SET_MAX	port_config_table.c	/^    __SWITCH_PORT_CFG_SET_MAX$/;"	e	enum:__anon11	file:
+__SWITCH_PORT_CFG_SET_TBL_MAX	port_config_table.c	/^    __SWITCH_PORT_CFG_SET_TBL_MAX,$/;"	e	enum:__anon12	file:
+__SWITCH_PORT_MIRROR_GET_MAX	port_mirror.c	/^    __SWITCH_PORT_MIRROR_GET_MAX$/;"	e	enum:__anon13	file:
+__SWITCH_PORT_MIRROR_GET_TBL_MAX	port_mirror.c	/^    __SWITCH_PORT_MIRROR_GET_TBL_MAX,$/;"	e	enum:__anon14	file:
+__SWITCH_PORT_MIRROR_SET_MAX	port_mirror.c	/^    __SWITCH_PORT_MIRROR_SET_MAX,$/;"	e	enum:__anon15	file:
+__SWITCH_PORT_MIRROR_SET_TBL_MAX	port_mirror.c	/^    __SWITCH_PORT_MIRROR_SET_TBL_MAX,$/;"	e	enum:__anon16	file:
 __SWITCH_RATE_LIMIT_GET_MAX	rate_limite_table.c	/^    __SWITCH_RATE_LIMIT_GET_MAX$/;"	e	enum:__anon1	file:
 __SWITCH_RATE_LIMIT_GET_TBL_MAX	rate_limite_table.c	/^    __SWITCH_RATE_LIMIT_GET_TBL_MAX,$/;"	e	enum:__anon2	file:
 __SWITCH_RATE_LIMIT_SET_MAX	rate_limite_table.c	/^    __SWITCH_RATE_LIMIT_SET_MAX,$/;"	e	enum:__anon3	file:
 __SWITCH_RATE_LIMIT_SET_TBL_MAX	rate_limite_table.c	/^    __SWITCH_RATE_LIMIT_SET_TBL_MAX,$/;"	e	enum:__anon4	file:
-__SYSINFO_GET_MAX	sysinfo.c	/^    __SYSINFO_GET_MAX,$/;"	e	enum:__anon5	file:
-__SYSINFO_MAX	sysinfo.c	/^    __SYSINFO_MAX$/;"	e	enum:__anon6	file:
+__SYSINFO_GET_MAX	sysinfo.c	/^    __SYSINFO_GET_MAX,$/;"	e	enum:__anon7	file:
+__SYSINFO_MAX	sysinfo.c	/^    __SYSINFO_MAX$/;"	e	enum:__anon8	file:
 __init	switchd.h	27;"	d
+_ctx	eth_stats_table.c	/^static struct ubus_context *_ctx;$/;"	v	typeref:struct:ubus_context	file:
 _ctx	port_config_table.c	/^static struct ubus_context *_ctx;$/;"	v	typeref:struct:ubus_context	file:
 _ctx	port_mirror.c	/^static struct ubus_context *_ctx;$/;"	v	typeref:struct:ubus_context	file:
 _ctx	rate_limite_table.c	/^static struct ubus_context *_ctx;$/;"	v	typeref:struct:ubus_context	file:
 _ctx	sysinfo.c	/^static struct ubus_context *_ctx;$/;"	v	typeref:struct:ubus_context	file:
+b	eth_stats_table.c	/^static struct blob_buf b;$/;"	v	typeref:struct:blob_buf	file:
 b	port_config_table.c	/^static struct blob_buf b;$/;"	v	typeref:struct:blob_buf	file:
 b	port_mirror.c	/^static struct blob_buf b;$/;"	v	typeref:struct:blob_buf	file:
 b	rate_limite_table.c	/^static struct blob_buf b;$/;"	v	typeref:struct:blob_buf	file:
@@ -84,6 +122,11 @@ b	sysinfo.c	/^static struct blob_buf b;$/;"	v	typeref:struct:blob_buf	file:
 ctx	ubus.c	/^static struct ubus_context *ctx;$/;"	v	typeref:struct:ubus_context	file:
 debug	switchd.c	/^unsigned int debug;$/;"	v
 do_reboot	signal.c	/^static void do_reboot(void)$/;"	f	file:	signature:(void)
+eth_stats_get_policy	eth_stats_table.c	/^static const struct blobmsg_policy eth_stats_get_policy[] = {$/;"	v	typeref:struct:blobmsg_policy	file:
+eth_stats_methods	eth_stats_table.c	/^static const struct ubus_method eth_stats_methods[] = {$/;"	v	typeref:struct:ubus_method	file:
+eth_stats_object	eth_stats_table.c	/^static struct ubus_object eth_stats_object = {$/;"	v	typeref:struct:ubus_object	file:
+eth_stats_object_type	eth_stats_table.c	/^static struct ubus_object_type eth_stats_object_type =$/;"	v	typeref:struct:ubus_object_type	file:
+eth_stats_tbl	eth_stats_table.c	/^static const struct jw_switch_policy eth_stats_tbl[] = {$/;"	v	typeref:struct:jw_switch_policy	file:
 get_handler	switchd.h	/^    int(*get_handler)(struct blob_buf *buf, int port_idx);$/;"	m	struct:jw_switch_policy	access:public
 jw_port_mirror_get_admin_mode	port_mirror.c	/^static int jw_port_mirror_get_admin_mode(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
 jw_port_mirror_get_admin_mode	port_mirror.c	/^static int jw_port_mirror_get_admin_mode(struct blob_buf *buf, int port_idx);$/;"	p	file:	signature:(struct blob_buf *buf, int port_idx)
@@ -230,9 +273,15 @@ type	switchd.h	/^    enum blobmsg_type type;$/;"	m	struct:jw_switch_policy	typer
 ubus_connect_cb	ubus.c	/^ubus_connect_cb(struct uloop_timeout *timeout)$/;"	f	file:	signature:(struct uloop_timeout *timeout)
 ubus_disconnect_cb	ubus.c	/^ubus_disconnect_cb(struct ubus_context *ctx)$/;"	f	file:	signature:(struct ubus_context *ctx)
 ubus_init_boardinfo	switchd.h	/^void ubus_init_boardinfo(struct ubus_context *ctx);$/;"	p	signature:(struct ubus_context *ctx)
+ubus_init_eth_stats	eth_stats_table.c	/^void ubus_init_eth_stats(struct ubus_context *ctx)$/;"	f	signature:(struct ubus_context *ctx)
+ubus_init_eth_stats	switchd.h	/^void ubus_init_eth_stats(struct ubus_context *ctx);$/;"	p	signature:(struct ubus_context *ctx)
+ubus_init_port_config	port_config_table.c	/^void ubus_init_port_config(struct ubus_context *ctx)$/;"	f	signature:(struct ubus_context *ctx)
+ubus_init_port_config	switchd.h	/^void ubus_init_port_config(struct ubus_context *ctx);$/;"	p	signature:(struct ubus_context *ctx)
 ubus_init_port_mirror	port_mirror.c	/^void ubus_init_port_mirror(struct ubus_context *ctx)$/;"	f	signature:(struct ubus_context *ctx)
+ubus_init_port_mirror	switchd.h	/^void ubus_init_port_mirror(struct ubus_context *ctx);$/;"	p	signature:(struct ubus_context *ctx)
 ubus_init_rate_limit	rate_limite_table.c	/^void ubus_init_rate_limit(struct ubus_context *ctx)$/;"	f	signature:(struct ubus_context *ctx)
-ubus_init_switch	port_config_table.c	/^void ubus_init_switch(struct ubus_context *ctx)$/;"	f	signature:(struct ubus_context *ctx)
+ubus_init_rate_limit	switchd.h	/^void ubus_init_rate_limit(struct ubus_context *ctx);$/;"	p	signature:(struct ubus_context *ctx)
+ubus_init_sysinfo	switchd.h	/^void ubus_init_sysinfo(struct ubus_context *ctx);$/;"	p	signature:(struct ubus_context *ctx)
 ubus_init_sysinfo	sysinfo.c	/^void ubus_init_sysinfo(struct ubus_context *ctx)$/;"	f	signature:(struct ubus_context *ctx)
 ubus_reconnect_cb	ubus.c	/^ubus_reconnect_cb(struct uloop_timeout *timeout)$/;"	f	file:	signature:(struct uloop_timeout *timeout)
 ubus_socket	ubus.c	/^char *ubus_socket = NULL;$/;"	v

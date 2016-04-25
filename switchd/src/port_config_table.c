@@ -374,7 +374,7 @@ static int jw_switchd_parse_port_cfg_get(struct blob_attr *tb, struct blob_buf *
     hdr = blob_data(tb);    // 获取消息头
     
     // 判断消息名字符串中是否有"idx-"
-    pidx = strstr(hdr->name, "idx-");
+    pidx = strstr((char *)hdr->name, "idx-");
     if (pidx) 
     {
         printf("[%s][%d], pidx = [%s]\n", __func__, __LINE__, pidx);
@@ -393,8 +393,8 @@ static int jw_switchd_parse_port_cfg_get(struct blob_attr *tb, struct blob_buf *
     void *msg_array = NULL;
     void *msg_table = NULL;
     
-    msg_table = blobmsg_open_table(buf, hdr->name); // 进入表
-    msg_array = blobmsg_open_array(buf, hdr->name); // 进入数组
+    msg_table = blobmsg_open_table(buf, (char *)hdr->name); // 进入表
+    msg_array = blobmsg_open_array(buf, (char *)hdr->name); // 进入数组
 
     // 遍历数组元素,也就是当前端口的参数名,每个元素是一个四级消息
     blobmsg_for_each_attr(cur, tb, rem) 
@@ -409,6 +409,7 @@ static int jw_switchd_parse_port_cfg_get(struct blob_attr *tb, struct blob_buf *
             jw_switch_p = (struct jw_switch_policy *)jw_switchd_get_context(array_var, port_config_get_tbl, __SWITCH_PORT_CFG_GET_TBL_MAX);
             // 如果索引成功且控制块有效，则执行对应的处理函数
             if (jw_switch_p && jw_switch_p->get_handler) {
+                printf("[%s][%d]:call policy handle in %p\n",__func__,__LINE__,jw_switch_p);
                 jw_switch_p->get_handler(buf, port_idx);
             }
         }
@@ -435,7 +436,7 @@ static int jw_switchd_parse_port_cfg_set(struct blob_attr *tb, struct blob_buf *
     hdr = blob_data(tb);    // 获取消息头
 
     // 判断消息名字符串中是否有"idx-"
-    pidx = strstr(hdr->name, "idx-");
+    pidx = strstr((char *)hdr->name, "idx-");
     if (pidx) {
         printf("[%s][%d], pidx = [%s]\n", __func__, __LINE__, pidx);
         port_idx = atoi(pidx + 4);
@@ -456,28 +457,50 @@ static int jw_switchd_parse_port_cfg_set(struct blob_attr *tb, struct blob_buf *
         // 四级消息必须是table格式
         if (blobmsg_type(cur) == BLOBMSG_TYPE_STRING) {
             array_var = blobmsg_get_string(cur);
-            printf("%s[%d]: array value = %s\n", __func__, __LINE__, array_var);
+            printf("[%s][%d]: array value = %s\n", __func__, __LINE__, array_var);
         } 
         else if (blobmsg_type(cur) == BLOBMSG_TYPE_TABLE) 
         {
-            printf("%s[%d]: BLOBMSG_TYPE_TABLE\n", __func__, __LINE__);
+            printf("[%s][%d]: BLOBMSG_TYPE_TABLE\n", __func__, __LINE__);
             // table的每个元素是一个五级消息
             struct blob_attr *t = blobmsg_data(cur);    // t指向五级消息
             int v = -1;
             char *name = NULL;
 
             // 获取五级消息的消息名，这才是真正的要设置的端口参数名
-            name = ((struct blobmsg_hdr *)blob_data(t))->name;  
+            name = (char *)((struct blobmsg_hdr *)blob_data(t))->name;  
 
-            // 五级消息必须是整形格式
-            v = blobmsg_get_u32(t);
-
-            //printf("%s[%d]: BLOBMSG_TYPE_TABLE, hdr name = [%s], var = [%d]\n", __func__, __LINE__, name, v);
-            // 根据五级消息名完成索引，找到对应参数名所在的控制块
-            jw_switch_p = (struct jw_switch_policy *)jw_switchd_get_context(name, port_config_set_tbl, __SWITCH_PORT_CFG_SET_TBL_MAX);
-            if (jw_switch_p && jw_switch_p->set_handler) {
-                // 执行参数对应的处理函数
-                jw_switch_p->set_handler(port_idx, (void *)&v);
+            // 五级消息格式判断
+            switch(blobmsg_type(t))
+            {
+                case BLOBMSG_TYPE_STRING:
+                    {
+                        char *val = blobmsg_get_string(t);
+                        printf("[%s][%d]: Lev5: BLOBMSG_TYPE_STRING, name = [%s], value = [%s]\n", __func__, __LINE__, name, val);
+                        // 根据五级消息名完成索引，找到对应参数名所在的控制块
+                        jw_switch_p = (struct jw_switch_policy *)jw_switchd_get_context(name, port_config_set_tbl, __SWITCH_PORT_CFG_SET_TBL_MAX);
+                        if (jw_switch_p && jw_switch_p->set_handler) 
+                        {
+                            // 执行参数对应的处理函数
+                            jw_switch_p->set_handler(port_idx, (void *)v);
+                        }
+                    }
+                    break;
+                case BLOBMSG_TYPE_INT32:
+                    {
+                        int val = blobmsg_get_u32(t);
+                        printf("[%s][%d]: Lev5 BLOBMSG_TYPE_INT32 name = [%s], value = [%d]\n", __func__, __LINE__, name, val); 
+                        jw_switch_p = (struct jw_switch_policy *)jw_switchd_get_context(name, port_config_set_tbl, __SWITCH_PORT_CFG_SET_TBL_MAX);
+                        if (jw_switch_p && jw_switch_p->set_handler) 
+                        {
+                            // 执行参数对应的处理函数
+                            jw_switch_p->set_handler(port_idx, (void *)&v);
+                        }
+                    }
+                    break;
+                default:
+                    printf("[%s][%d]: Lev5 msg type error!\n",__func__,__LINE__);
+                    break;                    
             }
         }
     }
@@ -576,7 +599,6 @@ static int port_config_set_handler(struct ubus_context *ctx, struct ubus_object 
     struct blob_attr *cur = NULL;   // cur指向一级消息
     struct blob_attr *_cur = NULL;  // _cur指向二级消息
     int rem = 0;
-    char *array_val = NULL;
 
     cur = tb[SWITCH_PORT_CFG_SET_ARRAY];
     // 一级消息"set_args"必须是数组类型
@@ -634,7 +656,7 @@ static struct ubus_object switch_object = {
 };
 
 
-void ubus_init_switch(struct ubus_context *ctx)
+void ubus_init_port_config(struct ubus_context *ctx)
 {
 	int ret;
 

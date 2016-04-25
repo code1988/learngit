@@ -1,17 +1,11 @@
+SRC = $(notdir $(wildcard *.c))
+OBJS = $(patsubst %c,%o,$(SRC))
+LIBS = -lubox -lubus -lblobmsg_json
 
 all: switchd
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c -o $@ $<
-
-SW_LIBS = -lubox -lubus -lblobmsg_json
-
-SW_OBJS = port_config_table.o rate_limite_table.o port_mirror.o
-
-OBJS = utils.o switchd.o ubus.o sysinfo.o signal.o $(SW_OBJS)
-
 switchd: $(OBJS)
-	$(CC) -o $@ $(OBJS) $(SW_LIBS)
+	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LIBS)
 
 .PHONY:clean
 clean:
