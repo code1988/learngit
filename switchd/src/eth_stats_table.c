@@ -56,12 +56,12 @@ static int JW_EthStatsHandle(struct ubus_context *ctx, struct ubus_object *obj,
                 struct blob_attr *msg);
 
 enum {
-    SWITCH_ETH_STATS_GET_ARRAY,
+    SWITCH_ETH_STATS_GET_KEYS,
     __SWITCH_ETH_STATS_GET_MAX
 };
 
 static const struct blobmsg_policy eth_stats_get_policy[] = {
-    [SWITCH_ETH_STATS_GET_ARRAY] = {.name = "get_args", .type = BLOBMSG_TYPE_ARRAY},
+    [SWITCH_ETH_STATS_GET_KEYS] = {.name = "get_args", .type = BLOBMSG_TYPE_ARRAY},
 };
 
 enum {
@@ -260,7 +260,7 @@ static int JW_GetTxBcastPkts(struct blob_buf *buf, int port_idx)
 
     table = blobmsg_open_table(buf, "jw_switch");
     printf("[%s][%d]: This is port %d\n", __func__, __LINE__,port_idx);
-    blobmsg_add_u32(buf, "tx_bordcast_packets", rx_bytes);
+    blobmsg_add_u32(buf, "tx_broadcast_packets", rx_bytes);
     blobmsg_close_table(buf, table);
 
     return 0;
@@ -385,7 +385,7 @@ static int JW_EthStatsHandle(struct ubus_context *ctx, struct ubus_object *obj,
 	struct blob_attr *lvl1 = NULL;  
 
     blobmsg_parse(eth_stats_get_policy, __SWITCH_ETH_STATS_GET_MAX, tb, blob_data(msg), blob_len(msg));
-	lvl1 = tb[SWITCH_ETH_STATS_GET_ARRAY];     
+	lvl1 = tb[SWITCH_ETH_STATS_GET_KEYS];     
     if (!lvl1) 
 	{
         ERROR("invalid params in %s\n", __func__);

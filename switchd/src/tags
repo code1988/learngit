@@ -29,39 +29,43 @@ JW_GetTxPausePkts	eth_stats_table.c	/^static int JW_GetTxPausePkts(struct blob_b
 JW_GetTxUcastPkts	eth_stats_table.c	/^static int JW_GetTxUcastPkts(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
 JW_GetTxUcastPkts	eth_stats_table.c	/^static int JW_GetTxUcastPkts(struct blob_buf *buf, int port_idx);$/;"	p	file:	signature:(struct blob_buf *buf, int port_idx)
 JW_ParsePortEthStatsGet	eth_stats_table.c	/^static int JW_ParsePortEthStatsGet(struct blob_attr *lvl3, struct blob_buf *buf)$/;"	f	file:	signature:(struct blob_attr *lvl3, struct blob_buf *buf)
+JW_SysinfoClearCfgRet	sysinfo.c	/^static int JW_SysinfoClearCfgRet(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
+JW_SysinfoGetHandle	sysinfo.c	/^static int JW_SysinfoGetHandle(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_object *obj, struct ubus_request_data *req, const char *method, struct blob_attr *msg)
+JW_SysinfoSaveCfgRet	sysinfo.c	/^static int JW_SysinfoSaveCfgRet(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
+JW_SysinfoSetHandle	sysinfo.c	/^static int JW_SysinfoSetHandle(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_object *obj, struct ubus_request_data *req, const char *method, struct blob_attr *msg)
 LIBS	Makefile	/^LIBS = -lubox -lubus -lblobmsg_json$/;"	m
 LOG	log.h	25;"	d
 OBJS	Makefile	/^OBJS = $(patsubst %c,%o,$(SRC))$/;"	m
 SRC	Makefile	/^SRC = $(notdir $(wildcard *.c))$/;"	m
-SWITCH_ETH_STATS_GET_ARRAY	eth_stats_table.c	/^    SWITCH_ETH_STATS_GET_ARRAY,$/;"	e	enum:__anon5	file:
-SWITCH_PORT_CFG_GET_KEYS	port_config_table.c	/^    SWITCH_PORT_CFG_GET_KEYS,$/;"	e	enum:__anon9	file:
-SWITCH_PORT_CFG_GET_TBL_ADMIN_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_ADMIN_MODE,$/;"	e	enum:__anon10	file:
-SWITCH_PORT_CFG_GET_TBL_FLOW_CONTROL_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_FLOW_CONTROL_MODE,$/;"	e	enum:__anon10	file:
-SWITCH_PORT_CFG_GET_TBL_LINK_STATUS	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_LINK_STATUS,$/;"	e	enum:__anon10	file:
-SWITCH_PORT_CFG_GET_TBL_LINK_TRAP_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_LINK_TRAP_MODE,$/;"	e	enum:__anon10	file:
-SWITCH_PORT_CFG_GET_TBL_PHYSICAL_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_PHYSICAL_MODE,$/;"	e	enum:__anon10	file:
-SWITCH_PORT_CFG_GET_TBL_PHYSICAL_STATUS	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_PHYSICAL_STATUS,$/;"	e	enum:__anon10	file:
-SWITCH_PORT_CFG_GET_TBL_RX_THRESHOLD_VALUE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_RX_THRESHOLD_VALUE,$/;"	e	enum:__anon10	file:
-SWITCH_PORT_CFG_GET_TBL_STATE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_STATE,$/;"	e	enum:__anon10	file:
-SWITCH_PORT_CFG_GET_TBL_THRESHOLD_TRAP_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_THRESHOLD_TRAP_MODE,$/;"	e	enum:__anon10	file:
-SWITCH_PORT_CFG_GET_TBL_TX_THRESHOLD_VALUE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_TX_THRESHOLD_VALUE,$/;"	e	enum:__anon10	file:
-SWITCH_PORT_CFG_GET_TBL_TYPE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_TYPE,$/;"	e	enum:__anon10	file:
-SWITCH_PORT_CFG_SET_ARRAY	port_config_table.c	/^    SWITCH_PORT_CFG_SET_ARRAY,$/;"	e	enum:__anon11	file:
-SWITCH_PORT_CFG_SET_TBL_ADMIN_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_ADMIN_MODE,$/;"	e	enum:__anon12	file:
-SWITCH_PORT_CFG_SET_TBL_FLOW_CONTROL_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_FLOW_CONTROL_MODE,$/;"	e	enum:__anon12	file:
-SWITCH_PORT_CFG_SET_TBL_LINK_TRAP_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_LINK_TRAP_MODE,$/;"	e	enum:__anon12	file:
-SWITCH_PORT_CFG_SET_TBL_PHYSICAL_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_PHYSICAL_MODE,$/;"	e	enum:__anon12	file:
-SWITCH_PORT_CFG_SET_TBL_RX_THRESHOLD_VALUE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_RX_THRESHOLD_VALUE,$/;"	e	enum:__anon12	file:
-SWITCH_PORT_CFG_SET_TBL_THRESHOLD_TRAP_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_THRESHOLD_TRAP_MODE,$/;"	e	enum:__anon12	file:
-SWITCH_PORT_CFG_SET_TBL_TX_THRESHOLD_VALUE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_TX_THRESHOLD_VALUE,$/;"	e	enum:__anon12	file:
-SWITCH_PORT_MIRROR_GET_ARRAY	port_mirror.c	/^    SWITCH_PORT_MIRROR_GET_ARRAY,$/;"	e	enum:__anon13	file:
-SWITCH_PORT_MIRROR_GET_TBL_ADMIN_MODE	port_mirror.c	/^    SWITCH_PORT_MIRROR_GET_TBL_ADMIN_MODE,$/;"	e	enum:__anon14	file:
-SWITCH_PORT_MIRROR_GET_TBL_DESTINATION_PORT	port_mirror.c	/^    SWITCH_PORT_MIRROR_GET_TBL_DESTINATION_PORT,$/;"	e	enum:__anon14	file:
-SWITCH_PORT_MIRROR_GET_TBL_DIRECTION	port_mirror.c	/^    SWITCH_PORT_MIRROR_GET_TBL_DIRECTION,$/;"	e	enum:__anon14	file:
-SWITCH_PORT_MIRROR_SET_ARRAY	port_mirror.c	/^    SWITCH_PORT_MIRROR_SET_ARRAY,$/;"	e	enum:__anon15	file:
-SWITCH_PORT_MIRROR_SET_TBL_ADMIN_MODE	port_mirror.c	/^    SWITCH_PORT_MIRROR_SET_TBL_ADMIN_MODE,$/;"	e	enum:__anon16	file:
-SWITCH_PORT_MIRROR_SET_TBL_DESTINATION_PORT	port_mirror.c	/^    SWITCH_PORT_MIRROR_SET_TBL_DESTINATION_PORT,$/;"	e	enum:__anon16	file:
-SWITCH_PORT_MIRROR_SET_TBL_DIRECTION	port_mirror.c	/^    SWITCH_PORT_MIRROR_SET_TBL_DIRECTION,$/;"	e	enum:__anon16	file:
+SWITCH_ETH_STATS_GET_KEYS	eth_stats_table.c	/^    SWITCH_ETH_STATS_GET_KEYS,$/;"	e	enum:__anon5	file:
+SWITCH_PORT_CFG_GET_KEYS	port_config_table.c	/^    SWITCH_PORT_CFG_GET_KEYS,$/;"	e	enum:__anon12	file:
+SWITCH_PORT_CFG_GET_TBL_ADMIN_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_ADMIN_MODE,$/;"	e	enum:__anon13	file:
+SWITCH_PORT_CFG_GET_TBL_FLOW_CONTROL_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_FLOW_CONTROL_MODE,$/;"	e	enum:__anon13	file:
+SWITCH_PORT_CFG_GET_TBL_LINK_STATUS	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_LINK_STATUS,$/;"	e	enum:__anon13	file:
+SWITCH_PORT_CFG_GET_TBL_LINK_TRAP_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_LINK_TRAP_MODE,$/;"	e	enum:__anon13	file:
+SWITCH_PORT_CFG_GET_TBL_PHYSICAL_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_PHYSICAL_MODE,$/;"	e	enum:__anon13	file:
+SWITCH_PORT_CFG_GET_TBL_PHYSICAL_STATUS	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_PHYSICAL_STATUS,$/;"	e	enum:__anon13	file:
+SWITCH_PORT_CFG_GET_TBL_RX_THRESHOLD_VALUE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_RX_THRESHOLD_VALUE,$/;"	e	enum:__anon13	file:
+SWITCH_PORT_CFG_GET_TBL_STATE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_STATE,$/;"	e	enum:__anon13	file:
+SWITCH_PORT_CFG_GET_TBL_THRESHOLD_TRAP_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_THRESHOLD_TRAP_MODE,$/;"	e	enum:__anon13	file:
+SWITCH_PORT_CFG_GET_TBL_TX_THRESHOLD_VALUE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_TX_THRESHOLD_VALUE,$/;"	e	enum:__anon13	file:
+SWITCH_PORT_CFG_GET_TBL_TYPE	port_config_table.c	/^    SWITCH_PORT_CFG_GET_TBL_TYPE,$/;"	e	enum:__anon13	file:
+SWITCH_PORT_CFG_SET_ARRAY	port_config_table.c	/^    SWITCH_PORT_CFG_SET_ARRAY,$/;"	e	enum:__anon14	file:
+SWITCH_PORT_CFG_SET_TBL_ADMIN_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_ADMIN_MODE,$/;"	e	enum:__anon15	file:
+SWITCH_PORT_CFG_SET_TBL_FLOW_CONTROL_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_FLOW_CONTROL_MODE,$/;"	e	enum:__anon15	file:
+SWITCH_PORT_CFG_SET_TBL_LINK_TRAP_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_LINK_TRAP_MODE,$/;"	e	enum:__anon15	file:
+SWITCH_PORT_CFG_SET_TBL_PHYSICAL_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_PHYSICAL_MODE,$/;"	e	enum:__anon15	file:
+SWITCH_PORT_CFG_SET_TBL_RX_THRESHOLD_VALUE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_RX_THRESHOLD_VALUE,$/;"	e	enum:__anon15	file:
+SWITCH_PORT_CFG_SET_TBL_THRESHOLD_TRAP_MODE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_THRESHOLD_TRAP_MODE,$/;"	e	enum:__anon15	file:
+SWITCH_PORT_CFG_SET_TBL_TX_THRESHOLD_VALUE	port_config_table.c	/^    SWITCH_PORT_CFG_SET_TBL_TX_THRESHOLD_VALUE,$/;"	e	enum:__anon15	file:
+SWITCH_PORT_MIRROR_GET_ARRAY	port_mirror.c	/^    SWITCH_PORT_MIRROR_GET_ARRAY,$/;"	e	enum:__anon16	file:
+SWITCH_PORT_MIRROR_GET_TBL_ADMIN_MODE	port_mirror.c	/^    SWITCH_PORT_MIRROR_GET_TBL_ADMIN_MODE,$/;"	e	enum:__anon17	file:
+SWITCH_PORT_MIRROR_GET_TBL_DESTINATION_PORT	port_mirror.c	/^    SWITCH_PORT_MIRROR_GET_TBL_DESTINATION_PORT,$/;"	e	enum:__anon17	file:
+SWITCH_PORT_MIRROR_GET_TBL_DIRECTION	port_mirror.c	/^    SWITCH_PORT_MIRROR_GET_TBL_DIRECTION,$/;"	e	enum:__anon17	file:
+SWITCH_PORT_MIRROR_SET_ARRAY	port_mirror.c	/^    SWITCH_PORT_MIRROR_SET_ARRAY,$/;"	e	enum:__anon18	file:
+SWITCH_PORT_MIRROR_SET_TBL_ADMIN_MODE	port_mirror.c	/^    SWITCH_PORT_MIRROR_SET_TBL_ADMIN_MODE,$/;"	e	enum:__anon19	file:
+SWITCH_PORT_MIRROR_SET_TBL_DESTINATION_PORT	port_mirror.c	/^    SWITCH_PORT_MIRROR_SET_TBL_DESTINATION_PORT,$/;"	e	enum:__anon19	file:
+SWITCH_PORT_MIRROR_SET_TBL_DIRECTION	port_mirror.c	/^    SWITCH_PORT_MIRROR_SET_TBL_DIRECTION,$/;"	e	enum:__anon19	file:
 SWITCH_RATE_LIMIT_GET_ARRAY	rate_limite_table.c	/^    SWITCH_RATE_LIMIT_GET_ARRAY,$/;"	e	enum:__anon1	file:
 SWITCH_RATE_LIMIT_GET_TBL_EGRESS_RATE_LIMIT_VALUE	rate_limite_table.c	/^    SWITCH_RATE_LIMIT_GET_TBL_EGRESS_RATE_LIMIT_VALUE,$/;"	e	enum:__anon2	file:
 SWITCH_RATE_LIMIT_GET_TBL_INGRESS_RATE_CTRL_MODE	rate_limite_table.c	/^    SWITCH_RATE_LIMIT_GET_TBL_INGRESS_RATE_CTRL_MODE,$/;"	e	enum:__anon2	file:
@@ -80,34 +84,37 @@ SWITCH_TX_BYTES	eth_stats_table.c	/^    SWITCH_TX_BYTES,$/;"	e	enum:__anon6	file
 SWITCH_TX_MCAST_PKTS	eth_stats_table.c	/^    SWITCH_TX_MCAST_PKTS,$/;"	e	enum:__anon6	file:
 SWITCH_TX_PAUSE_PKTS	eth_stats_table.c	/^    SWITCH_TX_PAUSE_PKTS,$/;"	e	enum:__anon6	file:
 SWITCH_TX_UCAST_PKTS	eth_stats_table.c	/^    SWITCH_TX_UCAST_PKTS,$/;"	e	enum:__anon6	file:
-SYSINFO_BOOTLOADER_VERSION	sysinfo.c	/^    SYSINFO_BOOTLOADER_VERSION,$/;"	e	enum:__anon8	file:
-SYSINFO_DESCRIPTION	sysinfo.c	/^    SYSINFO_DESCRIPTION,$/;"	e	enum:__anon8	file:
-SYSINFO_FIRMWARE_VERSION	sysinfo.c	/^    SYSINFO_FIRMWARE_VERSION,$/;"	e	enum:__anon8	file:
-SYSINFO_GET_ARRAY	sysinfo.c	/^    SYSINFO_GET_ARRAY,$/;"	e	enum:__anon7	file:
-SYSINFO_HARDWARE_VERSION	sysinfo.c	/^    SYSINFO_HARDWARE_VERSION,$/;"	e	enum:__anon8	file:
-SYSINFO_MAC_ADDRESS	sysinfo.c	/^    SYSINFO_MAC_ADDRESS,$/;"	e	enum:__anon8	file:
-SYSINFO_MODEL_NAME	sysinfo.c	/^    SYSINFO_MODEL_NAME,$/;"	e	enum:__anon8	file:
-SYSINFO_SYS_LOCATION	sysinfo.c	/^    SYSINFO_SYS_LOCATION,$/;"	e	enum:__anon8	file:
-SYSINFO_SYS_NAME	sysinfo.c	/^    SYSINFO_SYS_NAME,$/;"	e	enum:__anon8	file:
-SYSINFO_UNIQUE_ID	sysinfo.c	/^    SYSINFO_UNIQUE_ID,$/;"	e	enum:__anon8	file:
+SYSINFO_BOOTLOADER_VERSION	sysinfo.c	/^    SYSINFO_BOOTLOADER_VERSION,$/;"	e	enum:__anon9	file:
+SYSINFO_DESCRIPTION	sysinfo.c	/^    SYSINFO_DESCRIPTION,$/;"	e	enum:__anon9	file:
+SYSINFO_GET_KEYS	sysinfo.c	/^    SYSINFO_GET_KEYS,$/;"	e	enum:__anon7	file:
+SYSINFO_HARDWARE_VERSION	sysinfo.c	/^    SYSINFO_HARDWARE_VERSION,$/;"	e	enum:__anon9	file:
+SYSINFO_MODEL_NAME	sysinfo.c	/^    SYSINFO_MODEL_NAME,$/;"	e	enum:__anon9	file:
+SYSINFO_RET_CLEAR_CFG	sysinfo.c	/^    SYSINFO_RET_CLEAR_CFG,$/;"	e	enum:__anon9	file:
+SYSINFO_RET_SAVE_CFG	sysinfo.c	/^    SYSINFO_RET_SAVE_CFG,$/;"	e	enum:__anon9	file:
+SYSINFO_SET_ARRAY	sysinfo.c	/^    SYSINFO_SET_ARRAY,$/;"	e	enum:__anon8	file:
+SYSINFO_SOFTWARE_VERSION	sysinfo.c	/^    SYSINFO_SOFTWARE_VERSION,$/;"	e	enum:__anon9	file:
+SYSINFO_SYS_LOCATION	sysinfo.c	/^    SYSINFO_SYS_LOCATION,$/;"	e	enum:__anon9	file:
+SYSINFO_SYS_NAME	sysinfo.c	/^    SYSINFO_SYS_NAME,$/;"	e	enum:__anon9	file:
+SYSINFO_UNIQUE_ID	sysinfo.c	/^    SYSINFO_UNIQUE_ID,$/;"	e	enum:__anon9	file:
+_SWITCHD_H_	switchd.h	16;"	d
 __LOG_H	log.h	16;"	d
-__SWITCHD_H	switchd.h	16;"	d
 __SWITCH_ETH_STATS_GET_MAX	eth_stats_table.c	/^    __SWITCH_ETH_STATS_GET_MAX$/;"	e	enum:__anon5	file:
 __SWITCH_ETH_STATS_MAX	eth_stats_table.c	/^    __SWITCH_ETH_STATS_MAX,$/;"	e	enum:__anon6	file:
-__SWITCH_PORT_CFG_GET_MAX	port_config_table.c	/^    __SWITCH_PORT_CFG_GET_MAX$/;"	e	enum:__anon9	file:
-__SWITCH_PORT_CFG_GET_TBL_MAX	port_config_table.c	/^    __SWITCH_PORT_CFG_GET_TBL_MAX,$/;"	e	enum:__anon10	file:
-__SWITCH_PORT_CFG_SET_MAX	port_config_table.c	/^    __SWITCH_PORT_CFG_SET_MAX$/;"	e	enum:__anon11	file:
-__SWITCH_PORT_CFG_SET_TBL_MAX	port_config_table.c	/^    __SWITCH_PORT_CFG_SET_TBL_MAX,$/;"	e	enum:__anon12	file:
-__SWITCH_PORT_MIRROR_GET_MAX	port_mirror.c	/^    __SWITCH_PORT_MIRROR_GET_MAX$/;"	e	enum:__anon13	file:
-__SWITCH_PORT_MIRROR_GET_TBL_MAX	port_mirror.c	/^    __SWITCH_PORT_MIRROR_GET_TBL_MAX,$/;"	e	enum:__anon14	file:
-__SWITCH_PORT_MIRROR_SET_MAX	port_mirror.c	/^    __SWITCH_PORT_MIRROR_SET_MAX,$/;"	e	enum:__anon15	file:
-__SWITCH_PORT_MIRROR_SET_TBL_MAX	port_mirror.c	/^    __SWITCH_PORT_MIRROR_SET_TBL_MAX,$/;"	e	enum:__anon16	file:
+__SWITCH_PORT_CFG_GET_MAX	port_config_table.c	/^    __SWITCH_PORT_CFG_GET_MAX$/;"	e	enum:__anon12	file:
+__SWITCH_PORT_CFG_GET_TBL_MAX	port_config_table.c	/^    __SWITCH_PORT_CFG_GET_TBL_MAX,$/;"	e	enum:__anon13	file:
+__SWITCH_PORT_CFG_SET_MAX	port_config_table.c	/^    __SWITCH_PORT_CFG_SET_MAX$/;"	e	enum:__anon14	file:
+__SWITCH_PORT_CFG_SET_TBL_MAX	port_config_table.c	/^    __SWITCH_PORT_CFG_SET_TBL_MAX,$/;"	e	enum:__anon15	file:
+__SWITCH_PORT_MIRROR_GET_MAX	port_mirror.c	/^    __SWITCH_PORT_MIRROR_GET_MAX$/;"	e	enum:__anon16	file:
+__SWITCH_PORT_MIRROR_GET_TBL_MAX	port_mirror.c	/^    __SWITCH_PORT_MIRROR_GET_TBL_MAX,$/;"	e	enum:__anon17	file:
+__SWITCH_PORT_MIRROR_SET_MAX	port_mirror.c	/^    __SWITCH_PORT_MIRROR_SET_MAX,$/;"	e	enum:__anon18	file:
+__SWITCH_PORT_MIRROR_SET_TBL_MAX	port_mirror.c	/^    __SWITCH_PORT_MIRROR_SET_TBL_MAX,$/;"	e	enum:__anon19	file:
 __SWITCH_RATE_LIMIT_GET_MAX	rate_limite_table.c	/^    __SWITCH_RATE_LIMIT_GET_MAX$/;"	e	enum:__anon1	file:
 __SWITCH_RATE_LIMIT_GET_TBL_MAX	rate_limite_table.c	/^    __SWITCH_RATE_LIMIT_GET_TBL_MAX,$/;"	e	enum:__anon2	file:
 __SWITCH_RATE_LIMIT_SET_MAX	rate_limite_table.c	/^    __SWITCH_RATE_LIMIT_SET_MAX,$/;"	e	enum:__anon3	file:
 __SWITCH_RATE_LIMIT_SET_TBL_MAX	rate_limite_table.c	/^    __SWITCH_RATE_LIMIT_SET_TBL_MAX,$/;"	e	enum:__anon4	file:
 __SYSINFO_GET_MAX	sysinfo.c	/^    __SYSINFO_GET_MAX,$/;"	e	enum:__anon7	file:
-__SYSINFO_MAX	sysinfo.c	/^    __SYSINFO_MAX$/;"	e	enum:__anon8	file:
+__SYSINFO_SET_MAX	sysinfo.c	/^    __SYSINFO_SET_MAX$/;"	e	enum:__anon8	file:
+__SYSINFO_TBL_MAX	sysinfo.c	/^    __SYSINFO_TBL_MAX$/;"	e	enum:__anon9	file:
 __init	switchd.h	27;"	d
 _ctx	eth_stats_table.c	/^static struct ubus_context *_ctx;$/;"	v	typeref:struct:ubus_context	file:
 _ctx	port_config_table.c	/^static struct ubus_context *_ctx;$/;"	v	typeref:struct:ubus_context	file:
@@ -127,7 +134,7 @@ eth_stats_methods	eth_stats_table.c	/^static const struct ubus_method eth_stats_
 eth_stats_object	eth_stats_table.c	/^static struct ubus_object eth_stats_object = {$/;"	v	typeref:struct:ubus_object	file:
 eth_stats_object_type	eth_stats_table.c	/^static struct ubus_object_type eth_stats_object_type =$/;"	v	typeref:struct:ubus_object_type	file:
 eth_stats_tbl	eth_stats_table.c	/^static const struct jw_switch_policy eth_stats_tbl[] = {$/;"	v	typeref:struct:jw_switch_policy	file:
-get_handler	switchd.h	/^    int(*get_handler)(struct blob_buf *buf, int port_idx);$/;"	m	struct:jw_switch_policy	access:public
+get_handler	switchd.h	/^    int(*get_handler)(struct blob_buf *buf, int port_idx);$/;"	m	union:jw_switch_policy::__anon10	access:public
 jw_port_mirror_get_admin_mode	port_mirror.c	/^static int jw_port_mirror_get_admin_mode(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
 jw_port_mirror_get_admin_mode	port_mirror.c	/^static int jw_port_mirror_get_admin_mode(struct blob_buf *buf, int port_idx);$/;"	p	file:	signature:(struct blob_buf *buf, int port_idx)
 jw_port_mirror_get_destination_port	port_mirror.c	/^static int jw_port_mirror_get_destination_port(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
@@ -149,16 +156,12 @@ jw_rate_limit_get_ingress_rate_ctrl_mode	rate_limite_table.c	/^static int jw_rat
 jw_rate_limit_get_ingress_rate_ctrl_mode	rate_limite_table.c	/^static int jw_rate_limit_get_ingress_rate_ctrl_mode(struct blob_buf *buf, int port_idx);$/;"	p	file:	signature:(struct blob_buf *buf, int port_idx)
 jw_rate_limit_get_ingress_rate_limit_value	rate_limite_table.c	/^static int jw_rate_limit_get_ingress_rate_limit_value(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
 jw_rate_limit_get_ingress_rate_limit_value	rate_limite_table.c	/^static int jw_rate_limit_get_ingress_rate_limit_value(struct blob_buf *buf, int port_idx);$/;"	p	file:	signature:(struct blob_buf *buf, int port_idx)
-jw_rate_limit_set_admin_mode	rate_limite_table.c	/^static int jw_rate_limit_set_admin_mode(int port_idx, void *p);$/;"	p	file:	signature:(int port_idx, void *p)
-jw_rate_limit_set_flow_control_mode	rate_limite_table.c	/^static int jw_rate_limit_set_flow_control_mode(int port_idx, void *p);$/;"	p	file:	signature:(int port_idx, void *p)
 jw_rate_limit_set_ingress_rate_ctrl_mode	rate_limite_table.c	/^static int jw_rate_limit_set_ingress_rate_ctrl_mode(int port_idx, void *p)$/;"	f	file:	signature:(int port_idx, void *p)
 jw_rate_limit_set_ingress_rate_limit_value	rate_limite_table.c	/^static int jw_rate_limit_set_ingress_rate_limit_value(int port_idx, void *p)$/;"	f	file:	signature:(int port_idx, void *p)
-jw_rate_limit_set_physical_mode	rate_limite_table.c	/^static int jw_rate_limit_set_physical_mode(int port_idx, void *p);$/;"	p	file:	signature:(int port_idx, void *p)
 jw_rate_limitd_parse_port_cfg_get	rate_limite_table.c	/^static int jw_rate_limitd_parse_port_cfg_get(struct blob_attr *tb, struct blob_buf *buf)$/;"	f	file:	signature:(struct blob_attr *tb, struct blob_buf *buf)
 jw_rate_limitd_parse_port_cfg_set	rate_limite_table.c	/^static int jw_rate_limitd_parse_port_cfg_set(struct blob_attr *tb, struct blob_buf *buf)$/;"	f	file:	signature:(struct blob_attr *tb, struct blob_buf *buf)
 jw_switch_get_admin_mode	port_config_table.c	/^static int jw_switch_get_admin_mode(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
 jw_switch_get_admin_mode	port_config_table.c	/^static int jw_switch_get_admin_mode(struct blob_buf *buf, int port_idx);$/;"	p	file:	signature:(struct blob_buf *buf, int port_idx)
-jw_switch_get_context	switchd.h	/^void jw_switch_get_context(char *name, struct jw_switch_policy *policy_tbl, int item_max);$/;"	p	signature:(char *name, struct jw_switch_policy *policy_tbl, int item_max)
 jw_switch_get_flow_control_mode	port_config_table.c	/^static int jw_switch_get_flow_control_mode(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
 jw_switch_get_flow_control_mode	port_config_table.c	/^static int jw_switch_get_flow_control_mode(struct blob_buf *buf, int port_idx);$/;"	p	file:	signature:(struct blob_buf *buf, int port_idx)
 jw_switch_get_link_status	port_config_table.c	/^static int jw_switch_get_link_status(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
@@ -180,9 +183,9 @@ jw_switch_get_tx_threshold_value	port_config_table.c	/^static int jw_switch_get_
 jw_switch_get_type	port_config_table.c	/^static int jw_switch_get_type(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
 jw_switch_get_type	port_config_table.c	/^static int jw_switch_get_type(struct blob_buf *buf, int port_idx);$/;"	p	file:	signature:(struct blob_buf *buf, int port_idx)
 jw_switch_policy	switchd.h	/^struct jw_switch_policy {$/;"	s
-jw_switch_policy::get_handler	switchd.h	/^    int(*get_handler)(struct blob_buf *buf, int port_idx);$/;"	m	struct:jw_switch_policy	access:public
+jw_switch_policy::__anon10::get_handler	switchd.h	/^    int(*get_handler)(struct blob_buf *buf, int port_idx);$/;"	m	union:jw_switch_policy::__anon10	access:public
+jw_switch_policy::__anon11::set_handler	switchd.h	/^    int(*set_handler)(int port_idx, void *var);$/;"	m	union:jw_switch_policy::__anon11	access:public
 jw_switch_policy::name	switchd.h	/^    char *name;$/;"	m	struct:jw_switch_policy	access:public
-jw_switch_policy::set_handler	switchd.h	/^    int(*set_handler)(int port_idx, void *var);$/;"	m	struct:jw_switch_policy	access:public
 jw_switch_policy::type	switchd.h	/^    enum blobmsg_type type;$/;"	m	struct:jw_switch_policy	typeref:enum:jw_switch_policy::blobmsg_type	access:public
 jw_switch_set_admin_mode	port_config_table.c	/^static int jw_switch_set_admin_mode(int port_idx, void *p)$/;"	f	file:	signature:(int port_idx, void *p)
 jw_switch_set_admin_mode	port_config_table.c	/^static int jw_switch_set_admin_mode(int port_idx, void *p);$/;"	p	file:	signature:(int port_idx, void *p)
@@ -198,21 +201,21 @@ jw_switch_set_threshold_trap_mode	port_config_table.c	/^static int jw_switch_set
 jw_switch_set_threshold_trap_mode	port_config_table.c	/^static int jw_switch_set_threshold_trap_mode(int port_idx, void *p);$/;"	p	file:	signature:(int port_idx, void *p)
 jw_switch_set_tx_threshold_value	port_config_table.c	/^static int jw_switch_set_tx_threshold_value(int port_idx, void *p)$/;"	f	file:	signature:(int port_idx, void *p)
 jw_switch_set_tx_threshold_value	port_config_table.c	/^static int jw_switch_set_tx_threshold_value(int port_idx, void *p);$/;"	p	file:	signature:(int port_idx, void *p)
-jw_switchd_get_context	utils.c	/^void* jw_switchd_get_context(char *name, struct jw_switch_policy *policy_tbl, int item_max)$/;"	f	signature:(char *name, struct jw_switch_policy *policy_tbl, int item_max)
+jw_switchd_get_context	switchd.h	/^const void *jw_switchd_get_context(char *name, const struct jw_switch_policy *policy_tbl, int item_max);$/;"	p	signature:(char *name, const struct jw_switch_policy *policy_tbl, int item_max)
+jw_switchd_get_context	utils.c	/^const void *jw_switchd_get_context(char *name, const struct jw_switch_policy *policy_tbl, int item_max)$/;"	f	signature:(char *name, const struct jw_switch_policy *policy_tbl, int item_max)
 jw_switchd_parse_port_cfg_get	port_config_table.c	/^static int jw_switchd_parse_port_cfg_get(struct blob_attr *tb, struct blob_buf *buf)$/;"	f	file:	signature:(struct blob_attr *tb, struct blob_buf *buf)
 jw_switchd_parse_port_cfg_set	port_config_table.c	/^static int jw_switchd_parse_port_cfg_set(struct blob_attr *tb, struct blob_buf *buf)$/;"	f	file:	signature:(struct blob_attr *tb, struct blob_buf *buf)
 jw_sysinfo_bootloader_version	sysinfo.c	/^static int jw_sysinfo_bootloader_version(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
 jw_sysinfo_bootloader_version	sysinfo.c	/^static int jw_sysinfo_bootloader_version(struct blob_buf *buf, int port_idx);$/;"	p	file:	signature:(struct blob_buf *buf, int port_idx)
 jw_sysinfo_description	sysinfo.c	/^static int jw_sysinfo_description(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
 jw_sysinfo_description	sysinfo.c	/^static int jw_sysinfo_description(struct blob_buf *buf, int port_idx);$/;"	p	file:	signature:(struct blob_buf *buf, int port_idx)
-jw_sysinfo_firmware_version	sysinfo.c	/^static int jw_sysinfo_firmware_version(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
 jw_sysinfo_firmware_version	sysinfo.c	/^static int jw_sysinfo_firmware_version(struct blob_buf *buf, int port_idx);$/;"	p	file:	signature:(struct blob_buf *buf, int port_idx)
 jw_sysinfo_hardware_version	sysinfo.c	/^static int jw_sysinfo_hardware_version(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
 jw_sysinfo_hardware_version	sysinfo.c	/^static int jw_sysinfo_hardware_version(struct blob_buf *buf, int port_idx);$/;"	p	file:	signature:(struct blob_buf *buf, int port_idx)
 jw_sysinfo_mac_address	sysinfo.c	/^static int jw_sysinfo_mac_address(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
-jw_sysinfo_mac_address	sysinfo.c	/^static int jw_sysinfo_mac_address(struct blob_buf *buf, int port_idx);$/;"	p	file:	signature:(struct blob_buf *buf, int port_idx)
 jw_sysinfo_model_name	sysinfo.c	/^static int jw_sysinfo_model_name(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
 jw_sysinfo_model_name	sysinfo.c	/^static int jw_sysinfo_model_name(struct blob_buf *buf, int port_idx);$/;"	p	file:	signature:(struct blob_buf *buf, int port_idx)
+jw_sysinfo_software_version	sysinfo.c	/^static int jw_sysinfo_software_version(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
 jw_sysinfo_sys_location	sysinfo.c	/^static int jw_sysinfo_sys_location(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
 jw_sysinfo_sys_location	sysinfo.c	/^static int jw_sysinfo_sys_location(struct blob_buf *buf, int port_idx);$/;"	p	file:	signature:(struct blob_buf *buf, int port_idx)
 jw_sysinfo_sys_name	sysinfo.c	/^static int jw_sysinfo_sys_name(struct blob_buf *buf, int port_idx)$/;"	f	file:	signature:(struct blob_buf *buf, int port_idx)
@@ -249,7 +252,7 @@ rate_limit_set_tbl	rate_limite_table.c	/^static const struct jw_switch_policy ra
 sa_crash	signal.c	/^struct sigaction sa_crash = {$/;"	v	typeref:struct:sigaction
 sa_dummy	signal.c	/^struct sigaction sa_dummy = {$/;"	v	typeref:struct:sigaction
 sa_shutdown	signal.c	/^struct sigaction sa_shutdown = {$/;"	v	typeref:struct:sigaction
-set_handler	switchd.h	/^    int(*set_handler)(int port_idx, void *var);$/;"	m	struct:jw_switch_policy	access:public
+set_handler	switchd.h	/^    int(*set_handler)(int port_idx, void *var);$/;"	m	union:jw_switch_policy::__anon11	access:public
 signal_crash	signal.c	/^static void signal_crash(int signal, siginfo_t *siginfo, void *data)$/;"	f	file:	signature:(int signal, siginfo_t *siginfo, void *data)
 signal_dummy	signal.c	/^static void signal_dummy(int signal, siginfo_t *siginfo, void *data)$/;"	f	file:	signature:(int signal, siginfo_t *siginfo, void *data)
 signal_shutdown	signal.c	/^static void signal_shutdown(int signal, siginfo_t *siginfo, void *data)$/;"	f	file:	signature:(int signal, siginfo_t *siginfo, void *data)
@@ -263,8 +266,8 @@ switchd_signal	signal.c	/^void switchd_signal(void)$/;"	f	signature:(void)
 switchd_signal	switchd.h	/^void switchd_signal(void);$/;"	p	signature:(void)
 switchd_signal_preinit	switchd.h	/^void switchd_signal_preinit(void);$/;"	p	signature:(void)
 switchd_state_next	switchd.h	/^void switchd_state_next(void);$/;"	p	signature:(void)
-sysinfo_handler	sysinfo.c	/^static int sysinfo_handler(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_object *obj, struct ubus_request_data *req, const char *method, struct blob_attr *msg)
-sysinfo_policy	sysinfo.c	/^static const struct blobmsg_policy sysinfo_policy[] = {$/;"	v	typeref:struct:blobmsg_policy	file:
+sysinfo_get_policy	sysinfo.c	/^static const struct blobmsg_policy sysinfo_get_policy[] = {$/;"	v	typeref:struct:blobmsg_policy	file:
+sysinfo_set_policy	sysinfo.c	/^static const struct blobmsg_policy sysinfo_set_policy[] = {$/;"	v	typeref:struct:blobmsg_policy	file:
 sysinfo_tbl	sysinfo.c	/^static const struct jw_switch_policy sysinfo_tbl[] = {$/;"	v	typeref:struct:jw_switch_policy	file:
 system_methods	sysinfo.c	/^static const struct ubus_method system_methods[] = {$/;"	v	typeref:struct:ubus_method	file:
 system_object	sysinfo.c	/^static struct ubus_object system_object = {$/;"	v	typeref:struct:ubus_object	file:

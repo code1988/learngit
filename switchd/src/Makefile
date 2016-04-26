@@ -1,6 +1,6 @@
 SRC = $(notdir $(wildcard *.c))
 OBJS = $(patsubst %c,%o,$(SRC))
-LIBS = -lubox -lubus -lblobmsg_json
+LIBS = -lubox -lubus -lblobmsg_json -ljssdk
 
 all: switchd
 

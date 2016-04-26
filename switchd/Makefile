@@ -19,7 +19,7 @@ define Package/switchd
   SECTION:=utils
   CATEGORY:=Utilities
   TITLE:=OBtelecom industry switcher ubus service processor
-  DEPENDS:=+jshn +libjson-c +libblobmsg-json +libubox +libubus
+  DEPENDS:=+jshn +libjson-c +libblobmsg-json +libubox +libubus +libjssdk
 endef
 
 define Build/Prepare
@@ -40,6 +40,10 @@ endef
 define Package/switchd/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/switchd $(1)/usr/sbin/
+endef
+
+define Package/switchd/extra_provides
+	echo 'libjssdk.so'
 endef
 
 $(eval $(call BuildPackage,switchd))

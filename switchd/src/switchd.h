@@ -32,11 +32,16 @@ extern int upgrade_running;
 struct jw_switch_policy {
     char *name;
     enum blobmsg_type type;
-    int(*get_handler)(struct blob_buf *buf, int port_idx);
-    int(*set_handler)(int port_idx, void *var);
+    union {
+        int(*get_handler)(struct blob_buf *buf, int port_idx);
+        int(*get_ext_handler)(struct blob_buf *buf);
+    };
+    union {
+        int(*set_handler)(int port_idx, void *var);
+        int(*set_ext_handler)(void *var);
+    };
 };
 
-//void *jw_switch_get_context(char *, struct jw_switch_policy *, int );
 const void *jw_switchd_get_context(char *name, const struct jw_switch_policy *policy_tbl, int item_max);
 
 void switchd_connect_ubus(void);
