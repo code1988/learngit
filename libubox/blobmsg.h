@@ -206,6 +206,7 @@ blobmsg_close_table(struct blob_buf *buf, void *cookie)
 	blob_nest_end(buf, cookie);
 }
 
+// 初始化一个table类型的blob
 static inline int blobmsg_buf_init(struct blob_buf *buf)
 {
 	return blob_buf_init(buf, BLOBMSG_TYPE_TABLE);
