@@ -1,0 +1,1163 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+) print	examples/uloop-example.lua	/^uloop.timer(function() print("2000 ms timer run"); end, 2000)$/;"	f
+) print	examples/uloop-example.lua	/^uloop.timer(function() print("3000 ms timer run"); end, 3000):cancel()$/;"	f
+ARRAY_SIZE	examples/blobmsg-example.c	84;"	d	file:
+ARRAY_SIZE	utils.h	45;"	d
+AVL_FIND_EQUAL	avl.h	/^  AVL_FIND_EQUAL,$/;"	e	enum:avl_find_mode
+AVL_FIND_GREATEREQUAL	avl.h	/^  AVL_FIND_GREATEREQUAL$/;"	e	enum:avl_find_mode
+AVL_FIND_LESSEQUAL	avl.h	/^  AVL_FIND_LESSEQUAL,$/;"	e	enum:avl_find_mode
+AVL_TREE	avl.h	164;"	d
+AVL_TREE_INIT	avl.h	156;"	d
+B64_DECODE_LEN	utils.h	196;"	d
+B64_ENCODE_LEN	utils.h	195;"	d
+BITFIELD_SIZE	utils.h	178;"	d
+BITS_PER_LONG	utils.h	175;"	d
+BLOBMSG_ALIGN	blobmsg.h	26;"	d
+BLOBMSG_PADDING	blobmsg.h	27;"	d
+BLOBMSG_TYPE_ARRAY	blobmsg.h	/^	BLOBMSG_TYPE_ARRAY,     \/\/ array$/;"	e	enum:blobmsg_type
+BLOBMSG_TYPE_BOOL	blobmsg.h	/^	BLOBMSG_TYPE_BOOL = BLOBMSG_TYPE_INT8,$/;"	e	enum:blobmsg_type
+BLOBMSG_TYPE_INT16	blobmsg.h	/^	BLOBMSG_TYPE_INT16,$/;"	e	enum:blobmsg_type
+BLOBMSG_TYPE_INT32	blobmsg.h	/^	BLOBMSG_TYPE_INT32,$/;"	e	enum:blobmsg_type
+BLOBMSG_TYPE_INT64	blobmsg.h	/^	BLOBMSG_TYPE_INT64,$/;"	e	enum:blobmsg_type
+BLOBMSG_TYPE_INT8	blobmsg.h	/^	BLOBMSG_TYPE_INT8,$/;"	e	enum:blobmsg_type
+BLOBMSG_TYPE_LAST	blobmsg.h	/^	BLOBMSG_TYPE_LAST = __BLOBMSG_TYPE_LAST - 1,$/;"	e	enum:blobmsg_type
+BLOBMSG_TYPE_STRING	blobmsg.h	/^	BLOBMSG_TYPE_STRING,$/;"	e	enum:blobmsg_type
+BLOBMSG_TYPE_TABLE	blobmsg.h	/^	BLOBMSG_TYPE_TABLE,     \/\/ table$/;"	e	enum:blobmsg_type
+BLOBMSG_TYPE_UNSPEC	blobmsg.h	/^	BLOBMSG_TYPE_UNSPEC,    \/\/ 未指定,如果策略中采用这种消息类型，意味着不对消息类型作过滤$/;"	e	enum:blobmsg_type
+BLOB_ATTR_ALIGN	blob.h	52;"	d
+BLOB_ATTR_BINARY	blob.h	/^	BLOB_ATTR_BINARY,$/;"	e	enum:__anon2
+BLOB_ATTR_EXTENDED	blob.h	53;"	d
+BLOB_ATTR_ID_MASK	blob.h	49;"	d
+BLOB_ATTR_ID_SHIFT	blob.h	50;"	d
+BLOB_ATTR_INT16	blob.h	/^	BLOB_ATTR_INT16,$/;"	e	enum:__anon2
+BLOB_ATTR_INT32	blob.h	/^	BLOB_ATTR_INT32,$/;"	e	enum:__anon2
+BLOB_ATTR_INT64	blob.h	/^	BLOB_ATTR_INT64,$/;"	e	enum:__anon2
+BLOB_ATTR_INT8	blob.h	/^	BLOB_ATTR_INT8,$/;"	e	enum:__anon2
+BLOB_ATTR_LAST	blob.h	/^	BLOB_ATTR_LAST$/;"	e	enum:__anon2
+BLOB_ATTR_LEN_MASK	blob.h	51;"	d
+BLOB_ATTR_NESTED	blob.h	/^	BLOB_ATTR_NESTED,$/;"	e	enum:__anon2
+BLOB_ATTR_STRING	blob.h	/^	BLOB_ATTR_STRING,$/;"	e	enum:__anon2
+BLOB_ATTR_UNSPEC	blob.h	/^	BLOB_ATTR_UNSPEC,$/;"	e	enum:__anon2
+BLOB_COOKIE	blob.h	34;"	d
+BUILD_BUG_ON	utils.h	52;"	d
+BUILD_BUG_ON	utils.h	59;"	d
+Base64	base64.c	/^static const char Base64[] =$/;"	v	file:
+CLOCK_MONOTONIC	utils.h	66;"	d
+CLOCK_REALTIME	utils.h	65;"	d
+DEFAULT_SET	ustream.c	111;"	d	file:
+DEFAULT_SET	ustream.c	128;"	d	file:
+EPOLLRDHUP	uloop.c	211;"	d	file:
+EXPORT	avl.h	50;"	d
+F	md5.c	66;"	d	file:
+FOO_LIST	examples/blobmsg-example.c	/^	FOO_LIST,$/;"	e	enum:__anon3	file:
+FOO_MESSAGE	examples/blobmsg-example.c	/^	FOO_MESSAGE,$/;"	e	enum:__anon3	file:
+FOO_TESTDATA	examples/blobmsg-example.c	/^	FOO_TESTDATA$/;"	e	enum:__anon3	file:
+G	md5.c	67;"	d	file:
+GET	md5.c	87;"	d	file:
+GET	md5.c	96;"	d	file:
+H	md5.c	68;"	d	file:
+H2	md5.c	69;"	d	file:
+I	md5.c	70;"	d	file:
+INIT_LIST_HEAD	list.h	/^INIT_LIST_HEAD(struct list_head *list)$/;"	f	signature:(struct list_head *list)
+INIT_SAFE_LIST	safe_list.h	48;"	d
+LIST_HEAD	list.h	51;"	d
+LIST_HEAD	list.h	52;"	d
+LIST_HEAD_INIT	list.h	50;"	d
+MAX_STACK_BUFLEN	ustream.c	462;"	d	file:
+MAX_VARLEN	jshn.c	33;"	d	file:
+Pad64	base64.c	/^static const char Pad64 = '=';$/;"	v	file:
+READ_BLOCKED_FULL	ustream.h	/^	READ_BLOCKED_FULL = (1 << 1),$/;"	e	enum:read_blocked_reason
+READ_BLOCKED_USER	ustream.h	/^	READ_BLOCKED_USER = (1 << 0),$/;"	e	enum:read_blocked_reason
+SAFE_LIST	safe_list.h	55;"	d
+SAFE_LIST_INIT	safe_list.h	54;"	d
+SET	md5.c	85;"	d	file:
+SET	md5.c	90;"	d	file:
+STEP	md5.c	75;"	d	file:
+ULOG_ERR	ulog.h	40;"	d
+ULOG_INFO	ulog.h	37;"	d
+ULOG_KMSG	ulog.h	/^	ULOG_KMSG   = (1 << 0),$/;"	e	enum:__anon1
+ULOG_NOTE	ulog.h	38;"	d
+ULOG_STDIO	ulog.h	/^	ULOG_STDIO  = (1 << 2)$/;"	e	enum:__anon1
+ULOG_SYSLOG	ulog.h	/^	ULOG_SYSLOG = (1 << 1),$/;"	e	enum:__anon1
+ULOG_WARN	ulog.h	39;"	d
+ULOOP_BLOCKING	uloop.h	49;"	d
+ULOOP_EDGE_DEFER	uloop.h	56;"	d
+ULOOP_EDGE_TRIGGER	uloop.h	48;"	d
+ULOOP_ERROR_CB	uloop.h	59;"	d
+ULOOP_EVENT_BUFFERED	uloop.h	54;"	d
+ULOOP_EVENT_MASK	uloop.h	51;"	d
+ULOOP_MAX_EVENTS	uloop.c	56;"	d	file:
+ULOOP_READ	uloop.h	46;"	d
+ULOOP_WRITE	uloop.h	47;"	d
+USE_EPOLL	uloop.h	33;"	d
+USE_KQUEUE	uloop.h	31;"	d
+USOCK_H_	usock.h	23;"	d
+USOCK_IPV4ONLY	usock.h	33;"	d
+USOCK_IPV6ONLY	usock.h	32;"	d
+USOCK_NOCLOEXEC	usock.h	29;"	d
+USOCK_NONBLOCK	usock.h	30;"	d
+USOCK_NUMERIC	usock.h	31;"	d
+USOCK_SERVER	usock.h	28;"	d
+USOCK_TCP	usock.h	25;"	d
+USOCK_UDP	usock.h	26;"	d
+USOCK_UNIX	usock.h	34;"	d
+VLIST_TREE	vlist.h	53;"	d
+VLIST_TREE_INIT	vlist.h	44;"	d
+_AVL_H	avl.h	42;"	d
+_BLOB_H__	blob.h	23;"	d
+_GNUC_MIN_VER	utils.h	73;"	d
+_GNUC_MIN_VER	utils.h	75;"	d
+_LIBUBOX_MD5_H	md5.h	42;"	d
+_LINUX_LIST_H_	list.h	30;"	d
+_ULOOP_H__	uloop.h	22;"	d
+__AVL_CMP_H	avl-cmp.h	17;"	d
+__BIG_ENDIAN	utils.h	101;"	d
+__BLOBMSG_H	blobmsg.h	20;"	d
+__BLOBMSG_JSON_H	blobmsg_json.h	17;"	d
+__BLOBMSG_TYPE_LAST	blobmsg.h	/^	__BLOBMSG_TYPE_LAST,$/;"	e	enum:blobmsg_type
+__BUILD_BUG_ON	utils.h	48;"	d
+__BYTE_ORDER	utils.h	98;"	d
+__JSON_SCRIPT_H	json_script.h	17;"	d
+__LIBUBOX_KVLIST_H	kvlist.h	19;"	d
+__LIBUBOX_RUNQUEUE_H	runqueue.h	20;"	d
+__LIBUBOX_SAFE_LIST_H	safe_list.h	26;"	d
+__LIBUBOX_ULOG_H	ulog.h	20;"	d
+__LIBUBOX_UTILS_H	utils.h	22;"	d
+__LIBUBOX_VLIST_H	vlist.h	18;"	d
+__LITTLE_ENDIAN	utils.h	104;"	d
+__USTREAM_H	ustream.h	20;"	d
+__avl_find_element	avl.h	/^__avl_find_element(const struct avl_tree *tree, const void *key, size_t offset, enum avl_find_mode mode) {$/;"	f	signature:(const struct avl_tree *tree, const void *key, size_t offset, enum avl_find_mode mode)
+__avl_list_to_kv	kvlist.h	36;"	d
+__blob_for_each_attr	blob.h	264;"	d
+__blobmsg_add_json	blobmsg_json.c	/^static bool __blobmsg_add_json(struct blob_buf *b, json_object *obj)$/;"	f	file:	signature:(struct blob_buf *b, json_object *obj)
+__calloc_a	utils.c	/^void *__calloc_a(size_t len, ...)$/;"	f	signature:(size_t len, ...)
+__calloc_a	utils.h	/^void *__calloc_a(size_t len, ...);$/;"	p	signature:(size_t len, ...)
+__constructor	utils.h	163;"	d
+__default_handle_error	json_script.c	/^__default_handle_error(struct json_script_ctx *ctx, const char *msg,$/;"	f	file:	signature:(struct json_script_ctx *ctx, const char *msg, struct blob_attr *context)
+__default_handle_expr	json_script.c	/^__default_handle_expr(struct json_script_ctx *ctx, const char *name,$/;"	f	file:	signature:(struct json_script_ctx *ctx, const char *name, struct blob_attr *expr, struct blob_attr *vars)
+__default_handle_file	json_script.c	/^__default_handle_file(struct json_script_ctx *ctx, const char *name)$/;"	f	file:	signature:(struct json_script_ctx *ctx, const char *name)
+__default_handle_var	json_script.c	/^__default_handle_var(struct json_script_ctx *ctx, const char *name,$/;"	f	file:	signature:(struct json_script_ctx *ctx, const char *name, struct blob_attr *vars)
+__destructor	utils.h	167;"	d
+__hidden	utils.h	171;"	d
+__jshn_raw_append	sh/jshn.sh	/^__jshn_raw_append() {$/;"	f
+__json_process_cmd	json_script.c	/^static int __json_process_cmd(struct json_call *call, struct blob_attr *cur)$/;"	f	file:	signature:(struct json_call *call, struct blob_attr *cur)
+__json_process_type	json_script.c	/^__json_process_type(struct json_call *call, struct blob_attr *cur,$/;"	f	file:	signature:(struct json_call *call, struct blob_attr *cur, const struct json_handler *h, int n, bool *found)
+__json_script_file_free	json_script.c	/^static void __json_script_file_free(struct json_script_file *f)$/;"	f	file:	signature:(struct json_script_file *f)
+__json_script_run	json_script.c	/^static void __json_script_run(struct json_call *call, struct json_script_file *file,$/;"	f	file:	signature:(struct json_call *call, struct json_script_file *file, struct blob_attr *context)
+__kvlist_get	kvlist.c	/^static struct kvlist_node *__kvlist_get(struct kvlist *kv, const char *name)$/;"	f	file:	signature:(struct kvlist *kv, const char *name)
+__packed	blob.h	/^} __packed;$/;"	v	typeref:struct:blob_attr
+__packed	blobmsg.h	/^} __packed;$/;"	v	typeref:struct:blobmsg_hdr
+__packed	utils.h	159;"	d
+__ptr_to_kv	kvlist.h	35;"	d
+__runqueue_cancel	runqueue.c	/^static int __runqueue_cancel(void *ctx, struct safe_list *list)$/;"	f	file:	signature:(void *ctx, struct safe_list *list)
+__runqueue_empty_cb	runqueue.c	/^__runqueue_empty_cb(struct uloop_timeout *timeout)$/;"	f	file:	signature:(struct uloop_timeout *timeout)
+__runqueue_proc_cb	runqueue.c	/^__runqueue_proc_cb(struct uloop_process *p, int ret)$/;"	f	file:	signature:(struct uloop_process *p, int ret)
+__runqueue_start_next	runqueue.c	/^static void __runqueue_start_next(struct uloop_timeout *timeout)$/;"	f	file:	signature:(struct uloop_timeout *timeout)
+__runqueue_task_timeout	runqueue.c	/^__runqueue_task_timeout(struct uloop_timeout *timeout)$/;"	f	file:	signature:(struct uloop_timeout *timeout)
+__safe_list_del_iterator	safe_list.c	/^__safe_list_del_iterator(struct safe_list_iterator *i)$/;"	f	file:	signature:(struct safe_list_iterator *i)
+__safe_list_move_iterator	safe_list.c	/^__safe_list_move_iterator(struct safe_list *list,$/;"	f	file:	signature:(struct safe_list *list, struct safe_list_iterator *i)
+__safe_list_set_iterator	safe_list.c	/^__safe_list_set_iterator(struct safe_list *list,$/;"	f	file:	signature:(struct safe_list *list, struct safe_list_iterator *i)
+__u_bswap16	utils.h	/^static inline uint16_t __u_bswap16(uint16_t val)$/;"	f	signature:(uint16_t val)
+__u_bswap32	utils.h	113;"	d
+__u_bswap32	utils.h	116;"	d
+__u_bswap64	utils.h	114;"	d
+__u_bswap64	utils.h	117;"	d
+__uloop_fd_delete	uloop.c	/^static int __uloop_fd_delete(struct uloop_fd *fd)$/;"	f	file:	signature:(struct uloop_fd *fd)
+__uloop_fd_delete	uloop.c	/^static int __uloop_fd_delete(struct uloop_fd *sock)$/;"	f	file:	signature:(struct uloop_fd *sock)
+__ustream_fd_poll	ustream-fd.c	/^static bool __ustream_fd_poll(struct ustream_fd *sf, unsigned int events)$/;"	f	file:	signature:(struct ustream_fd *sf, unsigned int events)
+__ustream_set_read_blocked	ustream.c	/^static void __ustream_set_read_blocked(struct ustream *s, unsigned char val)$/;"	f	file:	signature:(struct ustream *s, unsigned char val)
+_get_var	sh/jshn.sh	/^_get_var() {$/;"	f
+_jshn_append	sh/jshn.sh	/^_jshn_append() {$/;"	f
+_json_add_generic	sh/jshn.sh	/^_json_add_generic() {$/;"	f
+_json_add_table	sh/jshn.sh	/^_json_add_table() {$/;"	f
+_json_close_table	sh/jshn.sh	/^_json_close_table() {$/;"	f
+_json_get_var	sh/jshn.sh	/^_json_get_var() {$/;"	f
+_json_inc	sh/jshn.sh	/^_json_inc() {$/;"	f
+_json_set_var	sh/jshn.sh	/^_json_set_var() {$/;"	f
+_list_add	list.h	/^_list_add(struct list_head *_new, struct list_head *prev,$/;"	f	signature:(struct list_head *_new, struct list_head *prev, struct list_head *next)
+_list_del	list.h	/^_list_del(struct list_head *entry)$/;"	f	signature:(struct list_head *entry)
+_list_splice	list.h	/^_list_splice(const struct list_head *list, struct list_head *prev,$/;"	f	signature:(const struct list_head *list, struct list_head *prev, struct list_head *next)
+_runqueue_task_add	runqueue.c	/^static void _runqueue_task_add(struct runqueue *q, struct runqueue_task *t, bool running, bool first)$/;"	f	file:	signature:(struct runqueue *q, struct runqueue_task *t, bool running, bool first)
+_set_var	sh/jshn.sh	/^_set_var() {$/;"	f
+_ulog_channels	ulog.c	/^static int _ulog_channels = -1;$/;"	v	file:
+_ulog_facility	ulog.c	/^static int _ulog_facility = -1;$/;"	v	file:
+_ulog_ident	ulog.c	/^static const char *_ulog_ident = NULL;$/;"	v	file:
+_ulog_initialized	ulog.c	/^static int _ulog_initialized = 0;$/;"	v	file:
+_ulog_threshold	ulog.c	/^static int _ulog_threshold = LOG_DEBUG;$/;"	v	file:
+a	md5.h	/^	uint32_t a, b, c, d;$/;"	m	struct:md5_ctx	access:public
+add_json_array	jshn.c	/^static int add_json_array(struct array_list *a)$/;"	f	file:	signature:(struct array_list *a)
+add_json_element	jshn.c	/^static int add_json_element(const char *key, json_object *obj)$/;"	f	file:	signature:(const char *key, json_object *obj)
+add_json_element	jshn.c	/^static int add_json_element(const char *key, json_object *obj);$/;"	p	file:	signature:(const char *key, json_object *obj)
+add_json_object	jshn.c	/^static int add_json_object(json_object *obj)$/;"	f	file:	signature:(json_object *obj)
+add_json_string	jshn.c	/^static void add_json_string(const char *str)$/;"	f	file:	signature:(const char *str)
+add_separator	blobmsg_json.c	/^static void add_separator(struct strbuf *s)$/;"	f	file:	signature:(struct strbuf *s)
+add_sleeper	examples/runqueue-example.c	/^static void add_sleeper(int val)$/;"	f	file:	signature:(int val)
+alloc	ustream.h	/^	int (*alloc)(struct ustream *s, struct ustream_buf_list *l);$/;"	m	struct:ustream_buf_list	access:public
+allow_dups	avl.h	/^  bool allow_dups;$/;"	m	struct:avl_tree	access:public
+attr_to_offset	blob.c	/^attr_to_offset(struct blob_buf *buf, struct blob_attr *attr)$/;"	f	file:	signature:(struct blob_buf *buf, struct blob_attr *attr)
+attr_to_offset	blobmsg.c	/^attr_to_offset(struct blob_buf *buf, struct blob_attr *attr)$/;"	f	file:	signature:(struct blob_buf *buf, struct blob_attr *attr)
+avl	json_script.h	/^	struct avl_node avl;$/;"	m	struct:json_script_file	typeref:struct:json_script_file::avl_node	access:public
+avl	kvlist.h	/^	struct avl_node avl;$/;"	m	struct:kvlist_node	typeref:struct:kvlist_node::avl_node	access:public
+avl	kvlist.h	/^	struct avl_tree avl;$/;"	m	struct:kvlist	typeref:struct:kvlist::avl_tree	access:public
+avl	vlist.h	/^	struct avl_node avl;$/;"	m	struct:vlist_node	typeref:struct:vlist_node::avl_node	access:public
+avl	vlist.h	/^	struct avl_tree avl;$/;"	m	struct:vlist_tree	typeref:struct:vlist_tree::avl_tree	access:public
+avl_delete	avl.c	/^avl_delete(struct avl_tree *tree, struct avl_node *node)$/;"	f	signature:(struct avl_tree *tree, struct avl_node *node)
+avl_delete	avl.h	/^void EXPORT(avl_delete)(struct avl_tree *, struct avl_node *);$/;"	p	signature:(struct avl_tree *, struct avl_node *)
+avl_delete_worker	avl.c	/^avl_delete_worker(struct avl_tree *tree, struct avl_node *node)$/;"	f	file:	signature:(struct avl_tree *tree, struct avl_node *node)
+avl_delete_worker	avl.c	/^static void avl_delete_worker(struct avl_tree *tree, struct avl_node *node);$/;"	p	file:	signature:(struct avl_tree *tree, struct avl_node *node)
+avl_find	avl.c	/^avl_find(const struct avl_tree *tree, const void *key)$/;"	f	signature:(const struct avl_tree *tree, const void *key)
+avl_find	avl.h	/^struct avl_node *EXPORT(avl_find)(const struct avl_tree *, const void *);$/;"	p	signature:(const struct avl_tree *, const void *)
+avl_find_element	avl.h	240;"	d
+avl_find_ge_element	avl.h	266;"	d
+avl_find_greaterequal	avl.c	/^avl_find_greaterequal(const struct avl_tree *tree, const void *key) {$/;"	f	signature:(const struct avl_tree *tree, const void *key)
+avl_find_greaterequal	avl.h	/^struct avl_node *EXPORT(avl_find_greaterequal)(const struct avl_tree *tree, const void *key);$/;"	p	signature:(const struct avl_tree *tree, const void *key)
+avl_find_le_element	avl.h	253;"	d
+avl_find_lessequal	avl.c	/^avl_find_lessequal(const struct avl_tree *tree, const void *key) {$/;"	f	signature:(const struct avl_tree *tree, const void *key)
+avl_find_lessequal	avl.h	/^struct avl_node *EXPORT(avl_find_lessequal)(const struct avl_tree *tree, const void *key);$/;"	p	signature:(const struct avl_tree *tree, const void *key)
+avl_find_mode	avl.h	/^enum avl_find_mode {$/;"	g
+avl_find_rec	avl.c	/^avl_find_rec(struct avl_node *node, const void *key, avl_tree_comp comp, void *cmp_ptr, int *cmp_result)$/;"	f	file:	signature:(struct avl_node *node, const void *key, avl_tree_comp comp, void *cmp_ptr, int *cmp_result)
+avl_find_rec	avl.c	/^avl_find_rec(struct avl_node *node, const void *key, avl_tree_comp comp, void *ptr, int *cmp_result);$/;"	p	file:	signature:(struct avl_node *node, const void *key, avl_tree_comp comp, void *ptr, int *cmp_result)
+avl_first_element	avl.h	280;"	d
+avl_for_each_element	avl.h	366;"	d
+avl_for_each_element_reverse	avl.h	382;"	d
+avl_for_each_element_reverse_safe	avl.h	522;"	d
+avl_for_each_element_safe	avl.h	503;"	d
+avl_for_element_range	avl.h	333;"	d
+avl_for_element_range_reverse	avl.h	350;"	d
+avl_for_element_range_reverse_safe	avl.h	484;"	d
+avl_for_element_range_safe	avl.h	466;"	d
+avl_for_element_to_last	avl.h	400;"	d
+avl_for_element_to_last_reverse	avl.h	417;"	d
+avl_for_first_to_element	avl.h	433;"	d
+avl_for_first_to_element_reverse	avl.h	450;"	d
+avl_init	avl.c	/^avl_init(struct avl_tree *tree, avl_tree_comp comp, bool allow_dups, void *ptr)$/;"	f	signature:(struct avl_tree *tree, avl_tree_comp comp, bool allow_dups, void *ptr)
+avl_init	avl.h	/^void EXPORT(avl_init)(struct avl_tree *, avl_tree_comp, bool, void *);$/;"	p	signature:(struct avl_tree *, avl_tree_comp, bool, void *)
+avl_insert	avl.c	/^avl_insert(struct avl_tree *tree, struct avl_node *new)$/;"	f	signature:(struct avl_tree *tree, struct avl_node *new)
+avl_insert	avl.h	/^int EXPORT(avl_insert)(struct avl_tree *, struct avl_node *);$/;"	p	signature:(struct avl_tree *, struct avl_node *)
+avl_insert_after	avl.c	/^avl_insert_after(struct avl_tree *tree, struct avl_node *pos_node, struct avl_node *node)$/;"	f	file:	signature:(struct avl_tree *tree, struct avl_node *pos_node, struct avl_node *node)
+avl_insert_after	avl.c	/^static void avl_insert_after(struct avl_tree *tree, struct avl_node *pos_node, struct avl_node *node);$/;"	p	file:	signature:(struct avl_tree *tree, struct avl_node *pos_node, struct avl_node *node)
+avl_insert_before	avl.c	/^avl_insert_before(struct avl_tree *tree, struct avl_node *pos_node, struct avl_node *node)$/;"	f	file:	signature:(struct avl_tree *tree, struct avl_node *pos_node, struct avl_node *node)
+avl_insert_before	avl.c	/^static void avl_insert_before(struct avl_tree *tree, struct avl_node *pos_node, struct avl_node *node);$/;"	p	file:	signature:(struct avl_tree *tree, struct avl_node *pos_node, struct avl_node *node)
+avl_is_empty	avl.h	/^avl_is_empty(struct avl_tree *tree) {$/;"	f	signature:(struct avl_tree *tree)
+avl_is_first	avl.h	/^avl_is_first(struct avl_tree *tree, struct avl_node *node) {$/;"	f	signature:(struct avl_tree *tree, struct avl_node *node)
+avl_is_last	avl.h	/^avl_is_last(struct avl_tree *tree, struct avl_node *node) {$/;"	f	signature:(struct avl_tree *tree, struct avl_node *node)
+avl_last_element	avl.h	292;"	d
+avl_local_min	avl.c	/^avl_local_min(struct avl_node *node)$/;"	f	file:	signature:(struct avl_node *node)
+avl_max	avl.c	/^static inline int avl_max(int x, int y) {$/;"	f	file:	signature:(int x, int y)
+avl_min	avl.c	/^static inline int avl_min(int x, int y) {$/;"	f	file:	signature:(int x, int y)
+avl_next	avl.c	/^static inline struct avl_node *avl_next(struct avl_node *node)$/;"	f	file:	signature:(struct avl_node *node)
+avl_next_element	avl.h	305;"	d
+avl_node	avl.h	/^struct avl_node {$/;"	s
+avl_node::balance	avl.h	/^  signed char balance;$/;"	m	struct:avl_node	access:public
+avl_node::key	avl.h	/^  const void *key;$/;"	m	struct:avl_node	access:public
+avl_node::leader	avl.h	/^  bool leader;$/;"	m	struct:avl_node	access:public
+avl_node::left	avl.h	/^  struct avl_node *left;$/;"	m	struct:avl_node	typeref:struct:avl_node::avl_node	access:public
+avl_node::list	avl.h	/^  struct list_head list;$/;"	m	struct:avl_node	typeref:struct:avl_node::list_head	access:public
+avl_node::parent	avl.h	/^  struct avl_node *parent;$/;"	m	struct:avl_node	typeref:struct:avl_node::avl_node	access:public
+avl_node::right	avl.h	/^  struct avl_node *right;$/;"	m	struct:avl_node	typeref:struct:avl_node::avl_node	access:public
+avl_post_delete	avl.c	/^avl_post_delete(struct avl_tree *tree, struct avl_node *node)$/;"	f	file:	signature:(struct avl_tree *tree, struct avl_node *node)
+avl_prev_element	avl.h	318;"	d
+avl_remove	avl.c	/^avl_remove(struct avl_tree *tree, struct avl_node *node)$/;"	f	file:	signature:(struct avl_tree *tree, struct avl_node *node)
+avl_remove	avl.c	/^static void avl_remove(struct avl_tree *tree, struct avl_node *node);$/;"	p	file:	signature:(struct avl_tree *tree, struct avl_node *node)
+avl_remove_all_elements	avl.h	545;"	d
+avl_rotate_left	avl.c	/^avl_rotate_left(struct avl_tree *tree, struct avl_node *node)$/;"	f	file:	signature:(struct avl_tree *tree, struct avl_node *node)
+avl_rotate_right	avl.c	/^avl_rotate_right(struct avl_tree *tree, struct avl_node *node)$/;"	f	file:	signature:(struct avl_tree *tree, struct avl_node *node)
+avl_strcmp	avl-cmp.c	/^avl_strcmp(const void *k1, const void *k2, void *ptr)$/;"	f	signature:(const void *k1, const void *k2, void *ptr)
+avl_strcmp	avl-cmp.h	/^int avl_strcmp(const void *k1, const void *k2, void *ptr);$/;"	p	signature:(const void *k1, const void *k2, void *ptr)
+avl_tree	avl.h	/^struct avl_tree {$/;"	s
+avl_tree::allow_dups	avl.h	/^  bool allow_dups;$/;"	m	struct:avl_tree	access:public
+avl_tree::cmp_ptr	avl.h	/^  void *cmp_ptr;$/;"	m	struct:avl_tree	access:public
+avl_tree::comp	avl.h	/^  avl_tree_comp comp;$/;"	m	struct:avl_tree	access:public
+avl_tree::count	avl.h	/^  unsigned int count;$/;"	m	struct:avl_tree	access:public
+avl_tree::list_head	avl.h	/^  struct list_head list_head;$/;"	m	struct:avl_tree	typeref:struct:avl_tree::list_head	access:public
+avl_tree::root	avl.h	/^  struct avl_node *root;$/;"	m	struct:avl_tree	typeref:struct:avl_tree::avl_node	access:public
+avl_tree_comp	avl.h	/^typedef int (*avl_tree_comp) (const void *k1, const void *k2, void *ptr);$/;"	t
+b	jshn.c	/^static struct blob_buf b = { 0 };$/;"	v	typeref:struct:blob_buf	file:
+b	md5.h	/^	uint32_t a, b, c, d;$/;"	m	struct:md5_ctx	access:public
+b64_decode	base64.c	/^int b64_decode(const void *_src, void *dest, size_t targsize)$/;"	f	signature:(const void *_src, void *dest, size_t targsize)
+b64_decode	utils.h	/^int b64_decode(const void *src, void *dest, size_t dest_len);$/;"	p	signature:(const void *src, void *dest, size_t dest_len)
+b64_encode	base64.c	/^int b64_encode(const void *_src, size_t srclength,$/;"	f	signature:(const void *_src, size_t srclength, void *dest, size_t targsize)
+b64_encode	utils.h	/^int b64_encode(const void *src, size_t src_len,$/;"	p	signature:(const void *src, size_t src_len, void *dest, size_t dest_len)
+b_script	examples/json_script-example.c	/^struct blob_buf 	b_script;$/;"	v	typeref:struct:blob_buf
+b_vars	examples/json_script-example.c	/^struct blob_buf 	b_vars;$/;"	v	typeref:struct:blob_buf
+balance	avl.h	/^  signed char balance;$/;"	m	struct:avl_node	access:public
+be16_to_cpu	utils.h	128;"	d
+be16_to_cpu	utils.h	154;"	d
+be32_to_cpu	utils.h	127;"	d
+be32_to_cpu	utils.h	153;"	d
+be64_to_cpu	utils.h	126;"	d
+be64_to_cpu	utils.h	152;"	d
+bitfield_set	utils.h	/^static inline void bitfield_set(unsigned long *bits, int bit)$/;"	f	signature:(unsigned long *bits, int bit)
+bitfield_test	utils.h	/^static inline bool bitfield_test(unsigned long *bits, int bit)$/;"	f	signature:(unsigned long *bits, int bit)
+blob_add	blob.c	/^blob_add(struct blob_buf *buf, struct blob_attr *pos, int id, int payload)$/;"	f	file:	signature:(struct blob_buf *buf, struct blob_attr *pos, int id, int payload)
+blob_attr	blob.h	/^struct blob_attr {$/;"	s
+blob_attr::data	blob.h	/^	char data[];        \/\/ 指向数据区(即上层的消息)$/;"	m	struct:blob_attr	access:public
+blob_attr::id_len	blob.h	/^	uint32_t id_len;    \/\/ [0-23]:数据区长度(包含了本身blob_attr结构长度);[24-30]:ID;[31]:扩展标志$/;"	m	struct:blob_attr	access:public
+blob_attr_equal	blob.c	/^blob_attr_equal(const struct blob_attr *a1, const struct blob_attr *a2)$/;"	f	signature:(const struct blob_attr *a1, const struct blob_attr *a2)
+blob_attr_equal	blob.h	/^extern bool blob_attr_equal(const struct blob_attr *a1, const struct blob_attr *a2);$/;"	p	signature:(const struct blob_attr *a1, const struct blob_attr *a2)
+blob_attr_info	blob.h	/^struct blob_attr_info {$/;"	s
+blob_attr_info::maxlen	blob.h	/^	unsigned int maxlen;$/;"	m	struct:blob_attr_info	access:public
+blob_attr_info::minlen	blob.h	/^	unsigned int minlen;$/;"	m	struct:blob_attr_info	access:public
+blob_attr_info::type	blob.h	/^	unsigned int type;$/;"	m	struct:blob_attr_info	access:public
+blob_attr_info::validate	blob.h	/^	bool (*validate)(const struct blob_attr_info *, struct blob_attr *);$/;"	m	struct:blob_attr_info	access:public
+blob_buf	blob.h	/^struct blob_buf {$/;"	s
+blob_buf::buf	blob.h	/^	void *buf;              \/\/ blob缓冲区指针$/;"	m	struct:blob_buf	access:public
+blob_buf::buflen	blob.h	/^	int buflen;             \/\/ blob缓冲区长度$/;"	m	struct:blob_buf	access:public
+blob_buf::grow	blob.h	/^	bool (*grow)(struct blob_buf *buf, int minlen); \/\/ 指向blob缓冲区容量调整函数$/;"	m	struct:blob_buf	access:public
+blob_buf::head	blob.h	/^	struct blob_attr *head; \/\/ 指向blob的属性空间（属性空间其实是在缓冲区中分配的）$/;"	m	struct:blob_buf	typeref:struct:blob_buf::blob_attr	access:public
+blob_buf_free	blob.c	/^blob_buf_free(struct blob_buf *buf)$/;"	f	signature:(struct blob_buf *buf)
+blob_buf_free	blob.h	/^extern void blob_buf_free(struct blob_buf *buf);$/;"	p	signature:(struct blob_buf *buf)
+blob_buf_grow	blob.c	/^blob_buf_grow(struct blob_buf *buf, int required)$/;"	f	signature:(struct blob_buf *buf, int required)
+blob_buf_grow	blob.h	/^extern bool blob_buf_grow(struct blob_buf *buf, int required);$/;"	p	signature:(struct blob_buf *buf, int required)
+blob_buf_init	blob.c	/^blob_buf_init(struct blob_buf *buf, int id)$/;"	f	signature:(struct blob_buf *buf, int id)
+blob_buf_init	blob.h	/^extern int blob_buf_init(struct blob_buf *buf, int id);$/;"	p	signature:(struct blob_buf *buf, int id)
+blob_buffer_grow	blob.c	/^blob_buffer_grow(struct blob_buf *buf, int minlen)$/;"	f	file:	signature:(struct blob_buf *buf, int minlen)
+blob_check_type	blob.c	/^blob_check_type(const void *ptr, unsigned int len, int type)$/;"	f	signature:(const void *ptr, unsigned int len, int type)
+blob_check_type	blob.h	/^extern bool blob_check_type(const void *ptr, unsigned int len, int type);$/;"	p	signature:(const void *ptr, unsigned int len, int type)
+blob_data	blob.h	/^blob_data(const struct blob_attr *attr)$/;"	f	signature:(const struct blob_attr *attr)
+blob_fill_pad	blob.c	/^blob_fill_pad(struct blob_attr *attr)$/;"	f	signature:(struct blob_attr *attr)
+blob_fill_pad	blob.h	/^extern void blob_fill_pad(struct blob_attr *attr);$/;"	p	signature:(struct blob_attr *attr)
+blob_for_each_attr	blob.h	272;"	d
+blob_get_int16	blob.h	/^blob_get_int16(const struct blob_attr *attr)$/;"	f	signature:(const struct blob_attr *attr)
+blob_get_int32	blob.h	/^blob_get_int32(const struct blob_attr *attr)$/;"	f	signature:(const struct blob_attr *attr)
+blob_get_int64	blob.h	/^blob_get_int64(const struct blob_attr *attr)$/;"	f	signature:(const struct blob_attr *attr)
+blob_get_int8	blob.h	/^blob_get_int8(const struct blob_attr *attr)$/;"	f	signature:(const struct blob_attr *attr)
+blob_get_string	blob.h	/^blob_get_string(const struct blob_attr *attr)$/;"	f	signature:(const struct blob_attr *attr)
+blob_get_u16	blob.h	/^blob_get_u16(const struct blob_attr *attr)$/;"	f	signature:(const struct blob_attr *attr)
+blob_get_u32	blob.h	/^blob_get_u32(const struct blob_attr *attr)$/;"	f	signature:(const struct blob_attr *attr)
+blob_get_u64	blob.h	/^blob_get_u64(const struct blob_attr *attr)$/;"	f	signature:(const struct blob_attr *attr)
+blob_get_u8	blob.h	/^blob_get_u8(const struct blob_attr *attr)$/;"	f	signature:(const struct blob_attr *attr)
+blob_id	blob.h	/^blob_id(const struct blob_attr *attr)$/;"	f	signature:(const struct blob_attr *attr)
+blob_init	blob.c	/^blob_init(struct blob_attr *attr, int id, unsigned int len)$/;"	f	file:	signature:(struct blob_attr *attr, int id, unsigned int len)
+blob_is_extended	blob.h	/^blob_is_extended(const struct blob_attr *attr)$/;"	f	signature:(const struct blob_attr *attr)
+blob_len	blob.h	/^blob_len(const struct blob_attr *attr)$/;"	f	signature:(const struct blob_attr *attr)
+blob_memdup	blob.c	/^blob_memdup(struct blob_attr *attr)$/;"	f	signature:(struct blob_attr *attr)
+blob_memdup	blob.h	/^extern struct blob_attr *blob_memdup(struct blob_attr *attr);$/;"	p	signature:(struct blob_attr *attr)
+blob_nest_end	blob.c	/^blob_nest_end(struct blob_buf *buf, void *cookie)$/;"	f	signature:(struct blob_buf *buf, void *cookie)
+blob_nest_end	blob.h	/^extern void blob_nest_end(struct blob_buf *buf, void *cookie);$/;"	p	signature:(struct blob_buf *buf, void *cookie)
+blob_nest_start	blob.c	/^blob_nest_start(struct blob_buf *buf, int id)$/;"	f	signature:(struct blob_buf *buf, int id)
+blob_nest_start	blob.h	/^extern void *blob_nest_start(struct blob_buf *buf, int id);$/;"	p	signature:(struct blob_buf *buf, int id)
+blob_new	blob.c	/^blob_new(struct blob_buf *buf, int id, int payload)$/;"	f	signature:(struct blob_buf *buf, int id, int payload)
+blob_new	blob.h	/^extern struct blob_attr *blob_new(struct blob_buf *buf, int id, int payload);$/;"	p	signature:(struct blob_buf *buf, int id, int payload)
+blob_next	blob.h	/^blob_next(const struct blob_attr *attr)$/;"	f	signature:(const struct blob_attr *attr)
+blob_pad_len	blob.h	/^blob_pad_len(const struct blob_attr *attr)$/;"	f	signature:(const struct blob_attr *attr)
+blob_parse	blob.c	/^blob_parse(struct blob_attr *attr, struct blob_attr **data, const struct blob_attr_info *info, int max)$/;"	f	signature:(struct blob_attr *attr, struct blob_attr **data, const struct blob_attr_info *info, int max)
+blob_parse	blob.h	/^extern int blob_parse(struct blob_attr *attr, struct blob_attr **data, const struct blob_attr_info *info, int max);$/;"	p	signature:(struct blob_attr *attr, struct blob_attr **data, const struct blob_attr_info *info, int max)
+blob_put	blob.c	/^blob_put(struct blob_buf *buf, int id, const void *ptr, unsigned int len)$/;"	f	signature:(struct blob_buf *buf, int id, const void *ptr, unsigned int len)
+blob_put	blob.h	/^extern struct blob_attr *blob_put(struct blob_buf *buf, int id, const void *ptr, unsigned int len);$/;"	p	signature:(struct blob_buf *buf, int id, const void *ptr, unsigned int len)
+blob_put_int16	blob.h	260;"	d
+blob_put_int32	blob.h	261;"	d
+blob_put_int64	blob.h	262;"	d
+blob_put_int8	blob.h	259;"	d
+blob_put_raw	blob.c	/^blob_put_raw(struct blob_buf *buf, const void *ptr, unsigned int len)$/;"	f	signature:(struct blob_buf *buf, const void *ptr, unsigned int len)
+blob_put_raw	blob.h	/^extern struct blob_attr *blob_put_raw(struct blob_buf *buf, const void *ptr, unsigned int len);$/;"	p	signature:(struct blob_buf *buf, const void *ptr, unsigned int len)
+blob_put_string	blob.h	/^blob_put_string(struct blob_buf *buf, int id, const char *str)$/;"	f	signature:(struct blob_buf *buf, int id, const char *str)
+blob_put_u16	blob.h	/^blob_put_u16(struct blob_buf *buf, int id, uint16_t val)$/;"	f	signature:(struct blob_buf *buf, int id, uint16_t val)
+blob_put_u32	blob.h	/^blob_put_u32(struct blob_buf *buf, int id, uint32_t val)$/;"	f	signature:(struct blob_buf *buf, int id, uint32_t val)
+blob_put_u64	blob.h	/^blob_put_u64(struct blob_buf *buf, int id, uint64_t val)$/;"	f	signature:(struct blob_buf *buf, int id, uint64_t val)
+blob_put_u8	blob.h	/^blob_put_u8(struct blob_buf *buf, int id, uint8_t val)$/;"	f	signature:(struct blob_buf *buf, int id, uint8_t val)
+blob_raw_len	blob.h	/^blob_raw_len(const struct blob_attr *attr)$/;"	f	signature:(const struct blob_attr *attr)
+blob_set_raw_len	blob.c	/^blob_set_raw_len(struct blob_attr *attr, unsigned int len)$/;"	f	signature:(struct blob_attr *attr, unsigned int len)
+blob_set_raw_len	blob.h	/^extern void blob_set_raw_len(struct blob_attr *attr, unsigned int len);$/;"	p	signature:(struct blob_attr *attr, unsigned int len)
+blob_type	blobmsg.c	/^static const int blob_type[__BLOBMSG_TYPE_LAST] = {$/;"	v	file:
+blob_type_minlen	blob.c	/^static const int blob_type_minlen[BLOB_ATTR_LAST] = {$/;"	v	file:
+blobmsg_add_array	blobmsg_json.c	/^static bool blobmsg_add_array(struct blob_buf *b, struct array_list *a)$/;"	f	file:	signature:(struct blob_buf *b, struct array_list *a)
+blobmsg_add_blob	blobmsg.h	/^blobmsg_add_blob(struct blob_buf *buf, struct blob_attr *attr)$/;"	f	signature:(struct blob_buf *buf, struct blob_attr *attr)
+blobmsg_add_field	blobmsg.c	/^blobmsg_add_field(struct blob_buf *buf, int type, const char *name,$/;"	f	signature:(struct blob_buf *buf, int type, const char *name, const void *data, unsigned int len)
+blobmsg_add_field	blobmsg.h	/^int blobmsg_add_field(struct blob_buf *buf, int type, const char *name,$/;"	p	signature:(struct blob_buf *buf, int type, const char *name, const void *data, unsigned int len)
+blobmsg_add_json_element	blobmsg_json.c	/^bool blobmsg_add_json_element(struct blob_buf *b, const char *name, json_object *obj)$/;"	f	signature:(struct blob_buf *b, const char *name, json_object *obj)
+blobmsg_add_json_element	blobmsg_json.h	/^bool blobmsg_add_json_element(struct blob_buf *b, const char *name, struct json_object *obj);$/;"	p	signature:(struct blob_buf *b, const char *name, struct json_object *obj)
+blobmsg_add_json_from_file	blobmsg_json.c	/^bool blobmsg_add_json_from_file(struct blob_buf *b, const char *file)$/;"	f	signature:(struct blob_buf *b, const char *file)
+blobmsg_add_json_from_file	blobmsg_json.h	/^bool blobmsg_add_json_from_file(struct blob_buf *b, const char *file);$/;"	p	signature:(struct blob_buf *b, const char *file)
+blobmsg_add_json_from_string	blobmsg_json.c	/^bool blobmsg_add_json_from_string(struct blob_buf *b, const char *str)$/;"	f	signature:(struct blob_buf *b, const char *str)
+blobmsg_add_json_from_string	blobmsg_json.h	/^bool blobmsg_add_json_from_string(struct blob_buf *b, const char *str);$/;"	p	signature:(struct blob_buf *b, const char *str)
+blobmsg_add_object	blobmsg_json.c	/^bool blobmsg_add_object(struct blob_buf *b, json_object *obj)$/;"	f	signature:(struct blob_buf *b, json_object *obj)
+blobmsg_add_object	blobmsg_json.h	/^bool blobmsg_add_object(struct blob_buf *b, struct json_object *obj);$/;"	p	signature:(struct blob_buf *b, struct json_object *obj)
+blobmsg_add_string	blobmsg.h	/^blobmsg_add_string(struct blob_buf *buf, const char *name, const char *string)$/;"	f	signature:(struct blob_buf *buf, const char *name, const char *string)
+blobmsg_add_string_buffer	blobmsg.c	/^blobmsg_add_string_buffer(struct blob_buf *buf)$/;"	f	signature:(struct blob_buf *buf)
+blobmsg_add_string_buffer	blobmsg.h	/^void blobmsg_add_string_buffer(struct blob_buf *buf);$/;"	p	signature:(struct blob_buf *buf)
+blobmsg_add_u16	blobmsg.h	/^blobmsg_add_u16(struct blob_buf *buf, const char *name, uint16_t val)$/;"	f	signature:(struct blob_buf *buf, const char *name, uint16_t val)
+blobmsg_add_u32	blobmsg.h	/^blobmsg_add_u32(struct blob_buf *buf, const char *name, uint32_t val)$/;"	f	signature:(struct blob_buf *buf, const char *name, uint32_t val)
+blobmsg_add_u64	blobmsg.h	/^blobmsg_add_u64(struct blob_buf *buf, const char *name, uint64_t val)$/;"	f	signature:(struct blob_buf *buf, const char *name, uint64_t val)
+blobmsg_add_u8	blobmsg.h	/^blobmsg_add_u8(struct blob_buf *buf, const char *name, uint8_t val)$/;"	f	signature:(struct blob_buf *buf, const char *name, uint8_t val)
+blobmsg_alloc_string_buffer	blobmsg.c	/^blobmsg_alloc_string_buffer(struct blob_buf *buf, const char *name, unsigned int maxlen)$/;"	f	signature:(struct blob_buf *buf, const char *name, unsigned int maxlen)
+blobmsg_alloc_string_buffer	blobmsg.h	/^void *blobmsg_alloc_string_buffer(struct blob_buf *buf, const char *name, unsigned int maxlen);$/;"	p	signature:(struct blob_buf *buf, const char *name, unsigned int maxlen)
+blobmsg_buf_init	blobmsg.h	/^static inline int blobmsg_buf_init(struct blob_buf *buf)$/;"	f	signature:(struct blob_buf *buf)
+blobmsg_check_array	blobmsg.c	/^int blobmsg_check_array(const struct blob_attr *attr, int type)$/;"	f	signature:(const struct blob_attr *attr, int type)
+blobmsg_check_array	blobmsg.h	/^int blobmsg_check_array(const struct blob_attr *attr, int type);$/;"	p	signature:(const struct blob_attr *attr, int type)
+blobmsg_check_attr	blobmsg.c	/^bool blobmsg_check_attr(const struct blob_attr *attr, bool name)$/;"	f	signature:(const struct blob_attr *attr, bool name)
+blobmsg_check_attr	blobmsg.h	/^bool blobmsg_check_attr(const struct blob_attr *attr, bool name);$/;"	p	signature:(const struct blob_attr *attr, bool name)
+blobmsg_check_attr_list	blobmsg.c	/^bool blobmsg_check_attr_list(const struct blob_attr *attr, int type)$/;"	f	signature:(const struct blob_attr *attr, int type)
+blobmsg_check_attr_list	blobmsg.h	/^bool blobmsg_check_attr_list(const struct blob_attr *attr, int type);$/;"	p	signature:(const struct blob_attr *attr, int type)
+blobmsg_clear_name	blobmsg.h	/^static inline void blobmsg_clear_name(struct blob_attr *attr)$/;"	f	signature:(struct blob_attr *attr)
+blobmsg_close_array	blobmsg.h	/^blobmsg_close_array(struct blob_buf *buf, void *cookie)$/;"	f	signature:(struct blob_buf *buf, void *cookie)
+blobmsg_close_table	blobmsg.h	/^blobmsg_close_table(struct blob_buf *buf, void *cookie)$/;"	f	signature:(struct blob_buf *buf, void *cookie)
+blobmsg_data	blobmsg.h	/^static inline void *blobmsg_data(const struct blob_attr *attr)$/;"	f	signature:(const struct blob_attr *attr)
+blobmsg_data_len	blobmsg.h	/^static inline int blobmsg_data_len(const struct blob_attr *attr)$/;"	f	signature:(const struct blob_attr *attr)
+blobmsg_for_each_attr	blobmsg.h	267;"	d
+blobmsg_format_element	blobmsg_json.c	/^static void blobmsg_format_element(struct strbuf *s, struct blob_attr *attr, bool array, bool head)$/;"	f	file:	signature:(struct strbuf *s, struct blob_attr *attr, bool array, bool head)
+blobmsg_format_json	blobmsg_json.h	/^static inline char *blobmsg_format_json(struct blob_attr *attr, bool list)$/;"	f	signature:(struct blob_attr *attr, bool list)
+blobmsg_format_json_indent	blobmsg_json.h	/^static inline char *blobmsg_format_json_indent(struct blob_attr *attr, bool list, int indent)$/;"	f	signature:(struct blob_attr *attr, bool list, int indent)
+blobmsg_format_json_list	blobmsg_json.c	/^static void blobmsg_format_json_list(struct strbuf *s, struct blob_attr *attr, int len, bool array)$/;"	f	file:	signature:(struct strbuf *s, struct blob_attr *attr, int len, bool array)
+blobmsg_format_json_list	blobmsg_json.c	/^static void blobmsg_format_json_list(struct strbuf *s, struct blob_attr *attr, int len, bool array);$/;"	p	file:	signature:(struct strbuf *s, struct blob_attr *attr, int len, bool array)
+blobmsg_format_json_with_cb	blobmsg_json.c	/^char *blobmsg_format_json_with_cb(struct blob_attr *attr, bool list, blobmsg_json_format_t cb, void *priv, int indent)$/;"	f	signature:(struct blob_attr *attr, bool list, blobmsg_json_format_t cb, void *priv, int indent)
+blobmsg_format_json_with_cb	blobmsg_json.h	/^char *blobmsg_format_json_with_cb(struct blob_attr *attr, bool list,$/;"	p	signature:(struct blob_attr *attr, bool list, blobmsg_json_format_t cb, void *priv, int indent)
+blobmsg_format_string	blobmsg_json.c	/^static void blobmsg_format_string(struct strbuf *s, const char *str)$/;"	f	file:	signature:(struct strbuf *s, const char *str)
+blobmsg_get_bool	blobmsg.h	/^static inline bool blobmsg_get_bool(struct blob_attr *attr)$/;"	f	signature:(struct blob_attr *attr)
+blobmsg_get_string	blobmsg.h	/^static inline char *blobmsg_get_string(struct blob_attr *attr)$/;"	f	signature:(struct blob_attr *attr)
+blobmsg_get_u16	blobmsg.h	/^static inline uint16_t blobmsg_get_u16(struct blob_attr *attr)$/;"	f	signature:(struct blob_attr *attr)
+blobmsg_get_u32	blobmsg.h	/^static inline uint32_t blobmsg_get_u32(struct blob_attr *attr)$/;"	f	signature:(struct blob_attr *attr)
+blobmsg_get_u64	blobmsg.h	/^static inline uint64_t blobmsg_get_u64(struct blob_attr *attr)$/;"	f	signature:(struct blob_attr *attr)
+blobmsg_get_u8	blobmsg.h	/^static inline uint8_t blobmsg_get_u8(struct blob_attr *attr)$/;"	f	signature:(struct blob_attr *attr)
+blobmsg_hdr	blobmsg.h	/^struct blobmsg_hdr {$/;"	s
+blobmsg_hdr::name	blobmsg.h	/^	uint8_t name[];     \/\/ 指向消息名$/;"	m	struct:blobmsg_hdr	access:public
+blobmsg_hdr::namelen	blobmsg.h	/^	uint16_t namelen;   \/\/ 消息名长度$/;"	m	struct:blobmsg_hdr	access:public
+blobmsg_hdrlen	blobmsg.h	/^static inline int blobmsg_hdrlen(unsigned int namelen)$/;"	f	signature:(unsigned int namelen)
+blobmsg_json_format_t	blobmsg_json.h	/^typedef const char *(*blobmsg_json_format_t)(void *priv, struct blob_attr *attr);$/;"	t
+blobmsg_len	blobmsg.h	/^static inline int blobmsg_len(const struct blob_attr *attr)$/;"	f	signature:(const struct blob_attr *attr)
+blobmsg_name	blobmsg.h	/^static inline const char *blobmsg_name(const struct blob_attr *attr)$/;"	f	signature:(const struct blob_attr *attr)
+blobmsg_namelen	blobmsg.c	/^blobmsg_namelen(const struct blobmsg_hdr *hdr)$/;"	f	file:	signature:(const struct blobmsg_hdr *hdr)
+blobmsg_new	blobmsg.c	/^blobmsg_new(struct blob_buf *buf, int type, const char *name, int payload_len, void **data)$/;"	f	file:	signature:(struct blob_buf *buf, int type, const char *name, int payload_len, void **data)
+blobmsg_open_array	blobmsg.h	/^blobmsg_open_array(struct blob_buf *buf, const char *name)$/;"	f	signature:(struct blob_buf *buf, const char *name)
+blobmsg_open_nested	blobmsg.c	/^blobmsg_open_nested(struct blob_buf *buf, const char *name, bool array)$/;"	f	signature:(struct blob_buf *buf, const char *name, bool array)
+blobmsg_open_nested	blobmsg.h	/^void *blobmsg_open_nested(struct blob_buf *buf, const char *name, bool array);$/;"	p	signature:(struct blob_buf *buf, const char *name, bool array)
+blobmsg_open_table	blobmsg.h	/^blobmsg_open_table(struct blob_buf *buf, const char *name)$/;"	f	signature:(struct blob_buf *buf, const char *name)
+blobmsg_parse	blobmsg.c	/^int blobmsg_parse(const struct blobmsg_policy *policy, int policy_len,$/;"	f	signature:(const struct blobmsg_policy *policy, int policy_len, struct blob_attr **tb, void *data, unsigned int len)
+blobmsg_parse	blobmsg.h	/^int blobmsg_parse(const struct blobmsg_policy *policy, int policy_len,$/;"	p	signature:(const struct blobmsg_policy *policy, int policy_len, struct blob_attr **tb, void *data, unsigned int len)
+blobmsg_parse_array	blobmsg.c	/^int blobmsg_parse_array(const struct blobmsg_policy *policy, int policy_len,$/;"	f	signature:(const struct blobmsg_policy *policy, int policy_len, struct blob_attr **tb, void *data, unsigned int len)
+blobmsg_parse_array	blobmsg.h	/^int blobmsg_parse_array(const struct blobmsg_policy *policy, int policy_len,$/;"	p	signature:(const struct blobmsg_policy *policy, int policy_len, struct blob_attr **tb, void *data, unsigned int len)
+blobmsg_policy	blobmsg.h	/^struct blobmsg_policy {$/;"	s
+blobmsg_policy::name	blobmsg.h	/^	const char *name;       \/\/ 策略名称$/;"	m	struct:blobmsg_policy	access:public
+blobmsg_policy::type	blobmsg.h	/^	enum blobmsg_type type; \/\/ 策略类型$/;"	m	struct:blobmsg_policy	typeref:enum:blobmsg_policy::blobmsg_type	access:public
+blobmsg_printf	blobmsg.c	/^blobmsg_printf(struct blob_buf *buf, const char *name, const char *format, ...)$/;"	f	signature:(struct blob_buf *buf, const char *name, const char *format, ...)
+blobmsg_printf	blobmsg.h	/^void blobmsg_printf(struct blob_buf *buf, const char *name, const char *format, ...)$/;"	p	signature:(struct blob_buf *buf, const char *name, const char *format, ...)
+blobmsg_puts	blobmsg_json.c	/^static bool blobmsg_puts(struct strbuf *s, const char *c, int len)$/;"	f	file:	signature:(struct strbuf *s, const char *c, int len)
+blobmsg_realloc_string_buffer	blobmsg.c	/^blobmsg_realloc_string_buffer(struct blob_buf *buf, unsigned int maxlen)$/;"	f	signature:(struct blob_buf *buf, unsigned int maxlen)
+blobmsg_realloc_string_buffer	blobmsg.h	/^void *blobmsg_realloc_string_buffer(struct blob_buf *buf, unsigned int maxlen);$/;"	p	signature:(struct blob_buf *buf, unsigned int maxlen)
+blobmsg_type	blobmsg.h	/^enum blobmsg_type {$/;"	g
+blobmsg_type	blobmsg.h	/^static inline int blobmsg_type(const struct blob_attr *attr)$/;"	f	signature:(const struct blob_attr *attr)
+blobmsg_vprintf	blobmsg.c	/^blobmsg_vprintf(struct blob_buf *buf, const char *name, const char *format, va_list arg)$/;"	f	signature:(struct blob_buf *buf, const char *name, const char *format, va_list arg)
+blobmsg_vprintf	blobmsg.h	/^void blobmsg_vprintf(struct blob_buf *buf, const char *name, const char *format, va_list arg);$/;"	p	signature:(struct blob_buf *buf, const char *name, const char *format, va_list arg)
+body	md5.c	/^static const void *body(md5_ctx_t *ctx, const void *data, unsigned long size)$/;"	f	file:	signature:(md5_ctx_t *ctx, const void *data, unsigned long size)
+bswap_32	utils.h	85;"	d
+bswap_32	utils.h	89;"	d
+bswap_32	utils.h	93;"	d
+bswap_64	utils.h	86;"	d
+bswap_64	utils.h	90;"	d
+bswap_64	utils.h	94;"	d
+buf	blob.h	/^	void *buf;              \/\/ blob缓冲区指针$/;"	m	struct:blob_buf	access:public
+buf	blobmsg_json.c	/^	char *buf;$/;"	m	struct:strbuf	file:	access:public
+buf	json_script.h	/^	struct blob_buf buf;$/;"	m	struct:json_script_ctx	typeref:struct:json_script_ctx::blob_buf	access:public
+buffer	md5.h	/^	unsigned char buffer[64];$/;"	m	struct:md5_ctx	access:public
+buffer_len	ustream.h	/^	int buffer_len;$/;"	m	struct:ustream_buf_list	access:public
+buffers	ustream.h	/^	int buffers;$/;"	m	struct:ustream_buf_list	access:public
+buflen	blob.h	/^	int buflen;             \/\/ blob缓冲区长度$/;"	m	struct:blob_buf	access:public
+c	md5.h	/^	uint32_t a, b, c, d;$/;"	m	struct:md5_ctx	access:public
+calloc_a	utils.h	39;"	d
+cancel	runqueue.h	/^	void (*cancel)(struct runqueue *q, struct runqueue_task *t, int type);$/;"	m	struct:runqueue_task_type	access:public
+cancel_timeout	runqueue.h	/^	int cancel_timeout;$/;"	m	struct:runqueue_task	access:public
+cancel_type	runqueue.h	/^	int cancel_type;$/;"	m	struct:runqueue_task	access:public
+cancelled	runqueue.h	/^	bool cancelled;$/;"	m	struct:runqueue_task	access:public
+cb	json_script.c	/^	int (*cb)(struct json_call *call, struct blob_attr *cur);$/;"	m	struct:json_handler	file:	access:public
+cb	uloop.h	/^	uloop_fd_handler cb;    \/\/ 指向fd的回调函数$/;"	m	struct:uloop_fd	access:public
+cb	uloop.h	/^	uloop_process_handler cb;   \/\/ 父进程给本子进程收尸的函数$/;"	m	struct:uloop_process	access:public
+cb	uloop.h	/^	uloop_timeout_handler cb;   \/\/ 超时处理函数$/;"	m	struct:uloop_timeout	access:public
+client	examples/ustream-example.c	/^struct client {$/;"	s	file:
+client::ctr	examples/ustream-example.c	/^	int ctr;$/;"	m	struct:client	file:	access:public
+client::s	examples/ustream-example.c	/^	struct ustream_fd s;$/;"	m	struct:client	typeref:struct:client::ustream_fd	file:	access:public
+client::sin	examples/ustream-example.c	/^	struct sockaddr_in sin;$/;"	m	struct:client	typeref:struct:client::sockaddr_in	file:	access:public
+client_close	examples/ustream-example.c	/^static void client_close(struct ustream *s)$/;"	f	file:	signature:(struct ustream *s)
+client_notify_state	examples/ustream-example.c	/^static void client_notify_state(struct ustream *s)$/;"	f	file:	signature:(struct ustream *s)
+client_notify_write	examples/ustream-example.c	/^static void client_notify_write(struct ustream *s, int bytes)$/;"	f	file:	signature:(struct ustream *s, int bytes)
+client_read_cb	examples/ustream-example.c	/^static void client_read_cb(struct ustream *s, int bytes)$/;"	f	file:	signature:(struct ustream *s, int bytes)
+clock_gettime	utils.c	/^int clock_gettime(int type, struct timespec *tv)$/;"	f	signature:(int type, struct timespec *tv)
+clock_gettime	utils.h	/^int clock_gettime(int type, struct timespec *tv);$/;"	p	signature:(int type, struct timespec *tv)
+clock_monotonic	utils.c	/^static clock_serv_t clock_monotonic;$/;"	v	file:
+clock_name_dealloc	utils.c	/^static void __destructor clock_name_dealloc(void)$/;"	f	file:	signature:(void)
+clock_name_init	utils.c	/^static void __constructor clock_name_init(void)$/;"	f	file:	signature:(void)
+clock_realtime	utils.c	/^static clock_serv_t clock_realtime;$/;"	v	file:
+cmd	json_script.c	/^static const struct json_handler cmd[] = {$/;"	v	typeref:struct:json_handler	file:
+cmd_add_string	json_script.c	/^static int cmd_add_string(struct json_call *call, const char *pattern)$/;"	f	file:	signature:(struct json_call *call, const char *pattern)
+cmd_process_strings	json_script.c	/^static int cmd_process_strings(struct json_call *call, struct blob_attr *attr)$/;"	f	file:	signature:(struct json_call *call, struct blob_attr *attr)
+cmp_ptr	avl.h	/^  void *cmp_ptr;$/;"	m	struct:avl_tree	access:public
+comp	avl.h	/^  avl_tree_comp comp;$/;"	m	struct:avl_tree	access:public
+complete	runqueue.h	/^	void (*complete)(struct runqueue *q, struct runqueue_task *t);$/;"	m	struct:runqueue_task	access:public
+container_of	list.h	38;"	d
+count	avl.h	/^  unsigned int count;$/;"	m	struct:avl_tree	access:public
+cpu_to_be16	utils.h	124;"	d
+cpu_to_be16	utils.h	150;"	d
+cpu_to_be32	utils.h	123;"	d
+cpu_to_be32	utils.h	149;"	d
+cpu_to_be64	utils.h	122;"	d
+cpu_to_be64	utils.h	148;"	d
+cpu_to_le16	utils.h	132;"	d
+cpu_to_le16	utils.h	142;"	d
+cpu_to_le32	utils.h	131;"	d
+cpu_to_le32	utils.h	141;"	d
+cpu_to_le64	utils.h	130;"	d
+cpu_to_le64	utils.h	140;"	d
+ctr	examples/ustream-example.c	/^	int ctr;$/;"	m	struct:client	file:	access:public
+ctx	json_script.c	/^	struct json_script_ctx *ctx;$/;"	m	struct:json_call	typeref:struct:json_call::json_script_ctx	file:	access:public
+cur_fd	uloop.c	/^static int cur_fd, cur_nfds;    \/\/ cur_fd:当前正在处理的触发事件索引号  cur_nfds:当前触发的事件数量$/;"	v	file:
+cur_fds	uloop.c	/^static struct uloop_fd_event cur_fds[ULOOP_MAX_EVENTS]; \/\/ 当前被触发的事件集合$/;"	v	typeref:struct:uloop_fd_event	file:
+cur_nfds	uloop.c	/^static int cur_fd, cur_nfds;    \/\/ cur_fd:当前正在处理的触发事件索引号  cur_nfds:当前触发的事件数量$/;"	v	file:
+custom_format	blobmsg_json.c	/^	blobmsg_json_format_t custom_format;$/;"	m	struct:strbuf	file:	access:public
+d	md5.h	/^	uint32_t a, b, c, d;$/;"	m	struct:md5_ctx	access:public
+data	blob.h	/^	char data[];        \/\/ 指向数据区(即上层的消息)$/;"	m	struct:blob_attr	access:public
+data	json_script.h	/^	struct blob_attr data[];$/;"	m	struct:json_script_file	typeref:struct:json_script_file::blob_attr	access:public
+data	kvlist.h	/^	char data[0] __attribute__((aligned(4)));$/;"	m	struct:kvlist_node	access:public
+data	ustream.h	/^	char *data;$/;"	m	struct:ustream_buf	access:public
+data_bytes	ustream.h	/^	int data_bytes;$/;"	m	struct:ustream_buf_list	access:public
+data_tail	ustream.h	/^	struct ustream_buf *data_tail;$/;"	m	struct:ustream_buf_list	typeref:struct:ustream_buf_list::ustream_buf	access:public
+do_sigchld	uloop.c	/^static bool do_sigchld = false; \/\/ SIGCHLD信号触发后的标志$/;"	v	file:
+dump_attr_data	examples/blobmsg-example.c	/^static void dump_attr_data(struct blob_attr *data, int indent, int next_indent)$/;"	f	file:	signature:(struct blob_attr *data, int indent, int next_indent)
+dump_attr_data	examples/blobmsg-example.c	/^static void dump_attr_data(struct blob_attr *data, int indent, int next_indent);$/;"	p	file:	signature:(struct blob_attr *data, int indent, int next_indent)
+dump_message	examples/blobmsg-example.c	/^static void dump_message(struct blob_buf *buf)$/;"	f	file:	signature:(struct blob_buf *buf)
+dump_table	examples/blobmsg-example.c	/^dump_table(struct blob_attr *head, int len, int indent, bool array)$/;"	f	file:	signature:(struct blob_attr *head, int len, int indent, bool array)
+empty	runqueue.h	/^	bool empty;$/;"	m	struct:runqueue	access:public
+empty_cb	runqueue.h	/^	void (*empty_cb)(struct runqueue *q);$/;"	m	struct:runqueue	access:public
+end	ustream.h	/^	char *end;$/;"	m	struct:ustream_buf	access:public
+eof	uloop.h	/^	bool eof;               \/\/ 对端断开连接标志$/;"	m	struct:uloop_fd	access:public
+eof	ustream.h	/^	bool eof, eof_write_done;$/;"	m	struct:ustream	access:public
+eof_write_done	ustream.h	/^	bool eof, eof_write_done;$/;"	m	struct:ustream	access:public
+eq_regex_cmp	json_script.c	/^static int eq_regex_cmp(const char *str, const char *pattern, bool regex)$/;"	f	file:	signature:(const char *str, const char *pattern, bool regex)
+error	uloop.h	/^	bool error;             \/\/ 本fd的出错标志$/;"	m	struct:uloop_fd	access:public
+eval_string	json_script.c	/^static int eval_string(struct json_call *call, struct blob_buf *buf, const char *name, const char *pattern)$/;"	f	file:	signature:(struct json_call *call, struct blob_buf *buf, const char *name, const char *pattern)
+events	uloop.c	/^	unsigned int events;    \/\/ 被触发的事件类型$/;"	m	struct:uloop_fd_event	file:	access:public
+events	uloop.c	/^	unsigned int events;$/;"	m	struct:uloop_fd_stack	file:	access:public
+events	uloop.c	/^static struct epoll_event events[ULOOP_MAX_EVENTS];$/;"	v	typeref:struct:epoll_event	file:
+events	uloop.c	/^static struct kevent events[ULOOP_MAX_EVENTS];$/;"	v	typeref:struct:kevent	file:
+expr	json_script.c	/^static const struct json_handler expr[] = {$/;"	v	typeref:struct:json_handler	file:
+expr_and_or	json_script.c	/^static int expr_and_or(struct json_call *call, struct blob_attr *expr, bool and)$/;"	f	file:	signature:(struct json_call *call, struct blob_attr *expr, bool and)
+expr_eq_regex	json_script.c	/^static int expr_eq_regex(struct json_call *call, struct blob_attr *expr, bool regex)$/;"	f	file:	signature:(struct json_call *call, struct blob_attr *expr, bool regex)
+fd	lua/uloop.c	/^	struct uloop_fd fd;$/;"	m	struct:lua_uloop_fd	typeref:struct:lua_uloop_fd::uloop_fd	file:	access:public
+fd	uloop.c	/^	struct uloop_fd *fd;    \/\/ 当前被触发事件隶属的fd控制块$/;"	m	struct:uloop_fd_event	typeref:struct:uloop_fd_event::uloop_fd	file:	access:public
+fd	uloop.c	/^	struct uloop_fd *fd;$/;"	m	struct:uloop_fd_stack	typeref:struct:uloop_fd_stack::uloop_fd	file:	access:public
+fd	uloop.h	/^	int fd;                 \/\/ 记录文件描述符$/;"	m	struct:uloop_fd	access:public
+fd	ustream.h	/^	struct uloop_fd fd;$/;"	m	struct:ustream_fd	typeref:struct:ustream_fd::uloop_fd	access:public
+fd_r	lua/uloop.c	/^	int fd_r;$/;"	m	struct:lua_uloop_fd	file:	access:public
+fd_stack	uloop.c	/^static struct uloop_fd_stack *fd_stack = NULL;  \/\/ 指向存储尚未处理的触发fd控制块的链表$/;"	v	typeref:struct:uloop_fd_stack	file:
+files	json_script.h	/^	struct avl_tree files;$/;"	m	struct:json_script_ctx	typeref:struct:json_script_ctx::avl_tree	access:public
+fill_message	examples/blobmsg-example.c	/^fill_message(struct blob_buf *buf)$/;"	f	file:	signature:(struct blob_buf *buf)
+flags	uloop.h	/^	uint8_t flags;$/;"	m	struct:uloop_fd	access:public
+foreach_arg	utils.c	24;"	d	file:
+free	ustream.h	/^	void (*free)(struct ustream *s);$/;"	m	struct:ustream	access:public
+get_flags	uloop.c	/^static uint16_t get_flags(unsigned int flags, unsigned int mask)$/;"	f	file:	signature:(unsigned int flags, unsigned int mask)
+get_keys	jshn.c	/^static char *get_keys(const char *prefix)$/;"	f	file:	signature:(const char *prefix)
+get_len	kvlist.h	/^	int (*get_len)(struct kvlist *kv, const void *data);$/;"	m	struct:kvlist	access:public
+get_sock_fd	lua/uloop.c	/^static int get_sock_fd(lua_State* L, int idx) {$/;"	f	file:	signature:(lua_State* L, int idx)
+get_var	jshn.c	/^static void get_var(const char *prefix, const char **name, char **var, char **type)$/;"	f	file:	signature:(const char *prefix, const char **name, char **var, char **type)
+grow	blob.h	/^	bool (*grow)(struct blob_buf *buf, int minlen); \/\/ 指向blob缓冲区容量调整函数$/;"	m	struct:blob_buf	access:public
+handle_case	json_script.c	/^static int handle_case(struct json_call *call, struct blob_attr *expr)$/;"	f	file:	signature:(struct json_call *call, struct blob_attr *expr)
+handle_command	examples/json_script-example.c	/^static void handle_command(struct json_script_ctx *ctx, const char *name,$/;"	f	file:	signature:(struct json_script_ctx *ctx, const char *name, struct blob_attr *data, struct blob_attr *vars)
+handle_command	json_script.h	/^	void (*handle_command)(struct json_script_ctx *ctx, const char *name,$/;"	m	struct:json_script_ctx	access:public
+handle_error	json_script.h	/^	void (*handle_error)(struct json_script_ctx *ctx, const char *msg,$/;"	m	struct:json_script_ctx	access:public
+handle_expr	json_script.h	/^	int (*handle_expr)(struct json_script_ctx *ctx, const char *name,$/;"	m	struct:json_script_ctx	access:public
+handle_expr_and	json_script.c	/^static int handle_expr_and(struct json_call *call, struct blob_attr *expr)$/;"	f	file:	signature:(struct json_call *call, struct blob_attr *expr)
+handle_expr_eq	json_script.c	/^static int handle_expr_eq(struct json_call *call, struct blob_attr *expr)$/;"	f	file:	signature:(struct json_call *call, struct blob_attr *expr)
+handle_expr_has	json_script.c	/^static int handle_expr_has(struct json_call *call, struct blob_attr *expr)$/;"	f	file:	signature:(struct json_call *call, struct blob_attr *expr)
+handle_expr_not	json_script.c	/^static int handle_expr_not(struct json_call *call, struct blob_attr *expr)$/;"	f	file:	signature:(struct json_call *call, struct blob_attr *expr)
+handle_expr_or	json_script.c	/^static int handle_expr_or(struct json_call *call, struct blob_attr *expr)$/;"	f	file:	signature:(struct json_call *call, struct blob_attr *expr)
+handle_expr_regex	json_script.c	/^static int handle_expr_regex(struct json_call *call, struct blob_attr *expr)$/;"	f	file:	signature:(struct json_call *call, struct blob_attr *expr)
+handle_file	examples/json_script-example.c	/^handle_file(struct json_script_ctx *ctx, const char *filename)$/;"	f	file:	signature:(struct json_script_ctx *ctx, const char *filename)
+handle_file	json_script.h	/^	struct json_script_file *(*handle_file)(struct json_script_ctx *ctx,$/;"	m	struct:json_script_ctx	typeref:struct:json_script_ctx::handle_file	access:public
+handle_if	json_script.c	/^static int handle_if(struct json_call *call, struct blob_attr *expr)$/;"	f	file:	signature:(struct json_call *call, struct blob_attr *expr)
+handle_include	json_script.c	/^static int handle_include(struct json_call *call, struct blob_attr *expr)$/;"	f	file:	signature:(struct json_call *call, struct blob_attr *expr)
+handle_return	json_script.c	/^static int handle_return(struct json_call *call, struct blob_attr *expr)$/;"	f	file:	signature:(struct json_call *call, struct blob_attr *expr)
+handle_var	json_script.h	/^	const char *(*handle_var)(struct json_script_ctx *ctx, const char *name,$/;"	m	struct:json_script_ctx	access:public
+head	blob.h	/^	struct blob_attr *head; \/\/ 指向blob的属性空间（属性空间其实是在缓冲区中分配的）$/;"	m	struct:blob_buf	typeref:struct:blob_buf::blob_attr	access:public
+head	safe_list.c	/^	struct safe_list_iterator **head;$/;"	m	struct:safe_list_iterator	typeref:struct:safe_list_iterator::safe_list_iterator	file:	access:public
+head	ustream.h	/^	char head[];$/;"	m	struct:ustream_buf	access:public
+head	ustream.h	/^	struct ustream_buf *head;$/;"	m	struct:ustream_buf_list	typeref:struct:ustream_buf_list::ustream_buf	access:public
+hi	md5.h	/^	uint32_t lo, hi;$/;"	m	struct:md5_ctx	access:public
+i	safe_list.h	/^	struct safe_list_iterator *i;$/;"	m	struct:safe_list	typeref:struct:safe_list::safe_list_iterator	access:public
+id_len	blob.h	/^	uint32_t id_len;    \/\/ [0-23]:数据区长度(包含了本身blob_attr结构长度);[24-30]:ID;[31]:扩展标志$/;"	m	struct:blob_attr	access:public
+indent	blobmsg_json.c	/^	bool indent;$/;"	m	struct:strbuf	file:	access:public
+indent_level	blobmsg_json.c	/^	int indent_level;$/;"	m	struct:strbuf	file:	access:public
+indent_printf	examples/blobmsg-example.c	9;"	d	file:
+indent_str	examples/blobmsg-example.c	/^static const char *indent_str = "\\t\\t\\t\\t\\t\\t\\t\\t\\t\\t\\t\\t\\t";$/;"	v	file:
+jctx	examples/json_script-example.c	/^struct json_script_ctx	jctx;$/;"	v	typeref:struct:json_script_ctx
+jshn_add_object_var	jshn.c	/^static void jshn_add_object_var(json_object *obj, bool array, const char *prefix, const char *name)$/;"	f	file:	signature:(json_object *obj, bool array, const char *prefix, const char *name)
+jshn_add_objects	jshn.c	/^static json_object *jshn_add_objects(json_object *obj, const char *prefix, bool array)$/;"	f	file:	signature:(json_object *obj, const char *prefix, bool array)
+jshn_add_objects	jshn.c	/^static json_object *jshn_add_objects(json_object *obj, const char *prefix, bool array);$/;"	p	file:	signature:(json_object *obj, const char *prefix, bool array)
+jshn_format	jshn.c	/^static int jshn_format(bool no_newline, bool indent)$/;"	f	file:	signature:(bool no_newline, bool indent)
+jshn_parse	jshn.c	/^static int jshn_parse(const char *str)$/;"	f	file:	signature:(const char *str)
+json_add_array	sh/jshn.sh	/^json_add_array() {$/;"	f
+json_add_boolean	sh/jshn.sh	/^json_add_boolean() {$/;"	f
+json_add_double	sh/jshn.sh	/^json_add_double() {$/;"	f
+json_add_int	sh/jshn.sh	/^json_add_int() {$/;"	f
+json_add_object	sh/jshn.sh	/^json_add_object() {$/;"	f
+json_add_string	sh/jshn.sh	/^json_add_string() {$/;"	f
+json_call	json_script.c	/^struct json_call {$/;"	s	file:
+json_call::ctx	json_script.c	/^	struct json_script_ctx *ctx;$/;"	m	struct:json_call	typeref:struct:json_call::json_script_ctx	file:	access:public
+json_call::seq	json_script.c	/^	unsigned int seq;$/;"	m	struct:json_call	file:	access:public
+json_call::vars	json_script.c	/^	struct blob_attr *vars;$/;"	m	struct:json_call	typeref:struct:json_call::blob_attr	file:	access:public
+json_cleanup	sh/jshn.sh	/^json_cleanup() {$/;"	f
+json_close_array	sh/jshn.sh	/^json_close_array() {$/;"	f
+json_close_object	sh/jshn.sh	/^json_close_object() {$/;"	f
+json_dump	sh/jshn.sh	/^json_dump() {$/;"	f
+json_get_keys	sh/jshn.sh	/^json_get_keys() {$/;"	f
+json_get_tuple	json_script.c	/^json_get_tuple(struct blob_attr *cur, struct blob_attr **tb, int t1, int t2)$/;"	f	file:	signature:(struct blob_attr *cur, struct blob_attr **tb, int t1, int t2)
+json_get_type	sh/jshn.sh	/^json_get_type() {$/;"	f
+json_get_values	sh/jshn.sh	/^json_get_values() {$/;"	f
+json_get_var	sh/jshn.sh	/^json_get_var() {$/;"	f
+json_get_vars	sh/jshn.sh	/^json_get_vars() {$/;"	f
+json_handler	json_script.c	/^struct json_handler {$/;"	s	file:
+json_handler::cb	json_script.c	/^	int (*cb)(struct json_call *call, struct blob_attr *cur);$/;"	m	struct:json_handler	file:	access:public
+json_handler::name	json_script.c	/^	const char *name;$/;"	m	struct:json_handler	file:	access:public
+json_init	sh/jshn.sh	/^json_init() {$/;"	f
+json_is_a	sh/jshn.sh	/^json_is_a() {$/;"	f
+json_load	sh/jshn.sh	/^json_load() {$/;"	f
+json_process_cmd	json_script.c	/^static int json_process_cmd(struct json_call *call, struct blob_attr *block)$/;"	f	file:	signature:(struct json_call *call, struct blob_attr *block)
+json_process_cmd	json_script.c	/^static int json_process_cmd(struct json_call *call, struct blob_attr *cur);$/;"	p	file:	signature:(struct json_call *call, struct blob_attr *cur)
+json_process_expr	json_script.c	/^static int json_process_expr(struct json_call *call, struct blob_attr *cur)$/;"	f	file:	signature:(struct json_call *call, struct blob_attr *cur)
+json_process_expr	json_script.c	/^static int json_process_expr(struct json_call *call, struct blob_attr *cur);$/;"	p	file:	signature:(struct json_call *call, struct blob_attr *cur)
+json_script_ctx	json_script.h	/^struct json_script_ctx {$/;"	s
+json_script_ctx::buf	json_script.h	/^	struct blob_buf buf;$/;"	m	struct:json_script_ctx	typeref:struct:json_script_ctx::blob_buf	access:public
+json_script_ctx::files	json_script.h	/^	struct avl_tree files;$/;"	m	struct:json_script_ctx	typeref:struct:json_script_ctx::avl_tree	access:public
+json_script_ctx::handle_command	json_script.h	/^	void (*handle_command)(struct json_script_ctx *ctx, const char *name,$/;"	m	struct:json_script_ctx	access:public
+json_script_ctx::handle_error	json_script.h	/^	void (*handle_error)(struct json_script_ctx *ctx, const char *msg,$/;"	m	struct:json_script_ctx	access:public
+json_script_ctx::handle_expr	json_script.h	/^	int (*handle_expr)(struct json_script_ctx *ctx, const char *name,$/;"	m	struct:json_script_ctx	access:public
+json_script_ctx::handle_file	json_script.h	/^	struct json_script_file *(*handle_file)(struct json_script_ctx *ctx,$/;"	m	struct:json_script_ctx	typeref:struct:json_script_ctx::handle_file	access:public
+json_script_ctx::handle_var	json_script.h	/^	const char *(*handle_var)(struct json_script_ctx *ctx, const char *name,$/;"	m	struct:json_script_ctx	access:public
+json_script_ctx::run_seq	json_script.h	/^	uint32_t run_seq;$/;"	m	struct:json_script_ctx	access:public
+json_script_eval_string	json_script.c	/^int json_script_eval_string(struct json_script_ctx *ctx, struct blob_attr *vars,$/;"	f	signature:(struct json_script_ctx *ctx, struct blob_attr *vars, struct blob_buf *buf, const char *name, const char *pattern)
+json_script_eval_string	json_script.h	/^int json_script_eval_string(struct json_script_ctx *ctx, struct blob_attr *vars,$/;"	p	signature:(struct json_script_ctx *ctx, struct blob_attr *vars, struct blob_buf *buf, const char *name, const char *pattern)
+json_script_file	json_script.h	/^struct json_script_file {$/;"	s
+json_script_file::avl	json_script.h	/^	struct avl_node avl;$/;"	m	struct:json_script_file	typeref:struct:json_script_file::avl_node	access:public
+json_script_file::data	json_script.h	/^	struct blob_attr data[];$/;"	m	struct:json_script_file	typeref:struct:json_script_file::blob_attr	access:public
+json_script_file::next	json_script.h	/^	struct json_script_file *next;$/;"	m	struct:json_script_file	typeref:struct:json_script_file::json_script_file	access:public
+json_script_file::seq	json_script.h	/^	unsigned int seq;$/;"	m	struct:json_script_file	access:public
+json_script_file_from_blobmsg	json_script.c	/^json_script_file_from_blobmsg(const char *name, void *data, int len)$/;"	f	signature:(const char *name, void *data, int len)
+json_script_file_from_blobmsg	json_script.h	/^json_script_file_from_blobmsg(const char *name, void *data, int len);$/;"	p	signature:(const char *name, void *data, int len)
+json_script_find_var	json_script.c	/^const char *json_script_find_var(struct json_script_ctx *ctx, struct blob_attr *vars,$/;"	f	signature:(struct json_script_ctx *ctx, struct blob_attr *vars, const char *name)
+json_script_find_var	json_script.h	/^const char *json_script_find_var(struct json_script_ctx *ctx, struct blob_attr *vars,$/;"	p	signature:(struct json_script_ctx *ctx, struct blob_attr *vars, const char *name)
+json_script_free	json_script.c	/^json_script_free(struct json_script_ctx *ctx)$/;"	f	signature:(struct json_script_ctx *ctx)
+json_script_free	json_script.h	/^void json_script_free(struct json_script_ctx *ctx);$/;"	p	signature:(struct json_script_ctx *ctx)
+json_script_get_file	json_script.c	/^json_script_get_file(struct json_script_ctx *ctx, const char *filename)$/;"	f	file:	signature:(struct json_script_ctx *ctx, const char *filename)
+json_script_init	json_script.c	/^void json_script_init(struct json_script_ctx *ctx)$/;"	f	signature:(struct json_script_ctx *ctx)
+json_script_init	json_script.h	/^void json_script_init(struct json_script_ctx *ctx);$/;"	p	signature:(struct json_script_ctx *ctx)
+json_script_run	json_script.c	/^void json_script_run(struct json_script_ctx *ctx, const char *name,$/;"	f	signature:(struct json_script_ctx *ctx, const char *name, struct blob_attr *vars)
+json_script_run	json_script.h	/^void json_script_run(struct json_script_ctx *ctx, const char *filename,$/;"	p	signature:(struct json_script_ctx *ctx, const char *filename, struct blob_attr *vars)
+json_script_run_file	json_script.c	/^void json_script_run_file(struct json_script_ctx *ctx, struct json_script_file *file,$/;"	f	signature:(struct json_script_ctx *ctx, struct json_script_file *file, struct blob_attr *vars)
+json_script_run_file	json_script.h	/^void json_script_run_file(struct json_script_ctx *ctx, struct json_script_file *file,$/;"	p	signature:(struct json_script_ctx *ctx, struct json_script_file *file, struct blob_attr *vars)
+json_select	sh/jshn.sh	/^json_select() {$/;"	f
+json_set_namespace	sh/jshn.sh	/^json_set_namespace() {$/;"	f
+keep_old	vlist.h	/^	bool keep_old;$/;"	m	struct:vlist_tree	access:public
+key	avl.h	/^  const void *key;$/;"	m	struct:avl_node	access:public
+kill	runqueue.h	/^	void (*kill)(struct runqueue *q, struct runqueue_task *t);$/;"	m	struct:runqueue_task_type	access:public
+kvlist	kvlist.h	/^struct kvlist {$/;"	s
+kvlist::avl	kvlist.h	/^	struct avl_tree avl;$/;"	m	struct:kvlist	typeref:struct:kvlist::avl_tree	access:public
+kvlist::get_len	kvlist.h	/^	int (*get_len)(struct kvlist *kv, const void *data);$/;"	m	struct:kvlist	access:public
+kvlist_blob_len	kvlist.c	/^int kvlist_blob_len(struct kvlist *kv, const void *data)$/;"	f	signature:(struct kvlist *kv, const void *data)
+kvlist_blob_len	kvlist.h	/^int kvlist_blob_len(struct kvlist *kv, const void *data);$/;"	p	signature:(struct kvlist *kv, const void *data)
+kvlist_delete	kvlist.c	/^bool kvlist_delete(struct kvlist *kv, const char *name)$/;"	f	signature:(struct kvlist *kv, const char *name)
+kvlist_delete	kvlist.h	/^bool kvlist_delete(struct kvlist *kv, const char *name);$/;"	p	signature:(struct kvlist *kv, const char *name)
+kvlist_for_each	kvlist.h	38;"	d
+kvlist_free	kvlist.c	/^void kvlist_free(struct kvlist *kv)$/;"	f	signature:(struct kvlist *kv)
+kvlist_free	kvlist.h	/^void kvlist_free(struct kvlist *kv);$/;"	p	signature:(struct kvlist *kv)
+kvlist_get	kvlist.c	/^void *kvlist_get(struct kvlist *kv, const char *name)$/;"	f	signature:(struct kvlist *kv, const char *name)
+kvlist_get	kvlist.h	/^void *kvlist_get(struct kvlist *kv, const char *name);$/;"	p	signature:(struct kvlist *kv, const char *name)
+kvlist_init	kvlist.c	/^void kvlist_init(struct kvlist *kv, int (*get_len)(struct kvlist *kv, const void *data))$/;"	f	signature:(struct kvlist *kv, int (*get_len)(struct kvlist *kv, const void *data))
+kvlist_init	kvlist.h	/^void kvlist_init(struct kvlist *kv, int (*get_len)(struct kvlist *kv, const void *data));$/;"	p	signature:(struct kvlist *kv, int (*get_len)(struct kvlist *kv, const void *data))
+kvlist_node	kvlist.h	/^struct kvlist_node {$/;"	s
+kvlist_node::avl	kvlist.h	/^	struct avl_node avl;$/;"	m	struct:kvlist_node	typeref:struct:kvlist_node::avl_node	access:public
+kvlist_node::data	kvlist.h	/^	char data[0] __attribute__((aligned(4)));$/;"	m	struct:kvlist_node	access:public
+kvlist_set	kvlist.c	/^void kvlist_set(struct kvlist *kv, const char *name, const void *data)$/;"	f	signature:(struct kvlist *kv, const char *name, const void *data)
+kvlist_set	kvlist.h	/^void kvlist_set(struct kvlist *kv, const char *name, const void *data);$/;"	p	signature:(struct kvlist *kv, const char *name, const void *data)
+kvlist_strlen	kvlist.c	/^int kvlist_strlen(struct kvlist *kv, const void *data)$/;"	f	signature:(struct kvlist *kv, const void *data)
+kvlist_strlen	kvlist.h	/^int kvlist_strlen(struct kvlist *kv, const void *data);$/;"	p	signature:(struct kvlist *kv, const void *data)
+le16_to_cpu	utils.h	136;"	d
+le16_to_cpu	utils.h	146;"	d
+le32_to_cpu	utils.h	135;"	d
+le32_to_cpu	utils.h	145;"	d
+le64_to_cpu	utils.h	134;"	d
+le64_to_cpu	utils.h	144;"	d
+leader	avl.h	/^  bool leader;$/;"	m	struct:avl_node	access:public
+left	avl.h	/^  struct avl_node *left;$/;"	m	struct:avl_node	typeref:struct:avl_node::avl_node	access:public
+len	blobmsg_json.c	/^	int len;$/;"	m	struct:strbuf	file:	access:public
+list	avl.h	/^  struct list_head list;$/;"	m	struct:avl_node	typeref:struct:avl_node::list_head	access:public
+list	runqueue.h	/^	struct safe_list list;$/;"	m	struct:runqueue_task	typeref:struct:runqueue_task::safe_list	access:public
+list	safe_list.h	/^	struct list_head list;$/;"	m	struct:safe_list	typeref:struct:safe_list::list_head	access:public
+list	uloop.h	/^	struct list_head list;      \/\/ 链表模块$/;"	m	struct:uloop_process	typeref:struct:uloop_process::list_head	access:public
+list	uloop.h	/^	struct list_head list;  \/\/ 链表模块$/;"	m	struct:uloop_timeout	typeref:struct:uloop_timeout::list_head	access:public
+list_add	list.h	/^list_add(struct list_head *_new, struct list_head *head)$/;"	f	signature:(struct list_head *_new, struct list_head *head)
+list_add_tail	list.h	/^list_add_tail(struct list_head *_new, struct list_head *head)$/;"	f	signature:(struct list_head *_new, struct list_head *head)
+list_del	list.h	/^list_del(struct list_head *entry)$/;"	f	signature:(struct list_head *entry)
+list_del_init	list.h	/^list_del_init(struct list_head *entry)$/;"	f	signature:(struct list_head *entry)
+list_empty	list.h	/^list_empty(const struct list_head *head)$/;"	f	signature:(const struct list_head *head)
+list_entry	list.h	112;"	d
+list_first_entry	list.h	113;"	d
+list_for_each	list.h	116;"	d
+list_for_each_entry	list.h	122;"	d
+list_for_each_entry_reverse	list.h	131;"	d
+list_for_each_entry_safe	list.h	126;"	d
+list_for_each_prev	list.h	135;"	d
+list_for_each_prev_safe	list.h	136;"	d
+list_for_each_safe	list.h	119;"	d
+list_head	avl.h	/^  struct list_head list_head;$/;"	m	struct:avl_tree	typeref:struct:avl_tree::list_head	access:public
+list_head	list.h	/^struct list_head {$/;"	s
+list_head::next	list.h	/^	struct list_head *next;$/;"	m	struct:list_head	typeref:struct:list_head::list_head	access:public
+list_head::prev	list.h	/^	struct list_head *prev;$/;"	m	struct:list_head	typeref:struct:list_head::list_head	access:public
+list_is_first	list.h	/^list_is_first(const struct list_head *list,$/;"	f	signature:(const struct list_head *list, const struct list_head *head)
+list_is_last	list.h	/^list_is_last(const struct list_head *list,$/;"	f	signature:(const struct list_head *list, const struct list_head *head)
+list_last_entry	list.h	114;"	d
+list_move	list.h	/^list_move(struct list_head *list, struct list_head *head)$/;"	f	signature:(struct list_head *list, struct list_head *head)
+list_move_tail	list.h	/^list_move_tail(struct list_head *entry, struct list_head *head)$/;"	f	signature:(struct list_head *entry, struct list_head *head)
+list_splice	list.h	/^list_splice(const struct list_head *list, struct list_head *head)$/;"	f	signature:(const struct list_head *list, struct list_head *head)
+list_splice_init	list.h	/^list_splice_init(struct list_head *list, struct list_head *head)$/;"	f	signature:(struct list_head *list, struct list_head *head)
+list_splice_tail	list.h	/^list_splice_tail(struct list_head *list, struct list_head *head)$/;"	f	signature:(struct list_head *list, struct list_head *head)
+list_splice_tail_init	list.h	/^list_splice_tail_init(struct list_head *list, struct list_head *head)$/;"	f	signature:(struct list_head *list, struct list_head *head)
+lo	md5.h	/^	uint32_t lo, hi;$/;"	m	struct:md5_ctx	access:public
+lua_uloop_fd	lua/uloop.c	/^struct lua_uloop_fd {$/;"	s	file:
+lua_uloop_fd::fd	lua/uloop.c	/^	struct uloop_fd fd;$/;"	m	struct:lua_uloop_fd	typeref:struct:lua_uloop_fd::uloop_fd	file:	access:public
+lua_uloop_fd::fd_r	lua/uloop.c	/^	int fd_r;$/;"	m	struct:lua_uloop_fd	file:	access:public
+lua_uloop_fd::r	lua/uloop.c	/^	int r;$/;"	m	struct:lua_uloop_fd	file:	access:public
+lua_uloop_process	lua/uloop.c	/^struct lua_uloop_process {$/;"	s	file:
+lua_uloop_process::p	lua/uloop.c	/^	struct uloop_process p;$/;"	m	struct:lua_uloop_process	typeref:struct:lua_uloop_process::uloop_process	file:	access:public
+lua_uloop_process::r	lua/uloop.c	/^	int r;$/;"	m	struct:lua_uloop_process	file:	access:public
+lua_uloop_timeout	lua/uloop.c	/^struct lua_uloop_timeout {$/;"	s	file:
+lua_uloop_timeout::r	lua/uloop.c	/^	int r;$/;"	m	struct:lua_uloop_timeout	file:	access:public
+lua_uloop_timeout::t	lua/uloop.c	/^	struct uloop_timeout t;$/;"	m	struct:lua_uloop_timeout	typeref:struct:lua_uloop_timeout::uloop_timeout	file:	access:public
+luaclose_uloop	lua/uloop.c	/^int luaclose_uloop(lua_State *L)$/;"	f	signature:(lua_State *L)
+luaclose_uloop	lua/uloop.c	/^int luaclose_uloop(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+luaopen_uloop	lua/uloop.c	/^int luaopen_uloop(lua_State *L)$/;"	f	signature:(lua_State *L)
+luaopen_uloop	lua/uloop.c	/^int luaopen_uloop(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+main	examples/blobmsg-example.c	/^int main(int argc, char **argv)$/;"	f	signature:(int argc, char **argv)
+main	examples/json_script-example.c	/^int main(int argc, char *argv[])$/;"	f	signature:(int argc, char *argv[])
+main	examples/runqueue-example.c	/^int main(int argc, char **argv)$/;"	f	signature:(int argc, char **argv)
+main	examples/ustream-example.c	/^int main(int argc, char **argv)$/;"	f	signature:(int argc, char **argv)
+main	jshn.c	/^int main(int argc, char **argv)$/;"	f	signature:(int argc, char **argv)
+max_buffers	ustream.h	/^	int max_buffers;$/;"	m	struct:ustream_buf_list	access:public
+max_running_tasks	runqueue.h	/^	int max_running_tasks;$/;"	m	struct:runqueue	access:public
+maxlen	blob.h	/^	unsigned int maxlen;$/;"	m	struct:blob_attr_info	access:public
+md5_begin	md5.c	/^void md5_begin(md5_ctx_t *ctx)$/;"	f	signature:(md5_ctx_t *ctx)
+md5_begin	md5.h	/^extern void md5_begin(md5_ctx_t *ctx);$/;"	p	signature:(md5_ctx_t *ctx)
+md5_ctx	md5.h	/^typedef struct md5_ctx {$/;"	s
+md5_ctx::a	md5.h	/^	uint32_t a, b, c, d;$/;"	m	struct:md5_ctx	access:public
+md5_ctx::b	md5.h	/^	uint32_t a, b, c, d;$/;"	m	struct:md5_ctx	access:public
+md5_ctx::buffer	md5.h	/^	unsigned char buffer[64];$/;"	m	struct:md5_ctx	access:public
+md5_ctx::c	md5.h	/^	uint32_t a, b, c, d;$/;"	m	struct:md5_ctx	access:public
+md5_ctx::d	md5.h	/^	uint32_t a, b, c, d;$/;"	m	struct:md5_ctx	access:public
+md5_ctx::hi	md5.h	/^	uint32_t lo, hi;$/;"	m	struct:md5_ctx	access:public
+md5_ctx::lo	md5.h	/^	uint32_t lo, hi;$/;"	m	struct:md5_ctx	access:public
+md5_ctx_t	md5.h	/^} md5_ctx_t;$/;"	t	typeref:struct:md5_ctx
+md5_end	md5.c	/^void md5_end(void *resbuf, md5_ctx_t *ctx)$/;"	f	signature:(void *resbuf, md5_ctx_t *ctx)
+md5_end	md5.h	/^extern void md5_end(void *resbuf, md5_ctx_t *ctx);$/;"	p	signature:(void *resbuf, md5_ctx_t *ctx)
+md5_hash	md5.c	/^void md5_hash(const void *data, size_t size, md5_ctx_t *ctx)$/;"	f	signature:(const void *data, size_t size, md5_ctx_t *ctx)
+md5_hash	md5.h	/^extern void md5_hash(const void *data, size_t length, md5_ctx_t *ctx);$/;"	p	signature:(const void *data, size_t length, md5_ctx_t *ctx)
+md5sum	md5.c	/^int md5sum(char *file, void *md5_buf)$/;"	f	signature:(char *file, void *md5_buf)
+md5sum	md5.h	/^int md5sum(char *file, void *md5_buf);$/;"	p	signature:(char *file, void *md5_buf)
+min_buffers	ustream.h	/^	int min_buffers;$/;"	m	struct:ustream_buf_list	access:public
+minlen	blob.h	/^	unsigned int minlen;$/;"	m	struct:blob_attr_info	access:public
+msg_find_var	json_script.c	/^msg_find_var(struct json_call *call, const char *name)$/;"	f	file:	signature:(struct json_call *call, const char *name)
+name	blobmsg.h	/^	const char *name;       \/\/ 策略名称$/;"	m	struct:blobmsg_policy	access:public
+name	blobmsg.h	/^	uint8_t name[];     \/\/ 指向消息名$/;"	m	struct:blobmsg_hdr	access:public
+name	json_script.c	/^	const char *name;$/;"	m	struct:json_handler	file:	access:public
+name	runqueue.h	/^	const char *name;$/;"	m	struct:runqueue_task_type	access:public
+namelen	blobmsg.h	/^	uint16_t namelen;   \/\/ 消息名长度$/;"	m	struct:blobmsg_hdr	access:public
+next	json_script.h	/^	struct json_script_file *next;$/;"	m	struct:json_script_file	typeref:struct:json_script_file::json_script_file	access:public
+next	list.h	/^	struct list_head *next;$/;"	m	struct:list_head	typeref:struct:list_head::list_head	access:public
+next	safe_list.c	/^	struct safe_list *next;$/;"	m	struct:safe_list_iterator	typeref:struct:safe_list_iterator::safe_list	file:	access:public
+next	uloop.c	/^	struct uloop_fd_stack *next;$/;"	m	struct:uloop_fd_stack	typeref:struct:uloop_fd_stack::uloop_fd_stack	file:	access:public
+next	ustream.h	/^	struct ustream *next;$/;"	m	struct:ustream	typeref:struct:ustream::ustream	access:public
+next	ustream.h	/^	struct ustream_buf *next;$/;"	m	struct:ustream_buf	typeref:struct:ustream_buf::ustream_buf	access:public
+next_client	examples/ustream-example.c	/^struct client *next_client = NULL;$/;"	v	typeref:struct:client
+next_i	safe_list.c	/^	struct safe_list_iterator *next_i;$/;"	m	struct:safe_list_iterator	typeref:struct:safe_list_iterator::safe_list_iterator	file:	access:public
+no_delete	vlist.h	/^	bool no_delete;$/;"	m	struct:vlist_tree	access:public
+notify_read	ustream.h	/^	void (*notify_read)(struct ustream *s, int bytes_new);$/;"	m	struct:ustream	access:public
+notify_state	ustream.h	/^	void (*notify_state)(struct ustream *s);$/;"	m	struct:ustream	access:public
+notify_write	ustream.h	/^	void (*notify_write)(struct ustream *s, int bytes);$/;"	m	struct:ustream	access:public
+offset_to_attr	blob.c	/^offset_to_attr(struct blob_buf *buf, int offset)$/;"	f	file:	signature:(struct blob_buf *buf, int offset)
+p	lua/uloop.c	/^	struct uloop_process p;$/;"	m	struct:lua_uloop_process	typeref:struct:lua_uloop_process::uloop_process	file:	access:public
+p1	examples/uloop-example.lua	/^function p1(r)$/;"	f
+p2	examples/uloop-example.lua	/^function p2(r)$/;"	f
+parent	avl.h	/^  struct avl_node *parent;$/;"	m	struct:avl_node	typeref:struct:avl_node::avl_node	access:public
+pending	uloop.h	/^	bool pending;               \/\/ 挂起标记$/;"	m	struct:uloop_process	access:public
+pending	uloop.h	/^	bool pending;           \/\/ 挂起标记$/;"	m	struct:uloop_timeout	access:public
+pid	uloop.h	/^	pid_t pid;                  \/\/ 本子进程pid$/;"	m	struct:uloop_process	access:public
+pol	examples/blobmsg-example.c	/^static const struct blobmsg_policy pol[] = {$/;"	v	typeref:struct:blobmsg_policy	file:
+poll	ustream.h	/^	bool (*poll)(struct ustream *s);$/;"	m	struct:ustream	access:public
+poll_fd	uloop.c	/^static int poll_fd = -1;        \/\/ epoll句柄$/;"	v	file:
+port	examples/ustream-example.c	/^static const char *port = "10000";$/;"	v	file:
+pos	blobmsg_json.c	/^	int pos;$/;"	m	struct:strbuf	file:	access:public
+post_insert	avl.c	/^post_insert(struct avl_tree *tree, struct avl_node *node)$/;"	f	file:	signature:(struct avl_tree *tree, struct avl_node *node)
+post_insert	avl.c	/^static void post_insert(struct avl_tree *tree, struct avl_node *node);$/;"	p	file:	signature:(struct avl_tree *tree, struct avl_node *node)
+prefetch	list.h	35;"	d
+prev	list.h	/^	struct list_head *prev;$/;"	m	struct:list_head	typeref:struct:list_head::list_head	access:public
+priv	blobmsg_json.c	/^	void *priv;$/;"	m	struct:strbuf	file:	access:public
+proc	examples/runqueue-example.c	/^	struct runqueue_process proc;$/;"	m	struct:sleeper	typeref:struct:sleeper::runqueue_process	file:	access:public
+proc	runqueue.h	/^	struct uloop_process proc;$/;"	m	struct:runqueue_process	typeref:struct:runqueue_process::uloop_process	access:public
+processes	uloop.c	/^static struct list_head processes = LIST_HEAD_INIT(processes);  \/\/ 创建了一个子进程链表的头结点，并初始化$/;"	v	typeref:struct:list_head	file:
+q	examples/runqueue-example.c	/^static struct runqueue q;$/;"	v	typeref:struct:runqueue	file:
+q	runqueue.h	/^	struct runqueue *q;$/;"	m	struct:runqueue_task	typeref:struct:runqueue_task::runqueue	access:public
+q_empty	examples/runqueue-example.c	/^static void q_empty(struct runqueue *q)$/;"	f	file:	signature:(struct runqueue *q)
+q_sleep_cancel	examples/runqueue-example.c	/^static void q_sleep_cancel(struct runqueue *q, struct runqueue_task *t, int type)$/;"	f	file:	signature:(struct runqueue *q, struct runqueue_task *t, int type)
+q_sleep_complete	examples/runqueue-example.c	/^static void q_sleep_complete(struct runqueue *q, struct runqueue_task *p)$/;"	f	file:	signature:(struct runqueue *q, struct runqueue_task *p)
+q_sleep_run	examples/runqueue-example.c	/^static void q_sleep_run(struct runqueue *q, struct runqueue_task *t)$/;"	f	file:	signature:(struct runqueue *q, struct runqueue_task *t)
+queued	runqueue.h	/^	bool queued;$/;"	m	struct:runqueue_task	access:public
+r	lua/uloop.c	/^	int r;$/;"	m	struct:lua_uloop_fd	file:	access:public
+r	lua/uloop.c	/^	int r;$/;"	m	struct:lua_uloop_process	file:	access:public
+r	lua/uloop.c	/^	int r;$/;"	m	struct:lua_uloop_timeout	file:	access:public
+r	ustream.h	/^	struct ustream_buf_list r, w;$/;"	m	struct:ustream	typeref:struct:ustream::ustream_buf_list	access:public
+read_blocked	ustream.h	/^	enum read_blocked_reason read_blocked;$/;"	m	struct:ustream	typeref:enum:ustream::read_blocked_reason	access:public
+read_blocked_reason	ustream.h	/^enum read_blocked_reason {$/;"	g
+register_kevent	uloop.c	/^static int register_kevent(struct uloop_fd *fd, unsigned int flags)$/;"	f	file:	signature:(struct uloop_fd *fd, unsigned int flags)
+register_poll	uloop.c	/^static int register_poll(struct uloop_fd *fd, unsigned int flags)$/;"	f	file:	signature:(struct uloop_fd *fd, unsigned int flags)
+registered	uloop.h	/^	bool registered;        \/\/ 本fd是否已经注册到epoll的标记位：0-未注册 1-已注册$/;"	m	struct:uloop_fd	access:public
+right	avl.h	/^  struct avl_node *right;$/;"	m	struct:avl_node	typeref:struct:avl_node::avl_node	access:public
+root	avl.h	/^  struct avl_node *root;$/;"	m	struct:avl_tree	typeref:struct:avl_tree::avl_node	access:public
+run	runqueue.h	/^	void (*run)(struct runqueue *q, struct runqueue_task *t);$/;"	m	struct:runqueue_task_type	access:public
+run_seq	json_script.h	/^	uint32_t run_seq;$/;"	m	struct:json_script_ctx	access:public
+run_server	examples/ustream-example.c	/^static int run_server(void)$/;"	f	file:	signature:(void)
+run_timeout	runqueue.h	/^	int run_timeout;$/;"	m	struct:runqueue_task	access:public
+running	runqueue.h	/^	bool running;$/;"	m	struct:runqueue_task	access:public
+running_tasks	runqueue.h	/^	int running_tasks;$/;"	m	struct:runqueue	access:public
+runqueue	runqueue.h	/^struct runqueue {$/;"	s
+runqueue::empty	runqueue.h	/^	bool empty;$/;"	m	struct:runqueue	access:public
+runqueue::empty_cb	runqueue.h	/^	void (*empty_cb)(struct runqueue *q);$/;"	m	struct:runqueue	access:public
+runqueue::max_running_tasks	runqueue.h	/^	int max_running_tasks;$/;"	m	struct:runqueue	access:public
+runqueue::running_tasks	runqueue.h	/^	int running_tasks;$/;"	m	struct:runqueue	access:public
+runqueue::stopped	runqueue.h	/^	bool stopped;$/;"	m	struct:runqueue	access:public
+runqueue::tasks_active	runqueue.h	/^	struct safe_list tasks_active;$/;"	m	struct:runqueue	typeref:struct:runqueue::safe_list	access:public
+runqueue::tasks_inactive	runqueue.h	/^	struct safe_list tasks_inactive;$/;"	m	struct:runqueue	typeref:struct:runqueue::safe_list	access:public
+runqueue::timeout	runqueue.h	/^	struct uloop_timeout timeout;$/;"	m	struct:runqueue	typeref:struct:runqueue::uloop_timeout	access:public
+runqueue_cancel	runqueue.c	/^void runqueue_cancel(struct runqueue *q)$/;"	f	signature:(struct runqueue *q)
+runqueue_cancel	runqueue.h	/^void runqueue_cancel(struct runqueue *q);$/;"	p	signature:(struct runqueue *q)
+runqueue_cancel_active	runqueue.c	/^void runqueue_cancel_active(struct runqueue *q)$/;"	f	signature:(struct runqueue *q)
+runqueue_cancel_active	runqueue.h	/^void runqueue_cancel_active(struct runqueue *q);$/;"	p	signature:(struct runqueue *q)
+runqueue_cancel_pending	runqueue.c	/^void runqueue_cancel_pending(struct runqueue *q)$/;"	f	signature:(struct runqueue *q)
+runqueue_cancel_pending	runqueue.h	/^void runqueue_cancel_pending(struct runqueue *q);$/;"	p	signature:(struct runqueue *q)
+runqueue_init	runqueue.c	/^void runqueue_init(struct runqueue *q)$/;"	f	signature:(struct runqueue *q)
+runqueue_init	runqueue.h	/^void runqueue_init(struct runqueue *q);$/;"	p	signature:(struct runqueue *q)
+runqueue_kill	runqueue.c	/^void runqueue_kill(struct runqueue *q)$/;"	f	signature:(struct runqueue *q)
+runqueue_kill	runqueue.h	/^void runqueue_kill(struct runqueue *q);$/;"	p	signature:(struct runqueue *q)
+runqueue_proc_type	runqueue.c	/^static const struct runqueue_task_type runqueue_proc_type = {$/;"	v	typeref:struct:runqueue_task_type	file:
+runqueue_process	runqueue.h	/^struct runqueue_process {$/;"	s
+runqueue_process::proc	runqueue.h	/^	struct uloop_process proc;$/;"	m	struct:runqueue_process	typeref:struct:runqueue_process::uloop_process	access:public
+runqueue_process::task	runqueue.h	/^	struct runqueue_task task;$/;"	m	struct:runqueue_process	typeref:struct:runqueue_process::runqueue_task	access:public
+runqueue_process_add	runqueue.c	/^void runqueue_process_add(struct runqueue *q, struct runqueue_process *p, pid_t pid)$/;"	f	signature:(struct runqueue *q, struct runqueue_process *p, pid_t pid)
+runqueue_process_add	runqueue.h	/^void runqueue_process_add(struct runqueue *q, struct runqueue_process *p, pid_t pid);$/;"	p	signature:(struct runqueue *q, struct runqueue_process *p, pid_t pid)
+runqueue_process_cancel_cb	runqueue.c	/^void runqueue_process_cancel_cb(struct runqueue *q, struct runqueue_task *t, int type)$/;"	f	signature:(struct runqueue *q, struct runqueue_task *t, int type)
+runqueue_process_cancel_cb	runqueue.h	/^void runqueue_process_cancel_cb(struct runqueue *q, struct runqueue_task *t, int type);$/;"	p	signature:(struct runqueue *q, struct runqueue_task *t, int type)
+runqueue_process_kill_cb	runqueue.c	/^void runqueue_process_kill_cb(struct runqueue *q, struct runqueue_task *t)$/;"	f	signature:(struct runqueue *q, struct runqueue_task *t)
+runqueue_process_kill_cb	runqueue.h	/^void runqueue_process_kill_cb(struct runqueue *q, struct runqueue_task *t);$/;"	p	signature:(struct runqueue *q, struct runqueue_task *t)
+runqueue_resume	runqueue.c	/^void runqueue_resume(struct runqueue *q)$/;"	f	signature:(struct runqueue *q)
+runqueue_resume	runqueue.h	/^void runqueue_resume(struct runqueue *q);$/;"	p	signature:(struct runqueue *q)
+runqueue_start_next	runqueue.c	/^static void runqueue_start_next(struct runqueue *q)$/;"	f	file:	signature:(struct runqueue *q)
+runqueue_stop	runqueue.c	/^void runqueue_stop(struct runqueue *q)$/;"	f	signature:(struct runqueue *q)
+runqueue_stop	runqueue.h	/^void runqueue_stop(struct runqueue *q);$/;"	p	signature:(struct runqueue *q)
+runqueue_task	runqueue.h	/^struct runqueue_task {$/;"	s
+runqueue_task::cancel_timeout	runqueue.h	/^	int cancel_timeout;$/;"	m	struct:runqueue_task	access:public
+runqueue_task::cancel_type	runqueue.h	/^	int cancel_type;$/;"	m	struct:runqueue_task	access:public
+runqueue_task::cancelled	runqueue.h	/^	bool cancelled;$/;"	m	struct:runqueue_task	access:public
+runqueue_task::complete	runqueue.h	/^	void (*complete)(struct runqueue *q, struct runqueue_task *t);$/;"	m	struct:runqueue_task	access:public
+runqueue_task::list	runqueue.h	/^	struct safe_list list;$/;"	m	struct:runqueue_task	typeref:struct:runqueue_task::safe_list	access:public
+runqueue_task::q	runqueue.h	/^	struct runqueue *q;$/;"	m	struct:runqueue_task	typeref:struct:runqueue_task::runqueue	access:public
+runqueue_task::queued	runqueue.h	/^	bool queued;$/;"	m	struct:runqueue_task	access:public
+runqueue_task::run_timeout	runqueue.h	/^	int run_timeout;$/;"	m	struct:runqueue_task	access:public
+runqueue_task::running	runqueue.h	/^	bool running;$/;"	m	struct:runqueue_task	access:public
+runqueue_task::timeout	runqueue.h	/^	struct uloop_timeout timeout;$/;"	m	struct:runqueue_task	typeref:struct:runqueue_task::uloop_timeout	access:public
+runqueue_task::type	runqueue.h	/^	const struct runqueue_task_type *type;$/;"	m	struct:runqueue_task	typeref:struct:runqueue_task::runqueue_task_type	access:public
+runqueue_task_add	runqueue.c	/^void runqueue_task_add(struct runqueue *q, struct runqueue_task *t, bool running)$/;"	f	signature:(struct runqueue *q, struct runqueue_task *t, bool running)
+runqueue_task_add	runqueue.h	/^void runqueue_task_add(struct runqueue *q, struct runqueue_task *t, bool running);$/;"	p	signature:(struct runqueue *q, struct runqueue_task *t, bool running)
+runqueue_task_add_first	runqueue.c	/^void runqueue_task_add_first(struct runqueue *q, struct runqueue_task *t, bool running)$/;"	f	signature:(struct runqueue *q, struct runqueue_task *t, bool running)
+runqueue_task_add_first	runqueue.h	/^void runqueue_task_add_first(struct runqueue *q, struct runqueue_task *t, bool running);$/;"	p	signature:(struct runqueue *q, struct runqueue_task *t, bool running)
+runqueue_task_cancel	runqueue.c	/^void runqueue_task_cancel(struct runqueue_task *t, int type)$/;"	f	signature:(struct runqueue_task *t, int type)
+runqueue_task_cancel	runqueue.h	/^void runqueue_task_cancel(struct runqueue_task *t, int type);$/;"	p	signature:(struct runqueue_task *t, int type)
+runqueue_task_complete	runqueue.c	/^void runqueue_task_complete(struct runqueue_task *t)$/;"	f	signature:(struct runqueue_task *t)
+runqueue_task_complete	runqueue.h	/^void runqueue_task_complete(struct runqueue_task *t);$/;"	p	signature:(struct runqueue_task *t)
+runqueue_task_kill	runqueue.c	/^void runqueue_task_kill(struct runqueue_task *t)$/;"	f	signature:(struct runqueue_task *t)
+runqueue_task_kill	runqueue.h	/^void runqueue_task_kill(struct runqueue_task *t);$/;"	p	signature:(struct runqueue_task *t)
+runqueue_task_type	runqueue.h	/^struct runqueue_task_type {$/;"	s
+runqueue_task_type::cancel	runqueue.h	/^	void (*cancel)(struct runqueue *q, struct runqueue_task *t, int type);$/;"	m	struct:runqueue_task_type	access:public
+runqueue_task_type::kill	runqueue.h	/^	void (*kill)(struct runqueue *q, struct runqueue_task *t);$/;"	m	struct:runqueue_task_type	access:public
+runqueue_task_type::name	runqueue.h	/^	const char *name;$/;"	m	struct:runqueue_task_type	access:public
+runqueue_task_type::run	runqueue.h	/^	void (*run)(struct runqueue *q, struct runqueue_task *t);$/;"	m	struct:runqueue_task_type	access:public
+s	examples/ustream-example.c	/^	struct ustream_fd s;$/;"	m	struct:client	typeref:struct:client::ustream_fd	file:	access:public
+safe_list	safe_list.h	/^struct safe_list {$/;"	s
+safe_list::i	safe_list.h	/^	struct safe_list_iterator *i;$/;"	m	struct:safe_list	typeref:struct:safe_list::safe_list_iterator	access:public
+safe_list::list	safe_list.h	/^	struct list_head list;$/;"	m	struct:safe_list	typeref:struct:safe_list::list_head	access:public
+safe_list_add	safe_list.c	/^void safe_list_add(struct safe_list *list, struct safe_list *head)$/;"	f	signature:(struct safe_list *list, struct safe_list *head)
+safe_list_add	safe_list.h	/^void safe_list_add(struct safe_list *list, struct safe_list *head);$/;"	p	signature:(struct safe_list *list, struct safe_list *head)
+safe_list_add_first	safe_list.c	/^void safe_list_add_first(struct safe_list *list, struct safe_list *head)$/;"	f	signature:(struct safe_list *list, struct safe_list *head)
+safe_list_add_first	safe_list.h	/^void safe_list_add_first(struct safe_list *list, struct safe_list *head);$/;"	p	signature:(struct safe_list *list, struct safe_list *head)
+safe_list_del	safe_list.c	/^void safe_list_del(struct safe_list *list)$/;"	f	signature:(struct safe_list *list)
+safe_list_del	safe_list.h	/^void safe_list_del(struct safe_list *list);$/;"	p	signature:(struct safe_list *list)
+safe_list_empty	safe_list.h	/^static inline bool safe_list_empty(struct safe_list *head)$/;"	f	signature:(struct safe_list *head)
+safe_list_for_each	safe_list.c	/^int safe_list_for_each(struct safe_list *head,$/;"	f	signature:(struct safe_list *head, int (*cb)(void *ctx, struct safe_list *list), void *ctx)
+safe_list_for_each	safe_list.h	/^int safe_list_for_each(struct safe_list *list,$/;"	p	signature:(struct safe_list *list, int (*cb)(void *ctx, struct safe_list *list), void *ctx)
+safe_list_iterator	safe_list.c	/^struct safe_list_iterator {$/;"	s	file:
+safe_list_iterator::head	safe_list.c	/^	struct safe_list_iterator **head;$/;"	m	struct:safe_list_iterator	typeref:struct:safe_list_iterator::safe_list_iterator	file:	access:public
+safe_list_iterator::next	safe_list.c	/^	struct safe_list *next;$/;"	m	struct:safe_list_iterator	typeref:struct:safe_list_iterator::safe_list	file:	access:public
+safe_list_iterator::next_i	safe_list.c	/^	struct safe_list_iterator *next_i;$/;"	m	struct:safe_list_iterator	typeref:struct:safe_list_iterator::safe_list_iterator	file:	access:public
+seq	json_script.c	/^	unsigned int seq;$/;"	m	struct:json_call	file:	access:public
+seq	json_script.h	/^	unsigned int seq;$/;"	m	struct:json_script_file	access:public
+server	examples/ustream-example.c	/^static struct uloop_fd server;$/;"	v	typeref:struct:uloop_fd	file:
+server_cb	examples/ustream-example.c	/^static void server_cb(struct uloop_fd *fd, unsigned int events)$/;"	f	file:	signature:(struct uloop_fd *fd, unsigned int events)
+set_read_blocked	ustream.h	/^	void (*set_read_blocked)(struct ustream *s);$/;"	m	struct:ustream	access:public
+sin	examples/ustream-example.c	/^	struct sockaddr_in sin;$/;"	m	struct:client	typeref:struct:client::sockaddr_in	file:	access:public
+sleeper	examples/runqueue-example.c	/^struct sleeper {$/;"	s	file:
+sleeper::proc	examples/runqueue-example.c	/^	struct runqueue_process proc;$/;"	m	struct:sleeper	typeref:struct:sleeper::runqueue_process	file:	access:public
+sleeper::val	examples/runqueue-example.c	/^	int val;$/;"	m	struct:sleeper	file:	access:public
+state	lua/uloop.c	/^static lua_State *state;$/;"	v	file:
+state_change	ustream.h	/^	struct uloop_timeout state_change;$/;"	m	struct:ustream	typeref:struct:ustream::uloop_timeout	access:public
+stopped	runqueue.h	/^	bool stopped;$/;"	m	struct:runqueue	access:public
+strbuf	blobmsg_json.c	/^struct strbuf {$/;"	s	file:
+strbuf::buf	blobmsg_json.c	/^	char *buf;$/;"	m	struct:strbuf	file:	access:public
+strbuf::custom_format	blobmsg_json.c	/^	blobmsg_json_format_t custom_format;$/;"	m	struct:strbuf	file:	access:public
+strbuf::indent	blobmsg_json.c	/^	bool indent;$/;"	m	struct:strbuf	file:	access:public
+strbuf::indent_level	blobmsg_json.c	/^	int indent_level;$/;"	m	struct:strbuf	file:	access:public
+strbuf::len	blobmsg_json.c	/^	int len;$/;"	m	struct:strbuf	file:	access:public
+strbuf::pos	blobmsg_json.c	/^	int pos;$/;"	m	struct:strbuf	file:	access:public
+strbuf::priv	blobmsg_json.c	/^	void *priv;$/;"	m	struct:strbuf	file:	access:public
+stream	ustream.h	/^	struct ustream stream;$/;"	m	struct:ustream_fd	typeref:struct:ustream_fd::ustream	access:public
+string_data	ustream.h	/^	bool string_data;$/;"	m	struct:ustream	access:public
+t	examples/uloop-example.lua	/^function t()$/;"	f
+t	lua/uloop.c	/^	struct uloop_timeout t;$/;"	m	struct:lua_uloop_timeout	typeref:struct:lua_uloop_timeout::uloop_timeout	file:	access:public
+tail	ustream.h	/^	char *tail;$/;"	m	struct:ustream_buf	access:public
+tail	ustream.h	/^	struct ustream_buf *tail;$/;"	m	struct:ustream_buf_list	typeref:struct:ustream_buf_list::ustream_buf	access:public
+task	runqueue.h	/^	struct runqueue_task task;$/;"	m	struct:runqueue_process	typeref:struct:runqueue_process::runqueue_task	access:public
+tasks_active	runqueue.h	/^	struct safe_list tasks_active;$/;"	m	struct:runqueue	typeref:struct:runqueue::safe_list	access:public
+tasks_inactive	runqueue.h	/^	struct safe_list tasks_inactive;$/;"	m	struct:runqueue	typeref:struct:runqueue::safe_list	access:public
+time	uloop.h	/^	struct timeval time;        \/\/ 定时值$/;"	m	struct:uloop_timeout	typeref:struct:uloop_timeout::timeval	access:public
+timeout	runqueue.h	/^	struct uloop_timeout timeout;$/;"	m	struct:runqueue	typeref:struct:runqueue::uloop_timeout	access:public
+timeout	runqueue.h	/^	struct uloop_timeout timeout;$/;"	m	struct:runqueue_task	typeref:struct:runqueue_task::uloop_timeout	access:public
+timeouts	uloop.c	/^static struct list_head timeouts = LIST_HEAD_INIT(timeouts);    \/\/ 创建了一个定时器链表的头结点，并初始化$/;"	v	typeref:struct:list_head	file:
+timer_m	lua/uloop.c	/^static const luaL_Reg timer_m[] = {$/;"	v	file:
+tv_diff	uloop.c	/^static int tv_diff(struct timeval *t1, struct timeval *t2)$/;"	f	file:	signature:(struct timeval *t1, struct timeval *t2)
+type	blob.h	/^	unsigned int type;$/;"	m	struct:blob_attr_info	access:public
+type	blobmsg.h	/^	enum blobmsg_type type; \/\/ 策略类型$/;"	m	struct:blobmsg_policy	typeref:enum:blobmsg_policy::blobmsg_type	access:public
+type	runqueue.h	/^	const struct runqueue_task_type *type;$/;"	m	struct:runqueue_task	typeref:struct:runqueue_task::runqueue_task_type	access:public
+udp_ev 	examples/uloop-example.lua	/^udp_ev = uloop.fd_add(udp, function(ufd, events)$/;"	f
+ufd_m	lua/uloop.c	/^static const luaL_Reg ufd_m[] = {$/;"	v	file:
+ul_end	lua/uloop.c	/^static int ul_end(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+ul_init	lua/uloop.c	/^static int ul_init(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+ul_process	lua/uloop.c	/^static int ul_process(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+ul_process_cb	lua/uloop.c	/^static void ul_process_cb(struct uloop_process *p, int ret)$/;"	f	file:	signature:(struct uloop_process *p, int ret)
+ul_run	lua/uloop.c	/^static int ul_run(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+ul_timer	lua/uloop.c	/^static int ul_timer(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+ul_timer_cb	lua/uloop.c	/^static void ul_timer_cb(struct uloop_timeout *t)$/;"	f	file:	signature:(struct uloop_timeout *t)
+ul_timer_free	lua/uloop.c	/^static int ul_timer_free(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+ul_timer_set	lua/uloop.c	/^static int ul_timer_set(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+ul_ufd_add	lua/uloop.c	/^static int ul_ufd_add(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+ul_ufd_cb	lua/uloop.c	/^static void ul_ufd_cb(struct uloop_fd *fd, unsigned int events)$/;"	f	file:	signature:(struct uloop_fd *fd, unsigned int events)
+ul_ufd_delete	lua/uloop.c	/^static int ul_ufd_delete(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+ulog	ulog.c	/^void ulog(int priority, const char *fmt, ...)$/;"	f	signature:(int priority, const char *fmt, ...)
+ulog	ulog.h	/^void ulog(int priority, const char *fmt, ...);$/;"	p	signature:(int priority, const char *fmt, ...)
+ulog_close	ulog.c	/^void ulog_close(void)$/;"	f	signature:(void)
+ulog_close	ulog.h	/^void ulog_close(void);$/;"	p	signature:(void)
+ulog_default_ident	ulog.c	/^static const char *ulog_default_ident(void)$/;"	f	file:	signature:(void)
+ulog_defaults	ulog.c	/^static void ulog_defaults(void)$/;"	f	file:	signature:(void)
+ulog_kmsg	ulog.c	/^static void ulog_kmsg(int priority, const char *fmt, va_list ap)$/;"	f	file:	signature:(int priority, const char *fmt, va_list ap)
+ulog_open	ulog.c	/^void ulog_open(int channels, int facility, const char *ident)$/;"	f	signature:(int channels, int facility, const char *ident)
+ulog_open	ulog.h	/^void ulog_open(int channels, int facility, const char *ident);$/;"	p	signature:(int channels, int facility, const char *ident)
+ulog_stdio	ulog.c	/^static void ulog_stdio(int priority, const char *fmt, va_list ap)$/;"	f	file:	signature:(int priority, const char *fmt, va_list ap)
+ulog_syslog	ulog.c	/^static void ulog_syslog(int priority, const char *fmt, va_list ap)$/;"	f	file:	signature:(int priority, const char *fmt, va_list ap)
+ulog_threshold	ulog.c	/^void ulog_threshold(int threshold)$/;"	f	signature:(int threshold)
+ulog_threshold	ulog.h	/^void ulog_threshold(int threshold);$/;"	p	signature:(int threshold)
+uloop_cancelled	uloop.c	/^bool uloop_cancelled = false;   \/\/ SIGINT信号触发后的标志$/;"	v
+uloop_clear_processes	uloop.c	/^static void uloop_clear_processes(void)$/;"	f	file:	signature:(void)
+uloop_clear_timeouts	uloop.c	/^static void uloop_clear_timeouts(void)$/;"	f	file:	signature:(void)
+uloop_done	uloop.c	/^void uloop_done(void)$/;"	f	signature:(void)
+uloop_done	uloop.h	/^void uloop_done(void);$/;"	p	signature:(void)
+uloop_end	uloop.h	/^static inline void uloop_end(void)$/;"	f	signature:(void)
+uloop_fd	uloop.h	/^struct uloop_fd$/;"	s
+uloop_fd::cb	uloop.h	/^	uloop_fd_handler cb;    \/\/ 指向fd的回调函数$/;"	m	struct:uloop_fd	access:public
+uloop_fd::eof	uloop.h	/^	bool eof;               \/\/ 对端断开连接标志$/;"	m	struct:uloop_fd	access:public
+uloop_fd::error	uloop.h	/^	bool error;             \/\/ 本fd的出错标志$/;"	m	struct:uloop_fd	access:public
+uloop_fd::fd	uloop.h	/^	int fd;                 \/\/ 记录文件描述符$/;"	m	struct:uloop_fd	access:public
+uloop_fd::flags	uloop.h	/^	uint8_t flags;$/;"	m	struct:uloop_fd	access:public
+uloop_fd::registered	uloop.h	/^	bool registered;        \/\/ 本fd是否已经注册到epoll的标记位：0-未注册 1-已注册$/;"	m	struct:uloop_fd	access:public
+uloop_fd_add	uloop.c	/^int uloop_fd_add(struct uloop_fd *sock, unsigned int flags)$/;"	f	signature:(struct uloop_fd *sock, unsigned int flags)
+uloop_fd_add	uloop.h	/^int uloop_fd_add(struct uloop_fd *sock, unsigned int flags);$/;"	p	signature:(struct uloop_fd *sock, unsigned int flags)
+uloop_fd_delete	uloop.c	/^int uloop_fd_delete(struct uloop_fd *fd)$/;"	f	signature:(struct uloop_fd *fd)
+uloop_fd_delete	uloop.h	/^int uloop_fd_delete(struct uloop_fd *sock);$/;"	p	signature:(struct uloop_fd *sock)
+uloop_fd_event	uloop.c	/^struct uloop_fd_event {$/;"	s	file:
+uloop_fd_event::events	uloop.c	/^	unsigned int events;    \/\/ 被触发的事件类型$/;"	m	struct:uloop_fd_event	file:	access:public
+uloop_fd_event::fd	uloop.c	/^	struct uloop_fd *fd;    \/\/ 当前被触发事件隶属的fd控制块$/;"	m	struct:uloop_fd_event	typeref:struct:uloop_fd_event::uloop_fd	file:	access:public
+uloop_fd_handler	uloop.h	/^typedef void (*uloop_fd_handler)(struct uloop_fd *u, unsigned int events);$/;"	t
+uloop_fd_stack	uloop.c	/^struct uloop_fd_stack {$/;"	s	file:
+uloop_fd_stack::events	uloop.c	/^	unsigned int events;$/;"	m	struct:uloop_fd_stack	file:	access:public
+uloop_fd_stack::fd	uloop.c	/^	struct uloop_fd *fd;$/;"	m	struct:uloop_fd_stack	typeref:struct:uloop_fd_stack::uloop_fd	file:	access:public
+uloop_fd_stack::next	uloop.c	/^	struct uloop_fd_stack *next;$/;"	m	struct:uloop_fd_stack	typeref:struct:uloop_fd_stack::uloop_fd_stack	file:	access:public
+uloop_fd_stack_event	uloop.c	/^static bool uloop_fd_stack_event(struct uloop_fd *fd, int events)$/;"	f	file:	signature:(struct uloop_fd *fd, int events)
+uloop_fetch_events	uloop.c	/^static int uloop_fetch_events(int timeout)$/;"	f	file:	signature:(int timeout)
+uloop_func	lua/uloop.c	/^static luaL_reg uloop_func[] = {$/;"	v	file:
+uloop_get_next_timeout	uloop.c	/^static int uloop_get_next_timeout(struct timeval *tv)$/;"	f	file:	signature:(struct timeval *tv)
+uloop_gettime	uloop.c	/^static void uloop_gettime(struct timeval *tv)$/;"	f	file:	signature:(struct timeval *tv)
+uloop_handle_processes	uloop.c	/^static void uloop_handle_processes(void)$/;"	f	file:	signature:(void)
+uloop_handle_sigint	uloop.c	/^static void uloop_handle_sigint(int signo)$/;"	f	file:	signature:(int signo)
+uloop_ignore_signal	uloop.c	/^static void uloop_ignore_signal(int signum, bool ignore)$/;"	f	file:	signature:(int signum, bool ignore)
+uloop_init	uloop.c	/^int uloop_init(void)$/;"	f	signature:(void)
+uloop_init	uloop.h	/^int uloop_init(void);$/;"	p	signature:(void)
+uloop_install_handler	uloop.c	/^static void uloop_install_handler(int signum, void (*handler)(int), struct sigaction* old, bool add)$/;"	f	file:	signature:(int signum, void (*handler)(int), struct sigaction* old, bool add)
+uloop_process	uloop.h	/^struct uloop_process$/;"	s
+uloop_process::cb	uloop.h	/^	uloop_process_handler cb;   \/\/ 父进程给本子进程收尸的函数$/;"	m	struct:uloop_process	access:public
+uloop_process::list	uloop.h	/^	struct list_head list;      \/\/ 链表模块$/;"	m	struct:uloop_process	typeref:struct:uloop_process::list_head	access:public
+uloop_process::pending	uloop.h	/^	bool pending;               \/\/ 挂起标记$/;"	m	struct:uloop_process	access:public
+uloop_process::pid	uloop.h	/^	pid_t pid;                  \/\/ 本子进程pid$/;"	m	struct:uloop_process	access:public
+uloop_process_add	uloop.c	/^int uloop_process_add(struct uloop_process *p)$/;"	f	signature:(struct uloop_process *p)
+uloop_process_add	uloop.h	/^int uloop_process_add(struct uloop_process *p);$/;"	p	signature:(struct uloop_process *p)
+uloop_process_delete	uloop.c	/^int uloop_process_delete(struct uloop_process *p)$/;"	f	signature:(struct uloop_process *p)
+uloop_process_delete	uloop.h	/^int uloop_process_delete(struct uloop_process *p);$/;"	p	signature:(struct uloop_process *p)
+uloop_process_handler	uloop.h	/^typedef void (*uloop_process_handler)(struct uloop_process *c, int ret);$/;"	t
+uloop_process_timeouts	uloop.c	/^static void uloop_process_timeouts(struct timeval *tv)$/;"	f	file:	signature:(struct timeval *tv)
+uloop_run	uloop.c	/^void uloop_run(void)$/;"	f	signature:(void)
+uloop_run	uloop.h	/^void uloop_run(void);$/;"	p	signature:(void)
+uloop_run_events	uloop.c	/^static void uloop_run_events(int timeout)$/;"	f	file:	signature:(int timeout)
+uloop_setup_signals	uloop.c	/^static void uloop_setup_signals(bool add)$/;"	f	file:	signature:(bool add)
+uloop_sigchld	uloop.c	/^static void uloop_sigchld(int signo)$/;"	f	file:	signature:(int signo)
+uloop_timeout	uloop.h	/^struct uloop_timeout$/;"	s
+uloop_timeout::cb	uloop.h	/^	uloop_timeout_handler cb;   \/\/ 超时处理函数$/;"	m	struct:uloop_timeout	access:public
+uloop_timeout::list	uloop.h	/^	struct list_head list;  \/\/ 链表模块$/;"	m	struct:uloop_timeout	typeref:struct:uloop_timeout::list_head	access:public
+uloop_timeout::pending	uloop.h	/^	bool pending;           \/\/ 挂起标记$/;"	m	struct:uloop_timeout	access:public
+uloop_timeout::time	uloop.h	/^	struct timeval time;        \/\/ 定时值$/;"	m	struct:uloop_timeout	typeref:struct:uloop_timeout::timeval	access:public
+uloop_timeout_add	uloop.c	/^int uloop_timeout_add(struct uloop_timeout *timeout)$/;"	f	signature:(struct uloop_timeout *timeout)
+uloop_timeout_add	uloop.h	/^int uloop_timeout_add(struct uloop_timeout *timeout);$/;"	p	signature:(struct uloop_timeout *timeout)
+uloop_timeout_cancel	uloop.c	/^int uloop_timeout_cancel(struct uloop_timeout *timeout)$/;"	f	signature:(struct uloop_timeout *timeout)
+uloop_timeout_cancel	uloop.h	/^int uloop_timeout_cancel(struct uloop_timeout *timeout);$/;"	p	signature:(struct uloop_timeout *timeout)
+uloop_timeout_handler	uloop.h	/^typedef void (*uloop_timeout_handler)(struct uloop_timeout *t);$/;"	t
+uloop_timeout_remaining	uloop.c	/^int uloop_timeout_remaining(struct uloop_timeout *timeout)$/;"	f	signature:(struct uloop_timeout *timeout)
+uloop_timeout_remaining	uloop.h	/^int uloop_timeout_remaining(struct uloop_timeout *timeout);$/;"	p	signature:(struct uloop_timeout *timeout)
+uloop_timeout_set	uloop.c	/^int uloop_timeout_set(struct uloop_timeout *timeout, int msecs)$/;"	f	signature:(struct uloop_timeout *timeout, int msecs)
+uloop_timeout_set	uloop.h	/^int uloop_timeout_set(struct uloop_timeout *timeout, int msecs);$/;"	p	signature:(struct uloop_timeout *timeout, int msecs)
+update	vlist.h	/^	vlist_update_cb update;$/;"	m	struct:vlist_tree	access:public
+usage	examples/json_script-example.c	/^static void usage(const char *prog, int exit_code)$/;"	f	file:	signature:(const char *prog, int exit_code)
+usage	examples/ustream-example.c	/^static int usage(const char *name)$/;"	f	file:	signature:(const char *name)
+usage	jshn.c	/^static int usage(const char *progname)$/;"	f	file:	signature:(const char *progname)
+usock	usock.c	/^int usock(int type, const char *host, const char *service) {$/;"	f	signature:(int type, const char *host, const char *service)
+usock	usock.h	/^int usock(int type, const char *host, const char *service);$/;"	p	signature:(int type, const char *host, const char *service)
+usock_connect	usock.c	/^static int usock_connect(int type, struct sockaddr *sa, int sa_len, int family, int socktype, bool server)$/;"	f	file:	signature:(int type, struct sockaddr *sa, int sa_len, int family, int socktype, bool server)
+usock_inet	usock.c	/^static int usock_inet(int type, const char *host, const char *service, int socktype, bool server)$/;"	f	file:	signature:(int type, const char *host, const char *service, int socktype, bool server)
+usock_port	usock.c	/^const char *usock_port(int port)$/;"	f	signature:(int port)
+usock_port	usock.h	/^const char *usock_port(int port);$/;"	p	signature:(int port)
+usock_set_flags	usock.c	/^static void usock_set_flags(int sock, unsigned int type)$/;"	f	file:	signature:(int sock, unsigned int type)
+usock_unix	usock.c	/^static int usock_unix(int type, const char *host, int socktype, bool server)$/;"	f	file:	signature:(int type, const char *host, int socktype, bool server)
+usock_wait_ready	usock.c	/^int usock_wait_ready(int fd, int msecs) {$/;"	f	signature:(int fd, int msecs)
+usock_wait_ready	usock.h	/^int usock_wait_ready(int fd, int msecs);$/;"	p	signature:(int fd, int msecs)
+ustream	ustream.h	/^struct ustream {$/;"	s
+ustream::eof	ustream.h	/^	bool eof, eof_write_done;$/;"	m	struct:ustream	access:public
+ustream::eof_write_done	ustream.h	/^	bool eof, eof_write_done;$/;"	m	struct:ustream	access:public
+ustream::free	ustream.h	/^	void (*free)(struct ustream *s);$/;"	m	struct:ustream	access:public
+ustream::next	ustream.h	/^	struct ustream *next;$/;"	m	struct:ustream	typeref:struct:ustream::ustream	access:public
+ustream::notify_read	ustream.h	/^	void (*notify_read)(struct ustream *s, int bytes_new);$/;"	m	struct:ustream	access:public
+ustream::notify_state	ustream.h	/^	void (*notify_state)(struct ustream *s);$/;"	m	struct:ustream	access:public
+ustream::notify_write	ustream.h	/^	void (*notify_write)(struct ustream *s, int bytes);$/;"	m	struct:ustream	access:public
+ustream::poll	ustream.h	/^	bool (*poll)(struct ustream *s);$/;"	m	struct:ustream	access:public
+ustream::r	ustream.h	/^	struct ustream_buf_list r, w;$/;"	m	struct:ustream	typeref:struct:ustream::ustream_buf_list	access:public
+ustream::read_blocked	ustream.h	/^	enum read_blocked_reason read_blocked;$/;"	m	struct:ustream	typeref:enum:ustream::read_blocked_reason	access:public
+ustream::set_read_blocked	ustream.h	/^	void (*set_read_blocked)(struct ustream *s);$/;"	m	struct:ustream	access:public
+ustream::state_change	ustream.h	/^	struct uloop_timeout state_change;$/;"	m	struct:ustream	typeref:struct:ustream::uloop_timeout	access:public
+ustream::string_data	ustream.h	/^	bool string_data;$/;"	m	struct:ustream	access:public
+ustream::w	ustream.h	/^	struct ustream_buf_list r, w;$/;"	m	struct:ustream	typeref:struct:ustream::	access:public
+ustream::write	ustream.h	/^	int (*write)(struct ustream *s, const char *buf, int len, bool more);$/;"	m	struct:ustream	access:public
+ustream::write_error	ustream.h	/^	bool write_error;$/;"	m	struct:ustream	access:public
+ustream_add_buf	ustream.c	/^static void ustream_add_buf(struct ustream_buf_list *l, struct ustream_buf *buf)$/;"	f	file:	signature:(struct ustream_buf_list *l, struct ustream_buf *buf)
+ustream_alloc_default	ustream.c	/^static int ustream_alloc_default(struct ustream *s, struct ustream_buf_list *l)$/;"	f	file:	signature:(struct ustream *s, struct ustream_buf_list *l)
+ustream_buf	ustream.h	/^struct ustream_buf {$/;"	s
+ustream_buf::data	ustream.h	/^	char *data;$/;"	m	struct:ustream_buf	access:public
+ustream_buf::end	ustream.h	/^	char *end;$/;"	m	struct:ustream_buf	access:public
+ustream_buf::head	ustream.h	/^	char head[];$/;"	m	struct:ustream_buf	access:public
+ustream_buf::next	ustream.h	/^	struct ustream_buf *next;$/;"	m	struct:ustream_buf	typeref:struct:ustream_buf::ustream_buf	access:public
+ustream_buf::tail	ustream.h	/^	char *tail;$/;"	m	struct:ustream_buf	access:public
+ustream_buf_list	ustream.h	/^struct ustream_buf_list {$/;"	s
+ustream_buf_list::alloc	ustream.h	/^	int (*alloc)(struct ustream *s, struct ustream_buf_list *l);$/;"	m	struct:ustream_buf_list	access:public
+ustream_buf_list::buffer_len	ustream.h	/^	int buffer_len;$/;"	m	struct:ustream_buf_list	access:public
+ustream_buf_list::buffers	ustream.h	/^	int buffers;$/;"	m	struct:ustream_buf_list	access:public
+ustream_buf_list::data_bytes	ustream.h	/^	int data_bytes;$/;"	m	struct:ustream_buf_list	access:public
+ustream_buf_list::data_tail	ustream.h	/^	struct ustream_buf *data_tail;$/;"	m	struct:ustream_buf_list	typeref:struct:ustream_buf_list::ustream_buf	access:public
+ustream_buf_list::head	ustream.h	/^	struct ustream_buf *head;$/;"	m	struct:ustream_buf_list	typeref:struct:ustream_buf_list::ustream_buf	access:public
+ustream_buf_list::max_buffers	ustream.h	/^	int max_buffers;$/;"	m	struct:ustream_buf_list	access:public
+ustream_buf_list::min_buffers	ustream.h	/^	int min_buffers;$/;"	m	struct:ustream_buf_list	access:public
+ustream_buf_list::tail	ustream.h	/^	struct ustream_buf *tail;$/;"	m	struct:ustream_buf_list	typeref:struct:ustream_buf_list::ustream_buf	access:public
+ustream_can_alloc	ustream.c	/^static bool ustream_can_alloc(struct ustream_buf_list *l)$/;"	f	file:	signature:(struct ustream_buf_list *l)
+ustream_consume	ustream.c	/^void ustream_consume(struct ustream *s, int len)$/;"	f	signature:(struct ustream *s, int len)
+ustream_consume	ustream.h	/^void ustream_consume(struct ustream *s, int len);$/;"	p	signature:(struct ustream *s, int len)
+ustream_fd	ustream.h	/^struct ustream_fd {$/;"	s
+ustream_fd::fd	ustream.h	/^	struct uloop_fd fd;$/;"	m	struct:ustream_fd	typeref:struct:ustream_fd::uloop_fd	access:public
+ustream_fd::stream	ustream.h	/^	struct ustream stream;$/;"	m	struct:ustream_fd	typeref:struct:ustream_fd::ustream	access:public
+ustream_fd_free	ustream-fd.c	/^static void ustream_fd_free(struct ustream *s)$/;"	f	file:	signature:(struct ustream *s)
+ustream_fd_init	ustream-fd.c	/^void ustream_fd_init(struct ustream_fd *sf, int fd)$/;"	f	signature:(struct ustream_fd *sf, int fd)
+ustream_fd_init	ustream.h	/^void ustream_fd_init(struct ustream_fd *s, int fd);$/;"	p	signature:(struct ustream_fd *s, int fd)
+ustream_fd_poll	ustream-fd.c	/^static bool ustream_fd_poll(struct ustream *s)$/;"	f	file:	signature:(struct ustream *s)
+ustream_fd_read_pending	ustream-fd.c	/^static void ustream_fd_read_pending(struct ustream_fd *sf, bool *more)$/;"	f	file:	signature:(struct ustream_fd *sf, bool *more)
+ustream_fd_set_read_blocked	ustream-fd.c	/^static void ustream_fd_set_read_blocked(struct ustream *s)$/;"	f	file:	signature:(struct ustream *s)
+ustream_fd_set_uloop	ustream-fd.c	/^static void ustream_fd_set_uloop(struct ustream *s, bool write)$/;"	f	file:	signature:(struct ustream *s, bool write)
+ustream_fd_write	ustream-fd.c	/^static int ustream_fd_write(struct ustream *s, const char *buf, int buflen, bool more)$/;"	f	file:	signature:(struct ustream *s, const char *buf, int buflen, bool more)
+ustream_fill_read	ustream.c	/^void ustream_fill_read(struct ustream *s, int len)$/;"	f	signature:(struct ustream *s, int len)
+ustream_fill_read	ustream.h	/^void ustream_fill_read(struct ustream *s, int len);$/;"	p	signature:(struct ustream *s, int len)
+ustream_fixup_string	ustream.c	/^static void ustream_fixup_string(struct ustream *s, struct ustream_buf *buf)$/;"	f	file:	signature:(struct ustream *s, struct ustream_buf *buf)
+ustream_free	ustream.c	/^void ustream_free(struct ustream *s)$/;"	f	signature:(struct ustream *s)
+ustream_free	ustream.h	/^void ustream_free(struct ustream *s);$/;"	p	signature:(struct ustream *s)
+ustream_free_buf	ustream.c	/^static void ustream_free_buf(struct ustream_buf_list *l, struct ustream_buf *buf)$/;"	f	file:	signature:(struct ustream_buf_list *l, struct ustream_buf *buf)
+ustream_free_buffers	ustream.c	/^static void ustream_free_buffers(struct ustream_buf_list *l)$/;"	f	file:	signature:(struct ustream_buf_list *l)
+ustream_get_read_buf	ustream.c	/^char *ustream_get_read_buf(struct ustream *s, int *buflen)$/;"	f	signature:(struct ustream *s, int *buflen)
+ustream_get_read_buf	ustream.h	/^char *ustream_get_read_buf(struct ustream *s, int *buflen);$/;"	p	signature:(struct ustream *s, int *buflen)
+ustream_init_buf	ustream.c	/^static void ustream_init_buf(struct ustream_buf *buf, int len)$/;"	f	file:	signature:(struct ustream_buf *buf, int len)
+ustream_init_defaults	ustream.c	/^void ustream_init_defaults(struct ustream *s)$/;"	f	signature:(struct ustream *s)
+ustream_init_defaults	ustream.h	/^void ustream_init_defaults(struct ustream *s);$/;"	p	signature:(struct ustream *s)
+ustream_pending_data	ustream.h	/^static inline int ustream_pending_data(struct ustream *s, bool write)$/;"	f	signature:(struct ustream *s, bool write)
+ustream_poll	ustream.h	/^static inline bool ustream_poll(struct ustream *s)$/;"	f	signature:(struct ustream *s)
+ustream_prepare_buf	ustream.c	/^static bool ustream_prepare_buf(struct ustream *s, struct ustream_buf_list *l, int len)$/;"	f	file:	signature:(struct ustream *s, struct ustream_buf_list *l, int len)
+ustream_printf	ustream.c	/^int ustream_printf(struct ustream *s, const char *format, ...)$/;"	f	signature:(struct ustream *s, const char *format, ...)
+ustream_printf	ustream.h	/^int ustream_printf(struct ustream *s, const char *format, ...);$/;"	p	signature:(struct ustream *s, const char *format, ...)
+ustream_read	ustream.c	/^int ustream_read(struct ustream *s, char *buf, int buflen)$/;"	f	signature:(struct ustream *s, char *buf, int buflen)
+ustream_read	ustream.h	/^int ustream_read(struct ustream *s, char *buf, int buflen);$/;"	p	signature:(struct ustream *s, char *buf, int buflen)
+ustream_read_blocked	ustream.h	/^static inline bool ustream_read_blocked(struct ustream *s)$/;"	f	signature:(struct ustream *s)
+ustream_read_buf_full	ustream.h	/^static inline bool ustream_read_buf_full(struct ustream *s)$/;"	f	signature:(struct ustream *s)
+ustream_reserve	ustream.c	/^char *ustream_reserve(struct ustream *s, int len, int *maxlen)$/;"	f	signature:(struct ustream *s, int len, int *maxlen)
+ustream_reserve	ustream.h	/^char *ustream_reserve(struct ustream *s, int len, int *maxlen);$/;"	p	signature:(struct ustream *s, int len, int *maxlen)
+ustream_set_read_blocked	ustream.c	/^void ustream_set_read_blocked(struct ustream *s, bool set)$/;"	f	signature:(struct ustream *s, bool set)
+ustream_set_read_blocked	ustream.h	/^void ustream_set_read_blocked(struct ustream *s, bool set);$/;"	p	signature:(struct ustream *s, bool set)
+ustream_should_move	ustream.c	/^static bool ustream_should_move(struct ustream_buf_list *l, struct ustream_buf *buf, int len)$/;"	f	file:	signature:(struct ustream_buf_list *l, struct ustream_buf *buf, int len)
+ustream_state_change	ustream.h	/^static inline void ustream_state_change(struct ustream *s)$/;"	f	signature:(struct ustream *s)
+ustream_state_change_cb	ustream.c	/^static void ustream_state_change_cb(struct uloop_timeout *t)$/;"	f	file:	signature:(struct uloop_timeout *t)
+ustream_uloop_cb	ustream-fd.c	/^static void ustream_uloop_cb(struct uloop_fd *fd, unsigned int events)$/;"	f	file:	signature:(struct uloop_fd *fd, unsigned int events)
+ustream_vprintf	ustream.c	/^int ustream_vprintf(struct ustream *s, const char *format, va_list arg)$/;"	f	signature:(struct ustream *s, const char *format, va_list arg)
+ustream_vprintf	ustream.h	/^int ustream_vprintf(struct ustream *s, const char *format, va_list arg);$/;"	p	signature:(struct ustream *s, const char *format, va_list arg)
+ustream_write	ustream.c	/^int ustream_write(struct ustream *s, const char *data, int len, bool more)$/;"	f	signature:(struct ustream *s, const char *data, int len, bool more)
+ustream_write	ustream.h	/^int ustream_write(struct ustream *s, const char *buf, int len, bool more);$/;"	p	signature:(struct ustream *s, const char *buf, int len, bool more)
+ustream_write_buffered	ustream.c	/^static int ustream_write_buffered(struct ustream *s, const char *data, int len, int wr)$/;"	f	file:	signature:(struct ustream *s, const char *data, int len, int wr)
+ustream_write_error	ustream.c	/^static void ustream_write_error(struct ustream *s)$/;"	f	file:	signature:(struct ustream *s)
+ustream_write_pending	ustream.c	/^bool ustream_write_pending(struct ustream *s)$/;"	f	signature:(struct ustream *s)
+ustream_write_pending	ustream.h	/^bool ustream_write_pending(struct ustream *s);$/;"	p	signature:(struct ustream *s)
+val	examples/runqueue-example.c	/^	int val;$/;"	m	struct:sleeper	file:	access:public
+validate	blob.h	/^	bool (*validate)(const struct blob_attr_info *, struct blob_attr *);$/;"	m	struct:blob_attr_info	access:public
+var_prefix	jshn.c	/^static const char *var_prefix = "";$/;"	v	file:
+var_prefix_len	jshn.c	/^static int var_prefix_len = 0;$/;"	v	file:
+vars	json_script.c	/^	struct blob_attr *vars;$/;"	m	struct:json_call	typeref:struct:json_call::blob_attr	file:	access:public
+version	vlist.h	/^	int version;$/;"	m	struct:vlist_node	access:public
+version	vlist.h	/^	int version;$/;"	m	struct:vlist_tree	access:public
+vlist_add	vlist.c	/^vlist_add(struct vlist_tree *tree, struct vlist_node *node, const void *key)$/;"	f	signature:(struct vlist_tree *tree, struct vlist_node *node, const void *key)
+vlist_add	vlist.h	/^void vlist_add(struct vlist_tree *tree, struct vlist_node *node, const void *key);$/;"	p	signature:(struct vlist_tree *tree, struct vlist_node *node, const void *key)
+vlist_delete	vlist.c	/^vlist_delete(struct vlist_tree *tree, struct vlist_node *node)$/;"	f	signature:(struct vlist_tree *tree, struct vlist_node *node)
+vlist_delete	vlist.h	/^void vlist_delete(struct vlist_tree *tree, struct vlist_node *node);$/;"	p	signature:(struct vlist_tree *tree, struct vlist_node *node)
+vlist_find	vlist.h	59;"	d
+vlist_flush	vlist.c	/^vlist_flush(struct vlist_tree *tree)$/;"	f	signature:(struct vlist_tree *tree)
+vlist_flush	vlist.h	/^void vlist_flush(struct vlist_tree *tree);$/;"	p	signature:(struct vlist_tree *tree)
+vlist_flush_all	vlist.c	/^vlist_flush_all(struct vlist_tree *tree)$/;"	f	signature:(struct vlist_tree *tree)
+vlist_flush_all	vlist.h	/^void vlist_flush_all(struct vlist_tree *tree);$/;"	p	signature:(struct vlist_tree *tree)
+vlist_for_each_element	vlist.h	72;"	d
+vlist_init	vlist.c	/^vlist_init(struct vlist_tree *tree, avl_tree_comp cmp, vlist_update_cb update)$/;"	f	signature:(struct vlist_tree *tree, avl_tree_comp cmp, vlist_update_cb update)
+vlist_init	vlist.h	/^void vlist_init(struct vlist_tree *tree, avl_tree_comp cmp, vlist_update_cb update);$/;"	p	signature:(struct vlist_tree *tree, avl_tree_comp cmp, vlist_update_cb update)
+vlist_node	vlist.h	/^struct vlist_node {$/;"	s
+vlist_node::avl	vlist.h	/^	struct avl_node avl;$/;"	m	struct:vlist_node	typeref:struct:vlist_node::avl_node	access:public
+vlist_node::version	vlist.h	/^	int version;$/;"	m	struct:vlist_node	access:public
+vlist_tree	vlist.h	/^struct vlist_tree {$/;"	s
+vlist_tree::avl	vlist.h	/^	struct avl_tree avl;$/;"	m	struct:vlist_tree	typeref:struct:vlist_tree::avl_tree	access:public
+vlist_tree::keep_old	vlist.h	/^	bool keep_old;$/;"	m	struct:vlist_tree	access:public
+vlist_tree::no_delete	vlist.h	/^	bool no_delete;$/;"	m	struct:vlist_tree	access:public
+vlist_tree::update	vlist.h	/^	vlist_update_cb update;$/;"	m	struct:vlist_tree	access:public
+vlist_tree::version	vlist.h	/^	int version;$/;"	m	struct:vlist_tree	access:public
+vlist_update	vlist.h	/^static inline void vlist_update(struct vlist_tree *tree)$/;"	f	signature:(struct vlist_tree *tree)
+vlist_update_cb	vlist.h	/^typedef void (*vlist_update_cb)(struct vlist_tree *tree,$/;"	t
+w	ustream.h	/^	struct ustream_buf_list r, w;$/;"	m	struct:ustream	typeref:struct:ustream::	access:public
+write	ustream.h	/^	int (*write)(struct ustream *s, const char *buf, int len, bool more);$/;"	m	struct:ustream	access:public
+write_error	ustream.h	/^	bool write_error;$/;"	m	struct:ustream	access:public
+write_key_string	jshn.c	/^static void write_key_string(const char *key)$/;"	f	file:	signature:(const char *key)
