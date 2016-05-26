@@ -363,7 +363,7 @@ int ubus_reconnect(struct ubus_context *ctx, const char *path)
 
     // 如果本地socket文件未定义，赋缺省值
 	if (!path)
-		path = UBUS_UNIX_SOCKET;
+		path = UBUS_UNIX_SOCKET;    // 宏定义UBUS_UNIX_SOCKET位于CMakeLists.txt
 
     // 如果客户端fd是否已经打开，需要先关闭fd
 	if (ctx->sock.fd >= 0) 
@@ -376,7 +376,7 @@ int ubus_reconnect(struct ubus_context *ctx, const char *path)
 		close(ctx->sock.fd);
 	}
 
-    // 创建客户端（二层封装）
+    // 创建unix socket客户端,隐含了采用TCP方式（二层封装）
 	ctx->sock.fd = usock(USOCK_UNIX, path, NULL);
 	if (ctx->sock.fd < 0)
 		return UBUS_STATUS_CONNECTION_FAILED;

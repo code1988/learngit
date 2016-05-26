@@ -19,7 +19,7 @@
 #include "count.h"
 
 static struct ubus_context *ctx;    // 指向注册服务到ubusd的客户端的总控制块
-static struct ubus_subscriber test_event;
+static struct ubus_subscriber test_event;   // 对象的附加描述控制块
 static struct blob_buf b;           // 定义一个静态全局BLOB控制块
 
 // 对象hello的参数枚举
@@ -147,6 +147,7 @@ static const struct blobmsg_policy watch_policy[__WATCH_MAX] = {
 	[WATCH_COUNTER] = { .name = "counter", .type = BLOBMSG_TYPE_INT32 },
 };
 
+// 附加描述控制块中删除动作的回调函数
 static void
 test_handle_remove(struct ubus_context *ctx, struct ubus_subscriber *s,
                    uint32_t id)
@@ -154,6 +155,7 @@ test_handle_remove(struct ubus_context *ctx, struct ubus_subscriber *s,
 	fprintf(stderr, "Object %08x went away\n", id);
 }
 
+// 附加描述控制块中的主回调函数
 static int
 test_notify(struct ubus_context *ctx, struct ubus_object *obj,
 	    struct ubus_request_data *req, const char *method,
@@ -177,7 +179,6 @@ static int test_watch(struct ubus_context *ctx, struct ubus_object *obj,
 	struct blob_attr *tb[__WATCH_MAX];
 	int ret;
 
-    printf(">>>>>>>>>>>>>>> method: %s\n",method);
 	blobmsg_parse(watch_policy, __WATCH_MAX, tb, blob_data(msg), blob_len(msg));
 	if (!tb[WATCH_ID])
 		return UBUS_STATUS_INVALID_ARGUMENT;
@@ -185,10 +186,8 @@ static int test_watch(struct ubus_context *ctx, struct ubus_object *obj,
     char *msgstr;
 	if (tb[WATCH_ID])
     {
-        printf("tb[WATCH_ID]->id_len: %08x\n",tb[WATCH_ID]->id_len);
 	    struct blobmsg_hdr *hdr = (struct blobmsg_hdr *) blob_data(tb[WATCH_ID]);
         printf("blobmsg_hdr_len: %d, name: %s\n",hdr->namelen,hdr->name);
-        printf("actual name len: %d\n",BLOBMSG_PADDING(sizeof(struct blobmsg_hdr) + be16_to_cpu(hdr->namelen) + 1));
 
         // 获取"id"的值
 		msgstr = blobmsg_data(tb[WATCH_ID]);
@@ -197,18 +196,16 @@ static int test_watch(struct ubus_context *ctx, struct ubus_object *obj,
 
 	if (tb[WATCH_COUNTER])
     {
-        printf("tb[WATCH_COUNTER]->id_len: %08x\n",tb[WATCH_COUNTER]->id_len);
 	    struct blobmsg_hdr *hdr = (struct blobmsg_hdr *) blob_data(tb[WATCH_COUNTER]);
         printf("blobmsg_hdr_len: %d, name: %s\n",hdr->namelen,hdr->name);
-        printf("actual name len: %d\n",BLOBMSG_PADDING(sizeof(struct blobmsg_hdr) + be16_to_cpu(hdr->namelen) + 1));
 
         // 获取"id"的值
 		msgstr = blobmsg_data(tb[WATCH_COUNTER]);
         printf("msgstr: %d\n",*(int *)msgstr);
     }
 
-	test_event.remove_cb = test_handle_remove;
-	test_event.cb = test_notify;
+	test_event.remove_cb = test_handle_remove;  // 注册附加描述控制块中删除动作的回调函数
+	test_event.cb = test_notify;                // 注册附加描述控制块中的主回调函数
 	ret = ubus_subscribe(ctx, &test_event, blobmsg_get_u32(tb[WATCH_ID]));
 	fprintf(stderr, "Watching object %08x: %s\n", blobmsg_get_u32(tb[WATCH_ID]), ubus_strerror(ret));
 	return ret;
@@ -277,10 +274,12 @@ static void server_main(void)
 {
 	int ret;
 
+    // 注册对象：test_object
 	ret = ubus_add_object(ctx, &test_object);
 	if (ret)
 		fprintf(stderr, "Failed to add object: %s\n", ubus_strerror(ret));
 
+    // 注册附加描述控制块：test_event(内部封装了一个只有方法没有对象名的对象)
 	ret = ubus_register_subscriber(ctx, &test_event);
 	if (ret)
 		fprintf(stderr, "Failed to add watch handler: %s\n", ubus_strerror(ret));

@@ -124,11 +124,12 @@ struct ubus_object {
 	int n_methods;      // 记录方法的数量
 };
 
+// 对象的附加描述控制块
 struct ubus_subscriber {
-	struct ubus_object obj;
+	struct ubus_object obj; // 对象
 
-	ubus_handler_t cb;
-	ubus_remove_handler_t remove_cb;
+	ubus_handler_t cb;      // 回调函数
+	ubus_remove_handler_t remove_cb;    // 删除动作的回调函数
 };
 
 struct ubus_event_handler {

@@ -65,9 +65,9 @@ H2	md5.c	69;"	d	file:
 I	md5.c	70;"	d	file:
 INIT_LIST_HEAD	list.h	/^INIT_LIST_HEAD(struct list_head *list)$/;"	f	signature:(struct list_head *list)
 INIT_SAFE_LIST	safe_list.h	48;"	d
-LIST_HEAD	list.h	51;"	d
-LIST_HEAD	list.h	52;"	d
-LIST_HEAD_INIT	list.h	50;"	d
+LIST_HEAD	list.h	57;"	d
+LIST_HEAD	list.h	58;"	d
+LIST_HEAD_INIT	list.h	56;"	d
 MAX_STACK_BUFLEN	ustream.c	462;"	d	file:
 MAX_VARLEN	jshn.c	33;"	d	file:
 Pad64	base64.c	/^static const char Pad64 = '=';$/;"	v	file:
@@ -113,7 +113,7 @@ _BLOB_H__	blob.h	23;"	d
 _GNUC_MIN_VER	utils.h	73;"	d
 _GNUC_MIN_VER	utils.h	75;"	d
 _LIBUBOX_MD5_H	md5.h	42;"	d
-_LINUX_LIST_H_	list.h	30;"	d
+_LINUX_LIST_H_	list.h	33;"	d
 _ULOOP_H__	uloop.h	22;"	d
 __AVL_CMP_H	avl-cmp.h	17;"	d
 __BIG_ENDIAN	utils.h	101;"	d
@@ -123,7 +123,7 @@ __BLOBMSG_TYPE_LAST	blobmsg.h	/^	__BLOBMSG_TYPE_LAST,$/;"	e	enum:blobmsg_type
 __BUILD_BUG_ON	utils.h	48;"	d
 __BYTE_ORDER	utils.h	98;"	d
 __JSON_SCRIPT_H	json_script.h	17;"	d
-__LIBUBOX_KVLIST_H	kvlist.h	19;"	d
+__LIBUBOX_KVLIST_H	kvlist.h	21;"	d
 __LIBUBOX_RUNQUEUE_H	runqueue.h	20;"	d
 __LIBUBOX_SAFE_LIST_H	safe_list.h	26;"	d
 __LIBUBOX_ULOG_H	ulog.h	20;"	d
@@ -132,7 +132,7 @@ __LIBUBOX_VLIST_H	vlist.h	18;"	d
 __LITTLE_ENDIAN	utils.h	104;"	d
 __USTREAM_H	ustream.h	20;"	d
 __avl_find_element	avl.h	/^__avl_find_element(const struct avl_tree *tree, const void *key, size_t offset, enum avl_find_mode mode) {$/;"	f	signature:(const struct avl_tree *tree, const void *key, size_t offset, enum avl_find_mode mode)
-__avl_list_to_kv	kvlist.h	36;"	d
+__avl_list_to_kv	kvlist.h	38;"	d
 __blob_for_each_attr	blob.h	264;"	d
 __blobmsg_add_json	blobmsg_json.c	/^static bool __blobmsg_add_json(struct blob_buf *b, json_object *obj)$/;"	f	file:	signature:(struct blob_buf *b, json_object *obj)
 __calloc_a	utils.c	/^void *__calloc_a(size_t len, ...)$/;"	f	signature:(size_t len, ...)
@@ -153,7 +153,7 @@ __kvlist_get	kvlist.c	/^static struct kvlist_node *__kvlist_get(struct kvlist *k
 __packed	blob.h	/^} __packed;$/;"	v	typeref:struct:blob_attr
 __packed	blobmsg.h	/^} __packed;$/;"	v	typeref:struct:blobmsg_hdr
 __packed	utils.h	159;"	d
-__ptr_to_kv	kvlist.h	35;"	d
+__ptr_to_kv	kvlist.h	37;"	d
 __runqueue_cancel	runqueue.c	/^static int __runqueue_cancel(void *ctx, struct safe_list *list)$/;"	f	file:	signature:(void *ctx, struct safe_list *list)
 __runqueue_empty_cb	runqueue.c	/^__runqueue_empty_cb(struct uloop_timeout *timeout)$/;"	f	file:	signature:(struct uloop_timeout *timeout)
 __runqueue_proc_cb	runqueue.c	/^__runqueue_proc_cb(struct uloop_process *p, int ret)$/;"	f	file:	signature:(struct uloop_process *p, int ret)
@@ -184,10 +184,10 @@ _list_del	list.h	/^_list_del(struct list_head *entry)$/;"	f	signature:(struct li
 _list_splice	list.h	/^_list_splice(const struct list_head *list, struct list_head *prev,$/;"	f	signature:(const struct list_head *list, struct list_head *prev, struct list_head *next)
 _runqueue_task_add	runqueue.c	/^static void _runqueue_task_add(struct runqueue *q, struct runqueue_task *t, bool running, bool first)$/;"	f	file:	signature:(struct runqueue *q, struct runqueue_task *t, bool running, bool first)
 _set_var	sh/jshn.sh	/^_set_var() {$/;"	f
-_ulog_channels	ulog.c	/^static int _ulog_channels = -1;$/;"	v	file:
+_ulog_channels	ulog.c	/^static int _ulog_channels = -1;         \/\/ 打印通道：ULOG_KMSG ULOG_SYSLOG ULOG_STDIO$/;"	v	file:
 _ulog_facility	ulog.c	/^static int _ulog_facility = -1;$/;"	v	file:
-_ulog_ident	ulog.c	/^static const char *_ulog_ident = NULL;$/;"	v	file:
-_ulog_initialized	ulog.c	/^static int _ulog_initialized = 0;$/;"	v	file:
+_ulog_ident	ulog.c	/^static const char *_ulog_ident = NULL;  \/\/ 打印信息头$/;"	v	file:
+_ulog_initialized	ulog.c	/^static int _ulog_initialized = 0;       \/\/ 打印设置初始化标志：0-未初始化 1-初始化完毕$/;"	v	file:
 _ulog_threshold	ulog.c	/^static int _ulog_threshold = LOG_DEBUG;$/;"	v	file:
 a	md5.h	/^	uint32_t a, b, c, d;$/;"	m	struct:md5_ctx	access:public
 add_json_array	jshn.c	/^static int add_json_array(struct array_list *a)$/;"	f	file:	signature:(struct array_list *a)
@@ -487,7 +487,7 @@ cmd_process_strings	json_script.c	/^static int cmd_process_strings(struct json_c
 cmp_ptr	avl.h	/^  void *cmp_ptr;$/;"	m	struct:avl_tree	access:public
 comp	avl.h	/^  avl_tree_comp comp;$/;"	m	struct:avl_tree	access:public
 complete	runqueue.h	/^	void (*complete)(struct runqueue *q, struct runqueue_task *t);$/;"	m	struct:runqueue_task	access:public
-container_of	list.h	38;"	d
+container_of	list.h	42;"	d
 count	avl.h	/^  unsigned int count;$/;"	m	struct:avl_tree	access:public
 cpu_to_be16	utils.h	124;"	d
 cpu_to_be16	utils.h	150;"	d
@@ -658,7 +658,7 @@ kvlist_blob_len	kvlist.c	/^int kvlist_blob_len(struct kvlist *kv, const void *da
 kvlist_blob_len	kvlist.h	/^int kvlist_blob_len(struct kvlist *kv, const void *data);$/;"	p	signature:(struct kvlist *kv, const void *data)
 kvlist_delete	kvlist.c	/^bool kvlist_delete(struct kvlist *kv, const char *name)$/;"	f	signature:(struct kvlist *kv, const char *name)
 kvlist_delete	kvlist.h	/^bool kvlist_delete(struct kvlist *kv, const char *name);$/;"	p	signature:(struct kvlist *kv, const char *name)
-kvlist_for_each	kvlist.h	38;"	d
+kvlist_for_each	kvlist.h	40;"	d
 kvlist_free	kvlist.c	/^void kvlist_free(struct kvlist *kv)$/;"	f	signature:(struct kvlist *kv)
 kvlist_free	kvlist.h	/^void kvlist_free(struct kvlist *kv);$/;"	p	signature:(struct kvlist *kv)
 kvlist_get	kvlist.c	/^void *kvlist_get(struct kvlist *kv, const char *name)$/;"	f	signature:(struct kvlist *kv, const char *name)
@@ -691,22 +691,22 @@ list_add_tail	list.h	/^list_add_tail(struct list_head *_new, struct list_head *h
 list_del	list.h	/^list_del(struct list_head *entry)$/;"	f	signature:(struct list_head *entry)
 list_del_init	list.h	/^list_del_init(struct list_head *entry)$/;"	f	signature:(struct list_head *entry)
 list_empty	list.h	/^list_empty(const struct list_head *head)$/;"	f	signature:(const struct list_head *head)
-list_entry	list.h	112;"	d
-list_first_entry	list.h	113;"	d
-list_for_each	list.h	116;"	d
-list_for_each_entry	list.h	122;"	d
-list_for_each_entry_reverse	list.h	131;"	d
-list_for_each_entry_safe	list.h	126;"	d
-list_for_each_prev	list.h	135;"	d
-list_for_each_prev_safe	list.h	136;"	d
-list_for_each_safe	list.h	119;"	d
+list_entry	list.h	127;"	d
+list_first_entry	list.h	129;"	d
+list_for_each	list.h	134;"	d
+list_for_each_entry	list.h	141;"	d
+list_for_each_entry_reverse	list.h	150;"	d
+list_for_each_entry_safe	list.h	145;"	d
+list_for_each_prev	list.h	154;"	d
+list_for_each_prev_safe	list.h	155;"	d
+list_for_each_safe	list.h	138;"	d
 list_head	avl.h	/^  struct list_head list_head;$/;"	m	struct:avl_tree	typeref:struct:avl_tree::list_head	access:public
 list_head	list.h	/^struct list_head {$/;"	s
 list_head::next	list.h	/^	struct list_head *next;$/;"	m	struct:list_head	typeref:struct:list_head::list_head	access:public
 list_head::prev	list.h	/^	struct list_head *prev;$/;"	m	struct:list_head	typeref:struct:list_head::list_head	access:public
 list_is_first	list.h	/^list_is_first(const struct list_head *list,$/;"	f	signature:(const struct list_head *list, const struct list_head *head)
 list_is_last	list.h	/^list_is_last(const struct list_head *list,$/;"	f	signature:(const struct list_head *list, const struct list_head *head)
-list_last_entry	list.h	114;"	d
+list_last_entry	list.h	131;"	d
 list_move	list.h	/^list_move(struct list_head *list, struct list_head *head)$/;"	f	signature:(struct list_head *list, struct list_head *head)
 list_move_tail	list.h	/^list_move_tail(struct list_head *entry, struct list_head *head)$/;"	f	signature:(struct list_head *entry, struct list_head *head)
 list_splice	list.h	/^list_splice(const struct list_head *list, struct list_head *head)$/;"	f	signature:(const struct list_head *list, struct list_head *head)
@@ -788,7 +788,7 @@ port	examples/ustream-example.c	/^static const char *port = "10000";$/;"	v	file:
 pos	blobmsg_json.c	/^	int pos;$/;"	m	struct:strbuf	file:	access:public
 post_insert	avl.c	/^post_insert(struct avl_tree *tree, struct avl_node *node)$/;"	f	file:	signature:(struct avl_tree *tree, struct avl_node *node)
 post_insert	avl.c	/^static void post_insert(struct avl_tree *tree, struct avl_node *node);$/;"	p	file:	signature:(struct avl_tree *tree, struct avl_node *node)
-prefetch	list.h	35;"	d
+prefetch	list.h	38;"	d
 prev	list.h	/^	struct list_head *prev;$/;"	m	struct:list_head	typeref:struct:list_head::list_head	access:public
 priv	blobmsg_json.c	/^	void *priv;$/;"	m	struct:strbuf	file:	access:public
 proc	examples/runqueue-example.c	/^	struct runqueue_process proc;$/;"	m	struct:sleeper	typeref:struct:sleeper::runqueue_process	file:	access:public
