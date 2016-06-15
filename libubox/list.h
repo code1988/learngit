@@ -28,6 +28,8 @@
  * 功能描述：链表操作的通用库。将head_list模块加入你的结构体即完成了链表的创建,
  *           这个库还提供了截断、移动、插入、遍历等链表操作
  * 备注：整个链表库操作基本类似kernel
+ *       特别注意头节点和首节点的区别，链表头节点不带数据，用来链接首、尾节点；
+ *       首节点是第一个带数据的节点，它前面一个节点就是头节点
  */
 #ifndef _LINUX_LIST_H_
 #define _LINUX_LIST_H_
@@ -71,7 +73,7 @@ list_empty(const struct list_head *head)
 	return (head->next == head);
 }
 
-// 判断当前节点是不是头节点
+// 判断当前节点是不是首节点
 static inline bool
 list_is_first(const struct list_head *list,
 	      const struct list_head *head)
@@ -134,14 +136,16 @@ list_del_init(struct list_head *entry)
 #define	list_for_each(p, head)						\
 	for (p = (head)->next; p != (head); p = p->next)
 
-// 遍历链表(安全模式)
+// 遍历链表(安全模式,避免多线程操作时，后继节点被删除的风险)
 #define	list_for_each_safe(p, n, head)					\
 	for (p = (head)->next, n = p->next; p != (head); p = n, n = p->next)
 
+// 遍历链表的父结构
 #define list_for_each_entry(p, h, field)				\
 	for (p = list_first_entry(h, typeof(*p), field); &p->field != (h); \
 	    p = list_entry(p->field.next, typeof(*p), field))
 
+// 遍历链表的父结构(安全模式)
 #define list_for_each_entry_safe(p, n, h, field)			\
 	for (p = list_first_entry(h, typeof(*p), field),		\
 	    n = list_entry(p->field.next, typeof(*p), field); &p->field != (h);\
@@ -154,12 +158,14 @@ list_del_init(struct list_head *entry)
 #define	list_for_each_prev(p, h) for (p = (h)->prev; p != (h); p = p->prev)
 #define	list_for_each_prev_safe(p, n, h) for (p = (h)->prev, n = p->prev; p != (h); p = n, n = p->prev)
 
+// 从前插入节点
 static inline void
 list_add(struct list_head *_new, struct list_head *head)
 {
 	_list_add(_new, head, head->next);
 }
 
+// 从后插入节点
 static inline void
 list_add_tail(struct list_head *_new, struct list_head *head)
 {
