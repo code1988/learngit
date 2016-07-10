@@ -5,4 +5,8 @@
 #define ALIGN_ARG   2
 #define ALIGN(len)  (((len) + (1 << ALIGN_ARG) - 1) & ~((1 << ALIGN_ARG) -1))
 
+// 数组元素数量
+#define ARRAY_SIZE(x) (sizeof(x) / (*(x)))
+
+
 #endif
