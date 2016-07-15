@@ -122,9 +122,9 @@ struct hostapd_data {
 #define AID_WORDS ((2008 + 31) / 32)
 	u32 sta_aid[AID_WORDS];
 
-	const struct wpa_driver_ops *driver;    // 指向此bss所使用的驱动程序API接口集合
-	void *drv_priv;                         // 指向此bss所使用的驱动程序控制块
-	struct hostapd_driver_ops drv;          // hostapd模式才会使用到的驱动程序API集合
+	const struct wpa_driver_ops *driver;    // 指向此bss所使用的具体类型驱动API集合
+	void *drv_priv;                         // 指向此bss所使用的具体类型驱动控制块
+	struct hostapd_driver_ops drv;          // AP模式下驱动接口(在具体类型驱动上又做的一层封装)
 
 	void (*new_assoc_sta_cb)(struct hostapd_data *hapd,
 				 struct sta_info *sta, int reassoc);    // 指向一个通知函数，用于通知有新的站表元素关联到AP

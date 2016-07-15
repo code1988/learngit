@@ -606,6 +606,8 @@ SM_STATE(EAP, SUCCESS2)
 // 检查EAP SM 的条件变量，然后根据情况进行状态切换
 SM_STEP(EAP)
 {
+    // 进入INITIALIZE的条件：
+    // EAPOL->EAP交互标志eapRestart和portEnabled被置位
 	if (sm->eap_if.eapRestart && sm->eap_if.portEnabled)
 		SM_ENTER_GLOBAL(EAP, INITIALIZE);
 	else if (!sm->eap_if.portEnabled)

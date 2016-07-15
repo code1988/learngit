@@ -344,7 +344,7 @@ struct hostapd_config {
 	int *supported_rates;
 	int *basic_rates;
 
-	const struct wpa_driver_ops *driver;    // 指向驱动程序API集合
+	const struct wpa_driver_ops *driver;    // 指向具体类型驱动程序API集合
 
 	int ap_table_max_size;
 	int ap_table_expiration_time;
