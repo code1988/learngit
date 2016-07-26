@@ -1,0 +1,43 @@
+#!/bin/sh /etc/rc.common
+
+START=91
+STOP=91
+NAME=rstpd
+PROG=/usr/sbin/rstpd
+pid_file=/var/run/rstpd.pid
+
+checkpid() {
+	pid=
+	if [ -f "$1" ] ; then
+		local line p
+		read line < "$pid_file"
+		for p in $line ; do
+			[ -z "${p//[0-9]/}" -a -d "/proc/$p" ] && pid="$pid $p"
+	done
+		if [ -n "$pid" ]; then
+			return 0
+		fi
+		return 1 # "Program is dead and /var/run pid file exists"
+	fi
+	return 3 # "Program is not running"
+}
+
+start() {
+	local pid
+	checkpid $pid_file
+	[ -n "$pid" ] && return
+
+	/usr/sbin/rstpd
+	sleep 1
+	exec /usr/sbin/rstpctl rstp on
+}
+
+stop() {
+	local pid
+	checkpid $pid_file
+
+	if [ -n "$pid" ]; then
+		kill -KILL $pid
+		rm -f $pid_file
+	fi
+}

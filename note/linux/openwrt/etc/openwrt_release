@@ -1,0 +1,7 @@
+DISTRIB_ID='OpenWrt'
+DISTRIB_RELEASE='Bleeding Edge'
+DISTRIB_REVISION='r3295'
+DISTRIB_CODENAME='designated_driver'
+DISTRIB_TARGET='imx6ul/generic'
+DISTRIB_DESCRIPTION='OpenWrt Designated Driver r3295'
+DISTRIB_TAINTS='no-all no-ipv6 busybox'

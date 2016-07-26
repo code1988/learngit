@@ -1,0 +1,14 @@
+# Put your custom commands here that should be executed once
+# the system init finished. By default this file does nothing.
+jssdk_sh -i
+jssdk_sh debug device mode-tag
+/usr/sbin/switchd&
+
+mv /usr/lib/lua/luci/controller/admin/status.lua /usr/lib/lua/luci/controller/admin/status.lua.bak
+mv /usr/lib/lua/luci/controller/admin/system.lua /usr/lib/lua/luci/controller/admin/system.lua.bak
+mv /usr/lib/lua/luci/controller/admin/network.lua /usr/lib/lua/luci/controller/admin/network.lua.bak
+
+#sleep 1
+
+/usr/sbin/jwps.sh&
+exit 0

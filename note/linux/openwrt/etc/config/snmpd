@@ -1,0 +1,179 @@
+config snmpd
+	option snmpdenable 1
+
+config agent
+	option agentaddress UDP:161
+
+config master
+	option master agentx
+
+config com2sec public
+	option secname ro
+	option source default
+	option community public
+
+config com2sec private
+	option secname rw
+	option source default 
+	option community private
+
+config group public_v1
+	option group public
+	option version v1
+	option secname ro
+
+config group public_v2c
+	option group public
+	option version v2c
+	option secname ro
+
+config group public_usm
+	option group public
+	option version usm
+	option secname ro
+
+config group private_v1
+	option group private
+	option version v1
+	option secname rw
+
+config group private_v2c
+	option group private
+	option version v2c
+	option secname rw
+
+config group private_usm
+	option group private
+	option version usm
+	option secname rw
+
+config view all
+	option viewname all
+	option type included
+	option oid .1
+
+config access public_access
+	option group public
+	option context none
+	option version any
+	option level noauth
+	option prefix exact
+	option read all
+	option write none
+	option notify none
+
+config access private_access
+	option group private
+	option context none
+	option version any
+	option level noauth
+	option prefix exact
+	option read all
+	option write all
+        option notify all
+
+config system
+	option sysLocation	'Block1,Chang TorchHotel,No.259 Wensan Road,Hangzhou,Zhejiang 310012 China'
+	option sysContact	'E-mail: support-snmp@joyware.com'
+	option sysName		'JoyWare-Switch'
+	option sysServices	2
+	option sysDescr		'Joyware Switch Software'
+	option sysObjectID	'1.3.6.1.4.1.33444.1.1.1'
+
+config exec
+	option name	filedescriptors
+	option prog	/bin/cat
+	option args	/proc/sys/fs/file-nr
+#	option miboid	1.2.3.4
+
+config trap                     
+        option activeMonitoring informsink
+        option serverAddr       192.168.2.40:162
+        option community        public
+        option authtrapenable   1
+
+config dlmod                                      
+        option agentObject      jwsDevGeneral
+        option libAgentObject   /usr/lib/libjws2100switch.so
+
+config dlmod                   
+        option agentObject      jwsDevFactoryInfo
+        option libAgentObject   /usr/lib/libjws2100switch.so
+
+config dlmod                                                
+        option agentObject      jwsDevNetworkConfig         
+        option libAgentObject   /usr/lib/libjws2100switch.so
+
+config dlmod                   
+        option agentObject      jwsDevSnmpConfig
+        option libAgentObject   /usr/lib/libjws2100switch.so
+
+config dlmod                                            
+        option agentObject      jwsIfExtPortTable           
+        option libAgentObject   /usr/lib/libjws2100switch.so
+
+config dlmod                                            
+        option agentObject      jwsMirrorTable              
+        option libAgentObject   /usr/lib/libjws2100switch.so
+
+config dlmod                                            
+        option agentObject      jwsMirrorConfigGroup        
+        option libAgentObject   /usr/lib/libjws2100switch.so
+
+config dlmod
+        option agentObject      jwsIfExtEthStats
+        option libAgentObject   /usr/lib/libjws2100switch.so
+
+config dlmod                                            
+        option agentObject      jwsIfExtEthStatsTable
+        option libAgentObject   /usr/lib/libjws2100switch.so
+
+config dlmod
+        option agentObject      jwsPagMibGroup
+        option libAgentObject   /usr/lib/libjws2100switch.so
+
+config dlmod
+        option agentObject      jwsPagStaticConfig
+        option libAgentObject   /usr/lib/libjws2100switch.so
+
+config dlmod
+        option agentObject      jwsPagStaticTable
+        option libAgentObject   /usr/lib/libjws2100switch.so
+
+config dlmod
+        option agentObject      jwsStaticMcastGroup
+        option libAgentObject   /usr/lib/libjws2100switch.so
+
+config dlmod                   
+        option agentObject      jwsStaticMcastTable
+        option libAgentObject   /usr/lib/libjws2100switch.so
+
+config dlmod                   
+        option agentObject      jwsQosConfigGroup
+        option libAgentObject   /usr/lib/libjws2100switch.so
+
+config dlmod                                                
+        option agentObject      jwsPriRateLimitTable        
+        option libAgentObject   /usr/lib/libjws2100switch.so
+
+config dlmod                                                
+        option agentObject      jwsVlanMngtGroup            
+        option libAgentObject   /usr/lib/libjws2100switch.so
+
+config dlmod                                                
+        option agentObject      jwsPortbasedVlanTable       
+        option libAgentObject   /usr/lib/libjws2100switch.so
+
+config dlmod                                         
+        option agentObject      jwsDot1qVlanStaticTable     
+        option libAgentObject   /usr/lib/libjws2100switch.so
+
+config dlmod
+        option agentObject      jwsLldpConfiguration
+        option libAgentObject   /usr/lib/libjws2100switch.so
+
+config dlmod
+        option agentObject      jwsTrapConfigGroup
+        option libAgentObject   /usr/lib/libjws2100switch.so
+
+
