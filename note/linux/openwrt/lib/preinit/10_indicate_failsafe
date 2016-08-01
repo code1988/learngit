@@ -14,4 +14,5 @@ indicate_failsafe() {
 	indicate_failsafe_led
 }
 
+# 给钩子failsafe_hook注册函数indicate_failsafe
 boot_hook_add failsafe indicate_failsafe

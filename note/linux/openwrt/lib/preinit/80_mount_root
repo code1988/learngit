@@ -12,4 +12,5 @@ do_mount_root() {
 	}
 }
 
+# 给钩子preinit_main_hook注册函数
 [ "$INITRAMFS" = "1" ] || boot_hook_add preinit_main do_mount_root

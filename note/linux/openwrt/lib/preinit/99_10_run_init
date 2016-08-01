@@ -6,4 +6,5 @@ run_init() {
 	preinit_ip_deconfig
 }
 
+# 给钩子preinit_main_hook注册函数run_init
 boot_hook_add preinit_main run_init

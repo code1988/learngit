@@ -1,3 +1,22 @@
+                            嵌入式linux启动流程
+/*****************************************************************************************
+    1. bootloader
+        存储在flash上的bootloader被运行
+        bootloader执行low-level初始化
+        bootloader将kernel image从flash上解压到RAM
+        bootloader运行启动参数里的init=...选项，（没有设置的话，默认执行/etc/preinit）
+
+    2. kernel
+        /etc/preinit    - 如果环境变量"PREINIT"没有被定义，直接执行/etc/init(实际该变量被定义了)
+                          导出PATH为环境变量                  
+                          导入脚本库/lib/functions.sh、/lib/functions/preinit.sh、/lib/functions/system.sh
+                          在钩子列表PI_STACK_LIST中添加钩子名preinit_essential、preinit_main、failsafe、initramfs、preinit_mount_root
+                          导入/lib/preinit/目录下所有脚本库，并完成钩子函数注册(实际只注册了preinit_main failsafe)
+                          运行钩子preinit_essential(实际由于该钩子名未注册钩子函数，所以do nothing)
+                          运行钩子preinit_main(完成了/proc和/sys文件系统的挂载、初始化设备树、最后启动init守护进程)
+
+*****************************************************************************************/
+
 							Linux的init进程
 /*****************************************************************************************
 	init是内核启动完毕后，启动的第一个进程，进程编号始终为1，一般位于/sbin/init，系统所有进程的父进程

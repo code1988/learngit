@@ -43,5 +43,6 @@ pi_indicate_preinit() {
 	set_state preinit
 }
 
+# 给钩子preinit_main_hook注册函数preinit_ip pi_indicate_preinit
 boot_hook_add preinit_main preinit_ip
 boot_hook_add preinit_main pi_indicate_preinit

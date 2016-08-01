@@ -7,4 +7,5 @@ indicate_regular_preinit() {
 	set_state preinit_regular
 }
 
+# 给钩子preinit_main_hook注册函数indicate_regular_preinit
 boot_hook_add preinit_main indicate_regular_preinit

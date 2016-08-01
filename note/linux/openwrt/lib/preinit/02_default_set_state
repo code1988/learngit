@@ -4,4 +4,5 @@ define_default_set_state() {
 	. /etc/diag.sh
 }
 
+# 给钩子preinit_main_hook注册函数define_default_set_state
 boot_hook_add preinit_main define_default_set_state

@@ -1,0 +1,24 @@
+1. 永久环境变量：
+    变量存储在文件中，掉电不丢失；
+    每打开一个shell，都会加载到shell中，成为当前shell的临时环境变量;
+    这个临时环境变量可以被unset掉，但不会影响其他shell
+
+2. 临时环境变量：
+    可以被当前shell和子shell调用，但不能被其他shell访问（相互独立）
+
+3. 普通变量：
+    仅能被当前shell访问，不能被其子shell访问，更不能被其他shell访问
+    普通变量可以通过export导出，成为当前shell的临时环境变量
+
+4. set env export 三者的区别
+    set(declare):   显示当前shell的普通变量、临时环境变量
+    env:            显示当前shell的临时环境变量
+    export:         显示当前shell的临时环境变量，并显示变量的属性
+
+5. export -n ttt
+    如果临时环境变量ttt存在，则降为普通变量,如果不存在则什么都不干；
+    这里有一种很常见的扩展用法：
+        val=aaa
+        export -n $val=bbb
+        eval echo "$val \$$val"
+    # 这种将变量val的值作为变量再为它赋值方法，概念上有点类似于C中的二级指针

@@ -13,5 +13,6 @@ failsafe_shell() {
 	echo "Please reboot system when done with failsafe network logins"
 }
 
+# 给钩子failsafe_hook注册函数failsafe_netlogin failsafe_shell
 boot_hook_add failsafe failsafe_netlogin
 boot_hook_add failsafe failsafe_shell

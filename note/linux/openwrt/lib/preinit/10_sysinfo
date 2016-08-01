@@ -7,4 +7,5 @@ do_sysinfo_generic() {
 		echo "$(cat /proc/device-tree/model)" > /tmp/sysinfo/model
 }
 
+# 给钩子preinit_main_hook注册函数do_sysinfo_generic
 boot_hook_add preinit_main do_sysinfo_generic

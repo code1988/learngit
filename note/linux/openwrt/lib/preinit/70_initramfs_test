@@ -10,4 +10,5 @@ initramfs_test() {
 	fi
 }
 
+# 给钩子preinit_main_hook注册函数initramfs_test
 boot_hook_add preinit_main initramfs_test

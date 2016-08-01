@@ -9,4 +9,5 @@ run_failsafe_hook() {
     fi
 }
 
+# 给钩子preinit_main_hook注册函数run_failsafe_hook
 boot_hook_add preinit_main run_failsafe_hook

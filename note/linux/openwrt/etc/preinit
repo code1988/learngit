@@ -2,8 +2,11 @@
 # Copyright (C) 2006 OpenWrt.org
 # Copyright (C) 2010 Vertical Communications
 
+
+# 如果环境变量"PREINIT"没有被定义，直接执行/etc/init(实际被定义为1了)
 [ -z "$PREINIT" ] && exec /sbin/init
 
+# 导出PATH为环境变量
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin
 
 pi_ifname=
@@ -23,24 +26,29 @@ pi_init_suppress_stderr="y"
 pi_init_path="/bin:/sbin:/usr/bin:/usr/sbin"
 pi_init_cmd="/sbin/init"
 
+# 导入/lib/functions.sh /lib/functions/preinit.sh /lib/functions/system.sh
 . /lib/functions.sh
 . /lib/functions/preinit.sh
 . /lib/functions/system.sh
 
+# 在钩子列表中添加以下钩子名
 boot_hook_init preinit_essential
 boot_hook_init preinit_main
 boot_hook_init failsafe
 boot_hook_init initramfs
 boot_hook_init preinit_mount_root
 
+# 导入/lib/preinit/目录下所有文件，并完成钩子函数注册(实际只注册了preinit_main failsafe)
 for pi_source_file in /lib/preinit/*; do
 	. $pi_source_file
 done
 
+# 运行钩子preinit_essential(实际由于该钩子名未注册钩子函数，所以do nothing)
 boot_run_hook preinit_essential
 
 pi_mount_skip_next=false
 pi_jffs2_mount_success=false
 pi_failsafe_net_message=false
 
+# 运行钩子preinit_main
 boot_run_hook preinit_main

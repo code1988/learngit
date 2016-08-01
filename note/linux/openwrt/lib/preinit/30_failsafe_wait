@@ -93,4 +93,5 @@ failsafe_wait() {
 	fi
 }
 
+# 给钩子preinit_main_hook注册函数failsafe_wait
 boot_hook_add preinit_main failsafe_wait
