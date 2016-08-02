@@ -626,32 +626,39 @@ static struct pernet_operations vlan_net_ops = {
 	.size = sizeof(struct vlan_net),
 };
 
+// vlan模块初始化
 static int __init vlan_proto_init(void)
 {
 	int err;
 
 	pr_info("%s v%s\n", vlan_fullname, vlan_version);
 
+    // 将vlan模块添加到每一个网络命名空间
 	err = register_pernet_subsys(&vlan_net_ops);
 	if (err < 0)
 		goto err0;
 
+    // 向通知链中注册一个vlan事件通知块
 	err = register_netdevice_notifier(&vlan_notifier_block);
 	if (err < 0)
 		goto err2;
 
+    // 没有配置CONFIG_VLAN_8021Q_GVRP功能时，这里不做任何事
 	err = vlan_gvrp_init();
 	if (err < 0)
 		goto err3;
 
+    // 没有配置CONFIG_VLAN_8021Q_MVRP功能时，这里不做任何事
 	err = vlan_mvrp_init();
 	if (err < 0)
 		goto err4;
 
+    // 初始化操作vlan用的netlink接口
 	err = vlan_netlink_init();
 	if (err < 0)
 		goto err5;
 
+    // 设置用于vlan操作的ioctl钩子函数
 	vlan_ioctl_set(vlan_ioctl_handler);
 	return 0;
 
