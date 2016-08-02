@@ -25,7 +25,7 @@
 #include <string.h>
 
 static int _ulog_channels = -1;         // 打印通道：ULOG_KMSG ULOG_SYSLOG ULOG_STDIO
-static int _ulog_facility = -1;         // 程序模块：LOG_DAEMON LOG_USER等
+static int _ulog_facility = -1;         // 程序类型：LOG_DAEMON LOG_USER等
 static int _ulog_threshold = LOG_DEBUG; // 打印阈值，优先级低于阈值的打印请求会被忽略(值越高优先级越低,LOG_DEBUG=7表示最低优先级，意味着执行全部打印请求)
 static int _ulog_initialized = 0;       // 打印设置初始化标志：0-未初始化 1-初始化完毕
 static const char *_ulog_ident = NULL;  // 打印信息头
