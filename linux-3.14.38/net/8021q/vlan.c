@@ -206,6 +206,9 @@ out_vid_del:
 }
 
 /*  Attach a VLAN device to a mac address (ie Ethernet Card).
+ *  注册一个新的vlan设备
+ *  @real_dev   - 宿主设备
+ *  @vlan_id    - 要创建的vlan设备的ID号
  *  Returns 0 if the device was created or a negative error code otherwise.
  */
 static int register_vlan_device(struct net_device *real_dev, u16 vlan_id)
@@ -481,6 +484,7 @@ static struct notifier_block vlan_notifier_block __read_mostly = {
 
 /*
  *	VLAN IOCTL handler.
+ *	用于ioctl的vlan操作钩子函数 
  *	o execute requested action or pass command to the device driver
  *   arg is really a struct vlan_ioctl_args __user *.
  */
@@ -490,6 +494,7 @@ static int vlan_ioctl_handler(struct net *net, void __user *arg)
 	struct vlan_ioctl_args args;
 	struct net_device *dev = NULL;
 
+    // 将ioctl的vlan传入参数从用户空间拷贝到内核
 	if (copy_from_user(&args, arg, sizeof(struct vlan_ioctl_args)))
 		return -EFAULT;
 
@@ -497,6 +502,7 @@ static int vlan_ioctl_handler(struct net *net, void __user *arg)
 	args.device1[23] = 0;
 	args.u.device2[23] = 0;
 
+    // rtnl上锁
 	rtnl_lock();
 
 	switch (args.cmd) {
@@ -508,11 +514,13 @@ static int vlan_ioctl_handler(struct net *net, void __user *arg)
 	case GET_VLAN_REALDEV_NAME_CMD:
 	case GET_VLAN_VID_CMD:
 		err = -ENODEV;
+        // 根据用户传入的设备名查找实际对应的设备管理块
 		dev = __dev_get_by_name(net, args.device1);
 		if (!dev)
 			goto out;
 
 		err = -EINVAL;
+        // 如果不是添加vlan设备命令时，需要检测设备是否为vlan设备
 		if (args.cmd != ADD_VLAN_CMD && !is_vlan_dev(dev))
 			goto out;
 	}
@@ -520,6 +528,7 @@ static int vlan_ioctl_handler(struct net *net, void __user *arg)
 	switch (args.cmd) {
 	case SET_VLAN_INGRESS_PRIORITY_CMD:
 		err = -EPERM;
+        // 设置vlan入口优先级命令的用户需要进行管理员级别权限测试
 		if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
 			break;
 		vlan_dev_set_ingress_priority(dev,
@@ -530,6 +539,7 @@ static int vlan_ioctl_handler(struct net *net, void __user *arg)
 
 	case SET_VLAN_EGRESS_PRIORITY_CMD:
 		err = -EPERM;
+        // 设置vlan出口优先级命令的用户需要进行管理员级别权限测试
 		if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
 			break;
 		err = vlan_dev_set_egress_priority(dev,
@@ -539,6 +549,7 @@ static int vlan_ioctl_handler(struct net *net, void __user *arg)
 
 	case SET_VLAN_FLAG_CMD:
 		err = -EPERM;
+        // 设置vlan标志位命令的用户需要进行管理员级别权限测试
 		if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
 			break;
 		err = vlan_dev_change_flags(dev,
@@ -548,6 +559,7 @@ static int vlan_ioctl_handler(struct net *net, void __user *arg)
 
 	case SET_VLAN_NAME_TYPE_CMD:
 		err = -EPERM;
+        // 设置vlan设备名风格的用户需要进行管理员级别权限测试
 		if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
 			break;
 		if ((args.u.name_type >= 0) &&
@@ -564,13 +576,16 @@ static int vlan_ioctl_handler(struct net *net, void __user *arg)
 
 	case ADD_VLAN_CMD:
 		err = -EPERM;
+        // 添加vlan设备的用户需要进行管理员级别权限测试
 		if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
 			break;
+        // 在宿主设备上注册一个新的vlan设备
 		err = register_vlan_device(dev, args.u.VID);
 		break;
 
 	case DEL_VLAN_CMD:
 		err = -EPERM;
+        // 删除vlan设备的用户需要进行管理员级别权限测试
 		if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
 			break;
 		unregister_vlan_dev(dev, NULL);
@@ -602,7 +617,7 @@ out:
 	return err;
 }
 
-// 具体的vlan功能初始化
+// 具体的vlan功能初始化(实际就是创建proc文件系统下的vlan接口)
 static int __net_init vlan_init_net(struct net *net)
 {
     // 根据vlan_net_id在该网络命名空间下索引对应的私有数据块，也就是vlan_net

@@ -61,8 +61,10 @@ struct rtnl_link {
 	rtnl_calcit_func 	calcit;
 };
 
+// 定义了一个rtnl互斥锁
 static DEFINE_MUTEX(rtnl_mutex);
 
+// rtnl上锁
 void rtnl_lock(void)
 {
 	mutex_lock(&rtnl_mutex);

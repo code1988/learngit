@@ -3,6 +3,7 @@
 
 #include <asm-generic/errno-base.h>
 
+// 以下定义了额外的errno值含义
 #define	EDEADLK		35	/* Resource deadlock would occur */
 #define	ENAMETOOLONG	36	/* File name too long */
 #define	ENOLCK		37	/* No record locks available */

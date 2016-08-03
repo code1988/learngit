@@ -83,7 +83,11 @@ static inline void set_fs(mm_segment_t fs)
 		: "cc"); \
 	(flag == 0); })
 
-/* We use 33-bit arithmetic here... */
+/* We use 33-bit arithmetic here... 
+ * 判断 addr+size 之后是否还在进程的用户空间范围内
+ * 
+ * 备注：分析暂略
+ * */
 #define __range_ok(addr,size) ({ \
 	unsigned long flag, roksum; \
 	__chk_user_ptr(addr);	\
@@ -221,6 +225,7 @@ static inline void set_fs(mm_segment_t fs)
 
 #endif /* CONFIG_MMU */
 
+// 对用户空间的地址指针addr做某种有效性检验(arm平台上，第一个参数type并没有用到)
 #define access_ok(type,addr,size)	(__range_ok(addr,size) == 0)
 
 #define user_addr_max() \
@@ -425,27 +430,38 @@ do {									\
 	: "cc")
 
 
-#ifdef CONFIG_MMU
+#ifdef CONFIG_MMU   // 以下用于带有MMU的体系架构
 extern unsigned long __must_check __copy_from_user(void *to, const void __user *from, unsigned long n);
 extern unsigned long __must_check __copy_to_user(void __user *to, const void *from, unsigned long n);
 extern unsigned long __must_check __copy_to_user_std(void __user *to, const void *from, unsigned long n);
 extern unsigned long __must_check __clear_user(void __user *addr, unsigned long n);
 extern unsigned long __must_check __clear_user_std(void __user *addr, unsigned long n);
-#else
+#else               // 以下用于不带MMU的体系架构
 #define __copy_from_user(to,from,n)	(memcpy(to, (void __force *)from, n), 0)
 #define __copy_to_user(to,from,n)	(memcpy((void __force *)to, from, n), 0)
 #define __clear_user(addr,n)		(memset((void __force *)addr, 0, n), 0)
 #endif
 
+/* 将数据从用户空间拷贝到内核
+ *
+ * 备注：因为要访问“user”的内存空间，并且本函数可能需要休眠，所以本函数的使用必须处于进程上下文中
+ *       不可以在中断上下文中使用
+ */
 static inline unsigned long __must_check copy_from_user(void *to, const void __user *from, unsigned long n)
 {
+    // 首先检查用户空间的地址指针是否有效
 	if (access_ok(VERIFY_READ, from, n))
 		n = __copy_from_user(to, from, n);
 	else /* security hole - plug it */
-		memset(to, 0, n);
+		memset(to, 0, n);       // 检查不通过的话就将内核数据空间清零
 	return n;
 }
 
+/* 将数据从内核拷贝到用户空间
+ *
+ * 备注：因为要访问“user”的内存空间，并且本函数可能需要休眠，所以本函数的使用必须处于进程上下文中
+ *       不可以在中断上下文中使用
+ */
 static inline unsigned long __must_check copy_to_user(void __user *to, const void *from, unsigned long n)
 {
 	if (access_ok(VERIFY_WRITE, to, n))

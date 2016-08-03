@@ -657,6 +657,7 @@ __setup("netdev=", netdev_boot_setup);
 
 /**
  *	__dev_get_by_name	- find a device by its name
+ *	根据设备名查找对应的设备管理块
  *	@net: the applicable net namespace
  *	@name: name to find
  *

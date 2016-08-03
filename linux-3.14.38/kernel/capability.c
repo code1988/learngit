@@ -372,9 +372,9 @@ bool has_capability_noaudit(struct task_struct *t, int cap)
 
 /**
  * ns_capable - Determine if the current task has a superior capability in effect
- * @ns:  The usernamespace we want the capability in
- * @cap: The capability to be tested for
- * 用户命名空间权限测试
+ * @ns:  The usernamespace we want the capability in 需要被测试的用户命名空间
+ * @cap: The capability to be tested for  基准权限级别
+ * 对指定用户命名空间进行权限测试
  *
  * Return true if the current task has the given superior capability currently
  * available for use, false if not.

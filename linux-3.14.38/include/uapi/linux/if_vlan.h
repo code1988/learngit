@@ -16,7 +16,9 @@
 
 /* VLAN IOCTLs are found in sockios.h */
 
-/* Passed in vlan_ioctl_args structure to determine behaviour. */
+/* Passed in vlan_ioctl_args structure to determine behaviour. 
+ * ioctl中已经定义了的vlan命令枚举
+ * */
 enum vlan_ioctl_cmds {
 	ADD_VLAN_CMD,
 	DEL_VLAN_CMD,
@@ -46,13 +48,15 @@ enum vlan_name_types {
 	VLAN_NAME_TYPE_HIGHEST
 };
 
+// ioctl中vlan传入的参数结构
 struct vlan_ioctl_args {
 	int cmd; /* Should be one of the vlan_ioctl_cmds enum above. */
-	char device1[24];
-
+	char device1[24];       // 用户传入的设备名，用于内核查找实际对应的设备
+                            // 调用ADD_VLAN_CMD/SET_VLAN_FLAG_CMD时，该参数传入的是vlan的宿主设备名
+                            // 调用其他命令时，该参数传入的是vlan设备名
         union {
-		char device2[24];
-		int VID;
+		char device2[24];   // 用于返回vlan设备名
+		int VID;            // 用于传入vlan ID
 		unsigned int skb_priority;
 		unsigned int name_type;
 		unsigned int bind_type;

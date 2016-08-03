@@ -184,7 +184,7 @@ struct vfs_cap_data {
 /* Allow multicasting */
 /* Allow read/write of device-specific registers */
 /* Allow activation of ATM control sockets */
-
+// 管理员权限
 #define CAP_NET_ADMIN        12
 
 /* Allow use of RAW sockets */

@@ -1,7 +1,8 @@
 #ifndef _ASM_GENERIC_ERRNO_BASE_H
 #define _ASM_GENERIC_ERRNO_BASE_H
 
-#define	EPERM		 1	/* Operation not permitted */
+// 以下定义了基本的errno值含义
+#define	EPERM		 1	/* Operation not permitted 用户命名空间权限测试没通过*/
 #define	ENOENT		 2	/* No such file or directory */
 #define	ESRCH		 3	/* No such process */
 #define	EINTR		 4	/* Interrupted system call */
@@ -14,12 +15,12 @@
 #define	EAGAIN		11	/* Try again */
 #define	ENOMEM		12	/* Out of memory */
 #define	EACCES		13	/* Permission denied */
-#define	EFAULT		14	/* Bad address */
+#define	EFAULT		14	/* Bad address 用户空间数据的地址有效性检查没通过*/
 #define	ENOTBLK		15	/* Block device required */
 #define	EBUSY		16	/* Device or resource busy */
 #define	EEXIST		17	/* File exists */
 #define	EXDEV		18	/* Cross-device link */
-#define	ENODEV		19	/* No such device */
+#define	ENODEV		19	/* No such device 没查找到实际对应的设备管理块(struct net_device)*/
 #define	ENOTDIR		20	/* Not a directory */
 #define	EISDIR		21	/* Is a directory */
 #define	EINVAL		22	/* Invalid argument */
