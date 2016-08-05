@@ -28,6 +28,7 @@
 
 static struct kmem_cache *nsproxy_cachep;
 
+// 定义了一个初始的nsproxy(系统运行中根据需要将从本nsproxy开始不断分裂)
 struct nsproxy init_nsproxy = {
 	.count			= ATOMIC_INIT(1),
 	.uts_ns			= &init_uts_ns,

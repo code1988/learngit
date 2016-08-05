@@ -13,6 +13,7 @@ struct fs_struct;
 /*
  * A structure to contain pointers to all per-process
  * namespaces - fs (mount), uts, network, sysvipc, etc.
+ * 定义了每个进程所包含的各类命名空间指针的集合
  *
  * The pid namespace is an exception -- it's accessed using
  * task_active_pid_ns.  The pid namespace here is the
@@ -25,9 +26,11 @@ struct fs_struct;
  * The nsproxy is shared by tasks which share all namespaces.
  * As soon as a single namespace is cloned or unshared, the
  * nsproxy is copied.
+ * 里面每个命名空间都共享的那些进程，也就会共享同一个nsproxy;
+ * 只要有个进程的任一个命名空间将不再相同，该进程都会单独拷贝一份nsproxy出来
  */
 struct nsproxy {
-	atomic_t count;
+	atomic_t count;     // 记录了当前有多少进程引用本结构
 	struct uts_namespace *uts_ns;
 	struct ipc_namespace *ipc_ns;
 	struct mnt_namespace *mnt_ns;
