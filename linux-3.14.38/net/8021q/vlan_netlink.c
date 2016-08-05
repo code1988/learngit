@@ -116,15 +116,20 @@ static int vlan_changelink(struct net_device *dev,
 	return 0;
 }
 
-// 注册并配置一个新的vlan设备
+/* 注册并配置一个新的vlan设备
+ *
+ * 备注：对应ioctl接口的函数register_vlan_device
+ */
 static int vlan_newlink(struct net *src_net, struct net_device *dev,
 			struct nlattr *tb[], struct nlattr *data[])
 {
+    // 获取vlan设备附属的私有空间
 	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
 	struct net_device *real_dev;
 	__be16 proto;
 	int err;
 
+    // 检查是否有传入IFLA_VLAN_ID属性
 	if (!data[IFLA_VLAN_ID])
 		return -EINVAL;
 

@@ -300,11 +300,11 @@ static inline struct net *read_pnet(struct net * const *pnet)
 // 定义了每个网络功能模块在网络命名空间层面的操作集合
 struct pernet_operations {
 	struct list_head list;          
-	int (*init)(struct net *net);   // 指向具体模块的功能初始化函数
-	void (*exit)(struct net *net);  // 指向具体模块的功能注销函数
+	int (*init)(struct net *net);   // 指向具体模块的功能初始化函数(一般就是创建具体的proc节点)
+	void (*exit)(struct net *net);  // 指向具体模块的功能注销函数(一般就是删除具体的proc节点)
 	void (*exit_batch)(struct list_head *net_exit_list);
-	int *id;        // id号用于在网络命名空间中唯一标识该功能模块（搜索用）,当然，对于没有id号需求的模块就不必分配了
-	size_t size;    // size指定该功能模块拥有的私有数据块（通常就是记录对应的proc文件系统信息）大小，配合id号，就可以搜索到对应的私有数据块
+	int *id;        // 在网络命名空间中唯一标识该功能模块（索引proc节点用）,当然，对于没有id号需求的模块就不必分配了
+	size_t size;    // size指定该功能模块拥有的私有数据块（通常就是记录对应的proc节点信息）大小，配合id号，就可以搜索到对应的私有数据块
 };
 
 /*

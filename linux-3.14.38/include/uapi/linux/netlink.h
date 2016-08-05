@@ -31,7 +31,7 @@
 
 #define NETLINK_INET_DIAG	NETLINK_SOCK_DIAG
 
-#define MAX_LINKS 32		
+#define MAX_LINKS 32	// netlink协议上限	
 
 // netlink地址
 struct sockaddr_nl {

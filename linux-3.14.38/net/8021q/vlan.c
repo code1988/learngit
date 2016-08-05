@@ -687,7 +687,7 @@ static int __init vlan_proto_init(void)
 
 	pr_info("%s v%s\n", vlan_fullname, vlan_version);
 
-    // 将vlan模块添加到每一个网络命名空间，并且执行了vlan_init_net
+    // 将vlan模块注册到每一个网络命名空间，并且执行了vlan_init_net
 	err = register_pernet_subsys(&vlan_net_ops);
 	if (err < 0)
 		goto err0;

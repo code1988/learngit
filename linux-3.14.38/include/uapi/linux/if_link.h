@@ -108,7 +108,7 @@ enum {
 	IFLA_UNSPEC,
 	IFLA_ADDRESS,
 	IFLA_BROADCAST,
-	IFLA_IFNAME,        // 序号对应的属性字段保存了接口名(.e "Fex-1")
+	IFLA_IFNAME,        // 对应的属性payload字段保存了接口名(.e "Fex-1")
 	IFLA_MTU,
 	IFLA_LINK,
 	IFLA_QDISC,
@@ -259,7 +259,7 @@ enum {
 
 enum {
 	IFLA_VLAN_UNSPEC,
-	IFLA_VLAN_ID,
+	IFLA_VLAN_ID,           // 对应的属性payload字段保存了vlan id
 	IFLA_VLAN_FLAGS,
 	IFLA_VLAN_EGRESS_QOS,
 	IFLA_VLAN_INGRESS_QOS,

@@ -23,7 +23,7 @@
 #define	ENODEV		19	/* No such device 没查找到实际对应的设备管理块(struct net_device)*/
 #define	ENOTDIR		20	/* Not a directory */
 #define	EISDIR		21	/* Is a directory */
-#define	EINVAL		22	/* Invalid argument */
+#define	EINVAL		22	/* Invalid argument 无效的参数，比如传入的参数缺失*/
 #define	ENFILE		23	/* File table overflow */
 #define	EMFILE		24	/* Too many open files */
 #define	ENOTTY		25	/* Not a typewriter */

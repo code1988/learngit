@@ -2991,7 +2991,7 @@ static struct pernet_operations rtnetlink_net_ops = {
 	.exit = rtnetlink_net_exit,
 };
 
-// netlink 路由设备初始化
+// rtnetlink初始化(在netlink_proto_init中被调用) 
 void __init rtnetlink_init(void)
 {
     // 注册一个rtnetlink网络子系统(包含rtnetlink网络初始化/结束函数)

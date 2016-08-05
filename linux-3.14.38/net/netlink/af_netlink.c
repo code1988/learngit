@@ -86,7 +86,7 @@ static inline int netlink_is_kernel(struct sock *sk)
 	return nlk_sk(sk)->flags & NETLINK_KERNEL_SOCKET;
 }
 
-// netlink总表，其中的每个表项对应定义的netlink协议值,如NETLINK_ROUTE
+// 定义一张netlink接口总表，包含MAX_LINKS个元素，每个元素对应一种netlink协议,如NETLINK_ROUTE
 struct netlink_table *nl_table;
 EXPORT_SYMBOL_GPL(nl_table);
 
@@ -3096,13 +3096,13 @@ static void __init netlink_add_usersock_entry(void)
 	netlink_table_ungrab();
 }
 
-// 定义了一个netlink网络操作块(包含netlink网络初始化/结束函数)
+// 定义了一个netlink模块在网络命名空间层面的操作集合
 static struct pernet_operations __net_initdata netlink_net_ops = {
 	.init = netlink_net_init,
 	.exit = netlink_net_exit,
 };
 
-// 内核netlink初始化函数
+// 内核netlink功能模块初始化
 static int __init netlink_proto_init(void)
 {
 	int i;
@@ -3160,7 +3160,7 @@ static int __init netlink_proto_init(void)
 
     // 注册netlink协议族(包含netlink接口创建函数)
 	sock_register(&netlink_family_ops);
-    // 注册一个netlink网络子系统(包含netlink网络初始化/结束函数)
+    // 将netlink模块注册到每一个网络命名空间，并且执行了netlink_net_init
 	register_pernet_subsys(&netlink_net_ops);
 	/* The netlink device handler may be needed early. */
     // netlink 路由设备初始化
