@@ -1,0 +1,29 @@
+1. 主机字节序、网络字节序
+---------------------------------------------------------------------------------------------------
+    主机字节序通常采用little-endian，低字节放低地址，高字节放高地址
+    网络字节序采用big-endian，低字节放高地址，高字节放低地址
+
+    unsigned long htonl(unsigned long host)     // 主机long转网络long
+    unsigned long ntohl(unsigned long net)      // 网络long转主机long
+    unsigned short htonl(unsigned short host)   // 主机short转网络short
+    unsigned short ntohl(unsigned short net)    // 网络short转主机short
+
+2. 点分十进制字符串IP和32位整型IP
+---------------------------------------------------------------------------------------------------
+    int inet_aton(const char *cp,struct in_addr *inp)   // 点分十进制字符串IP转32位整型IP
+    char *inet_ntoa(struct in_addr in)                  // 32位整型IP转点分十进制字符串IP
+    
+    更新的程序用inet_pton和inet_ntop来代替上面两个函数，因为新函数支持ipv4和ipv6
+    int inet_pton(int af,const char *src,void *dst)                         // 点分十进制字符串IP转32位整型IP
+    const char *inet_ntop(int af,const void *src,char *dst,socklen_t size)  // 32位整型IP转点分十进制字符串IP
+
+    上面转换函数都用到的一个结构
+        typedef uint32_t in_addt_t;
+        struct in_addr{
+            in_addr_t s_addr;                           // 网络字节序       
+        }; 
+
+3. 主机名和IP地址的对应关系
+---------------------------------------------------------------------------------------------------
+    struct hostent *gethostbyname(const char *name)                     // 根据主机名来获取其IP地址
+    struct hostent *gethostbyaddr(const void *addr,int len,int type)    // 根据IP地址获取主机名
