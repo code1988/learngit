@@ -1,0 +1,21 @@
+1. 口令文件(/etc/passwd 644)
+    口令文件记录了linux用户账户以及相关信息（密码除外），每一行中各字段定义如下：
+    <pwd.h>
+    struct passwd {
+        char *pw_name;  // 用户名
+        char *pw_passwd;// 加密口令
+        __uid_t pw_uid; // 用户ID
+        __git_t pw_gid; // 组ID
+        char *pw_gecos; // 注释字段
+        char *pw_dir;   // home目录
+        char *pw_shell; // 该用户的登陆shell
+    }
+    备注：通常有一个用户名为root的登陆项，其用户ID是0；通常还有一个用户名为nobody的登陆项，其用户ID是65534，一般对该用户不提供任何特权，只能访问人人都可读写的文件
+          加密口令字段在这里就是个占位符"x"，实际的加密口令放到了/etc/shadow中
+          用户ID和组ID应该就是当前进程的实际用户ID和实际组ID
+          某些字段可以为空，注释字段为空不产生任何影响
+          home目录字段记录的就是该用户的家目录
+          shell字段一般指定了一个shell程序用来登陆系统，这里有多种方法来组织一个特定用户登陆系统，常见的有/dev/null、/bin/false、/bin/true、/usr/sbin/nologin等
+
+
+
