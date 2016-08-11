@@ -1,6 +1,6 @@
-/* libhttpd.c - HTTP protocol library
-** ÊµÏÖhttp·şÎñÆ÷µÄ´¦Àí·½·¨
-** Copyright © 1995,1998,1999,2000,2001 by Jef Poskanzer <jef@mail.acme.com>.
+ï»¿/* libhttpd.c - HTTP protocol library
+** å®ç°httpæœåŠ¡å™¨çš„å¤„ç†æ–¹æ³•
+** Copyright ?1995,1998,1999,2000,2001 by Jef Poskanzer <jef@mail.acme.com>.
 ** All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
@@ -702,9 +702,9 @@ send_mime( httpd_conn* hc, int status, char* title, char* encodings, char* extra
 
 
 static int str_alloc_count = 0;
-static size_t str_alloc_size = 0;	// ±£´æurlµÄÄÚ´æ¿Õ¼äµÄ´óĞ¡
+static size_t str_alloc_size = 0;	// ä¿å­˜urlçš„å†…å­˜ç©ºé—´çš„å¤§å°
 
-// ÎªurlÖØĞÂ·ÖÅäÄÚ´æ¿Õ¼ä
+// ä¸ºurlé‡æ–°åˆ†é…å†…å­˜ç©ºé—´
 void
 httpd_realloc_str( char** strP, size_t* maxsizeP, size_t size )
 {
@@ -1766,9 +1766,9 @@ httpd_get_conn( httpd_server* hs, int listen_fd, httpd_conn* hc )
 /* Checks hc->read_buf to see whether a complete request has been read so far;
 ** either the first line has two words (an HTTP/0.9 request), or the first
 ** line has three words and there's a blank line present.
-** »ñÈ¡httpÇëÇóĞĞ
-	ÇëÇóĞĞ¸ñÊ½:
-		ÇëÇó·½·¨ + ÇëÇóµÄURI + Ğ­ÒéµÄ°æ±¾(http/0.9²»´ø¸ÃÑ¡Ïî)
+** è·å–httpè¯·æ±‚è¡Œ
+	è¯·æ±‚è¡Œæ ¼å¼:
+		è¯·æ±‚æ–¹æ³• + è¯·æ±‚çš„URI + åè®®çš„ç‰ˆæœ¬(http/0.9ä¸å¸¦è¯¥é€‰é¡¹)
 ** hc->read_idx is how much has been read in; hc->checked_idx is how much we
 ** have checked so far; and hc->checked_state is the current state of the
 ** finite state machine.
@@ -1778,7 +1778,7 @@ httpd_got_request( httpd_conn* hc )
 {
 	char c;
 
-	// ÇëÇóĞĞºÏ·¨ĞÔ¼ì²é
+	// è¯·æ±‚è¡Œåˆæ³•æ€§æ£€æŸ¥
 	for ( ; hc->checked_idx < hc->read_idx; ++hc->checked_idx )
 	{
 		c = hc->read_buf[hc->checked_idx];
@@ -1787,10 +1787,10 @@ httpd_got_request( httpd_conn* hc )
 		    case CHST_FIRSTWORD:
 		    	switch ( c )
 				{
-					case ' ': case '\t':		// ¿Õ¸ñ tab	- ½øÈëCHST_FIRSTWS×´Ì¬
+					case ' ': case '\t':		// ç©ºæ ¼ tab	- è¿›å…¥CHST_FIRSTWSçŠ¶æ€
 					hc->checked_state = CHST_FIRSTWS;
 					break;
-					case '\012': case '\015':	// »»ĞĞ »Ø³µ	- ·µ»Ø´íÎóµÄÇëÇóÍ·
+					case '\012': case '\015':	// æ¢è¡Œ å›è½¦	- è¿”å›é”™è¯¯çš„è¯·æ±‚å¤´
 					hc->checked_state = CHST_BOGUS;
 					return GR_BAD_REQUEST;
 				}
@@ -1798,12 +1798,12 @@ httpd_got_request( httpd_conn* hc )
 		    case CHST_FIRSTWS:
 		    	switch ( c )
 				{
-					case ' ': case '\t':		// ¿Õ¸ñ tab	- ºöÂÔ	
+					case ' ': case '\t':		// ç©ºæ ¼ tab	- å¿½ç•¥	
 					break;
-					case '\012': case '\015':	// »»ĞĞ »Ø³µ	- ·µ»Ø´íÎóµÄÇëÇóÍ·
+					case '\012': case '\015':	// æ¢è¡Œ å›è½¦	- è¿”å›é”™è¯¯çš„è¯·æ±‚å¤´
 					hc->checked_state = CHST_BOGUS;
 					return GR_BAD_REQUEST;
-					default:					// ÆäÓà×Ö·û	- ½øÈëCHST_SECONDWORD×´Ì¬
+					default:					// å…¶ä½™å­—ç¬¦	- è¿›å…¥CHST_SECONDWORDçŠ¶æ€
 					hc->checked_state = CHST_SECONDWORD;
 					break;
 				}
@@ -1811,10 +1811,10 @@ httpd_got_request( httpd_conn* hc )
 		    case CHST_SECONDWORD:
 		    	switch ( c )
 				{
-					case ' ': case '\t':		// ¿Õ¸ñ tab	- ½øÈëCHST_SECONDWS×´Ì¬
+					case ' ': case '\t':		// ç©ºæ ¼ tab	- è¿›å…¥CHST_SECONDWSçŠ¶æ€
 					hc->checked_state = CHST_SECONDWS;
 					break;
-					case '\012': case '\015':	// »»ĞĞ »Ø³µ	- ³É¹¦»ñÈ¡ÇëÇóÍ·(1ĞĞÖ»ÓĞ2¸öµ¥´Ê£¬ËµÃ÷ÕâÊÇhttp0.9°æ±¾µÄÇëÇóÍ·)
+					case '\012': case '\015':	// æ¢è¡Œ å›è½¦	- æˆåŠŸè·å–è¯·æ±‚å¤´(1è¡Œåªæœ‰2ä¸ªå•è¯ï¼Œè¯´æ˜è¿™æ˜¯http0.9ç‰ˆæœ¬çš„è¯·æ±‚å¤´)
 					/* The first line has only two words - an HTTP/0.9 request. */
 					return GR_GOT_REQUEST;
 				}
@@ -1822,12 +1822,12 @@ httpd_got_request( httpd_conn* hc )
 		    case CHST_SECONDWS:
 		    	switch ( c )
 				{
-					case ' ': case '\t':		// ¿Õ¸ñ tab	- ºöÂÔ	
+					case ' ': case '\t':		// ç©ºæ ¼ tab	- å¿½ç•¥	
 					break;
-					case '\012': case '\015':	// »»ĞĞ »Ø³µ	- ·µ»Ø´íÎóµÄÇëÇóÍ·
+					case '\012': case '\015':	// æ¢è¡Œ å›è½¦	- è¿”å›é”™è¯¯çš„è¯·æ±‚å¤´
 					hc->checked_state = CHST_BOGUS;
 					return GR_BAD_REQUEST;
-					default:					// ÆäÓà×Ö·û	- ½øÈëCHST_THIRDWORD×´Ì¬
+					default:					// å…¶ä½™å­—ç¬¦	- è¿›å…¥CHST_THIRDWORDçŠ¶æ€
 					hc->checked_state = CHST_THIRDWORD;
 					break;
 				}
@@ -1835,13 +1835,13 @@ httpd_got_request( httpd_conn* hc )
 		    case CHST_THIRDWORD:
 		    	switch ( c )
 				{
-					case ' ': case '\t':			// ¿Õ¸ñ tab	- ½øÈëCHST_THIRDWS×´Ì¬
+					case ' ': case '\t':			// ç©ºæ ¼ tab	- è¿›å…¥CHST_THIRDWSçŠ¶æ€
 					hc->checked_state = CHST_THIRDWS;
 					break;
-					case '\012':					// »»ĞĞ		- ½øÈëCHST_LF
+					case '\012':					// æ¢è¡Œ		- è¿›å…¥CHST_LF
 					hc->checked_state = CHST_LF;
 					break;
-					case '\015':					// »Ø³µ		- ½øÈëCHST_CR
+					case '\015':					// å›è½¦		- è¿›å…¥CHST_CR
 					hc->checked_state = CHST_CR;
 					break;
 				}
@@ -1849,15 +1849,15 @@ httpd_got_request( httpd_conn* hc )
 		    case CHST_THIRDWS:
 		    	switch ( c )
 				{
-					case ' ': case '\t':			// ¿Õ¸ñ tab	- ºöÂÔ	
+					case ' ': case '\t':			// ç©ºæ ¼ tab	- å¿½ç•¥	
 					break;
-					case '\012':					// »»ĞĞ		- ½øÈëCHST_LF
+					case '\012':					// æ¢è¡Œ		- è¿›å…¥CHST_LF
 					hc->checked_state = CHST_LF;
 					break;
-					case '\015':					// »Ø³µ		- ½øÈëCHST_CR
+					case '\015':					// å›è½¦		- è¿›å…¥CHST_CR
 					hc->checked_state = CHST_CR;
 					break;
-					default:						// ÆäÓà×Ö·û	- ·µ»Ø´íÎóµÄÇëÇóÍ·
+					default:						// å…¶ä½™å­—ç¬¦	- è¿”å›é”™è¯¯çš„è¯·æ±‚å¤´
 					hc->checked_state = CHST_BOGUS;
 					return GR_BAD_REQUEST;
 				}
@@ -1865,10 +1865,10 @@ httpd_got_request( httpd_conn* hc )
 		    case CHST_LINE:
 		    	switch ( c )
 				{
-					case '\012':					// »»ĞĞ		- ½øÈëCHST_LF
+					case '\012':					// æ¢è¡Œ		- è¿›å…¥CHST_LF
 					hc->checked_state = CHST_LF;
 					break;
-					case '\015':					// »Ø³µ		- ½øÈëCHST_CR
+					case '\015':					// å›è½¦		- è¿›å…¥CHST_CR
 					hc->checked_state = CHST_CR;
 					break;
 				}
@@ -1876,27 +1876,27 @@ httpd_got_request( httpd_conn* hc )
 		    case CHST_LF:
 		    	switch ( c )
 				{
-					case '\012':					// »»ĞĞ		- Á¬Ğø2¸ö»»ĞĞ·ûÒâÎ¶×Å³É¹¦»ñÈ¡ÇëÇóÍ·
+					case '\012':					// æ¢è¡Œ		- è¿ç»­2ä¸ªæ¢è¡Œç¬¦æ„å‘³ç€æˆåŠŸè·å–è¯·æ±‚å¤´
 					/* Two newlines in a row - a blank line - end of request. */
 					return GR_GOT_REQUEST;
-					case '\015':					// »Ø³µ		- ½øÈëCHST_CR 
+					case '\015':					// å›è½¦		- è¿›å…¥CHST_CR 
 					hc->checked_state = CHST_CR;
 					break;
 					default:
-					hc->checked_state = CHST_LINE;	// ÆäÓà×Ö·û	- ½øÈëCHST_LINE
+					hc->checked_state = CHST_LINE;	// å…¶ä½™å­—ç¬¦	- è¿›å…¥CHST_LINE
 					break;
 				}
 		    break;
 		    case CHST_CR:
 		    	switch ( c )
 				{
-					case '\012':					// »»ĞĞ		- »Ø³µ + »»ĞĞ ½øÈëCHST_CRLF
+					case '\012':					// æ¢è¡Œ		- å›è½¦ + æ¢è¡Œ è¿›å…¥CHST_CRLF
 					hc->checked_state = CHST_CRLF;
 					break;
-					case '\015':					// »Ø³µ		- Á¬Ğø2¸ö»Ø³µ·ûÒâÎ¶×Å³É¹¦»ñÈ¡ÇëÇóÍ·
+					case '\015':					// å›è½¦		- è¿ç»­2ä¸ªå›è½¦ç¬¦æ„å‘³ç€æˆåŠŸè·å–è¯·æ±‚å¤´
 					/* Two returns in a row - end of request. */
 					return GR_GOT_REQUEST;
-					default:						// ÆäÓà×Ö·û	- ½øÈëCHST_LINE
+					default:						// å…¶ä½™å­—ç¬¦	- è¿›å…¥CHST_LINE
 					hc->checked_state = CHST_LINE;
 					break;
 				}
@@ -1904,24 +1904,24 @@ httpd_got_request( httpd_conn* hc )
 		    case CHST_CRLF:
 		    	switch ( c )
 				{
-					case '\012':					// »»ĞĞ		- »Ø³µ + »»ĞĞ + »»ĞĞ ÒâÎ¶×Å³É¹¦»ñÈ¡ÇëÇóÍ·
+					case '\012':					// æ¢è¡Œ		- å›è½¦ + æ¢è¡Œ + æ¢è¡Œ æ„å‘³ç€æˆåŠŸè·å–è¯·æ±‚å¤´
 					/* Two newlines in a row - end of request. */
 					return GR_GOT_REQUEST;
-					case '\015':					// »Ø³µ		- ½øÈëCHST_CRLFCR
+					case '\015':					// å›è½¦		- è¿›å…¥CHST_CRLFCR
 					hc->checked_state = CHST_CRLFCR;
 					break;
 					default:
-					hc->checked_state = CHST_LINE;	// ÆäÓà×Ö·û	- ½øÈëCHST_LINE
+					hc->checked_state = CHST_LINE;	// å…¶ä½™å­—ç¬¦	- è¿›å…¥CHST_LINE
 					break;
 				}
 		    break;
 		    case CHST_CRLFCR:
 		    	switch ( c )
 				{
-					case '\012': case '\015':		// »»ĞĞ »Ø³µ	- ÒâÎ¶×Å³É¹¦»ñÈ¡ÇëÇóÍ·
+					case '\012': case '\015':		// æ¢è¡Œ å›è½¦	- æ„å‘³ç€æˆåŠŸè·å–è¯·æ±‚å¤´
 					/* Two CRLFs or two CRs in a row - end of request. */
 					return GR_GOT_REQUEST;
-					default:						// ÆäÓà×Ö·û	- ½øÈëCHST_LINE
+					default:						// å…¶ä½™å­—ç¬¦	- è¿›å…¥CHST_LINE
 					hc->checked_state = CHST_LINE;
 					break;
 				}
@@ -1933,25 +1933,25 @@ httpd_got_request( httpd_conn* hc )
 return GR_NO_REQUEST;
 }
 
-// ·ÖÎöÇëÇóĞĞ
+// åˆ†æè¯·æ±‚è¡Œ
 int
 httpd_parse_request( httpd_conn* hc )
 {
     char* buf;
-    char* method_str;	// Ö¸ÏòÇëÇó·½·¨
-    char* url;			// Ö¸ÏòÇëÇóµÄurl
-    char* protocol;		// Ö¸ÏòĞ­Òé°æ±¾
-    char* reqhost;		// Ö¸ÏòurlÍøÖ·²¿·Ö
+    char* method_str;	// æŒ‡å‘è¯·æ±‚æ–¹æ³•
+    char* url;			// æŒ‡å‘è¯·æ±‚çš„url
+    char* protocol;		// æŒ‡å‘åè®®ç‰ˆæœ¬
+    char* reqhost;		// æŒ‡å‘urlç½‘å€éƒ¨åˆ†
     char* eol;
     char* cp;
     char* pi;
 
     hc->checked_idx = 0;	/* reset */
 
-	// »ñÈ¡ÇëÇó·½·¨
+	// è·å–è¯·æ±‚æ–¹æ³•
     method_str = bufgets( hc );
 
-	// »ñÈ¡ÇëÇóµÄurl
+	// è·å–è¯·æ±‚çš„url
     url = strpbrk( method_str, " \t\012\015" );
     if ( url == (char*) 0 )
 	{
@@ -1961,7 +1961,7 @@ httpd_parse_request( httpd_conn* hc )
     *url++ = '\0';
     url += strspn( url, " \t\012\015" );
 
-	// »ñÈ¡Ğ­Òé°æ±¾
+	// è·å–åè®®ç‰ˆæœ¬
     protocol = strpbrk( url, " \t\012\015" );
     if ( protocol == (char*) 0 )
 	{
@@ -1984,7 +1984,7 @@ httpd_parse_request( httpd_conn* hc )
     hc->protocol = protocol;
 
     /* Check for HTTP/1.1 absolute URL. */
-	// ´¦ÀíurlÖĞµÄÖ÷»úÍøÖ·²¿·Ö
+	// å¤„ç†urlä¸­çš„ä¸»æœºç½‘å€éƒ¨åˆ†
     if ( strncasecmp( url, "http://", 7 ) == 0 )
 	{
 		if ( ! hc->one_one )
@@ -1992,24 +1992,24 @@ httpd_parse_request( httpd_conn* hc )
 		    httpd_send_err( hc, 400, httpd_err400title, "", httpd_err400form, "" );
 		    return -1;
 		    }
-		reqhost = url + 7;				// »ñÈ¡urlµÄÆğÊ¼Ö¸Õë
+		reqhost = url + 7;				// è·å–urlçš„èµ·å§‹æŒ‡é’ˆ
 		url = strchr( reqhost, '/' );
 		if ( url == (char*) 0 )
 		    {
 		    httpd_send_err( hc, 400, httpd_err400title, "", httpd_err400form, "" );
 		    return -1;
 		    }
-		*url = '\0';					// '/'×Ö·û´¦½Ø¶Ïurl
+		*url = '\0';					// '/'å­—ç¬¦å¤„æˆªæ–­url
 		if ( strchr( reqhost, '/' ) != (char*) 0 || reqhost[0] == '.' )
 		    {
 		    httpd_send_err( hc, 400, httpd_err400title, "", httpd_err400form, "" );
 		    return -1;
 		    }
 
-		// µ÷Õû´æ´¢urlµÄÄÚ´æ¿Õ¼ä,²¢Íê³É¿½±´
+		// è°ƒæ•´å­˜å‚¨urlçš„å†…å­˜ç©ºé—´,å¹¶å®Œæˆæ‹·è´
 		httpd_realloc_str( &hc->reqhost, &hc->maxreqhost, strlen( reqhost ) );
 		(void) strcpy( hc->reqhost, reqhost );
-		*url = '/';						// È¡Ïû½Ø¶Ï
+		*url = '/';						// å–æ¶ˆæˆªæ–­
 	}
 
     if ( *url != '/' )
@@ -2373,7 +2373,7 @@ httpd_parse_request( httpd_conn* hc )
     return 0;
 }
 
-// »ñÈ¡Ò»ĞĞÊı¾İ
+// è·å–ä¸€è¡Œæ•°æ®
 static char*
 bufgets( httpd_conn* hc )
 {
@@ -2384,13 +2384,13 @@ bufgets( httpd_conn* hc )
 	{
 		c = hc->read_buf[hc->checked_idx];
 
-		// ²éÕÒ»»ĞĞ·ûºÍ»Ø³µ·û,ÓÃ'\0'´úÌæ
+		// æŸ¥æ‰¾æ¢è¡Œç¬¦å’Œå›è½¦ç¬¦,ç”¨'\0'ä»£æ›¿
 		if ( c == '\012' || c == '\015' )
 	    {
 		    hc->read_buf[hc->checked_idx] = '\0';
 		    ++hc->checked_idx;
 
-			// ÅĞ¶ÏÊÇ·ñÊÇ	\r\n
+			// åˆ¤æ–­æ˜¯å¦æ˜¯	\r\n
 		    if ( c == '\015' && hc->checked_idx < hc->read_idx &&
 			 hc->read_buf[hc->checked_idx] == '\012' )
 			{
@@ -2398,7 +2398,7 @@ bufgets( httpd_conn* hc )
 			++hc->checked_idx;
 			}
 
-			// ·µ»ØÒ»ĞĞÊı¾İµÄÖ¸Õë
+			// è¿”å›ä¸€è¡Œæ•°æ®çš„æŒ‡é’ˆ
 		    return &(hc->read_buf[i]);
 	    }
 	}

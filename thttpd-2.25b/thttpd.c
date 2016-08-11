@@ -1,6 +1,6 @@
-/* thttpd.c - tiny/turbo/throttling HTTP server
-** ÊµÏÖÖ÷º¯Êı
-** Copyright © 1995,1998,1999,2000,2001 by Jef Poskanzer <jef@mail.acme.com>.
+ï»¿/* thttpd.c - tiny/turbo/throttling HTTP server
+** å®ç°ä¸»å‡½æ•°
+** Copyright ?1995,1998,1999,2000,2001 by Jef Poskanzer <jef@mail.acme.com>.
 ** All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
@@ -70,21 +70,21 @@ typedef long long int64_t;
 
 
 static char* argv0;
-static int debug;			// 0-Æô¶¯ÊØ»¤½ø³Ì  1-¹Ø±ÕÊØ»¤½ø³Ì
-static unsigned short port;	// Ä¬ÈÏ¶Ë¿Ú
-static char* dir;			// ³ÌĞòÂ·¾¶,do_chrootÊ¹ÄÜÊ±£¬³ÌĞòÀï×÷Îª¸ùÄ¿Â¼Ê¹ÓÃ
-static char* data_dir;		// Êı¾İÂ·¾¶
+static int debug;			// 0-å¯åŠ¨å®ˆæŠ¤è¿›ç¨‹  1-å…³é—­å®ˆæŠ¤è¿›ç¨‹
+static unsigned short port;	// é»˜è®¤ç«¯å£
+static char* dir;			// ç¨‹åºè·¯å¾„,do_chrootä½¿èƒ½æ—¶ï¼Œç¨‹åºé‡Œä½œä¸ºæ ¹ç›®å½•ä½¿ç”¨
+static char* data_dir;		// æ•°æ®è·¯å¾„
 static int do_chroot, no_log, no_symlink_check, do_vhost, do_global_passwd;
-static char* cgi_pattern;	// CGI³ÌĞòÂ·¾¶
+static char* cgi_pattern;	// CGIç¨‹åºè·¯å¾„
 static int cgi_limit;
 static char* url_pattern;
 static int no_empty_referers;
 static char* local_pattern;
-static char* logfile;		// ÈÕÖ¾ÎÄ¼ş
-static char* throttlefile;	// Á÷Á¿¿ØÖÆÎÄ¼ş
-static char* hostname;		// ±¾µØIP
-static char* pidfile;		// ½ø³ÌºÅÎÄ¼ş
-static char* user;			// ÓÃ»§Ãû£¬±ÈÈçrootÓÃ»§£¬Ä¬ÈÏÊÇnobody		
+static char* logfile;		// æ—¥å¿—æ–‡ä»¶
+static char* throttlefile;	// æµé‡æ§åˆ¶æ–‡ä»¶
+static char* hostname;		// æœ¬åœ°IP
+static char* pidfile;		// è¿›ç¨‹å·æ–‡ä»¶
+static char* user;			// ç”¨æˆ·åï¼Œæ¯”å¦‚rootç”¨æˆ·ï¼Œé»˜è®¤æ˜¯nobody		
 static char* charset;
 static char* p3p;
 static int max_age;
@@ -97,16 +97,16 @@ typedef struct {
     off_t bytes_since_avg;
     int num_sending;
     } throttletab;
-static throttletab* throttles;			// Á÷Á¿¿ØÖÆ¿é
+static throttletab* throttles;			// æµé‡æ§åˆ¶å—
 static int numthrottles, maxthrottles;
 
 #define THROTTLE_NOLIMIT -1
 
-// ·şÎñÆ÷¶ËÁ¬½Ó¿ØÖÆ¿é
+// æœåŠ¡å™¨ç«¯è¿æ¥æ§åˆ¶å—
 typedef struct {
-    int conn_state;				// ±êÊ¶·şÎñÆ÷µ±Ç°¶Ë¿ÚµÄ×´Ì¬:¿É¶ÁÖĞ ¿ÉĞ´ÖĞ ¼àÌıÖĞ ¿ÕÏĞÖĞ
+    int conn_state;				// æ ‡è¯†æœåŠ¡å™¨å½“å‰ç«¯å£çš„çŠ¶æ€:å¯è¯»ä¸­ å¯å†™ä¸­ ç›‘å¬ä¸­ ç©ºé—²ä¸­
     int next_free_connect;
-    httpd_conn* hc;				// Ö¸ÏòÖ¸¶¨¶Ë¿ÚµÄ¿Í»§¶Ëhttp²ãÁ¬½Ó¿ØÖÆ¿é
+    httpd_conn* hc;				// æŒ‡å‘æŒ‡å®šç«¯å£çš„å®¢æˆ·ç«¯httpå±‚è¿æ¥æ§åˆ¶å—
     int tnums[MAXTHROTTLENUMS];         /* throttle indexes */
     int numtnums;
     long max_limit, min_limit;
@@ -118,7 +118,7 @@ typedef struct {
     off_t end_byte_index;
     off_t next_byte_index;
     } connecttab;
-static connecttab* connects;		// Á¬½Ó±í ½á¹¹ÌåÊı×éÖ¸Õë
+static connecttab* connects;		// è¿æ¥è¡¨ ç»“æ„ä½“æ•°ç»„æŒ‡é’ˆ
 static int num_connects, max_connects, first_free_connect;
 static int httpd_conn_count;
 
@@ -172,7 +172,7 @@ static void thttpd_logstats( long secs );
 
 
 /* SIGTERM and SIGINT say to exit immediately. */
-// Á¢¼´ÍË³ö
+// ç«‹å³é€€å‡º
 static void
 handle_term( int sig )
     {
@@ -186,7 +186,7 @@ handle_term( int sig )
 
 
 /* SIGCHLD - a chile process exitted, so we need to reap the zombie */
-// ×Ó½ø³ÌÍË³öĞÅºÅ£¬ÕâÀï´¦Àí½©Ê¬½ø³Ì
+// å­è¿›ç¨‹é€€å‡ºä¿¡å·ï¼Œè¿™é‡Œå¤„ç†åƒµå°¸è¿›ç¨‹
 static void
 handle_chld( int sig )
     {
@@ -371,7 +371,7 @@ main( int argc, char** argv )
     int gotv4, gotv6;
     struct timeval tv;
 
-	// »ñÈ¡µÚÒ»¸öÈë²Î£¬Ò²¾ÍÊÇµ±Ç°ÔËĞĞµÄ³ÌĞòÃû
+	// è·å–ç¬¬ä¸€ä¸ªå…¥å‚ï¼Œä¹Ÿå°±æ˜¯å½“å‰è¿è¡Œçš„ç¨‹åºå
     argv0 = argv[0];
 
     cp = strrchr( argv0, '/' );
@@ -380,18 +380,18 @@ main( int argc, char** argv )
     else
 		cp = argv0;
 	
-	// ´ò¿ªÏµÍ³¼ÇÂ¼£¬ÒÔ³ÌĞòÃû×÷ÎªÃ¿ĞĞĞĞÊ×±êÖ¾
+	// æ‰“å¼€ç³»ç»Ÿè®°å½•ï¼Œä»¥ç¨‹åºåä½œä¸ºæ¯è¡Œè¡Œé¦–æ ‡å¿—
     openlog( cp, LOG_NDELAY|LOG_PID, LOG_FACILITY );
 
-    // ´¦ÀíÃüÁîĞĞ²ÎÊı
+    // å¤„ç†å‘½ä»¤è¡Œå‚æ•°
     parse_args( argc, argv );
 
     /* Read zone info now, in case we chroot(). */
-	// ÉèÖÃÊ±¼ä»·¾³±äÁ¿
+	// è®¾ç½®æ—¶é—´ç¯å¢ƒå˜é‡
     tzset();
 
     /* Look up hostname now, in case we chroot(). */
-	// »ñÈ¡±¾µØiP
+	// è·å–æœ¬åœ°iP
     lookup_hostname( &sa4, sizeof(sa4), &gotv4, &sa6, sizeof(sa6), &gotv6 );
     if ( ! ( gotv4 || gotv6 ) )
 	{
@@ -400,14 +400,14 @@ main( int argc, char** argv )
 	exit( 1 );
 	}
 
-    // Á÷Á¿¿ØÖÆÄ£¿é£¬Ä¬ÈÏÁ÷Á¿¿ØÖÆÎÄ¼şÃ»ÓĞÅäÖÃ
+    // æµé‡æ§åˆ¶æ¨¡å—ï¼Œé»˜è®¤æµé‡æ§åˆ¶æ–‡ä»¶æ²¡æœ‰é…ç½®
     numthrottles = 0;
     maxthrottles = 0;
     throttles = (throttletab*) 0;
     if ( throttlefile != (char*) 0 )
 		read_throttlefile( throttlefile );
 
-	// Èç¹ûµ±Ç°ÊÇrootÓÃ»§£¬È»ºóÒªÇĞ»»µ½ÆäËûÓÃ»§£¬ÄÇÃ´ĞèÒª»ñÈ¡ÆäËûÓÃ»§µÄuidºÍgid
+	// å¦‚æœå½“å‰æ˜¯rootç”¨æˆ·ï¼Œç„¶åè¦åˆ‡æ¢åˆ°å…¶ä»–ç”¨æˆ·ï¼Œé‚£ä¹ˆéœ€è¦è·å–å…¶ä»–ç”¨æˆ·çš„uidå’Œgid
     if ( getuid() == 0 )
 	{
 		pwd = getpwnam( user );
@@ -421,15 +421,15 @@ main( int argc, char** argv )
 		gid = pwd->pw_gid;
 	}
 
-    // ÅäÖÃÈÕÖ¾ÎÄ¼ş
+    // é…ç½®æ—¥å¿—æ–‡ä»¶
     if ( logfile != (char*) 0 )
 	{
-		if ( strcmp( logfile, "/dev/null" ) == 0 )	// ÈÕÖ¾ÎÄ¼şÊÇ/dev/nullÒâÎ¶×ÅÈÕÖ¾¹¦ÄÜ¹Ø±Õ
+		if ( strcmp( logfile, "/dev/null" ) == 0 )	// æ—¥å¿—æ–‡ä»¶æ˜¯/dev/nullæ„å‘³ç€æ—¥å¿—åŠŸèƒ½å…³é—­
 		    {
 		    no_log = 1;
 		    logfp = (FILE*) 0;
 		    }
-		else if ( strcmp( logfile, "-" ) == 0 )		// ÈÕÖ¾ÎÄ¼şÊÇ- ÒâÎ¶×ÅÊä³öµ½±ê×¼Êä³ö
+		else if ( strcmp( logfile, "-" ) == 0 )		// æ—¥å¿—æ–‡ä»¶æ˜¯- æ„å‘³ç€è¾“å‡ºåˆ°æ ‡å‡†è¾“å‡º
 		    logfp = stdout;
 		else
 	    {
@@ -440,14 +440,14 @@ main( int argc, char** argv )
 			perror( logfile );
 			exit( 1 );
 			}
-		    if ( logfile[0] != '/' )				// ÈÕÖ¾ÎÄ¼ş±ØĞë´ø¾ø¶ÔÂ·¾¶
+		    if ( logfile[0] != '/' )				// æ—¥å¿—æ–‡ä»¶å¿…é¡»å¸¦ç»å¯¹è·¯å¾„
 			{
 			syslog( LOG_WARNING, "logfile is not an absolute path, you may not be able to re-open it" );
 			(void) fprintf( stderr, "%s: logfile is not an absolute path, you may not be able to re-open it\n", argv0 );
 			}
-		    (void) fcntl( fileno( logfp ), F_SETFD, 1 );	// ÊµÏÖclose-on-exec
+		    (void) fcntl( fileno( logfp ), F_SETFD, 1 );	// å®ç°close-on-exec
 
-			// Èç¹ûµ±Ç°ÊÇrootÓÃ»§£¬¿ÉÒÔ°ÑÈÕÖ¾ÎÄ¼şµÄËùÓĞÕßºÍËùÔÚ×é±ä¸üÎªÖ¸¶¨µÄÓÃ»§
+			// å¦‚æœå½“å‰æ˜¯rootç”¨æˆ·ï¼Œå¯ä»¥æŠŠæ—¥å¿—æ–‡ä»¶çš„æ‰€æœ‰è€…å’Œæ‰€åœ¨ç»„å˜æ›´ä¸ºæŒ‡å®šçš„ç”¨æˆ·
 		    if ( getuid() == 0 )
 			{
 				/* If we are root then we chown the log file to the user we'll
@@ -464,7 +464,7 @@ main( int argc, char** argv )
     else
 		logfp = (FILE*) 0;
 
-    // ¸Ä±äµ±Ç°¹¤×÷Ä¿Â¼µ½ÍøÒ³Ä¿Â¼ÏÂ
+    // æ”¹å˜å½“å‰å·¥ä½œç›®å½•åˆ°ç½‘é¡µç›®å½•ä¸‹
     if ( dir != (char*) 0 )
 	{
 		if ( chdir( dir ) < 0 )
@@ -490,25 +490,25 @@ main( int argc, char** argv )
 	}
 #endif /* USE_USER_DIR */
 
-    // »ñÈ¡µ±Ç°¹¤×÷Ä¿Â¼£¬Ò²¾ÍÊÇÍøÒ³Ä¿Â¼
+    // è·å–å½“å‰å·¥ä½œç›®å½•ï¼Œä¹Ÿå°±æ˜¯ç½‘é¡µç›®å½•
     (void) getcwd( cwd, sizeof(cwd) - 1 );
     if ( cwd[strlen( cwd ) - 1] != '/' )
 	(void) strcat( cwd, "/" );
 
-	// ÅĞ¶ÏÊÇ·ñÊ¹ÄÜºóÌ¨¹¦ÄÜ(ÊØ»¤½ø³Ì)
+	// åˆ¤æ–­æ˜¯å¦ä½¿èƒ½åå°åŠŸèƒ½(å®ˆæŠ¤è¿›ç¨‹)
     if ( ! debug )
 	{
 		/* We're not going to use stdin stdout or stderr from here on, so close
 		** them to save file descriptors.
 		*/
-		(void) fclose( stdin );			// ¹Ø±ê×¼ÊäÈë
-		if ( logfp != stdout )			// Èç¹ûÈÕÖ¾ÎÄ¼şÊä³öÃ»ÓĞÖØ¶¨Ïòµ½±ê×¼Êä³ö£¬Ôò¹Ø±Õ±ê×¼Êä³ö
+		(void) fclose( stdin );			// å…³æ ‡å‡†è¾“å…¥
+		if ( logfp != stdout )			// å¦‚æœæ—¥å¿—æ–‡ä»¶è¾“å‡ºæ²¡æœ‰é‡å®šå‘åˆ°æ ‡å‡†è¾“å‡ºï¼Œåˆ™å…³é—­æ ‡å‡†è¾“å‡º
 		    (void) fclose( stdout );
-		(void) fclose( stderr );		// ¹Ø±Õ±ê×¼´íÎóÊä³ö
+		(void) fclose( stderr );		// å…³é—­æ ‡å‡†é”™è¯¯è¾“å‡º
 
 		/* Daemonize - make ourselves a subprocess. */
 #ifdef HAVE_DAEMON
-		// ´´½¨ÊØ»¤½ø³Ì£¬¼´fork³É¹¦ºó£¬¸¸½ø³ÌÍË³ö£¬µ±Ç°Ä¿Â¼¡¢±ê×¼ÊäÈëÊä³ö²»±ä
+		// åˆ›å»ºå®ˆæŠ¤è¿›ç¨‹ï¼Œå³forkæˆåŠŸåï¼Œçˆ¶è¿›ç¨‹é€€å‡ºï¼Œå½“å‰ç›®å½•ã€æ ‡å‡†è¾“å…¥è¾“å‡ºä¸å˜
 		if ( daemon( 1, 1 ) < 0 )
 		    {
 		    syslog( LOG_CRIT, "daemon - %m" );
@@ -526,7 +526,7 @@ main( int argc, char** argv )
 		    exit( 0 );
 	    }
 #ifdef HAVE_SETSID
-        (void) setsid();	// ÉèÖÃµ±Ç°½ø³Ì(ÕâÀïÒ²¾ÍÊÇ×Ó½ø³Ì)ÎªĞÂµÄ»á»°µÄÁìÍ·½ø³Ì£¬±àĞ´ÊØ»¤½ø³ÌµÄ±ØĞëÁ÷³Ì
+        (void) setsid();	// è®¾ç½®å½“å‰è¿›ç¨‹(è¿™é‡Œä¹Ÿå°±æ˜¯å­è¿›ç¨‹)ä¸ºæ–°çš„ä¼šè¯çš„é¢†å¤´è¿›ç¨‹ï¼Œç¼–å†™å®ˆæŠ¤è¿›ç¨‹çš„å¿…é¡»æµç¨‹
 #endif /* HAVE_SETSID */
 #endif /* HAVE_DAEMON */
 	}
@@ -540,7 +540,7 @@ main( int argc, char** argv )
 #endif /* HAVE_SETSID */
 	}
 
-	// ½«µ±Ç°µÄ½ø³ÌºÅĞ´ÈëÖ¸¶¨ÎÄ¼ş
+	// å°†å½“å‰çš„è¿›ç¨‹å·å†™å…¥æŒ‡å®šæ–‡ä»¶
     if ( pidfile != (char*) 0 )
 	{
 	/* Write the PID file. */
@@ -557,7 +557,7 @@ main( int argc, char** argv )
     /* Initialize the fdwatch package.  Have to do this before chroot,
     ** if /dev/poll is used.
     */
-    // ÉèÖÃµ±Ç°½ø³ÌÔÊĞí²Ù×÷µÄ×î´óÎÄ¼ş¼şÊı£¬²¢³õÊ¼»¯pollÎÄ¼şÃèÊö·û
+    // è®¾ç½®å½“å‰è¿›ç¨‹å…è®¸æ“ä½œçš„æœ€å¤§æ–‡ä»¶ä»¶æ•°ï¼Œå¹¶åˆå§‹åŒ–pollæ–‡ä»¶æè¿°ç¬¦
     max_connects = fdwatch_get_nfiles();
     if ( max_connects < 0 )
 	{
@@ -566,10 +566,10 @@ main( int argc, char** argv )
 	}
     max_connects -= SPARE_FDS;
 
-    // Èç¹ûÇëÇó¸Ä±ä¸ùÄ¿Â¼
+    // å¦‚æœè¯·æ±‚æ”¹å˜æ ¹ç›®å½•
     if ( do_chroot )
 	{
-		// ¸Ä±ä¸ùÄ¿Â¼ÎªcwdËùÖ¸¶¨µÄÄ¿Â¼£¬ÕâÀïÊÇ/usr/local/www/data/
+		// æ”¹å˜æ ¹ç›®å½•ä¸ºcwdæ‰€æŒ‡å®šçš„ç›®å½•ï¼Œè¿™é‡Œæ˜¯/usr/local/www/data/
 		if ( chroot( cwd ) < 0 )
 		    {
 		    syslog( LOG_CRIT, "chroot - %m" );
@@ -598,7 +598,7 @@ main( int argc, char** argv )
 			}
 	    }
 
-		// ÇĞ»»µ½ĞÂµÄ¸ùÄ¿Â¼
+		// åˆ‡æ¢åˆ°æ–°çš„æ ¹ç›®å½•
 		(void) strcpy( cwd, "/" );
 		/* Always chdir to / after a chroot. */
 		if ( chdir( cwd ) < 0 )
@@ -609,7 +609,7 @@ main( int argc, char** argv )
 		    }
 	}
 
-    // Èç¹û¶¨ÒåÁËÊı¾İÂ·¾¶ÔòÇĞ»»µ½Êı¾İÂ·¾¶ÏÂ,¸ÃÂ·¾¶ÔİÎ´Ê¹ÓÃ
+    // å¦‚æœå®šä¹‰äº†æ•°æ®è·¯å¾„åˆ™åˆ‡æ¢åˆ°æ•°æ®è·¯å¾„ä¸‹,è¯¥è·¯å¾„æš‚æœªä½¿ç”¨
     if ( data_dir != (char*) 0 )
 	{
 	if ( chdir( data_dir ) < 0 )
@@ -620,7 +620,7 @@ main( int argc, char** argv )
 	    }
 	}
 
-    // ÉèÖÃ¶ÔÏµÍ³ĞÅºÅµÄ´¦Àí
+    // è®¾ç½®å¯¹ç³»ç»Ÿä¿¡å·çš„å¤„ç†
 #ifdef HAVE_SIGSET
     (void) sigset( SIGTERM, handle_term );
     (void) sigset( SIGINT, handle_term );
@@ -646,13 +646,13 @@ main( int argc, char** argv )
     (void) alarm( OCCASIONAL_TIME * 3 );
 
     /* Initialize the timer package. */
-	// ³õÊ¼»¯¶¨Ê±Æ÷Ïà¹Ø±äÁ¿
+	// åˆå§‹åŒ–å®šæ—¶å™¨ç›¸å…³å˜é‡
     tmr_init();
 
     /* Initialize the HTTP layer.  Got to do this before giving up root,
     ** so that we can bind to a privileged port.
     */
-    // ³õÊ¼»¯http server
+    // åˆå§‹åŒ–http server
     hs = httpd_initialize(
 	hostname,
 	gotv4 ? &sa4 : (httpd_sockaddr*) 0, gotv6 ? &sa6 : (httpd_sockaddr*) 0,
@@ -662,7 +662,7 @@ main( int argc, char** argv )
     if ( hs == (httpd_server*) 0 )
 	exit( 1 );
 
-    // ´´½¨occasional idle throttles stats 4¸ö¶¨Ê±Æ÷
+    // åˆ›å»ºoccasional idle throttles stats 4ä¸ªå®šæ—¶å™¨
     if ( tmr_create( (struct timeval*) 0, occasional, JunkClientData, OCCASIONAL_TIME * 1000L, 1 ) == (Timer*) 0 )
 	{
 	syslog( LOG_CRIT, "tmr_create(occasional) failed" );
@@ -692,14 +692,14 @@ main( int argc, char** argv )
 	}
 #endif /* STATS_TIME */
 
-	// »ñÈ¡µ±Ç°Ê±¼ä
+	// è·å–å½“å‰æ—¶é—´
     start_time = stats_time = time( (time_t*) 0 );
     stats_connections = 0;
     stats_bytes = 0;
     stats_simultaneous = 0;
 
     /* If we're root, try to become someone else. */
-	// Èç¹ûÊÇrootÓÃ»§£¬ÕâÀïÉèÖÃµ±Ç°³ÌĞòµÄgid¡¢uid
+	// å¦‚æœæ˜¯rootç”¨æˆ·ï¼Œè¿™é‡Œè®¾ç½®å½“å‰ç¨‹åºçš„gidã€uid
     if ( getuid() == 0 )
 	{
 		/* Set aux groups to null. */
@@ -735,7 +735,7 @@ main( int argc, char** argv )
 	}
 
     /* Initialize our connections table. */
-	// ³õÊ¼»¯ÕûÕÅÁ¬½Ó¿ØÖÆ±í
+	// åˆå§‹åŒ–æ•´å¼ è¿æ¥æ§åˆ¶è¡¨
     connects = NEW( connecttab, max_connects );
     if ( connects == (connecttab*) 0 )
 	{
@@ -753,7 +753,7 @@ main( int argc, char** argv )
     num_connects = 0;
     httpd_conn_count = 0;
 
-	// ½«IPv4»òIPv6¼àÌıÌ×½Ó×Ö¼ÓÈëpoll¼¯ºÏ
+	// å°†IPv4æˆ–IPv6ç›‘å¬å¥—æ¥å­—åŠ å…¥pollé›†åˆ
     if ( hs != (httpd_server*) 0 )
 	{
 		if ( hs->listen4_fd != -1 )
@@ -773,9 +773,9 @@ main( int argc, char** argv )
 		    got_hup = 0;
 		    }
 
-		// »ñÈ¡Ì×½Ó×Ö¼¯ºÏÖĞµÄĞÅÏ¢
+		// è·å–å¥—æ¥å­—é›†åˆä¸­çš„ä¿¡æ¯
 		num_ready = fdwatch( tmr_mstimeout( &tv ) );
-		if ( num_ready < 0 )		// ³öÏÖÒì³£´¦Àí
+		if ( num_ready < 0 )		// å‡ºç°å¼‚å¸¸å¤„ç†
 	    {
 		    if ( errno == EINTR || errno == EAGAIN )
 				continue;       /* try again */
@@ -784,19 +784,19 @@ main( int argc, char** argv )
 	    }
 		(void) gettimeofday( &tv, (struct timezone*) 0 );
 
-		if ( num_ready == 0 )		// ³¬Ê±´¦Àí
+		if ( num_ready == 0 )		// è¶…æ—¶å¤„ç†
 	    {
 		    /* No fd's are ready - run the timers. */
 		    tmr_run( &tv );
 		    continue;
 	    }
 
-		// ÔËĞĞµ½ÕâÀïÒâÎ¶×Åpoll¼¯ºÏÖĞÓĞ¶Á/Ğ´±»´¥·¢
+		// è¿è¡Œåˆ°è¿™é‡Œæ„å‘³ç€pollé›†åˆä¸­æœ‰è¯»/å†™è¢«è§¦å‘
 		/* Is it a new connection? */
 		if ( hs != (httpd_server*) 0 && hs->listen6_fd != -1 &&
-		     fdwatch_check_fd( hs->listen6_fd ) )				// Èç¹û´¥·¢ÊÇÀ´×ÔIPv6
+		     fdwatch_check_fd( hs->listen6_fd ) )				// å¦‚æœè§¦å‘æ˜¯æ¥è‡ªIPv6
 	    {
-	    	// Èç¹ûÊÇÒòÎªaccept±»´¥·¢£¬Ö±½Ó·µ»Ø
+	    	// å¦‚æœæ˜¯å› ä¸ºacceptè¢«è§¦å‘ï¼Œç›´æ¥è¿”å›
 		    if ( handle_newconnect( &tv, hs->listen6_fd ) )
 			/* Go around the loop and do another fdwatch, rather than
 			** dropping through and processing existing connections.
@@ -805,9 +805,9 @@ main( int argc, char** argv )
 			continue;
 	    }
 		if ( hs != (httpd_server*) 0 && hs->listen4_fd != -1 &&
-		     fdwatch_check_fd( hs->listen4_fd ) )				// Èç¹û´¥·¢ÊÇÀ´×ÔIPv4
+		     fdwatch_check_fd( hs->listen4_fd ) )				// å¦‚æœè§¦å‘æ˜¯æ¥è‡ªIPv4
 	    {
-	    	// Èç¹ûÊÇÒòÎªaccept±»´¥·¢£¬Ö±½Ó·µ»Ø
+	    	// å¦‚æœæ˜¯å› ä¸ºacceptè¢«è§¦å‘ï¼Œç›´æ¥è¿”å›
 		    if ( handle_newconnect( &tv, hs->listen4_fd ) )
 			/* Go around the loop and do another fdwatch, rather than
 			** dropping through and processing existing connections.
@@ -816,7 +816,7 @@ main( int argc, char** argv )
 			continue;
 	    }
 
-		// ÔËĞĞµ½ÕâÀïÒâÎ¶×ÅÒòÎªÊı¾İµÄ¶Á/Ğ´±»´¥·¢
+		// è¿è¡Œåˆ°è¿™é‡Œæ„å‘³ç€å› ä¸ºæ•°æ®çš„è¯»/å†™è¢«è§¦å‘
 		while ( ( c = (connecttab*) fdwatch_get_next_client_data() ) != (connecttab*) -1 )
 	    {
 		    if ( c == (connecttab*) 0 )
@@ -862,8 +862,8 @@ parse_args( int argc, char** argv )
     {
     int argn;
 
-    debug = 0;				// Æô¶¯ÊØ»¤½ø³Ì
-    port = DEFAULT_PORT;	// Ä¬ÈÏ¶Ë¿Ú80
+    debug = 0;				// å¯åŠ¨å®ˆæŠ¤è¿›ç¨‹
+    port = DEFAULT_PORT;	// é»˜è®¤ç«¯å£80
     dir = (char*) 0;
     data_dir = (char*) 0;
 #ifdef ALWAYS_CHROOT
@@ -900,31 +900,31 @@ parse_args( int argc, char** argv )
     hostname = (char*) 0;
     logfile = (char*) 0;
     pidfile = (char*) 0;
-    user = DEFAULT_USER;		// Ä¬ÈÏÓÃ»§Ãûnodody
+    user = DEFAULT_USER;		// é»˜è®¤ç”¨æˆ·ånodody
     charset = DEFAULT_CHARSET;
     p3p = "";
     max_age = -1;
 
-	// ÃüÁîĞĞ²ÎÊı´¦Àí,ÕâĞ©ÅäÖÃ²ÎÊı¿ÉÒÔÔÚÃüÁîĞĞÉèÖÃ£¬Ò²¿ÉÒÔÍ³Ò»ÔÚÅäÖÃÎÄ¼şÀïÉèÖÃ
+	// å‘½ä»¤è¡Œå‚æ•°å¤„ç†,è¿™äº›é…ç½®å‚æ•°å¯ä»¥åœ¨å‘½ä»¤è¡Œè®¾ç½®ï¼Œä¹Ÿå¯ä»¥ç»Ÿä¸€åœ¨é…ç½®æ–‡ä»¶é‡Œè®¾ç½®
     argn = 1;
     while ( argn < argc && argv[argn][0] == '-' )
 	{
-		if ( strcmp( argv[argn], "-V" ) == 0 )							// -V  ´òÓ¡°æ±¾ºÅ£¬È»ºóÍË³ö³ÌĞò
+		if ( strcmp( argv[argn], "-V" ) == 0 )							// -V  æ‰“å°ç‰ˆæœ¬å·ï¼Œç„¶åé€€å‡ºç¨‹åº
 		    {
 		    (void) printf( "%s\n", SERVER_SOFTWARE );
 		    exit( 0 );
 		    }
-		else if ( strcmp( argv[argn], "-C" ) == 0 && argn + 1 < argc )	// -C  µ¼ÈëÅäÖÃ
+		else if ( strcmp( argv[argn], "-C" ) == 0 && argn + 1 < argc )	// -C  å¯¼å…¥é…ç½®
 		    {
 		    ++argn;
-		    read_config( argv[argn] );	// ¶ÁÈ¡ÅäÖÃÎÄ¼ş,´øÂ·¾¶
+		    read_config( argv[argn] );	// è¯»å–é…ç½®æ–‡ä»¶,å¸¦è·¯å¾„
 		    }
-		else if ( strcmp( argv[argn], "-p" ) == 0 && argn + 1 < argc )	// -p  ÉèÖÃ¶Ë¿Ú
+		else if ( strcmp( argv[argn], "-p" ) == 0 && argn + 1 < argc )	// -p  è®¾ç½®ç«¯å£
 		    {
 		    ++argn;
 		    port = (unsigned short) atoi( argv[argn] );
 		    }
-		else if ( strcmp( argv[argn], "-d" ) == 0 && argn + 1 < argc )	// -d  ÉèÖÃÍøÒ³Â·¾¶
+		else if ( strcmp( argv[argn], "-d" ) == 0 && argn + 1 < argc )	// -d  è®¾ç½®ç½‘é¡µè·¯å¾„
 		    {
 		    ++argn;
 		    dir = argv[argn];
@@ -1021,7 +1021,7 @@ usage( void )
     exit( 1 );
     }
 
-// ¶ÁÈ¡ÅäÖÃÎÄ¼ş,´øÂ·¾¶
+// è¯»å–é…ç½®æ–‡ä»¶,å¸¦è·¯å¾„
 static void
 read_config( char* filename )
     {
@@ -1029,8 +1029,8 @@ read_config( char* filename )
     char line[10000];
     char* cp;
     char* cp2;
-    char* name;		// Ö¸Ïò±äÁ¿
-    char* value;	// Ö¸Ïò¶ÔÓ¦Öµ
+    char* name;		// æŒ‡å‘å˜é‡
+    char* value;	// æŒ‡å‘å¯¹åº”å€¼
 
     fp = fopen( filename, "r" );
     if ( fp == (FILE*) 0 )
@@ -1039,56 +1039,56 @@ read_config( char* filename )
 	exit( 1 );
 	}
 
-	// °´ĞĞ¶ÁÅäÖÃÎÄ¼ş
+	// æŒ‰è¡Œè¯»é…ç½®æ–‡ä»¶
     while ( fgets( line, sizeof(line), fp ) != (char*) 0 )
 	{	
-		// È¥µô×¢ÊÍ
+		// å»æ‰æ³¨é‡Š
 		if ( ( cp = strchr( line, '#' ) ) != (char*) 0 )
 		    *cp = '\0';
 
-		// ÂÓ¹ıÃ¿ĞĞÍ·²¿µÄ¿Õ°×,cpÖ¸ÏòÃ¿ĞĞµÚÒ»¸öÓĞĞ§×Ö·û
+		// æ è¿‡æ¯è¡Œå¤´éƒ¨çš„ç©ºç™½,cpæŒ‡å‘æ¯è¡Œç¬¬ä¸€ä¸ªæœ‰æ•ˆå­—ç¬¦
 		cp = line;
 		cp += strspn( cp, " \t\n\r" );
 
 		/* Split line into words. */
 		while ( *cp != '\0' )
 		{
-		    // ÕÒµ½ÏÂÒ»´¦¿Õ°×
+		    // æ‰¾åˆ°ä¸‹ä¸€å¤„ç©ºç™½
 		    cp2 = cp + strcspn( cp, " \t\n\r" );
 
-		    // ¿Õ°×Î»ÖÃÈ«²¿ÓÃ'\0'Ìî³ä,cp2×îºóÖ¸ÏòÏÂÒ»¸öÓĞĞ§×Ö·û
+		    // ç©ºç™½ä½ç½®å…¨éƒ¨ç”¨'\0'å¡«å……,cp2æœ€åæŒ‡å‘ä¸‹ä¸€ä¸ªæœ‰æ•ˆå­—ç¬¦
 		    while ( *cp2 == ' ' || *cp2 == '\t' || *cp2 == '\n' || *cp2 == '\r' )
 				*cp2++ = '\0';
 			
-		    // ÌáÈ¡±äÁ¿ºÍ¶ÔÓ¦Öµ
+		    // æå–å˜é‡å’Œå¯¹åº”å€¼
 		    name = cp;
 		    value = strchr( name, '=' );
 		    if ( value != (char*) 0 )
 				*value++ = '\0';
 			
-		    // ±äÁ¿´¦Àí
-		    if ( strcasecmp( name, "debug" ) == 0 )			// debug : ¹Ø±ÕÊØ»¤½ø³Ì
+		    // å˜é‡å¤„ç†
+		    if ( strcasecmp( name, "debug" ) == 0 )			// debug : å…³é—­å®ˆæŠ¤è¿›ç¨‹
 			{
 			no_value_required( name, value );				
 			debug = 1;
 			}
-		    else if ( strcasecmp( name, "port" ) == 0 )		// port : ¶Ë¿ÚÉèÖÃ
+		    else if ( strcasecmp( name, "port" ) == 0 )		// port : ç«¯å£è®¾ç½®
 			{
 			value_required( name, value );					
 			port = (unsigned short) atoi( value );
 			}
-		    else if ( strcasecmp( name, "dir" ) == 0 )		// dir : ÉèÖÃÍøÒ³Â·¾¶
+		    else if ( strcasecmp( name, "dir" ) == 0 )		// dir : è®¾ç½®ç½‘é¡µè·¯å¾„
 			{
 			value_required( name, value );
 			dir = e_strdup( value );
 			}
-		    else if ( strcasecmp( name, "chroot" ) == 0 )	// chroot : ÇëÇó¸Ä±ä¸ùÄ¿Â¼
+		    else if ( strcasecmp( name, "chroot" ) == 0 )	// chroot : è¯·æ±‚æ”¹å˜æ ¹ç›®å½•
 			{
 			no_value_required( name, value );
 			do_chroot = 1;
 			no_symlink_check = 1;
 			}
-		    else if ( strcasecmp( name, "nochroot" ) == 0 )	// nochroot : ²»¸Ä±ä¸ùÄ¿Â¼
+		    else if ( strcasecmp( name, "nochroot" ) == 0 )	// nochroot : ä¸æ”¹å˜æ ¹ç›®å½•
 			{
 			no_value_required( name, value );
 			do_chroot = 0;
@@ -1119,12 +1119,12 @@ read_config( char* filename )
 			no_value_required( name, value );
 			no_symlink_check = 1;
 			}
-		    else if ( strcasecmp( name, "user" ) == 0 )			// user : ÓÃ»§ÃûÉèÖÃ
+		    else if ( strcasecmp( name, "user" ) == 0 )			// user : ç”¨æˆ·åè®¾ç½®
 			{
 			value_required( name, value );
 			user = e_strdup( value );
 			}
-		    else if ( strcasecmp( name, "cgipat" ) == 0 )		// cgipat : CGI³ÌĞòÂ·¾¶
+		    else if ( strcasecmp( name, "cgipat" ) == 0 )		// cgipat : CGIç¨‹åºè·¯å¾„
 			{
 			value_required( name, value );
 			cgi_pattern = e_strdup( value );
@@ -1154,12 +1154,12 @@ read_config( char* filename )
 			value_required( name, value );
 			throttlefile = e_strdup( value );
 			}
-		    else if ( strcasecmp( name, "host" ) == 0 )			// host : ±¾»úIPÉèÖÃ
+		    else if ( strcasecmp( name, "host" ) == 0 )			// host : æœ¬æœºIPè®¾ç½®
 			{
 			value_required( name, value );
 			hostname = e_strdup( value );
 			}
-		    else if ( strcasecmp( name, "logfile" ) == 0 )		// logfile : ÈÕÖ¾ÎÄ¼ş
+		    else if ( strcasecmp( name, "logfile" ) == 0 )		// logfile : æ—¥å¿—æ–‡ä»¶
 			{
 			value_required( name, value );
 			logfile = e_strdup( value );
@@ -1184,7 +1184,7 @@ read_config( char* filename )
 			no_value_required( name, value );
 			do_global_passwd = 0;
 			}
-		    else if ( strcasecmp( name, "pidfile" ) == 0 )		// pidfile : ½ø³ÌºÅÎÄ¼ş
+		    else if ( strcasecmp( name, "pidfile" ) == 0 )		// pidfile : è¿›ç¨‹å·æ–‡ä»¶
 			{
 			value_required( name, value );
 			pidfile = e_strdup( value );
@@ -1220,7 +1220,7 @@ read_config( char* filename )
     (void) fclose( fp );
     }
 
-// ¶ÔÓ¦Öµ²»ÄÜÎª¿Õ
+// å¯¹åº”å€¼ä¸èƒ½ä¸ºç©º
 static void
 value_required( char* name, char* value )
     {
@@ -1232,7 +1232,7 @@ value_required( char* name, char* value )
 	}
     }
 
-// ¶ÔÓ¦Öµ±ØĞëÎª¿Õ
+// å¯¹åº”å€¼å¿…é¡»ä¸ºç©º
 static void
 no_value_required( char* name, char* value )
     {
@@ -1245,7 +1245,7 @@ no_value_required( char* name, char* value )
 	}
     }
 
-// ×Ö·û´®ÄÚ´æ¿½±´
+// å­—ç¬¦ä¸²å†…å­˜æ‹·è´
 static char*
 e_strdup( char* oldstr )
     {
@@ -1395,7 +1395,7 @@ lookup_hostname( httpd_sockaddr* sa4P, size_t sa4_len, int* gotv4P, httpd_sockad
 #endif /* USE_IPV6 */
     }
 
-// ¶ÁÈ¡Á÷Á¿¿ØÖÆÎÄ¼ş
+// è¯»å–æµé‡æ§åˆ¶æ–‡ä»¶
 static void
 read_throttlefile( char* throttlefile )
     {
@@ -1611,7 +1611,7 @@ handle_newconnect( struct timeval* tvP, int listen_fd )
 	}
     }
 
-// ´¦ÀíÊÕµ½µÄÊı¾İÖ¡
+// å¤„ç†æ”¶åˆ°çš„æ•°æ®å¸§
 static void
 handle_read( connecttab* c, struct timeval* tvP )
 {
@@ -1619,7 +1619,7 @@ handle_read( connecttab* c, struct timeval* tvP )
 	ClientData client_data;
 	httpd_conn* hc = c->hc;
 
-	// ¼ì²â½ÓÊÕ»º³åÊÇ·ñÂú
+	// æ£€æµ‹æ¥æ”¶ç¼“å†²æ˜¯å¦æ»¡
 	if ( hc->read_idx >= hc->read_size )
 	{
 		if ( hc->read_size > 5000 )
@@ -1632,7 +1632,7 @@ handle_read( connecttab* c, struct timeval* tvP )
 		    &hc->read_buf, &hc->read_size, hc->read_size + 1000 );
 	}
 
-	// µ÷ÓÃread¶ÁÈ¡Ì×½Ó×ÖÉÏ·¢À´µÄÊı¾İ
+	// è°ƒç”¨readè¯»å–å¥—æ¥å­—ä¸Šå‘æ¥çš„æ•°æ®
 	sz = read(hc->conn_fd, &(hc->read_buf[hc->read_idx]),hc->read_size - hc->read_idx );
 	if ( sz == 0 )
 	{
@@ -1655,11 +1655,11 @@ handle_read( connecttab* c, struct timeval* tvP )
 		return;
 	}
 	
-	hc->read_idx += sz;				// ¸üĞÂÎ´¶ÁÊı¾İ³¤¶È
+	hc->read_idx += sz;				// æ›´æ–°æœªè¯»æ•°æ®é•¿åº¦
 	c->active_at = tvP->tv_sec;
 
 	/* Do we have a complete request yet? */
-	// »ñÈ¡httpÇëÇóÍ·
+	// è·å–httpè¯·æ±‚å¤´
 	switch ( httpd_got_request( hc ) )
 	{
 		case GR_NO_REQUEST:
@@ -1671,8 +1671,8 @@ handle_read( connecttab* c, struct timeval* tvP )
 	}
 
 	/* Yes.  Try parsing and resolving it. */
-	// ÔËĞĞµ½ÕâÀïÒâÎ¶×Å»ñÈ¡µ½ÕıÈ·µÄhttpÇëÇóÍ·
-	// ·ÖÎöÇëÇóÍ·
+	// è¿è¡Œåˆ°è¿™é‡Œæ„å‘³ç€è·å–åˆ°æ­£ç¡®çš„httpè¯·æ±‚å¤´
+	// åˆ†æè¯·æ±‚å¤´
 	if ( httpd_parse_request( hc ) < 0 )
 	{
 	finish_connection( c, tvP );

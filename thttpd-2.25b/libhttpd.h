@@ -1,6 +1,6 @@
-/* libhttpd.h - defines for libhttpd
+ï»¿/* libhttpd.h - defines for libhttpd
 **
-** Copyright © 1995,1998,1999,2000,2001 by Jef Poskanzer <jef@mail.acme.com>.
+** Copyright ?1995,1998,1999,2000,2001 by Jef Poskanzer <jef@mail.acme.com>.
 ** All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
@@ -88,21 +88,21 @@ typedef struct {
     } httpd_server;
 
 /* A connection. */
-// ¶¨ÒåÁË¿Í»§¶ËÁ¬½ÓµÄhttp²ã¿ØÖÆ¿é
+// å®šä¹‰äº†å®¢æˆ·ç«¯è¿žæŽ¥çš„httpå±‚æŽ§åˆ¶å—
 typedef struct {
     int initialized;
     httpd_server* hs;
     httpd_sockaddr client_addr;
-    char* read_buf;					// Ö¸Ïò½ÓÊÕ»º³å
-    size_t read_size, read_idx, checked_idx;	// ½ÓÊÕ»º´æ³ß´ç£¬½ÓÊÕ»º³åÖÐÎ´¶ÁÊý¾Ý³¤¶È£¬Î´¶ÁÊý¾ÝÒÑ¾­±»²éÔÄ¹ýµÄ³¤¶È
-    int checked_state;				// ÇëÇóÍ·µÄ×´Ì¬
+    char* read_buf;					// æŒ‡å‘æŽ¥æ”¶ç¼“å†²
+    size_t read_size, read_idx, checked_idx;	// æŽ¥æ”¶ç¼“å­˜å°ºå¯¸ï¼ŒæŽ¥æ”¶ç¼“å†²ä¸­æœªè¯»æ•°æ®é•¿åº¦ï¼Œæœªè¯»æ•°æ®å·²ç»è¢«æŸ¥é˜…è¿‡çš„é•¿åº¦
+    int checked_state;				// è¯·æ±‚å¤´çš„çŠ¶æ€
     int method;
     int status;
     off_t bytes_to_send;
     off_t bytes_sent;
     char* encodedurl;
     char* decodedurl;
-    char* protocol;					// httpÐ­Òé°æ±¾
+    char* protocol;					// httpåè®®ç‰ˆæœ¬
     char* origfilename;
     char* expnfilename;
     char* encodings;
@@ -115,7 +115,7 @@ typedef struct {
     char* acceptl;
     char* cookie;
     char* contenttype;
-    char* reqhost;					// Ö¸Ïò±£´æurlµÄÄÚ´æ¿Õ¼ä
+    char* reqhost;					// æŒ‡å‘ä¿å­˜urlçš„å†…å­˜ç©ºé—´
     char* hdrhost;
     char* hostdir;
     char* authorization;
@@ -152,7 +152,7 @@ typedef struct {
 #define METHOD_POST 3
 
 /* States for checked_state. */
-// ¼ì²éÇëÇóÍ·Ê±µÄ×´Ì¬
+// æ£€æŸ¥è¯·æ±‚å¤´æ—¶çš„çŠ¶æ€
 #define CHST_FIRSTWORD 0	
 #define CHST_FIRSTWS 1		
 #define CHST_SECONDWORD 2	
@@ -210,9 +210,9 @@ extern int httpd_get_conn( httpd_server* hs, int listen_fd, httpd_conn* hc );
 ** complete request, or there won't be a valid request due to a syntax error.
 */
 extern int httpd_got_request( httpd_conn* hc );
-#define GR_NO_REQUEST 0		// Ã»ÓÐÇëÇó
-#define GR_GOT_REQUEST 1	// ÕýÈ·µÄÇëÇó
-#define GR_BAD_REQUEST 2	// ´íÎóµÄÇëÇó
+#define GR_NO_REQUEST 0		// æ²¡æœ‰è¯·æ±‚
+#define GR_GOT_REQUEST 1	// æ­£ç¡®çš„è¯·æ±‚
+#define GR_BAD_REQUEST 2	// é”™è¯¯çš„è¯·æ±‚
 
 /* Parses the request in hc->read_buf.  Fills in lots of fields in hc,
 ** like the URL and the various headers.

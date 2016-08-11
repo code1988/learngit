@@ -10,7 +10,7 @@
 
 2. 点分十进制字符串IP和32位整型IP
 ---------------------------------------------------------------------------------------------------
-    int inet_aton(const char *cp,struct in_addr *inp)   // 点分十进制字符串IP转32位整型IP
+    int inet_aton(const char *cp,struct in_addr *inp)   // 点分十进制字符串IP转32位整型IP,成功返回非0,失败返回0
     char *inet_ntoa(struct in_addr in)                  // 32位整型IP转点分十进制字符串IP
     
     更新的程序用inet_pton和inet_ntop来代替上面两个函数，因为新函数支持ipv4和ipv6

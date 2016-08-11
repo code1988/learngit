@@ -1,6 +1,6 @@
-/* fdwatch.c - fd watcher routines, either select() or poll()
-** Ì×½Ó×Ö¹ÜÀíÄ£¿é
-** Copyright © 1999,2000 by Jef Poskanzer <jef@mail.acme.com>.
+ï»¿/* fdwatch.c - fd watcher routines, either select() or poll()
+** å¥—æ¥å­—ç®¡ç†æ¨¡å—
+** Copyright ?1999,2000 by Jef Poskanzer <jef@mail.acme.com>.
 ** All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without
@@ -70,9 +70,9 @@
 #endif /* !FD_SET */
 #endif /* HAVE_SELECT */
 
-static int nfiles;		// µ±Ç°½ø³Ì²Ù×÷ÎÄ¼şµÄ×î´óÊıÁ¿
+static int nfiles;		// å½“å‰è¿›ç¨‹æ“ä½œæ–‡ä»¶çš„æœ€å¤§æ•°é‡
 static long nwatches;
-static int* fd_rw;		// ÎÄ¼şÃèÊö·û´æ´¢¿Õ¼ä
+static int* fd_rw;		// æ–‡ä»¶æè¿°ç¬¦å­˜å‚¨ç©ºé—´
 static void** fd_data;
 static int nreturned, next_ridx;
 
@@ -158,7 +158,7 @@ static int select_get_fd( int ridx );
 /* Figure out how many file descriptors the system allows, and
 ** initialize the fdwatch data structures.  Returns -1 on failure.
 */
-// ÉèÖÃµ±Ç°½ø³ÌÔÊĞí²Ù×÷µÄ×î´óÎÄ¼şÊı
+// è®¾ç½®å½“å‰è¿›ç¨‹å…è®¸æ“ä½œçš„æœ€å¤§æ–‡ä»¶æ•°
 int
 fdwatch_get_nfiles( void )
     {
@@ -170,7 +170,7 @@ fdwatch_get_nfiles( void )
     /* Figure out how many fd's we can have. */
     nfiles = getdtablesize();
 #ifdef RLIMIT_NOFILE
-    // »ñÈ¡µ±Ç°½ø³ÌÏµÍ³×ÊÔ´µÄÏŞÖÆÊ¹ÓÃÁ¿(ÕâÀïÊÇÎÄ¼ş×ÊÔ´)
+    // è·å–å½“å‰è¿›ç¨‹ç³»ç»Ÿèµ„æºçš„é™åˆ¶ä½¿ç”¨é‡(è¿™é‡Œæ˜¯æ–‡ä»¶èµ„æº)
     if ( getrlimit( RLIMIT_NOFILE, &rl ) == 0 )
 	{
 	nfiles = rl.rlim_cur;
@@ -179,7 +179,7 @@ fdwatch_get_nfiles( void )
 	else if ( rl.rlim_max > rl.rlim_cur )
 	    rl.rlim_cur = rl.rlim_max;
 
-	// ÉèÖÃµ±Ç°½ø³ÌÏµÍ³×ÊÔ´µÄÏŞÖÆÊ¹ÓÃÁ¿(ÕâÀïÊÇÎÄ¼ş×ÊÔ´)
+	// è®¾ç½®å½“å‰è¿›ç¨‹ç³»ç»Ÿèµ„æºçš„é™åˆ¶ä½¿ç”¨é‡(è¿™é‡Œæ˜¯æ–‡ä»¶èµ„æº)
 	if ( setrlimit( RLIMIT_NOFILE, &rl ) == 0 )
 	    nfiles = rl.rlim_cur;
 	}
@@ -197,7 +197,7 @@ fdwatch_get_nfiles( void )
     if ( fd_rw == (int*) 0 || fd_data == (void**) 0 )
 	return -1;
 
-	// ÎÄ¼şÃèÊö·ûÈ«²¿³õÊ¼»¯Îª-1
+	// æ–‡ä»¶æè¿°ç¬¦å…¨éƒ¨åˆå§‹åŒ–ä¸º-1
     for ( i = 0; i < nfiles; ++i )
 		fd_rw[i] = -1;
     if ( INIT( nfiles ) == -1 )
@@ -552,9 +552,9 @@ devpoll_get_fd( int ridx )
 
 #  ifdef HAVE_POLL
 
-static struct pollfd* pollfds;	// poll½á¹¹ÌåÊı×éÖ¸Õë
+static struct pollfd* pollfds;	// pollç»“æ„ä½“æ•°ç»„æŒ‡é’ˆ
 static int npoll_fds;			
-static int* poll_fdidx;			// ´æ´¢pollË÷ÒıºÅ
+static int* poll_fdidx;			// å­˜å‚¨pollç´¢å¼•å·
 static int* poll_rfdidx;		
 
 
