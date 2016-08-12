@@ -15,10 +15,10 @@
             struct stat{
                 dev_t st_dev;               // 文件的设备ID
                 ino_t st_ino;               // 节点
-                mode_t st_mode;             // 文件类型和权限
+                mode_t st_mode;             // 文件类型和权限，这里可以设置一类特殊标志S_ISUID、S_ISGID
                 nlink_t st_nlink;           // 连接到该文件的硬链接数目，刚建立的文件为1
-                uid_t st_uid;               // 用户ID
-                gid_t st_gid;               // 组ID
+                uid_t st_uid;               // 所属用户ID
+                gid_t st_gid;               // 所属组ID
                 dev_t st_rdev;              // 设备ID
                 off_t st_size;              // 文件字节数
                 unsigned long st_blksize;   // 块大小（文件系统I/O缓冲区大小）
@@ -35,6 +35,11 @@
             目录文件        S_IFDIR                         S_ISDIR(st_mode) 
             字符设备        S_IFCHR                         S_ISCHR(st_mode) 
             FIFO文件        S_IFIFO                         S_ISFIFO(st_mode) 
+                                                            --------------------------
+            设置用户ID位    S_ISUID                         当执行此文件时，将进程的有效用户ID设置为文件的所属用户st_uid
+            设置组ID位      S_ISGID                         当执行此文件时，将进程的有效组ID设置为文件的所属组st_gid
+
+            
     返回值：失败时错误信息见errno
 
 3. int access(const char *pathname,int mode)
