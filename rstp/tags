@@ -1,0 +1,1707 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+ADMIN_P2P_T	rstplib/uid_stp.h	/^} ADMIN_P2P_T;$/;"	t	typeref:enum:__anon19
+ADMIN_PORT_PATH_COST_AUTO	rstplib/uid_stp.h	138;"	d
+AGREEMENT_BIT	rstplib/stp_bpdu.h	46;"	d
+AR	common.mk	/^AR = $(CROSS_COMPILE)gcc-ar$/;"	m
+ARFLAGS	rstplib/Makefile	/^ARFLAGS = cr #cru$/;"	m
+Aged	rstplib/port.h	/^  Aged,$/;"	e	enum:__anon2
+AlternatePort	rstplib/port.h	/^  AlternatePort,$/;"	e	enum:__anon4
+BEGIN	rstplib/statmch.h	31;"	d
+BITMAP_T	rstplib/bitmap.h	/^} BITMAP_T;$/;"	t	typeref:struct:tagBITMAP
+BPDU_BODY_T	rstplib/stp_bpdu.h	/^} BPDU_BODY_T;$/;"	t	typeref:struct:bpdu_body_t
+BPDU_CONFIG_TYPE	rstplib/stp_bpdu.h	37;"	d
+BPDU_HEADER_T	rstplib/stp_bpdu.h	/^} BPDU_HEADER_T;$/;"	t	typeref:struct:bpdu_header_t
+BPDU_LEN8023_OFF	rstplib/transmit.c	29;"	d	file:
+BPDU_L_SAP	rstplib/stp_bpdu.h	29;"	d
+BPDU_PROTOCOL_ID	rstplib/stp_bpdu.h	31;"	d
+BPDU_RSTP	rstplib/stp_bpdu.h	38;"	d
+BPDU_T	rstplib/stp_bpdu.h	/^} BPDU_T;$/;"	t	typeref:struct:stp_bpdu_t
+BPDU_TOPO_CHANGE_TYPE	rstplib/stp_bpdu.h	36;"	d
+BPDU_VERSION_ID	rstplib/stp_bpdu.h	32;"	d
+BPDU_VERSION_RAPID_ID	rstplib/stp_bpdu.h	33;"	d
+BRIDGECFILES	rstplib/Makefile	/^BRIDGECFILES = bridge.c stp_cli.c stp_to.c$/;"	m
+BRIDGEOFILES	rstplib/Makefile	/^BRIDGEOFILES = bridge.o stp_cli.o stp_to.o$/;"	m
+BRIDGE_ID	rstplib/vector.h	/^} BRIDGE_ID;$/;"	t	typeref:struct:bridge_id
+BRIDGE_T	rstplib/mngr.c	/^} BRIDGE_T;$/;"	t	typeref:struct:bridge_s	file:
+BR_CFG_AGE	rstplib/uid_stp.h	47;"	d
+BR_CFG_AGE_MODE	rstplib/uid_stp.h	51;"	d
+BR_CFG_AGE_TIME	rstplib/uid_stp.h	52;"	d
+BR_CFG_ALL	rstplib/uid_stp.h	54;"	d
+BR_CFG_DELAY	rstplib/uid_stp.h	49;"	d
+BR_CFG_FORCE_VER	rstplib/uid_stp.h	50;"	d
+BR_CFG_HELLO	rstplib/uid_stp.h	48;"	d
+BR_CFG_HOLD_TIME	rstplib/uid_stp.h	53;"	d
+BR_CFG_PRIO	rstplib/uid_stp.h	46;"	d
+BR_CFG_STATE	rstplib/uid_stp.h	45;"	d
+BackupPort	rstplib/port.h	/^  BackupPort,$/;"	e	enum:__anon4
+BitmapAnd	rstplib/bitmap.h	48;"	d
+BitmapClear	rstplib/bitmap.h	33;"	d
+BitmapClearBit	rstplib/bitmap.h	72;"	d
+BitmapClearBits	rstplib/bitmap.h	39;"	d
+BitmapCmp	rstplib/bitmap.h	56;"	d
+BitmapCopy	rstplib/bitmap.h	75;"	d
+BitmapGetBit	rstplib/bitmap.h	65;"	d
+BitmapIsAllOnes	rstplib/bitmap.h	62;"	d
+BitmapIsZero	rstplib/bitmap.h	59;"	d
+BitmapNot	rstplib/bitmap.h	51;"	d
+BitmapOr	rstplib/bitmap.h	45;"	d
+BitmapSetAllBits	rstplib/bitmap.h	36;"	d
+BitmapSetBit	rstplib/bitmap.h	69;"	d
+BitmapSetBits	rstplib/bitmap.h	42;"	d
+BitmapXor	rstplib/bitmap.h	78;"	d
+Bool	rstplib/base.h	63;"	d
+Bool	rstplib/stp_in.h	45;"	d
+BrId	rstplib/stpm.h	/^  BRIDGE_ID             BrId;           \/* 17.17.2 *\/$/;"	m	struct:stpm_t	access:public
+BrTimes	rstplib/stpm.h	/^  TIMEVALUES_T          BrTimes;        \/* 17.17.4 *\/$/;"	m	struct:stpm_t	access:public
+CC	common.mk	/^CC = $(CROSS_COMPILE)gcc$/;"	m
+CCFLAGS	rstplib/Makefile	/^CCFLAGS = $(CFLAGS) -D_REENTRANT -D__LINUX__ -DSTP_DBG=1 -DRSTP_JWS=1 # -g -DOLD_READLINE$/;"	m
+CFILES	rstplib/Makefile	/^CFILES= $(MNGRCFILES) $(BRIDGECFILES) $(RSTPCFILES) $(UIDCFILES) $(CLICFILES)$/;"	m
+CFILES_CTL	Makefile	/^CFILES_CTL = utils.c ctl_client.c ctl_main.c log.c ctl_wrap.c$/;"	m
+CFILES_RSTPD	Makefile	/^CFILES_RSTPD = log.c utils.c libnetlink.c epoll_loop.c brmon.c brstate.c packet.c ctl_socket.c rstp_if.c rstpd.c $/;"	m
+CHOOSE	ctl_func.h	23;"	d
+CHOOSE	ctl_func.h	30;"	d
+CHOOSE	ctl_wrap.c	18;"	d	file:
+CHOOSE	ctl_wrap.c	22;"	d	file:
+CHOOSE	rstplib/base.h	110;"	d
+CHOOSE	rstplib/base.h	112;"	d
+CHOOSE	rstplib/choose.h	28;"	d
+CHOOSE	rstplib/choose.h	30;"	d
+CHOOSE	rstplib/choose.h	35;"	d
+CHOOSE	rstplib/choose.h	37;"	d
+CHOOSE	rstplib/stp_in.c	977;"	d	file:
+CHOOSE	rstplib/stp_in.c	979;"	d	file:
+CLICFILES	rstplib/Makefile	/^CLICFILES = cli.c$/;"	m
+CLIENT_SIDE_FUNCTION	ctl_socket.h	147;"	d
+CLIENT_SIDE_FUNCTION	ctl_wrap.c	/^CLIENT_SIDE_FUNCTION(enable_rstp)$/;"	f
+CLILIBF	rstplib/Makefile	/^CLILIBF  = lib$(CLILIBS).a$/;"	m
+CLILIBS	rstplib/Makefile	/^CLILIBS  = cli$/;"	m
+CLIOFILES	rstplib/Makefile	/^CLIOFILES = cli.o$/;"	m
+CLI_CMD_CLBK	rstplib/cli.h	/^typedef int CLI_CMD_CLBK (int argc, char** argv);$/;"	t
+CLI_out_port_id	rstplib/stp_cli.c	/^static void CLI_out_port_id (int port, unsigned char cr)$/;"	f	file:	signature:(int port, unsigned char cr)
+CMD_CODE_enable_rstp	ctl_socket.h	30;"	d
+CMD_CODE_get_bridge_state	ctl_socket.h	43;"	d
+CMD_CODE_get_port_state	ctl_socket.h	70;"	d
+CMD_CODE_set_bridge_config	ctl_socket.h	57;"	d
+CMD_CODE_set_debug_level	ctl_socket.h	99;"	d
+CMD_CODE_set_port_config	ctl_socket.h	85;"	d
+CMD_CODE_set_port_trace	ctl_socket.h	112;"	d
+CMD_DSCR_T	rstplib/cli.h	/^} CMD_DSCR_T;$/;"	t	typeref:struct:cmd_dscr_s
+CMD_PARAM_TYPE_T	rstplib/cli.h	/^} CMD_PARAM_TYPE_T;$/;"	t	typeref:enum:__anon7
+CMD_PAR_BOOL_YN	rstplib/cli.h	/^  CMD_PAR_BOOL_YN,$/;"	e	enum:__anon7
+CMD_PAR_DSCR_T	rstplib/cli.h	/^} CMD_PAR_DSCR_T;$/;"	t	typeref:struct:cmd_par_dscr_s
+CMD_PAR_ENUM	rstplib/cli.h	/^  CMD_PAR_ENUM,$/;"	e	enum:__anon7
+CMD_PAR_LIMITS	rstplib/cli.h	/^} CMD_PAR_LIMITS;$/;"	t	typeref:struct:cmd_par_number_limits_s
+CMD_PAR_NUMBER	rstplib/cli.h	/^  CMD_PAR_NUMBER,$/;"	e	enum:__anon7
+CMD_PAR_SELECTOR	rstplib/cli.h	/^} CMD_PAR_SELECTOR;$/;"	t	typeref:struct:cmd_par_string_selector_s
+CMD_PAR_STRING	rstplib/cli.h	/^  CMD_PAR_STRING,$/;"	e	enum:__anon7
+COMPILE	rstplib/Makefile	/^COMPILE = $(CC) $(DEFS) $(INCLUDES) $(CCFLAGS)$/;"	m
+CONFIG_BPDU_T	rstplib/transmit.c	/^} CONFIG_BPDU_T;$/;"	t	typeref:struct:tx_stp_bpdu_t	file:
+CROSS_COMPILE	common.mk	/^  CROSS_COMPILE = arm-openwrt-linux-muslgnueabi-$/;"	m
+CTL_ERRORS	ctl_func.h	/^	CTL_ERRORS Err_Dummy_End$/;"	e	enum:Errors
+CTL_ERRORS	ctl_func.h	17;"	d
+CTL_SERVER_SOCK_NAME	ctl_socket.h	23;"	d
+CTL_enable_rstp	ctl_func.h	/^int CTL_enable_rstp(int enable);$/;"	p	signature:(int enable)
+CTL_enable_rstp	rstp_if.c	/^int CTL_enable_rstp(int enable)$/;"	f	signature:(int enable)
+CTL_error_explanation	ctl_func.h	/^const char *CTL_error_explanation(int err);$/;"	p	signature:(int err)
+CTL_get_bridge_state	ctl_func.h	/^int CTL_get_bridge_state(UID_STP_CFG_T *cfg, UID_STP_STATE_T *state);$/;"	p	signature:(UID_STP_CFG_T *cfg, UID_STP_STATE_T *state)
+CTL_get_bridge_state	rstp_if.c	/^int CTL_get_bridge_state(UID_STP_CFG_T *cfg, UID_STP_STATE_T *state)$/;"	f	signature:(UID_STP_CFG_T *cfg, UID_STP_STATE_T *state)
+CTL_get_port_state	ctl_func.h	/^int CTL_get_port_state(int port_index, UID_STP_PORT_CFG_T *cfg, UID_STP_PORT_STATE_T *state);$/;"	p	signature:(int port_index, UID_STP_PORT_CFG_T *cfg, UID_STP_PORT_STATE_T *state)
+CTL_get_port_state	rstp_if.c	/^int CTL_get_port_state(int port_index, UID_STP_PORT_CFG_T *cfg, UID_STP_PORT_STATE_T *state)$/;"	f	signature:(int port_index, UID_STP_PORT_CFG_T *cfg, UID_STP_PORT_STATE_T *state)
+CTL_set_bridge_config	ctl_func.h	/^int CTL_set_bridge_config(UID_STP_CFG_T *cfg);$/;"	p	signature:(UID_STP_CFG_T *cfg)
+CTL_set_bridge_config	rstp_if.c	/^int CTL_set_bridge_config(UID_STP_CFG_T *cfg)$/;"	f	signature:(UID_STP_CFG_T *cfg)
+CTL_set_debug_level	ctl_func.h	/^int CTL_set_debug_level(int level);$/;"	p	signature:(int level)
+CTL_set_debug_level	rstp_if.c	/^int CTL_set_debug_level(int level)$/;"	f	signature:(int level)
+CTL_set_port_config	ctl_func.h	/^int CTL_set_port_config(int port_index, UID_STP_PORT_CFG_T *cfg);$/;"	p	signature:(int port_index, UID_STP_PORT_CFG_T *cfg)
+CTL_set_port_config	rstp_if.c	/^int CTL_set_port_config(int port_index, UID_STP_PORT_CFG_T *cfg)$/;"	f	signature:(int port_index, UID_STP_PORT_CFG_T *cfg)
+CTL_set_port_trace	ctl_func.h	/^int CTL_set_port_trace(BITMAP_T *portmap, int mach_index, int enableflag);$/;"	p	signature:(BITMAP_T *portmap, int mach_index, int enableflag)
+CTL_set_port_trace	rstp_if.c	/^int CTL_set_port_trace(BITMAP_T *portmap, int mach_index, int enableflag)$/;"	f	signature:(BITMAP_T *portmap, int mach_index, int enableflag)
+CURRENT	ctl_main.c	726;"	d	file:
+ConfirmedRootMsg	rstplib/port.h	/^  ConfirmedRootMsg,$/;"	e	enum:__anon3
+DEFAULT_LINK_DELAY	rstplib/edge.c	39;"	d	file:
+DEFS	rstplib/Makefile	/^DEFS=$/;"	m
+DEF_ADMIN_EDGE	rstplib/stp_in.h	83;"	d
+DEF_ADMIN_NON_STP	rstplib/stp_in.h	82;"	d
+DEF_BR_FWDELAY	rstplib/stp_in.h	69;"	d
+DEF_BR_HELLOT	rstplib/stp_in.h	61;"	d
+DEF_BR_MAXAGE	rstplib/stp_in.h	65;"	d
+DEF_BR_PRIO	rstplib/stp_in.h	56;"	d
+DEF_FORCE_VERS	rstplib/stp_in.h	73;"	d
+DEF_LINK_DELAY	rstplib/stp_in.h	84;"	d
+DEF_P2P	rstplib/stp_in.h	85;"	d
+DEF_PORT_PRIO	rstplib/stp_in.h	77;"	d
+DesignatedPort	rstplib/port.h	/^  DesignatedPort,$/;"	e	enum:__anon4
+Disabled	rstplib/port.h	/^  Disabled$/;"	e	enum:__anon2
+DisabledPort	rstplib/port.h	/^  DisabledPort = 0,$/;"	e	enum:__anon4
+Dprintf	ctl_wrap.c	/^void Dprintf(int level, const char *fmt, ...)$/;"	f	signature:(int level, const char *fmt, ...)
+END_OF_LANG	rstplib/cli.h	74;"	d
+ESCAPED	ctl_main.c	727;"	d	file:
+ETH_HEADER_T	rstplib/stp_bpdu.h	/^} ETH_HEADER_T;$/;"	t	typeref:struct:eth_header_t
+EV_SIZE	epoll_loop.c	80;"	d	file:
+EXECUTABLE	rstplib/Makefile	/^EXECUTABLE= bridge mngr$/;"	m
+Err_Dummy_End	ctl_func.h	/^	CTL_ERRORS Err_Dummy_End$/;"	e	enum:Errors
+Err_Dummy_Start	ctl_func.h	/^	Err_Dummy_Start = 1000,$/;"	e	enum:Errors
+Errors	ctl_func.h	/^enum Errors {$/;"	g
+FORCE_STP_COMPAT	rstplib/stpm.h	/^  FORCE_STP_COMPAT = 0,     \/\/ stp模式$/;"	e	enum:__anon1
+FORWARD_BIT	rstplib/stp_bpdu.h	45;"	d
+False	rstplib/base.h	64;"	d
+False	rstplib/stp_in.h	46;"	d
+ForceVersion	rstplib/stpm.h	/^  PROTOCOL_VERSION_T    ForceVersion;   \/* 17.12, 17.16.1 *\/    \/\/ 生成树协议版本$/;"	m	struct:stpm_t	access:public
+ForwardDelay	rstplib/times.h	/^  unsigned short ForwardDelay;      \/\/ 转发延迟$/;"	m	struct:timevalues_t	access:public
+GCCFLAGS	Makefile	/^GCCFLAGS = $(CFLAGS) $(INCLUDES) -D__LINUX__ -DSTP_DBG=1 -DRSTP_JWS=1$/;"	m
+GET_FILE_DESCRIPTOR	rstplib/uid_sock.h	77;"	d
+GET_STATE_NAME	rstplib/choose.h	/^char * GET_STATE_NAME (int state)$/;"	f	signature:(int state)
+GET_STATE_NAME	rstplib/edge.c	36;"	d	file:
+GET_STATE_NAME	rstplib/migrate.c	36;"	d	file:
+GET_STATE_NAME	rstplib/p2p.c	35;"	d	file:
+GET_STATE_NAME	rstplib/pcost.c	35;"	d	file:
+GET_STATE_NAME	rstplib/portinfo.c	42;"	d	file:
+GET_STATE_NAME	rstplib/rolesel.c	33;"	d	file:
+GET_STATE_NAME	rstplib/roletrns.c	50;"	d	file:
+GET_STATE_NAME	rstplib/sttrans.c	35;"	d	file:
+GET_STATE_NAME	rstplib/topoch.c	40;"	d	file:
+GET_STATE_NAME	rstplib/transmit.c	40;"	d	file:
+HelloTime	rstplib/times.h	/^  unsigned short HelloTime;         \/\/ 保活时间$/;"	m	struct:timevalues_t	access:public
+Htonl	rstplib/base.h	/^extern ULONG Htonl (ULONG h);   $/;"	p	signature:(ULONG h)
+Htons	rstplib/base.h	/^extern USHORT Htons (USHORT h);$/;"	p	signature:(USHORT h)
+IN	rstplib/base.h	52;"	d
+IN	rstplib/stp_in.h	34;"	d
+INCLUDES	Makefile	/^INCLUDES = -I. -I.\/rstplib -I$(STAGING_DIR)\/usr\/include\/jssdk$/;"	m
+INCLUDES	rstplib/Makefile	/^INCLUDES = -I.$/;"	m
+INCR100	rstplib/stp_in.c	32;"	d	file:
+INFO_IS_T	rstplib/port.h	/^} INFO_IS_T;$/;"	t	typeref:enum:__anon2
+INOUT	rstplib/base.h	54;"	d
+INOUT	rstplib/stp_in.h	36;"	d
+I_am_a_stupid_hub	rstplib/stp_cli.c	/^int I_am_a_stupid_hub = 0;$/;"	v
+LD	common.mk	/^LD = $(CROSS_COMPILE)ld$/;"	m
+LEARN_BIT	rstplib/stp_bpdu.h	44;"	d
+LIBS	rstplib/Makefile	/^LIBS= -lreadline -lncurses$/;"	m
+LLC_UI	rstplib/stp_bpdu.h	30;"	d
+LOG_LEVEL_DEBUG	log.h	12;"	d
+LOG_LEVEL_DEFAULT	log.h	14;"	d
+LOG_LEVEL_ERROR	log.h	9;"	d
+LOG_LEVEL_INFO	log.h	10;"	d
+LOG_LEVEL_MAX	log.h	13;"	d
+LOG_LEVEL_MODULE	log.h	11;"	d
+LOG_LEVEL_NONE	log.h	8;"	d
+LT_FLASH_ALL_PORTS_EXCLUDE_THIS	rstplib/stp_to.h	/^  LT_FLASH_ALL_PORTS_EXCLUDE_THIS,$/;"	e	enum:__anon22
+LT_FLASH_ONLY_THE_PORT	rstplib/stp_to.h	/^  LT_FLASH_ONLY_THE_PORT$/;"	e	enum:__anon22
+LT_FLASH_TYPE_T	rstplib/stp_to.h	/^} LT_FLASH_TYPE_T;$/;"	t	typeref:enum:__anon22
+LinkDelay	rstplib/port.h	/^  int               LinkDelay;   \/* TBD: LinkDelay may be managed ? *\/$/;"	m	struct:port_t	access:public
+MACHINE_NUM	ctl_main.c	569;"	d	file:
+MACHINE_NUM	rstp_if.c	605;"	d	file:
+MAC_HEADER_T	rstplib/stp_bpdu.h	/^} MAC_HEADER_T;$/;"	t	typeref:struct:mac_header_t
+MAKE	common.mk	/^MAKE = make$/;"	m
+MASK_BR_PRIO	rstplib/stp_in.h	59;"	d
+MASK_PORT_PRIO	rstplib/stp_in.h	80;"	d
+MAXPARAMLEN	rstplib/cli.h	28;"	d
+MAXPARAMNUM	rstplib/cli.h	27;"	d
+MAX_BR_FWDELAY	rstplib/stp_in.h	71;"	d
+MAX_BR_HELLOT	rstplib/stp_in.h	63;"	d
+MAX_BR_MAXAGE	rstplib/stp_in.h	67;"	d
+MAX_BR_PRIO	rstplib/stp_in.h	58;"	d
+MAX_CLI_BUFF	rstplib/cli.h	26;"	d
+MAX_CLI_PROMT	rstplib/cli.h	29;"	d
+MAX_PORT_PCOST	rstplib/stp_in.h	87;"	d
+MAX_PORT_PRIO	rstplib/stp_in.h	79;"	d
+MAX_SELECTOR	rstplib/cli.h	30;"	d
+MAX_UID_MSG_SIZE	rstplib/uid.h	62;"	d
+MESSAGE_SIZE	rstplib/uid_sock.h	55;"	d
+MIN_BPDU	rstplib/stp_bpdu.h	28;"	d
+MIN_BR_FWDELAY	rstplib/stp_in.h	70;"	d
+MIN_BR_HELLOT	rstplib/stp_in.h	62;"	d
+MIN_BR_MAXAGE	rstplib/stp_in.h	66;"	d
+MIN_BR_PRIO	rstplib/stp_in.h	57;"	d
+MIN_FRAME_LENGTH	rstplib/transmit.c	43;"	d	file:
+MIN_PORT_PRIO	rstplib/stp_in.h	78;"	d
+MNGRCFILES	rstplib/Makefile	/^MNGRCFILES = mngr.c$/;"	m
+MNGROFILES	rstplib/Makefile	/^MNGROFILES = mngr.o$/;"	m
+MODULE_CTL_PATH	rstpd.c	25;"	d	file:
+MODULE_NAME	rstpd.c	23;"	d	file:
+MODULE_PID_FILE	rstpd.c	24;"	d	file:
+MaxAge	rstplib/times.h	/^  unsigned short MaxAge;            \/\/ 最大消息年龄$/;"	m	struct:timevalues_t	access:public
+MessageAge	rstplib/times.h	/^  unsigned short MessageAge;        \/\/ 消息年龄$/;"	m	struct:timevalues_t	access:public
+MigrateTime	rstplib/migrate.c	39;"	d	file:
+Mine	rstplib/port.h	/^  Mine,$/;"	e	enum:__anon2
+NAME_LEN	rstplib/uid_stp.h	28;"	d
+NLMSG_TAIL	libnetlink.h	53;"	d
+NORMAL_RSTP	rstplib/stpm.h	/^  NORMAL_RSTP = 2           \/\/ rstp模式$/;"	e	enum:__anon1
+NUMBER_OF_PORTS	rstplib/bitmap.h	26;"	d
+NonStpPort	rstplib/port.h	/^  NonStpPort$/;"	e	enum:__anon4
+Ntohl	rstplib/base.h	/^extern ULONG Ntohl (ULONG n);$/;"	p	signature:(ULONG n)
+Ntohs	rstplib/base.h	/^extern USHORT Ntohs (USHORT n); $/;"	p	signature:(USHORT n)
+OFILES	rstplib/Makefile	/^OFILES= $(MNGROFILES) $(BRIDGEOFILES) $(RSTPOFILES) $(UIDOFILES) $(CLIOFILES)$/;"	m
+OFILES_CTL	Makefile	/^OFILES_CTL = $(CFILES_CTL:.c=.o)$/;"	m
+OFILES_RSTPD	Makefile	/^OFILES_RSTPD = $(CFILES_RSTPD:.c=.o)$/;"	m
+OUT	rstplib/base.h	53;"	d
+OUT	rstplib/stp_in.h	35;"	d
+One	rstplib/base.h	59;"	d
+One	rstplib/stp_in.h	41;"	d
+OtherMsg	rstplib/port.h	/^  OtherMsg              \/\/ 其他消息(包括拓扑变化消息)$/;"	e	enum:__anon3
+P2P_AUTO	rstplib/uid_stp.h	/^  P2P_AUTO,$/;"	e	enum:__anon19
+P2P_FORCE_FALSE	rstplib/uid_stp.h	/^  P2P_FORCE_FALSE,$/;"	e	enum:__anon19
+P2P_FORCE_TRUE	rstplib/uid_stp.h	/^  P2P_FORCE_TRUE,$/;"	e	enum:__anon19
+PARAM_BOOL	rstplib/cli.h	72;"	d
+PARAM_ENUM	rstplib/cli.h	69;"	d
+PARAM_ENUM_DEFAULT	rstplib/cli.h	71;"	d
+PARAM_ENUM_SEL	rstplib/cli.h	70;"	d
+PARAM_NUMBER	rstplib/cli.h	67;"	d
+PARAM_STRING	rstplib/cli.h	68;"	d
+PLATFORM	common.mk	/^	PLATFORM = ARM_IMX6UL$/;"	m
+PORT_ID	rstplib/vector.h	/^typedef unsigned short  PORT_ID;$/;"	t
+PORT_ROLE_MASK	rstplib/stp_bpdu.h	43;"	d
+PORT_ROLE_OFFS	rstplib/stp_bpdu.h	42;"	d
+PORT_ROLE_T	rstplib/port.h	/^} PORT_ROLE_T;$/;"	t	typeref:enum:__anon4
+PORT_T	rstplib/mngr.c	/^} PORT_T;$/;"	t	typeref:struct:port_s	file:
+PORT_T	rstplib/port.h	/^} PORT_T;$/;"	t	typeref:struct:port_t
+PORT_TIMER_T	rstplib/port.h	/^typedef unsigned int    PORT_TIMER_T;$/;"	t
+PRIO_VECTOR_T	rstplib/vector.h	/^} PRIO_VECTOR_T;$/;"	t	typeref:struct:prio_vector_t
+PROPOSAL_BIT	rstplib/stp_bpdu.h	41;"	d
+PROTOCOL_VERSION_T	rstplib/stpm.h	/^} PROTOCOL_VERSION_T;$/;"	t	typeref:enum:__anon1
+PT_CFG_ALL	rstplib/uid_stp.h	130;"	d
+PT_CFG_COST	rstplib/uid_stp.h	119;"	d
+PT_CFG_DBG_SKIP_RX	rstplib/uid_stp.h	126;"	d
+PT_CFG_DBG_SKIP_TX	rstplib/uid_stp.h	127;"	d
+PT_CFG_EDGE	rstplib/uid_stp.h	122;"	d
+PT_CFG_MCHECK	rstplib/uid_stp.h	123;"	d
+PT_CFG_NON_STP	rstplib/uid_stp.h	124;"	d
+PT_CFG_P2P	rstplib/uid_stp.h	121;"	d
+PT_CFG_PRIO	rstplib/uid_stp.h	120;"	d
+PT_CFG_STATE	rstplib/uid_stp.h	118;"	d
+Print	rstplib/base.h	41;"	d
+RANLIB	common.mk	/^RANLIB = $(CROSS_COMPILE)ranlib$/;"	m
+RCVD_MSG_T	rstplib/port.h	/^} RCVD_MSG_T;$/;"	t	typeref:enum:__anon3
+RSTPCFILES	rstplib/Makefile	/^RSTPCFILES = statmch.c stpm.c port.c stpmgmt.c stp_in.c rolesel.c \\$/;"	m
+RSTPLIBF	rstplib/Makefile	/^RSTPLIBF = lib$(RSTPLIBS).a$/;"	m
+RSTPLIBS	rstplib/Makefile	/^RSTPLIBS = rstp$/;"	m
+RSTPOFILES	rstplib/Makefile	/^RSTPOFILES = statmch.o stpm.o port.o stpmgmt.o stp_in.o rolesel.o \\$/;"	m
+RSTP_BPDU_T	rstplib/transmit.c	/^} RSTP_BPDU_T;$/;"	t	typeref:struct:tx_rstp_bpdu_t	file:
+RSTP_CRITICAL_PATH_END	rstplib/stp_in.h	195;"	d
+RSTP_CRITICAL_PATH_END	rstplib/stp_in.h	199;"	d
+RSTP_CRITICAL_PATH_START	rstplib/stp_in.h	194;"	d
+RSTP_CRITICAL_PATH_START	rstplib/stp_in.h	198;"	d
+RSTP_ERRORS	rstplib/base.h	72;"	d
+RSTP_ERRORS_T	rstplib/base.h	/^typedef enum RSTP_ERRORS RSTP_ERRORS_T;$/;"	t	typeref:enum:RSTP_ERRORS
+RSTP_EVENT_LAST_DUMMY	rstplib/base.h	/^  RSTP_EVENT_LAST_DUMMY$/;"	e	enum:__anon11
+RSTP_EVENT_T	rstplib/base.h	/^} RSTP_EVENT_T;$/;"	t	typeref:enum:__anon11
+RSTP_INIT_CRITICAL_PATH_PROTECTIO	rstplib/stp_in.h	193;"	d
+RSTP_INIT_CRITICAL_PATH_PROTECTIO	rstplib/stp_in.h	197;"	d
+RSTP_PORT_DIS_T	rstplib/base.h	/^  RSTP_PORT_DIS_T,$/;"	e	enum:__anon11
+RSTP_PORT_DPLEX_T	rstplib/base.h	/^  RSTP_PORT_DPLEX_T,$/;"	e	enum:__anon11
+RSTP_PORT_EN_T	rstplib/base.h	/^  RSTP_PORT_EN_T,$/;"	e	enum:__anon11
+RSTP_PORT_MNGR_T	rstplib/base.h	/^  RSTP_PORT_MNGR_T,$/;"	e	enum:__anon11
+RSTP_PORT_ROLE_ALTBACK	rstplib/stp_bpdu.h	51;"	d
+RSTP_PORT_ROLE_DESGN	rstplib/stp_bpdu.h	53;"	d
+RSTP_PORT_ROLE_ROOT	rstplib/stp_bpdu.h	52;"	d
+RSTP_PORT_ROLE_UNKN	rstplib/stp_bpdu.h	50;"	d
+RSTP_PORT_RX_T	rstplib/base.h	/^  RSTP_PORT_RX_T,$/;"	e	enum:__anon11
+RSTP_PORT_SPEED_T	rstplib/base.h	/^  RSTP_PORT_SPEED_T,$/;"	e	enum:__anon11
+RSTP_PORT_STATE	rstplib/uid_stp.h	/^} RSTP_PORT_STATE;$/;"	t	typeref:enum:__anon18
+RSTP_PORT_TIME_T	rstplib/base.h	/^  RSTP_PORT_TIME_T,$/;"	e	enum:__anon11
+Received	rstplib/port.h	/^  Received,$/;"	e	enum:__anon2
+RepeatedDesignateMsg	rstplib/port.h	/^  RepeatedDesignateMsg, \/\/ 重复的bpdu$/;"	e	enum:__anon3
+RootPort	rstplib/port.h	/^  RootPort,$/;"	e	enum:__anon4
+SA	rstplib/uid_sock.h	/^typedef struct sockaddr SA;$/;"	t	typeref:struct:sockaddr
+SERVER_MESSAGE_CASE	ctl_socket.h	130;"	d
+SIZE_OF_ADDRESS	rstplib/uid_sock.h	37;"	d
+SOCKET_NAME_LENGTH	rstplib/uid_sock.h	36;"	d
+STATES	rstplib/edge.c	29;"	d	file:
+STATES	rstplib/migrate.c	28;"	d	file:
+STATES	rstplib/p2p.c	29;"	d	file:
+STATES	rstplib/pcost.c	29;"	d	file:
+STATES	rstplib/portinfo.c	30;"	d	file:
+STATES	rstplib/rolesel.c	28;"	d	file:
+STATES	rstplib/roletrns.c	29;"	d	file:
+STATES	rstplib/sttrans.c	29;"	d	file:
+STATES	rstplib/topoch.c	29;"	d	file:
+STATES	rstplib/transmit.c	31;"	d	file:
+STATE_MACH_T	rstplib/statmch.h	/^} STATE_MACH_T;$/;"	t	typeref:struct:state_mach_t
+STPM_T	rstplib/stpm.h	/^} STPM_T;$/;"	t	typeref:struct:stpm_t
+STP_DBG	rstplib/base.h	32;"	d
+STP_DEFAULT_VLAN_ID	rstpd.h	13;"	d
+STP_DEFAULT_VLAN_NAME	rstpd.h	14;"	d
+STP_DISABLED	rstplib/uid_stp.h	/^  STP_DISABLED,$/;"	e	enum:__anon13
+STP_DOWN	rstpd.h	21;"	d
+STP_ENABLED	rstplib/uid_stp.h	/^  STP_ENABLED,$/;"	e	enum:__anon13
+STP_FATAL	rstplib/base.h	130;"	d
+STP_FATAL	rstplib/base.h	134;"	d
+STP_FREE	rstplib/base.h	148;"	d
+STP_IN_changed_port_duplex	rstplib/stp_in.c	/^STP_IN_changed_port_duplex (int port_index)$/;"	f	signature:(int port_index)
+STP_IN_changed_port_duplex	rstplib/stp_in.h	/^STP_IN_changed_port_duplex (int port_index);$/;"	p	signature:(int port_index)
+STP_IN_changed_port_speed	rstplib/stp_in.c	/^STP_IN_changed_port_speed (int port_index, long speed)$/;"	f	signature:(int port_index, long speed)
+STP_IN_changed_port_speed	rstplib/stp_in.h	/^STP_IN_changed_port_speed (int port_index, long speed);$/;"	p	signature:(int port_index, long speed)
+STP_IN_check_bpdu_header	rstplib/stp_in.c	/^STP_IN_check_bpdu_header (BPDU_T* bpdu, size_t len)$/;"	f	signature:(BPDU_T* bpdu, size_t len)
+STP_IN_check_bpdu_header	rstplib/stp_in.h	/^STP_IN_check_bpdu_header (BPDU_T* bpdu, size_t len);$/;"	p	signature:(BPDU_T* bpdu, size_t len)
+STP_IN_dbg_set_port_trace	rstplib/stp_in.c	/^STP_IN_dbg_set_port_trace (char* mach_name, int enadis,$/;"	f	signature:(char* mach_name, int enadis, int vlan_id, BITMAP_T* ports, int is_print_err)
+STP_IN_dbg_set_port_trace	rstplib/stp_in.h	/^int STP_IN_dbg_set_port_trace (char* mach_name, int enadis,$/;"	p	signature:(char* mach_name, int enadis, int vlan_id, BITMAP_T* ports, int is_print_err)
+STP_IN_delete_all	rstplib/stp_in.h	/^STP_IN_delete_all (void);$/;"	p	signature:(void)
+STP_IN_delete_all	rstplib/stpmgmt.c	/^STP_IN_delete_all (void)$/;"	f	signature:(void)
+STP_IN_enable_port	rstplib/stp_in.c	/^STP_IN_enable_port (int port_index, Bool enable)$/;"	f	signature:(int port_index, Bool enable)
+STP_IN_enable_port	rstplib/stp_in.h	/^STP_IN_enable_port (int port_index, Bool enable);$/;"	p	signature:(int port_index, Bool enable)
+STP_IN_get_error_explanation	ctl_main.c	27;"	d	file:
+STP_IN_get_error_explanation	rstplib/stp_in.c	/^STP_IN_get_error_explanation (int rstp_err_no)$/;"	f	signature:(int rstp_err_no)
+STP_IN_get_error_explanation	rstplib/stp_in.h	/^STP_IN_get_error_explanation (int rstp_err_no);$/;"	p	signature:(int rstp_err_no)
+STP_IN_get_is_stpm_enabled	rstplib/stp_in.h	/^STP_IN_get_is_stpm_enabled (int vlan_id);$/;"	p	signature:(int vlan_id)
+STP_IN_get_is_stpm_enabled	rstplib/stpmgmt.c	/^STP_IN_get_is_stpm_enabled (int vlan_id)$/;"	f	signature:(int vlan_id)
+STP_IN_init	rstplib/stp_in.c	/^STP_IN_init (int max_port_index)$/;"	f	signature:(int max_port_index)
+STP_IN_init	rstplib/stp_in.h	/^STP_IN_init (int max_port_index);$/;"	p	signature:(int max_port_index)
+STP_IN_one_second	rstplib/stp_in.c	/^STP_IN_one_second (void)$/;"	f	signature:(void)
+STP_IN_one_second	rstplib/stp_in.h	/^STP_IN_one_second (void);$/;"	p	signature:(void)
+STP_IN_port_create	rstplib/stp_in.c	/^int STP_IN_port_create(int vlan_id, int port_index)$/;"	f	signature:(int vlan_id, int port_index)
+STP_IN_port_create	rstplib/stp_in.h	/^int STP_IN_port_create(int vlan_id, int port_index);$/;"	p	signature:(int vlan_id, int port_index)
+STP_IN_port_delete	rstplib/stp_in.c	/^int STP_IN_port_delete(int vlan_id, int port_index)$/;"	f	signature:(int vlan_id, int port_index)
+STP_IN_port_delete	rstplib/stp_in.h	/^int STP_IN_port_delete(int vlan_id, int port_index);$/;"	p	signature:(int vlan_id, int port_index)
+STP_IN_port_get_cfg	rstplib/stp_in.c	/^STP_IN_port_get_cfg (int vlan_id, int port_index, UID_STP_PORT_CFG_T* uid_cfg)$/;"	f	signature:(int vlan_id, int port_index, UID_STP_PORT_CFG_T* uid_cfg)
+STP_IN_port_get_cfg	rstplib/stp_in.h	/^STP_IN_port_get_cfg (int vlan_id, int port_index, UID_STP_PORT_CFG_T* uid_cfg);$/;"	p	signature:(int vlan_id, int port_index, UID_STP_PORT_CFG_T* uid_cfg)
+STP_IN_port_get_state	rstplib/stp_in.c	/^STP_IN_port_get_state (IN int vlan_id, INOUT UID_STP_PORT_STATE_T* entry)$/;"	f	signature:(IN int vlan_id, INOUT UID_STP_PORT_STATE_T* entry)
+STP_IN_port_get_state	rstplib/stp_in.h	/^STP_IN_port_get_state (int vlan_id, UID_STP_PORT_STATE_T* entry);$/;"	p	signature:(int vlan_id, UID_STP_PORT_STATE_T* entry)
+STP_IN_rx_bpdu	rstplib/stp_in.c	/^int STP_IN_rx_bpdu (int vlan_id, int port_index, BPDU_T* bpdu, size_t len)$/;"	f	signature:(int vlan_id, int port_index, BPDU_T* bpdu, size_t len)
+STP_IN_rx_bpdu	rstplib/stp_in.h	/^STP_IN_rx_bpdu (int vlan_id, int port_index, BPDU_T* bpdu, size_t len);$/;"	p	signature:(int vlan_id, int port_index, BPDU_T* bpdu, size_t len)
+STP_IN_set_port_cfg	rstplib/stp_in.c	/^STP_IN_set_port_cfg (IN int vlan_id, IN UID_STP_PORT_CFG_T* uid_cfg)$/;"	f	signature:(IN int vlan_id, IN UID_STP_PORT_CFG_T* uid_cfg)
+STP_IN_set_port_cfg	rstplib/stp_in.h	/^STP_IN_set_port_cfg (int vlan_id, int port_index,$/;"	p	signature:(int vlan_id, int port_index, UID_STP_PORT_CFG_T* uid_cfg)
+STP_IN_set_port_cfg	rstplib/stp_in.h	/^STP_IN_set_port_cfg (int vlan_id,$/;"	p	signature:(int vlan_id, UID_STP_PORT_CFG_T* uid_cfg)
+STP_IN_stop_all	rstplib/stp_in.h	/^STP_IN_stop_all (void);$/;"	p	signature:(void)
+STP_IN_stop_all	rstplib/stpmgmt.c	/^STP_IN_stop_all (void)$/;"	f	signature:(void)
+STP_IN_stpm_create	rstplib/stp_in.h	/^STP_IN_stpm_create (int vlan_id, char* name, BITMAP_T* port_bmp);$/;"	p	signature:(int vlan_id, char* name, BITMAP_T* port_bmp)
+STP_IN_stpm_create	rstplib/stpmgmt.c	/^STP_IN_stpm_create (int vlan_id, char* name, BITMAP_T* port_bmp)$/;"	f	signature:(int vlan_id, char* name, BITMAP_T* port_bmp)
+STP_IN_stpm_delete	rstplib/stp_in.h	/^STP_IN_stpm_delete (int vlan_id);$/;"	p	signature:(int vlan_id)
+STP_IN_stpm_delete	rstplib/stpmgmt.c	/^STP_IN_stpm_delete (int vlan_id)$/;"	f	signature:(int vlan_id)
+STP_IN_stpm_get_cfg	rstplib/stp_in.c	/^STP_IN_stpm_get_cfg (IN int vlan_id, OUT UID_STP_CFG_T* uid_cfg)$/;"	f	signature:(IN int vlan_id, OUT UID_STP_CFG_T* uid_cfg)
+STP_IN_stpm_get_cfg	rstplib/stp_in.h	/^STP_IN_stpm_get_cfg (int vlan_id, UID_STP_CFG_T* uid_cfg);$/;"	p	signature:(int vlan_id, UID_STP_CFG_T* uid_cfg)
+STP_IN_stpm_get_name_by_vlan_id	rstplib/stp_in.c	/^STP_IN_stpm_get_name_by_vlan_id (int vlan_id, char* name, size_t buffsize)$/;"	f	signature:(int vlan_id, char* name, size_t buffsize)
+STP_IN_stpm_get_name_by_vlan_id	rstplib/stp_in.h	/^STP_IN_stpm_get_name_by_vlan_id (int vlan_id, char* name, size_t buffsize);$/;"	p	signature:(int vlan_id, char* name, size_t buffsize)
+STP_IN_stpm_get_state	rstplib/stp_in.c	/^STP_IN_stpm_get_state (IN int vlan_id, OUT UID_STP_STATE_T* entry)$/;"	f	signature:(IN int vlan_id, OUT UID_STP_STATE_T* entry)
+STP_IN_stpm_get_state	rstplib/stp_in.h	/^STP_IN_stpm_get_state (int vlan_id, UID_STP_STATE_T* entry);$/;"	p	signature:(int vlan_id, UID_STP_STATE_T* entry)
+STP_IN_stpm_get_vlan_id_by_name	rstplib/stp_in.h	/^STP_IN_stpm_get_vlan_id_by_name (char* name, int* vlan_id);$/;"	p	signature:(char* name, int* vlan_id)
+STP_IN_stpm_get_vlan_id_by_name	rstplib/stpmgmt.c	/^STP_IN_stpm_get_vlan_id_by_name (char* name, int* vlan_id)$/;"	f	signature:(char* name, int* vlan_id)
+STP_IN_stpm_set_cfg	rstplib/stp_in.c	/^STP_IN_stpm_set_cfg (IN int vlan_id,$/;"	f	signature:(IN int vlan_id, IN BITMAP_T* port_bmp, IN UID_STP_CFG_T* uid_cfg)
+STP_IN_stpm_set_cfg	rstplib/stp_in.h	/^STP_IN_stpm_set_cfg (int vlan_id,$/;"	p	signature:(int vlan_id, BITMAP_T* port_bmp, UID_STP_CFG_T* uid_cfg)
+STP_MALLOC	rstplib/base.h	139;"	d
+STP_MAX_PORT_NUM	rstpd.h	12;"	d
+STP_MODE_DISABLED	rstpd.h	17;"	d
+STP_MODE_ENABLED	rstpd.h	18;"	d
+STP_NEW_IN_LIST	rstplib/base.h	165;"	d
+STP_OUT_flush_lt	rstp_if.c	/^int STP_OUT_flush_lt (IN int port_index, IN int vlan_id, LT_FLASH_TYPE_T type, char* reason)$/;"	f	signature:(IN int port_index, IN int vlan_id, LT_FLASH_TYPE_T type, char* reason)
+STP_OUT_flush_lt	rstplib/stp_to.c	/^STP_OUT_flush_lt (IN int port_index, IN int vlan_id, LT_FLASH_TYPE_T type, char* reason)$/;"	f	signature:(IN int port_index, IN int vlan_id, LT_FLASH_TYPE_T type, char* reason)
+STP_OUT_flush_lt	rstplib/stp_to.h	/^STP_OUT_flush_lt (IN int port_index, IN int vlan_id,$/;"	p	signature:(IN int port_index, IN int vlan_id, IN LT_FLASH_TYPE_T type, IN char* reason)
+STP_OUT_get_deafult_port_path_cost	rstp_if.c	/^unsigned long STP_OUT_get_deafult_port_path_cost (IN unsigned int portNo)$/;"	f	signature:(IN unsigned int portNo)
+STP_OUT_get_deafult_port_path_cost	rstplib/stp_to.c	/^STP_OUT_get_deafult_port_path_cost (IN unsigned int portNo)$/;"	f	signature:(IN unsigned int portNo)
+STP_OUT_get_duplex	rstp_if.c	/^int STP_OUT_get_duplex (IN int port_index)$/;"	f	signature:(IN int port_index)
+STP_OUT_get_duplex	rstplib/stp_to.c	/^STP_OUT_get_duplex (IN int port_index)$/;"	f	signature:(IN int port_index)
+STP_OUT_get_duplex	rstplib/stp_to.h	/^STP_OUT_get_duplex (IN int port_index);$/;"	p	signature:(IN int port_index)
+STP_OUT_get_init_port_cfg	rstp_if.c	/^int STP_OUT_get_init_port_cfg (IN int vlan_id, IN int port_index, INOUT UID_STP_PORT_CFG_T* cfg)$/;"	f	signature:(IN int vlan_id, IN int port_index, INOUT UID_STP_PORT_CFG_T* cfg)
+STP_OUT_get_init_port_cfg	rstplib/stp_to.c	/^STP_OUT_get_init_port_cfg (IN int vlan_id,$/;"	f	signature:(IN int vlan_id, IN int port_index, INOUT UID_STP_PORT_CFG_T* cfg)
+STP_OUT_get_init_port_cfg	rstplib/stp_to.h	/^STP_OUT_get_init_port_cfg (IN int vlan_id,$/;"	p	signature:(IN int vlan_id, IN int port_index, INOUT UID_STP_PORT_CFG_T* cfg)
+STP_OUT_get_init_stpm_cfg	rstp_if.c	/^int STP_OUT_get_init_stpm_cfg (IN int vlan_id, INOUT UID_STP_CFG_T* cfg)$/;"	f	signature:(IN int vlan_id, INOUT UID_STP_CFG_T* cfg)
+STP_OUT_get_init_stpm_cfg	rstplib/stp_to.c	/^STP_OUT_get_init_stpm_cfg (IN int vlan_id,$/;"	f	signature:(IN int vlan_id, INOUT UID_STP_CFG_T* cfg)
+STP_OUT_get_init_stpm_cfg	rstplib/stp_to.h	/^STP_OUT_get_init_stpm_cfg (IN int vlan_id,$/;"	p	signature:(IN int vlan_id, INOUT UID_STP_CFG_T* cfg)
+STP_OUT_get_port_link_status	rstp_if.c	/^int STP_OUT_get_port_link_status (int port_index)$/;"	f	signature:(int port_index)
+STP_OUT_get_port_link_status	rstplib/stp_to.c	/^STP_OUT_get_port_link_status (int port_index)$/;"	f	signature:(int port_index)
+STP_OUT_get_port_link_status	rstplib/stp_to.h	/^STP_OUT_get_port_link_status (IN int port_index);$/;"	p	signature:(IN int port_index)
+STP_OUT_get_port_mac	rstp_if.c	/^void STP_OUT_get_port_mac (int port_index, unsigned char *mac)$/;"	f	signature:(int port_index, unsigned char *mac)
+STP_OUT_get_port_mac	rstplib/stp_to.c	/^STP_OUT_get_port_mac (int port_index, unsigned char *mac)$/;"	f	signature:(int port_index, unsigned char *mac)
+STP_OUT_get_port_mac	rstplib/stp_to.h	/^STP_OUT_get_port_mac (IN int port_index, OUT unsigned char* mac);$/;"	p	signature:(IN int port_index, OUT unsigned char* mac)
+STP_OUT_get_port_name	rstp_if.c	/^const char *STP_OUT_get_port_name (IN int port_index)$/;"	f	signature:(IN int port_index)
+STP_OUT_get_port_name	rstplib/stp_to.c	/^STP_OUT_get_port_name (IN int port_index)$/;"	f	signature:(IN int port_index)
+STP_OUT_get_port_name	rstplib/stp_to.h	/^STP_OUT_get_port_name (IN int port_index);$/;"	p	signature:(IN int port_index)
+STP_OUT_get_port_oper_speed	rstp_if.c	/^unsigned long STP_OUT_get_port_oper_speed (unsigned int portNo)$/;"	f	signature:(unsigned int portNo)
+STP_OUT_get_port_oper_speed	rstplib/stp_to.c	/^unsigned long STP_OUT_get_port_oper_speed (unsigned int portNo)$/;"	f	signature:(unsigned int portNo)
+STP_OUT_get_port_oper_speed	rstplib/stp_to.h	/^STP_OUT_get_port_oper_speed (IN unsigned int portNo);$/;"	p	signature:(IN unsigned int portNo)
+STP_OUT_psos_close_semaphore	rstplib/stp_in.h	/^   extern void STP_OUT_psos_close_semaphore (void);$/;"	p	signature:(void)
+STP_OUT_psos_init_semaphore	rstplib/stp_in.h	/^   extern void STP_OUT_psos_init_semaphore (void);$/;"	p	signature:(void)
+STP_OUT_psos_open_semaphore	rstplib/stp_in.h	/^   extern void STP_OUT_psos_open_semaphore (void);$/;"	p	signature:(void)
+STP_OUT_set_forwarding	rstplib/stp_to.c	/^STP_OUT_set_forwarding (int port_index, int vlan_id, int enable)$/;"	f	signature:(int port_index, int vlan_id, int enable)
+STP_OUT_set_forwarding	rstplib/stp_to.h	/^STP_OUT_set_forwarding (IN int port_index, IN int vlan_id, IN int enable);$/;"	p	signature:(IN int port_index, IN int vlan_id, IN int enable)
+STP_OUT_set_hardware_mode	rstp_if.c	/^int STP_OUT_set_hardware_mode (int vlan_id, UID_STP_MODE_T mode)$/;"	f	signature:(int vlan_id, UID_STP_MODE_T mode)
+STP_OUT_set_hardware_mode	rstplib/stp_to.c	/^STP_OUT_set_hardware_mode (int vlan_id, UID_STP_MODE_T mode)$/;"	f	signature:(int vlan_id, UID_STP_MODE_T mode)
+STP_OUT_set_hardware_mode	rstplib/stp_to.h	/^STP_OUT_set_hardware_mode (int vlan_id, UID_STP_MODE_T mode);$/;"	p	signature:(int vlan_id, UID_STP_MODE_T mode)
+STP_OUT_set_learning	rstplib/stp_to.c	/^STP_OUT_set_learning (int port_index, int vlan_id, int enable)$/;"	f	signature:(int port_index, int vlan_id, int enable)
+STP_OUT_set_learning	rstplib/stp_to.h	/^STP_OUT_set_learning (IN int port_index, IN int vlan_id, IN int enable);$/;"	p	signature:(IN int port_index, IN int vlan_id, IN int enable)
+STP_OUT_set_port_state	rstp_if.c	/^int STP_OUT_set_port_state (IN int port_index, IN int vlan_id, IN RSTP_PORT_STATE state)$/;"	f	signature:(IN int port_index, IN int vlan_id, IN RSTP_PORT_STATE state)
+STP_OUT_set_port_state	rstplib/stp_to.c	/^STP_OUT_set_port_state (IN int port_index, IN int vlan_id,$/;"	f	signature:(IN int port_index, IN int vlan_id, IN RSTP_PORT_STATE state)
+STP_OUT_set_port_state	rstplib/stp_to.h	/^STP_OUT_set_port_state (IN int port_index, IN int vlan_id, IN RSTP_PORT_STATE state);$/;"	p	signature:(IN int port_index, IN int vlan_id, IN RSTP_PORT_STATE state)
+STP_OUT_tx_bpdu	rstp_if.c	/^int STP_OUT_tx_bpdu (int port_index, int vlan_id, unsigned char *bpdu, size_t bpdu_len)$/;"	f	signature:(int port_index, int vlan_id, unsigned char *bpdu, size_t bpdu_len)
+STP_OUT_tx_bpdu	rstplib/stp_to.c	/^STP_OUT_tx_bpdu (int port_index, int vlan_id,$/;"	f	signature:(int port_index, int vlan_id, unsigned char *bpdu, size_t bpdu_len)
+STP_OUT_tx_bpdu	rstplib/stp_to.h	/^STP_OUT_tx_bpdu (IN int port_index, IN int vlan_id,$/;"	p	signature:(IN int port_index, IN int vlan_id, IN unsigned char* bpdu, IN size_t bpdu_len)
+STP_PORT_DISABLED	rstpd.h	25;"	d
+STP_PORT_DUPLEX_FULL	rstpd.h	34;"	d
+STP_PORT_DUPLEX_HALF	rstpd.h	33;"	d
+STP_PORT_ENABLED	rstpd.h	26;"	d
+STP_PORT_LINKDOWN	rstpd.h	29;"	d
+STP_PORT_LINKUP	rstpd.h	30;"	d
+STP_RUNNING	rstpd.h	22;"	d
+STP_SET_TIME	rstplib/times.c	58;"	d	file:
+STP_STATE_MACH_IN_LIST	rstplib/statmch.h	58;"	d
+STP_STRDUP	rstplib/base.h	157;"	d
+STP_VECT_br_id_print	rstplib/vector.c	/^STP_VECT_br_id_print (IN char *title, IN BRIDGE_ID* br_id, IN Bool cr)$/;"	f	signature:(IN char *title, IN BRIDGE_ID* br_id, IN Bool cr)
+STP_VECT_br_id_print	rstplib/vector.h	/^STP_VECT_br_id_print (IN char *title, IN BRIDGE_ID* br_id, IN Bool cr);$/;"	p	signature:(IN char *title, IN BRIDGE_ID* br_id, IN Bool cr)
+STP_VECT_compare_bridge_id	rstplib/vector.c	/^int STP_VECT_compare_bridge_id (BRIDGE_ID* b1, BRIDGE_ID* b2)$/;"	f	signature:(BRIDGE_ID* b1, BRIDGE_ID* b2)
+STP_VECT_compare_bridge_id	rstplib/vector.h	/^STP_VECT_compare_bridge_id (IN BRIDGE_ID* b1, IN BRIDGE_ID* b2);$/;"	p	signature:(IN BRIDGE_ID* b1, IN BRIDGE_ID* b2)
+STP_VECT_compare_vector	rstplib/vector.c	/^int STP_VECT_compare_vector (PRIO_VECTOR_T* v1, PRIO_VECTOR_T* v2)$/;"	f	signature:(PRIO_VECTOR_T* v1, PRIO_VECTOR_T* v2)
+STP_VECT_compare_vector	rstplib/vector.h	/^STP_VECT_compare_vector (IN PRIO_VECTOR_T* v1, IN PRIO_VECTOR_T* v2);$/;"	p	signature:(IN PRIO_VECTOR_T* v1, IN PRIO_VECTOR_T* v2)
+STP_VECT_copy	rstplib/vector.c	/^STP_VECT_copy (OUT PRIO_VECTOR_T* t, IN PRIO_VECTOR_T* f)$/;"	f	signature:(OUT PRIO_VECTOR_T* t, IN PRIO_VECTOR_T* f)
+STP_VECT_copy	rstplib/vector.h	/^STP_VECT_copy (OUT PRIO_VECTOR_T* t, IN PRIO_VECTOR_T* f);$/;"	p	signature:(OUT PRIO_VECTOR_T* t, IN PRIO_VECTOR_T* f)
+STP_VECT_create	rstplib/vector.c	/^STP_VECT_create (OUT PRIO_VECTOR_T* t,$/;"	f	signature:(OUT PRIO_VECTOR_T* t, IN BRIDGE_ID* root_br, IN unsigned long root_path_cost, IN BRIDGE_ID* design_bridge, IN PORT_ID design_port, IN PORT_ID bridge_port)
+STP_VECT_create	rstplib/vector.h	/^STP_VECT_create (OUT PRIO_VECTOR_T* t,$/;"	p	signature:(OUT PRIO_VECTOR_T* t, IN BRIDGE_ID* root_br, IN unsigned long root_path_cost, IN BRIDGE_ID* design_bridge, IN PORT_ID design_port, IN PORT_ID bridge_port)
+STP_VECT_get_vector	rstplib/vector.c	/^void STP_VECT_get_vector (IN BPDU_BODY_T* b, OUT PRIO_VECTOR_T* v)$/;"	f	signature:(IN BPDU_BODY_T* b, OUT PRIO_VECTOR_T* v)
+STP_VECT_get_vector	rstplib/vector.h	/^STP_VECT_get_vector (IN BPDU_BODY_T* b, OUT PRIO_VECTOR_T* v);$/;"	p	signature:(IN BPDU_BODY_T* b, OUT PRIO_VECTOR_T* v)
+STP_VECT_print	rstplib/vector.c	/^STP_VECT_print (IN char *title, IN PRIO_VECTOR_T *v)$/;"	f	signature:(IN char *title, IN PRIO_VECTOR_T *v)
+STP_VECT_print	rstplib/vector.h	/^STP_VECT_print (IN char* title, IN PRIO_VECTOR_T* v);$/;"	p	signature:(IN char* title, IN PRIO_VECTOR_T* v)
+STP_VECT_set_vector	rstplib/vector.c	/^void STP_VECT_set_vector (IN PRIO_VECTOR_T* v, OUT BPDU_BODY_T* b)$/;"	f	signature:(IN PRIO_VECTOR_T* v, OUT BPDU_BODY_T* b)
+STP_VECT_set_vector	rstplib/vector.h	/^STP_VECT_set_vector (IN PRIO_VECTOR_T* v, OUT BPDU_BODY_T* b);$/;"	p	signature:(IN PRIO_VECTOR_T* v, OUT BPDU_BODY_T* b)
+STP_change_state	rstplib/statmch.c	/^Bool STP_change_state (STATE_MACH_T* this)$/;"	f	signature:(STATE_MACH_T* this)
+STP_change_state	rstplib/statmch.h	/^STP_change_state (STATE_MACH_T* this);$/;"	p	signature:(STATE_MACH_T* this)
+STP_check_condition	rstplib/statmch.c	/^Bool STP_check_condition (STATE_MACH_T* this)$/;"	f	signature:(STATE_MACH_T* this)
+STP_check_condition	rstplib/statmch.h	/^STP_check_condition (STATE_MACH_T* this);$/;"	p	signature:(STATE_MACH_T* this)
+STP_compare_times	rstplib/times.c	/^int STP_compare_times (IN TIMEVALUES_T *t1, IN TIMEVALUES_T *t2)$/;"	f	signature:(IN TIMEVALUES_T *t1, IN TIMEVALUES_T *t2)
+STP_compare_times	rstplib/times.h	/^STP_compare_times (IN TIMEVALUES_T* t1, IN TIMEVALUES_T* t2);$/;"	p	signature:(IN TIMEVALUES_T* t1, IN TIMEVALUES_T* t2)
+STP_compute_bridge_id	rstplib/stpm.c	/^STP_compute_bridge_id (STPM_T* this)$/;"	f	signature:(STPM_T* this)
+STP_compute_bridge_id	rstplib/stpm.h	/^STP_compute_bridge_id (STPM_T* this);$/;"	p	signature:(STPM_T* this)
+STP_copy_times	rstplib/times.c	/^void STP_copy_times (OUT TIMEVALUES_T *t, IN TIMEVALUES_T *f)$/;"	f	signature:(OUT TIMEVALUES_T *t, IN TIMEVALUES_T *f)
+STP_copy_times	rstplib/times.h	/^STP_copy_times (OUT TIMEVALUES_T* t, IN TIMEVALUES_T* f);$/;"	p	signature:(OUT TIMEVALUES_T* t, IN TIMEVALUES_T* f)
+STP_edge_check_conditions	rstplib/edge.c	/^STP_edge_check_conditions (STATE_MACH_T *s)$/;"	f	signature:(STATE_MACH_T *s)
+STP_edge_check_conditions	rstplib/edge.h	/^STP_edge_check_conditions (STATE_MACH_T* s);$/;"	p	signature:(STATE_MACH_T* s)
+STP_edge_enter_state	rstplib/edge.c	/^STP_edge_enter_state (STATE_MACH_T *s)$/;"	f	signature:(STATE_MACH_T *s)
+STP_edge_enter_state	rstplib/edge.h	/^STP_edge_enter_state (STATE_MACH_T* s);$/;"	p	signature:(STATE_MACH_T* s)
+STP_edge_get_state_name	rstplib/edge.h	/^STP_edge_get_state_name (int state);$/;"	p	signature:(int state)
+STP_get_times	rstplib/times.c	/^void STP_get_times (IN BPDU_BODY_T *b, OUT TIMEVALUES_T *v)$/;"	f	signature:(IN BPDU_BODY_T *b, OUT TIMEVALUES_T *v)
+STP_get_times	rstplib/times.h	/^STP_get_times (IN BPDU_BODY_T* b, OUT TIMEVALUES_T* v);$/;"	p	signature:(IN BPDU_BODY_T* b, OUT TIMEVALUES_T* v)
+STP_hop_2_state	rstplib/statmch.c	/^Bool STP_hop_2_state (STATE_MACH_T* this, unsigned int new_state)$/;"	f	signature:(STATE_MACH_T* this, unsigned int new_state)
+STP_hop_2_state	rstplib/statmch.h	/^STP_hop_2_state (STATE_MACH_T* this, unsigned int new_state);$/;"	p	signature:(STATE_MACH_T* this, unsigned int new_state)
+STP_info_check_conditions	rstplib/portinfo.c	/^Bool STP_info_check_conditions (STATE_MACH_T* this)$/;"	f	signature:(STATE_MACH_T* this)
+STP_info_check_conditions	rstplib/portinfo.h	/^STP_info_check_conditions (STATE_MACH_T* s);$/;"	p	signature:(STATE_MACH_T* s)
+STP_info_enter_state	rstplib/portinfo.c	/^void STP_info_enter_state (STATE_MACH_T* this)$/;"	f	signature:(STATE_MACH_T* this)
+STP_info_enter_state	rstplib/portinfo.h	/^STP_info_enter_state (STATE_MACH_T* s);$/;"	p	signature:(STATE_MACH_T* s)
+STP_info_get_state_name	rstplib/portinfo.h	/^STP_info_get_state_name (int state);$/;"	p	signature:(int state)
+STP_info_rx_bpdu	rstplib/portinfo.c	/^void STP_info_rx_bpdu (PORT_T* port, struct stp_bpdu_t* bpdu, size_t len)$/;"	f	signature:(PORT_T* port, struct stp_bpdu_t* bpdu, size_t len)
+STP_info_rx_bpdu	rstplib/portinfo.h	/^STP_info_rx_bpdu (PORT_T* this, struct stp_bpdu_t* bpdu, size_t len);$/;"	p	signature:(PORT_T* this, struct stp_bpdu_t* bpdu, size_t len)
+STP_migrate_check_conditions	rstplib/migrate.c	/^STP_migrate_check_conditions (STATE_MACH_T* this)$/;"	f	signature:(STATE_MACH_T* this)
+STP_migrate_check_conditions	rstplib/migrate.h	/^STP_migrate_check_conditions (STATE_MACH_T* s);$/;"	p	signature:(STATE_MACH_T* s)
+STP_migrate_enter_state	rstplib/migrate.c	/^STP_migrate_enter_state (STATE_MACH_T* this)$/;"	f	signature:(STATE_MACH_T* this)
+STP_migrate_enter_state	rstplib/migrate.h	/^STP_migrate_enter_state (STATE_MACH_T* s);$/;"	p	signature:(STATE_MACH_T* s)
+STP_migrate_get_state_name	rstplib/migrate.h	/^STP_migrate_get_state_name (int state);$/;"	p	signature:(int state)
+STP_p2p_check_conditions	rstplib/p2p.c	/^STP_p2p_check_conditions (STATE_MACH_T* s)$/;"	f	signature:(STATE_MACH_T* s)
+STP_p2p_check_conditions	rstplib/p2p.h	/^STP_p2p_check_conditions (STATE_MACH_T* s);$/;"	p	signature:(STATE_MACH_T* s)
+STP_p2p_enter_state	rstplib/p2p.c	/^STP_p2p_enter_state (STATE_MACH_T* s)$/;"	f	signature:(STATE_MACH_T* s)
+STP_p2p_enter_state	rstplib/p2p.h	/^STP_p2p_enter_state (STATE_MACH_T* s);$/;"	p	signature:(STATE_MACH_T* s)
+STP_p2p_get_state_name	rstplib/p2p.h	/^STP_p2p_get_state_name (int state);$/;"	p	signature:(int state)
+STP_pcost_check_conditions	rstplib/pcost.c	/^STP_pcost_check_conditions (STATE_MACH_T* this)$/;"	f	signature:(STATE_MACH_T* this)
+STP_pcost_check_conditions	rstplib/pcost.h	/^STP_pcost_check_conditions (STATE_MACH_T* s);$/;"	p	signature:(STATE_MACH_T* s)
+STP_pcost_enter_state	rstplib/pcost.c	/^STP_pcost_enter_state (STATE_MACH_T *this)$/;"	f	signature:(STATE_MACH_T *this)
+STP_pcost_enter_state	rstplib/pcost.h	/^STP_pcost_enter_state (STATE_MACH_T* s);$/;"	p	signature:(STATE_MACH_T* s)
+STP_pcost_get_state_name	rstplib/pcost.h	/^STP_pcost_get_state_name (int state);$/;"	p	signature:(int state)
+STP_port_create	rstplib/port.c	/^PORT_T *STP_port_create (STPM_T* stpm, int port_index)$/;"	f	signature:(STPM_T* stpm, int port_index)
+STP_port_create	rstplib/port.h	/^STP_port_create (struct stpm_t* stpm, int port_index);$/;"	p	signature:(struct stpm_t* stpm, int port_index)
+STP_port_delete	rstplib/port.c	/^STP_port_delete (PORT_T* this)$/;"	f	signature:(PORT_T* this)
+STP_port_delete	rstplib/port.h	/^STP_port_delete (PORT_T* this);$/;"	p	signature:(PORT_T* this)
+STP_port_init	rstplib/port.c	/^STP_port_init (PORT_T* this, STPM_T* stpm, Bool check_link)$/;"	f	signature:(PORT_T* this, STPM_T* stpm, Bool check_link)
+STP_port_init	rstplib/port.h	/^STP_port_init (PORT_T* this, struct stpm_t* stpm, Bool check_link);$/;"	p	signature:(PORT_T* this, struct stpm_t* stpm, Bool check_link)
+STP_port_rx_bpdu	rstplib/port.c	/^int STP_port_rx_bpdu (PORT_T* this, BPDU_T* bpdu, size_t len)$/;"	f	signature:(PORT_T* this, BPDU_T* bpdu, size_t len)
+STP_port_rx_bpdu	rstplib/port.h	/^STP_port_rx_bpdu (PORT_T* this, BPDU_T* bpdu, size_t len);$/;"	p	signature:(PORT_T* this, BPDU_T* bpdu, size_t len)
+STP_port_trace_flags	rstplib/port.c	/^void STP_port_trace_flags (char* title, PORT_T* this)$/;"	f	signature:(char* title, PORT_T* this)
+STP_port_trace_flags	rstplib/port.h	/^STP_port_trace_flags (char* title, PORT_T* this);$/;"	p	signature:(char* title, PORT_T* this)
+STP_port_trace_state_machine	rstplib/port.c	/^int STP_port_trace_state_machine (PORT_T* this, char* mach_name, int enadis, int vlan_id)$/;"	f	signature:(PORT_T* this, char* mach_name, int enadis, int vlan_id)
+STP_port_trace_state_machine	rstplib/port.h	/^STP_port_trace_state_machine (PORT_T* this, char* mach_name, int enadis, int vlan_id);$/;"	p	signature:(PORT_T* this, char* mach_name, int enadis, int vlan_id)
+STP_rolesel_check_conditions	rstplib/rolesel.c	/^STP_rolesel_check_conditions (STATE_MACH_T* s)$/;"	f	signature:(STATE_MACH_T* s)
+STP_rolesel_check_conditions	rstplib/rolesel.h	/^STP_rolesel_check_conditions (STATE_MACH_T* s);$/;"	p	signature:(STATE_MACH_T* s)
+STP_rolesel_enter_state	rstplib/rolesel.c	/^STP_rolesel_enter_state (STATE_MACH_T* this)$/;"	f	signature:(STATE_MACH_T* this)
+STP_rolesel_enter_state	rstplib/rolesel.h	/^STP_rolesel_enter_state (STATE_MACH_T* s);$/;"	p	signature:(STATE_MACH_T* s)
+STP_rolesel_get_state_name	rstplib/rolesel.h	/^STP_rolesel_get_state_name (int state);$/;"	p	signature:(int state)
+STP_rolesel_update_stpm	rstplib/rolesel.c	/^STP_rolesel_update_stpm (STPM_T* this)$/;"	f	signature:(STPM_T* this)
+STP_rolesel_update_stpm	rstplib/rolesel.h	/^STP_rolesel_update_stpm (struct stpm_t* this);$/;"	p	signature:(struct stpm_t* this)
+STP_roletrns_check_conditions	rstplib/roletrns.c	/^STP_roletrns_check_conditions (STATE_MACH_T* this)$/;"	f	signature:(STATE_MACH_T* this)
+STP_roletrns_check_conditions	rstplib/roletrns.h	/^STP_roletrns_check_conditions (STATE_MACH_T* s);$/;"	p	signature:(STATE_MACH_T* s)
+STP_roletrns_enter_state	rstplib/roletrns.c	/^STP_roletrns_enter_state (STATE_MACH_T* this)$/;"	f	signature:(STATE_MACH_T* this)
+STP_roletrns_enter_state	rstplib/roletrns.h	/^STP_roletrns_enter_state (STATE_MACH_T* s);$/;"	p	signature:(STATE_MACH_T* s)
+STP_roletrns_get_state_name	rstplib/roletrns.h	/^char* STP_roletrns_get_state_name (int state);$/;"	p	signature:(int state)
+STP_set_times	rstplib/times.c	/^void STP_set_times (IN TIMEVALUES_T *v, OUT BPDU_BODY_T *b)$/;"	f	signature:(IN TIMEVALUES_T *v, OUT BPDU_BODY_T *b)
+STP_set_times	rstplib/times.h	/^STP_set_times (IN TIMEVALUES_T* v, OUT BPDU_BODY_T* b);$/;"	p	signature:(IN TIMEVALUES_T* v, OUT BPDU_BODY_T* b)
+STP_state_mach_create	rstplib/statmch.c	/^STATE_MACH_T *STP_state_mach_create (void (*concreteEnterState) (STATE_MACH_T*),$/;"	f	signature:(void (*concreteEnterState) (STATE_MACH_T*), Bool (*concreteCheckCondition) (STATE_MACH_T*), char *(*concreteGetStatName) (int), void *owner, char *name)
+STP_state_mach_create	rstplib/statmch.h	/^STP_state_mach_create (void (* concreteEnterState) (STATE_MACH_T*),$/;"	p	signature:(void (* concreteEnterState) (STATE_MACH_T*), Bool (* concreteCheckCondition) (STATE_MACH_T*), char * (* concreteGetStatName) (int), void* owner, char* name)
+STP_state_mach_delete	rstplib/statmch.c	/^void STP_state_mach_delete (STATE_MACH_T *this)$/;"	f	signature:(STATE_MACH_T *this)
+STP_state_mach_delete	rstplib/statmch.h	/^STP_state_mach_delete (STATE_MACH_T* this);$/;"	p	signature:(STATE_MACH_T* this)
+STP_stpm_check_bridge_priority	rstplib/stpm.c	/^STP_stpm_check_bridge_priority (STPM_T* this)$/;"	f	signature:(STPM_T* this)
+STP_stpm_check_bridge_priority	rstplib/stpm.h	/^STP_stpm_check_bridge_priority (STPM_T* this);$/;"	p	signature:(STPM_T* this)
+STP_stpm_create	rstplib/stpm.c	/^STP_stpm_create (int vlan_id, char* name)$/;"	f	signature:(int vlan_id, char* name)
+STP_stpm_create	rstplib/stpm.h	/^STP_stpm_create (int vlan_id, char* name);$/;"	p	signature:(int vlan_id, char* name)
+STP_stpm_delete	rstplib/stpm.c	/^STP_stpm_delete (STPM_T* this)$/;"	f	signature:(STPM_T* this)
+STP_stpm_delete	rstplib/stpm.h	/^STP_stpm_delete (STPM_T* this);$/;"	p	signature:(STPM_T* this)
+STP_stpm_enable	rstplib/stpm.c	/^STP_stpm_enable (STPM_T* this, UID_STP_MODE_T admin_state)$/;"	f	signature:(STPM_T* this, UID_STP_MODE_T admin_state)
+STP_stpm_enable	rstplib/stpm.h	/^STP_stpm_enable (STPM_T* this, UID_STP_MODE_T admin_state);$/;"	p	signature:(STPM_T* this, UID_STP_MODE_T admin_state)
+STP_stpm_get_port_name_by_id	rstplib/stpm.c	/^STP_stpm_get_port_name_by_id (STPM_T* this, PORT_ID port_id)$/;"	f	signature:(STPM_T* this, PORT_ID port_id)
+STP_stpm_get_port_name_by_id	rstplib/stpm.h	/^STP_stpm_get_port_name_by_id (STPM_T* this, PORT_ID port_id);$/;"	p	signature:(STPM_T* this, PORT_ID port_id)
+STP_stpm_get_the_list	rstplib/stpm.c	/^STP_stpm_get_the_list (void)$/;"	f	signature:(void)
+STP_stpm_get_the_list	rstplib/stpm.h	/^STP_stpm_get_the_list (void);$/;"	p	signature:(void)
+STP_stpm_one_second	rstplib/stpm.c	/^STP_stpm_one_second (STPM_T* param)$/;"	f	signature:(STPM_T* param)
+STP_stpm_one_second	rstplib/stpm.h	/^STP_stpm_one_second (STPM_T* param);$/;"	p	signature:(STPM_T* param)
+STP_stpm_start	rstplib/stpm.c	/^STP_stpm_start (STPM_T* this)$/;"	f	signature:(STPM_T* this)
+STP_stpm_start	rstplib/stpm.h	/^STP_stpm_start (STPM_T* this);$/;"	p	signature:(STPM_T* this)
+STP_stpm_stop	rstplib/stpm.c	/^STP_stpm_stop (STPM_T* this)$/;"	f	signature:(STPM_T* this)
+STP_stpm_stop	rstplib/stpm.h	/^STP_stpm_stop (STPM_T* this);$/;"	p	signature:(STPM_T* this)
+STP_stpm_update	rstplib/stpm.c	/^STP_stpm_update (STPM_T* this) \/* returns number of loops *\/$/;"	f	signature:(STPM_T* this)
+STP_stpm_update	rstplib/stpm.h	/^STP_stpm_update (STPM_T* this);$/;"	p	signature:(STPM_T* this)
+STP_stpm_update_after_bridge_management	rstplib/stpm.c	/^STP_stpm_update_after_bridge_management (STPM_T* this)$/;"	f	signature:(STPM_T* this)
+STP_stpm_update_after_bridge_management	rstplib/stpm.h	/^STP_stpm_update_after_bridge_management (STPM_T* this);$/;"	p	signature:(STPM_T* this)
+STP_sttrans_check_conditions	rstplib/sttrans.c	/^STP_sttrans_check_conditions (STATE_MACH_T *this)$/;"	f	signature:(STATE_MACH_T *this)
+STP_sttrans_check_conditions	rstplib/sttrans.h	/^STP_sttrans_check_conditions (STATE_MACH_T* s);$/;"	p	signature:(STATE_MACH_T* s)
+STP_sttrans_enter_state	rstplib/sttrans.c	/^STP_sttrans_enter_state (STATE_MACH_T *this)$/;"	f	signature:(STATE_MACH_T *this)
+STP_sttrans_enter_state	rstplib/sttrans.h	/^STP_sttrans_enter_state (STATE_MACH_T* s);$/;"	p	signature:(STATE_MACH_T* s)
+STP_sttrans_get_state_name	rstplib/sttrans.h	/^STP_sttrans_get_state_name (int state);$/;"	p	signature:(int state)
+STP_topoch_check_conditions	rstplib/topoch.c	/^STP_topoch_check_conditions (STATE_MACH_T* this)$/;"	f	signature:(STATE_MACH_T* this)
+STP_topoch_check_conditions	rstplib/topoch.h	/^STP_topoch_check_conditions (STATE_MACH_T* s);$/;"	p	signature:(STATE_MACH_T* s)
+STP_topoch_enter_state	rstplib/topoch.c	/^STP_topoch_enter_state (STATE_MACH_T* this)$/;"	f	signature:(STATE_MACH_T* this)
+STP_topoch_enter_state	rstplib/topoch.h	/^STP_topoch_enter_state (STATE_MACH_T* s);$/;"	p	signature:(STATE_MACH_T* s)
+STP_topoch_get_state_name	rstplib/topoch.h	/^char* STP_topoch_get_state_name (int state);$/;"	p	signature:(int state)
+STP_transmit_check_conditions	rstplib/transmit.c	/^STP_transmit_check_conditions (STATE_MACH_T* this)$/;"	f	signature:(STATE_MACH_T* this)
+STP_transmit_check_conditions	rstplib/transmit.h	/^STP_transmit_check_conditions (STATE_MACH_T* s);$/;"	p	signature:(STATE_MACH_T* s)
+STP_transmit_enter_state	rstplib/transmit.c	/^STP_transmit_enter_state (STATE_MACH_T* this)$/;"	f	signature:(STATE_MACH_T* this)
+STP_transmit_enter_state	rstplib/transmit.h	/^STP_transmit_enter_state (STATE_MACH_T* s);$/;"	p	signature:(STATE_MACH_T* s)
+STP_transmit_get_state_name	rstplib/transmit.h	/^STP_transmit_get_state_name (int state);$/;"	p	signature:(int state)
+STRIP	common.mk	/^STRIP = $(CROSS_COMPILE)strip$/;"	m
+SYSFS_PATH_MAX	utils.c	24;"	d	file:
+Socket	rstplib/uid_sock.c	/^static int Socket(int family, int type, int protocol)$/;"	f	file:	signature:(int family, int type, int protocol)
+State	rstplib/statmch.h	/^  unsigned int  State;          \/\/ 当前状态$/;"	m	struct:state_mach_t	access:public
+SuperiorDesignateMsg	rstplib/port.h	/^  SuperiorDesignateMsg, \/\/ 更优的bpdu$/;"	e	enum:__anon3
+TCN_BPDU_T	rstplib/transmit.c	/^} TCN_BPDU_T;$/;"	t	typeref:struct:tx_tcn_bpdu_t	file:
+THE_COMMAND	rstplib/cli.h	66;"	d
+THE_FUNC	rstplib/cli.h	73;"	d
+THE_STATE_T	rstplib/choose.h	/^typedef enum STATES THE_STATE_T;$/;"	t	typeref:enum:STATES
+TIMERS_NUMBER	rstplib/port.h	30;"	d
+TIMEVALUES_T	rstplib/times.h	/^} TIMEVALUES_T;$/;"	t	typeref:struct:timevalues_t
+TOLPLOGY_CHANGE_ACK_BIT	rstplib/stp_bpdu.h	47;"	d
+TOLPLOGY_CHANGE_BIT	rstplib/stp_bpdu.h	40;"	d
+TYPE_OF_BINDING	rstplib/uid_sock.h	/^} TYPE_OF_BINDING;$/;"	t	typeref:enum:__anon5
+TheList	rstplib/cli.c	/^static CMD_DSCR_T* TheList = 0;$/;"	v	file:
+Topo_Change	rstplib/stpm.h	/^  unsigned char         Topo_Change;           \/* 14.8.1.1.3.d *\/$/;"	m	struct:stpm_t	access:public
+Topo_Change	rstplib/uid_stp.h	/^  unsigned char     Topo_Change;           \/* 14.8.1.1.3.d: TBD *\/$/;"	m	struct:__anon17	access:public
+Topo_Change_Count	rstplib/stpm.h	/^  unsigned long         Topo_Change_Count;     \/* 14.8.1.1.3.c *\/$/;"	m	struct:stpm_t	access:public
+Topo_Change_Count	rstplib/uid_stp.h	/^  unsigned long     Topo_Change_Count;     \/* 14.8.1.1.3.c: TBD *\/$/;"	m	struct:__anon17	access:public
+True	rstplib/base.h	65;"	d
+True	rstplib/stp_in.h	47;"	d
+TxHoldCount	rstplib/stpm.h	44;"	d
+UIDCFILES	rstplib/Makefile	/^UIDCFILES = uid_sock.c$/;"	m
+UIDLIBF	rstplib/Makefile	/^UIDLIBF  = lib$(UIDLIBS).a$/;"	m
+UIDLIBS	rstplib/Makefile	/^UIDLIBS  = uid$/;"	m
+UIDOFILES	rstplib/Makefile	/^UIDOFILES = uid_sock.o$/;"	m
+UID_BIND_AS_CLIENT	rstplib/uid_sock.h	/^  UID_BIND_AS_CLIENT,$/;"	e	enum:__anon5
+UID_BIND_AS_SERVER	rstplib/uid_sock.h	/^  UID_BIND_AS_SERVER$/;"	e	enum:__anon5
+UID_BPDU	rstplib/uid.h	/^  UID_BPDU$/;"	e	enum:__anon8
+UID_BRIDGE_HANDSHAKE	rstplib/uid.h	/^  UID_BRIDGE_HANDSHAKE,$/;"	e	enum:__anon9
+UID_BRIDGE_ID_T	rstplib/uid_stp.h	/^} UID_BRIDGE_ID_T;$/;"	t	typeref:struct:__anon14
+UID_BRIDGE_SHUTDOWN	rstplib/uid.h	/^  UID_BRIDGE_SHUTDOWN,$/;"	e	enum:__anon9
+UID_CMD_TYPE_T	rstplib/uid.h	/^} UID_CMD_TYPE_T;$/;"	t	typeref:enum:__anon8
+UID_CNTRL	rstplib/uid.h	/^  UID_CNTRL = 0,$/;"	e	enum:__anon8
+UID_CNTRL_BODY_T	rstplib/uid.h	/^} UID_CNTRL_BODY_T;$/;"	t	typeref:struct:uid_port_control_s
+UID_CNTRL_CMD_T	rstplib/uid.h	/^} UID_CNTRL_CMD_T;$/;"	t	typeref:enum:__anon9
+UID_LAST_DUMMY	rstplib/uid.h	/^  UID_LAST_DUMMY$/;"	e	enum:__anon9
+UID_MSG_HEADER_T	rstplib/uid.h	/^} UID_MSG_HEADER_T;$/;"	t	typeref:struct:uid_msg_header_s
+UID_MSG_T	rstplib/uid.h	/^} UID_MSG_T;$/;"	t	typeref:struct:uid_msg_s
+UID_PORT_CONNECT	rstplib/uid.h	/^  UID_PORT_CONNECT,$/;"	e	enum:__anon9
+UID_PORT_DISABLED	rstplib/uid_stp.h	/^  UID_PORT_DISABLED = 0,$/;"	e	enum:__anon18
+UID_PORT_DISCARDING	rstplib/uid_stp.h	/^  UID_PORT_DISCARDING,$/;"	e	enum:__anon18
+UID_PORT_DISCONNECT	rstplib/uid.h	/^  UID_PORT_DISCONNECT,$/;"	e	enum:__anon9
+UID_PORT_FORWARDING	rstplib/uid_stp.h	/^  UID_PORT_FORWARDING,$/;"	e	enum:__anon18
+UID_PORT_ID	rstplib/uid_stp.h	/^typedef unsigned short  UID_PORT_ID;$/;"	t
+UID_PORT_LEARNING	rstplib/uid_stp.h	/^  UID_PORT_LEARNING,$/;"	e	enum:__anon18
+UID_PORT_NON_STP	rstplib/uid_stp.h	/^  UID_PORT_NON_STP$/;"	e	enum:__anon18
+UID_REPL_PATH	rstplib/uid_sock.h	32;"	d
+UID_SET_SOCKET_CLIENT_ID	rstplib/uid_sock.c	54;"	d	file:
+UID_SET_SOCKET_ID	rstplib/uid_sock.c	45;"	d	file:
+UID_SET_SOCKET_SERVER_ID	rstplib/uid_sock.c	49;"	d	file:
+UID_SOCKET_T	rstplib/uid_sock.h	/^} UID_SOCKET_T;$/;"	t	typeref:struct:__anon6
+UID_SOCK_ID	rstplib/uid_sock.h	/^typedef char        UID_SOCK_ID[SOCKET_NAME_LENGTH];$/;"	t
+UID_STP_BR_CTRL_T	rstplib/uid_stp.h	/^} UID_STP_BR_CTRL_T;$/;"	t	typeref:struct:__anon15
+UID_STP_CFG_T	rstplib/uid_stp.h	/^} UID_STP_CFG_T;$/;"	t	typeref:struct:__anon16
+UID_STP_MODE_T	rstplib/uid_stp.h	/^} UID_STP_MODE_T;$/;"	t	typeref:enum:__anon13
+UID_STP_PORT_CFG_T	rstplib/uid_stp.h	/^} UID_STP_PORT_CFG_T;$/;"	t	typeref:struct:__anon20
+UID_STP_PORT_STATE_T	rstplib/uid_stp.h	/^} UID_STP_PORT_STATE_T;$/;"	t	typeref:struct:__anon21
+UID_STP_STATE_T	rstplib/uid_stp.h	/^} UID_STP_STATE_T;$/;"	t	typeref:struct:__anon17
+UT_sprint_time_stamp	rstplib/cli.c	/^char* UT_sprint_time_stamp (void)$/;"	f	signature:(void)
+UT_sprint_time_stamp	rstplib/cli.h	/^char* UT_sprint_time_stamp (void);$/;"	p	signature:(void)
+UiD_SocketClose	rstplib/uid_sock.c	/^int UiD_SocketClose(UID_SOCKET_T* s)$/;"	f	signature:(UID_SOCKET_T* s)
+UiD_SocketClose	rstplib/uid_sock.h	/^int UiD_SocketClose(UID_SOCKET_T* sock);$/;"	p	signature:(UID_SOCKET_T* sock)
+UiD_SocketCompare	rstplib/uid_sock.c	/^UiD_SocketCompare (UID_SOCKET_T* s, UID_SOCKET_T* t)$/;"	f	signature:(UID_SOCKET_T* s, UID_SOCKET_T* t)
+UiD_SocketCompare	rstplib/uid_sock.h	/^UiD_SocketCompare (UID_SOCKET_T* s, UID_SOCKET_T* t);$/;"	p	signature:(UID_SOCKET_T* s, UID_SOCKET_T* t)
+UiD_SocketInit	rstplib/uid_sock.c	/^int UiD_SocketInit(UID_SOCKET_T* s,$/;"	f	signature:(UID_SOCKET_T* s, UID_SOCK_ID socket_id, TYPE_OF_BINDING binding)
+UiD_SocketInit	rstplib/uid_sock.h	/^int UiD_SocketInit(UID_SOCKET_T* sock,$/;"	p	signature:(UID_SOCKET_T* sock, UID_SOCK_ID id, TYPE_OF_BINDING binding)
+UiD_SocketRecvfrom	rstplib/uid_sock.c	/^int UiD_SocketRecvfrom (UID_SOCKET_T* sock,$/;"	f	signature:(UID_SOCKET_T* sock, void* msg, int buffer_size, UID_SOCKET_T* sock_4_reply)
+UiD_SocketRecvfrom	rstplib/uid_sock.h	/^int UiD_SocketRecvfrom (UID_SOCKET_T* sock,$/;"	p	signature:(UID_SOCKET_T* sock, void* msg_buffer, int buffer_size, UID_SOCKET_T* sock_4_reply)
+UiD_SocketSendto	rstplib/uid_sock.c	/^int UiD_SocketSendto (UID_SOCKET_T* sock, void* msg, int msg_size)$/;"	f	signature:(UID_SOCKET_T* sock, void* msg, int msg_size)
+UiD_SocketSendto	rstplib/uid_sock.h	/^int UiD_SocketSendto (UID_SOCKET_T* sock,$/;"	p	signature:(UID_SOCKET_T* sock, void* msg_buffer, int buffer_size)
+UiD_SocketSetReadTimeout	rstplib/uid_sock.c	/^int UiD_SocketSetReadTimeout (UID_SOCKET_T* s, int timeout)$/;"	f	signature:(UID_SOCKET_T* s, int timeout)
+UiD_SocketSetReadTimeout	rstplib/uid_sock.h	/^int UiD_SocketSetReadTimeout (UID_SOCKET_T* s, int timeout);$/;"	p	signature:(UID_SOCKET_T* s, int timeout)
+Zero	rstplib/base.h	58;"	d
+Zero	rstplib/stp_in.h	40;"	d
+_CLI_API__	rstplib/cli.h	24;"	d
+_CTL_CLIENT_H_	ctl_client.h	3;"	d
+_CTL_FUNC_H_	ctl_func.h	4;"	d
+_CTL_SERVER_H_	ctl_server.h	3;"	d
+_CTL_SOCKET_H_	ctl_socket.h	3;"	d
+_EPOLL_LOOP_H_	epoll_loop.h	3;"	d
+_LOG_H_	log.h	3;"	d
+_PDU_PACKET_H_	packet.h	3;"	d
+_PRIO_VECTOR_H__	rstplib/vector.h	26;"	d
+_RSTPD_H_	rstpd.h	3;"	d
+_RSTP_IF_H_	rstp_if.h	3;"	d
+_RSTP_TIMES_H__	rstplib/times.h	28;"	d
+_STP_API_H__	rstplib/stp_in.h	27;"	d
+_STP_BASE_H__	rstplib/base.h	26;"	d
+_STP_BPDU_H__	rstplib/stp_bpdu.h	26;"	d
+_STP_CHOOSE_H__	rstplib/choose.h	24;"	d
+_STP_CLI__	rstplib/stp_cli.h	24;"	d
+_STP_EDGE_H__	rstplib/edge.h	27;"	d
+_STP_INFOR_H__	rstplib/portinfo.h	26;"	d
+_STP_MACHINE_H__	rstplib/stpm.h	39;"	d
+_STP_MIGRATE_H__	rstplib/migrate.h	26;"	d
+_STP_OUT_H__	rstplib/stp_to.h	27;"	d
+_STP_P2P_H__	rstplib/p2p.h	26;"	d
+_STP_PCOST_H__	rstplib/pcost.h	26;"	d
+_STP_PORT_H__	rstplib/port.h	26;"	d
+_STP_ROLES_SELECT_H	rstplib/rolesel.h	26;"	d
+_STP_ROLES_TRANSIT_H__	rstplib/roletrns.h	26;"	d
+_STP_STATER_H__	rstplib/statmch.h	28;"	d
+_STP_STATE_TRANSIT_H__	rstplib/sttrans.h	26;"	d
+_STP_TOPO_CHANGE_H__	rstplib/topoch.h	26;"	d
+_STP_TRANSMIT_H__	rstplib/transmit.h	26;"	d
+_UID_SOCKET_H__	rstplib/uid_sock.h	24;"	d
+_UID_STP_H__	rstplib/uid_stp.h	26;"	d
+_UTILS_H_	utils.h	3;"	d
+__BITMAP_H	rstplib/bitmap.h	24;"	d
+__LIBNETLINK_H__	libnetlink.h	2;"	d
+__anon14::addr	rstplib/uid_stp.h	/^  unsigned char   addr[6];$/;"	m	struct:__anon14	access:public
+__anon14::prio	rstplib/uid_stp.h	/^  unsigned short  prio;$/;"	m	struct:__anon14	access:public
+__anon15::action	rstplib/uid_stp.h	/^  char      action; \/* 1-create, 0- delete *\/$/;"	m	struct:__anon15	access:public
+__anon15::vlan_name	rstplib/uid_stp.h	/^  char      vlan_name[NAME_LEN]; \/* name of the VLAN, key of the bridge *\/$/;"	m	struct:__anon15	access:public
+__anon16::bridge_priority	rstplib/uid_stp.h	/^  int           bridge_priority;$/;"	m	struct:__anon16	access:public
+__anon16::field_mask	rstplib/uid_stp.h	/^  unsigned long     field_mask; \/* which fields to change *\/$/;"	m	struct:__anon16	access:public
+__anon16::force_version	rstplib/uid_stp.h	/^  int           force_version;$/;"	m	struct:__anon16	access:public
+__anon16::forward_delay	rstplib/uid_stp.h	/^  int           forward_delay;$/;"	m	struct:__anon16	access:public
+__anon16::hello_time	rstplib/uid_stp.h	/^  int           hello_time;$/;"	m	struct:__anon16	access:public
+__anon16::hold_time	rstplib/uid_stp.h	/^  int           hold_time;$/;"	m	struct:__anon16	access:public
+__anon16::max_age	rstplib/uid_stp.h	/^  int           max_age;$/;"	m	struct:__anon16	access:public
+__anon16::stp_enabled	rstplib/uid_stp.h	/^  UID_STP_MODE_T    stp_enabled;$/;"	m	struct:__anon16	access:public
+__anon16::vlan_name	rstplib/uid_stp.h	/^  char              vlan_name[NAME_LEN]; \/* name of the VLAN, key of the bridge *\/$/;"	m	struct:__anon16	access:public
+__anon17::Topo_Change	rstplib/uid_stp.h	/^  unsigned char     Topo_Change;           \/* 14.8.1.1.3.d: TBD *\/$/;"	m	struct:__anon17	access:public
+__anon17::Topo_Change_Count	rstplib/uid_stp.h	/^  unsigned long     Topo_Change_Count;     \/* 14.8.1.1.3.c: TBD *\/$/;"	m	struct:__anon17	access:public
+__anon17::bridge_id	rstplib/uid_stp.h	/^  UID_BRIDGE_ID_T   bridge_id;$/;"	m	struct:__anon17	access:public
+__anon17::designated_root	rstplib/uid_stp.h	/^  UID_BRIDGE_ID_T   designated_root;$/;"	m	struct:__anon17	access:public
+__anon17::forward_delay	rstplib/uid_stp.h	/^  int               forward_delay;$/;"	m	struct:__anon17	access:public
+__anon17::hello_time	rstplib/uid_stp.h	/^  int               hello_time;$/;"	m	struct:__anon17	access:public
+__anon17::max_age	rstplib/uid_stp.h	/^  int               max_age;$/;"	m	struct:__anon17	access:public
+__anon17::root_path_cost	rstplib/uid_stp.h	/^  unsigned long     root_path_cost;$/;"	m	struct:__anon17	access:public
+__anon17::root_port	rstplib/uid_stp.h	/^  unsigned short    root_port;$/;"	m	struct:__anon17	access:public
+__anon17::stp_enabled	rstplib/uid_stp.h	/^  UID_STP_MODE_T    stp_enabled;$/;"	m	struct:__anon17	access:public
+__anon17::timeSince_Topo_Change	rstplib/uid_stp.h	/^  unsigned long     timeSince_Topo_Change; \/* 14.8.1.1.3.b: TBD *\/$/;"	m	struct:__anon17	access:public
+__anon17::vlan_id	rstplib/uid_stp.h	/^  unsigned long     vlan_id;$/;"	m	struct:__anon17	access:public
+__anon17::vlan_name	rstplib/uid_stp.h	/^  char              vlan_name[NAME_LEN]; \/* name of the VLAN, key of the bridge *\/$/;"	m	struct:__anon17	access:public
+__anon20::admin_edge	rstplib/uid_stp.h	/^  unsigned char admin_edge;$/;"	m	struct:__anon20	access:public
+__anon20::admin_non_stp	rstplib/uid_stp.h	/^  unsigned char admin_non_stp; \/* 1- doesn't participate in STP, 1 - regular *\/$/;"	m	struct:__anon20	access:public
+__anon20::admin_point2point	rstplib/uid_stp.h	/^  ADMIN_P2P_T   admin_point2point;$/;"	m	struct:__anon20	access:public
+__anon20::admin_port_path_cost	rstplib/uid_stp.h	/^  unsigned long admin_port_path_cost; \/* ADMIN_PORT_PATH_COST_AUTO - auto sence *\/$/;"	m	struct:__anon20	access:public
+__anon20::field_mask	rstplib/uid_stp.h	/^  unsigned long field_mask; \/* which fields to change *\/$/;"	m	struct:__anon20	access:public
+__anon20::port_bmp	rstplib/uid_stp.h	/^  BITMAP_T      port_bmp;   $/;"	m	struct:__anon20	access:public
+__anon20::port_priority	rstplib/uid_stp.h	/^  int           port_priority;$/;"	m	struct:__anon20	access:public
+__anon20::skip_rx	rstplib/uid_stp.h	/^  unsigned int	skip_rx;$/;"	m	struct:__anon20	access:public
+__anon20::skip_tx	rstplib/uid_stp.h	/^  unsigned int	skip_tx;$/;"	m	struct:__anon20	access:public
+__anon20::vlan_name	rstplib/uid_stp.h	/^  char          vlan_name[NAME_LEN]; \/* name of the VLAN, key of the bridge *\/$/;"	m	struct:__anon20	access:public
+__anon21::designated_bridge	rstplib/uid_stp.h	/^  UID_BRIDGE_ID_T   designated_bridge;$/;"	m	struct:__anon21	access:public
+__anon21::designated_cost	rstplib/uid_stp.h	/^  unsigned long     designated_cost;$/;"	m	struct:__anon21	access:public
+__anon21::designated_port	rstplib/uid_stp.h	/^  UID_PORT_ID       designated_port;$/;"	m	struct:__anon21	access:public
+__anon21::designated_root	rstplib/uid_stp.h	/^  UID_BRIDGE_ID_T   designated_root;$/;"	m	struct:__anon21	access:public
+__anon21::fdWhile	rstplib/uid_stp.h	/^  int               fdWhile;      \/* 17.15.1 *\/$/;"	m	struct:__anon21	access:public
+__anon21::helloWhen	rstplib/uid_stp.h	/^  int               helloWhen;    \/* 17.15.2 *\/$/;"	m	struct:__anon21	access:public
+__anon21::lnkWhile	rstplib/uid_stp.h	/^  int               lnkWhile;$/;"	m	struct:__anon21	access:public
+__anon21::mdelayWhile	rstplib/uid_stp.h	/^  int               mdelayWhile;  \/* 17.15.3 *\/$/;"	m	struct:__anon21	access:public
+__anon21::oper_edge	rstplib/uid_stp.h	/^  unsigned char     oper_edge;$/;"	m	struct:__anon21	access:public
+__anon21::oper_point2point	rstplib/uid_stp.h	/^  unsigned char     oper_point2point;$/;"	m	struct:__anon21	access:public
+__anon21::oper_port_path_cost	rstplib/uid_stp.h	/^  unsigned long     oper_port_path_cost;$/;"	m	struct:__anon21	access:public
+__anon21::oper_stp_neigb	rstplib/uid_stp.h	/^  unsigned char     oper_stp_neigb;$/;"	m	struct:__anon21	access:public
+__anon21::path_cost	rstplib/uid_stp.h	/^  unsigned long     path_cost;$/;"	m	struct:__anon21	access:public
+__anon21::port_id	rstplib/uid_stp.h	/^  UID_PORT_ID       port_id;$/;"	m	struct:__anon21	access:public
+__anon21::port_no	rstplib/uid_stp.h	/^  unsigned int      port_no; \/* key of the entry *\/$/;"	m	struct:__anon21	access:public
+__anon21::rbWhile	rstplib/uid_stp.h	/^  int               rbWhile;      \/* 17.15.4 *\/$/;"	m	struct:__anon21	access:public
+__anon21::rcvdInfoWhile	rstplib/uid_stp.h	/^  int               rcvdInfoWhile;\/* 17.15.5 *\/$/;"	m	struct:__anon21	access:public
+__anon21::role	rstplib/uid_stp.h	/^  unsigned char     role;$/;"	m	struct:__anon21	access:public
+__anon21::rrWhile	rstplib/uid_stp.h	/^  int               rrWhile;      \/* 17.15.6 *\/$/;"	m	struct:__anon21	access:public
+__anon21::rx_cfg_bpdu_cnt	rstplib/uid_stp.h	/^  unsigned long     rx_cfg_bpdu_cnt;$/;"	m	struct:__anon21	access:public
+__anon21::rx_rstp_bpdu_cnt	rstplib/uid_stp.h	/^  unsigned long     rx_rstp_bpdu_cnt;$/;"	m	struct:__anon21	access:public
+__anon21::rx_tcn_bpdu_cnt	rstplib/uid_stp.h	/^  unsigned long     rx_tcn_bpdu_cnt;$/;"	m	struct:__anon21	access:public
+__anon21::state	rstplib/uid_stp.h	/^  RSTP_PORT_STATE   state;$/;"	m	struct:__anon21	access:public
+__anon21::tc	rstplib/uid_stp.h	/^  unsigned char     tc;$/;"	m	struct:__anon21	access:public
+__anon21::tcWhile	rstplib/uid_stp.h	/^  int               tcWhile;      \/* 17.15.7 *\/$/;"	m	struct:__anon21	access:public
+__anon21::top_change_ack	rstplib/uid_stp.h	/^  unsigned char     top_change_ack;$/;"	m	struct:__anon21	access:public
+__anon21::txCount	rstplib/uid_stp.h	/^  int               txCount;      \/* 17.18.40 *\/$/;"	m	struct:__anon21	access:public
+__anon21::uptime	rstplib/uid_stp.h	/^  unsigned long     uptime;       \/* 14.8.2.1.3.a *\/$/;"	m	struct:__anon21	access:public
+__anon21::vlan_name	rstplib/uid_stp.h	/^  char              vlan_name[NAME_LEN]; \/* name of the VLAN, key of the bridge *\/$/;"	m	struct:__anon21	access:public
+__anon23::brIndex	rstpd.h	/^	int             brIndex;            \/\/ 桥的接口序号$/;"	m	struct:__anon23	access:public
+__anon23::brName	rstpd.h	/^	char            brName[IFNAMSIZ];   \/\/ 桥的接口名$/;"	m	struct:__anon23	access:public
+__anon23::bridge_priority	rstpd.h	/^	int             bridge_priority;$/;"	m	struct:__anon23	access:public
+__anon23::force_version	rstpd.h	/^	int             force_version;$/;"	m	struct:__anon23	access:public
+__anon23::forward_delay	rstpd.h	/^	int             forward_delay;$/;"	m	struct:__anon23	access:public
+__anon23::hello_time	rstpd.h	/^	int             hello_time;$/;"	m	struct:__anon23	access:public
+__anon23::hold_time	rstpd.h	/^	int             hold_time;	$/;"	m	struct:__anon23	access:public
+__anon23::max_age	rstpd.h	/^	int             max_age;$/;"	m	struct:__anon23	access:public
+__anon23::portCount	rstpd.h	/^	int             portCount;          \/\/ 桥的端口数量$/;"	m	struct:__anon23	access:public
+__anon23::portList	rstpd.h	/^	int            *portList;$/;"	m	struct:__anon23	access:public
+__anon23::stp_enabled	rstpd.h	/^	UID_STP_MODE_T  stp_enabled;$/;"	m	struct:__anon23	access:public
+__anon23::stpm	rstpd.h	/^	STPM_T*         stpm;$/;"	m	struct:__anon23	access:public
+__anon24::admin_edge	rstpd.h	/^	unsigned char   admin_edge;$/;"	m	struct:__anon24	access:public
+__anon24::admin_non_stp	rstpd.h	/^	unsigned char   admin_non_stp;	        \/\/ 端口rstp功能使能\/禁止$/;"	m	struct:__anon24	access:public
+__anon24::admin_point2point	rstpd.h	/^	ADMIN_P2P_T     admin_point2point;$/;"	m	struct:__anon24	access:public
+__anon24::admin_port_path_cost	rstpd.h	/^	int             admin_port_path_cost;   \/\/ 端口路径成本$/;"	m	struct:__anon24	access:public
+__anon24::duplex	rstpd.h	/^	int             duplex;             \/\/ 端口双工模式$/;"	m	struct:__anon24	access:public
+__anon24::ifIndex	rstpd.h	/^    int             ifIndex;            \/\/ 端口序号$/;"	m	struct:__anon24	access:public
+__anon24::ifName	rstpd.h	/^	char            ifName[IFNAMSIZ];   \/\/ 端口名$/;"	m	struct:__anon24	access:public
+__anon24::linkStatus	rstpd.h	/^	int             linkStatus;         \/\/ 端口link状态$/;"	m	struct:__anon24	access:public
+__anon24::port	rstpd.h	/^	PORT_T*         port;$/;"	m	struct:__anon24	access:public
+__anon24::portEnable	rstpd.h	/^	unsigned char   portEnable;         \/\/ 端口使能\/禁止$/;"	m	struct:__anon24	access:public
+__anon24::port_priority	rstpd.h	/^	int             port_priority;          \/\/ 端口优先级$/;"	m	struct:__anon24	access:public
+__anon24::speed	rstpd.h	/^	int             speed;              \/\/ 端口速率$/;"	m	struct:__anon24	access:public
+__anon25::bridge	rstpd.h	/^	stpBridge_t     bridge;     \/\/ 桥控制块$/;"	m	struct:__anon25	access:public
+__anon25::ports	rstpd.h	/^	stpPort_t      *ports;      \/\/ stp端口控制块$/;"	m	struct:__anon25	access:public
+__anon25::running	rstpd.h	/^	int             running;    \/\/ 运行状态$/;"	m	struct:__anon25	access:public
+__anon6::binding	rstplib/uid_sock.h	/^  TYPE_OF_BINDING   binding;$/;"	m	struct:__anon6	access:public
+__anon6::clientAddr	rstplib/uid_sock.h	/^  struct sockaddr_un    clientAddr;$/;"	m	struct:__anon6	typeref:struct:__anon6::sockaddr_un	access:public
+__anon6::serverAddr	rstplib/uid_sock.h	/^  struct sockaddr_un    serverAddr; \/\/ Only for socket of UID_BIND_AS_CLIENT$/;"	m	struct:__anon6	typeref:struct:__anon6::sockaddr_un	access:public
+__anon6::sock_fd	rstplib/uid_sock.h	/^  int           sock_fd;$/;"	m	struct:__anon6	access:public
+__anon6::socket_id	rstplib/uid_sock.h	/^  UID_SOCK_ID       socket_id;$/;"	m	struct:__anon6	access:public
+_br_set_state	brstate.c	/^static int _br_set_state(struct rtnl_handle *rth, unsigned ifindex, __u8 state)$/;"	f	file:	signature:(struct rtnl_handle *rth, unsigned ifindex, __u8 state)
+_check_stpm_config	rstplib/stp_in.c	/^_check_stpm_config (IN UID_STP_CFG_T* uid_cfg)$/;"	f	file:	signature:(IN UID_STP_CFG_T* uid_cfg)
+_check_topoch	rstplib/stpm.c	/^_check_topoch (STPM_T* this)$/;"	f	file:	signature:(STPM_T* this)
+_conv_br_id_2_uid	rstplib/stp_in.c	/^_conv_br_id_2_uid (IN BRIDGE_ID* f, OUT UID_BRIDGE_ID_T* t)$/;"	f	file:	signature:(IN BRIDGE_ID* f, OUT UID_BRIDGE_ID_T* t)
+_filter_dot	utils.c	/^static int _filter_dot(const struct dirent *entry)$/;"	f	file:	signature:(const struct dirent *entry)
+_is_backup_port	rstplib/rolesel.c	/^_is_backup_port (PORT_T* port, STPM_T* this)$/;"	f	file:	signature:(PORT_T* port, STPM_T* this)
+_isbridge	utils.c	/^static int _isbridge(const struct dirent *entry)$/;"	f	file:	signature:(const struct dirent *entry)
+_link_two_ports	rstplib/mngr.c	/^static void _link_two_ports (BRIDGE_T* br1, PORT_T* port1,  int indx1,$/;"	f	file:	signature:(BRIDGE_T* br1, PORT_T* port1, int indx1, BRIDGE_T* br2, PORT_T* port2, int indx2)
+_stp_in_enable_port_on_stpm	rstplib/stp_in.c	/^_stp_in_enable_port_on_stpm (STPM_T* stpm, int port_index, Bool enable)$/;"	f	file:	signature:(STPM_T* stpm, int port_index, Bool enable)
+_stp_in_stpm_enable	rstplib/stp_in.c	/^_stp_in_stpm_enable (int vlan_id, char* name,$/;"	f	signature:(int vlan_id, char* name, BITMAP_T* port_bmp, UID_STP_MODE_T admin_state)
+_stp_stpm_init_data	rstplib/stpm.c	/^_stp_stpm_init_data (STPM_T* this)$/;"	f	signature:(STPM_T* this)
+_stp_stpm_init_machine	rstplib/stpm.c	/^_stp_stpm_init_machine (STATE_MACH_T* this)$/;"	f	file:	signature:(STATE_MACH_T* this)
+_stp_stpm_iterate_machines	rstplib/stpm.c	/^_stp_stpm_iterate_machines (STPM_T* this,$/;"	f	file:	signature:(STPM_T* this, int (*iter_callb) (STATE_MACH_T*), Bool exit_on_non_zero_ret)
+_stpapi_port_find	rstplib/stp_in.c	/^_stpapi_port_find (STPM_T* this, int port_index)$/;"	f	file:	signature:(STPM_T* this, int port_index)
+action	rstplib/uid_stp.h	/^  char      action; \/* 1-create, 0- delete *\/$/;"	m	struct:__anon15	access:public
+add_epoll	epoll_loop.c	/^int add_epoll(struct epoll_event_handler *h)$/;"	f	signature:(struct epoll_event_handler *h)
+add_epoll	epoll_loop.h	/^int add_epoll(struct epoll_event_handler *h);$/;"	p	signature:(struct epoll_event_handler *h)
+addattr32	libnetlink.c	/^int addattr32(struct nlmsghdr *n, int maxlen, int type, __u32 data)$/;"	f	signature:(struct nlmsghdr *n, int maxlen, int type, __u32 data)
+addattr32	libnetlink.h	/^extern int addattr32(struct nlmsghdr *n, int maxlen, int type, __u32 data);$/;"	p	signature:(struct nlmsghdr *n, int maxlen, int type, __u32 data)
+addattr_l	libnetlink.c	/^int addattr_l(struct nlmsghdr *n, int maxlen, int type, const void *data,$/;"	f	signature:(struct nlmsghdr *n, int maxlen, int type, const void *data, int alen)
+addattr_l	libnetlink.h	/^extern int addattr_l(struct nlmsghdr *n, int maxlen, int type, const void *data, int alen);$/;"	p	signature:(struct nlmsghdr *n, int maxlen, int type, const void *data, int alen)
+addr	rstplib/uid_stp.h	/^  unsigned char   addr[6];$/;"	m	struct:__anon14	access:public
+addr	rstplib/vector.h	/^  unsigned char     addr[6];    \/\/ 地址$/;"	m	struct:bridge_id	access:public
+addraw_l	libnetlink.c	/^int addraw_l(struct nlmsghdr *n, int maxlen, const void *data, int len)$/;"	f	signature:(struct nlmsghdr *n, int maxlen, const void *data, int len)
+addraw_l	libnetlink.h	/^extern int addraw_l(struct nlmsghdr *n, int maxlen, const void *data, int len);$/;"	p	signature:(struct nlmsghdr *n, int maxlen, const void *data, int len)
+adminEdge	rstplib/port.h	/^  Bool              adminEdge;     \/* 17.18.14 *\/$/;"	m	struct:port_t	access:public
+adminEnable	rstplib/port.h	/^  Bool              adminEnable; \/* 'has LINK' *\/$/;"	m	struct:port_t	access:public
+adminPCost	rstplib/port.h	/^  unsigned long     adminPCost; \/* may be ADMIN_PORT_PATH_COST_AUTO *\/$/;"	m	struct:port_t	access:public
+adminPointToPointMac	rstplib/port.h	/^  ADMIN_P2P_T       adminPointToPointMac;$/;"	m	struct:port_t	access:public
+admin_edge	rstpd.h	/^	unsigned char   admin_edge;$/;"	m	struct:__anon24	access:public
+admin_edge	rstplib/uid_stp.h	/^  unsigned char admin_edge;$/;"	m	struct:__anon20	access:public
+admin_non_stp	rstpd.h	/^	unsigned char   admin_non_stp;	        \/\/ 端口rstp功能使能\/禁止$/;"	m	struct:__anon24	access:public
+admin_non_stp	rstplib/port.h	/^  Bool              admin_non_stp;  \/\/ 生成树使能\/禁止标记$/;"	m	struct:port_t	access:public
+admin_non_stp	rstplib/uid_stp.h	/^  unsigned char admin_non_stp; \/* 1- doesn't participate in STP, 1 - regular *\/$/;"	m	struct:__anon20	access:public
+admin_point2point	rstpd.h	/^	ADMIN_P2P_T     admin_point2point;$/;"	m	struct:__anon24	access:public
+admin_point2point	rstplib/uid_stp.h	/^  ADMIN_P2P_T   admin_point2point;$/;"	m	struct:__anon20	access:public
+admin_port_path_cost	rstpd.h	/^	int             admin_port_path_cost;   \/\/ 端口路径成本$/;"	m	struct:__anon24	access:public
+admin_port_path_cost	rstplib/uid_stp.h	/^  unsigned long admin_port_path_cost; \/* ADMIN_PORT_PATH_COST_AUTO - auto sence *\/$/;"	m	struct:__anon20	access:public
+admin_state	rstplib/stpm.h	/^  UID_STP_MODE_T        admin_state;    \/* STP_DISABLED or STP_ENABLED; type see in UiD *\/$/;"	m	struct:stpm_t	access:public
+agreed	rstplib/port.h	/^  Bool              agreed;        \/* 17.18.1 *\/$/;"	m	struct:port_t	access:public
+arg	epoll_loop.h	/^	void *arg;$/;"	m	struct:epoll_event_handler	access:public
+become_daemon	rstpd.c	/^static int become_daemon = 1;$/;"	v	file:
+binding	rstplib/uid_sock.h	/^  TYPE_OF_BINDING   binding;$/;"	m	struct:__anon6	access:public
+body	rstplib/stp_bpdu.h	/^  BPDU_BODY_T   body;       \/\/ bpdu主体$/;"	m	struct:stp_bpdu_t	access:public
+body	rstplib/transmit.c	/^  BPDU_BODY_T   body;$/;"	m	struct:tx_rstp_bpdu_t	file:	access:public
+body	rstplib/transmit.c	/^  BPDU_BODY_T   body;$/;"	m	struct:tx_stp_bpdu_t	file:	access:public
+body	rstplib/uid.h	/^  } body;$/;"	m	struct:uid_msg_s	typeref:union:uid_msg_s::__anon10	access:public
+body_len	rstplib/uid.h	/^  size_t        body_len;$/;"	m	struct:uid_msg_header_s	access:public
+bpdu	rstplib/uid.h	/^    char bpdu[64];$/;"	m	union:uid_msg_s::__anon10	access:public
+bpdu_body_t	rstplib/stp_bpdu.h	/^typedef struct bpdu_body_t {$/;"	s
+bpdu_body_t::bridge_id	rstplib/stp_bpdu.h	/^  unsigned char bridge_id[8];       \/\/ 同root id$/;"	m	struct:bpdu_body_t	access:public
+bpdu_body_t::flags	rstplib/stp_bpdu.h	/^  unsigned char flags;              $/;"	m	struct:bpdu_body_t	access:public
+bpdu_body_t::forward_delay	rstplib/stp_bpdu.h	/^  unsigned char forward_delay[2];   \/\/ 转发延迟，统一由根节点配置$/;"	m	struct:bpdu_body_t	access:public
+bpdu_body_t::hello_time	rstplib/stp_bpdu.h	/^  unsigned char hello_time[2];      \/\/ ，统一由根节点配置$/;"	m	struct:bpdu_body_t	access:public
+bpdu_body_t::max_age	rstplib/stp_bpdu.h	/^  unsigned char max_age[2];         \/\/ 消息最大年龄，统一由根节点配置$/;"	m	struct:bpdu_body_t	access:public
+bpdu_body_t::message_age	rstplib/stp_bpdu.h	/^  unsigned char message_age[2];     \/\/ 消息年龄，每经过一个网桥+1，message_age大于max_age时消息被丢弃，所以网络上的网桥数量受到限制$/;"	m	struct:bpdu_body_t	access:public
+bpdu_body_t::port_id	rstplib/stp_bpdu.h	/^  unsigned char port_id[2];         \/\/ 端口ID，由优先级和端口编号组成$/;"	m	struct:bpdu_body_t	access:public
+bpdu_body_t::root_id	rstplib/stp_bpdu.h	/^  unsigned char root_id[8];         \/\/ 也就是桥ID，由2字节优先级和6字节mac组成$/;"	m	struct:bpdu_body_t	access:public
+bpdu_body_t::root_path_cost	rstplib/stp_bpdu.h	/^  unsigned char root_path_cost[4];  \/\/ 路径成本$/;"	m	struct:bpdu_body_t	access:public
+bpdu_header_t	rstplib/stp_bpdu.h	/^typedef struct bpdu_header_t {$/;"	s
+bpdu_header_t::bpdu_type	rstplib/stp_bpdu.h	/^  unsigned char bpdu_type;      \/\/ bpdu类型$/;"	m	struct:bpdu_header_t	access:public
+bpdu_header_t::protocol	rstplib/stp_bpdu.h	/^  unsigned char protocol[2];    \/\/ 固定值0x0000$/;"	m	struct:bpdu_header_t	access:public
+bpdu_header_t::version	rstplib/stp_bpdu.h	/^  unsigned char version;        \/\/ bpdu版本（rstp\/stp）$/;"	m	struct:bpdu_header_t	access:public
+bpdu_packet	rstplib/transmit.c	/^static RSTP_BPDU_T bpdu_packet  = {$/;"	v	file:
+bpdu_type	rstplib/stp_bpdu.h	/^  unsigned char bpdu_type;      \/\/ bpdu类型$/;"	m	struct:bpdu_header_t	access:public
+brIndex	rstpd.h	/^	int             brIndex;            \/\/ 桥的接口序号$/;"	m	struct:__anon23	access:public
+brName	rstpd.h	/^	char            brName[IFNAMSIZ];   \/\/ 桥的接口名$/;"	m	struct:__anon23	access:public
+br_bpdu_rcv	rstp_if.c	/^void br_bpdu_rcv(int if_index, const unsigned char *data, int len)$/;"	f	signature:(int if_index, const unsigned char *data, int len)
+br_bpdu_rcv	rstp_if.h	/^void br_bpdu_rcv(int if_index, const unsigned char *data, int len);$/;"	p	signature:(int if_index, const unsigned char *data, int len)
+br_event_handler	brmon.c	/^static void br_event_handler(uint32_t events, struct epoll_event_handler *h)$/;"	f	file:	signature:(uint32_t events, struct epoll_event_handler *h)
+br_filter_message	brmon.c	/^static int br_filter_message(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg)$/;"	f	file:	signature:(const struct sockaddr_nl *who, struct nlmsghdr *n, void *arg)
+br_get_configuration	brmon.c	/^void br_get_configuration(void)$/;"	f	signature:(void)
+br_get_configuration	rstp_if.h	/^void br_get_configuration(void);$/;"	p	signature:(void)
+br_handler	brmon.c	/^struct epoll_event_handler br_handler;$/;"	v	typeref:struct:epoll_event_handler
+br_info_init	rstp_if.c	/^int br_info_init(void)$/;"	f	signature:(void)
+br_info_init	rstp_if.h	/^int br_info_init(void);$/;"	p	signature:(void)
+br_lst	rstplib/mngr.c	/^static BRIDGE_T* br_lst = 0;$/;"	v	file:
+br_notify	rstp_if.c	/^int br_notify(int if_index, int newlink, unsigned flags)$/;"	f	signature:(int if_index, int newlink, unsigned flags)
+br_notify	rstp_if.h	/^int br_notify(int if_index, int newlink, unsigned flags);$/;"	p	signature:(int if_index, int newlink, unsigned flags)
+br_one_second	rstp_if.c	/^void br_one_second(void)$/;"	f	signature:(void)
+br_one_second	rstp_if.h	/^void br_one_second(void);$/;"	p	signature:(void)
+br_set_state	brstate.c	/^int br_set_state(int ifindex, int brstate)$/;"	f	signature:(int ifindex, int brstate)
+br_set_state	rstp_if.h	/^int br_set_state(int ifindex, int brstate);$/;"	p	signature:(int ifindex, int brstate)
+bridge	rstpd.h	/^	stpBridge_t     bridge;     \/\/ 桥控制块$/;"	m	struct:__anon25	access:public
+bridge_control	rstplib/bridge.c	/^int bridge_control (int port_index,$/;"	f	signature:(int port_index, UID_CNTRL_BODY_T* cntrl)
+bridge_id	rstplib/stp_bpdu.h	/^  unsigned char bridge_id[8];       \/\/ 同root id$/;"	m	struct:bpdu_body_t	access:public
+bridge_id	rstplib/uid_stp.h	/^  UID_BRIDGE_ID_T   bridge_id;$/;"	m	struct:__anon17	access:public
+bridge_id	rstplib/vector.h	/^typedef struct bridge_id$/;"	s
+bridge_id::addr	rstplib/vector.h	/^  unsigned char     addr[6];    \/\/ 地址$/;"	m	struct:bridge_id	access:public
+bridge_id::prio	rstplib/vector.h	/^  unsigned short    prio;       \/\/ 桥优先级$/;"	m	struct:bridge_id	access:public
+bridge_partner	rstplib/mngr.c	/^  struct bridge_s *bridge_partner;$/;"	m	struct:port_s	typeref:struct:port_s::bridge_s	file:	access:public
+bridge_port	rstplib/vector.h	/^  PORT_ID   bridge_port;$/;"	m	struct:prio_vector_t	access:public
+bridge_priority	rstpd.h	/^	int             bridge_priority;$/;"	m	struct:__anon23	access:public
+bridge_priority	rstplib/uid_stp.h	/^  int           bridge_priority;$/;"	m	struct:__anon16	access:public
+bridge_rx_bpdu	rstplib/bridge.c	/^int bridge_rx_bpdu (UID_MSG_T* msg, size_t msgsize)$/;"	f	signature:(UID_MSG_T* msg, size_t msgsize)
+bridge_s	rstplib/mngr.c	/^typedef struct bridge_s {$/;"	s	file:
+bridge_s::next	rstplib/mngr.c	/^  struct bridge_s* next;$/;"	m	struct:bridge_s	typeref:struct:bridge_s::bridge_s	file:	access:public
+bridge_s::number_of_ports	rstplib/mngr.c	/^  long      number_of_ports;$/;"	m	struct:bridge_s	file:	access:public
+bridge_s::pid	rstplib/mngr.c	/^  long      pid;$/;"	m	struct:bridge_s	file:	access:public
+bridge_s::ports	rstplib/mngr.c	/^  PORT_T*   ports;$/;"	m	struct:bridge_s	file:	access:public
+bridge_s::sock	rstplib/mngr.c	/^  UID_SOCKET_T  sock;$/;"	m	struct:bridge_s	file:	access:public
+bridge_shutdown	rstplib/bridge.c	/^void bridge_shutdown (void)$/;"	f	signature:(void)
+bridge_start	rstplib/bridge.c	/^int bridge_start (void)$/;"	f	signature:(void)
+bridge_tx_bpdu	rstplib/bridge.c	/^int bridge_tx_bpdu (int port_index, unsigned char *bpdu, size_t bpdu_len)$/;"	f	signature:(int port_index, unsigned char *bpdu, size_t bpdu_len)
+bridges	rstplib/stpm.c	/^static STPM_T *bridges = NULL;$/;"	v	file:
+build_bpdu_header	rstplib/transmit.c	/^build_bpdu_header (int port_index,$/;"	f	file:	signature:(int port_index, unsigned char bpdu_type, unsigned short pkt_len)
+build_config_bpdu	rstplib/transmit.c	/^build_config_bpdu (PORT_T* port, Bool set_topo_ack_flag)$/;"	f	file:	signature:(PORT_T* port, Bool set_topo_ack_flag)
+cfg	ctl_socket.h	/^	UID_STP_CFG_T cfg;$/;"	m	struct:get_bridge_state_OUT	access:public
+cfg	ctl_socket.h	/^	UID_STP_CFG_T cfg;$/;"	m	struct:set_bridge_config_IN	access:public
+cfg	ctl_socket.h	/^	UID_STP_PORT_CFG_T cfg;$/;"	m	struct:get_port_state_OUT	access:public
+cfg	ctl_socket.h	/^	UID_STP_PORT_CFG_T cfg;$/;"	m	struct:set_port_config_IN	access:public
+changeState	rstplib/statmch.h	/^  Bool          changeState;    \/\/ 状态变化标志,根据状态切换检测函数的返回值而定$/;"	m	struct:state_mach_t	access:public
+clbk	rstplib/cli.h	/^  CLI_CMD_CLBK*		clbk;$/;"	m	struct:cmd_dscr_s	access:public
+clearReselectBridge	rstplib/rolesel.c	/^clearReselectBridge (STPM_T* this)$/;"	f	file:	signature:(STPM_T* this)
+clear_epoll	epoll_loop.c	/^void clear_epoll(void)$/;"	f	signature:(void)
+clear_epoll	epoll_loop.h	/^void clear_epoll(void);$/;"	p	signature:(void)
+cli_br_fdelay	rstplib/stp_cli.c	/^static int cli_br_fdelay (int argc, char** argv)$/;"	f	file:	signature:(int argc, char** argv)
+cli_br_fvers	rstplib/stp_cli.c	/^static int cli_br_fvers (int argc, char** argv)$/;"	f	file:	signature:(int argc, char** argv)
+cli_br_get_cfg	rstplib/stp_cli.c	/^static int cli_br_get_cfg (int argc, char** argv)$/;"	f	file:	signature:(int argc, char** argv)
+cli_br_maxage	rstplib/stp_cli.c	/^static int cli_br_maxage (int argc, char** argv)$/;"	f	file:	signature:(int argc, char** argv)
+cli_br_prio	rstplib/stp_cli.c	/^static int cli_br_prio (int argc, char** argv)$/;"	f	file:	signature:(int argc, char** argv)
+cli_call_callback	rstplib/cli.c	/^static int cli_call_callback (CMD_DSCR_T* reg, const char* line, int* argc, char** argv)$/;"	f	file:	signature:(CMD_DSCR_T* reg, const char* line, int* argc, char** argv)
+cli_completion_entry_fucntion	rstplib/cli.c	/^char* cli_completion_entry_fucntion (const char *str, int ignore)$/;"	f	signature:(const char *str, int ignore)
+cli_completion_entry_fucntion	rstplib/cli.c	/^int cli_completion_entry_fucntion (int ignore, int invoking_key)$/;"	f	signature:(int ignore, int invoking_key)
+cli_count_words	rstplib/cli.c	/^int cli_count_words (char* line)$/;"	f	signature:(char* line)
+cli_debug_dump_args	rstplib/cli.c	/^void cli_debug_dump_args (char* title, int argc, char** argv)$/;"	f	signature:(char* title, int argc, char** argv)
+cli_debug_dump_args	rstplib/cli.h	/^void cli_debug_dump_args (char* title, int argc, char** argv);$/;"	p	signature:(char* title, int argc, char** argv)
+cli_disable	rstplib/stp_cli.c	/^static int cli_disable (int argc, char** argv)$/;"	f	file:	signature:(int argc, char** argv)
+cli_dummy	rstplib/cli.c	/^static int cli_dummy (int argc, char** argv)$/;"	f	file:	signature:(int argc, char** argv)
+cli_enable	rstplib/stp_cli.c	/^static int cli_enable (int argc, char** argv)$/;"	f	file:	signature:(int argc, char** argv)
+cli_execute_command	rstplib/cli.c	/^int cli_execute_command (const char* line)$/;"	f	signature:(const char* line)
+cli_execute_command	rstplib/cli.h	/^int cli_execute_command (const char* line);$/;"	p	signature:(const char* line)
+cli_help	rstplib/cli.c	/^void cli_help (int argc, char** argv, const char* line)$/;"	f	signature:(int argc, char** argv, const char* line)
+cli_help_brosed_line	rstplib/cli.c	/^cli_help_brosed_line (int argc, char** argv, const char* line)$/;"	f	file:	signature:(int argc, char** argv, const char* line)
+cli_inline_help	rstplib/cli.c	/^int cli_inline_help (void)$/;"	f	signature:(void)
+cli_parse_parms	rstplib/cli.c	/^cli_parse_parms (const char* line, int skip_words, char** argv)$/;"	f	file:	signature:(const char* line, int skip_words, char** argv)
+cli_pr_get_cfg	rstplib/stp_cli.c	/^static int cli_pr_get_cfg (int argc, char** argv)$/;"	f	file:	signature:(int argc, char** argv)
+cli_private_completion	rstplib/cli.c	/^cli_private_completion (char *text, int start, int end)$/;"	f	signature:(char *text, int start, int end)
+cli_prt_edge	rstplib/stp_cli.c	/^static int cli_prt_edge (int argc, char** argv)$/;"	f	file:	signature:(int argc, char** argv)
+cli_prt_mcheck	rstplib/stp_cli.c	/^static int cli_prt_mcheck (int argc, char** argv)$/;"	f	file:	signature:(int argc, char** argv)
+cli_prt_non_stp	rstplib/stp_cli.c	/^static int cli_prt_non_stp (int argc, char** argv)$/;"	f	file:	signature:(int argc, char** argv)
+cli_prt_p2p	rstplib/stp_cli.c	/^static int cli_prt_p2p (int argc, char** argv)$/;"	f	file:	signature:(int argc, char** argv)
+cli_prt_pcost	rstplib/stp_cli.c	/^static int cli_prt_pcost (int argc, char** argv)$/;"	f	file:	signature:(int argc, char** argv)
+cli_prt_prio	rstplib/stp_cli.c	/^static int cli_prt_prio (int argc, char** argv)$/;"	f	file:	signature:(int argc, char** argv)
+cli_register_language	rstplib/cli.c	/^void cli_register_language (const CMD_DSCR_T* cmd_list)$/;"	f	signature:(const CMD_DSCR_T* cmd_list)
+cli_register_language	rstplib/cli.h	/^void cli_register_language (const CMD_DSCR_T* cmd_list);$/;"	p	signature:(const CMD_DSCR_T* cmd_list)
+cli_set_defaults	rstplib/cli.c	/^static void cli_set_defaults (CMD_DSCR_T* reg, char** argv)$/;"	f	file:	signature:(CMD_DSCR_T* reg, char** argv)
+cli_skip	rstplib/stp_cli.c	/^static int cli_skip (int argc, char** argv)$/;"	f	file:	signature:(int argc, char** argv)
+cli_sleep	rstplib/stp_cli.c	/^static int cli_sleep (int argc, char** argv)$/;"	f	file:	signature:(int argc, char** argv)
+cli_trace	rstplib/stp_cli.c	/^static int cli_trace (int argc, char** argv)$/;"	f	file:	signature:(int argc, char** argv)
+clientAddr	rstplib/uid_sock.h	/^  struct sockaddr_un    clientAddr;$/;"	m	struct:__anon6	typeref:struct:__anon6::sockaddr_un	access:public
+cmd	ctl_socket.h	/^	int cmd;$/;"	m	struct:ctl_msg_hdr	access:public
+cmd	rstplib/uid.h	/^  UID_CNTRL_CMD_T cmd;$/;"	m	struct:uid_port_control_s	access:public
+cmd_debuglevel	ctl_main.c	/^static int cmd_debuglevel(int argc, char *const *argv)$/;"	f	file:	signature:(int argc, char *const *argv)
+cmd_dscr_s	rstplib/cli.h	/^typedef struct cmd_dscr_s {$/;"	s
+cmd_dscr_s::clbk	rstplib/cli.h	/^  CLI_CMD_CLBK*		clbk;$/;"	m	struct:cmd_dscr_s	access:public
+cmd_dscr_s::cmd_help	rstplib/cli.h	/^  char*			cmd_help;$/;"	m	struct:cmd_dscr_s	access:public
+cmd_dscr_s::cmd_name	rstplib/cli.h	/^  char*			cmd_name;$/;"	m	struct:cmd_dscr_s	access:public
+cmd_dscr_s::param	rstplib/cli.h	/^  CMD_PAR_DSCR_T	param[MAXPARAMNUM];$/;"	m	struct:cmd_dscr_s	access:public
+cmd_exec	ctl_main.c	/^static int cmd_exec(int argc, char** argv)$/;"	f	file:	signature:(int argc, char** argv)
+cmd_help	ctl_main.c	/^static void cmd_help()$/;"	f	file:
+cmd_help	rstplib/cli.h	/^  char*			cmd_help;$/;"	m	struct:cmd_dscr_s	access:public
+cmd_lookup	ctl_main.c	/^const struct command *cmd_lookup(const char *cmd)$/;"	f	signature:(const char *cmd)
+cmd_name	rstplib/cli.h	/^  char*			cmd_name;$/;"	m	struct:cmd_dscr_s	access:public
+cmd_par_dscr_s	rstplib/cli.h	/^typedef struct cmd_par_dscr_s {$/;"	s
+cmd_par_dscr_s::default_value	rstplib/cli.h	/^  char*			default_value;$/;"	m	struct:cmd_par_dscr_s	access:public
+cmd_par_dscr_s::number_limits	rstplib/cli.h	/^  CMD_PAR_LIMITS	number_limits;$/;"	m	struct:cmd_par_dscr_s	access:public
+cmd_par_dscr_s::param_help	rstplib/cli.h	/^  char*			param_help;$/;"	m	struct:cmd_par_dscr_s	access:public
+cmd_par_dscr_s::param_type	rstplib/cli.h	/^  CMD_PARAM_TYPE_T	param_type;$/;"	m	struct:cmd_par_dscr_s	access:public
+cmd_par_dscr_s::string_selector	rstplib/cli.h	/^  CMD_PAR_SELECTOR	string_selector[MAX_SELECTOR];$/;"	m	struct:cmd_par_dscr_s	access:public
+cmd_par_number_limits_s	rstplib/cli.h	/^typedef struct cmd_par_number_limits_s {$/;"	s
+cmd_par_number_limits_s::max	rstplib/cli.h	/^  unsigned long max;$/;"	m	struct:cmd_par_number_limits_s	access:public
+cmd_par_number_limits_s::min	rstplib/cli.h	/^  unsigned long min;$/;"	m	struct:cmd_par_number_limits_s	access:public
+cmd_par_string_selector_s	rstplib/cli.h	/^typedef struct cmd_par_string_selector_s {$/;"	s
+cmd_par_string_selector_s::string_help	rstplib/cli.h	/^  char* string_help;$/;"	m	struct:cmd_par_string_selector_s	access:public
+cmd_par_string_selector_s::string_value	rstplib/cli.h	/^  char* string_value;$/;"	m	struct:cmd_par_string_selector_s	access:public
+cmd_portmcheck	ctl_main.c	/^static int cmd_portmcheck(int argc, char *const *argv)$/;"	f	file:	signature:(int argc, char *const *argv)
+cmd_rstp	ctl_main.c	/^static int cmd_rstp(int argc, char *const *argv)$/;"	f	file:	signature:(int argc, char *const *argv)
+cmd_set_bridge_fdelay	ctl_main.c	/^static int cmd_set_bridge_fdelay(int argc, char *const *argv)$/;"	f	file:	signature:(int argc, char *const *argv)
+cmd_set_bridge_forcevers	ctl_main.c	/^static int cmd_set_bridge_forcevers(int argc, char *const *argv)$/;"	f	file:	signature:(int argc, char *const *argv)
+cmd_set_bridge_hello	ctl_main.c	/^static int cmd_set_bridge_hello(int argc, char *const *argv)$/;"	f	file:	signature:(int argc, char *const *argv)
+cmd_set_bridge_maxage	ctl_main.c	/^static int cmd_set_bridge_maxage(int argc, char *const *argv)$/;"	f	file:	signature:(int argc, char *const *argv)
+cmd_set_bridge_prio	ctl_main.c	/^static int cmd_set_bridge_prio(int argc, char *const *argv)$/;"	f	file:	signature:(int argc, char *const *argv)
+cmd_set_bridge_state	ctl_main.c	/^static int cmd_set_bridge_state(int argc, char *const *argv)$/;"	f	file:	signature:(int argc, char *const *argv)
+cmd_set_port_edge	ctl_main.c	/^static int cmd_set_port_edge(int argc, char *const *argv)$/;"	f	file:	signature:(int argc, char *const *argv)
+cmd_set_port_nonstp	ctl_main.c	/^static int cmd_set_port_nonstp(int argc, char *const *argv)$/;"	f	file:	signature:(int argc, char *const *argv)
+cmd_set_port_p2p	ctl_main.c	/^static int cmd_set_port_p2p(int argc, char *const *argv)$/;"	f	file:	signature:(int argc, char *const *argv)
+cmd_set_port_pathcost	ctl_main.c	/^static int cmd_set_port_pathcost(int argc, char *const *argv)$/;"	f	file:	signature:(int argc, char *const *argv)
+cmd_set_port_prio	ctl_main.c	/^static int cmd_set_port_prio(int argc, char *const *argv)$/;"	f	file:	signature:(int argc, char *const *argv)
+cmd_set_trace	ctl_main.c	/^static int cmd_set_trace(int argc, char *const *argv)$/;"	f	file:	signature:(int argc, char *const *argv)
+cmd_show_bridge	ctl_main.c	/^static int cmd_show_bridge(int argc, char *const *argv)$/;"	f	file:	signature:(int argc, char *const *argv)
+cmd_show_port	ctl_main.c	/^static int cmd_show_port(int argc, char *const *argv)$/;"	f	file:	signature:(int argc, char *const *argv)
+cmd_show_portdetail	ctl_main.c	/^static int cmd_show_portdetail(int argc, char *const *argv)$/;"	f	file:	signature:(int argc, char *const *argv)
+cmd_tokenize_free	ctl_main.c	/^void cmd_tokenize_free(int argc, char **argv)$/;"	f	signature:(int argc, char **argv)
+cmd_tokenize_line	ctl_main.c	/^int cmd_tokenize_line(const char *line, int *argc, char ***argv)$/;"	f	signature:(const char *line, int *argc, char ***argv)
+cmd_type	rstplib/uid.h	/^  UID_CMD_TYPE_T    cmd_type;$/;"	m	struct:uid_msg_header_s	access:public
+cntrl	rstplib/uid.h	/^    UID_CNTRL_BODY_T    cntrl;$/;"	m	union:uid_msg_s::__anon10	access:public
+command	ctl_main.c	/^struct command {$/;"	s	file:
+command::func	ctl_main.c	/^	int (*func) (int argc, char *const *argv);  \/\/ 命令对应的回调函数$/;"	m	struct:command	file:	access:public
+command::help	ctl_main.c	/^	const char *help;   \/\/ 命令解释$/;"	m	struct:command	file:	access:public
+command::name	ctl_main.c	/^	const char *name;   \/\/ 命令名$/;"	m	struct:command	file:	access:public
+command::nargs	ctl_main.c	/^	int nargs;          \/\/ 入参数量$/;"	m	struct:command	file:	access:public
+command::optargs	ctl_main.c	/^	int optargs;        $/;"	m	struct:command	file:	access:public
+command_generator	rstplib/cli.c	/^char* command_generator (char* text, int state)$/;"	f	signature:(char* text, int state)
+commands	ctl_main.c	/^static const struct command commands[] = {$/;"	v	typeref:struct:command	file:
+complete_status	rstplib/cli.c	/^int complete_status;$/;"	v
+computeAutoPCost	rstplib/pcost.c	/^computeAutoPCost (STATE_MACH_T *this)$/;"	f	file:	signature:(STATE_MACH_T *this)
+computeP2P	rstplib/p2p.c	/^computeP2P (PORT_T *port)$/;"	f	file:	signature:(PORT_T *port)
+compute_all_synced	rstplib/roletrns.c	/^compute_all_synced (PORT_T* this)$/;"	f	file:	signature:(PORT_T* this)
+compute_re_rooted	rstplib/roletrns.c	/^compute_re_rooted (PORT_T* this)$/;"	f	file:	signature:(PORT_T* this)
+concreteCheckCondition	rstplib/statmch.h	/^  Bool          (* concreteCheckCondition) (struct state_mach_t * );\/\/ 检查状态切换条件并完成状态切换$/;"	m	struct:state_mach_t	access:public
+concreteEnterState	rstplib/statmch.h	/^  void          (* concreteEnterState) (struct state_mach_t * );    \/\/ 执行进入某状态后的固定动作$/;"	m	struct:state_mach_t	access:public
+concreteGetStatName	rstplib/statmch.h	/^  char*         (* concreteGetStatName) (int);                      \/\/ 获取状态名$/;"	m	struct:state_mach_t	access:public
+count_command_paramms	rstplib/cli.c	/^static int count_command_paramms (CMD_DSCR_T* reg)$/;"	f	file:	signature:(CMD_DSCR_T* reg)
+ctl_client_cleanup	ctl_client.c	/^void ctl_client_cleanup(void)$/;"	f	signature:(void)
+ctl_client_cleanup	ctl_client.h	/^void ctl_client_cleanup(void);$/;"	p	signature:(void)
+ctl_client_fd	ctl_client.c	/^static int ctl_client_fd = -1;$/;"	v	file:
+ctl_client_init	ctl_client.c	/^int ctl_client_init(void)$/;"	f	signature:(void)
+ctl_client_init	ctl_client.h	/^int ctl_client_init(void);$/;"	p	signature:(void)
+ctl_client_send	ctl_client.c	/^int ctl_client_send(int cmd, void *inbuf, int lin, void *outbuf, int *lout, int *res)$/;"	f	signature:(int cmd, void *inbuf, int lin, void *outbuf, int *lout, int *res)
+ctl_client_send	ctl_client.h	/^int ctl_client_send(int cmd, void *inbuf, int lin, void *outbuf, int *lout, int *res);$/;"	p	signature:(int cmd, void *inbuf, int lin, void *outbuf, int *lout, int *res)
+ctl_handle_message	ctl_socket.c	/^int ctl_handle_message(int cmd, void *inbuf, int lin, void *outbuf, int *lout)$/;"	f	signature:(int cmd, void *inbuf, int lin, void *outbuf, int *lout)
+ctl_handler	ctl_socket.c	/^struct epoll_event_handler ctl_handler;$/;"	v	typeref:struct:epoll_event_handler
+ctl_msg_hdr	ctl_socket.h	/^struct ctl_msg_hdr {$/;"	s
+ctl_msg_hdr::cmd	ctl_socket.h	/^	int cmd;$/;"	m	struct:ctl_msg_hdr	access:public
+ctl_msg_hdr::lin	ctl_socket.h	/^	int lin;$/;"	m	struct:ctl_msg_hdr	access:public
+ctl_msg_hdr::lout	ctl_socket.h	/^	int lout;$/;"	m	struct:ctl_msg_hdr	access:public
+ctl_msg_hdr::res	ctl_socket.h	/^	int res;$/;"	m	struct:ctl_msg_hdr	access:public
+ctl_rcv_handler	ctl_socket.c	/^void ctl_rcv_handler(uint32_t events, struct epoll_event_handler *p)$/;"	f	signature:(uint32_t events, struct epoll_event_handler *p)
+ctl_server_cleanup	ctl_server.h	/^void ctl_server_cleanup(void);$/;"	p	signature:(void)
+ctl_server_cleanup	ctl_socket.c	/^void ctl_server_cleanup(void)$/;"	f	signature:(void)
+ctl_server_init	ctl_server.h	/^int ctl_server_init(void);$/;"	p	signature:(void)
+ctl_server_init	ctl_socket.c	/^int ctl_server_init(void)$/;"	f	signature:(void)
+dbg_rstp_deny	rstplib/stp_in.c	/^int dbg_rstp_deny = 0;$/;"	v
+debug	rstplib/statmch.h	/^  char          debug; \/* 0- no dbg, 1 - port, 2 - stpm *\/$/;"	m	struct:state_mach_t	access:public
+default_value	rstplib/cli.h	/^  char*			default_value;$/;"	m	struct:cmd_par_dscr_s	access:public
+designPrio	rstplib/port.h	/^  PRIO_VECTOR_T     designPrio;    \/* 17.18.2 *\/$/;"	m	struct:port_t	access:public
+designTimes	rstplib/port.h	/^  TIMEVALUES_T      designTimes;   \/* 17.18.3 *\/$/;"	m	struct:port_t	access:public
+design_bridge	rstplib/vector.h	/^  BRIDGE_ID design_bridge;      \/\/ 指定桥ID$/;"	m	struct:prio_vector_t	access:public
+design_port	rstplib/vector.h	/^  PORT_ID   design_port;        \/\/ 指定端口$/;"	m	struct:prio_vector_t	access:public
+designated_bridge	rstplib/uid_stp.h	/^  UID_BRIDGE_ID_T   designated_bridge;$/;"	m	struct:__anon21	access:public
+designated_cost	rstplib/uid_stp.h	/^  unsigned long     designated_cost;$/;"	m	struct:__anon21	access:public
+designated_port	rstplib/uid_stp.h	/^  UID_PORT_ID       designated_port;$/;"	m	struct:__anon21	access:public
+designated_root	rstplib/uid_stp.h	/^  UID_BRIDGE_ID_T   designated_root;$/;"	m	struct:__anon17	access:public
+designated_root	rstplib/uid_stp.h	/^  UID_BRIDGE_ID_T   designated_root;$/;"	m	struct:__anon21	access:public
+destination_port	rstplib/uid.h	/^  int           destination_port;$/;"	m	struct:uid_msg_header_s	access:public
+disableForwarding	rstplib/sttrans.c	/^disableForwarding (STATE_MACH_T *this)$/;"	f	file:	signature:(STATE_MACH_T *this)
+disableLearning	rstplib/sttrans.c	/^disableLearning (STATE_MACH_T *this)$/;"	f	file:	signature:(STATE_MACH_T *this)
+disconnect_port	rstplib/mngr.c	/^int disconnect_port (PORT_T* port, char reset_myself)$/;"	f	signature:(PORT_T* port, char reset_myself)
+dsap	rstplib/stp_bpdu.h	/^  unsigned char dsap;$/;"	m	struct:eth_header_t	access:public
+dst_mac	rstplib/stp_bpdu.h	/^  unsigned char dst_mac[6];$/;"	m	struct:mac_header_t	access:public
+dump	libnetlink.h	/^	__u32			dump;$/;"	m	struct:rtnl_handle	access:public
+dump_hex	log.h	/^static inline void dump_hex(void *b, int l)$/;"	f	signature:(void *b, int l)
+duplex	rstpd.h	/^	int             duplex;             \/\/ 端口双工模式$/;"	m	struct:__anon24	access:public
+edge	rstplib/port.h	/^  STATE_MACH_T*     edge;      \/*  *\/$/;"	m	struct:port_t	access:public
+enable	ctl_socket.h	/^	int enable; $/;"	m	struct:enable_rstp_IN	access:public
+enableForwarding	rstplib/sttrans.c	/^enableForwarding (STATE_MACH_T *this)$/;"	f	file:	signature:(STATE_MACH_T *this)
+enableLearning	rstplib/sttrans.c	/^enableLearning (STATE_MACH_T *this)$/;"	f	file:	signature:(STATE_MACH_T *this)
+enable_rstp_ARGS	ctl_socket.h	31;"	d
+enable_rstp_CALL	ctl_socket.h	34;"	d
+enable_rstp_COPY_IN	ctl_socket.h	32;"	d
+enable_rstp_COPY_OUT	ctl_socket.h	33;"	d
+enable_rstp_IN	ctl_socket.h	/^struct enable_rstp_IN {$/;"	s
+enable_rstp_IN::enable	ctl_socket.h	/^	int enable; $/;"	m	struct:enable_rstp_IN	access:public
+enable_rstp_OUT	ctl_socket.h	/^struct enable_rstp_OUT {$/;"	s
+enabled_ports	rstplib/bridge.c	/^BITMAP_T    enabled_ports;$/;"	v
+enableflag	ctl_socket.h	/^	int enableflag;$/;"	m	struct:set_port_trace_IN	access:public
+epoll_event_handler	epoll_loop.h	/^struct epoll_event_handler {$/;"	s
+epoll_event_handler::arg	epoll_loop.h	/^	void *arg;$/;"	m	struct:epoll_event_handler	access:public
+epoll_event_handler::fd	epoll_loop.h	/^	int fd;$/;"	m	struct:epoll_event_handler	access:public
+epoll_event_handler::handler	epoll_loop.h	/^	void (*handler) (uint32_t events, struct epoll_event_handler *p);$/;"	m	struct:epoll_event_handler	access:public
+epoll_event_handler::ref_ev	epoll_loop.h	/^	struct epoll_event *ref_ev;$/;"	m	struct:epoll_event_handler	typeref:struct:epoll_event_handler::epoll_event	access:public
+epoll_fd	epoll_loop.c	/^int epoll_fd = -1;$/;"	v
+epoll_main_loop	epoll_loop.c	/^int epoll_main_loop(void)$/;"	f	signature:(void)
+epoll_main_loop	epoll_loop.h	/^int epoll_main_loop(void);$/;"	p	signature:(void)
+eth	rstplib/stp_bpdu.h	/^  ETH_HEADER_T  eth;        \/\/ 以太网帧头$/;"	m	struct:stp_bpdu_t	access:public
+eth	rstplib/transmit.c	/^  ETH_HEADER_T  eth;$/;"	m	struct:tx_rstp_bpdu_t	file:	access:public
+eth	rstplib/transmit.c	/^  ETH_HEADER_T  eth;$/;"	m	struct:tx_stp_bpdu_t	file:	access:public
+eth	rstplib/transmit.c	/^  ETH_HEADER_T  eth;$/;"	m	struct:tx_tcn_bpdu_t	file:	access:public
+eth_header_t	rstplib/stp_bpdu.h	/^typedef struct eth_header_t {$/;"	s
+eth_header_t::dsap	rstplib/stp_bpdu.h	/^  unsigned char dsap;$/;"	m	struct:eth_header_t	access:public
+eth_header_t::len8023	rstplib/stp_bpdu.h	/^  unsigned char len8023[2];$/;"	m	struct:eth_header_t	access:public
+eth_header_t::llc	rstplib/stp_bpdu.h	/^  unsigned char llc;$/;"	m	struct:eth_header_t	access:public
+eth_header_t::ssap	rstplib/stp_bpdu.h	/^  unsigned char ssap;$/;"	m	struct:eth_header_t	access:public
+event_handler	packet.c	/^static struct epoll_event_handler event_handler;$/;"	v	typeref:struct:epoll_event_handler	file:
+fd	epoll_loop.h	/^	int fd;$/;"	m	struct:epoll_event_handler	access:public
+fd	libnetlink.h	/^	int			fd;$/;"	m	struct:rtnl_handle	access:public
+fdWhile	rstplib/port.h	/^  PORT_TIMER_T      fdWhile;      \/* 17.15.1 *\/$/;"	m	struct:port_t	access:public
+fdWhile	rstplib/uid_stp.h	/^  int               fdWhile;      \/* 17.15.1 *\/$/;"	m	struct:__anon21	access:public
+field_mask	rstplib/uid_stp.h	/^  unsigned long     field_mask; \/* which fields to change *\/$/;"	m	struct:__anon16	access:public
+field_mask	rstplib/uid_stp.h	/^  unsigned long field_mask; \/* which fields to change *\/$/;"	m	struct:__anon20	access:public
+find_command	rstplib/cli.c	/^static int find_command (const char* line, char forHelp, CMD_DSCR_T **reg_ptr)$/;"	f	file:	signature:(const char* line, char forHelp, CMD_DSCR_T **reg_ptr)
+flags	rstplib/stp_bpdu.h	/^  unsigned char flags;              $/;"	m	struct:bpdu_body_t	access:public
+flush	rstplib/topoch.c	/^flush (STATE_MACH_T *this, char* reason) \/* 17.19.9 *\/$/;"	f	file:	signature:(STATE_MACH_T *this, char* reason)
+force_version	rstpd.h	/^	int             force_version;$/;"	m	struct:__anon23	access:public
+force_version	rstplib/uid_stp.h	/^  int           force_version;$/;"	m	struct:__anon16	access:public
+forward	rstplib/port.h	/^  Bool              forward;       \/* 17.18.4 *\/$/;"	m	struct:port_t	access:public
+forward_delay	rstpd.h	/^	int             forward_delay;$/;"	m	struct:__anon23	access:public
+forward_delay	rstplib/stp_bpdu.h	/^  unsigned char forward_delay[2];   \/\/ 转发延迟，统一由根节点配置$/;"	m	struct:bpdu_body_t	access:public
+forward_delay	rstplib/uid_stp.h	/^  int               forward_delay;$/;"	m	struct:__anon17	access:public
+forward_delay	rstplib/uid_stp.h	/^  int           forward_delay;$/;"	m	struct:__anon16	access:public
+forwarding	rstplib/port.h	/^  Bool              forwarding;    \/* 17.18.5 *\/$/;"	m	struct:port_t	access:public
+func	ctl_main.c	/^	int (*func) (int argc, char *const *argv);  \/\/ 命令对应的回调函数$/;"	m	struct:command	file:	access:public
+get_bool_arg	rstplib/stp_cli.c	/^static int get_bool_arg (int narg, int argc, char** argv,$/;"	f	file:	signature:(int narg, int argc, char** argv, unsigned long* value)
+get_bridge_name	utils.c	/^int get_bridge_name(char *br_name) $/;"	f	signature:(char *br_name)
+get_bridge_name	utils.h	/^int get_bridge_name(char *br_name);$/;"	p	signature:(char *br_name)
+get_bridge_state_ARGS	ctl_socket.h	44;"	d
+get_bridge_state_CALL	ctl_socket.h	47;"	d
+get_bridge_state_COPY_IN	ctl_socket.h	45;"	d
+get_bridge_state_COPY_OUT	ctl_socket.h	46;"	d
+get_bridge_state_IN	ctl_socket.h	/^struct get_bridge_state_IN {$/;"	s
+get_bridge_state_OUT	ctl_socket.h	/^struct get_bridge_state_OUT {$/;"	s
+get_bridge_state_OUT::cfg	ctl_socket.h	/^	UID_STP_CFG_T cfg;$/;"	m	struct:get_bridge_state_OUT	access:public
+get_bridge_state_OUT::state	ctl_socket.h	/^	UID_STP_STATE_T state;$/;"	m	struct:get_bridge_state_OUT	access:public
+get_commnad_name	rstplib/cli.c	/^static char* get_commnad_name (int list_index)$/;"	f	file:	signature:(int list_index)
+get_hwaddr	utils.c	/^int get_hwaddr(char *ifname, unsigned char *hwaddr)$/;"	f	signature:(char *ifname, unsigned char *hwaddr)
+get_hwaddr	utils.h	/^int get_hwaddr(char *ifname, unsigned char *hwaddr);$/;"	p	signature:(char *ifname, unsigned char *hwaddr)
+get_if_mac	utils.c	/^int get_if_mac(int if_index, unsigned char *mac) $/;"	f	signature:(int if_index, unsigned char *mac)
+get_if_mac	utils.h	/^int get_if_mac(int if_index, unsigned char *mac);$/;"	p	signature:(int if_index, unsigned char *mac)
+get_port_count	utils.c	/^int get_port_count(char *br_name, int *count) $/;"	f	signature:(char *br_name, int *count)
+get_port_count	utils.h	/^int get_port_count(char *br_name, int *count);$/;"	p	signature:(char *br_name, int *count)
+get_port_state_ARGS	ctl_socket.h	71;"	d
+get_port_state_CALL	ctl_socket.h	74;"	d
+get_port_state_COPY_IN	ctl_socket.h	72;"	d
+get_port_state_COPY_OUT	ctl_socket.h	73;"	d
+get_port_state_IN	ctl_socket.h	/^struct get_port_state_IN {$/;"	s
+get_port_state_IN::port_index	ctl_socket.h	/^	int port_index;$/;"	m	struct:get_port_state_IN	access:public
+get_port_state_OUT	ctl_socket.h	/^struct get_port_state_OUT {$/;"	s
+get_port_state_OUT::cfg	ctl_socket.h	/^	UID_STP_PORT_CFG_T cfg;$/;"	m	struct:get_port_state_OUT	access:public
+get_port_state_OUT::state	ctl_socket.h	/^	UID_STP_PORT_STATE_T state;$/;"	m	struct:get_port_state_OUT	access:public
+get_prompt	rstplib/bridge.c	/^char *get_prompt (void)$/;"	f	signature:(void)
+get_prompt	rstplib/cli.h	/^char *get_prompt (void); \/* this function not from the lib ! *\/$/;"	p	signature:(void)
+get_prompt	rstplib/mngr.c	/^char *get_prompt (void)$/;"	f	signature:(void)
+getenum	ctl_main.c	/^int getenum(const char *s, const char *opt[])$/;"	f	signature:(const char *s, const char *opt[])
+getuint	ctl_main.c	/^unsigned int getuint(const char *s)$/;"	f	signature:(const char *s)
+getyesno	ctl_main.c	/^int getyesno(const char *s, const char *yes, const char *no)$/;"	f	signature:(const char *s, const char *yes, const char *no)
+handler	epoll_loop.h	/^	void (*handler) (uint32_t events, struct epoll_event_handler *p);$/;"	m	struct:epoll_event_handler	access:public
+hdr	rstplib/stp_bpdu.h	/^  BPDU_HEADER_T hdr;        \/\/ bpdu头$/;"	m	struct:stp_bpdu_t	access:public
+hdr	rstplib/transmit.c	/^  BPDU_HEADER_T hdr;$/;"	m	struct:tx_rstp_bpdu_t	file:	access:public
+hdr	rstplib/transmit.c	/^  BPDU_HEADER_T hdr;$/;"	m	struct:tx_stp_bpdu_t	file:	access:public
+hdr	rstplib/transmit.c	/^  BPDU_HEADER_T hdr;$/;"	m	struct:tx_tcn_bpdu_t	file:	access:public
+header	rstplib/uid.h	/^  UID_MSG_HEADER_T  header;$/;"	m	struct:uid_msg_s	access:public
+helloWhen	rstplib/port.h	/^  PORT_TIMER_T      helloWhen;    \/* 17.15.2 *\/$/;"	m	struct:port_t	access:public
+helloWhen	rstplib/uid_stp.h	/^  int               helloWhen;    \/* 17.15.2 *\/$/;"	m	struct:__anon21	access:public
+hello_time	rstpd.h	/^	int             hello_time;$/;"	m	struct:__anon23	access:public
+hello_time	rstplib/stp_bpdu.h	/^  unsigned char hello_time[2];      \/\/ ，统一由根节点配置$/;"	m	struct:bpdu_body_t	access:public
+hello_time	rstplib/uid_stp.h	/^  int               hello_time;$/;"	m	struct:__anon17	access:public
+hello_time	rstplib/uid_stp.h	/^  int           hello_time;$/;"	m	struct:__anon16	access:public
+help	ctl_main.c	/^	const char *help;   \/\/ 命令解释$/;"	m	struct:command	file:	access:public
+help_on_command	rstplib/cli.c	/^void help_on_command (CMD_DSCR_T* reg, char brief)$/;"	f	signature:(CMD_DSCR_T* reg, char brief)
+help_on_param	rstplib/cli.c	/^static int help_on_param (int iii, CMD_PAR_DSCR_T* par, int cry_on_empty)$/;"	f	file:	signature:(int iii, CMD_PAR_DSCR_T* par, int cry_on_empty)
+hold_time	rstpd.h	/^	int             hold_time;	$/;"	m	struct:__anon23	access:public
+hold_time	rstplib/uid_stp.h	/^  int           hold_time;$/;"	m	struct:__anon16	access:public
+htonl	rstplib/base.h	122;"	d
+htons	rstplib/base.h	123;"	d
+ifIndex	rstpd.h	/^    int             ifIndex;            \/\/ 端口序号$/;"	m	struct:__anon24	access:public
+ifName	rstpd.h	/^	char            ifName[IFNAMSIZ];   \/\/ 端口名$/;"	m	struct:__anon24	access:public
+ignoreHop2State	rstplib/statmch.h	/^  unsigned int  ignoreHop2State;$/;"	m	struct:state_mach_t	access:public
+info	rstplib/port.h	/^  STATE_MACH_T*     info;      \/* 17.21 *\/$/;"	m	struct:port_t	access:public
+infoIs	rstplib/port.h	/^  INFO_IS_T         infoIs;        \/* 17.18.6 *\/$/;"	m	struct:port_t	access:public
+initPm	rstplib/port.h	/^  Bool              initPm;        \/* 17.18.7  *\/$/;"	m	struct:port_t	access:public
+init_bridge_ops	brmon.c	/^int init_bridge_ops(void)$/;"	f	signature:(void)
+init_bridge_ops	rstp_if.h	/^int init_bridge_ops(void);$/;"	p	signature:(void)
+init_epoll	epoll_loop.c	/^int init_epoll(void)$/;"	f	signature:(void)
+init_epoll	epoll_loop.h	/^int init_epoll(void);$/;"	p	signature:(void)
+is_daemon	rstpd.c	/^static int is_daemon = 0;$/;"	v	file:
+lang	rstplib/mngr.c	/^static CMD_DSCR_T lang[] = {$/;"	v	file:
+lang	rstplib/stp_cli.c	/^static CMD_DSCR_T lang[] = {$/;"	v	file:
+learn	rstplib/port.h	/^  Bool              learn;         \/* 17.18.8 *\/$/;"	m	struct:port_t	access:public
+learning	rstplib/port.h	/^  Bool              learning;      \/* 17.18.9 *\/$/;"	m	struct:port_t	access:public
+len8023	rstplib/stp_bpdu.h	/^  unsigned char len8023[2];$/;"	m	struct:eth_header_t	access:public
+level	ctl_socket.h	/^	int level;$/;"	m	struct:set_debug_level_IN	access:public
+lin	ctl_socket.h	/^	int lin;$/;"	m	struct:ctl_msg_hdr	access:public
+linkStatus	rstpd.h	/^	int             linkStatus;         \/\/ 端口link状态$/;"	m	struct:__anon24	access:public
+link_bridges	rstplib/mngr.c	/^static int link_bridges (int argc, char** argv)$/;"	f	file:	signature:(int argc, char** argv)
+link_ring	rstplib/mngr.c	/^static int link_ring (int argc, char** argv)$/;"	f	file:	signature:(int argc, char** argv)
+llc	rstplib/stp_bpdu.h	/^  unsigned char llc;$/;"	m	struct:eth_header_t	access:public
+lnkWhile	rstplib/port.h	/^  PORT_TIMER_T      lnkWhile;$/;"	m	struct:port_t	access:public
+lnkWhile	rstplib/uid_stp.h	/^  int               lnkWhile;$/;"	m	struct:__anon21	access:public
+load_configure	rstpd.c	/^static pid_t load_configure(void)$/;"	f	file:	signature:(void)
+local	libnetlink.h	/^	struct sockaddr_nl	local;$/;"	m	struct:rtnl_handle	typeref:struct:rtnl_handle::sockaddr_nl	access:public
+log_debug	log.c	/^void log_debug(const char *fmt, ...)$/;"	f	signature:(const char *fmt, ...)
+log_debug	log.h	/^void log_debug(const char *fmt, ...);$/;"	p	signature:(const char *fmt, ...)
+log_err	log.c	/^void log_err(const char *fmt, ...)$/;"	f	signature:(const char *fmt, ...)
+log_err	log.h	/^void log_err(const char *fmt, ...);$/;"	p	signature:(const char *fmt, ...)
+log_info	log.c	/^void log_info(const char *fmt, ...)$/;"	f	signature:(const char *fmt, ...)
+log_info	log.h	/^void log_info(const char *fmt, ...);$/;"	p	signature:(const char *fmt, ...)
+log_init	log.c	/^void log_init(const char *progname)$/;"	f	signature:(const char *progname)
+log_init	log.h	/^void log_init(const char *progname);$/;"	p	signature:(const char *progname)
+log_level	rstpd.c	/^int log_level = LOG_LEVEL_MODULE;$/;"	v
+log_print	log.c	/^void log_print(int level, const char *fmt, ...)$/;"	f	signature:(int level, const char *fmt, ...)
+log_trace	log.c	/^void log_trace(const char *fmt, ...)$/;"	f	signature:(const char *fmt, ...)
+log_trace	log.h	/^void log_trace(const char *fmt, ...);$/;"	p	signature:(const char *fmt, ...)
+lout	ctl_socket.h	/^	int lout;$/;"	m	struct:ctl_msg_hdr	access:public
+mac	rstplib/transmit.c	/^  MAC_HEADER_T  mac;$/;"	m	struct:tx_rstp_bpdu_t	file:	access:public
+mac	rstplib/transmit.c	/^  MAC_HEADER_T  mac;$/;"	m	struct:tx_stp_bpdu_t	file:	access:public
+mac	rstplib/transmit.c	/^  MAC_HEADER_T  mac;$/;"	m	struct:tx_tcn_bpdu_t	file:	access:public
+mac_header_t	rstplib/stp_bpdu.h	/^typedef struct mac_header_t {$/;"	s
+mac_header_t::dst_mac	rstplib/stp_bpdu.h	/^  unsigned char dst_mac[6];$/;"	m	struct:mac_header_t	access:public
+mac_header_t::src_mac	rstplib/stp_bpdu.h	/^  unsigned char src_mac[6];$/;"	m	struct:mac_header_t	access:public
+mach_index	ctl_socket.h	/^	int mach_index;$/;"	m	struct:set_port_trace_IN	access:public
+machines	rstplib/port.h	/^  STATE_MACH_T*     machines; \/* list of machines *\/$/;"	m	struct:port_t	access:public
+machines	rstplib/stpm.h	/^  STATE_MACH_T*         machines;$/;"	m	struct:stpm_t	access:public
+main	ctl_main.c	/^int main(int argc, char** argv)$/;"	f	signature:(int argc, char** argv)
+main	rstpd.c	/^int main(int argc, char** argv)$/;"	f	signature:(int argc, char** argv)
+main	rstplib/bridge.c	/^int main (int argc, char** argv)$/;"	f	signature:(int argc, char** argv)
+main	rstplib/mngr.c	/^int main (int argc, char** argv)$/;"	f	signature:(int argc, char** argv)
+main_loop	rstplib/bridge.c	/^int main_loop (void)$/;"	f	signature:(void)
+main_loop	rstplib/mngr.c	/^int main_loop (void)$/;"	f	signature:(void)
+main_sock	rstplib/mngr.c	/^UID_SOCKET_T    main_sock;$/;"	v
+max	rstplib/cli.h	/^  unsigned long max;$/;"	m	struct:cmd_par_number_limits_s	access:public
+max_age	rstpd.h	/^	int             max_age;$/;"	m	struct:__anon23	access:public
+max_age	rstplib/stp_bpdu.h	/^  unsigned char max_age[2];         \/\/ 消息最大年龄，统一由根节点配置$/;"	m	struct:bpdu_body_t	access:public
+max_age	rstplib/uid_stp.h	/^  int               max_age;$/;"	m	struct:__anon17	access:public
+max_age	rstplib/uid_stp.h	/^  int           max_age;$/;"	m	struct:__anon16	access:public
+max_port	rstplib/stp_in.c	/^int max_port = 1024;$/;"	v
+mcheck	rstplib/port.h	/^  Bool              mcheck;        \/* 17.18.10 *\/$/;"	m	struct:port_t	access:public
+mdelayWhile	rstplib/port.h	/^  PORT_TIMER_T      mdelayWhile;  \/* 17.15.3 *\/$/;"	m	struct:port_t	access:public
+mdelayWhile	rstplib/uid_stp.h	/^  int               mdelayWhile;  \/* 17.15.3 *\/$/;"	m	struct:__anon21	access:public
+message_age	rstplib/stp_bpdu.h	/^  unsigned char message_age[2];     \/\/ 消息年龄，每经过一个网桥+1，message_age大于max_age时消息被丢弃，所以网络上的网桥数量受到限制$/;"	m	struct:bpdu_body_t	access:public
+migrate	rstplib/port.h	/^  STATE_MACH_T*     migrate;   \/* 17.26 *\/$/;"	m	struct:port_t	access:public
+min	rstplib/cli.h	/^  unsigned long min;$/;"	m	struct:cmd_par_number_limits_s	access:public
+mngr_control	rstplib/mngr.c	/^int mngr_control (UID_MSG_T* msg, UID_SOCKET_T* sock_4_reply)$/;"	f	signature:(UID_MSG_T* msg, UID_SOCKET_T* sock_4_reply)
+mngr_rx_bpdu	rstplib/mngr.c	/^int mngr_rx_bpdu (UID_MSG_T* msg, size_t msgsize)$/;"	f	signature:(UID_MSG_T* msg, size_t msgsize)
+mngr_shutdown	rstplib/mngr.c	/^void mngr_shutdown (void)$/;"	f	signature:(void)
+mngr_start	rstplib/mngr.c	/^void mngr_start (void)$/;"	f	signature:(void)
+msgBpduType	rstplib/port.h	/^  unsigned char     msgBpduType;    \/\/ bpdu报文类型$/;"	m	struct:port_t	access:public
+msgBpduVersion	rstplib/port.h	/^  unsigned char     msgBpduVersion; \/\/ bpdu版本$/;"	m	struct:port_t	access:public
+msgFlags	rstplib/port.h	/^  unsigned char     msgFlags;       \/\/ bpdu携带的标记，用于记录拓扑标志$/;"	m	struct:port_t	access:public
+msgPortRole	rstplib/port.h	/^  unsigned char     msgPortRole;    \/\/ 端口角色$/;"	m	struct:port_t	access:public
+msgPrio	rstplib/port.h	/^  PRIO_VECTOR_T     msgPrio;       \/* 17.18.11 *\/   \/\/ 消息优先级向量$/;"	m	struct:port_t	access:public
+msgTimes	rstplib/port.h	/^  TIMEVALUES_T      msgTimes;      \/* 17.18.12 *\/   \/\/ 时间控制块$/;"	m	struct:port_t	access:public
+msg_buf_len	ctl_socket.c	15;"	d	file:
+msg_inbuf	ctl_socket.c	/^unsigned char msg_inbuf[1024];$/;"	v
+msg_outbuf	ctl_socket.c	/^unsigned char msg_outbuf[1024];$/;"	v
+my_pid	rstplib/bridge.c	/^long        my_pid = 0;$/;"	v
+name	ctl_main.c	/^	const char *name;   \/\/ 命令名$/;"	m	struct:command	file:	access:public
+name	rstplib/statmch.h	/^  char*         name; \/* for debugging *\/   \/\/ 状态机名$/;"	m	struct:state_mach_t	access:public
+name	rstplib/stpm.h	/^  char*                 name;           \/* name of the VLAN, maily for debugging *\/$/;"	m	struct:stpm_t	access:public
+nargs	ctl_main.c	/^	int nargs;          \/\/ 入参数量$/;"	m	struct:command	file:	access:public
+netsock	utils.c	/^int netsock = -1;   \/\/ 用于ioctl$/;"	v
+netsock_init	utils.c	/^int netsock_init(void)$/;"	f	signature:(void)
+netsock_init	utils.h	/^int netsock_init(void);$/;"	p	signature:(void)
+nev	rstplib/stp_in.c	/^int			 nev = 0;$/;"	v
+newInfo	rstplib/port.h	/^  Bool              newInfo;       \/* 17.18.13 *\/$/;"	m	struct:port_t	access:public
+newTcWhile	rstplib/topoch.c	/^newTcWhile (STATE_MACH_T* this) \/* 17.19.7 *\/$/;"	f	file:	signature:(STATE_MACH_T* this)
+next	rstplib/mngr.c	/^  struct bridge_s* next;$/;"	m	struct:bridge_s	typeref:struct:bridge_s::bridge_s	file:	access:public
+next	rstplib/port.h	/^  struct port_t*     next;$/;"	m	struct:port_t	typeref:struct:port_t::port_t	access:public
+next	rstplib/statmch.h	/^  struct state_mach_t* next;    \/\/ 指向下一个状态机控制块$/;"	m	struct:state_mach_t	typeref:struct:state_mach_t::state_mach_t	access:public
+next	rstplib/stpm.h	/^  struct stpm_t*        next;$/;"	m	struct:stpm_t	typeref:struct:stpm_t::stpm_t	access:public
+nexttimeout	epoll_loop.c	/^struct timeval nexttimeout;$/;"	v	typeref:struct:timeval
+ntohl	rstplib/base.h	124;"	d
+ntohs	rstplib/base.h	125;"	d
+number_limits	rstplib/cli.h	/^  CMD_PAR_LIMITS	number_limits;$/;"	m	struct:cmd_par_dscr_s	access:public
+number_of_ports	rstplib/mngr.c	/^  long      number_of_ports;$/;"	m	struct:bridge_s	file:	access:public
+operEdge	rstplib/port.h	/^  Bool              operEdge;      \/* 17.18.14 *\/$/;"	m	struct:port_t	access:public
+operPCost	rstplib/port.h	/^  unsigned long     operPCost;$/;"	m	struct:port_t	access:public
+operPointToPointMac	rstplib/port.h	/^  Bool              operPointToPointMac;$/;"	m	struct:port_t	access:public
+operSpeed	rstplib/port.h	/^  unsigned long     operSpeed;$/;"	m	struct:port_t	access:public
+oper_edge	rstplib/uid_stp.h	/^  unsigned char     oper_edge;$/;"	m	struct:__anon21	access:public
+oper_point2point	rstplib/uid_stp.h	/^  unsigned char     oper_point2point;$/;"	m	struct:__anon21	access:public
+oper_port_path_cost	rstplib/uid_stp.h	/^  unsigned long     oper_port_path_cost;$/;"	m	struct:__anon21	access:public
+oper_stp_neigb	rstplib/uid_stp.h	/^  unsigned char     oper_stp_neigb;$/;"	m	struct:__anon21	access:public
+optargs	ctl_main.c	/^	int optargs;        $/;"	m	struct:command	file:	access:public
+owner	rstplib/port.h	/^  struct stpm_t*    owner; \/* Bridge, that this port belongs to *\/$/;"	m	struct:port_t	typeref:struct:port_t::stpm_t	access:public
+owner	rstplib/statmch.h	/^    void         * owner;   \/\/ 指向本状态机的创建者，可能是某端口，也可能是某网桥$/;"	m	union:state_mach_t::__anon12	access:public
+owner	rstplib/statmch.h	/^  } owner;              \/\/ 状态机属主$/;"	m	struct:state_mach_t	typeref:union:state_mach_t::__anon12	access:public
+p2p	rstplib/port.h	/^  STATE_MACH_T*     p2p;       \/* 6.4.3, 6.5.1 *\/$/;"	m	struct:port_t	access:public
+p2p_recompute	rstplib/port.h	/^  Bool              p2p_recompute;$/;"	m	struct:port_t	access:public
+pRstp	rstp_if.c	/^rstp_t *pRstp = NULL;$/;"	v
+packet_filter	packet.c	/^static struct sock_filter packet_filter[] = {$/;"	v	typeref:struct:sock_filter	file:
+param	rstplib/cli.h	/^  CMD_PAR_DSCR_T	param[MAXPARAMNUM];$/;"	m	struct:cmd_dscr_s	access:public
+param1	rstplib/uid.h	/^  unsigned long  param1;  $/;"	m	struct:uid_port_control_s	access:public
+param2	rstplib/uid.h	/^  unsigned long  param2;  $/;"	m	struct:uid_port_control_s	access:public
+param_help	rstplib/cli.h	/^  char*			param_help;$/;"	m	struct:cmd_par_dscr_s	access:public
+param_type	rstplib/cli.h	/^  CMD_PARAM_TYPE_T	param_type;$/;"	m	struct:cmd_par_dscr_s	access:public
+parse_rtattr	libnetlink.c	/^int parse_rtattr(struct rtattr *tb[], int max, struct rtattr *rta, int len)$/;"	f	signature:(struct rtattr *tb[], int max, struct rtattr *rta, int len)
+parse_rtattr	libnetlink.h	/^extern int parse_rtattr(struct rtattr *tb[], int max, struct rtattr *rta, int len);$/;"	p	signature:(struct rtattr *tb[], int max, struct rtattr *rta, int len)
+parse_rtattr_byindex	libnetlink.c	/^int parse_rtattr_byindex(struct rtattr *tb[], int max, struct rtattr *rta,$/;"	f	signature:(struct rtattr *tb[], int max, struct rtattr *rta, int len)
+parse_rtattr_byindex	libnetlink.h	/^extern int parse_rtattr_byindex(struct rtattr *tb[], int max, struct rtattr *rta, int len);$/;"	p	signature:(struct rtattr *tb[], int max, struct rtattr *rta, int len)
+parse_rtattr_nested	libnetlink.h	45;"	d
+part0	rstplib/bitmap.h	/^  unsigned long part0;     \/* Least Significant part *\/$/;"	m	struct:tagBITMAP	access:public
+path_cost	rstplib/uid_stp.h	/^  unsigned long     path_cost;$/;"	m	struct:__anon21	access:public
+pcost	rstplib/port.h	/^  STATE_MACH_T*     pcost;     \/*  *\/$/;"	m	struct:port_t	access:public
+pdu_pkt_rcv	packet.c	/^static void pdu_pkt_rcv(uint32_t events, struct epoll_event_handler *h)$/;"	f	file:	signature:(uint32_t events, struct epoll_event_handler *h)
+pdu_pkt_send	packet.c	/^void pdu_pkt_send(int ifindex, const unsigned char *data, int len)$/;"	f	signature:(int ifindex, const unsigned char *data, int len)
+pdu_pkt_send	packet.h	/^void pdu_pkt_send(int ifindex, const unsigned char *data, int len);$/;"	p	signature:(int ifindex, const unsigned char *data, int len)
+pdu_sock_init	packet.c	/^int pdu_sock_init(void)$/;"	f	signature:(void)
+pdu_sock_init	packet.h	/^int pdu_sock_init(void);$/;"	p	signature:(void)
+peer	libnetlink.h	/^	struct sockaddr_nl	peer;$/;"	m	struct:rtnl_handle	typeref:struct:rtnl_handle::sockaddr_nl	access:public
+pid	rstplib/mngr.c	/^  long      pid;$/;"	m	struct:bridge_s	file:	access:public
+port	rstpd.h	/^	PORT_T*         port;$/;"	m	struct:__anon24	access:public
+port	rstplib/mngr.c	/^  int port;$/;"	m	struct:port_s	file:	access:public
+port	rstplib/statmch.h	/^    struct port_t* port;    \/\/ 指向本状态机所属端口控制块$/;"	m	union:state_mach_t::__anon12	typeref:struct:state_mach_t::__anon12::port_t	access:public
+portCount	rstpd.h	/^	int             portCount;          \/\/ 桥的端口数量$/;"	m	struct:__anon23	access:public
+portEnable	rstpd.h	/^	unsigned char   portEnable;         \/\/ 端口使能\/禁止$/;"	m	struct:__anon24	access:public
+portEnabled	rstplib/port.h	/^  Bool              portEnabled;   \/* 17.18.15 *\/$/;"	m	struct:port_t	access:public
+portList	rstpd.h	/^	int            *portList;$/;"	m	struct:__anon23	access:public
+portPrio	rstplib/port.h	/^  PRIO_VECTOR_T     portPrio;      \/* 17.18.17 *\/   \/\/ 端口优先级向量    $/;"	m	struct:port_t	access:public
+portTimes	rstplib/port.h	/^  TIMEVALUES_T      portTimes;     \/* 17.18.18 *\/$/;"	m	struct:port_t	access:public
+port_bmp	rstplib/uid_stp.h	/^  BITMAP_T      port_bmp;   $/;"	m	struct:__anon20	access:public
+port_id	rstplib/port.h	/^  PORT_ID           port_id;       \/* 17.18.16 *\/   \/\/ 端口ID$/;"	m	struct:port_t	access:public
+port_id	rstplib/stp_bpdu.h	/^  unsigned char port_id[2];         \/\/ 端口ID，由优先级和端口编号组成$/;"	m	struct:bpdu_body_t	access:public
+port_id	rstplib/uid_stp.h	/^  UID_PORT_ID       port_id;$/;"	m	struct:__anon21	access:public
+port_index	ctl_socket.h	/^	int port_index;$/;"	m	struct:get_port_state_IN	access:public
+port_index	ctl_socket.h	/^	int port_index;$/;"	m	struct:set_port_config_IN	access:public
+port_index	rstplib/port.h	/^  int               port_index;$/;"	m	struct:port_t	access:public
+port_name	rstplib/port.h	/^  char*             port_name;$/;"	m	struct:port_t	access:public
+port_no	rstplib/uid_stp.h	/^  unsigned int      port_no; \/* key of the entry *\/$/;"	m	struct:__anon21	access:public
+port_partner	rstplib/mngr.c	/^  int             port_partner;$/;"	m	struct:port_s	file:	access:public
+port_priority	rstpd.h	/^	int             port_priority;          \/\/ 端口优先级$/;"	m	struct:__anon24	access:public
+port_priority	rstplib/uid_stp.h	/^  int           port_priority;$/;"	m	struct:__anon20	access:public
+port_s	rstplib/mngr.c	/^typedef struct port_s {$/;"	s	file:
+port_s::bridge_partner	rstplib/mngr.c	/^  struct bridge_s *bridge_partner;$/;"	m	struct:port_s	typeref:struct:port_s::bridge_s	file:	access:public
+port_s::port	rstplib/mngr.c	/^  int port;$/;"	m	struct:port_s	file:	access:public
+port_s::port_partner	rstplib/mngr.c	/^  int             port_partner;$/;"	m	struct:port_s	file:	access:public
+port_t	rstplib/port.h	/^typedef struct port_t {$/;"	s
+port_t::LinkDelay	rstplib/port.h	/^  int               LinkDelay;   \/* TBD: LinkDelay may be managed ? *\/$/;"	m	struct:port_t	access:public
+port_t::adminEdge	rstplib/port.h	/^  Bool              adminEdge;     \/* 17.18.14 *\/$/;"	m	struct:port_t	access:public
+port_t::adminEnable	rstplib/port.h	/^  Bool              adminEnable; \/* 'has LINK' *\/$/;"	m	struct:port_t	access:public
+port_t::adminPCost	rstplib/port.h	/^  unsigned long     adminPCost; \/* may be ADMIN_PORT_PATH_COST_AUTO *\/$/;"	m	struct:port_t	access:public
+port_t::adminPointToPointMac	rstplib/port.h	/^  ADMIN_P2P_T       adminPointToPointMac;$/;"	m	struct:port_t	access:public
+port_t::admin_non_stp	rstplib/port.h	/^  Bool              admin_non_stp;  \/\/ 生成树使能\/禁止标记$/;"	m	struct:port_t	access:public
+port_t::agreed	rstplib/port.h	/^  Bool              agreed;        \/* 17.18.1 *\/$/;"	m	struct:port_t	access:public
+port_t::designPrio	rstplib/port.h	/^  PRIO_VECTOR_T     designPrio;    \/* 17.18.2 *\/$/;"	m	struct:port_t	access:public
+port_t::designTimes	rstplib/port.h	/^  TIMEVALUES_T      designTimes;   \/* 17.18.3 *\/$/;"	m	struct:port_t	access:public
+port_t::edge	rstplib/port.h	/^  STATE_MACH_T*     edge;      \/*  *\/$/;"	m	struct:port_t	access:public
+port_t::fdWhile	rstplib/port.h	/^  PORT_TIMER_T      fdWhile;      \/* 17.15.1 *\/$/;"	m	struct:port_t	access:public
+port_t::forward	rstplib/port.h	/^  Bool              forward;       \/* 17.18.4 *\/$/;"	m	struct:port_t	access:public
+port_t::forwarding	rstplib/port.h	/^  Bool              forwarding;    \/* 17.18.5 *\/$/;"	m	struct:port_t	access:public
+port_t::helloWhen	rstplib/port.h	/^  PORT_TIMER_T      helloWhen;    \/* 17.15.2 *\/$/;"	m	struct:port_t	access:public
+port_t::info	rstplib/port.h	/^  STATE_MACH_T*     info;      \/* 17.21 *\/$/;"	m	struct:port_t	access:public
+port_t::infoIs	rstplib/port.h	/^  INFO_IS_T         infoIs;        \/* 17.18.6 *\/$/;"	m	struct:port_t	access:public
+port_t::initPm	rstplib/port.h	/^  Bool              initPm;        \/* 17.18.7  *\/$/;"	m	struct:port_t	access:public
+port_t::learn	rstplib/port.h	/^  Bool              learn;         \/* 17.18.8 *\/$/;"	m	struct:port_t	access:public
+port_t::learning	rstplib/port.h	/^  Bool              learning;      \/* 17.18.9 *\/$/;"	m	struct:port_t	access:public
+port_t::lnkWhile	rstplib/port.h	/^  PORT_TIMER_T      lnkWhile;$/;"	m	struct:port_t	access:public
+port_t::machines	rstplib/port.h	/^  STATE_MACH_T*     machines; \/* list of machines *\/$/;"	m	struct:port_t	access:public
+port_t::mcheck	rstplib/port.h	/^  Bool              mcheck;        \/* 17.18.10 *\/$/;"	m	struct:port_t	access:public
+port_t::mdelayWhile	rstplib/port.h	/^  PORT_TIMER_T      mdelayWhile;  \/* 17.15.3 *\/$/;"	m	struct:port_t	access:public
+port_t::migrate	rstplib/port.h	/^  STATE_MACH_T*     migrate;   \/* 17.26 *\/$/;"	m	struct:port_t	access:public
+port_t::msgBpduType	rstplib/port.h	/^  unsigned char     msgBpduType;    \/\/ bpdu报文类型$/;"	m	struct:port_t	access:public
+port_t::msgBpduVersion	rstplib/port.h	/^  unsigned char     msgBpduVersion; \/\/ bpdu版本$/;"	m	struct:port_t	access:public
+port_t::msgFlags	rstplib/port.h	/^  unsigned char     msgFlags;       \/\/ bpdu携带的标记，用于记录拓扑标志$/;"	m	struct:port_t	access:public
+port_t::msgPortRole	rstplib/port.h	/^  unsigned char     msgPortRole;    \/\/ 端口角色$/;"	m	struct:port_t	access:public
+port_t::msgPrio	rstplib/port.h	/^  PRIO_VECTOR_T     msgPrio;       \/* 17.18.11 *\/   \/\/ 消息优先级向量$/;"	m	struct:port_t	access:public
+port_t::msgTimes	rstplib/port.h	/^  TIMEVALUES_T      msgTimes;      \/* 17.18.12 *\/   \/\/ 时间控制块$/;"	m	struct:port_t	access:public
+port_t::newInfo	rstplib/port.h	/^  Bool              newInfo;       \/* 17.18.13 *\/$/;"	m	struct:port_t	access:public
+port_t::next	rstplib/port.h	/^  struct port_t*     next;$/;"	m	struct:port_t	typeref:struct:port_t::port_t	access:public
+port_t::operEdge	rstplib/port.h	/^  Bool              operEdge;      \/* 17.18.14 *\/$/;"	m	struct:port_t	access:public
+port_t::operPCost	rstplib/port.h	/^  unsigned long     operPCost;$/;"	m	struct:port_t	access:public
+port_t::operPointToPointMac	rstplib/port.h	/^  Bool              operPointToPointMac;$/;"	m	struct:port_t	access:public
+port_t::operSpeed	rstplib/port.h	/^  unsigned long     operSpeed;$/;"	m	struct:port_t	access:public
+port_t::owner	rstplib/port.h	/^  struct stpm_t*    owner; \/* Bridge, that this port belongs to *\/$/;"	m	struct:port_t	typeref:struct:port_t::stpm_t	access:public
+port_t::p2p	rstplib/port.h	/^  STATE_MACH_T*     p2p;       \/* 6.4.3, 6.5.1 *\/$/;"	m	struct:port_t	access:public
+port_t::p2p_recompute	rstplib/port.h	/^  Bool              p2p_recompute;$/;"	m	struct:port_t	access:public
+port_t::pcost	rstplib/port.h	/^  STATE_MACH_T*     pcost;     \/*  *\/$/;"	m	struct:port_t	access:public
+port_t::portEnabled	rstplib/port.h	/^  Bool              portEnabled;   \/* 17.18.15 *\/$/;"	m	struct:port_t	access:public
+port_t::portPrio	rstplib/port.h	/^  PRIO_VECTOR_T     portPrio;      \/* 17.18.17 *\/   \/\/ 端口优先级向量    $/;"	m	struct:port_t	access:public
+port_t::portTimes	rstplib/port.h	/^  TIMEVALUES_T      portTimes;     \/* 17.18.18 *\/$/;"	m	struct:port_t	access:public
+port_t::port_id	rstplib/port.h	/^  PORT_ID           port_id;       \/* 17.18.16 *\/   \/\/ 端口ID$/;"	m	struct:port_t	access:public
+port_t::port_index	rstplib/port.h	/^  int               port_index;$/;"	m	struct:port_t	access:public
+port_t::port_name	rstplib/port.h	/^  char*             port_name;$/;"	m	struct:port_t	access:public
+port_t::proposed	rstplib/port.h	/^  Bool              proposed;      \/* 17.18.19 *\/$/;"	m	struct:port_t	access:public
+port_t::proposing	rstplib/port.h	/^  Bool              proposing;     \/* 17.18.20 *\/$/;"	m	struct:port_t	access:public
+port_t::rbWhile	rstplib/port.h	/^  PORT_TIMER_T      rbWhile;      \/* 17.15.4 *\/$/;"	m	struct:port_t	access:public
+port_t::rcvdBpdu	rstplib/port.h	/^  Bool              rcvdBpdu;      \/* 17.18.21 *\/   \/\/ 标记是否收到bpdu报文$/;"	m	struct:port_t	access:public
+port_t::rcvdInfoWhile	rstplib/port.h	/^  PORT_TIMER_T      rcvdInfoWhile;\/* 17.15.5 *\/ \/\/ bpdu报文的剩余生存时间,用于避免旧config bpdu报文在冗余链路上无休止传播$/;"	m	struct:port_t	access:public
+port_t::rcvdMsg	rstplib/port.h	/^  RCVD_MSG_T        rcvdMsg;       \/* 17.18.22 *\/   $/;"	m	struct:port_t	access:public
+port_t::rcvdRSTP	rstplib/port.h	/^  Bool              rcvdRSTP;      \/* 17\/18.23 *\/   \/\/ 标记是否收到rstp bpdu$/;"	m	struct:port_t	access:public
+port_t::rcvdSTP	rstplib/port.h	/^  Bool              rcvdSTP;       \/* 17.18.24 *\/   \/\/ 标记是否收到stp bpdu$/;"	m	struct:port_t	access:public
+port_t::rcvdTc	rstplib/port.h	/^  Bool              rcvdTc;        \/* 17.18.25 *\/   \/\/ 标记拓扑变化$/;"	m	struct:port_t	access:public
+port_t::rcvdTcAck	rstplib/port.h	/^  Bool              rcvdTcAck;     \/* 17.18.26 *\/   \/\/ 标记拓扑变化ack$/;"	m	struct:port_t	access:public
+port_t::rcvdTcn	rstplib/port.h	/^  Bool              rcvdTcn;       \/* 17.18.27 *\/   \/\/ 标记是否收到TCN（拓扑变化通知）bpdu$/;"	m	struct:port_t	access:public
+port_t::reRoot	rstplib/port.h	/^  Bool              reRoot;        \/* 17.18.28 *\/$/;"	m	struct:port_t	access:public
+port_t::reselect	rstplib/port.h	/^  Bool              reselect;      \/* 17.18.29 *\/$/;"	m	struct:port_t	access:public
+port_t::role	rstplib/port.h	/^  PORT_ROLE_T       role;          \/* 17.18.30 *\/$/;"	m	struct:port_t	access:public
+port_t::roletrns	rstplib/port.h	/^  STATE_MACH_T*     roletrns;  \/* 17.23 *\/$/;"	m	struct:port_t	access:public
+port_t::rrWhile	rstplib/port.h	/^  PORT_TIMER_T      rrWhile;      \/* 17.15.6 *\/$/;"	m	struct:port_t	access:public
+port_t::rx_cfg_bpdu_cnt	rstplib/port.h	/^  unsigned long     rx_cfg_bpdu_cnt;    \/\/ 记录config bpdu数量$/;"	m	struct:port_t	access:public
+port_t::rx_rstp_bpdu_cnt	rstplib/port.h	/^  unsigned long     rx_rstp_bpdu_cnt;   \/\/ 记录rstp bpdu数量$/;"	m	struct:port_t	access:public
+port_t::rx_tcn_bpdu_cnt	rstplib/port.h	/^  unsigned long     rx_tcn_bpdu_cnt;    \/\/ 记录CNT bpdu数量$/;"	m	struct:port_t	access:public
+port_t::selected	rstplib/port.h	/^  Bool              selected;      \/* 17.18.31 *\/$/;"	m	struct:port_t	access:public
+port_t::selectedRole	rstplib/port.h	/^  PORT_ROLE_T       selectedRole;  \/* 17.18.32 *\/$/;"	m	struct:port_t	access:public
+port_t::sendRSTP	rstplib/port.h	/^  Bool              sendRSTP;      \/* 17.18.33 *\/$/;"	m	struct:port_t	access:public
+port_t::skip_rx	rstplib/port.h	/^  unsigned int	    skip_rx;$/;"	m	struct:port_t	access:public
+port_t::skip_tx	rstplib/port.h	/^  unsigned int	    skip_tx;$/;"	m	struct:port_t	access:public
+port_t::sttrans	rstplib/port.h	/^  STATE_MACH_T*     sttrans;   \/* 17.24 *\/$/;"	m	struct:port_t	access:public
+port_t::sync	rstplib/port.h	/^  Bool              sync;          \/* 17.18.34 *\/$/;"	m	struct:port_t	access:public
+port_t::synced	rstplib/port.h	/^  Bool              synced;        \/* 17.18.35 *\/$/;"	m	struct:port_t	access:public
+port_t::tc	rstplib/port.h	/^  Bool              tc;            \/* 17.18.36 *\/$/;"	m	struct:port_t	access:public
+port_t::tcAck	rstplib/port.h	/^  Bool              tcAck;         \/* 17.18.37 *\/$/;"	m	struct:port_t	access:public
+port_t::tcProp	rstplib/port.h	/^  Bool              tcProp;        \/* 17.18.38 *\/$/;"	m	struct:port_t	access:public
+port_t::tcWhile	rstplib/port.h	/^  PORT_TIMER_T      tcWhile;      \/* 17.15.7 *\/$/;"	m	struct:port_t	access:public
+port_t::timers	rstplib/port.h	/^  PORT_TIMER_T*     timers[TIMERS_NUMBER]; \/*list of timers *\/$/;"	m	struct:port_t	access:public
+port_t::topoch	rstplib/port.h	/^  STATE_MACH_T*     topoch;    \/* 17.25 *\/$/;"	m	struct:port_t	access:public
+port_t::transmit	rstplib/port.h	/^  STATE_MACH_T*     transmit;  \/* 17.26 *\/$/;"	m	struct:port_t	access:public
+port_t::txCount	rstplib/port.h	/^  PORT_TIMER_T      txCount;      \/* 17.18.40 *\/$/;"	m	struct:port_t	access:public
+port_t::updtInfo	rstplib/port.h	/^  Bool              updtInfo;      \/* 17.18.41 *\/$/;"	m	struct:port_t	access:public
+port_t::uptime	rstplib/port.h	/^  unsigned long     uptime;       \/* 14.8.2.1.3.a *\/$/;"	m	struct:port_t	access:public
+port_t::usedSpeed	rstplib/port.h	/^  unsigned long     usedSpeed;$/;"	m	struct:port_t	access:public
+port_t::wasInitBpdu	rstplib/port.h	/^  Bool              wasInitBpdu;  $/;"	m	struct:port_t	access:public
+portmap	ctl_socket.h	/^	BITMAP_T portmap;$/;"	m	struct:set_port_trace_IN	access:public
+ports	rstpd.h	/^	stpPort_t      *ports;      \/\/ stp端口控制块$/;"	m	struct:__anon25	access:public
+ports	rstplib/mngr.c	/^  PORT_T*   ports;$/;"	m	struct:bridge_s	file:	access:public
+ports	rstplib/stpm.h	/^  struct port_t*        ports;$/;"	m	struct:stpm_t	typeref:struct:stpm_t::port_t	access:public
+print_bridge_id	ctl_main.c	/^static void print_bridge_id(UID_BRIDGE_ID_T * bridge_id, unsigned char cr)$/;"	f	file:	signature:(UID_BRIDGE_ID_T * bridge_id, unsigned char cr)
+print_bridge_id	rstplib/stp_cli.c	/^print_bridge_id (UID_BRIDGE_ID_T *bridge_id, unsigned char cr)$/;"	f	file:	signature:(UID_BRIDGE_ID_T *bridge_id, unsigned char cr)
+prio	rstplib/uid_stp.h	/^  unsigned short  prio;$/;"	m	struct:__anon14	access:public
+prio	rstplib/vector.h	/^  unsigned short    prio;       \/\/ 桥优先级$/;"	m	struct:bridge_id	access:public
+prio_vector_t	rstplib/vector.h	/^typedef struct prio_vector_t {$/;"	s
+prio_vector_t::bridge_port	rstplib/vector.h	/^  PORT_ID   bridge_port;$/;"	m	struct:prio_vector_t	access:public
+prio_vector_t::design_bridge	rstplib/vector.h	/^  BRIDGE_ID design_bridge;      \/\/ 指定桥ID$/;"	m	struct:prio_vector_t	access:public
+prio_vector_t::design_port	rstplib/vector.h	/^  PORT_ID   design_port;        \/\/ 指定端口$/;"	m	struct:prio_vector_t	access:public
+prio_vector_t::root_bridge	rstplib/vector.h	/^  BRIDGE_ID root_bridge;        \/\/ 根桥ID$/;"	m	struct:prio_vector_t	access:public
+prio_vector_t::root_path_cost	rstplib/vector.h	/^  unsigned long root_path_cost; \/\/ 路径成本$/;"	m	struct:prio_vector_t	access:public
+proposed	rstplib/port.h	/^  Bool              proposed;      \/* 17.18.19 *\/$/;"	m	struct:port_t	access:public
+proposing	rstplib/port.h	/^  Bool              proposing;     \/* 17.18.20 *\/$/;"	m	struct:port_t	access:public
+protocol	rstplib/stp_bpdu.h	/^  unsigned char protocol[2];    \/\/ 固定值0x0000$/;"	m	struct:bpdu_header_t	access:public
+rbWhile	rstplib/port.h	/^  PORT_TIMER_T      rbWhile;      \/* 17.15.4 *\/$/;"	m	struct:port_t	access:public
+rbWhile	rstplib/uid_stp.h	/^  int               rbWhile;      \/* 17.15.4 *\/$/;"	m	struct:__anon21	access:public
+rcvBpdu	rstplib/portinfo.c	/^static RCVD_MSG_T rcvBpdu (STATE_MACH_T* this)$/;"	f	file:	signature:(STATE_MACH_T* this)
+rcvdBpdu	rstplib/port.h	/^  Bool              rcvdBpdu;      \/* 17.18.21 *\/   \/\/ 标记是否收到bpdu报文$/;"	m	struct:port_t	access:public
+rcvdInfoWhile	rstplib/port.h	/^  PORT_TIMER_T      rcvdInfoWhile;\/* 17.15.5 *\/ \/\/ bpdu报文的剩余生存时间,用于避免旧config bpdu报文在冗余链路上无休止传播$/;"	m	struct:port_t	access:public
+rcvdInfoWhile	rstplib/uid_stp.h	/^  int               rcvdInfoWhile;\/* 17.15.5 *\/$/;"	m	struct:__anon21	access:public
+rcvdMsg	rstplib/port.h	/^  RCVD_MSG_T        rcvdMsg;       \/* 17.18.22 *\/   $/;"	m	struct:port_t	access:public
+rcvdRSTP	rstplib/port.h	/^  Bool              rcvdRSTP;      \/* 17\/18.23 *\/   \/\/ 标记是否收到rstp bpdu$/;"	m	struct:port_t	access:public
+rcvdSTP	rstplib/port.h	/^  Bool              rcvdSTP;       \/* 17.18.24 *\/   \/\/ 标记是否收到stp bpdu$/;"	m	struct:port_t	access:public
+rcvdTc	rstplib/port.h	/^  Bool              rcvdTc;        \/* 17.18.25 *\/   \/\/ 标记拓扑变化$/;"	m	struct:port_t	access:public
+rcvdTcAck	rstplib/port.h	/^  Bool              rcvdTcAck;     \/* 17.18.26 *\/   \/\/ 标记拓扑变化ack$/;"	m	struct:port_t	access:public
+rcvdTcn	rstplib/port.h	/^  Bool              rcvdTcn;       \/* 17.18.27 *\/   \/\/ 标记是否收到TCN（拓扑变化通知）bpdu$/;"	m	struct:port_t	access:public
+reRoot	rstplib/port.h	/^  Bool              reRoot;        \/* 17.18.28 *\/$/;"	m	struct:port_t	access:public
+read_cli	rstplib/cli.c	/^char read_cli (void)$/;"	f	signature:(void)
+read_uid	rstplib/bridge.c	/^char read_uid (UID_SOCKET_T* uid_sock)$/;"	f	signature:(UID_SOCKET_T* uid_sock)
+read_uid	rstplib/mngr.c	/^char read_uid (void)$/;"	f	signature:(void)
+recordProposed	rstplib/portinfo.c	/^static Bool recordProposed (STATE_MACH_T* this, char* reason)$/;"	f	file:	signature:(STATE_MACH_T* this, char* reason)
+ref_ev	epoll_loop.h	/^	struct epoll_event *ref_ev;$/;"	m	struct:epoll_event_handler	typeref:struct:epoll_event_handler::epoll_event	access:public
+register_bridge	rstplib/mngr.c	/^int register_bridge (UID_MSG_T* msg, UID_SOCKET_T* socket_4_reply)$/;"	f	signature:(UID_MSG_T* msg, UID_SOCKET_T* socket_4_reply)
+remove_epoll	epoll_loop.c	/^int remove_epoll(struct epoll_event_handler *h)$/;"	f	signature:(struct epoll_event_handler *h)
+remove_epoll	epoll_loop.h	/^int remove_epoll(struct epoll_event_handler *h);$/;"	p	signature:(struct epoll_event_handler *h)
+res	ctl_socket.h	/^	int res;$/;"	m	struct:ctl_msg_hdr	access:public
+reselect	rstplib/port.h	/^  Bool              reselect;      \/* 17.18.29 *\/$/;"	m	struct:port_t	access:public
+rl_init	rstplib/cli.c	/^void rl_init ()$/;"	f
+rl_init	rstplib/cli.h	/^void rl_init (void);$/;"	p	signature:(void)
+rl_read_cli	rstplib/cli.c	/^void rl_read_cli (void)$/;"	f	signature:(void)
+rl_read_cli	rstplib/cli.h	/^void rl_read_cli (char *);$/;"	p	signature:(char *)
+rl_read_cli	rstplib/cli.h	/^void rl_read_cli (void);$/;"	p	signature:(void)
+rl_shutdown	rstplib/cli.c	/^void rl_shutdown ()$/;"	f
+rl_shutdown	rstplib/cli.h	/^void rl_shutdown (void);$/;"	p	signature:(void)
+role	rstplib/port.h	/^  PORT_ROLE_T       role;          \/* 17.18.30 *\/$/;"	m	struct:port_t	access:public
+role	rstplib/uid_stp.h	/^  unsigned char     role;$/;"	m	struct:__anon21	access:public
+rolesel	rstplib/stpm.h	/^  STATE_MACH_T*         rolesel;   \/* the Port Role Selection State machione: 17.22 *\/$/;"	m	struct:stpm_t	access:public
+roletrns	rstplib/port.h	/^  STATE_MACH_T*     roletrns;  \/* 17.23 *\/$/;"	m	struct:port_t	access:public
+rootPortId	rstplib/stpm.h	/^  PORT_ID               rootPortId;     \/* 17.17.5 *\/$/;"	m	struct:stpm_t	access:public
+rootPrio	rstplib/stpm.h	/^  PRIO_VECTOR_T         rootPrio;       \/* 17.17.6 *\/$/;"	m	struct:stpm_t	access:public
+rootTimes	rstplib/stpm.h	/^  TIMEVALUES_T          rootTimes;      \/* 17.17.7 *\/$/;"	m	struct:stpm_t	access:public
+root_bridge	rstplib/vector.h	/^  BRIDGE_ID root_bridge;        \/\/ 根桥ID$/;"	m	struct:prio_vector_t	access:public
+root_id	rstplib/stp_bpdu.h	/^  unsigned char root_id[8];         \/\/ 也就是桥ID，由2字节优先级和6字节mac组成$/;"	m	struct:bpdu_body_t	access:public
+root_path_cost	rstplib/stp_bpdu.h	/^  unsigned char root_path_cost[4];  \/\/ 路径成本$/;"	m	struct:bpdu_body_t	access:public
+root_path_cost	rstplib/uid_stp.h	/^  unsigned long     root_path_cost;$/;"	m	struct:__anon17	access:public
+root_path_cost	rstplib/vector.h	/^  unsigned long root_path_cost; \/\/ 路径成本$/;"	m	struct:prio_vector_t	access:public
+root_port	rstplib/uid_stp.h	/^  unsigned short    root_port;$/;"	m	struct:__anon17	access:public
+rrWhile	rstplib/port.h	/^  PORT_TIMER_T      rrWhile;      \/* 17.15.6 *\/$/;"	m	struct:port_t	access:public
+rrWhile	rstplib/uid_stp.h	/^  int               rrWhile;      \/* 17.15.6 *\/$/;"	m	struct:__anon21	access:public
+rstp_t	rstpd.h	/^} rstp_t;$/;"	t	typeref:struct:__anon25
+rta_addattr32	libnetlink.c	/^int rta_addattr32(struct rtattr *rta, int maxlen, int type, __u32 data)$/;"	f	signature:(struct rtattr *rta, int maxlen, int type, __u32 data)
+rta_addattr32	libnetlink.h	/^extern int rta_addattr32(struct rtattr *rta, int maxlen, int type, __u32 data);$/;"	p	signature:(struct rtattr *rta, int maxlen, int type, __u32 data)
+rta_addattr_l	libnetlink.c	/^int rta_addattr_l(struct rtattr *rta, int maxlen, int type,$/;"	f	signature:(struct rtattr *rta, int maxlen, int type, const void *data, int alen)
+rta_addattr_l	libnetlink.h	/^extern int rta_addattr_l(struct rtattr *rta, int maxlen, int type, const void *data, int alen);$/;"	p	signature:(struct rtattr *rta, int maxlen, int type, const void *data, int alen)
+rth	brmon.c	/^struct rtnl_handle rth;$/;"	v	typeref:struct:rtnl_handle
+rth_state	brmon.c	/^struct rtnl_handle rth_state;$/;"	v	typeref:struct:rtnl_handle
+rtnl_close	libnetlink.c	/^void rtnl_close(struct rtnl_handle *rth)$/;"	f	signature:(struct rtnl_handle *rth)
+rtnl_close	libnetlink.h	/^extern void rtnl_close(struct rtnl_handle *rth);$/;"	p	signature:(struct rtnl_handle *rth)
+rtnl_dump_filter	libnetlink.c	/^int rtnl_dump_filter(struct rtnl_handle *rth,$/;"	f	signature:(struct rtnl_handle *rth, rtnl_filter_t filter, void *arg1, rtnl_filter_t junk, void *arg2)
+rtnl_dump_filter	libnetlink.h	/^extern int rtnl_dump_filter(struct rtnl_handle *rth, rtnl_filter_t filter,$/;"	p	signature:(struct rtnl_handle *rth, rtnl_filter_t filter, void *arg1, rtnl_filter_t junk, void *arg2)
+rtnl_dump_request	libnetlink.c	/^int rtnl_dump_request(struct rtnl_handle *rth, int type, void *req, int len)$/;"	f	signature:(struct rtnl_handle *rth, int type, void *req, int len)
+rtnl_dump_request	libnetlink.h	/^extern int rtnl_dump_request(struct rtnl_handle *rth, int type, void *req, int len);$/;"	p	signature:(struct rtnl_handle *rth, int type, void *req, int len)
+rtnl_filter_t	libnetlink.h	/^typedef int (*rtnl_filter_t)(const struct sockaddr_nl *, $/;"	t
+rtnl_from_file	libnetlink.c	/^int rtnl_from_file(FILE * rtnl, rtnl_filter_t handler, void *jarg)$/;"	f	signature:(FILE * rtnl, rtnl_filter_t handler, void *jarg)
+rtnl_from_file	libnetlink.h	/^extern int rtnl_from_file(FILE *, rtnl_filter_t handler,$/;"	p	signature:(FILE *, rtnl_filter_t handler, void *jarg)
+rtnl_handle	libnetlink.h	/^struct rtnl_handle$/;"	s
+rtnl_handle::dump	libnetlink.h	/^	__u32			dump;$/;"	m	struct:rtnl_handle	access:public
+rtnl_handle::fd	libnetlink.h	/^	int			fd;$/;"	m	struct:rtnl_handle	access:public
+rtnl_handle::local	libnetlink.h	/^	struct sockaddr_nl	local;$/;"	m	struct:rtnl_handle	typeref:struct:rtnl_handle::sockaddr_nl	access:public
+rtnl_handle::peer	libnetlink.h	/^	struct sockaddr_nl	peer;$/;"	m	struct:rtnl_handle	typeref:struct:rtnl_handle::sockaddr_nl	access:public
+rtnl_handle::seq	libnetlink.h	/^	__u32			seq;$/;"	m	struct:rtnl_handle	access:public
+rtnl_listen	libnetlink.c	/^int rtnl_listen(struct rtnl_handle *rtnl, rtnl_filter_t handler, void *jarg)$/;"	f	signature:(struct rtnl_handle *rtnl, rtnl_filter_t handler, void *jarg)
+rtnl_listen	libnetlink.h	/^extern int rtnl_listen(struct rtnl_handle *, rtnl_filter_t handler, $/;"	p	signature:(struct rtnl_handle *, rtnl_filter_t handler, void *jarg)
+rtnl_open	libnetlink.c	/^int rtnl_open(struct rtnl_handle *rth, unsigned subscriptions)$/;"	f	signature:(struct rtnl_handle *rth, unsigned subscriptions)
+rtnl_open	libnetlink.h	/^extern int rtnl_open(struct rtnl_handle *rth, unsigned subscriptions);$/;"	p	signature:(struct rtnl_handle *rth, unsigned subscriptions)
+rtnl_open_byproto	libnetlink.c	/^int rtnl_open_byproto(struct rtnl_handle *rth, unsigned subscriptions,$/;"	f	signature:(struct rtnl_handle *rth, unsigned subscriptions, int protocol)
+rtnl_open_byproto	libnetlink.h	/^extern int rtnl_open_byproto(struct rtnl_handle *rth, unsigned subscriptions, int protocol);$/;"	p	signature:(struct rtnl_handle *rth, unsigned subscriptions, int protocol)
+rtnl_send	libnetlink.c	/^int rtnl_send(struct rtnl_handle *rth, const char *buf, int len)$/;"	f	signature:(struct rtnl_handle *rth, const char *buf, int len)
+rtnl_send	libnetlink.h	/^extern int rtnl_send(struct rtnl_handle *rth, const char *buf, int);$/;"	p	signature:(struct rtnl_handle *rth, const char *buf, int)
+rtnl_talk	libnetlink.c	/^int rtnl_talk(struct rtnl_handle *rtnl, struct nlmsghdr *n, pid_t peer,$/;"	f	signature:(struct rtnl_handle *rtnl, struct nlmsghdr *n, pid_t peer, unsigned groups, struct nlmsghdr *answer, rtnl_filter_t junk, void *jarg)
+rtnl_talk	libnetlink.h	/^extern int rtnl_talk(struct rtnl_handle *rtnl, struct nlmsghdr *n, pid_t peer,$/;"	p	signature:(struct rtnl_handle *rtnl, struct nlmsghdr *n, pid_t peer, unsigned groups, struct nlmsghdr *answer, rtnl_filter_t junk, void *jarg)
+rtnl_wilddump_request	libnetlink.c	/^int rtnl_wilddump_request(struct rtnl_handle *rth, int family, int type)$/;"	f	signature:(struct rtnl_handle *rth, int family, int type)
+rtnl_wilddump_request	libnetlink.h	/^extern int rtnl_wilddump_request(struct rtnl_handle *rth, int fam, int type);$/;"	p	signature:(struct rtnl_handle *rth, int fam, int type)
+run_timeouts	epoll_loop.c	/^void run_timeouts(void)$/;"	f	signature:(void)
+running	rstpd.h	/^	int             running;    \/\/ 运行状态$/;"	m	struct:__anon25	access:public
+rx_cfg_bpdu_cnt	rstplib/port.h	/^  unsigned long     rx_cfg_bpdu_cnt;    \/\/ 记录config bpdu数量$/;"	m	struct:port_t	access:public
+rx_cfg_bpdu_cnt	rstplib/uid_stp.h	/^  unsigned long     rx_cfg_bpdu_cnt;$/;"	m	struct:__anon21	access:public
+rx_rstp_bpdu_cnt	rstplib/port.h	/^  unsigned long     rx_rstp_bpdu_cnt;   \/\/ 记录rstp bpdu数量$/;"	m	struct:port_t	access:public
+rx_rstp_bpdu_cnt	rstplib/uid_stp.h	/^  unsigned long     rx_rstp_bpdu_cnt;$/;"	m	struct:__anon21	access:public
+rx_tcn_bpdu_cnt	rstplib/port.h	/^  unsigned long     rx_tcn_bpdu_cnt;    \/\/ 记录CNT bpdu数量$/;"	m	struct:port_t	access:public
+rx_tcn_bpdu_cnt	rstplib/uid_stp.h	/^  unsigned long     rx_tcn_bpdu_cnt;$/;"	m	struct:__anon21	access:public
+scan_br_name	rstplib/mngr.c	/^static long scan_br_name (char* param)$/;"	f	file:	signature:(char* param)
+selected	rstplib/port.h	/^  Bool              selected;      \/* 17.18.31 *\/$/;"	m	struct:port_t	access:public
+selectedRole	rstplib/port.h	/^  PORT_ROLE_T       selectedRole;  \/* 17.18.32 *\/$/;"	m	struct:port_t	access:public
+sendRSTP	rstplib/port.h	/^  Bool              sendRSTP;      \/* 17.18.33 *\/$/;"	m	struct:port_t	access:public
+sender_pid	rstplib/uid.h	/^  long          sender_pid;$/;"	m	struct:uid_msg_header_s	access:public
+seq	libnetlink.h	/^	__u32			seq;$/;"	m	struct:rtnl_handle	access:public
+serverAddr	rstplib/uid_sock.h	/^  struct sockaddr_un    serverAddr; \/\/ Only for socket of UID_BIND_AS_CLIENT$/;"	m	struct:__anon6	typeref:struct:__anon6::sockaddr_un	access:public
+setReRootBridge	rstplib/roletrns.c	/^setReRootBridge (STATE_MACH_T *this)$/;"	f	file:	signature:(STATE_MACH_T *this)
+setRoleSelected	rstplib/rolesel.c	/^setRoleSelected (char* reason, STPM_T* stpm, PORT_T* port,$/;"	f	file:	signature:(char* reason, STPM_T* stpm, PORT_T* port, PORT_ROLE_T newRole)
+setSelectedBridge	rstplib/rolesel.c	/^setSelectedBridge (STPM_T* this)$/;"	f	file:	signature:(STPM_T* this)
+setSyncBridge	rstplib/roletrns.c	/^setSyncBridge (STATE_MACH_T *this)$/;"	f	file:	signature:(STATE_MACH_T *this)
+setTcFlags	rstplib/portinfo.c	/^static Bool setTcFlags (STATE_MACH_T* this)$/;"	f	file:	signature:(STATE_MACH_T* this)
+setTcPropBridge	rstplib/topoch.c	/^setTcPropBridge (STATE_MACH_T* this, char* reason) \/* 17.19.14 *\/$/;"	f	file:	signature:(STATE_MACH_T* this, char* reason)
+set_bridge_cfg_value	ctl_main.c	/^static int set_bridge_cfg_value(unsigned long value, unsigned long val_mask)$/;"	f	file:	signature:(unsigned long value, unsigned long val_mask)
+set_bridge_cfg_value	rstplib/stp_cli.c	/^set_bridge_cfg_value (unsigned long value, unsigned long val_mask)$/;"	f	file:	signature:(unsigned long value, unsigned long val_mask)
+set_bridge_config_ARGS	ctl_socket.h	58;"	d
+set_bridge_config_CALL	ctl_socket.h	61;"	d
+set_bridge_config_COPY_IN	ctl_socket.h	59;"	d
+set_bridge_config_COPY_OUT	ctl_socket.h	60;"	d
+set_bridge_config_IN	ctl_socket.h	/^struct set_bridge_config_IN {$/;"	s
+set_bridge_config_IN::cfg	ctl_socket.h	/^	UID_STP_CFG_T cfg;$/;"	m	struct:set_bridge_config_IN	access:public
+set_bridge_config_OUT	ctl_socket.h	/^struct set_bridge_config_OUT {$/;"	s
+set_bridge_stp	utils.c	/^int set_bridge_stp(char *br_name, int stp_val)$/;"	f	signature:(char *br_name, int stp_val)
+set_bridge_stp	utils.h	/^int set_bridge_stp(char *br_name, int stp_val);$/;"	p	signature:(char *br_name, int stp_val)
+set_debug_level_ARGS	ctl_socket.h	100;"	d
+set_debug_level_CALL	ctl_socket.h	103;"	d
+set_debug_level_COPY_IN	ctl_socket.h	101;"	d
+set_debug_level_COPY_OUT	ctl_socket.h	102;"	d
+set_debug_level_IN	ctl_socket.h	/^struct set_debug_level_IN {$/;"	s
+set_debug_level_IN::level	ctl_socket.h	/^	int level;$/;"	m	struct:set_debug_level_IN	access:public
+set_debug_level_OUT	ctl_socket.h	/^struct set_debug_level_OUT {$/;"	s
+set_port_cfg_value	ctl_main.c	/^static int set_port_cfg_value(int port_index, unsigned long value, unsigned long val_mask)$/;"	f	file:	signature:(int port_index, unsigned long value, unsigned long val_mask)
+set_port_config_ARGS	ctl_socket.h	86;"	d
+set_port_config_CALL	ctl_socket.h	89;"	d
+set_port_config_COPY_IN	ctl_socket.h	87;"	d
+set_port_config_COPY_OUT	ctl_socket.h	88;"	d
+set_port_config_IN	ctl_socket.h	/^struct set_port_config_IN {$/;"	s
+set_port_config_IN::cfg	ctl_socket.h	/^	UID_STP_PORT_CFG_T cfg;$/;"	m	struct:set_port_config_IN	access:public
+set_port_config_IN::port_index	ctl_socket.h	/^	int port_index;$/;"	m	struct:set_port_config_IN	access:public
+set_port_config_OUT	ctl_socket.h	/^struct set_port_config_OUT {$/;"	s
+set_port_trace_ARGS	ctl_socket.h	113;"	d
+set_port_trace_CALL	ctl_socket.h	116;"	d
+set_port_trace_COPY_IN	ctl_socket.h	114;"	d
+set_port_trace_COPY_OUT	ctl_socket.h	115;"	d
+set_port_trace_IN	ctl_socket.h	/^struct set_port_trace_IN {$/;"	s
+set_port_trace_IN::enableflag	ctl_socket.h	/^	int enableflag;$/;"	m	struct:set_port_trace_IN	access:public
+set_port_trace_IN::mach_index	ctl_socket.h	/^	int mach_index;$/;"	m	struct:set_port_trace_IN	access:public
+set_port_trace_IN::portmap	ctl_socket.h	/^	BITMAP_T portmap;$/;"	m	struct:set_port_trace_IN	access:public
+set_port_trace_OUT	ctl_socket.h	/^struct set_port_trace_OUT {$/;"	s
+set_rstp_port_cfg_value	rstplib/stp_cli.c	/^set_rstp_port_cfg_value (int port_index,$/;"	f	file:	signature:(int port_index, unsigned long value, unsigned long val_mask)
+set_socket_address	ctl_socket.h	16;"	d
+show_bridge	rstplib/mngr.c	/^static int show_bridge (int argc, char** argv)$/;"	f	file:	signature:(int argc, char** argv)
+show_rstp_port	rstplib/stp_cli.c	/^show_rstp_port (BITMAP_T* ports_bitmap, int detail)$/;"	f	file:	signature:(BITMAP_T* ports_bitmap, int detail)
+shutdown_flag	rstplib/bridge.c	/^char shutdown_flag = 0;$/;"	v
+shutdown_flag	rstplib/mngr.c	/^char shutdown_flag = 0;$/;"	v
+skip_rx	rstplib/port.h	/^  unsigned int	    skip_rx;$/;"	m	struct:port_t	access:public
+skip_rx	rstplib/uid_stp.h	/^  unsigned int	skip_rx;$/;"	m	struct:__anon20	access:public
+skip_tx	rstplib/port.h	/^  unsigned int	    skip_tx;$/;"	m	struct:port_t	access:public
+skip_tx	rstplib/uid_stp.h	/^  unsigned int	skip_tx;$/;"	m	struct:__anon20	access:public
+sock	rstplib/mngr.c	/^  UID_SOCKET_T  sock;$/;"	m	struct:bridge_s	file:	access:public
+sock_fd	rstplib/uid_sock.h	/^  int           sock_fd;$/;"	m	struct:__anon6	access:public
+socket_id	rstplib/uid_sock.h	/^  UID_SOCK_ID       socket_id;$/;"	m	struct:__anon6	access:public
+source_port	rstplib/uid.h	/^  int           source_port;$/;"	m	struct:uid_msg_header_s	access:public
+speed	rstpd.h	/^	int             speed;              \/\/ 端口速率$/;"	m	struct:__anon24	access:public
+sprint_time_stump	rstplib/base.h	/^extern char* sprint_time_stump (void);$/;"	p	signature:(void)
+sprint_time_stump	rstplib/bridge.c	/^char* sprint_time_stump (void)$/;"	f	signature:(void)
+src_mac	rstplib/stp_bpdu.h	/^  unsigned char src_mac[6];$/;"	m	struct:mac_header_t	access:public
+ssap	rstplib/stp_bpdu.h	/^  unsigned char ssap;$/;"	m	struct:eth_header_t	access:public
+state	ctl_socket.h	/^	UID_STP_PORT_STATE_T state;$/;"	m	struct:get_port_state_OUT	access:public
+state	ctl_socket.h	/^	UID_STP_STATE_T state;$/;"	m	struct:get_bridge_state_OUT	access:public
+state	rstplib/uid_stp.h	/^  RSTP_PORT_STATE   state;$/;"	m	struct:__anon21	access:public
+state_mach_t	rstplib/statmch.h	/^typedef struct state_mach_t {$/;"	s
+state_mach_t::State	rstplib/statmch.h	/^  unsigned int  State;          \/\/ 当前状态$/;"	m	struct:state_mach_t	access:public
+state_mach_t::__anon12::owner	rstplib/statmch.h	/^    void         * owner;   \/\/ 指向本状态机的创建者，可能是某端口，也可能是某网桥$/;"	m	union:state_mach_t::__anon12	access:public
+state_mach_t::__anon12::port	rstplib/statmch.h	/^    struct port_t* port;    \/\/ 指向本状态机所属端口控制块$/;"	m	union:state_mach_t::__anon12	typeref:struct:state_mach_t::__anon12::port_t	access:public
+state_mach_t::__anon12::stpm	rstplib/statmch.h	/^    struct stpm_t* stpm;    \/\/ 指向本状态机所属网桥$/;"	m	union:state_mach_t::__anon12	typeref:struct:state_mach_t::__anon12::stpm_t	access:public
+state_mach_t::changeState	rstplib/statmch.h	/^  Bool          changeState;    \/\/ 状态变化标志,根据状态切换检测函数的返回值而定$/;"	m	struct:state_mach_t	access:public
+state_mach_t::concreteCheckCondition	rstplib/statmch.h	/^  Bool          (* concreteCheckCondition) (struct state_mach_t * );\/\/ 检查状态切换条件并完成状态切换$/;"	m	struct:state_mach_t	access:public
+state_mach_t::concreteEnterState	rstplib/statmch.h	/^  void          (* concreteEnterState) (struct state_mach_t * );    \/\/ 执行进入某状态后的固定动作$/;"	m	struct:state_mach_t	access:public
+state_mach_t::concreteGetStatName	rstplib/statmch.h	/^  char*         (* concreteGetStatName) (int);                      \/\/ 获取状态名$/;"	m	struct:state_mach_t	access:public
+state_mach_t::debug	rstplib/statmch.h	/^  char          debug; \/* 0- no dbg, 1 - port, 2 - stpm *\/$/;"	m	struct:state_mach_t	access:public
+state_mach_t::ignoreHop2State	rstplib/statmch.h	/^  unsigned int  ignoreHop2State;$/;"	m	struct:state_mach_t	access:public
+state_mach_t::name	rstplib/statmch.h	/^  char*         name; \/* for debugging *\/   \/\/ 状态机名$/;"	m	struct:state_mach_t	access:public
+state_mach_t::next	rstplib/statmch.h	/^  struct state_mach_t* next;    \/\/ 指向下一个状态机控制块$/;"	m	struct:state_mach_t	typeref:struct:state_mach_t::state_mach_t	access:public
+state_mach_t::owner	rstplib/statmch.h	/^  } owner;              \/\/ 状态机属主$/;"	m	struct:state_mach_t	typeref:union:state_mach_t::__anon12	access:public
+stdcmd	rstplib/cli.c	/^static CMD_DSCR_T stdcmd[] = {$/;"	v	file:
+stpBridge_t	rstpd.h	/^} stpBridge_t;$/;"	t	typeref:struct:__anon23
+stpPort_t	rstpd.h	/^} stpPort_t;$/;"	t	typeref:struct:__anon24
+stp_bpdu_t	rstplib/stp_bpdu.h	/^typedef struct stp_bpdu_t {$/;"	s
+stp_bpdu_t::body	rstplib/stp_bpdu.h	/^  BPDU_BODY_T   body;       \/\/ bpdu主体$/;"	m	struct:stp_bpdu_t	access:public
+stp_bpdu_t::eth	rstplib/stp_bpdu.h	/^  ETH_HEADER_T  eth;        \/\/ 以太网帧头$/;"	m	struct:stp_bpdu_t	access:public
+stp_bpdu_t::hdr	rstplib/stp_bpdu.h	/^  BPDU_HEADER_T hdr;        \/\/ bpdu头$/;"	m	struct:stp_bpdu_t	access:public
+stp_bpdu_t::ver_1_len	rstplib/stp_bpdu.h	/^  unsigned char ver_1_len[2];   \/\/ stp没有此项，为rstp特有$/;"	m	struct:stp_bpdu_t	access:public
+stp_cli_init	rstplib/stp_cli.c	/^int stp_cli_init (void)$/;"	f	signature:(void)
+stp_cli_init	rstplib/stp_cli.h	/^int stp_cli_init ();$/;"	p	signature:()
+stp_dbg_break_point	rstplib/rolesel.c	/^void stp_dbg_break_point (PORT_T * port, STPM_T* stpm)$/;"	f	signature:(PORT_T * port, STPM_T* stpm)
+stp_enabled	rstpd.h	/^	UID_STP_MODE_T  stp_enabled;$/;"	m	struct:__anon23	access:public
+stp_enabled	rstplib/uid_stp.h	/^  UID_STP_MODE_T    stp_enabled;$/;"	m	struct:__anon16	access:public
+stp_enabled	rstplib/uid_stp.h	/^  UID_STP_MODE_T    stp_enabled;$/;"	m	struct:__anon17	access:public
+stp_in_stpm_create	rstplib/stp_in.c	/^stp_in_stpm_create (int vlan_id, char* name, BITMAP_T* port_bmp, int* err_code)$/;"	f	signature:(int vlan_id, char* name, BITMAP_T* port_bmp, int* err_code)
+stp_in_stpm_create	rstplib/stp_in.h	/^void* stp_in_stpm_create (int vlan_id, char* name, BITMAP_T* port_bmp,$/;"	p	signature:(int vlan_id, char* name, BITMAP_T* port_bmp, int* err_code)
+stp_in_stpm_enable	rstplib/stp_in.h	/^int stp_in_stpm_enable (int vlan_id, char* name,$/;"	p	signature:(int vlan_id, char* name, BITMAP_T* port_bmp, UID_STP_MODE_T admin_state)
+stp_state2str	ctl_main.c	/^static char *stp_state2str(RSTP_PORT_STATE stp_port_state, int detail)$/;"	f	file:	signature:(RSTP_PORT_STATE stp_port_state, int detail)
+stp_state2str	rstplib/stp_cli.c	/^stp_state2str (RSTP_PORT_STATE stp_port_state, int detail)$/;"	f	file:	signature:(RSTP_PORT_STATE stp_port_state, int detail)
+stp_trace	rstp_if.c	/^void stp_trace(const char *fmt, ...)$/;"	f	signature:(const char *fmt, ...)
+stp_trace	rstplib/base.h	/^extern void stp_trace (const char* fmt, ...);$/;"	p	signature:(const char* fmt, ...)
+stp_trace	rstplib/base.h	188;"	d
+stp_vect_get_bridge_id	rstplib/vector.c	/^stp_vect_get_bridge_id (IN unsigned char* c_br, OUT BRIDGE_ID* bridge_id)$/;"	f	file:	signature:(IN unsigned char* c_br, OUT BRIDGE_ID* bridge_id)
+stp_vect_get_short	rstplib/vector.c	/^stp_vect_get_short (IN unsigned char* f)$/;"	f	file:	signature:(IN unsigned char* f)
+stp_vect_set_bridge_id	rstplib/vector.c	/^stp_vect_set_bridge_id (IN BRIDGE_ID* bridge_id, OUT unsigned char* c_br)$/;"	f	file:	signature:(IN BRIDGE_ID* bridge_id, OUT unsigned char* c_br)
+stp_vect_set_short	rstplib/vector.c	/^stp_vect_set_short (IN unsigned short f, OUT unsigned char* t)$/;"	f	file:	signature:(IN unsigned short f, OUT unsigned char* t)
+stpapi_port_find	rstplib/stp_in.c	/^stpapi_port_find (STPM_T* this, int port_index)$/;"	f	signature:(STPM_T* this, int port_index)
+stpapi_port_find	rstplib/stp_in.h	/^PORT_T* stpapi_port_find (STPM_T* this, int port_index);$/;"	p	signature:(STPM_T* this, int port_index)
+stpapi_stpm_find	rstplib/stp_in.c	/^stpapi_stpm_find (int vlan_id)$/;"	f	signature:(int vlan_id)
+stpapi_stpm_find	rstplib/stp_in.h	/^STPM_T* stpapi_stpm_find (int vlan_id);$/;"	p	signature:(int vlan_id)
+stpm	rstpd.h	/^	STPM_T*         stpm;$/;"	m	struct:__anon23	access:public
+stpm	rstplib/statmch.h	/^    struct stpm_t* stpm;    \/\/ 指向本状态机所属网桥$/;"	m	union:state_mach_t::__anon12	typeref:struct:state_mach_t::__anon12::stpm_t	access:public
+stpm_t	rstplib/stpm.h	/^typedef struct stpm_t {$/;"	s
+stpm_t::BrId	rstplib/stpm.h	/^  BRIDGE_ID             BrId;           \/* 17.17.2 *\/$/;"	m	struct:stpm_t	access:public
+stpm_t::BrTimes	rstplib/stpm.h	/^  TIMEVALUES_T          BrTimes;        \/* 17.17.4 *\/$/;"	m	struct:stpm_t	access:public
+stpm_t::ForceVersion	rstplib/stpm.h	/^  PROTOCOL_VERSION_T    ForceVersion;   \/* 17.12, 17.16.1 *\/    \/\/ 生成树协议版本$/;"	m	struct:stpm_t	access:public
+stpm_t::Topo_Change	rstplib/stpm.h	/^  unsigned char         Topo_Change;           \/* 14.8.1.1.3.d *\/$/;"	m	struct:stpm_t	access:public
+stpm_t::Topo_Change_Count	rstplib/stpm.h	/^  unsigned long         Topo_Change_Count;     \/* 14.8.1.1.3.c *\/$/;"	m	struct:stpm_t	access:public
+stpm_t::admin_state	rstplib/stpm.h	/^  UID_STP_MODE_T        admin_state;    \/* STP_DISABLED or STP_ENABLED; type see in UiD *\/$/;"	m	struct:stpm_t	access:public
+stpm_t::machines	rstplib/stpm.h	/^  STATE_MACH_T*         machines;$/;"	m	struct:stpm_t	access:public
+stpm_t::name	rstplib/stpm.h	/^  char*                 name;           \/* name of the VLAN, maily for debugging *\/$/;"	m	struct:stpm_t	access:public
+stpm_t::next	rstplib/stpm.h	/^  struct stpm_t*        next;$/;"	m	struct:stpm_t	typeref:struct:stpm_t::stpm_t	access:public
+stpm_t::ports	rstplib/stpm.h	/^  struct port_t*        ports;$/;"	m	struct:stpm_t	typeref:struct:stpm_t::port_t	access:public
+stpm_t::rolesel	rstplib/stpm.h	/^  STATE_MACH_T*         rolesel;   \/* the Port Role Selection State machione: 17.22 *\/$/;"	m	struct:stpm_t	access:public
+stpm_t::rootPortId	rstplib/stpm.h	/^  PORT_ID               rootPortId;     \/* 17.17.5 *\/$/;"	m	struct:stpm_t	access:public
+stpm_t::rootPrio	rstplib/stpm.h	/^  PRIO_VECTOR_T         rootPrio;       \/* 17.17.6 *\/$/;"	m	struct:stpm_t	access:public
+stpm_t::rootTimes	rstplib/stpm.h	/^  TIMEVALUES_T          rootTimes;      \/* 17.17.7 *\/$/;"	m	struct:stpm_t	access:public
+stpm_t::timeSince_Topo_Change	rstplib/stpm.h	/^  unsigned long         timeSince_Topo_Change; \/* 14.8.1.1.3.b *\/$/;"	m	struct:stpm_t	access:public
+stpm_t::vlan_id	rstplib/stpm.h	/^  int                   vlan_id;        \/* let's say: tag *\/$/;"	m	struct:stpm_t	access:public
+strdup	rstplib/base.h	/^extern char* strdup (const char *s);$/;"	p	signature:(const char *s)
+string_help	rstplib/cli.h	/^  char* string_help;$/;"	m	struct:cmd_par_string_selector_s	access:public
+string_selector	rstplib/cli.h	/^  CMD_PAR_SELECTOR	string_selector[MAX_SELECTOR];$/;"	m	struct:cmd_par_dscr_s	access:public
+string_value	rstplib/cli.h	/^  char* string_value;$/;"	m	struct:cmd_par_string_selector_s	access:public
+sttrans	rstplib/port.h	/^  STATE_MACH_T*     sttrans;   \/* 17.24 *\/$/;"	m	struct:port_t	access:public
+sync	rstplib/port.h	/^  Bool              sync;          \/* 17.18.34 *\/$/;"	m	struct:port_t	access:public
+synced	rstplib/port.h	/^  Bool              synced;        \/* 17.18.35 *\/$/;"	m	struct:port_t	access:public
+tagBITMAP	rstplib/bitmap.h	/^typedef struct tagBITMAP$/;"	s
+tagBITMAP::part0	rstplib/bitmap.h	/^  unsigned long part0;     \/* Least Significant part *\/$/;"	m	struct:tagBITMAP	access:public
+tc	rstplib/port.h	/^  Bool              tc;            \/* 17.18.36 *\/$/;"	m	struct:port_t	access:public
+tc	rstplib/uid_stp.h	/^  unsigned char     tc;$/;"	m	struct:__anon21	access:public
+tcAck	rstplib/port.h	/^  Bool              tcAck;         \/* 17.18.37 *\/$/;"	m	struct:port_t	access:public
+tcProp	rstplib/port.h	/^  Bool              tcProp;        \/* 17.18.38 *\/$/;"	m	struct:port_t	access:public
+tcWhile	rstplib/port.h	/^  PORT_TIMER_T      tcWhile;      \/* 17.15.7 *\/$/;"	m	struct:port_t	access:public
+tcWhile	rstplib/uid_stp.h	/^  int               tcWhile;      \/* 17.15.7 *\/$/;"	m	struct:__anon21	access:public
+tev	rstplib/stp_in.c	/^RSTP_EVENT_T tev = RSTP_EVENT_LAST_DUMMY;$/;"	v
+timeSince_Topo_Change	rstplib/stpm.h	/^  unsigned long         timeSince_Topo_Change; \/* 14.8.1.1.3.b *\/$/;"	m	struct:stpm_t	access:public
+timeSince_Topo_Change	rstplib/uid_stp.h	/^  unsigned long     timeSince_Topo_Change; \/* 14.8.1.1.3.b: TBD *\/$/;"	m	struct:__anon17	access:public
+time_diff	epoll_loop.c	/^int time_diff(struct timeval *second, struct timeval *first)$/;"	f	signature:(struct timeval *second, struct timeval *first)
+timers	rstplib/port.h	/^  PORT_TIMER_T*     timers[TIMERS_NUMBER]; \/*list of timers *\/$/;"	m	struct:port_t	access:public
+timevalues_t	rstplib/times.h	/^typedef struct timevalues_t {$/;"	s
+timevalues_t::ForwardDelay	rstplib/times.h	/^  unsigned short ForwardDelay;      \/\/ 转发延迟$/;"	m	struct:timevalues_t	access:public
+timevalues_t::HelloTime	rstplib/times.h	/^  unsigned short HelloTime;         \/\/ 保活时间$/;"	m	struct:timevalues_t	access:public
+timevalues_t::MaxAge	rstplib/times.h	/^  unsigned short MaxAge;            \/\/ 最大消息年龄$/;"	m	struct:timevalues_t	access:public
+timevalues_t::MessageAge	rstplib/times.h	/^  unsigned short MessageAge;        \/\/ 消息年龄$/;"	m	struct:timevalues_t	access:public
+top_change_ack	rstplib/uid_stp.h	/^  unsigned char     top_change_ack;$/;"	m	struct:__anon21	access:public
+topoch	rstplib/port.h	/^  STATE_MACH_T*     topoch;    \/* 17.25 *\/$/;"	m	struct:port_t	access:public
+transmit	rstplib/port.h	/^  STATE_MACH_T*     transmit;  \/* 17.26 *\/$/;"	m	struct:port_t	access:public
+txConfig	rstplib/transmit.c	/^txConfig (STATE_MACH_T* this)$/;"	f	file:	signature:(STATE_MACH_T* this)
+txCount	rstplib/port.h	/^  PORT_TIMER_T      txCount;      \/* 17.18.40 *\/$/;"	m	struct:port_t	access:public
+txCount	rstplib/uid_stp.h	/^  int               txCount;      \/* 17.18.40 *\/$/;"	m	struct:__anon21	access:public
+txRstp	rstplib/transmit.c	/^txRstp (STATE_MACH_T* this)$/;"	f	file:	signature:(STATE_MACH_T* this)
+txTcn	rstplib/transmit.c	/^txTcn (STATE_MACH_T* this)$/;"	f	file:	signature:(STATE_MACH_T* this)
+tx_rstp_bpdu_t	rstplib/transmit.c	/^typedef struct tx_rstp_bpdu_t {$/;"	s	file:
+tx_rstp_bpdu_t::body	rstplib/transmit.c	/^  BPDU_BODY_T   body;$/;"	m	struct:tx_rstp_bpdu_t	file:	access:public
+tx_rstp_bpdu_t::eth	rstplib/transmit.c	/^  ETH_HEADER_T  eth;$/;"	m	struct:tx_rstp_bpdu_t	file:	access:public
+tx_rstp_bpdu_t::hdr	rstplib/transmit.c	/^  BPDU_HEADER_T hdr;$/;"	m	struct:tx_rstp_bpdu_t	file:	access:public
+tx_rstp_bpdu_t::mac	rstplib/transmit.c	/^  MAC_HEADER_T  mac;$/;"	m	struct:tx_rstp_bpdu_t	file:	access:public
+tx_rstp_bpdu_t::ver_1_length	rstplib/transmit.c	/^  unsigned char ver_1_length[2];$/;"	m	struct:tx_rstp_bpdu_t	file:	access:public
+tx_stp_bpdu_t	rstplib/transmit.c	/^typedef struct tx_stp_bpdu_t {$/;"	s	file:
+tx_stp_bpdu_t::body	rstplib/transmit.c	/^  BPDU_BODY_T   body;$/;"	m	struct:tx_stp_bpdu_t	file:	access:public
+tx_stp_bpdu_t::eth	rstplib/transmit.c	/^  ETH_HEADER_T  eth;$/;"	m	struct:tx_stp_bpdu_t	file:	access:public
+tx_stp_bpdu_t::hdr	rstplib/transmit.c	/^  BPDU_HEADER_T hdr;$/;"	m	struct:tx_stp_bpdu_t	file:	access:public
+tx_stp_bpdu_t::mac	rstplib/transmit.c	/^  MAC_HEADER_T  mac;$/;"	m	struct:tx_stp_bpdu_t	file:	access:public
+tx_tcn_bpdu_t	rstplib/transmit.c	/^typedef struct tx_tcn_bpdu_t {$/;"	s	file:
+tx_tcn_bpdu_t::eth	rstplib/transmit.c	/^  ETH_HEADER_T  eth;$/;"	m	struct:tx_tcn_bpdu_t	file:	access:public
+tx_tcn_bpdu_t::hdr	rstplib/transmit.c	/^  BPDU_HEADER_T hdr;$/;"	m	struct:tx_tcn_bpdu_t	file:	access:public
+tx_tcn_bpdu_t::mac	rstplib/transmit.c	/^  MAC_HEADER_T  mac;$/;"	m	struct:tx_tcn_bpdu_t	file:	access:public
+uid_msg_header_s	rstplib/uid.h	/^typedef struct uid_msg_header_s {$/;"	s
+uid_msg_header_s::body_len	rstplib/uid.h	/^  size_t        body_len;$/;"	m	struct:uid_msg_header_s	access:public
+uid_msg_header_s::cmd_type	rstplib/uid.h	/^  UID_CMD_TYPE_T    cmd_type;$/;"	m	struct:uid_msg_header_s	access:public
+uid_msg_header_s::destination_port	rstplib/uid.h	/^  int           destination_port;$/;"	m	struct:uid_msg_header_s	access:public
+uid_msg_header_s::sender_pid	rstplib/uid.h	/^  long          sender_pid;$/;"	m	struct:uid_msg_header_s	access:public
+uid_msg_header_s::source_port	rstplib/uid.h	/^  int           source_port;$/;"	m	struct:uid_msg_header_s	access:public
+uid_msg_s	rstplib/uid.h	/^typedef struct uid_msg_s {$/;"	s
+uid_msg_s::__anon10::bpdu	rstplib/uid.h	/^    char bpdu[64];$/;"	m	union:uid_msg_s::__anon10	access:public
+uid_msg_s::__anon10::cntrl	rstplib/uid.h	/^    UID_CNTRL_BODY_T    cntrl;$/;"	m	union:uid_msg_s::__anon10	access:public
+uid_msg_s::body	rstplib/uid.h	/^  } body;$/;"	m	struct:uid_msg_s	typeref:union:uid_msg_s::__anon10	access:public
+uid_msg_s::header	rstplib/uid.h	/^  UID_MSG_HEADER_T  header;$/;"	m	struct:uid_msg_s	access:public
+uid_port_control_s	rstplib/uid.h	/^typedef struct uid_port_control_s {$/;"	s
+uid_port_control_s::cmd	rstplib/uid.h	/^  UID_CNTRL_CMD_T cmd;$/;"	m	struct:uid_port_control_s	access:public
+uid_port_control_s::param1	rstplib/uid.h	/^  unsigned long  param1;  $/;"	m	struct:uid_port_control_s	access:public
+uid_port_control_s::param2	rstplib/uid.h	/^  unsigned long  param2;  $/;"	m	struct:uid_port_control_s	access:public
+uid_socket	rstplib/bridge.c	/^UID_SOCKET_T    uid_socket;$/;"	v
+unlink_port	rstplib/mngr.c	/^static int unlink_port (int argc, char** argv)$/;"	f	file:	signature:(int argc, char** argv)
+unregister_bridge	rstplib/mngr.c	/^int unregister_bridge (UID_MSG_T* msg)$/;"	f	signature:(UID_MSG_T* msg)
+updPortPathCost	rstplib/pcost.c	/^updPortPathCost (PORT_T *port)$/;"	f	file:	signature:(PORT_T *port)
+updPortPathCost	rstplib/pcost.c	/^updPortPathCost (STATE_MACH_T *this)$/;"	f	file:	signature:(STATE_MACH_T *this)
+update_bridge_stp_config	rstp_if.c	/^void update_bridge_stp_config(stpBridge_t *br, UID_STP_CFG_T *cfg)$/;"	f	signature:(stpBridge_t *br, UID_STP_CFG_T *cfg)
+update_port_stp_config	rstp_if.c	/^void update_port_stp_config(stpPort_t *ifc, UID_STP_PORT_CFG_T *cfg)$/;"	f	signature:(stpPort_t *ifc, UID_STP_PORT_CFG_T *cfg)
+updtBPDUVersion	rstplib/portinfo.c	/^static Bool updtBPDUVersion (STATE_MACH_T* this)$/;"	f	file:	signature:(STATE_MACH_T* this)
+updtInfo	rstplib/port.h	/^  Bool              updtInfo;      \/* 17.18.41 *\/$/;"	m	struct:port_t	access:public
+updtRcvdInfoWhile	rstplib/portinfo.c	/^static Bool updtRcvdInfoWhile (STATE_MACH_T* this)$/;"	f	file:	signature:(STATE_MACH_T* this)
+updtRoleDisableBridge	rstplib/rolesel.c	/^updtRoleDisableBridge (STPM_T* this)$/;"	f	file:	signature:(STPM_T* this)
+updtRolesBridge	rstplib/rolesel.c	/^updtRolesBridge (STATE_MACH_T* this)$/;"	f	file:	signature:(STATE_MACH_T* this)
+updtRootPrio	rstplib/rolesel.c	/^updtRootPrio (STATE_MACH_T* this)$/;"	f	file:	signature:(STATE_MACH_T* this)
+uptime	rstplib/port.h	/^  unsigned long     uptime;       \/* 14.8.2.1.3.a *\/$/;"	m	struct:port_t	access:public
+uptime	rstplib/uid_stp.h	/^  unsigned long     uptime;       \/* 14.8.2.1.3.a *\/$/;"	m	struct:__anon21	access:public
+usage	rstpd.c	/^static void usage(void)$/;"	f	file:	signature:(void)
+usage	rstplib/cli.c	/^void usage (void)$/;"	f	signature:(void)
+usage	rstplib/cli.h	/^void usage (void);$/;"	p	signature:(void)
+usedSpeed	rstplib/port.h	/^  unsigned long     usedSpeed;$/;"	m	struct:port_t	access:public
+vDprintf	ctl_wrap.c	/^void vDprintf(int level, const char *fmt, va_list ap)$/;"	f	signature:(int level, const char *fmt, va_list ap)
+vDprintf	log.h	/^extern void vDprintf(int level, const char *fmt, va_list ap);$/;"	p	signature:(int level, const char *fmt, va_list ap)
+vDprintf	rstpd.c	/^void vDprintf(int level, const char *fmt, va_list ap)$/;"	f	signature:(int level, const char *fmt, va_list ap)
+ver_1_len	rstplib/stp_bpdu.h	/^  unsigned char ver_1_len[2];   \/\/ stp没有此项，为rstp特有$/;"	m	struct:stp_bpdu_t	access:public
+ver_1_length	rstplib/transmit.c	/^  unsigned char ver_1_length[2];$/;"	m	struct:tx_rstp_bpdu_t	file:	access:public
+version	rstplib/stp_bpdu.h	/^  unsigned char version;        \/\/ bpdu版本（rstp\/stp）$/;"	m	struct:bpdu_header_t	access:public
+vlan_id	rstplib/stpm.h	/^  int                   vlan_id;        \/* let's say: tag *\/$/;"	m	struct:stpm_t	access:public
+vlan_id	rstplib/uid_stp.h	/^  unsigned long     vlan_id;$/;"	m	struct:__anon17	access:public
+vlan_name	rstplib/uid_stp.h	/^  char              vlan_name[NAME_LEN]; \/* name of the VLAN, key of the bridge *\/$/;"	m	struct:__anon16	access:public
+vlan_name	rstplib/uid_stp.h	/^  char              vlan_name[NAME_LEN]; \/* name of the VLAN, key of the bridge *\/$/;"	m	struct:__anon17	access:public
+vlan_name	rstplib/uid_stp.h	/^  char              vlan_name[NAME_LEN]; \/* name of the VLAN, key of the bridge *\/$/;"	m	struct:__anon21	access:public
+vlan_name	rstplib/uid_stp.h	/^  char          vlan_name[NAME_LEN]; \/* name of the VLAN, key of the bridge *\/$/;"	m	struct:__anon20	access:public
+vlan_name	rstplib/uid_stp.h	/^  char      vlan_name[NAME_LEN]; \/* name of the VLAN, key of the bridge *\/$/;"	m	struct:__anon15	access:public
+wasInitBpdu	rstplib/port.h	/^  Bool              wasInitBpdu;  $/;"	m	struct:port_t	access:public
