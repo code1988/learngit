@@ -45,12 +45,13 @@ static pid_t load_configure(void)
 			if (devnull > 2) 
 				close(devnull);
 			
-			log_info("execute \"rstpctl -c\" ...");
+			log_info("-------------------this is in [%d][%s]: execute \"rstpctl -c\" ...",getpid(),__func__);
 			execl(rstpctl_path, "rstpctl", "-c", (char *)NULL);
 		}
 		_exit(127);
 		break;
 	default:
+        log_info("--------------------this is in [%d][%s]\n",getpid(),__func__);	
 		return rstpctl;
 	}
 	
@@ -153,6 +154,7 @@ int main(int argc, char** argv)
 	/* Loading configuration */
 	if(load_configure() == -1)
 		log_err("load_configure failed");
+	
 	
 	return epoll_main_loop();
 

@@ -65,11 +65,12 @@ void STP_state_mach_delete (STATE_MACH_T *this)
   STP_FREE(this, "state machine");
 }
 
-// 检查切换条件,条件通过则标志位置1
+// 检查指定状态机的切换条件,条件通过则标志位置1
 Bool STP_check_condition (STATE_MACH_T* this)
 {
   Bool bret;
 
+  // 调用每个状态机的检测状态函数
   bret = (*(this->concreteCheckCondition)) (this);  
   if (bret) {
     this->changeState = True;
@@ -78,7 +79,7 @@ Bool STP_check_condition (STATE_MACH_T* this)
   return bret;
 }
         
-// 状态机更新
+// 通过执行回调函数状态机真正进入新的状态
 Bool STP_change_state (STATE_MACH_T* this)
 {
   register int number_of_loops;
@@ -96,7 +97,7 @@ Bool STP_change_state (STATE_MACH_T* this)
   return number_of_loops;
 }
 
-// 状态机状态切换
+// 状态机状态更新，并置位状态切换标记
 Bool STP_hop_2_state (STATE_MACH_T* this, unsigned int new_state)
 {
 #ifdef STP_DBG

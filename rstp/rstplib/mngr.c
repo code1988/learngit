@@ -20,6 +20,8 @@
  * 02111-1307, USA. 
  **********************************************************************/
 
+#if 0   // not use temporary
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -544,6 +546,10 @@ int main_loop (void)
 
 int main (int argc, char** argv)
 {
+
+    log_info("This is in [%d][%s]\n",getpid(),__func__);
+    syslog(LOG_INFO,"This is in [%d][%s]\n",getpid(),__func__);
+    fprintf(stderr,"[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[%s\n",__func__);
   rl_init ();
   
   mngr_start ();
@@ -556,4 +562,4 @@ int main (int argc, char** argv)
 
   return 0;
 }
-
+#endif

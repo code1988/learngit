@@ -28,8 +28,9 @@
 #include "stp_to.h"
 
 
-int
-STP_IN_stpm_create (int vlan_id, char* name, BITMAP_T* port_bmp)
+// 创建一个网桥，包含内存申请、桥状态机申请、端口状态机申请、设置桥的初始配置信息
+// 最后开启生成树
+int STP_IN_stpm_create (int vlan_id, char* name, BITMAP_T* port_bmp)
 {
   register STPM_T*  this;
   int               err_code;
@@ -42,8 +43,13 @@ STP_IN_stpm_create (int vlan_id, char* name, BITMAP_T* port_bmp)
   init_cfg.field_mask = 0;
 
   RSTP_CRITICAL_PATH_START;  
+
+  // 创建一个网桥,内含状态机初始化
   this = stp_in_stpm_create (vlan_id, name, port_bmp, &err_code);
-  if (this) {
+
+  // 设置初始的桥配置信息
+  if (this) 
+  {
     this->BrId.prio = init_cfg.bridge_priority;
     this->BrTimes.MaxAge = init_cfg.max_age;
     this->BrTimes.HelloTime = init_cfg.hello_time;
@@ -52,6 +58,7 @@ STP_IN_stpm_create (int vlan_id, char* name, BITMAP_T* port_bmp)
   }
 #ifndef RSTP_JWS
 #else
+  // 使能生成树,并完成状态监测和切换
   if (this->admin_state != STP_ENABLED)
     err_code = STP_stpm_enable(this, STP_ENABLED);
 #endif

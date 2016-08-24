@@ -6,7 +6,7 @@ GCCFLAGS = $(CFLAGS) $(INCLUDES) -D__LINUX__ -DSTP_DBG=1 -DRSTP_JWS=1
 
 CFILES_RSTPD = log.c utils.c libnetlink.c epoll_loop.c brmon.c brstate.c packet.c ctl_socket.c rstp_if.c rstpd.c 
 OFILES_RSTPD = $(CFILES_RSTPD:.c=.o)
-CFILES_CTL = utils.c ctl_client.c ctl_main.c log.c ctl_wrap.c
+CFILES_CTL = utils.c ctl_client.c ctl_main.c log.c ctl_wrap.c 
 OFILES_CTL = $(CFILES_CTL:.c=.o)
 
 .SUFFIXES: .c .o

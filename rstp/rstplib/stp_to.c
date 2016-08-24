@@ -161,8 +161,8 @@ STP_OUT_get_duplex (IN int port_index)
   return 1;
 }
 
-int
-STP_OUT_get_init_stpm_cfg (IN int vlan_id,
+// 设置初始的桥配置信息
+int STP_OUT_get_init_stpm_cfg (IN int vlan_id,
                            INOUT UID_STP_CFG_T* cfg)
 {
   cfg->bridge_priority =        DEF_BR_PRIO;

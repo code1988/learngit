@@ -20,6 +20,9 @@
  * 02111-1307, USA. 
  **********************************************************************/
 
+
+#if 0   // not use temporary
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -205,4 +208,4 @@ int UiD_SocketSetReadTimeout (UID_SOCKET_T* s, int timeout)
   return retval;
 }
 
-
+#endif

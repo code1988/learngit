@@ -20,6 +20,8 @@
  * 02111-1307, USA. 
  **********************************************************************/
 
+#if 0   // not use temporary
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -510,4 +512,4 @@ void rl_shutdown ()
   rl_initialize ();
   rl_callback_handler_remove();
 }
-
+#endif

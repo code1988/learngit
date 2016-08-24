@@ -27,46 +27,56 @@
 #include "stp_in.h"
 #include "stp_to.h"
 
-int max_port = 1024;
+int max_port = 1024;    // 端口最大数量
 
 #define INCR100(nev) { nev++; if (nev > 99) nev = 0;}
 
 RSTP_EVENT_T tev = RSTP_EVENT_LAST_DUMMY;
 int			 nev = 0;
 
-void *
-stp_in_stpm_create (int vlan_id, char* name, BITMAP_T* port_bmp, int* err_code)
+// 创建一个网桥
+void *stp_in_stpm_create (int vlan_id, char* name, BITMAP_T* port_bmp, int* err_code)
 {
-  int port_index;
-  register STPM_T* this;
+    int port_index;
+    register STPM_T* this;
 
-  /* stp_trace ("stp_in_stpm_create(%s)", name); */
-  this = stpapi_stpm_find (vlan_id);
-  if (this) { /* it had just been created :( */
+    /* stp_trace ("stp_in_stpm_create(%s)", name); */
+    this = stpapi_stpm_find (vlan_id);
+    if (this) { /* it had just been created :( */
     *err_code = STP_Nothing_To_Do;
     return this;
-  }
-
-  this = STP_stpm_create (vlan_id, name);
-  if (! this) { /* can't create stpm :( */
-    *err_code = STP_Cannot_Create_Instance_For_Vlan;
-    return NULL;
-  }
-
-  for (port_index = 1; port_index <= max_port; port_index++) {
-    if (BitmapGetBit(port_bmp, (port_index - 1))) {
-      if (! STP_port_create (this, port_index)) {
-        /* can't add port :( */
-        stp_trace ("can't create port %d", (int) port_index);
-        STP_stpm_delete (this);
-        *err_code =STP_Cannot_Create_Instance_For_Port;
-        return NULL;
-      }
     }
-  }
 
-  *err_code = STP_OK;
-  return this;
+    // 创建一个网桥控制块，并初始化，特别是创建了内部一个端口角色选择状态机
+    this = STP_stpm_create (vlan_id, name);
+    if (! this) { /* can't create stpm :( */
+        *err_code = STP_Cannot_Create_Instance_For_Vlan;
+        return NULL;
+    }
+    fprintf(stderr,"[%s]: creat stpm %s ok!\n",__func__,name);
+
+    // 遍历当前网桥的所有端口
+    for (port_index = 1; port_index <= max_port; port_index++) 
+    {
+        if (BitmapGetBit(port_bmp, (port_index - 1))) 
+        {
+            // 这里更合理的是调用STP_IN_port_create封装
+            // 为每个端口创建一个端口控制块,并初始化，特别是创建了端口相关的状态机
+            if (! STP_port_create (this, port_index)) 
+            {
+                /* can't add port :( */
+                stp_trace ("can't create port %d", (int) port_index);
+                STP_stpm_delete (this);
+                *err_code =STP_Cannot_Create_Instance_For_Port;
+                return NULL;
+            }
+            fprintf(stderr,"[%s]: creat port %d ok!\n",__func__,(int)port_index);
+        }
+    }
+    fprintf(stderr,"[%s]: max_port = %d\n",__func__,max_port);
+
+    *err_code = STP_OK;
+    return this;
 }
 
 int
@@ -125,11 +135,12 @@ _stp_in_stpm_enable (int vlan_id, char* name,
 }
 
 
-STPM_T *
-stpapi_stpm_find (int vlan_id)
+// 获取指定vlan id的网桥
+STPM_T *stpapi_stpm_find (int vlan_id)
 {
   register STPM_T* this;
 
+  // 遍历整个网桥链表
   for (this = STP_stpm_get_the_list (); this; this = this->next)
     if (vlan_id == this->vlan_id)
       return this;
@@ -150,8 +161,7 @@ _stpapi_port_find (STPM_T* this, int port_index)
   return NULL;
 }
 
-PORT_T *
-stpapi_port_find (STPM_T* this, int port_index)
+PORT_T *stpapi_port_find (STPM_T* this, int port_index)
 {
   return _stpapi_port_find(this, port_index);
 }
@@ -254,6 +264,7 @@ _stp_in_enable_port_on_stpm (STPM_T* stpm, int port_index, Bool enable)
   port->selected = False;  
 }
 
+// 端口最大数量初始化
 void STP_IN_init (int max_port_index)
 {
   max_port = max_port_index;
@@ -694,8 +705,7 @@ int STP_IN_rx_bpdu (int vlan_id, int port_index, BPDU_T* bpdu, size_t len)
   return iret;
 }
 
-int
-STP_IN_one_second (void)
+int STP_IN_one_second (void)
 {
   register STPM_T* stpm;
   register int     dbg_cnt = 0;
@@ -988,6 +998,7 @@ static char* rstp_error_names[] = RSTP_ERRORS;
 
 /*---------------- Dynamic port create / delete ------------------*/
 
+// 创建端口控制块,包含状态机的创建,目前还包含了第一次状态机的检查和状态切换
 int STP_IN_port_create(int vlan_id, int port_index)
 {
   register STPM_T* this;
@@ -1008,6 +1019,8 @@ int STP_IN_port_create(int vlan_id, int port_index)
 
   STP_compute_bridge_id(this);
   STP_stpm_update_after_bridge_management (this);
+
+  // 完成状态机的检查和状态切换
   STP_stpm_update (this);
   return 0;
 }

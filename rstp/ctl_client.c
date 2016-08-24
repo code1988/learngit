@@ -44,7 +44,6 @@ int ctl_client_init(void)
 	
 	ctl_client_fd = s;
 
-	fprintf(stderr, "this is in %s\n",__func__);
 	return 0;
 }
 

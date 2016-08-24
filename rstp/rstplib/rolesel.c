@@ -25,6 +25,14 @@
 #include "base.h"
 #include "stpm.h"
 
+/*
+ * 端口角色选择状态机的状态枚举
+ * INIT_BRIDGE: 初始化后进入状态
+ * ROLE_SELECTION: 计算端口角色并为每个端口分配角色，
+ * 如果在计算过程中任一端口的reselect被置位，重新计算
+ *
+ * BEGIN->INIT_BRIDGE->ROLE_SELECTION皆为无条件切换
+ */
 #define STATES { \
   CHOOSE(INIT_BRIDGE),      \
   CHOOSE(ROLE_SELECTION),   \
@@ -103,8 +111,8 @@ setRoleSelected (char* reason, STPM_T* stpm, PORT_T* port,
 #endif
 }
 
-static void
-updtRoleDisableBridge (STPM_T* this)
+// 本网桥所有端口的端口角色复位
+static void updtRoleDisableBridge (STPM_T* this)
 {               /* 17.10.20 */
   register PORT_T *port;
 
@@ -113,8 +121,8 @@ updtRoleDisableBridge (STPM_T* this)
   }
 }
 
-static void
-clearReselectBridge (STPM_T* this)
+// 本网桥所有端口的reselect标志位清零
+static void clearReselectBridge (STPM_T* this)
 {               /* 17.19.1 */
   register PORT_T *port;
 
@@ -291,53 +299,59 @@ setSelectedBridge (STPM_T* this)
   return True;
 }
 
-void
-STP_rolesel_enter_state (STATE_MACH_T* this)
+void STP_rolesel_enter_state (STATE_MACH_T* this)
 {
   STPM_T* stpm;
 
+  // 指向所属网桥
   stpm = this->owner.stpm;
 
   switch (this->State) {
     case BEGIN:
     case INIT_BRIDGE:
-      updtRoleDisableBridge (stpm);
+      updtRoleDisableBridge (stpm); // 本网桥所有端口的端口角色复位
       break;
     case ROLE_SELECTION:
-      clearReselectBridge (stpm);
-      updtRolesBridge (this);
-      setSelectedBridge (stpm);
+      clearReselectBridge (stpm);   // 本网桥所有端口的reselect标志位清零
+      updtRolesBridge (this);       // 为本网桥所有端口分配角色
+      setSelectedBridge (stpm);     // 当本网桥所有端口都未触发角色重选时，置位所有端口的selected
       break;
   }
 }
 
-Bool
-STP_rolesel_check_conditions (STATE_MACH_T* s)
+// 端口角色选择状态机的状态检测函数
+//  BEGIN->INIT_BRIDGE->ROLE_SELECTION皆为无条件切换
+Bool STP_rolesel_check_conditions (STATE_MACH_T* s)
 {
   STPM_T* stpm;
   register PORT_T* port;
 
-  if (BEGIN == s->State) {
-    STP_hop_2_state (s, INIT_BRIDGE);
-  }
+    if (BEGIN == s->State) 
+    {
+        STP_hop_2_state (s, INIT_BRIDGE);
+    }
 
-  switch (s->State) {
-    case BEGIN:
-      return STP_hop_2_state (s, INIT_BRIDGE);
-    case INIT_BRIDGE:
-      return STP_hop_2_state (s, ROLE_SELECTION);
-    case ROLE_SELECTION:
-      stpm = s->owner.stpm;
-      for (port = stpm->ports; port; port = port->next) {
-        if (port->reselect) {
-          /* stp_trace ("reselect on port %s", port->port_name); */
+    switch (s->State) 
+    {
+        case BEGIN:
+          return STP_hop_2_state (s, INIT_BRIDGE);
+        case INIT_BRIDGE:
           return STP_hop_2_state (s, ROLE_SELECTION);
-        }
-      }
-      break;
-  }
+        case ROLE_SELECTION:
+          stpm = s->owner.stpm;
+          for (port = stpm->ports; port; port = port->next) 
+          {
+              // 只有reselect被置位了才会触发端口角色选择状态机去重新更新端口角色
+            if (port->reselect) 
+            {
+              /* stp_trace ("reselect on port %s", port->port_name); */
+              return STP_hop_2_state (s, ROLE_SELECTION);
+            }
+          }
+          break;
+    }
 
-  return False;
+    return False;
 }
 
 void

@@ -19,6 +19,7 @@
  * Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 
  * 02111-1307, USA. 
  **********************************************************************/
+#if 0   // not use temporary
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -216,6 +217,9 @@ int main_loop (void)
   int           rc, numfds, sock, kkk;
 
   
+    log_info("This is in [%d][%s]\n",getpid(),__func__);
+    syslog(LOG_INFO,"This is in [%d][%s]\n",getpid(),__func__);
+    fprintf(stderr,"[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[%s\n",__func__);
   sock = GET_FILE_DESCRIPTOR(&uid_socket);
 
   gettimeofday (&earliest, NULL);
@@ -284,6 +288,9 @@ int main_loop (void)
 
 int main (int argc, char** argv)
 {
+    log_info("This is in [%d][%s]\n",getpid(),__func__);
+    syslog(LOG_INFO,"This is in [%d][%s]\n",getpid(),__func__);
+    fprintf(stderr,"[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[%s\n",__func__);
   rl_init ();
   
   my_pid = getpid();
@@ -304,4 +311,4 @@ char* sprint_time_stump (void)
 {
   return UT_sprint_time_stamp();
 }
-
+#endif

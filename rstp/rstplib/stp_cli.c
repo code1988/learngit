@@ -20,6 +20,8 @@
  * 02111-1307, USA. 
  **********************************************************************/
 
+#if 0   // not use temporary
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -793,4 +795,4 @@ int stp_cli_init (void)
    cli_register_language (lang);
    return 0;
 }
-
+#endif

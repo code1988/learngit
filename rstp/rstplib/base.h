@@ -162,6 +162,7 @@ extern ULONG Ntohl (ULONG n);
     }                                   \
   }
 
+// 创建节点并插入表头
 #define STP_NEW_IN_LIST(WHAT, TYPE, LIST, MSG)  \
   {                                             \
     STP_MALLOC(WHAT, TYPE, MSG);                \

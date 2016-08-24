@@ -480,7 +480,7 @@ static int cmd_rstp(int argc, char *const *argv)
 		return 1;
 	}
 
-    // 使能/禁止rstp
+    // 使能/禁止rstp,函数定义位于ctl_wrap.c
 	r = CTL_enable_rstp(enable);
 	if (r < 0) {
 		fprintf(stderr, "Failed to %s rstp\n", (enable == 1)? "enable":"disable");
@@ -868,10 +868,10 @@ int main(int argc, char** argv)
 					}
 					if (cargc != 0) 
                     {
-						pCmd = &cmdbuf[0];
 						memset(cmdbuf, 0, 256);
 						offset = 0;
-						for(i=0; i<cargc; i++) {
+						for(i=0; i<cargc; i++) 
+                        {
 							sprintf(pCmd + offset, "%s ", cargv[i]);
 							offset += strlen(cargv[i]) + 1;
 							if(offset > 256) {
@@ -892,10 +892,12 @@ int main(int argc, char** argv)
         {
 			syslog(LOG_ERR, "unable to open %s\n", conf_file_name);
 		}
+
+        syslog(LOG_INFO, "--------------------this is in end of [%d][%s]", getpid(),__func__);
+
 		return 1;
 	}
 
-	fprintf(stderr, "---------------------------optind =%d\n", optind);
 	if(argc == optind)
 		goto help;
 	

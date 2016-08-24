@@ -39,6 +39,7 @@
 
 #include "stp_to.h" /* for STP_OUT_get_port_name & STP_OUT_get_port_link_status */
 
+// 创建端口控制块，包含申请内存并挂钩到桥控制块内，端口状态机的创建,端口配置信息初始化
 PORT_T *STP_port_create (STPM_T* stpm, int port_index)
 {
   PORT_T*        this;

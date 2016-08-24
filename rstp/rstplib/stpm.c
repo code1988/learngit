@@ -36,8 +36,9 @@ _stp_stpm_init_machine (STATE_MACH_T* this)
   return 0;
 }
 
-static int
-_stp_stpm_iterate_machines (STPM_T* this,
+// 根据需求执行状态机的回调函数，返回成功执行的状态机数量
+// exit_on_non_zero_ret用于传入需求
+static int _stp_stpm_iterate_machines (STPM_T* this,
                            int (*iter_callb) (STATE_MACH_T*),
                            Bool exit_on_non_zero_ret)
 {
@@ -46,8 +47,13 @@ _stp_stpm_iterate_machines (STPM_T* this,
   int                    iret, mret = 0;
 
   /* state machines per bridge */
-  for (stater = this->machines; stater; stater = stater->next) {
+  // 遍历隶属于桥的状态机链表
+  for (stater = this->machines; stater; stater = stater->next) 
+  {
+      // 检查每个状态机是否状态改变
     iret = (*iter_callb) (stater);
+
+    // 根据需求决定是否继续遍历
     if (exit_on_non_zero_ret && iret)
       return iret;
     else
@@ -55,9 +61,16 @@ _stp_stpm_iterate_machines (STPM_T* this,
   }
 
   /* state machines per port */
-  for (port = this->ports; port; port = port->next) {
-    for (stater = port->machines; stater; stater = stater->next) {
+  // 遍历每个端口
+  for (port = this->ports; port; port = port->next) 
+  {
+    // 遍历隶属于端口的状态机
+    for (stater = port->machines; stater; stater = stater->next) 
+    {
+      // 检查每个状态机是否状态改变
       iret = (*iter_callb) (stater);
+
+      // 根据需求决定是否继续遍历
       if (exit_on_non_zero_ret && iret)
         return iret;
       else
@@ -65,6 +78,7 @@ _stp_stpm_iterate_machines (STPM_T* this,
     }
   }
   
+  // 返回状态变化的状态机数量 
   return mret;
 }
 
@@ -95,8 +109,7 @@ _check_topoch (STPM_T* this)
   return 0;
 }
 
-void
-STP_stpm_one_second (STPM_T* param)
+void STP_stpm_one_second (STPM_T* param)
 {
   STPM_T*           this = (STPM_T*) param;
   register PORT_T*  port;
@@ -124,11 +137,12 @@ STP_stpm_one_second (STPM_T* param)
   }
 }
 
-STPM_T*
-STP_stpm_create (int vlan_id, char* name)
+// 创建一个网桥控制块，并初始化，特别是创建了内部一个端口角色选择状态机
+STPM_T* STP_stpm_create (int vlan_id, char* name)
 {
   STPM_T* this;
 
+  // 创建网桥控制块节点并插入表头
   STP_NEW_IN_LIST(this, STPM_T, bridges, "stp instance");
 
   this->admin_state = STP_DISABLED;
@@ -141,6 +155,7 @@ STP_stpm_create (int vlan_id, char* name)
   this->machines = NULL;
   this->ports = NULL;
 
+  // 创建端口角色选择状态机,隶属于当前网桥
   STP_STATE_MACH_IN_LIST(rolesel);
 
 #ifdef STP_DBG
@@ -150,8 +165,8 @@ STP_stpm_create (int vlan_id, char* name)
   return this;
 }
 
-int
-STP_stpm_enable (STPM_T* this, UID_STP_MODE_T admin_state)
+// 使能/禁止生成树,并完成生成树状态检测和切换
+int STP_stpm_enable (STPM_T* this, UID_STP_MODE_T admin_state)
 {
   int rc = 0;
 
@@ -161,10 +176,13 @@ STP_stpm_enable (STPM_T* this, UID_STP_MODE_T admin_state)
   }
 
   if (STP_ENABLED == admin_state) {
+    // 开启生成树,并完成生成树状态检测和切换
     rc = STP_stpm_start (this);
     this->admin_state = admin_state;
-  } else {
+  } 
+  else {
     this->admin_state = admin_state;
+    // 关闭生成树
     STP_stpm_stop (this);
   }
   
@@ -212,8 +230,8 @@ STP_stpm_delete (STPM_T* this)
   }
 }
 
-int
-STP_stpm_start (STPM_T* this)
+// 开启生成树,并完成生成树状态检测和切换
+int STP_stpm_start (STPM_T* this)
 {
   register PORT_T* port;
 
@@ -251,6 +269,9 @@ STP_stpm_start (STPM_T* this)
 #endif
 
   _stp_stpm_iterate_machines (this, _stp_stpm_init_machine, False);
+
+  
+    // 这里完成了当前网桥以及端口所属的所有状态机的状态检测和切换
   STP_stpm_update (this);
 
   return 0;
@@ -261,34 +282,39 @@ STP_stpm_stop (STPM_T* this)
 {
 }
 
-int
-STP_stpm_update (STPM_T* this) /* returns number of loops */
+// 这里完成了当前网桥以及端口所属的所有状态机的状态检测和切换
+int STP_stpm_update (STPM_T* this) /* returns number of loops */
 {
   register Bool     need_state_change;
   register int      number_of_loops = 0;
 
   need_state_change = False; 
   
-  for (;;) {/* loop until not need changes */
+  for (;;) 
+  {/* loop until not need changes */
+    // 检查状态变化的状态机,一次找到一个就行
     need_state_change = _stp_stpm_iterate_machines (this,
                                                    STP_check_condition,
                                                    True);
+    // 当再也找不到时返回执行了检查和切换的状态机总数
     if (! need_state_change) return number_of_loops;
 
     number_of_loops++;
     /* here we know, that at least one stater must be
        updated (it has changed state) */
+    // 切换所有状态变化的状态机状态
     number_of_loops += _stp_stpm_iterate_machines (this,
                                                   STP_change_state,
                                                   False);
 
   }
 
+  // 返回执行了检查和切换的状态机总数
   return number_of_loops;
 }
 
-BRIDGE_ID *
-STP_compute_bridge_id (STPM_T* this)
+// 生成桥ID
+BRIDGE_ID *STP_compute_bridge_id (STPM_T* this)
 {
 #ifdef RSTP_JWS
   register PORT_T* port;
@@ -324,14 +350,14 @@ STP_compute_bridge_id (STPM_T* this)
 #endif 
 }
 
-STPM_T*
-STP_stpm_get_the_list (void)
+// 获取网桥链表头
+STPM_T *STP_stpm_get_the_list (void)
 {
   return bridges;
 }
 
-void
-STP_stpm_update_after_bridge_management (STPM_T* this)
+// 置位每个端口的reselect、复位每个端口的selected
+void STP_stpm_update_after_bridge_management (STPM_T* this)
 {
   register PORT_T* port;
 

@@ -144,6 +144,7 @@ case CMD_CODE_ ## name : do { \
 } while (0)
 
 /* Wraper for the control functions in the control command client */
+// 这里封装了客户端所有CLI命令对应的执行函数的定义,函数以"CTL_"打头
 #define CLIENT_SIDE_FUNCTION(name) \
 int CTL_ ## name name ## _ARGS \
 { \
@@ -153,12 +154,55 @@ int CTL_ ## name name ## _ARGS \
   name ## _COPY_IN; \
   int res = 0; \
   int r = ctl_client_send(CMD_CODE_ ## name, in, sizeof(*in), out, &l, &res); \
+  fprintf(stderr,"-----------------Got return code %d,%d",r,res);\
   if (r || res) log_info("Got return code %d, %d", r, res); \
   if (r) return r; \
   if (res) return res; \
   name ## _COPY_OUT; \
   return r; \
 }
+
+/* 
+ *  以“rstpctl showbridge”命令为例
+ *  对应的客户端请求函数为
+ *  int CTL_get_bridge_state((UID_STP_CFG_T *cfg, UID_STP_STATE_T *state))
+ *  {
+ *      struct get_bridge_state_IN in0, *in = &in0;
+ *      struct get_bridge_state_OUT out0,*out = &out0;
+ *      int l = sizeof(*out);
+ *
+ *      // get_bridge_state_COPY_IN;
+ *      
+ *      int res = 0;
+ *      int r = ctl_client_send(CMD_CODE_get_bridge_state,in,sizeof(*in),out,&l,&res);
+ *      if(r || res)
+ *      {
+ *          log_info("Got return code %d,%d",r,res);
+ *      }
+ *      
+ *      if(r)
+ *          return r;
+ *
+ *      if(res)
+ *          return res;
+ *
+ *      // get_bridge_state_COPY_OUT;
+ *      cfg = out->cfg; 
+ *      *state = out->state;
+ *
+ *      return r;
+ *  }
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * */
 
 #endif
 

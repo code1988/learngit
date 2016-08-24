@@ -18,6 +18,8 @@
  * along with RSTP library; see the file COPYING.  If not, write to the Free
  * Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
+ *
+ * CLI通信时需要用到的一些数据结构
  **********************************************************************/
 
 /* External management communication API definitions */
@@ -27,7 +29,7 @@
 
 #define NAME_LEN    20
 
-// 生成树使能/禁止
+// 网桥使能/禁止
 typedef enum {
   STP_DISABLED,
   STP_ENABLED,
@@ -43,6 +45,7 @@ typedef struct {
   char      action; /* 1-create, 0- delete */
 } UID_STP_BR_CTRL_T;
 
+// 生成树配置参数标记位
 #define BR_CFG_STATE        (1L << 0)
 #define BR_CFG_PRIO         (1L << 1)
 #define BR_CFG_AGE          (1L << 2)
@@ -62,10 +65,11 @@ typedef struct {
                    BR_CFG_AGE_TIME  | \
                    BR_CFG_HOLD_TIME
 
+// 桥参数配置控制块
 typedef struct {
   /* service data */
-  unsigned long     field_mask; /* which fields to change */
-  UID_STP_MODE_T    stp_enabled;
+  unsigned long     field_mask;         // 网桥配置参数标记字段
+  UID_STP_MODE_T    stp_enabled;        // 网桥使能/禁止
   char              vlan_name[NAME_LEN]; /* name of the VLAN, key of the bridge */
 
   /* protocol data */
@@ -77,6 +81,7 @@ typedef struct {
   int           hold_time;
 } UID_STP_CFG_T;
 
+// 生成树运行状态控制块
 typedef struct {
   /* service data */
   char              vlan_name[NAME_LEN]; /* name of the VLAN, key of the bridge */

@@ -57,20 +57,20 @@ typedef struct stpm_t {
 
   /* The only "per bridge" state machine */
   // 属于网桥的状态机
-  STATE_MACH_T*         rolesel;   /* the Port Role Selection State machione: 17.22 */
-  STATE_MACH_T*         machines;
+  STATE_MACH_T*         rolesel;    // 端口角色选择状态机 /* the Port Role Selection State machione: 17.22 */
+  STATE_MACH_T*         machines;   // 属于网桥的状态机链表
 
   /* variables */
   PROTOCOL_VERSION_T    ForceVersion;   /* 17.12, 17.16.1 */    // 生成树协议版本
-  BRIDGE_ID             BrId;           /* 17.17.2 */
-  TIMEVALUES_T          BrTimes;        /* 17.17.4 */
+  BRIDGE_ID             BrId;           /* 17.17.2 */           // 桥ID控制块，由优先级和mac组成
+  TIMEVALUES_T          BrTimes;        /* 17.17.4 */           // 当前网桥的定时器族
   PORT_ID               rootPortId;     /* 17.17.5 */
   PRIO_VECTOR_T         rootPrio;       /* 17.17.6 */
-  TIMEVALUES_T          rootTimes;      /* 17.17.7 */
+  TIMEVALUES_T          rootTimes;      /* 17.17.7 */           // 根桥的定时器族
   
   int                   vlan_id;        /* let's say: tag */
   char*                 name;           /* name of the VLAN, maily for debugging */
-  UID_STP_MODE_T        admin_state;    /* STP_DISABLED or STP_ENABLED; type see in UiD */
+  UID_STP_MODE_T        admin_state;    /* STP_DISABLED or STP_ENABLED; type see in UiD */  // 生成树使能/禁止
 
   unsigned long         timeSince_Topo_Change; /* 14.8.1.1.3.b */
   unsigned long         Topo_Change_Count;     /* 14.8.1.1.3.c */

@@ -28,7 +28,7 @@
 #include "statmch.h"
 
 #define TIMERS_NUMBER   9
-typedef unsigned int    PORT_TIMER_T;
+typedef unsigned int    PORT_TIMER_T;   // 定时器计数器
 
 typedef enum {
   Mine,
@@ -45,12 +45,13 @@ typedef enum {
   OtherMsg              // 其他消息(包括拓扑变化消息)
 } RCVD_MSG_T;
 
+// 端口角色
 typedef enum {
   DisabledPort = 0,
-  AlternatePort,
-  BackupPort,
-  RootPort,
-  DesignatedPort,
+  AlternatePort,    // 可选端口，提供了到达根网桥的另一条可选路径，是根端口的备份
+  BackupPort,       // 备份端口，备份端口是指定端口的备份
+  RootPort,         // 根端口，提供了到达根网桥的一条最优路径
+  DesignatedPort,   // 指定端口，将LAN连到指定网桥的端口都是该LAN的指定端口
   NonStpPort
 } PORT_ROLE_T;
 
@@ -70,7 +71,7 @@ typedef struct port_t {
   STATE_MACH_T*     edge;      /*  */
   STATE_MACH_T*     pcost;     /*  */
 
-  STATE_MACH_T*     machines; /* list of machines */
+  STATE_MACH_T*     machines;   // 属于端口的状态机链表 /* list of machines */
 
   struct stpm_t*    owner; /* Bridge, that this port belongs to */
   
@@ -85,7 +86,7 @@ typedef struct port_t {
   PORT_TIMER_T      txCount;      /* 17.18.40 */
   PORT_TIMER_T      lnkWhile;
 
-  PORT_TIMER_T*     timers[TIMERS_NUMBER]; /*list of timers */
+  PORT_TIMER_T*     timers[TIMERS_NUMBER]; /*list of timers */  // 定时器数组
 
   Bool              agreed;        /* 17.18.1 */
   PRIO_VECTOR_T     designPrio;    /* 17.18.2 */
@@ -116,10 +117,10 @@ typedef struct port_t {
   Bool              rcvdTcAck;     /* 17.18.26 */   // 标记拓扑变化ack
   Bool              rcvdTcn;       /* 17.18.27 */   // 标记是否收到TCN（拓扑变化通知）bpdu
   Bool              reRoot;        /* 17.18.28 */
-  Bool              reselect;      /* 17.18.29 */
+  Bool              reselect;      /* 17.18.29 */   // 标记本端口是否重新发起端口选择
   PORT_ROLE_T       role;          /* 17.18.30 */
-  Bool              selected;      /* 17.18.31 */
-  PORT_ROLE_T       selectedRole;  /* 17.18.32 */
+  Bool              selected;      /* 17.18.31 */   // 角色选择完成标记
+  PORT_ROLE_T       selectedRole;  /* 17.18.32 */   // 端口角色
   Bool              sendRSTP;      /* 17.18.33 */
   Bool              sync;          /* 17.18.34 */
   Bool              synced;        /* 17.18.35 */
@@ -154,7 +155,7 @@ typedef struct port_t {
   unsigned long     rx_rstp_bpdu_cnt;   // 记录rstp bpdu数量
   unsigned long     rx_tcn_bpdu_cnt;    // 记录CNT bpdu数量
 
-  unsigned long     uptime;       /* 14.8.2.1.3.a */
+  unsigned long     uptime;       /* 14.8.2.1.3.a */    // 运行时间，单位秒
 
   int               port_index;
   char*             port_name;

@@ -197,7 +197,9 @@ int br_notify(int if_index, int newlink, unsigned flags)
 
 	/* Link status is change */
 	if(pRstp->ports[if_index-1].linkStatus != link_status) {
+#if 0
 		log_info("Port%02d link changed -> link-%s", if_index, (link_status == STP_PORT_LINKUP)? "up":"down");
+#endif
 		
 		if(link_status == STP_PORT_LINKDOWN) {
 			/* Link down */
@@ -314,10 +316,12 @@ int STP_OUT_set_port_state (IN int port_index, IN int vlan_id, IN RSTP_PORT_STAT
 	fal_port_dot1d_state_t dot1d_state;
 	int br_state;
 	
-	log_info("Port%02d stp state => %s\n",  port_index,			
+#if 0
+	log_info("Port%02d stp state h> %s\n",  port_index,			
 			(state == UID_PORT_DISCARDING)? "blocking" : 
 			(state == UID_PORT_LEARNING)? "learning" : 
 			(state == UID_PORT_FORWARDING)? "forwarding" : "unkown");
+#endif
 	
 	switch (state) {
 	case UID_PORT_DISCARDING:
@@ -352,20 +356,26 @@ int STP_OUT_set_port_state (IN int port_index, IN int vlan_id, IN RSTP_PORT_STAT
 /* 1- Up, 0- Down */ 
 int STP_OUT_get_port_link_status (int port_index)
 {
+#if 0
 	log_info("Port%02d link   : link-%s\n",  port_index, (pRstp->ports[port_index-1].linkStatus == 1)? "up" : "down");	
+#endif
 	return pRstp->ports[port_index-1].linkStatus;
 }
 
 unsigned long STP_OUT_get_port_oper_speed (unsigned int portNo)
 {
+#if 0
 	log_info("Port%02d speed  : %d\n", portNo, pRstp->ports[portNo-1].speed);
+#endif
 	return pRstp->ports[portNo-1].speed;
 }
 
 /* 1- Full, 0- Half */
 int STP_OUT_get_duplex (IN int port_index)
 {
+#if 0
 	log_info("Port%02d duplex : %s\n", port_index, (pRstp->ports[port_index-1].duplex == 1)? "full":"half");
+#endif
 	return pRstp->ports[port_index-1].duplex;
 }
 
@@ -434,12 +444,14 @@ int CTL_set_debug_level(int level)
 	return 0;
 }
 
+// 使能/禁止rstp
 int CTL_enable_rstp(int enable)
 {
 	int r = 0;
 	int port_index;
 	BITMAP_T portmap;
 
+    log_info("--------------------this is in [%d][%s]\n",getpid(),__func__);	
 	if(enable) 
     {
 		/* Enable */
@@ -450,36 +462,46 @@ int CTL_enable_rstp(int enable)
 
 		//set_bridge_stp(pRstp->bridge.brName, STP_ENABLED);
 		
-		STP_IN_init(pRstp->bridge.portCount);
+		STP_IN_init(pRstp->bridge.portCount);   // 初始化端口最大数量
 		BitmapClear(&portmap);
 	
+        // 创建一个网桥，包含状态机的创建、桥初始信息的配置，最后开启生成树
 		r = STP_IN_stpm_create(STP_DEFAULT_VLAN_ID, STP_DEFAULT_VLAN_NAME, &portmap);
 		if(r != 0) {
 			log_err("stpm create failed, err=%s", STP_IN_get_error_explanation(r));
 			return -1;
 		}
 
+        // 将vlan id对应的网桥控制块挂钩到rstp总控制块下属的桥控制块下
 		if((pRstp->bridge.stpm = (STPM_T *)stpapi_stpm_find(STP_DEFAULT_VLAN_ID)) == NULL) {
 			log_err("stpm find failed");
 			return -1;
 		}
 		log_info("RSTP stpm create done");
 		
-		for(port_index=1; port_index<=pRstp->bridge.portCount; port_index++) {
-			pRstp->ports[port_index-1].linkStatus = STP_PORT_LINKDOWN;
-			pRstp->ports[port_index-1].speed = 0;
-			pRstp->ports[port_index-1].duplex = STP_PORT_DUPLEX_HALF;
+        // 遍历当前网桥的所有端口
+		for(port_index=1; port_index<=pRstp->bridge.portCount; port_index++) 
+        {
+            // 这部分在br_info_init中已经完成初始化
+			//pRstp->ports[port_index-1].linkStatus = STP_PORT_LINKDOWN;
+			//pRstp->ports[port_index-1].speed = 0;
+			//pRstp->ports[port_index-1].duplex = STP_PORT_DUPLEX_HALF;
 			
+            // 调用jssdk库设置端口stp初始状态
 			if(fal_port_dot1d_state_set(0, port_index, FAL_PORT_DOT1D_STATE_BLOCKING) != SW_OK) {
 				log_err("Error: fal_port_dot1d_state_set failed");
 				return -1;
 			}
 			
+            // 创建端口控制块,包含状态机的创建,目前还包含了第一次状态机的检查和状态切换
 			r = STP_IN_port_create(STP_DEFAULT_VLAN_ID, port_index);
 			if(r != 0) {
 				log_err("stp port create failed, err=%s", STP_IN_get_error_explanation(r));
 				return -1;
 			}
+
+
+            // 将port_index对应的端口控制块挂钩到rstp总控制块下属的端口控制块下
 			if((pRstp->ports[port_index-1].port = (PORT_T *)stpapi_port_find(pRstp->bridge.stpm, port_index)) == NULL) {
 				log_err("stp port find failed");
 				return -1;
