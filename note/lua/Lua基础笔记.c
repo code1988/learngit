@@ -46,6 +46,8 @@
 
 7. lua中函数默认为全局函数，头部加local表示为局部函数
    lua函数可以返回多个值，以逗号隔开
+   lua函数可以匿名(只有关键字function标识而没有函数名)，可以定义在参数位置，作为参数传递
+   lua函数可以接受可变形参，格式类似C语言使用"..."，参数保存在全局arg表或{...}中
 
 8. lua的算术运算符和关系运算符基本类C，唯一区别：~= 表示不等于
    lua的逻辑运算符：    and - 逻辑与操作符
@@ -70,11 +72,11 @@
                                        搜索成功返回2个值，ret1为搜索的内容在目标字符串中的起始索引，ret2为结束索引;搜索失败返回nil
     string.reverse(str)             -- 字符串反转
     string.formate(...)             -- 类printf，返回一个格式化字符串
-    string.char(arg)                -- 整形转字符并连接，arg参数个数不限，范围为ASCII
-    string.byte(str,index)          -- 字符转整形
+    string.char(arg)                -- 整形转字符(注意，不是字符串)并连接，arg参数个数不限，范围为ASCII
+    string.byte(str,index)          -- 字符转整形(注意，不是字符串)
                                        str为目标字符串，index为可选参数，表示指定索引，缺省为1,可取负值，表示从后往前数
-    string.len(str)                 -- 计算字符串长度
-    string.rep(str,n)               -- 返回字符串的n个拷贝
+    string.len(str)                 -- 计算字符串长度，功能类似于"#"符号
+    string.rep(str,n)               -- 将字符串str拷贝n次
 
 10. lua自带的table操作库函数：
     table.concat(table,str,s_i,e_i) -- 连接table中的元素
