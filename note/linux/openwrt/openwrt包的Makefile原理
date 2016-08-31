@@ -70,6 +70,14 @@
                     Build/Configure - 如果源代码编译前需要configure或调用配置脚本，就定义这个宏，否则不需要
                     Build/Compile   - 源代码编译规则，默认已经设置好，一般不需要自定义，只有当需要指定一些特殊的规则时才用到。定义了该宏之后，
                                       默认的编译规则就会被覆盖掉，所以这条自定义的规则必须完整
+                    Build/InstallDev    - 如果包是一个动态库，那么通常就需要这个宏，这个宏的作用是安装动态库以及相应的头文件到环境中
+                                          一般的类似写法就是：
+                                                        #define Build/InstallDev
+                                                            $(INSTALL_DIR) $(1)/usr/include
+                                                            $(CP) $(PKG_BUILD_DIR)/*.h $(1)/usr/include/
+                                                            $(INSTALL_DIR) $(1)/usr/lib
+                                                            $(CP) $(PKG_BUILD_DIR)/*.so $(1)/usr/lib/
+                                                        #endef
                     Package/包名/install    - 软件包的安装方法，主要就是将一系列编译好的文件、启动脚本、UCI配置文件等拷贝到指定位置，
                                               一般的类似写法就是：
                                                         #define Package/包名/install
