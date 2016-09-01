@@ -73,7 +73,7 @@ struct uloop_fd
 struct uloop_timeout
 {
 	struct list_head list;  // 链表模块
-	bool pending;           // 挂起标记
+	bool pending;           // 加入链表后该标志置1
 
 	uloop_timeout_handler cb;   // 超时处理函数
 	struct timeval time;        // 定时值
@@ -83,7 +83,7 @@ struct uloop_timeout
 struct uloop_process
 {
 	struct list_head list;      // 链表模块
-	bool pending;               // 挂起标记
+	bool pending;               // 加入链表后该标志置1
 
 	uloop_process_handler cb;   // 父进程给本子进程收尸的函数
 	pid_t pid;                  // 本子进程pid
