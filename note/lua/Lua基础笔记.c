@@ -80,14 +80,15 @@
     string.rep(str,n)               -- 将字符串str拷贝n次
 
 10. lua自带的table操作库函数：
-    table.concat(table,str,s_i,e_i) -- 连接table中的元素
+    table.concat(table,str,s_i,e_i) -- 连接table中的数组部分（注意，table中那些索引号不是整数的元素将会被跳过，同时连接部分的索引号必须连续）
                                        str，可选，为元素间插入的连接符，缺省则无连接符
-                                       s_i，可选，为起始索引号，缺省则连接所有元素
+                                       s_i，可选，为起始索引号，缺省则从索引号1开始连接
                                        e_i，可选，为结束索引号，缺省则连接s_i后所有元素
-    table.insert(table,index,val)   -- 在table中的指定位置插入一个元素
-                                       index，可选，缺省插入到table末尾
-                                       val，插入元素
-    table.remove(table,index)       -- 移除table中指定位置的元素
-                                       index，可选，缺省则移除最后一个
-    table.sort(table)               -- 对table按首字母进行升序排序
+    table.insert(table,index,val)   -- 在table中的数组部分指定位置插入一个元素(注意，操作只针对数组部分)
+                                       index,可选，表示插入位置的数组索引号，缺省插入到最小的未被使用的非零整数位置
+                                       val，插入的元素
+    table.remove(table,index)       -- 移除table中的数组部分指定位置的元素
+                                       index，可选，表示移除位置的数组索引号，缺省则移除最后一个
+    table.sort(table,comp)          -- 对table进行升序排序
+                                       comp是排序函数，可选，缺省则按首字母进行升序排序
                                        
