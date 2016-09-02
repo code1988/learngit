@@ -391,9 +391,11 @@ static inline struct list_head *ptype_head(const struct packet_type *pt)
 
 void dev_add_pack(struct packet_type *pt)
 {
+    // 先确定将要注册到哪张表中
 	struct list_head *head = ptype_head(pt);
 
 	spin_lock(&ptype_lock);
+    // 完成注册
 	list_add_rcu(&pt->list, head);
 	spin_unlock(&ptype_lock);
 }

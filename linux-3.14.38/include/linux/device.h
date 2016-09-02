@@ -1,5 +1,13 @@
 /*
  * device.h - generic, centralized driver model
+ * 描述linux设备模型的核心头文件
+ *
+ * 设备模型包含了4个核心概念：
+ *              bus     - 总线（核心数据结构就是struct bus_type）
+ *              class   - 分类
+ *              device  - 设备（核心数据结构就是struct device）
+ *              device driver   - 驱动（核心数据结构就是struct device_driver）
+ *
  *
  * Copyright (c) 2001-2003 Patrick Mochel <mochel@osdl.org>
  * Copyright (c) 2004-2009 Greg Kroah-Hartman <gregkh@suse.de>
@@ -100,6 +108,8 @@ extern void bus_remove_file(struct bus_type *, struct bus_attribute *);
  * A bus is represented by the bus_type structure. It contains the name, the
  * default attributes, the bus' methods, PM operations, and the driver core's
  * private data.
+ * 
+ * 总线是CPU和设备之间信息交互的通道
  */
 struct bus_type {
 	const char		*name;
