@@ -52,7 +52,10 @@
 
 typedef struct lua_State lua_State;
 
-// 和lua交互的C函数必须遵循的格式
+/* 注册到lua中的C函数必须遵循的格式
+ *
+ * 备注：返回一个整数，表示压入栈中的返回值数量
+ */
 typedef int (*lua_CFunction) (lua_State *L);
 
 
@@ -124,6 +127,8 @@ LUA_API lua_CFunction (lua_atpanic) (lua_State *L, lua_CFunction panicf);
 
 /*
 ** basic stack manipulation
+
+以下这部分API用于对栈进行一系列基础操作
 */
 LUA_API int   (lua_gettop) (lua_State *L);
 LUA_API void  (lua_settop) (lua_State *L, int idx);
@@ -138,6 +143,10 @@ LUA_API void  (lua_xmove) (lua_State *from, lua_State *to, int n);
 
 /*
 ** access functions (stack -> C)
+
+以下这部分API用于访问面向C环境的栈
+        lua_is*系列函数用于检查栈中该索引处元素是否是一个指定的类型
+        lua_to*系列函数用于获取指定类型的栈中元素
 */
 
 LUA_API int             (lua_isnumber) (lua_State *L, int idx);
@@ -164,6 +173,9 @@ LUA_API const void     *(lua_topointer) (lua_State *L, int idx);
 
 /*
 ** push functions (C -> stack)
+
+以下这部分API用于设置面向C环境的栈
+        lua_push*系列函数用于将C value压栈以便传递给lua
 */
 LUA_API void  (lua_pushnil) (lua_State *L);
 LUA_API void  (lua_pushnumber) (lua_State *L, lua_Number n);
@@ -181,6 +193,8 @@ LUA_API int   (lua_pushthread) (lua_State *L);
 
 /*
 ** get functions (Lua -> stack)
+
+以下这部分API用于访问面向lua环境的栈
 */
 LUA_API void  (lua_gettable) (lua_State *L, int idx);
 LUA_API void  (lua_getfield) (lua_State *L, int idx, const char *k);
@@ -194,6 +208,8 @@ LUA_API void  (lua_getfenv) (lua_State *L, int idx);
 
 /*
 ** set functions (stack -> Lua)
+
+以下这部分API用于设置面向lua环境的栈
 */
 LUA_API void  (lua_settable) (lua_State *L, int idx);
 LUA_API void  (lua_setfield) (lua_State *L, int idx, const char *k);
@@ -287,7 +303,7 @@ LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud);
 // 从堆栈上弹出一个值，并将其设为全局table中的元素s的新值
 #define lua_setglobal(L,s)	lua_setfield(L, LUA_GLOBALSINDEX, (s))
 
-// 将全局table中的元素s的值压栈，返回该值的类型
+// 将全局table(_G)中的元素s的值压栈，返回该值的类型
 #define lua_getglobal(L,s)	lua_getfield(L, LUA_GLOBALSINDEX, (s))
 
 #define lua_tostring(L,i)	lua_tolstring(L, (i), NULL)

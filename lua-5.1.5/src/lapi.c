@@ -165,12 +165,16 @@ LUA_API lua_State *lua_newthread (lua_State *L) {
 ** basic stack manipulation
 */
 
-
+// 获取栈顶元素的正索引，也就是获取栈中元素的个数
 LUA_API int lua_gettop (lua_State *L) {
   return cast_int(L->top - L->base);
 }
 
-
+/* 将栈顶设置为一个指定位置，即修改栈中元素的数量
+ *
+ * @idx - 正数时，如果比之前的栈顶高，会向栈中压入nil来补足大小，如果比之前的栈顶低，意味着多出来的元素会被丢弃;
+ *        负数时，只有丢弃功能
+ */
 LUA_API void lua_settop (lua_State *L, int idx) {
   lua_lock(L);
   if (idx >= 0) {
@@ -186,7 +190,10 @@ LUA_API void lua_settop (lua_State *L, int idx) {
   lua_unlock(L);
 }
 
-
+/* 删除指定索引上的元素
+ * 
+ * 删除后，该位置之上的所有元素会下移一个槽位
+ */
 LUA_API void lua_remove (lua_State *L, int idx) {
   StkId p;
   lua_lock(L);
@@ -197,7 +204,9 @@ LUA_API void lua_remove (lua_State *L, int idx) {
   lua_unlock(L);
 }
 
-
+/* 上移指定位置之上的所有元素以开辟一个槽位的空间
+ *
+ */
 LUA_API void lua_insert (lua_State *L, int idx) {
   StkId p;
   StkId q;
@@ -209,7 +218,9 @@ LUA_API void lua_insert (lua_State *L, int idx) {
   lua_unlock(L);
 }
 
-
+/* 弹出栈顶的值，并将该值设置到指定索引上
+ *
+ */
 LUA_API void lua_replace (lua_State *L, int idx) {
   StkId o;
   lua_lock(L);
@@ -246,7 +257,7 @@ LUA_API void lua_pushvalue (lua_State *L, int idx) {
 
 /*
 ** access functions (stack -> C)
-以下这些函数都是用于操作面向C的栈
+以下这些函数都是用于操作面向C环境的栈
 */
 
 // 获取栈中元素在lua中的类型
@@ -330,7 +341,7 @@ LUA_API int lua_lessthan (lua_State *L, int index1, int index2) {
 }
 
 /*
- *  基础API 提供了lua_to*系列函数用于获取栈中元素
+ *  基础API 提供了lua_to*系列函数用于获取指定类型的栈中元素
  *  注意：正索引通常用于获取栈底，负索引通常用于获取栈顶
  */
 // 把索引处的lua值转换为lua_Number类型的C类型
