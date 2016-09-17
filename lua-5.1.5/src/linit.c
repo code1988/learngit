@@ -13,7 +13,7 @@
 #include "lualib.h"
 #include "lauxlib.h"
 
-
+// 以下这张表中记录了所有的标准库
 static const luaL_Reg lualibs[] = {
   {"", luaopen_base},
   {LUA_LOADLIBNAME, luaopen_package},
@@ -26,7 +26,7 @@ static const luaL_Reg lualibs[] = {
   {NULL, NULL}
 };
 
-
+// 打开所有的标准库
 LUALIB_API void luaL_openlibs (lua_State *L) {
   const luaL_Reg *lib = lualibs;
   for (; lib->func; lib++) {

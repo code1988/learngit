@@ -247,6 +247,7 @@ static const luaL_Reg mathlib[] = {
 
 /*
 ** Open math library
+开启lua的数学标准库
 */
 LUALIB_API int luaopen_math (lua_State *L) {
   luaL_register(L, LUA_MATHLIBNAME, mathlib);

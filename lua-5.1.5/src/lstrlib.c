@@ -858,6 +858,7 @@ static void createmetatable (lua_State *L) {
 
 /*
 ** Open string library
+开启lua的字符串标准库
 */
 LUALIB_API int luaopen_string (lua_State *L) {
   luaL_register(L, LUA_STRLIBNAME, strlib);

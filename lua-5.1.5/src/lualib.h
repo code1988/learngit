@@ -1,6 +1,9 @@
 /*
 ** $Id: lualib.h,v 1.36.1.1 2007/12/27 13:02:25 roberto Exp $
 ** Lua standard libraries
+
+本头文件声明了打开每种lua标准库的函数
+
 ** See Copyright Notice in lua.h
 */
 

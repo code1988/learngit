@@ -533,7 +533,7 @@ static void newfenv (lua_State *L, lua_CFunction cls) {
   lua_setfield(L, -2, "__close");
 }
 
-
+// 开启lua的I/O标准库
 LUALIB_API int luaopen_io (lua_State *L) {
   createmeta(L);
   /* create (private) environment (with fields IO_INPUT, IO_OUTPUT, __close) */

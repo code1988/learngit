@@ -390,7 +390,7 @@ static const luaL_Reg dblib[] = {
   {NULL, NULL}
 };
 
-
+// 开启lua的调试标准库
 LUALIB_API int luaopen_debug (lua_State *L) {
   luaL_register(L, LUA_DBLIBNAME, dblib);
   return 1;

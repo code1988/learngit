@@ -1,6 +1,12 @@
 /*
 ** $Id: lauxlib.c,v 1.159.1.3 2008/01/21 13:20:51 roberto Exp $
 ** Auxiliary functions for building Lua libraries
+
+本文件定义了lua辅助库API
+
+辅助库是一个使用lua.h中基础API编写的一个较高抽象层
+辅助库API用于编写lua标准库
+
 ** See Copyright Notice in lua.h
 */
 
@@ -650,7 +656,12 @@ static int panic (lua_State *L) {
   return 0;
 }
 
-// 创建一个新的lua状态机,并打印出错信息到标准错误输出
+/* 创建一个新的lua环境(状态机),并打印出错信息到标准错误输出
+ *
+ * 备注：本函数创建的新lua环境中没有包含任何预定义的函数，甚至没有print，这么做的目的是尽可能保持语言本身的小巧
+ *       调用lualib.h中声明的函数可以打开各种标准库，而调用辅助库API luaL_openlibs可以打开所有的标准库
+ *       
+ */
 LUALIB_API lua_State *luaL_newstate (void) {
   lua_State *L = lua_newstate(l_alloc, NULL);
   if (L) lua_atpanic(L, &panic);
