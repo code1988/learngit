@@ -32,11 +32,108 @@
 
    如果不想在访问一个table时自动调用到它的__index元方法，就需要使用函数rawget。
 
-   一个典型的__index元方法应用案例就是：实现具有默认值的table
-            
+   一个典型的__index元方法应用案例就是实现具有默认值的table:
+
+        function setDefault (t,d)
+            local mt = {__index = function (t,k) return d end}
+            setmetatable(t,mt)
+            return t
+        end
+        tb = {1,2}
+        setDefault(tb,6)
+        print(tb[1],tb[10])    --> 1,6
+        --[[
+        以上代码中，调用了setDefault后，任何对tb中不存在字段的访问都将调用它的__index元方法，
+        而这个元方法总是返回d的值(这里就是6)。
+
+        但是用这种方式实现具有默认值的table存在一个缺陷：需要为每个具有默认值的table都创建一个对应的元表.
+        --]]
+              
+        local mt = {__index = function (t,k) return t.___ end}
+        function setDefault (t,d)
+            t.___ = d
+            setmetatable(t,mt)
+        end
+        tb = {1,2}
+        setDefault(tb,6)
+        print(tb[1],tb[10])    --> 1,6
+        --[[
+        以上代码中，独立出来的元表mt可以用于所有table，因为默认值被存储在每个table中的固定字段"___"，而不再跟元表关联.
+        
+        但是这种方法需要注意命名冲突问题.
+        --]]
+        
+        local key = {}
+        local mt = {__index = function (t,k) return t[key] end}
+        function setDefault (t,d)
+            t[key] = d
+            setmetatable(t,mt)
+        end
+        tb = {1,2}
+        setDefault(tb,6)
+        print(tb[1],tb[10])    --> 1,6
+        --[[
+        以上代码中，创建了一个独立的table，并用它的地址作为key，从而确保这个key在所有table中的唯一性
+        --]]
 
 5. __newindex元方法用于改变设置table中不存在的key时的行为。
    当对一个table中不存在的key赋值时，如果在该table的元表中定义了__newindex字段，那么lua就会调用该元方法，规则基本类似__index
    
    如果不想在设置一个table时自动调用到它的__newindex元方法，就需要使用函数rawset。
+
+6. __index和__newindex的应用案例： 监视对一个table的所有访问情况
+   实现原理：为真正的table创建一个代理，这个代理就是一个空的table(只有将一个table永远保持为空，才能捕捉到所有对它的访问)， 
+             并通过__index和__newindex将访问重定向到原来的table上。
+                
+        local tb = {1,2}    -- 构造一个需要被监控的table
+        local _tb = tb      -- 保持对原table的一个私有访问
+        tb = {}             -- 创建代理
+        
+        local mt = {
+            __index = 
+            function (t,k)
+                print("access to element " .. tostring(k))
+                return _tb[k]
+            end,
+            __newindwx = 
+            function (t,k,v)
+                print("update of element ".. tostring(k).. " to " .. tostring(v))
+                _tb[k] = v
+            end
+        }
+
+        setmetatable(tb,mt) -- 设置代理table的元表
+        
+        print(tb[1])    -- access to element 1
+                        -- 1
+        tb[3] = 3       -- update of element 3 to 3
+        --[[
+        以上代码中，原table被保存在一个私有变量_tb中，外界只能通过代理table来访问原table，而整个访问情况通过代理table的元表被记录下来.
+
+        当然这种代理方法存在2个缺点:
+            [1]. 无法遍历原来的table，因为pairs只能操作代理table
+            [2]. 如果要同时监视多个table，就需要为每个table创建对应的元表，解决方法类似上面的"实现具有默认值的table"
+        --]]
+
+7. __index和__newindex的应用案例：实现只读的table
+   实现原理：同样是为真正的table创建一个空的代理table，不同的是只需要监控所有对table的写操作，并引发一个错误就行。
+             至于读操作，直接使用原table作为__index元方法即可。
+
+        local tb = {1,2}    -- 构造一个需要被监控的table
+        local _tb = tb      -- 保持对原table的一个私有访问
+        tb = {}             -- 创建代理
+        
+        local mt = {
+            __index = _tb,
+            __newindex = 
+            function (t,k,v)
+                error("attempt to update a read-only table",2)
+            end
+        }
+
+        setmetatable(tb,mt) -- 设置代理table的元表
+        
+        print(tb[1])    -- 1
+        tb[1] = 2       -- error: attempt to update a read-only table
+
 
