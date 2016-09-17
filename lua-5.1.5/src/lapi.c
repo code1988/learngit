@@ -1,6 +1,9 @@
 /*
 ** $Id: lapi.c,v 2.55.1.5 2008/07/04 18:41:18 roberto Exp $
 ** Lua API
+
+定义了lua对外的基础API
+
 ** See Copyright Notice in lua.h
 */
 
@@ -98,7 +101,7 @@ void luaA_pushobject (lua_State *L, const TValue *o) {
   api_incr_top(L);
 }
 
-
+// 检查lua栈中是否有足够的空间
 LUA_API int lua_checkstack (lua_State *L, int size) {
   int res = 1;
   lua_lock(L);
@@ -243,9 +246,10 @@ LUA_API void lua_pushvalue (lua_State *L, int idx) {
 
 /*
 ** access functions (stack -> C)
+以下这些函数都是用于操作面向C的栈
 */
 
-
+// 获取栈中元素在lua中的类型
 LUA_API int lua_type (lua_State *L, int idx) {
   StkId o = index2adr(L, idx);
   return (o == luaO_nilobject) ? LUA_TNONE : ttype(o);
@@ -258,7 +262,7 @@ LUA_API const char *lua_typename (lua_State *L, int t) {
 }
 
 /*
- *  API提供了lua_is*系列函数用于检查栈中该索引处元素是否是一个指定的类型
+ *  基础API提供了lua_is*系列函数用于检查栈中该索引处元素是否是一个指定的类型
  *
  */
 // 检查该索引处的元素类型是否是 LUA_TFUNCTION 且是C闭包
@@ -267,14 +271,20 @@ LUA_API int lua_iscfunction (lua_State *L, int idx) {
   return iscfunction(o);
 }
 
-
+/* 检查该索引处的元素类型是LUA_TNUMBER
+ *
+ * 备注：LUA_TNUMBER 或者是可以转换成LUA_TNUMBER的字符串都会判断为true
+ */
 LUA_API int lua_isnumber (lua_State *L, int idx) {
   TValue n;
   const TValue *o = index2adr(L, idx);
   return tonumber(o, &n);
 }
 
-
+/* 检查该索引处的元素类型是LUA_TSTRING
+ *
+ * 备注：LUA_TSTRING或者是LUA_TNUMBER都会判断为true
+ */
 LUA_API int lua_isstring (lua_State *L, int idx) {
   int t = lua_type(L, idx);
   return (t == LUA_TSTRING || t == LUA_TNUMBER);
@@ -320,7 +330,7 @@ LUA_API int lua_lessthan (lua_State *L, int index1, int index2) {
 }
 
 /*
- *  API 提供了lua_to*系列函数用于获取栈中元素
+ *  基础API 提供了lua_to*系列函数用于获取栈中元素
  *  注意：正索引通常用于获取栈底，负索引通常用于获取栈顶
  */
 // 把索引处的lua值转换为lua_Number类型的C类型
@@ -337,7 +347,7 @@ LUA_API lua_Number lua_tonumber (lua_State *L, int idx) {
     return 0;
 }
 
-// 把给丁索引处的lua值转换为带符号的整数类型
+// 把索引处的lua值转换为带符号的整数类型
 LUA_API lua_Integer lua_tointeger (lua_State *L, int idx) {
   TValue n;
   const TValue *o = index2adr(L, idx);
@@ -357,7 +367,7 @@ LUA_API int lua_toboolean (lua_State *L, int idx) {
   return !l_isfalse(o);
 }
 
-// 把给定索引处的lua值转换为一个C字符串
+// 把索引处的lua值转换为一个C字符串
 LUA_API const char *lua_tolstring (lua_State *L, int idx, size_t *len) {
   StkId o = index2adr(L, idx);
   if (!ttisstring(o)) {
@@ -375,7 +385,10 @@ LUA_API const char *lua_tolstring (lua_State *L, int idx, size_t *len) {
   return svalue(o);
 }
 
-
+/* 获取索引处的lua对象的长度
+ *
+ * 备注：对于lua字符串和table，就是使用长度操作符"#"的结果
+ */
 LUA_API size_t lua_objlen (lua_State *L, int idx) {
   StkId o = index2adr(L, idx);
   switch (ttype(o)) {
@@ -432,10 +445,10 @@ LUA_API const void *lua_topointer (lua_State *L, int idx) {
 
 
 /*
- *  API 提供了lua_push*系列函数用于将C value压栈以便传递给lua
+ *  基础API提供了lua_push*系列函数用于将C value压栈以便传递给lua
 */
 
-// 向lua栈中压入一个nil值
+// 向lua栈中压入一个常量nil
 LUA_API void lua_pushnil (lua_State *L) {
   lua_lock(L);
   setnilvalue(L->top);
@@ -443,7 +456,7 @@ LUA_API void lua_pushnil (lua_State *L) {
   lua_unlock(L);
 }
 
-// 向lua栈中压入一个float数值
+// 向lua栈中压入一个双精度浮点数
 LUA_API void lua_pushnumber (lua_State *L, lua_Number n) {
   lua_lock(L);
   setnvalue(L->top, n);
@@ -451,7 +464,7 @@ LUA_API void lua_pushnumber (lua_State *L, lua_Number n) {
   lua_unlock(L);
 }
 
-
+// 向lua栈中压入一个整型值
 LUA_API void lua_pushinteger (lua_State *L, lua_Integer n) {
   lua_lock(L);
   setnvalue(L->top, cast_num(n));
@@ -459,7 +472,13 @@ LUA_API void lua_pushinteger (lua_State *L, lua_Integer n) {
   lua_unlock(L);
 }
 
-
+/* 向lua栈中压入一个任意字符串
+ *
+ * @s   - 指向一串字符
+ * @len - 显式指定字符串长度
+ *
+ * 备注： 本API支持不带"\0"结尾的字符串
+ */
 LUA_API void lua_pushlstring (lua_State *L, const char *s, size_t len) {
   lua_lock(L);
   luaC_checkGC(L);
@@ -468,7 +487,10 @@ LUA_API void lua_pushlstring (lua_State *L, const char *s, size_t len) {
   lua_unlock(L);
 }
 
-
+/* 向lua栈中压入一个任意字符串
+ *
+ * @s   - 指向一个"\0"结尾的字符串
+ */
 LUA_API void lua_pushstring (lua_State *L, const char *s) {
   if (s == NULL)
     lua_pushnil(L);
@@ -662,10 +684,15 @@ LUA_API void lua_getfenv (lua_State *L, int idx) {
   api_incr_top(L);
   lua_unlock(L);
 }
+/*
+** access functions (stack -> C)
+以上这些函数都是用于操作面向C的栈
+*/
 
 
 /*
 ** set functions (stack -> Lua)
+以下这些函数都是用于操作面向lua的栈
 */
 
 

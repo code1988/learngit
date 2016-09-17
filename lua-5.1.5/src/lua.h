@@ -2,7 +2,7 @@
 ** $Id: lua.h,v 1.218.1.7 2012/01/13 20:36:20 roberto Exp $
 ** Lua - An Extensible Extension Language
 
-本头文件主要声明了lua提供的基础API，包括创建lua环境、读写lua环境中的全局变量等
+本头文件主要声明了lua供外部使用的基础API，包括创建lua环境、读写lua环境中的全局变量等
 
 ** Lua.org, PUC-Rio, Brazil (http://www.lua.org)
 ** See Copyright Notice at the end of this file
@@ -88,7 +88,10 @@ typedef void * (*lua_Alloc) (void *ud, void *ptr, size_t osize, size_t nsize);
 
 
 
-/* minimum Lua stack available to a C function */
+/* minimum Lua stack available to a C function 
+ *
+ * 定义了lua的栈中至少会有的槽数量
+ * */
 #define LUA_MINSTACK	20
 
 
