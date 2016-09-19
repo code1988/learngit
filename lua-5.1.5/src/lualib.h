@@ -18,6 +18,7 @@
 #define LUA_FILEHANDLE		"FILE*"
 
 
+// 以下这些宏用来表示lua标准库的名称
 #define LUA_COLIBNAME	"coroutine"
 LUALIB_API int (luaopen_base) (lua_State *L);
 

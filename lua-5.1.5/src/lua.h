@@ -35,6 +35,7 @@
 
 /*
 ** pseudo-indices
+以下定义了一些lua中的假索引
 */
 #define LUA_REGISTRYINDEX	(-10000)
 #define LUA_ENVIRONINDEX	(-10001)
@@ -144,9 +145,8 @@ LUA_API void  (lua_xmove) (lua_State *from, lua_State *to, int n);
 /*
 ** access functions (stack -> C)
 
-以下这部分API用于访问面向C环境的栈
-        lua_is*系列函数用于检查栈中该索引处元素是否是一个指定的类型
-        lua_to*系列函数用于获取指定类型的栈中元素
+lua_is*系列函数用于检查栈中该索引处元素是否是一个指定的类型
+lua_to*系列函数用于获取指定类型的栈中元素
 */
 
 LUA_API int             (lua_isnumber) (lua_State *L, int idx);
@@ -174,8 +174,7 @@ LUA_API const void     *(lua_topointer) (lua_State *L, int idx);
 /*
 ** push functions (C -> stack)
 
-以下这部分API用于设置面向C环境的栈
-        lua_push*系列函数用于将C value压栈以便传递给lua
+lua_push*系列函数用于将C value压栈以便传递给lua
 */
 LUA_API void  (lua_pushnil) (lua_State *L);
 LUA_API void  (lua_pushnumber) (lua_State *L, lua_Number n);
@@ -193,8 +192,6 @@ LUA_API int   (lua_pushthread) (lua_State *L);
 
 /*
 ** get functions (Lua -> stack)
-
-以下这部分API用于访问面向lua环境的栈
 */
 LUA_API void  (lua_gettable) (lua_State *L, int idx);
 LUA_API void  (lua_getfield) (lua_State *L, int idx, const char *k);
@@ -277,13 +274,21 @@ LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud);
 
 #define lua_pop(L,n)		lua_settop(L, -(n)-1)
 
+// 创建一个lua中的空table
 #define lua_newtable(L)		lua_createtable(L, 0, 0)
 
-// 把C函数f注册到全局变量name中
+/* 把C函数f注册为lua全局环境中的函数
+ *
+ * 备注：由2步操作组成： 
+ *              [1]. 将函数f的入口指针作为一个值压栈
+ *              [2]. 将该值赋给lua全局table(_G)的字段n
+ */
 #define lua_register(L,n,f) (lua_pushcfunction(L, (f)), lua_setglobal(L, (n)))
 
-// 将一个C函数压栈,这个C函数必须按照lua_CFunction格式来定义
-// 并且这个C函数没有关联值
+/* 将一个C函数压栈
+ * 
+ * 备注：这个C函数必须按照lua_CFunction格式来定义，并且这个C函数没有关联值
+ */
 #define lua_pushcfunction(L,f)	lua_pushcclosure(L, (f), 0)
 
 #define lua_strlen(L,i)		lua_objlen(L, (i))
@@ -300,7 +305,7 @@ LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud);
 #define lua_pushliteral(L, s)	\
 	lua_pushlstring(L, "" s, (sizeof(s)/sizeof(char))-1)
 
-// 从堆栈上弹出一个值，并将其设为全局table中的元素s的新值
+// 从堆栈上弹出一个值，并将其赋给全局table(_G)中的元素s
 #define lua_setglobal(L,s)	lua_setfield(L, LUA_GLOBALSINDEX, (s))
 
 // 将全局table(_G)中的元素s的值压栈，返回该值的类型

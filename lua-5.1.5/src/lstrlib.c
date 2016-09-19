@@ -1,6 +1,9 @@
 /*
 ** $Id: lstrlib.c,v 1.132.1.5 2010/05/14 15:34:19 roberto Exp $
 ** Standard library for string operations and pattern-matching
+
+本文件定义了lua字符串标准库
+
 ** See Copyright Notice in lua.h
 */
 
@@ -823,7 +826,7 @@ static int str_format (lua_State *L) {
   return 1;
 }
 
-
+// 定义了一张lua字符串标准库的库函数表
 static const luaL_Reg strlib[] = {
   {"byte", str_byte},
   {"char", str_char},
@@ -859,8 +862,11 @@ static void createmetatable (lua_State *L) {
 /*
 ** Open string library
 开启lua的字符串标准库
+
+备注： 返回值1表示栈中有1个值需要返回给lua，也就是创建的table
 */
 LUALIB_API int luaopen_string (lua_State *L) {
+  // 创建一个名为LUA_STRLIBNAME的table，并将strlib表中的所有函数注册到这个table中
   luaL_register(L, LUA_STRLIBNAME, strlib);
 #if defined(LUA_COMPAT_GFIND)
   lua_getfield(L, -1, "gmatch");

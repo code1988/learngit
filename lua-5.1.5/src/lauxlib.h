@@ -2,7 +2,7 @@
 ** $Id: lauxlib.h,v 1.88.1.1 2007/12/27 13:02:25 roberto Exp $
 ** Auxiliary functions for building Lua libraries
 
-本头文件主要声明了一些辅助库函数，这些辅助函数用于建立lua标准库
+本头文件主要声明了辅助库函数，这些辅助库函数用于建立lua标准库
 
 ** See Copyright Notice in lua.h
 */
@@ -34,10 +34,10 @@ LUALIB_API void (luaL_setn) (lua_State *L, int t, int n);
 /* extra error code for `luaL_load' */
 #define LUA_ERRFILE     (LUA_ERRERR+1)
 
-
+// 定义了一个用于注册C函数时传入的数据结构
 typedef struct luaL_Reg {
-  const char *name;
-  lua_CFunction func;
+  const char *name;     // 在lua中的函数名
+  lua_CFunction func;   // C中的函数入口指针
 } luaL_Reg;
 
 
@@ -102,6 +102,8 @@ LUALIB_API const char *(luaL_findtable) (lua_State *L, int idx,
 
 #define luaL_argcheck(L, cond,numarg,extramsg)	\
 		((void)((cond) || luaL_argerror(L, (numarg), (extramsg))))
+
+// 取出栈中指定索引处的值，并检查是否是字符串，不关心其长度
 #define luaL_checkstring(L,n)	(luaL_checklstring(L, (n), NULL))
 #define luaL_optstring(L,n,d)	(luaL_optlstring(L, (n), (d), NULL))
 #define luaL_checkint(L,n)	((int)luaL_checkinteger(L, (n)))

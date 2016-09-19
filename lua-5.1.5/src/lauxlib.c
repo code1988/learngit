@@ -148,7 +148,11 @@ LUALIB_API void luaL_checkstack (lua_State *L, int space, const char *mes) {
     luaL_error(L, "stack overflow (%s)", mes);
 }
 
-
+/* 检查栈中元素是否是指定类型，不匹配时会抛出一个错误
+ *
+ * @narg    - 栈的索引号
+ * @t       - 指定的匹配类型
+ */
 LUALIB_API void luaL_checktype (lua_State *L, int narg, int t) {
   if (lua_type(L, narg) != t)
     tag_error(L, narg, t);
@@ -160,7 +164,9 @@ LUALIB_API void luaL_checkany (lua_State *L, int narg) {
     luaL_argerror(L, narg, "value expected");
 }
 
-
+/* 取出栈中指定索引处的值，并检查是否是字符串
+ * 成功则返回这个lua_number，失败则抛出一个错误消息
+ */
 LUALIB_API const char *luaL_checklstring (lua_State *L, int narg, size_t *len) {
   const char *s = lua_tolstring(L, narg, len);
   if (!s) tag_error(L, narg, LUA_TSTRING);
@@ -178,7 +184,9 @@ LUALIB_API const char *luaL_optlstring (lua_State *L, int narg,
   else return luaL_checklstring(L, narg, len);
 }
 
-
+/* 取出栈中指定索引处的值，并检查是否符合LUA_TNUMBER类型
+ * 成功则返回这个lua_number，失败则抛出一个错误消息
+ */
 LUALIB_API lua_Number luaL_checknumber (lua_State *L, int narg) {
   lua_Number d = lua_tonumber(L, narg);
   if (d == 0 && !lua_isnumber(L, narg))  /* avoid extra test when d is not 0 */
@@ -231,7 +239,14 @@ LUALIB_API int luaL_callmeta (lua_State *L, int obj, const char *event) {
   return 1;
 }
 
-// 用于批量注册C函数到lua(5.1.5之后的版本中被废除)
+/* 用于注册模块内的所有C函数到lua中一个名为libname的table中(通常这些C函数的集合就是一个库)
+ *
+ * @libname - 模块名/库名
+ * @l       - 需要注册的C函数表
+ *
+ * 备注: 由于通过这种方式注册的C函数会成为lua全局环境中的变量，这种污染全局环境的方式并不合理
+ *       5.2开始的版本中被废除，取而代之的是luaL_setfuncs
+ */
 LUALIB_API void (luaL_register) (lua_State *L, const char *libname,
                                 const luaL_Reg *l) {
   luaI_openlib(L, libname, l, 0);
@@ -247,6 +262,7 @@ static int libsize (const luaL_Reg *l) {
 // 批量注册C函数到lua(5.1.5之后的版本中被废除)
 LUALIB_API void luaI_openlib (lua_State *L, const char *libname,
                               const luaL_Reg *l, int nup) {
+  // 根据传入的libname创建/复用一个table
   if (libname) {
     int size = libsize(l);
     /* check whether lib already exists */

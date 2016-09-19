@@ -163,9 +163,14 @@ LUA_API lua_State *lua_newthread (lua_State *L) {
 
 /*
 ** basic stack manipulation
+
+以下都是针对堆栈的基本操作API
 */
 
-// 获取栈顶元素的正索引，也就是获取栈中元素的个数
+/* 返回栈顶元素的正索引，也就是获取栈中元素的个数
+ *
+ * 备注：返回0意味着堆栈为空
+ */
 LUA_API int lua_gettop (lua_State *L) {
   return cast_int(L->top - L->base);
 }
@@ -192,7 +197,8 @@ LUA_API void lua_settop (lua_State *L, int idx) {
 
 /* 删除指定索引上的元素
  * 
- * 删除后，该位置之上的所有元素会下移一个槽位
+ * 备注：删除后，该位置之上的所有元素会下移一个槽位
+ *       不能用伪索引来调用这个函数，因为其并不指向真实的栈上位置
  */
 LUA_API void lua_remove (lua_State *L, int idx) {
   StkId p;
@@ -204,8 +210,9 @@ LUA_API void lua_remove (lua_State *L, int idx) {
   lua_unlock(L);
 }
 
-/* 上移指定位置之上的所有元素以开辟一个槽位的空间
+/* 把栈顶元素插入指定的有效索引处，并依次移动这个索引之上的元素
  *
+ * 备注：不要用伪索引来调用这个函数，因为伪索引并不真正指向堆栈上的位置
  */
 LUA_API void lua_insert (lua_State *L, int idx) {
   StkId p;
@@ -218,8 +225,9 @@ LUA_API void lua_insert (lua_State *L, int idx) {
   lua_unlock(L);
 }
 
-/* 弹出栈顶的值，并将该值设置到指定索引上
+/* 弹出栈顶的值，并用该值替换指定索引上的值
  *
+ * 备注：因为是在指定索引上进行覆盖操作，所以不移动任何元素
  */
 LUA_API void lua_replace (lua_State *L, int idx) {
   StkId o;
@@ -245,7 +253,7 @@ LUA_API void lua_replace (lua_State *L, int idx) {
   lua_unlock(L);
 }
 
-// 
+// 将栈上指定索引处的值作一个拷贝压入栈顶
 LUA_API void lua_pushvalue (lua_State *L, int idx) {
   lua_lock(L);
   setobj2s(L, L->top, index2adr(L, idx));
@@ -590,7 +598,11 @@ LUA_API int lua_pushthread (lua_State *L) {
 ** get functions (Lua -> stack)
 */
 
-
+/* 顾名思义，本函数用于获取table中指定元素的值，类似"t[k]"
+ *
+ * 备注：t是指定索引idx处的值，k是栈顶(-1)处的值
+ *       本函数会弹出栈顶的k，然后将获得的值"t[k]"压入栈顶
+ */
 LUA_API void lua_gettable (lua_State *L, int idx) {
   StkId t;
   lua_lock(L);
@@ -613,7 +625,10 @@ LUA_API void lua_getfield (lua_State *L, int idx, const char *k) {
   lua_unlock(L);
 }
 
-
+/* 类似lua_gettable，区别在于本函数不会触发__index元方法
+ *
+ * 备注：t是指定索引idx处的值，k是栈顶(-1)处的值
+ */
 LUA_API void lua_rawget (lua_State *L, int idx) {
   StkId t;
   lua_lock(L);
@@ -623,7 +638,10 @@ LUA_API void lua_rawget (lua_State *L, int idx) {
   lua_unlock(L);
 }
 
-
+/* 类似lua_rawget，区别在于本函数只专门用于操作数组
+ *
+ * 备注：t是指定索引idx处的值，n是元素在数组中的索引
+ */
 LUA_API void lua_rawgeti (lua_State *L, int idx, int n) {
   StkId o;
   lua_lock(L);
@@ -703,10 +721,12 @@ LUA_API void lua_getfenv (lua_State *L, int idx) {
 
 /*
 ** set functions (stack -> Lua)
-以下这些函数都是用于操作面向lua的栈
 */
 
-
+/* 顾名思义，本函数做了一个等价于"t[k] = v"的操作
+ *
+ * 备注：t是指定索引idx处的值，v是栈顶(-1)处的值，k是栈顶之下(-2)那个值
+ */
 LUA_API void lua_settable (lua_State *L, int idx) {
   StkId t;
   lua_lock(L);
@@ -734,7 +754,10 @@ LUA_API void lua_setfield (lua_State *L, int idx, const char *k) {
   lua_unlock(L);
 }
 
-
+/* 类似lua_settable，做了一个等价于"t[k] = v"的操作，区别在于本函数不会触发__newindex元方法
+ *
+ * 备注：t是指定索引idx处的值，v是栈顶(-1)处的值，k是栈顶之下(-2)那个值
+ */
 LUA_API void lua_rawset (lua_State *L, int idx) {
   StkId t;
   lua_lock(L);
@@ -747,7 +770,10 @@ LUA_API void lua_rawset (lua_State *L, int idx) {
   lua_unlock(L);
 }
 
-
+/* 类似lua_rawset，做了一个等价于"t[n] = v"的操作，区别在于本函数只专门用于操作数组
+ *
+ * 备注：t是指定索引idx处的值，n是元素在数组中的索引，v是栈顶(-1)处的值
+ */
 LUA_API void lua_rawseti (lua_State *L, int idx, int n) {
   StkId o;
   lua_lock(L);
@@ -839,7 +865,17 @@ LUA_API int lua_setfenv (lua_State *L, int idx) {
 #define checkresults(L,na,nr) \
      api_check(L, (nr) == LUA_MULTRET || (L->ci->top - L->top >= (nr) - (na)))
 	
-
+/* 调用一个lua函数
+ * @nargs   - 压入栈中的参数个数
+ * @nresults- 返回值的个数
+ *
+ * 备注：要调用一个lua函数前需要确保已经执行了以下操作：
+ *      [1]. 要调用的lua函数应该首先被压入栈
+ *      [2]. 然后把该函数的入参正序压入栈(也就是第一个参数首先压栈)
+ *      [3]. 最后调用一下lua_call
+ *
+ *       当lua_call返回时，所有的入参以及要调用的lua函数都会出栈，而函数的返回值则同样按照正序被压入栈
+ */
 LUA_API void lua_call (lua_State *L, int nargs, int nresults) {
   StkId func;
   lua_lock(L);
