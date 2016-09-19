@@ -272,6 +272,7 @@ LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud);
 ** ===============================================================
 */
 
+// 从栈顶弹出n个元素(意味着n必定是个正数，也就是将栈顶设置到-(n + 1)位置)
 #define lua_pop(L,n)		lua_settop(L, -(n)-1)
 
 // 创建一个lua中的新的空table并压入栈
@@ -281,7 +282,7 @@ LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud);
  *
  * 备注：由2步操作组成： 
  *              [1]. 将函数f的入口指针作为一个值压栈
- *              [2]. 将该值赋给lua全局table(_G)的字段n
+ *              [2]. 将该值赋给lua全局table的字段n
  */
 #define lua_register(L,n,f) (lua_pushcfunction(L, (f)), lua_setglobal(L, (n)))
 

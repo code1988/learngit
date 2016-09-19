@@ -350,7 +350,9 @@ LUA_API int lua_lessthan (lua_State *L, int index1, int index2) {
 
 /*
  *  基础API 提供了lua_to*系列函数用于获取指定类型的栈中元素
+ *
  *  注意：正索引通常用于获取栈底，负索引通常用于获取栈顶
+ *        lua_to*系列函数不会对栈上元素执行弹出操作     
  */
 // 把索引处的lua值转换为lua_Number类型的C类型
 LUA_API lua_Number lua_tonumber (lua_State *L, int idx) {
@@ -366,7 +368,8 @@ LUA_API lua_Number lua_tonumber (lua_State *L, int idx) {
     return 0;
 }
 
-// 把索引处的lua值转换为带符号的整数类型
+/* 把索引处的lua值转换为带符号的整数类型
+ */
 LUA_API lua_Integer lua_tointeger (lua_State *L, int idx) {
   TValue n;
   const TValue *o = index2adr(L, idx);
@@ -567,7 +570,7 @@ LUA_API void lua_pushcclosure (lua_State *L, lua_CFunction fn, int n) {
   lua_unlock(L);
 }
 
-
+// 将b作为一个boolean值压栈
 LUA_API void lua_pushboolean (lua_State *L, int b) {
   lua_lock(L);
   setbvalue(L->top, (b != 0));  /* ensure that true is 1 */

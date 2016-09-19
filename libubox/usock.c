@@ -29,6 +29,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#include "utils.h"
 #include "usock.h"
 
 // 套接字close-on-exec和非阻塞功能设置

@@ -18,8 +18,8 @@ BinOpr	lcode.h	/^typedef enum BinOpr {$/;"	g
 BinOpr	lcode.h	/^} BinOpr;$/;"	t	typeref:enum:BinOpr
 BlockCnt	lparser.c	/^typedef struct BlockCnt {$/;"	s	file:
 BlockCnt	lparser.c	/^} BlockCnt;$/;"	t	typeref:struct:BlockCnt	file:
-CAP_POSITION	lstrlib.c	168;"	d	file:
-CAP_UNFINISHED	lstrlib.c	167;"	d	file:
+CAP_POSITION	lstrlib.c	171;"	d	file:
+CAP_UNFINISHED	lstrlib.c	170;"	d	file:
 CC	Makefile	/^CC= gcc$/;"	m
 CCallS	lapi.c	/^struct CCallS {  \/* data to `f_Ccall' *\/$/;"	s	file:
 CClosure	lobject.h	/^typedef struct CClosure {$/;"	s
@@ -71,8 +71,8 @@ EXTRA_STACK	lstate.h	30;"	d
 FINALIZEDBIT	lgc.h	57;"	d
 FIRST_RESERVED	llex.h	14;"	d
 FIXEDBIT	lgc.h	60;"	d
-FLAGS	lstrlib.c	688;"	d	file:
-FREELIST_REF	lauxlib.c	28;"	d	file:
+FLAGS	lstrlib.c	691;"	d	file:
+FREELIST_REF	lauxlib.c	34;"	d	file:
 FuncState	lparser.h	/^typedef struct FuncState {$/;"	s
 FuncState	lparser.h	/^} FuncState;$/;"	t	typeref:struct:FuncState
 G	lstate.h	136;"	d
@@ -132,7 +132,7 @@ LIB_FAIL	loadlib.c	232;"	d	file:
 LIB_FAIL	loadlib.c	233;"	d	file:
 LIB_FAIL	loadlib.c	35;"	d	file:
 LIB_O	Makefile	/^LIB_O=	lauxlib.o lbaselib.o ldblib.o liolib.o lmathlib.o loslib.o ltablib.o \\$/;"	m
-LIMIT	lauxlib.c	402;"	d	file:
+LIMIT	lauxlib.c	424;"	d	file:
 LUAC_FORMAT	lundump.h	31;"	d
 LUAC_HEADERSIZE	lundump.h	34;"	d
 LUAC_O	Makefile	/^LUAC_O=	luac.o print.o$/;"	m
@@ -180,10 +180,10 @@ LUA_ANSI	luaconf.h	28;"	d
 LUA_API	luaconf.h	157;"	d
 LUA_API	luaconf.h	159;"	d
 LUA_API	luaconf.h	164;"	d
-LUA_AUTHORS	lua.h	23;"	d
+LUA_AUTHORS	lua.h	26;"	d
 LUA_CDIR	luaconf.h	89;"	d
 LUA_CDIR	luaconf.h	99;"	d
-LUA_COLIBNAME	lualib.h	18;"	d
+LUA_COLIBNAME	lualib.h	22;"	d
 LUA_COMPAT_GETN	luaconf.h	322;"	d
 LUA_COMPAT_GFIND	luaconf.h	358;"	d
 LUA_COMPAT_LOADLIB	luaconf.h	329;"	d
@@ -191,8 +191,8 @@ LUA_COMPAT_LSTR	luaconf.h	351;"	d
 LUA_COMPAT_MOD	luaconf.h	343;"	d
 LUA_COMPAT_OPENLIB	luaconf.h	366;"	d
 LUA_COMPAT_VARARG	luaconf.h	336;"	d
-LUA_COPYRIGHT	lua.h	22;"	d
-LUA_CORE	lapi.c	14;"	d	file:
+LUA_COPYRIGHT	lua.h	25;"	d
+LUA_CORE	lapi.c	17;"	d	file:
 LUA_CORE	lcode.c	11;"	d	file:
 LUA_CORE	ldebug.c	14;"	d	file:
 LUA_CORE	ldo.c	13;"	d	file:
@@ -216,34 +216,34 @@ LUA_CORE	print.c	11;"	d	file:
 LUA_CPATH	luaconf.h	70;"	d
 LUA_CPATH_DEFAULT	luaconf.h	103;"	d
 LUA_CPATH_DEFAULT	luaconf.h	93;"	d
-LUA_DBLIBNAME	lualib.h	36;"	d
+LUA_DBLIBNAME	lualib.h	40;"	d
 LUA_DIRSEP	luaconf.h	114;"	d
 LUA_DIRSEP	luaconf.h	116;"	d
 LUA_DL_DLL	luaconf.h	705;"	d
 LUA_DL_DLOPEN	luaconf.h	701;"	d
 LUA_DL_DYLD	luaconf.h	44;"	d
-LUA_ENVIRONINDEX	lua.h	37;"	d
-LUA_ERRERR	lua.h	47;"	d
-LUA_ERRFILE	lauxlib.h	32;"	d
-LUA_ERRMEM	lua.h	46;"	d
-LUA_ERRRUN	lua.h	44;"	d
-LUA_ERRSYNTAX	lua.h	45;"	d
+LUA_ENVIRONINDEX	lua.h	41;"	d
+LUA_ERRERR	lua.h	51;"	d
+LUA_ERRFILE	lauxlib.h	35;"	d
+LUA_ERRMEM	lua.h	50;"	d
+LUA_ERRRUN	lua.h	48;"	d
+LUA_ERRSYNTAX	lua.h	49;"	d
 LUA_EXECDIR	luaconf.h	134;"	d
-LUA_FILEHANDLE	lualib.h	15;"	d
-LUA_GCCOLLECT	lua.h	225;"	d
-LUA_GCCOUNT	lua.h	226;"	d
-LUA_GCCOUNTB	lua.h	227;"	d
-LUA_GCRESTART	lua.h	224;"	d
-LUA_GCSETPAUSE	lua.h	229;"	d
-LUA_GCSETSTEPMUL	lua.h	230;"	d
-LUA_GCSTEP	lua.h	228;"	d
-LUA_GCSTOP	lua.h	223;"	d
-LUA_GLOBALSINDEX	lua.h	38;"	d
-LUA_HOOKCALL	lua.h	319;"	d
-LUA_HOOKCOUNT	lua.h	322;"	d
-LUA_HOOKLINE	lua.h	321;"	d
-LUA_HOOKRET	lua.h	320;"	d
-LUA_HOOKTAILRET	lua.h	323;"	d
+LUA_FILEHANDLE	lualib.h	18;"	d
+LUA_GCCOLLECT	lua.h	244;"	d
+LUA_GCCOUNT	lua.h	245;"	d
+LUA_GCCOUNTB	lua.h	246;"	d
+LUA_GCRESTART	lua.h	243;"	d
+LUA_GCSETPAUSE	lua.h	248;"	d
+LUA_GCSETSTEPMUL	lua.h	249;"	d
+LUA_GCSTEP	lua.h	247;"	d
+LUA_GCSTOP	lua.h	242;"	d
+LUA_GLOBALSINDEX	lua.h	42;"	d
+LUA_HOOKCALL	lua.h	346;"	d
+LUA_HOOKCOUNT	lua.h	349;"	d
+LUA_HOOKLINE	lua.h	348;"	d
+LUA_HOOKRET	lua.h	347;"	d
+LUA_HOOKTAILRET	lua.h	350;"	d
 LUA_IDSIZE	luaconf.h	210;"	d
 LUA_IGMARK	luaconf.h	135;"	d
 LUA_INIT	luaconf.h	71;"	d
@@ -252,10 +252,10 @@ LUA_INTFRMLEN	luaconf.h	741;"	d
 LUA_INTFRMLEN	luaconf.h	746;"	d
 LUA_INTFRM_T	luaconf.h	742;"	d
 LUA_INTFRM_T	luaconf.h	747;"	d
-LUA_IOLIBNAME	lualib.h	24;"	d
+LUA_IOLIBNAME	lualib.h	28;"	d
 LUA_LDIR	luaconf.h	88;"	d
 LUA_LDIR	luaconf.h	98;"	d
-LUA_LIB	lauxlib.c	21;"	d	file:
+LUA_LIB	lauxlib.c	27;"	d	file:
 LUA_LIB	lbaselib.c	15;"	d	file:
 LUA_LIB	ldblib.c	13;"	d	file:
 LUA_LIB	linit.c	9;"	d	file:
@@ -263,27 +263,27 @@ LUA_LIB	liolib.c	14;"	d	file:
 LUA_LIB	lmathlib.c	12;"	d	file:
 LUA_LIB	loadlib.c	17;"	d	file:
 LUA_LIB	loslib.c	15;"	d	file:
-LUA_LIB	lstrlib.c	15;"	d	file:
+LUA_LIB	lstrlib.c	18;"	d	file:
 LUA_LIB	ltablib.c	11;"	d	file:
-LUA_LOADLIBNAME	lualib.h	39;"	d
-LUA_MASKCALL	lua.h	329;"	d
-LUA_MASKCOUNT	lua.h	332;"	d
-LUA_MASKLINE	lua.h	331;"	d
-LUA_MASKRET	lua.h	330;"	d
-LUA_MATHLIBNAME	lualib.h	33;"	d
+LUA_LOADLIBNAME	lualib.h	43;"	d
+LUA_MASKCALL	lua.h	356;"	d
+LUA_MASKCOUNT	lua.h	359;"	d
+LUA_MASKLINE	lua.h	358;"	d
+LUA_MASKRET	lua.h	357;"	d
+LUA_MATHLIBNAME	lualib.h	37;"	d
 LUA_MAXCAPTURES	luaconf.h	633;"	d
 LUA_MAXINPUT	luaconf.h	262;"	d
 LUA_MINBUFFER	llimits.h	105;"	d
-LUA_MINSTACK	lua.h	89;"	d
-LUA_MULTRET	lua.h	30;"	d
-LUA_NOREF	lauxlib.h	159;"	d
+LUA_MINSTACK	lua.h	99;"	d
+LUA_MULTRET	lua.h	33;"	d
+LUA_NOREF	lauxlib.h	164;"	d
 LUA_NUMBER	luaconf.h	505;"	d
 LUA_NUMBER_DOUBLE	luaconf.h	504;"	d
 LUA_NUMBER_FMT	luaconf.h	522;"	d
 LUA_NUMBER_SCAN	luaconf.h	521;"	d
 LUA_O	Makefile	/^LUA_O=	lua.o$/;"	m
 LUA_OFSEP	loadlib.c	29;"	d	file:
-LUA_OSLIBNAME	lualib.h	27;"	d
+LUA_OSLIBNAME	lualib.h	31;"	d
 LUA_PATH	luaconf.h	69;"	d
 LUA_PATHSEP	luaconf.h	132;"	d
 LUA_PATH_DEFAULT	luaconf.h	100;"	d
@@ -295,29 +295,29 @@ LUA_PROMPT	luaconf.h	245;"	d
 LUA_PROMPT2	luaconf.h	246;"	d
 LUA_QL	luaconf.h	201;"	d
 LUA_QS	luaconf.h	202;"	d
-LUA_REFNIL	lauxlib.h	160;"	d
-LUA_REGISTRYINDEX	lua.h	36;"	d
-LUA_RELEASE	lua.h	20;"	d
+LUA_REFNIL	lauxlib.h	165;"	d
+LUA_REGISTRYINDEX	lua.h	40;"	d
+LUA_RELEASE	lua.h	23;"	d
 LUA_ROOT	luaconf.h	97;"	d
-LUA_SIGNATURE	lua.h	27;"	d
-LUA_STRLIBNAME	lualib.h	30;"	d
+LUA_SIGNATURE	lua.h	30;"	d
+LUA_STRLIBNAME	lualib.h	34;"	d
 LUA_T	Makefile	/^LUA_T=	lua$/;"	m
-LUA_TABLIBNAME	lualib.h	21;"	d
-LUA_TBOOLEAN	lua.h	77;"	d
+LUA_TABLIBNAME	lualib.h	25;"	d
+LUA_TBOOLEAN	lua.h	84;"	d
 LUA_TDEADKEY	lobject.h	30;"	d
-LUA_TFUNCTION	lua.h	82;"	d
-LUA_TLIGHTUSERDATA	lua.h	78;"	d
+LUA_TFUNCTION	lua.h	89;"	d
+LUA_TLIGHTUSERDATA	lua.h	85;"	d
 LUA_TMPNAMBUFSIZE	luaconf.h	648;"	d
 LUA_TMPNAMBUFSIZE	luaconf.h	656;"	d
-LUA_TNIL	lua.h	76;"	d
-LUA_TNONE	lua.h	74;"	d
-LUA_TNUMBER	lua.h	79;"	d
+LUA_TNIL	lua.h	83;"	d
+LUA_TNONE	lua.h	81;"	d
+LUA_TNUMBER	lua.h	86;"	d
 LUA_TPROTO	lobject.h	28;"	d
-LUA_TSTRING	lua.h	80;"	d
-LUA_TTABLE	lua.h	81;"	d
-LUA_TTHREAD	lua.h	84;"	d
+LUA_TSTRING	lua.h	87;"	d
+LUA_TTABLE	lua.h	88;"	d
+LUA_TTHREAD	lua.h	91;"	d
 LUA_TUPVAL	lobject.h	29;"	d
-LUA_TUSERDATA	lua.h	83;"	d
+LUA_TUSERDATA	lua.h	90;"	d
 LUA_USE_DLOPEN	luaconf.h	38;"	d
 LUA_USE_ISATTY	luaconf.h	56;"	d
 LUA_USE_MKSTEMP	luaconf.h	55;"	d
@@ -326,11 +326,11 @@ LUA_USE_POSIX	luaconf.h	37;"	d
 LUA_USE_POSIX	luaconf.h	43;"	d
 LUA_USE_READLINE	luaconf.h	39;"	d
 LUA_USE_ULONGJMP	luaconf.h	58;"	d
-LUA_VERSION	lua.h	19;"	d
-LUA_VERSION_NUM	lua.h	21;"	d
+LUA_VERSION	lua.h	22;"	d
+LUA_VERSION_NUM	lua.h	24;"	d
 LUA_WIN	luaconf.h	33;"	d
-LUA_YIELD	lua.h	43;"	d
-L_ESC	lstrlib.c	182;"	d	file:
+LUA_YIELD	lua.h	47;"	d
+L_ESC	lstrlib.c	185;"	d	file:
 L_Umaxalign	llimits.h	/^typedef LUAI_USER_ALIGNMENT_T L_Umaxalign;$/;"	t
 LexState	llex.h	/^typedef struct LexState {$/;"	s
 LexState	llex.h	/^} LexState;$/;"	t	typeref:struct:LexState
@@ -371,9 +371,9 @@ MAXINDEXRK	lopcodes.h	127;"	d
 MAXSRC	llex.c	75;"	d	file:
 MAXSTACK	llimits.h	93;"	d
 MAXTAGLOOP	lvm.c	32;"	d	file:
-MAX_FORMAT	lstrlib.c	693;"	d	file:
+MAX_FORMAT	lstrlib.c	696;"	d	file:
 MAX_INT	llimits.h	35;"	d
-MAX_ITEM	lstrlib.c	686;"	d	file:
+MAX_ITEM	lstrlib.c	689;"	d	file:
 MAX_LUMEM	llimits.h	32;"	d
 MAX_SIZET	llimits.h	30;"	d
 MEMERRMSG	lmem.h	16;"	d
@@ -512,7 +512,7 @@ SIZE_B	lopcodes.h	38;"	d
 SIZE_Bx	lopcodes.h	39;"	d
 SIZE_C	lopcodes.h	37;"	d
 SIZE_OP	lopcodes.h	42;"	d
-SPECIALS	lstrlib.c	183;"	d	file:
+SPECIALS	lstrlib.c	186;"	d	file:
 SParser	ldo.c	/^struct SParser {  \/* data to `f_parser' *\/$/;"	s	file:
 SS	print.c	158;"	d	file:
 SemInfo	llex.h	/^} SemInfo;  \/* semantics information *\/$/;"	t	typeref:union:__anon16
@@ -619,7 +619,7 @@ WHITEBITS	lgc.h	62;"	d
 Z	lundump.c	/^ ZIO* Z;$/;"	m	struct:__anon1	file:
 ZIO	lzio.h	/^typedef struct Zio ZIO;$/;"	t	typeref:struct:Zio
 Zio	lzio.h	/^struct Zio {$/;"	s
-abs_index	lauxlib.c	32;"	d	file:
+abs_index	lauxlib.c	38;"	d	file:
 actvar	lparser.h	/^  unsigned short actvar[LUAI_MAXVARS];  \/* declared-variable stack *\/$/;"	m	struct:FuncState
 add_s	lstrlib.c	/^static void add_s (MatchState *ms, luaL_Buffer *b, const char *s,$/;"	f	file:
 add_value	lstrlib.c	/^static void add_value (MatchState *ms, luaL_Buffer *b, const char *s,$/;"	f	file:
@@ -631,15 +631,15 @@ addquoted	lstrlib.c	/^static void addquoted (lua_State *L, luaL_Buffer *b, int a
 adjust_assign	lparser.c	/^static void adjust_assign (LexState *ls, int nvars, int nexps, expdesc *e) {$/;"	f	file:
 adjust_varargs	ldo.c	/^static StkId adjust_varargs (lua_State *L, Proto *p, int actual) {$/;"	f	file:
 adjustlocalvars	lparser.c	/^static void adjustlocalvars (LexState *ls, int nvars) {$/;"	f	file:
-adjustresults	lapi.c	797;"	d	file:
+adjustresults	lapi.c	875;"	d	file:
 adjuststack	lauxlib.c	/^static void adjuststack (luaL_Buffer *B) {$/;"	f	file:
 allowhook	lstate.h	/^  lu_byte allowhook;$/;"	m	struct:lua_State
 anchor_token	lparser.c	/^static void anchor_token (LexState *ls) {$/;"	f	file:
 api_check	llimits.h	58;"	d
 api_check	llimits.h	64;"	d
-api_checknelems	lapi.c	41;"	d	file:
-api_checkvalidindex	lapi.c	43;"	d	file:
-api_incr_top	lapi.c	45;"	d	file:
+api_checknelems	lapi.c	44;"	d	file:
+api_checkvalidindex	lapi.c	46;"	d	file:
+api_incr_top	lapi.c	48;"	d	file:
 argc	lua.c	/^  int argc;$/;"	m	struct:Smain	file:
 argc	luac.c	/^ int argc;$/;"	m	struct:Smain	file:
 argv	lua.c	/^  char **argv;$/;"	m	struct:Smain	file:
@@ -685,8 +685,8 @@ buff	llex.h	/^  Mbuffer *buff;  \/* buffer for tokens *\/$/;"	m	struct:LexState
 buff	lstate.h	/^  Mbuffer buff;  \/* temporary buffer for string concatentation *\/$/;"	m	struct:global_State
 buffer	lauxlib.h	/^  char buffer[LUAL_BUFFERSIZE];$/;"	m	struct:luaL_Buffer
 buffer	lzio.h	/^  char *buffer;$/;"	m	struct:Mbuffer
-bufffree	lauxlib.c	400;"	d	file:
-bufflen	lauxlib.c	399;"	d	file:
+bufffree	lauxlib.c	422;"	d	file:
+bufflen	lauxlib.c	421;"	d	file:
 buffreplace	llex.c	/^static void buffreplace (LexState *ls, char from, char to) {$/;"	f	file:
 buffsize	lzio.h	/^  size_t buffsize;$/;"	m	struct:Mbuffer
 bvalue	lobject.h	106;"	d
@@ -729,7 +729,7 @@ checknext	lparser.c	/^static void checknext (LexState *ls, int c) {$/;"	f	file:
 checkopenop	ldebug.c	288;"	d	file:
 checkreg	ldebug.c	272;"	d	file:
 checkreg	ldebug.c	479;"	d	file:
-checkresults	lapi.c	801;"	d	file:
+checkresults	lapi.c	879;"	d	file:
 checkstacksizes	lgc.c	/^static void checkstacksizes (lua_State *L, StkId max) {$/;"	f	file:
 chunk	lparser.c	/^static void chunk (LexState *ls) {$/;"	f	file:
 ci	lstate.h	/^  CallInfo *ci;  \/* call info for current function *\/$/;"	m	struct:lua_State
@@ -875,7 +875,7 @@ fromstate	lstate.c	28;"	d	file:
 fs	llex.h	/^  struct FuncState *fs;  \/* `FuncState' is private to the parser *\/$/;"	m	struct:LexState	typeref:struct:LexState::FuncState
 func	lapi.c	/^  StkId func;$/;"	m	struct:CallS	file:
 func	lapi.c	/^  lua_CFunction func;$/;"	m	struct:CCallS	file:
-func	lauxlib.h	/^  lua_CFunction func;$/;"	m	struct:luaL_Reg
+func	lauxlib.h	/^  lua_CFunction func;   \/\/ C中的函数入口指针$/;"	m	struct:luaL_Reg
 func	lstate.h	/^  StkId func;  \/* function index in the stack *\/$/;"	m	struct:CallInfo
 funcargs	lparser.c	/^static void funcargs (LexState *ls, expdesc *f) {$/;"	f	file:
 funcinfo	ldebug.c	/^static void funcinfo (lua_Debug *ar, Closure *cl) {$/;"	f	file:
@@ -1043,7 +1043,7 @@ l_setbit	lgc.h	32;"	d
 l_strcmp	lvm.c	/^static int l_strcmp (const TString *ls, const TString *rs) {$/;"	f	file:
 l_uacNumber	llimits.h	/^typedef LUAI_UACNUMBER l_uacNumber;$/;"	t
 laction	lua.c	/^static void laction (int i) {$/;"	f	file:
-lapi_c	lapi.c	13;"	d	file:
+lapi_c	lapi.c	16;"	d	file:
 lapi_h	lapi.h	8;"	d
 lastfree	lobject.h	/^  Node *lastfree;  \/* any free position is before this position *\/$/;"	m	struct:Table
 lastline	llex.h	/^  int lastline;  \/* line of last token `consumed' *\/$/;"	m	struct:LexState
@@ -1051,8 +1051,8 @@ lastlinedefined	lobject.h	/^  int lastlinedefined;$/;"	m	struct:Proto
 lastlinedefined	lua.h	/^  int lastlinedefined;	\/* (S) *\/$/;"	m	struct:lua_Debug
 lastlistfield	lparser.c	/^static void lastlistfield (FuncState *fs, struct ConsControl *cc) {$/;"	f	file:
 lasttarget	lparser.h	/^  int lasttarget;   \/* `pc' of last `jump target' *\/$/;"	m	struct:FuncState
-lauxlib_c	lauxlib.c	20;"	d	file:
-lauxlib_h	lauxlib.h	9;"	d
+lauxlib_c	lauxlib.c	26;"	d	file:
+lauxlib_h	lauxlib.h	12;"	d
 lbaselib_c	lbaselib.c	14;"	d	file:
 lcode_c	lcode.c	10;"	d	file:
 lcode_h	lcode.h	8;"	d
@@ -1130,7 +1130,7 @@ lstate_h	lstate.h	8;"	d
 lstop	lua.c	/^static void lstop (lua_State *L, lua_Debug *ar) {$/;"	f	file:
 lstring_c	lstring.c	10;"	d	file:
 lstring_h	lstring.h	8;"	d
-lstrlib_c	lstrlib.c	14;"	d	file:
+lstrlib_c	lstrlib.c	17;"	d	file:
 ltable_c	ltable.c	24;"	d	file:
 ltable_h	ltable.h	8;"	d
 ltablib_c	ltablib.c	10;"	d	file:
@@ -1236,7 +1236,7 @@ luaH_set	ltable.c	/^TValue *luaH_set (lua_State *L, Table *t, const TValue *key)
 luaH_setnum	ltable.c	/^TValue *luaH_setnum (lua_State *L, Table *t, int key) {$/;"	f
 luaH_setstr	ltable.c	/^TValue *luaH_setstr (lua_State *L, Table *t, TString *key) {$/;"	f
 luaI_openlib	lauxlib.c	/^LUALIB_API void luaI_openlib (lua_State *L, const char *libname,$/;"	f
-luaI_openlib	lauxlib.h	27;"	d
+luaI_openlib	lauxlib.h	30;"	d
 luaK_checkstack	lcode.c	/^void luaK_checkstack (FuncState *fs, int n) {$/;"	f
 luaK_code	lcode.c	/^static int luaK_code (FuncState *fs, Instruction i, int line) {$/;"	f	file:
 luaK_codeABC	lcode.c	/^int luaK_codeABC (FuncState *fs, OpCode o, int a, int b, int c) {$/;"	f
@@ -1274,34 +1274,34 @@ luaL_Buffer	lauxlib.h	/^typedef struct luaL_Buffer {$/;"	s
 luaL_Buffer	lauxlib.h	/^} luaL_Buffer;$/;"	t	typeref:struct:luaL_Buffer
 luaL_Reg	lauxlib.h	/^typedef struct luaL_Reg {$/;"	s
 luaL_Reg	lauxlib.h	/^} luaL_Reg;$/;"	t	typeref:struct:luaL_Reg
-luaL_addchar	lauxlib.h	136;"	d
+luaL_addchar	lauxlib.h	141;"	d
 luaL_addlstring	lauxlib.c	/^LUALIB_API void luaL_addlstring (luaL_Buffer *B, const char *s, size_t l) {$/;"	f
-luaL_addsize	lauxlib.h	143;"	d
+luaL_addsize	lauxlib.h	148;"	d
 luaL_addstring	lauxlib.c	/^LUALIB_API void luaL_addstring (luaL_Buffer *B, const char *s) {$/;"	f
 luaL_addvalue	lauxlib.c	/^LUALIB_API void luaL_addvalue (luaL_Buffer *B) {$/;"	f
-luaL_argcheck	lauxlib.h	100;"	d
+luaL_argcheck	lauxlib.h	103;"	d
 luaL_argerror	lauxlib.c	/^LUALIB_API int luaL_argerror (lua_State *L, int narg, const char *extramsg) {$/;"	f
 luaL_buffinit	lauxlib.c	/^LUALIB_API void luaL_buffinit (lua_State *L, luaL_Buffer *B) {$/;"	f
 luaL_callmeta	lauxlib.c	/^LUALIB_API int luaL_callmeta (lua_State *L, int obj, const char *event) {$/;"	f
 luaL_checkany	lauxlib.c	/^LUALIB_API void luaL_checkany (lua_State *L, int narg) {$/;"	f
-luaL_checkint	lauxlib.h	104;"	d
+luaL_checkint	lauxlib.h	109;"	d
 luaL_checkinteger	lauxlib.c	/^LUALIB_API lua_Integer luaL_checkinteger (lua_State *L, int narg) {$/;"	f
-luaL_checklong	lauxlib.h	106;"	d
+luaL_checklong	lauxlib.h	111;"	d
 luaL_checklstring	lauxlib.c	/^LUALIB_API const char *luaL_checklstring (lua_State *L, int narg, size_t *len) {$/;"	f
 luaL_checknumber	lauxlib.c	/^LUALIB_API lua_Number luaL_checknumber (lua_State *L, int narg) {$/;"	f
 luaL_checkoption	lauxlib.c	/^LUALIB_API int luaL_checkoption (lua_State *L, int narg, const char *def,$/;"	f
 luaL_checkstack	lauxlib.c	/^LUALIB_API void luaL_checkstack (lua_State *L, int space, const char *mes) {$/;"	f
-luaL_checkstring	lauxlib.h	102;"	d
+luaL_checkstring	lauxlib.h	107;"	d
 luaL_checktype	lauxlib.c	/^LUALIB_API void luaL_checktype (lua_State *L, int narg, int t) {$/;"	f
 luaL_checkudata	lauxlib.c	/^LUALIB_API void *luaL_checkudata (lua_State *L, int ud, const char *tname) {$/;"	f
-luaL_dofile	lauxlib.h	111;"	d
-luaL_dostring	lauxlib.h	114;"	d
+luaL_dofile	lauxlib.h	116;"	d
+luaL_dostring	lauxlib.h	119;"	d
 luaL_error	lauxlib.c	/^LUALIB_API int luaL_error (lua_State *L, const char *fmt, ...) {$/;"	f
 luaL_findtable	lauxlib.c	/^LUALIB_API const char *luaL_findtable (lua_State *L, int idx,$/;"	f
 luaL_getmetafield	lauxlib.c	/^LUALIB_API int luaL_getmetafield (lua_State *L, int obj, const char *event) {$/;"	f
-luaL_getmetatable	lauxlib.h	117;"	d
+luaL_getmetatable	lauxlib.h	122;"	d
 luaL_getn	lauxlib.c	/^LUALIB_API int luaL_getn (lua_State *L, int t) {$/;"	f
-luaL_getn	lauxlib.h	22;"	d
+luaL_getn	lauxlib.h	25;"	d
 luaL_gsub	lauxlib.c	/^LUALIB_API const char *luaL_gsub (lua_State *L, const char *s, const char *p,$/;"	f
 luaL_loadbuffer	lauxlib.c	/^LUALIB_API int luaL_loadbuffer (lua_State *L, const char *buff, size_t size,$/;"	f
 luaL_loadfile	lauxlib.c	/^LUALIB_API int luaL_loadfile (lua_State *L, const char *filename) {$/;"	f
@@ -1309,22 +1309,22 @@ luaL_loadstring	lauxlib.c	/^LUALIB_API int (luaL_loadstring) (lua_State *L, cons
 luaL_newmetatable	lauxlib.c	/^LUALIB_API int luaL_newmetatable (lua_State *L, const char *tname) {$/;"	f
 luaL_newstate	lauxlib.c	/^LUALIB_API lua_State *luaL_newstate (void) {$/;"	f
 luaL_openlibs	linit.c	/^LUALIB_API void luaL_openlibs (lua_State *L) {$/;"	f
-luaL_opt	lauxlib.h	119;"	d
-luaL_optint	lauxlib.h	105;"	d
+luaL_opt	lauxlib.h	124;"	d
+luaL_optint	lauxlib.h	110;"	d
 luaL_optinteger	lauxlib.c	/^LUALIB_API lua_Integer luaL_optinteger (lua_State *L, int narg,$/;"	f
-luaL_optlong	lauxlib.h	107;"	d
+luaL_optlong	lauxlib.h	112;"	d
 luaL_optlstring	lauxlib.c	/^LUALIB_API const char *luaL_optlstring (lua_State *L, int narg,$/;"	f
 luaL_optnumber	lauxlib.c	/^LUALIB_API lua_Number luaL_optnumber (lua_State *L, int narg, lua_Number def) {$/;"	f
-luaL_optstring	lauxlib.h	103;"	d
+luaL_optstring	lauxlib.h	108;"	d
 luaL_prepbuffer	lauxlib.c	/^LUALIB_API char *luaL_prepbuffer (luaL_Buffer *B) {$/;"	f
 luaL_pushresult	lauxlib.c	/^LUALIB_API void luaL_pushresult (luaL_Buffer *B) {$/;"	f
-luaL_putchar	lauxlib.h	141;"	d
+luaL_putchar	lauxlib.h	146;"	d
 luaL_ref	lauxlib.c	/^LUALIB_API int luaL_ref (lua_State *L, int t) {$/;"	f
-luaL_reg	lauxlib.h	170;"	d
+luaL_reg	lauxlib.h	175;"	d
 luaL_register	lauxlib.c	/^LUALIB_API void (luaL_register) (lua_State *L, const char *libname,$/;"	f
 luaL_setn	lauxlib.c	/^LUALIB_API void luaL_setn (lua_State *L, int t, int n) {$/;"	f
-luaL_setn	lauxlib.h	23;"	d
-luaL_typename	lauxlib.h	109;"	d
+luaL_setn	lauxlib.h	26;"	d
+luaL_typename	lauxlib.h	114;"	d
 luaL_typerror	lauxlib.c	/^LUALIB_API int luaL_typerror (lua_State *L, int narg, const char *tname) {$/;"	f
 luaL_unref	lauxlib.c	/^LUALIB_API void luaL_unref (lua_State *L, int t, int ref) {$/;"	f
 luaL_where	lauxlib.c	/^LUALIB_API void luaL_where (lua_State *L, int level) {$/;"	f
@@ -1403,8 +1403,8 @@ luaZ_resizebuffer	lzio.h	39;"	d
 luaZ_sizebuffer	lzio.h	33;"	d
 lua_Alloc	lua.h	/^typedef void * (*lua_Alloc) (void *ud, void *ptr, size_t osize, size_t nsize);$/;"	t
 lua_CFunction	lua.h	/^typedef int (*lua_CFunction) (lua_State *L);$/;"	t
-lua_Chunkreader	lua.h	301;"	d
-lua_Chunkwriter	lua.h	302;"	d
+lua_Chunkreader	lua.h	328;"	d
+lua_Chunkwriter	lua.h	329;"	d
 lua_Debug	lua.h	/^struct lua_Debug {$/;"	s
 lua_Debug	lua.h	/^typedef struct lua_Debug lua_Debug;  \/* activation record *\/$/;"	t	typeref:struct:lua_Debug
 lua_Hook	lua.h	/^typedef void (*lua_Hook) (lua_State *L, lua_Debug *ar);$/;"	t
@@ -1416,7 +1416,7 @@ lua_State	lua.h	/^typedef struct lua_State lua_State;$/;"	t	typeref:struct:lua_S
 lua_TValue	lobject.h	/^typedef struct lua_TValue {$/;"	s
 lua_Writer	lua.h	/^typedef int (*lua_Writer) (lua_State *L, const void* p, size_t sz, void* ud);$/;"	t
 lua_assert	llimits.h	62;"	d
-lua_assert	lualib.h	49;"	d
+lua_assert	lualib.h	53;"	d
 lua_atpanic	lapi.c	/^LUA_API lua_CFunction lua_atpanic (lua_State *L, lua_CFunction panicf) {$/;"	f
 lua_c	lua.c	15;"	d	file:
 lua_call	lapi.c	/^LUA_API void lua_call (lua_State *L, int nargs, int nresults) {$/;"	f
@@ -1434,41 +1434,41 @@ lua_gc	lapi.c	/^LUA_API int lua_gc (lua_State *L, int what, int data) {$/;"	f
 lua_getallocf	lapi.c	/^LUA_API lua_Alloc lua_getallocf (lua_State *L, void **ud) {$/;"	f
 lua_getfenv	lapi.c	/^LUA_API void lua_getfenv (lua_State *L, int idx) {$/;"	f
 lua_getfield	lapi.c	/^LUA_API void lua_getfield (lua_State *L, int idx, const char *k) {$/;"	f
-lua_getgccount	lua.h	299;"	d
-lua_getglobal	lua.h	285;"	d
+lua_getgccount	lua.h	326;"	d
+lua_getglobal	lua.h	312;"	d
 lua_gethook	ldebug.c	/^LUA_API lua_Hook lua_gethook (lua_State *L) {$/;"	f
 lua_gethookcount	ldebug.c	/^LUA_API int lua_gethookcount (lua_State *L) {$/;"	f
 lua_gethookmask	ldebug.c	/^LUA_API int lua_gethookmask (lua_State *L) {$/;"	f
 lua_getinfo	ldebug.c	/^LUA_API int lua_getinfo (lua_State *L, const char *what, lua_Debug *ar) {$/;"	f
 lua_getlocal	ldebug.c	/^LUA_API const char *lua_getlocal (lua_State *L, const lua_Debug *ar, int n) {$/;"	f
 lua_getmetatable	lapi.c	/^LUA_API int lua_getmetatable (lua_State *L, int objindex) {$/;"	f
-lua_getref	lauxlib.h	167;"	d
-lua_getregistry	lua.h	297;"	d
+lua_getref	lauxlib.h	172;"	d
+lua_getregistry	lua.h	324;"	d
 lua_getstack	ldebug.c	/^LUA_API int lua_getstack (lua_State *L, int level, lua_Debug *ar) {$/;"	f
 lua_gettable	lapi.c	/^LUA_API void lua_gettable (lua_State *L, int idx) {$/;"	f
 lua_gettop	lapi.c	/^LUA_API int lua_gettop (lua_State *L) {$/;"	f
 lua_getupvalue	lapi.c	/^LUA_API const char *lua_getupvalue (lua_State *L, int funcindex, int n) {$/;"	f
-lua_h	lua.h	10;"	d
+lua_h	lua.h	13;"	d
 lua_ident	lapi.c	/^const char lua_ident[] =$/;"	v
 lua_insert	lapi.c	/^LUA_API void lua_insert (lua_State *L, int idx) {$/;"	f
-lua_isboolean	lua.h	273;"	d
+lua_isboolean	lua.h	300;"	d
 lua_iscfunction	lapi.c	/^LUA_API int lua_iscfunction (lua_State *L, int idx) {$/;"	f
-lua_isfunction	lua.h	269;"	d
-lua_islightuserdata	lua.h	271;"	d
-lua_isnil	lua.h	272;"	d
-lua_isnone	lua.h	275;"	d
-lua_isnoneornil	lua.h	276;"	d
+lua_isfunction	lua.h	296;"	d
+lua_islightuserdata	lua.h	298;"	d
+lua_isnil	lua.h	299;"	d
+lua_isnone	lua.h	302;"	d
+lua_isnoneornil	lua.h	303;"	d
 lua_isnumber	lapi.c	/^LUA_API int lua_isnumber (lua_State *L, int idx) {$/;"	f
 lua_isstring	lapi.c	/^LUA_API int lua_isstring (lua_State *L, int idx) {$/;"	f
-lua_istable	lua.h	270;"	d
-lua_isthread	lua.h	274;"	d
+lua_istable	lua.h	297;"	d
+lua_isthread	lua.h	301;"	d
 lua_isuserdata	lapi.c	/^LUA_API int lua_isuserdata (lua_State *L, int idx) {$/;"	f
 lua_lessthan	lapi.c	/^LUA_API int lua_lessthan (lua_State *L, int index1, int index2) {$/;"	f
 lua_load	lapi.c	/^LUA_API int lua_load (lua_State *L, lua_Reader reader, void *data,$/;"	f
 lua_lock	llimits.h	110;"	d
 lua_longjmp	ldo.c	/^struct lua_longjmp {$/;"	s	file:
 lua_newstate	lstate.c	/^LUA_API lua_State *lua_newstate (lua_Alloc f, void *ud) {$/;"	f
-lua_newtable	lua.h	258;"	d
+lua_newtable	lua.h	278;"	d
 lua_newthread	lapi.c	/^LUA_API lua_State *lua_newthread (lua_State *L) {$/;"	f
 lua_newuserdata	lapi.c	/^LUA_API void *lua_newuserdata (lua_State *L, size_t size) {$/;"	f
 lua_next	lapi.c	/^LUA_API int lua_next (lua_State *L, int idx) {$/;"	f
@@ -1480,22 +1480,22 @@ lua_number2integer	luaconf.h	573;"	d
 lua_number2integer	luaconf.h	581;"	d
 lua_number2str	luaconf.h	523;"	d
 lua_objlen	lapi.c	/^LUA_API size_t lua_objlen (lua_State *L, int idx) {$/;"	f
-lua_open	lua.h	295;"	d
+lua_open	lua.h	322;"	d
 lua_pcall	lapi.c	/^LUA_API int lua_pcall (lua_State *L, int nargs, int nresults, int errfunc) {$/;"	f
 lua_pclose	luaconf.h	671;"	d
 lua_pclose	luaconf.h	676;"	d
 lua_pclose	luaconf.h	682;"	d
-lua_pop	lua.h	256;"	d
+lua_pop	lua.h	275;"	d
 lua_popen	luaconf.h	670;"	d
 lua_popen	luaconf.h	675;"	d
 lua_popen	luaconf.h	680;"	d
 lua_pushboolean	lapi.c	/^LUA_API void lua_pushboolean (lua_State *L, int b) {$/;"	f
 lua_pushcclosure	lapi.c	/^LUA_API void lua_pushcclosure (lua_State *L, lua_CFunction fn, int n) {$/;"	f
-lua_pushcfunction	lua.h	265;"	d
+lua_pushcfunction	lua.h	292;"	d
 lua_pushfstring	lapi.c	/^LUA_API const char *lua_pushfstring (lua_State *L, const char *fmt, ...) {$/;"	f
 lua_pushinteger	lapi.c	/^LUA_API void lua_pushinteger (lua_State *L, lua_Integer n) {$/;"	f
 lua_pushlightuserdata	lapi.c	/^LUA_API void lua_pushlightuserdata (lua_State *L, void *p) {$/;"	f
-lua_pushliteral	lua.h	278;"	d
+lua_pushliteral	lua.h	305;"	d
 lua_pushlstring	lapi.c	/^LUA_API void lua_pushlstring (lua_State *L, const char *s, size_t len) {$/;"	f
 lua_pushnil	lapi.c	/^LUA_API void lua_pushnil (lua_State *L) {$/;"	f
 lua_pushnumber	lapi.c	/^LUA_API void lua_pushnumber (lua_State *L, lua_Number n) {$/;"	f
@@ -1510,8 +1510,8 @@ lua_rawset	lapi.c	/^LUA_API void lua_rawset (lua_State *L, int idx) {$/;"	f
 lua_rawseti	lapi.c	/^LUA_API void lua_rawseti (lua_State *L, int idx, int n) {$/;"	f
 lua_readline	luaconf.h	277;"	d
 lua_readline	luaconf.h	283;"	d
-lua_ref	lauxlib.h	162;"	d
-lua_register	lua.h	261;"	d
+lua_ref	lauxlib.h	167;"	d
+lua_register	lua.h	286;"	d
 lua_remove	lapi.c	/^LUA_API void lua_remove (lua_State *L, int idx) {$/;"	f
 lua_replace	lapi.c	/^LUA_API void lua_replace (lua_State *L, int idx) {$/;"	f
 lua_resume	ldo.c	/^LUA_API int lua_resume (lua_State *L, int nargs) {$/;"	f
@@ -1520,7 +1520,7 @@ lua_saveline	luaconf.h	286;"	d
 lua_setallocf	lapi.c	/^LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud) {$/;"	f
 lua_setfenv	lapi.c	/^LUA_API int lua_setfenv (lua_State *L, int idx) {$/;"	f
 lua_setfield	lapi.c	/^LUA_API void lua_setfield (lua_State *L, int idx, const char *k) {$/;"	f
-lua_setglobal	lua.h	282;"	d
+lua_setglobal	lua.h	309;"	d
 lua_sethook	ldebug.c	/^LUA_API int lua_sethook (lua_State *L, lua_Hook func, int mask, int count) {$/;"	f
 lua_setlevel	lapi.c	/^LUA_API void lua_setlevel (lua_State *from, lua_State *to) {$/;"	f
 lua_setlocal	ldebug.c	/^LUA_API const char *lua_setlocal (lua_State *L, const lua_Debug *ar, int n) {$/;"	f
@@ -1533,7 +1533,7 @@ lua_stdin_is_tty	luaconf.h	229;"	d
 lua_stdin_is_tty	luaconf.h	233;"	d
 lua_stdin_is_tty	luaconf.h	235;"	d
 lua_str2number	luaconf.h	525;"	d
-lua_strlen	lua.h	267;"	d
+lua_strlen	lua.h	294;"	d
 lua_tmpnam	luaconf.h	649;"	d
 lua_tmpnam	luaconf.h	657;"	d
 lua_toboolean	lapi.c	/^LUA_API int lua_toboolean (lua_State *L, int idx) {$/;"	f
@@ -1542,14 +1542,14 @@ lua_tointeger	lapi.c	/^LUA_API lua_Integer lua_tointeger (lua_State *L, int idx)
 lua_tolstring	lapi.c	/^LUA_API const char *lua_tolstring (lua_State *L, int idx, size_t *len) {$/;"	f
 lua_tonumber	lapi.c	/^LUA_API lua_Number lua_tonumber (lua_State *L, int idx) {$/;"	f
 lua_topointer	lapi.c	/^LUA_API const void *lua_topointer (lua_State *L, int idx) {$/;"	f
-lua_tostring	lua.h	287;"	d
+lua_tostring	lua.h	314;"	d
 lua_tothread	lapi.c	/^LUA_API lua_State *lua_tothread (lua_State *L, int idx) {$/;"	f
 lua_touserdata	lapi.c	/^LUA_API void *lua_touserdata (lua_State *L, int idx) {$/;"	f
 lua_type	lapi.c	/^LUA_API int lua_type (lua_State *L, int idx) {$/;"	f
 lua_typename	lapi.c	/^LUA_API const char *lua_typename (lua_State *L, int t) {$/;"	f
 lua_unlock	llimits.h	111;"	d
-lua_unref	lauxlib.h	165;"	d
-lua_upvalueindex	lua.h	39;"	d
+lua_unref	lauxlib.h	170;"	d
+lua_upvalueindex	lua.h	43;"	d
 lua_xmove	lapi.c	/^LUA_API void lua_xmove (lua_State *from, lua_State *to, int n) {$/;"	f
 lua_yield	ldo.c	/^LUA_API int lua_yield (lua_State *L, int nresults) {$/;"	f
 luac_c	luac.c	12;"	d	file:
@@ -1578,7 +1578,7 @@ luai_userstateopen	luaconf.h	723;"	d
 luai_userstateresume	luaconf.h	727;"	d
 luai_userstatethread	luaconf.h	725;"	d
 luai_userstateyield	luaconf.h	728;"	d
-lualib_h	lualib.h	9;"	d
+lualib_h	lualib.h	12;"	d
 lualibs	linit.c	/^static const luaL_Reg lualibs[] = {$/;"	v	file:
 luaopen_base	lbaselib.c	/^LUALIB_API int luaopen_base (lua_State *L) {$/;"	f
 luaopen_debug	ldblib.c	/^LUALIB_API int luaopen_debug (lua_State *L) {$/;"	f
@@ -1659,7 +1659,7 @@ nCcalls	lstate.h	/^  unsigned short nCcalls;  \/* number of nested C calls *\/$/
 na	lparser.c	/^  int na;  \/* total number of array elements *\/$/;"	m	struct:ConsControl	file:
 nactvar	lparser.c	/^  lu_byte nactvar;  \/* # active locals outside the breakable structure *\/$/;"	m	struct:BlockCnt	file:
 nactvar	lparser.h	/^  lu_byte nactvar;  \/* number of active local variables *\/$/;"	m	struct:FuncState
-name	lauxlib.h	/^  const char *name;$/;"	m	struct:luaL_Reg
+name	lauxlib.h	/^  const char *name;     \/\/ 在lua中的函数名$/;"	m	struct:luaL_Reg
 name	ldo.c	/^  const char *name;$/;"	m	struct:SParser	file:
 name	lua.h	/^  const char *name;	\/* (n) *\/$/;"	m	struct:lua_Debug
 name	lundump.c	/^ const char* name;$/;"	m	struct:__anon1	file:
@@ -1978,7 +1978,7 @@ txtToken	llex.c	/^static const char *txtToken (LexState *ls, int token) {$/;"	f	
 u	lobject.h	/^  } u;$/;"	m	struct:UpVal	typeref:union:UpVal::__anon10
 u	lparser.h	/^  } u;$/;"	m	struct:expdesc	typeref:union:expdesc::__anon4
 u	lstate.h	/^  union Udata u;        \/\/ 用户自定义数据$/;"	m	union:GCObject	typeref:union:GCObject::Udata
-uchar	lstrlib.c	24;"	d	file:
+uchar	lstrlib.c	27;"	d	file:
 ud	lapi.c	/^  void *ud;$/;"	m	struct:CCallS	file:
 ud	lstate.h	/^  void *ud;         \/* auxiliary data to `frealloc' *\/$/;"	m	struct:global_State
 unbound_search	ltable.c	/^static int unbound_search (Table *t, unsigned int j) {$/;"	f	file:

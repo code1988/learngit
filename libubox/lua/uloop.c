@@ -206,6 +206,7 @@ static const luaL_Reg ufd_m[] = {
 	{ NULL, NULL }
 };
 
+// 将需要监听的fd加入epool监听池中
 static int ul_ufd_add(lua_State *L)
 {
 	struct lua_uloop_fd *ufd;
@@ -341,6 +342,7 @@ static int ul_process(lua_State *L)
 	return 1;
 }
 
+// 创建epool句柄
 static int ul_init(lua_State *L)
 {
 	uloop_init();
@@ -381,17 +383,26 @@ int luaopen_uloop(lua_State *L)
 {
 	state = L;
 
+    // 创建一个名为"__uloop_cb"的新的空table(预分配1个元素的数组空间)，
 	lua_createtable(L, 1, 0);
 	lua_setglobal(L, "__uloop_cb");
 
+    // 创建一个名为"__uloop_fds"的新的空table(预分配1个元素的数组空间)，
 	lua_createtable(L, 1, 0);
 	lua_setglobal(L, "__uloop_fds");
 
+    // 创建一个名为"uloop"的table，并将uloop_func中的所有C函数注册进去
 	luaL_openlib(L, "uloop", uloop_func, 0);
 	lua_pushstring(L, "_VERSION");
 	lua_pushstring(L, "1.0");
 	lua_rawset(L, -3);
 
+    /* 继续往名为"uloop"的table中添加元素:
+     *          "ULOOP_READ"            = ULOOP_READ
+     *          "ULOOP_WRITE"           = ULOOP_WRITE
+     *          "ULOOP_EDGE_TRIGGER"    = ULOOP_EDGE_TRIGGER
+     *          "ULOOP_BLOCKING"        = ULOOP_BLOCKING
+     */
 	lua_pushstring(L, "ULOOP_READ");
 	lua_pushinteger(L, ULOOP_READ);
 	lua_rawset(L, -3);
