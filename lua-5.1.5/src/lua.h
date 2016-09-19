@@ -274,7 +274,7 @@ LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud);
 
 #define lua_pop(L,n)		lua_settop(L, -(n)-1)
 
-// 创建一个lua中的空table
+// 创建一个lua中的新的空table并压入栈
 #define lua_newtable(L)		lua_createtable(L, 0, 0)
 
 /* 把C函数f注册为lua全局环境中的函数
@@ -305,10 +305,10 @@ LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud);
 #define lua_pushliteral(L, s)	\
 	lua_pushlstring(L, "" s, (sizeof(s)/sizeof(char))-1)
 
-// 从堆栈上弹出一个值，并将其赋给全局table(_G)中的元素s
+// 从堆栈上弹出一个值，并将其赋给全局table中的元素s
 #define lua_setglobal(L,s)	lua_setfield(L, LUA_GLOBALSINDEX, (s))
 
-// 将全局table(_G)中的元素s的值压栈，返回该值的类型
+// 将全局变量s的值压栈
 #define lua_getglobal(L,s)	lua_getfield(L, LUA_GLOBALSINDEX, (s))
 
 #define lua_tostring(L,i)	lua_tolstring(L, (i), NULL)

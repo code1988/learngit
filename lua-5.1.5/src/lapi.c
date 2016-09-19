@@ -598,7 +598,7 @@ LUA_API int lua_pushthread (lua_State *L) {
 ** get functions (Lua -> stack)
 */
 
-/* 顾名思义，本函数用于获取table中指定元素的值，类似"t[k]"
+/* 顾名思义，本函数用于获取table中指定元素的值，类似"t[k]"，本函数可能会触发__index元方法
  *
  * 备注：t是指定索引idx处的值，k是栈顶(-1)处的值
  *       本函数会弹出栈顶的k，然后将获得的值"t[k]"压入栈顶
@@ -612,7 +612,11 @@ LUA_API void lua_gettable (lua_State *L, int idx) {
   lua_unlock(L);
 }
 
-// 取table中的元素k的值
+/* 类似lua_gettable，区别在于"k"不来自栈顶而来自入参
+ *
+ * @idx - 该索引处存放了"t[k]"的值t
+ * @k   - 传入了"t[k]"的值k
+ */
 LUA_API void lua_getfield (lua_State *L, int idx, const char *k) {
   StkId t;
   TValue key;
@@ -652,7 +656,10 @@ LUA_API void lua_rawgeti (lua_State *L, int idx, int n) {
   lua_unlock(L);
 }
 
-
+/* 创建一个新的空table并压入栈
+ *
+ * 备注：这个新table将被预分配narray个元素的数组空间以及nrec个元素的非数组空间
+ */
 LUA_API void lua_createtable (lua_State *L, int narray, int nrec) {
   lua_lock(L);
   luaC_checkGC(L);
@@ -723,9 +730,10 @@ LUA_API void lua_getfenv (lua_State *L, int idx) {
 ** set functions (stack -> Lua)
 */
 
-/* 顾名思义，本函数做了一个等价于"t[k] = v"的操作
+/* 顾名思义，本函数做了一个等价于"t[k] = v"的操作，本函数可能会触发__newindex元方法
  *
  * 备注：t是指定索引idx处的值，v是栈顶(-1)处的值，k是栈顶之下(-2)那个值
+ *       本函数运行中会弹出栈中的v和k值
  */
 LUA_API void lua_settable (lua_State *L, int idx) {
   StkId t;
@@ -738,7 +746,13 @@ LUA_API void lua_settable (lua_State *L, int idx) {
   lua_unlock(L);
 }
 
-// 给table中的元素k赋值,值来自栈顶
+/* 类似lua_settable，做了一个等价于"t[k] = v"的操作，区别在于k来自入参
+ *
+ * @k   - 传入了"t[k]"的值k
+ *
+ * 备注：t是指定索引idx处的值，v是栈顶(-1)处的值
+ *       本函数运行中会弹出栈中的v值
+ */
 LUA_API void lua_setfield (lua_State *L, int idx, const char *k) {
   StkId t;
   TValue key;
