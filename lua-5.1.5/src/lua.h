@@ -205,8 +205,6 @@ LUA_API void  (lua_getfenv) (lua_State *L, int idx);
 
 /*
 ** set functions (stack -> Lua)
-
-以下这部分API用于设置面向lua环境的栈
 */
 LUA_API void  (lua_settable) (lua_State *L, int idx);
 LUA_API void  (lua_setfield) (lua_State *L, int idx, const char *k);

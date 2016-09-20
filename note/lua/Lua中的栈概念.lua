@@ -75,8 +75,10 @@ C-API是一组能使C代码与Lua交互的函数，这些API实现了读写Lua�
     -- lua_pushlightuserdata        : 往栈中压入一个C指针
     备注：在lua中light userdata是一个像数字一样的值（猜测是C指针指向的地址值）;
 
-3. 这部分API都是用于访问栈上的元素，这部分API有另外一个共同点，那就是不会引起栈上元素的变化
+3. 这部分API专门用于访问栈上的元素，并且有另外一个共同点，那就是这些API操作不会引起栈上元素的变化
     -- lua_type(idx)            : 返回索引idx处的元素类型
+    -- lua_typename(type)       : 返回lua数据类型type对应的字符串名
+    -- lua_objlen(idx)          : 返回索引idx处的元素的长度
     
     -- lua_isnumber(idx)        : 如果索引idx处的元素是LUA_TNUMBER类型返回true
     备注：LUA_TNUMBER 或者是可以转换成LUA_TNUMBER的字符串都会判断为true
@@ -89,4 +91,17 @@ C-API是一组能使C代码与Lua交互的函数，这些API实现了读写Lua�
     -- lua_isfunction(idx)      : 如果索引idx处的元素是函数(lua函数或c函数都可)返回true
     -- lua_iscfunction(idx)     : 如果索引idx处的元素是C函数返回true
 
-    -- lua_to*系列API：
+    -- lua_to*系列API用于从指定索引处获取特定类型的值
+    备注：如果指定索引处的元素不具有正确的类型，则根据特定API返回0或NULL
+
+4. 这部分API专门用于对table进行操作
+    -- lua_gettable(idx)        : 用于获取table中指定元素的值，类似"t[k]"，本函数可能会触发__index元方法
+    备注：t是指定索引idx处的值，k是栈顶(-1)处的值;
+          本函数会弹出栈顶的k，然后将获得的值"t[k]"压入栈顶
+
+    -- lua_getfield(idx,k)      : 类似lua_gettable，区别在于"k"不来自栈顶而来自入参
+    -- lua_rawget(idx)          : 类似lua_gettable，区别在于本函数不会触发__index元方法
+    -- lua_rawgeti(idx,n)       : 用于获取数组中指定元素的值
+    备注：跟lua_getfield的相似点在于table/array的索引都来自入参;
+          跟lua_rawget的相似点在于都不会触发__index元方法
+

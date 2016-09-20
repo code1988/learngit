@@ -634,9 +634,6 @@ LUA_API void lua_gettable (lua_State *L, int idx) {
 }
 
 /* 类似lua_gettable，区别在于"k"不来自栈顶而来自入参
- *
- * @idx - 该索引处存放了"t[k]"的值t
- * @k   - 传入了"t[k]"的值k
  */
 LUA_API void lua_getfield (lua_State *L, int idx, const char *k) {
   StkId t;
@@ -663,9 +660,11 @@ LUA_API void lua_rawget (lua_State *L, int idx) {
   lua_unlock(L);
 }
 
-/* 类似lua_rawget，区别在于本函数只专门用于操作数组
- *
- * 备注：t是指定索引idx处的值，n是元素在数组中的索引
+/* 本函数用于获取数组中指定元素的值，类似"t[n]"
+ * 
+ * 备注：t是指定索引idx处的值，n是元素在数组中的索引;
+ *       跟lua_getfield的相似点在于table/array的索引都来自入参;
+ *       跟lua_rawget的相似点在于都不会触发__index元方法
  */
 LUA_API void lua_rawgeti (lua_State *L, int idx, int n) {
   StkId o;
