@@ -906,7 +906,7 @@ LUA_API int lua_setfenv (lua_State *L, int idx) {
 #define checkresults(L,na,nr) \
      api_check(L, (nr) == LUA_MULTRET || (L->ci->top - L->top >= (nr) - (na)))
 	
-/* 调用一个lua函数
+/* 调用一个lua代码块(由于lua 把一个 chunk 当作一个拥有不定参数的匿名函数，所以本函数也可理解为调用一个lua函数)
  * @nargs   - 压入栈中的参数个数
  * @nresults- 返回值的个数
  *
@@ -944,8 +944,18 @@ static void f_call (lua_State *L, void *ud) {
   luaD_call(L, c->func, c->nresults);
 }
 
-
-
+/* 以保护模式调用一个lua代码块(由于lua 把一个 chunk 当作一个拥有不定参数的匿名函数，所以本函数也可理解为调用一个lua函数)
+ * @nargs   - 压入栈中的参数个数
+ * @nresults- 返回值的个数
+ * @errfunc - 错误处理函数在栈上的索引，如果存在错误处理函数(errfunc非0)，则必须先将其压入栈中，也就是必须位于待调用函数及其参数的下面
+ *
+ * 备注：如果在调用过程中没有发生错误，或者errfunc=0， 则lua_pcall 的行为和 lua_call 完全一致;
+ *       否则在发生运行错误时的行为顺序如下：
+ *          [1]. 调用errfunc索引处的错误处理函数，入参就是原始错误信息
+ *          [2]. 错误处理函数的返回值将作为出错信息压栈
+ *          [3]. 返回调用函数本身的返回值，也就是错误代码LUA_ERR*
+ *       通常用法是，错误处理函数被用来在出错信息上加上更多的调试信息，以获得更详细的出错原因
+ */
 LUA_API int lua_pcall (lua_State *L, int nargs, int nresults, int errfunc) {
   struct CallS c;
   int status;

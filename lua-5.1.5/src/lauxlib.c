@@ -555,6 +555,8 @@ LUALIB_API void luaL_unref (lua_State *L, int t, int ref) {
 /*
 ** {======================================================
 ** Load functions
+以下都是一些加载lua代码块的API
+加载的过程，实质就是将lua代码块作为一个匿名函数的body压栈
 ** =======================================================
 */
 
@@ -587,7 +589,9 @@ static int errfile (lua_State *L, const char *what, int fnameindex) {
   return LUA_ERRFILE;
 }
 
-
+/* 加载lua程序文件
+ * @filename    - 带路径的lua程序文件名
+ */
 LUALIB_API int luaL_loadfile (lua_State *L, const char *filename) {
   LoadF lf;
   int status, readstatus;
