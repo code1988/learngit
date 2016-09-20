@@ -35,12 +35,12 @@
 
 /*
 ** pseudo-indices
-以下定义了一些lua中的假索引
+以下定义了一些lua中的"伪索引"
 */
-#define LUA_REGISTRYINDEX	(-10000)
-#define LUA_ENVIRONINDEX	(-10001)
+#define LUA_REGISTRYINDEX	(-10000)    // 该索引位置处存放了注册表
+#define LUA_ENVIRONINDEX	(-10001)    // 该索引位置处存放了环境table
 #define LUA_GLOBALSINDEX	(-10002)
-#define lua_upvalueindex(i)	(LUA_GLOBALSINDEX-(i))
+#define lua_upvalueindex(i)	(LUA_GLOBALSINDEX-(i))  // 用来生成指定C闭包的一个upvalue的"伪索引"
 
 
 /* thread status; 0 is OK */
@@ -129,7 +129,7 @@ LUA_API lua_CFunction (lua_atpanic) (lua_State *L, lua_CFunction panicf);
 /*
 ** basic stack manipulation
 
-以下这部分API用于对栈进行一系列基础操作
+以下这部分API用于对栈本身进行一系列基础操作
 */
 LUA_API int   (lua_gettop) (lua_State *L);
 LUA_API void  (lua_settop) (lua_State *L, int idx);
@@ -286,9 +286,10 @@ LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud);
  */
 #define lua_register(L,n,f) (lua_pushcfunction(L, (f)), lua_setglobal(L, (n)))
 
-/* 将一个C函数压栈
+/* 将一个普通的C函数压栈
  * 
- * 备注：这个C函数必须按照lua_CFunction格式来定义，并且这个C函数没有关联值
+ * 备注：这个C函数必须按照lua_CFunction格式来定义，
+ *       并且这个C函数没有upvalue(也就是意味着压入栈中的是一个普通的C函数)
  */
 #define lua_pushcfunction(L,f)	lua_pushcclosure(L, (f), 0)
 
@@ -309,7 +310,7 @@ LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud);
 // 从堆栈上弹出一个值，并将其赋给全局table中的元素s
 #define lua_setglobal(L,s)	lua_setfield(L, LUA_GLOBALSINDEX, (s))
 
-// 将全局变量s的值压栈
+// 将全局table中元素s的值压栈
 #define lua_getglobal(L,s)	lua_getfield(L, LUA_GLOBALSINDEX, (s))
 
 #define lua_tostring(L,i)	lua_tolstring(L, (i), NULL)

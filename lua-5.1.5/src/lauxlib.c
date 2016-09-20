@@ -239,9 +239,9 @@ LUALIB_API int luaL_callmeta (lua_State *L, int obj, const char *event) {
   return 1;
 }
 
-/* 用于注册模块内的所有C函数到lua中一个名为libname的table中(通常这些C函数的集合就是一个库)
+/* 用于注册模块内的所有C函数到lua中一个名为libname的值中(通常这些C函数的集合就是一个库)
  *
- * @libname - 模块名/库名
+ * @libname - 模块名/库名，NULL时表示将表l中的所有C函数注册到栈顶的值中;非NULL时表示将首先创建一个名为libname的全局table，然后将表l中的所有C函数注册到该table中
  * @l       - 需要注册的C函数表
  *
  * 备注: 由于通过这种方式注册的C函数会成为lua全局环境中的变量，这种污染全局环境的方式并不合理
@@ -509,7 +509,11 @@ LUALIB_API void luaL_buffinit (lua_State *L, luaL_Buffer *B) {
 
 /* }====================================================== */
 
-
+/* "引用系统"的成员函数，本函数用于创建一个指向lua值的整数key(即"引用")
+ *
+ * 备注：本函数首先从栈中弹出一个值，然后用一个新分配的整数key来将这个值保存到索引t处的table中，最后返回这个整数key.
+ *       C中无法通过指针来指向lua对象，只能通过这种引用的方式
+ */
 LUALIB_API int luaL_ref (lua_State *L, int t) {
   int ref;
   t = abs_index(L, t);
@@ -532,7 +536,10 @@ LUALIB_API int luaL_ref (lua_State *L, int t) {
   return ref;
 }
 
-
+/* "引用系统"的成员函数，本函数用于释放一个C变量中保存的指向lua值的引用
+ * @t   - 索引号t处的table中存放了该引用的lua值
+ * @ref - 需要被释放的"引用
+ */
 LUALIB_API void luaL_unref (lua_State *L, int t, int ref) {
   if (ref >= 0) {
     t = abs_index(L, t);

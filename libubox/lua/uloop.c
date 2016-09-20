@@ -43,23 +43,29 @@ struct lua_uloop_process {
 
 static lua_State *state;
 
+// 定时器回调函数
 static void ul_timer_cb(struct uloop_timeout *t)
 {
 	struct lua_uloop_timeout *tout = container_of(t, struct lua_uloop_timeout, t);
 
+    // 将全局table中名为"__uloop_cb"的table压栈
 	lua_getglobal(state, "__uloop_cb");
+    // 根据事先记录的"引用"从名为"__uloop_cb"的table中索引对应的lua超时回调，然后将该回调压栈
 	lua_rawgeti(state, -1, tout->r);
+    // 删除栈中名为"__uloop_cb"的table
 	lua_remove(state, -2);
 
+    // 调用栈中的lua超时回调，无入参，无返回值
 	lua_call(state, 0, 0);
-
 }
 
+// 开启/更新定时器
 static int ul_timer_set(lua_State *L)
 {
 	struct lua_uloop_timeout *tout;
 	double set;
 
+    // 确保栈顶元素是个整形的超时值
 	if (!lua_isnumber(L, -1)) {
 		lua_pushstring(L, "invalid arg list");
 		lua_error(L);
@@ -67,13 +73,18 @@ static int ul_timer_set(lua_State *L)
 		return 0;
 	}
 
+    // 获取栈顶的超时值
 	set = lua_tointeger(L, -1);
+    // 获取栈底的lua_uloop_timeout结构
 	tout = lua_touserdata(L, 1);
+
+    // 开启或更新定时器
 	uloop_timeout_set(&tout->t, set);
 
 	return 1;
 }
 
+// 销毁定时器
 static int ul_timer_free(lua_State *L)
 {
 	struct lua_uloop_timeout *tout = lua_touserdata(L, 1);
@@ -98,17 +109,24 @@ static const luaL_Reg timer_m[] = {
 	{ NULL, NULL }
 };
 
+/* 创建一个定时器
+ * lua函数"uloop.timer"参数入栈情况：
+ *          -2  指定了该定时器的超时回调(必须)
+ *          -1  指定了该定时器的超时值(可选)
+ */
 static int ul_timer(lua_State *L)
 {
 	struct lua_uloop_timeout *tout;
 	int set = 0;
 	int ref;
 
+    // 如果传入了超时值，则记录下来
 	if (lua_isnumber(L, -1)) {
 		set = lua_tointeger(L, -1);
 		lua_pop(L, 1);
 	}
 
+    // 超时回调函数必须传入
 	if (!lua_isfunction(L, -1)) {
 		lua_pushstring(L, "invalid arg list");
 		lua_error(L);
@@ -116,32 +134,124 @@ static int ul_timer(lua_State *L)
 		return 0;
 	}
 
+    /* 将全局table中名为"__uloop_cb"的table压栈
+     * 此时的栈：   
+     *          -1 名为"_uloop_cb"的table
+     *          -2 超时回调
+     */
 	lua_getglobal(L, "__uloop_cb");
+    /* 拷贝一份超时回调函数压栈
+     * 此时的栈：
+     *          -1 超时回调
+     *          -2 "_uloop_cb"的值
+     *          -3 超时回调
+     */
 	lua_pushvalue(L, -2);
+    /* 弹出栈顶的值（即超时回调），创建一个对该值的引用，并将其记录在名为"__uloop_cb"的table中
+     * 此时的栈：
+     *          -1 "_uloop_cb"的值
+     *          -2 超时回调
+     */
 	ref = luaL_ref(L, -2);
 
+    /* 分配一块lua_uloop_timeout结构的内存，并作为userdata压栈，同时返回其地址
+     * 此时的栈：
+     *          -1 userdata(lua_uloop_timeout结构)
+     *          -2 "_uloop_cb"的值
+     *          -3 超时回调
+     */
 	tout = lua_newuserdata(L, sizeof(*tout));
+    /* 创建一个新的空table(实际就是元表)并压栈，同时为该table预分配了2个元素的非数组空间
+     * 此时的栈：
+     *          -1 元表
+     *          -2 userdata(lua_uloop_timeout结构)
+     *          -3 "_uloop_cb"的值
+     *          -4 超时回调
+     */
 	lua_createtable(L, 0, 2);
+    /* 拷贝一份刚创建的table压栈
+     * 此时的栈：
+     *          -1 空table
+     *          -2 元表
+     *          -3 userdata(lua_uloop_timeout结构)
+     *          -4 "_uloop_cb"的值
+     *          -5 超时回调
+     */
 	lua_pushvalue(L, -1);
+    /* 弹出栈顶的空table，赋给元表中的"__index"
+     * 此时的栈：
+     *          -1 元表(有成员__index = 空table)
+     *          -2 userdata(lua_uloop_timeout结构)
+     *          -3 "_uloop_cb"的值
+     *          -4 超时回调
+     */
 	lua_setfield(L, -2, "__index");
+    /* 将C函数ul_timer_free压栈
+     * 此时的栈：
+     *          -1 ul_timer_free 
+     *          -2 元表(有成员__index = 空table)
+     *          -3 userdata(lua_uloop_timeout结构)
+     *          -4 "_uloop_cb"的值
+     *          -5 超时回调
+     */
 	lua_pushcfunction(L, ul_timer_free);
+    /* 弹出栈顶的ul_timer_free，赋给元表中的"__gc"
+     * 此时的栈：
+     *          -1 元表(有成员__index = 空table;__gc = ul_timer_free)
+     *          -2 userdata(lua_uloop_timeout结构)
+     *          -3 "_uloop_cb"的值
+     *          -4 超时回调
+     */
 	lua_setfield(L, -2, "__gc");
+    /* 拷贝一份元表压栈
+     * 此时的栈：
+     *          -1 元表(有成员__index = 空table;__gc = ul_timer_free)
+     *          -2 元表(有成员__index = 空table;__gc = ul_timer_free)
+     *          -3 userdata(lua_uloop_timeout结构)
+     *          -4 "_uloop_cb"的值
+     *          -5 超时回调
+     */
 	lua_pushvalue(L, -1);
+    /* 弹出栈顶的元表，然后将其设置为userdata的元表
+     * 此时的栈：
+     *          -1 元表(有成员__index = 空table;__gc = ul_timer_free)
+     *          -2 userdata(lua_uloop_timeout结构，有元表)
+     *          -3 "_uloop_cb"的值
+     *          -4 超时回调
+     */
 	lua_setmetatable(L, -3);
+    /* 拷贝一份userdata压栈
+     * 此时的栈：
+     *          -1 userdata(lua_uloop_timeout结构，有元表)
+     *          -2 元表(有成员__index = 空table;__gc = ul_timer_free)
+     *          -3 userdata(lua_uloop_timeout结构，有元表)
+     *          -4 "_uloop_cb"的值
+     *          -5 超时回调
+     */
 	lua_pushvalue(L, -2);
+    /* 向userdata中注册timer_m包含的函数
+     * 此时的栈：
+     *          -1 userdata(lua_uloop_timeout结构，有元表、有timer_m中的函数)
+     *          -2 元表(有成员__index = 空table;__gc = ul_timer_free)
+     *          -3 userdata(lua_uloop_timeout结构，有元表)
+     *          -4 "_uloop_cb"的值
+     *          -5 超时回调
+     */
 	luaI_openlib(L, NULL, timer_m, 1);
 	lua_pushvalue(L, -2);
 
 	memset(tout, 0, sizeof(*tout));
 
-	tout->r = ref;
-	tout->t.cb = ul_timer_cb;
+	tout->r = ref;  // 记录"引用"值，指向lua函数超时回调
+	tout->t.cb = ul_timer_cb;   // 注册C函数超时回调
+    // 如果设置了超时值，则开启该定时器
 	if (set)
 		uloop_timeout_set(&tout->t, set);
 
 	return 1;
 }
 
+// 被监听的fd的回调函数
 static void ul_ufd_cb(struct uloop_fd *fd, unsigned int events)
 {
 	struct lua_uloop_fd *ufd = container_of(fd, struct lua_uloop_fd, fd);
@@ -160,7 +270,7 @@ static void ul_ufd_cb(struct uloop_fd *fd, unsigned int events)
 	lua_call(state, 2, 0);
 }
 
-
+// 获取需要被监听的fd
 static int get_sock_fd(lua_State* L, int idx) {
 	int fd;
 	if(lua_isnumber(L, idx)) {
@@ -178,6 +288,7 @@ static int get_sock_fd(lua_State* L, int idx) {
 	return fd;
 }
 
+// 销毁被监听的fd
 static int ul_ufd_delete(lua_State *L)
 {
 	struct lua_uloop_fd *ufd = lua_touserdata(L, 1);
@@ -351,6 +462,7 @@ static int ul_init(lua_State *L)
 	return 1;
 }
 
+// 死循环监听epool
 static int ul_run(lua_State *L)
 {
 	uloop_run();
@@ -359,6 +471,7 @@ static int ul_run(lua_State *L)
 	return 1;
 }
 
+// 跳出死循环
 static int ul_end(lua_State *L)
 {
 	uloop_end();

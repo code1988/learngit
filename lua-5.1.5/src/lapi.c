@@ -198,7 +198,7 @@ LUA_API void lua_settop (lua_State *L, int idx) {
 /* 删除指定索引上的元素
  * 
  * 备注：删除后，该位置之上的所有元素会下移一个槽位
- *       不能用伪索引来调用这个函数，因为其并不指向真实的栈上位置
+ *       本函数不可以操作"伪索引"，因为其并不指向真实的栈上位置
  */
 LUA_API void lua_remove (lua_State *L, int idx) {
   StkId p;
@@ -212,7 +212,7 @@ LUA_API void lua_remove (lua_State *L, int idx) {
 
 /* 把栈顶元素插入指定的有效索引处，并依次移动这个索引之上的元素
  *
- * 备注：不要用伪索引来调用这个函数，因为伪索引并不真正指向堆栈上的位置
+ * 备注：本函数不可以操作"伪索引"，因为伪索引并不真正指向堆栈上的位置
  */
 LUA_API void lua_insert (lua_State *L, int idx) {
   StkId p;
@@ -228,6 +228,7 @@ LUA_API void lua_insert (lua_State *L, int idx) {
 /* 弹出栈顶的值，并用该值替换指定索引上的值
  *
  * 备注：因为是在指定索引上进行覆盖操作，所以不移动任何元素
+ *       本函数可以操作"伪索引"
  */
 LUA_API void lua_replace (lua_State *L, int idx) {
   StkId o;
@@ -520,7 +521,12 @@ LUA_API void lua_pushstring (lua_State *L, const char *s) {
     lua_pushlstring(L, s, strlen(s));
 }
 
-
+/* 向栈中压入一个格式化过的字符串，并返回指向这个字符串的指针
+ *
+ * 备注：类似于C中的sprintf，但也有区别：
+ *      [1]. 无需提供这个字符串的缓冲区，因为会由lua来管理这个缓存
+ *      [2]. 本函数接受的格式化符号极为有限(仅支持%%、%s、%d、%f、%c)
+ */
 LUA_API const char *lua_pushvfstring (lua_State *L, const char *fmt,
                                       va_list argp) {
   const char *ret;
@@ -531,7 +537,8 @@ LUA_API const char *lua_pushvfstring (lua_State *L, const char *fmt,
   return ret;
 }
 
-
+/* 基本类似于lua_pushvfstring，区别仅仅在于可变形参的格式
+ */
 LUA_API const char *lua_pushfstring (lua_State *L, const char *fmt, ...) {
   const char *ret;
   va_list argp;
@@ -544,8 +551,16 @@ LUA_API const char *lua_pushfstring (lua_State *L, const char *fmt, ...) {
   return ret;
 }
 
-// 将C函数压栈的实质是将对应的C闭包压栈
-// 创建C闭包，并把这个C闭包压栈
+/* 将C函数fn压栈以创建一个新的C闭包
+ * @fn  - 符合lua_CFunction格式的C函数
+ * @n   - upvalue的数量
+ *
+ * 备注：创建C闭包的步骤：
+ *      [1].将需要关联的任意数量upvalue依次压栈
+ *      [2].调用本函数将C函数fn改造成C闭包，并将这个C闭包压栈
+ *
+ * 要注意的是，本函数调用过程中首先会从栈中弹出所有的upvalue来创建C闭包，然后才是将C闭包压栈
+ */
 LUA_API void lua_pushcclosure (lua_State *L, lua_CFunction fn, int n) {
   Closure *cl;
   lua_lock(L);
@@ -578,7 +593,8 @@ LUA_API void lua_pushboolean (lua_State *L, int b) {
   lua_unlock(L);
 }
 
-
+/* 将一个C指针压栈
+ */
 LUA_API void lua_pushlightuserdata (lua_State *L, void *p) {
   lua_lock(L);
   setpvalue(L->top, p);
@@ -803,7 +819,8 @@ LUA_API void lua_rawseti (lua_State *L, int idx, int n) {
   lua_unlock(L);
 }
 
-
+/* 将栈顶的table弹出，然后将其设置为指定索引objindex的值的元表
+ */
 LUA_API int lua_setmetatable (lua_State *L, int objindex) {
   TValue *obj;
   Table *mt;
@@ -1141,7 +1158,8 @@ LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud) {
   lua_unlock(L);
 }
 
-
+/* 分配一块size大小的内存，并将其地址作为userdata压入堆栈，同时返回这个地址
+ */
 LUA_API void *lua_newuserdata (lua_State *L, size_t size) {
   Udata *u;
   lua_lock(L);
