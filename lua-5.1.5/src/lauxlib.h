@@ -37,7 +37,7 @@ LUALIB_API void (luaL_setn) (lua_State *L, int t, int n);
 // 定义了一个用于注册C函数时传入的数据结构
 typedef struct luaL_Reg {
   const char *name;     // 在lua中的函数名
-  lua_CFunction func;   // C中的函数入口指针
+  lua_CFunction func;   // C函数地址
 } luaL_Reg;
 
 

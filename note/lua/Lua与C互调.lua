@@ -63,22 +63,46 @@ C程序中调用lua代码块的标准套路如下：
 
                     C作为一个库嵌入到Lua中使用的情况
 --------------------------------------------------------------------------------------------                                    
-1. C函数必须遵循的格式       
-    typedef int (lua_CFunction *)(lua_Stat *L)
-                    
-2. 相关的API函数
-    void lua_register(lua_State *L,const char *name,lua_CFunction f)
-    通过一个宏定义把C函数f注册到全局变量name中： 
-        #define lua_register(L,n,f) (lua_pushcfuncton(L,f),lua_setglobal(L,n))
-    具体的注册流程：
-        创建C闭包，将C函数注册到该闭包  
-        将C闭包压栈，此时位于栈顶  
-        从栈顶弹出一个值，也就是C闭包,赋值给全局table中的元素name
-        至此完成了C函数在lua全局table中的注册
+所有注册到lua中的C函数必须遵循的格式: 
+                typedef int (lua_CFunction *)(lua_Stat *L)  -- C函数从栈中获取参数，并将结果压入栈中，同时返回一个整数，表示其压入栈中的返回值数量。
 
-    lua_to*(lua_State *L,int index)
-    把索引处的"*"指定类型的lua值从栈中取出
+典型的例子就是lua的标准库.
+实现一个C库的标准套路如下：
+        static int do_init(lua_State *L)
+        {
+            printf("hello world\n");
+            return 0;
+        }
 
-    lua_push*(lua_State *L,C value)
-    把一个"*"指定类型的C value压栈以便传递给lua
-*****************************************************************************************/
+        static const luaL_Reg mylib[] = {
+            {"init", do_init},
+            {NULL,NULL}
+        };
+
+        int luaopen_mylib(lua_State *L)
+        {
+            luaL_register(L,"mylib",mylib);
+            return 1;
+        }
+
+1. C库必须定义一个特殊的函数luaopen_*，这个函数用于注册模块中所有的C函数，以及一些本模块相关的初始化.
+   通常，C模块中中只有这一个对外函数，其他所有函数都是static的.
+   
+2. 模块中所有的C函数(除了luaopen_*)通常都会被收集到一个数组中，数组元素的类型为luaL_Reg结构：
+        typedef struct luaL_Reg{
+            const char *name;   // 在lua中的函数名
+            lua_CFunction func; // C函数地址
+        }luaL_Reg; 
+   该数组的最后一个元素总是{NULL,NULL}，用以标识结尾
+
+3. 实际注册C模块的API为：
+    luaL_register(L,libname,l)
+    @libname    - 模块名/库名
+                  NULL时表示将表l中的所有C函数注册到栈顶的值中;
+                  非NULL时表示将首先创建一个名为libname的全局table，然后将表l中的所有C函数注册到该table中.
+    @l          - 需要注册的C函数集合
+    备注：由于通过这种方式注册的C函数会成为lua全局环境中的变量，这种污染全局环境的方式并不合理，5.2开始的版本中被废除，取而代之的是luaL_setfuncs
+
+4. 将C模块编译成动态链接库后，需要放入LUA_CPATH指定的C路径中，这样就可以在lua中加载该模块：
+        require "mylib"
+   
