@@ -63,7 +63,7 @@
 		每行的格式如下
 		<id>:<runlevel>:<action>:<process>
 		id：		嵌入式Linux里，这个字段不是随意定义的，因为头部会默认加上/dev/，也就是说该字段必须是/dev/目录下的文件名
-		renlevel:：	嵌入式Linux里，这个字段被忽略，也就是说，init不支持运行级别
+		runlevel:：	嵌入式Linux里，这个字段被忽略，也就是说，init不支持运行级别
 		action：	这个字段用于描述后面的process，有以下几个固定值
 					sysinit				- 	表明在系统启动阶段，后面的process将被执行，这里就是执行/etc/init.d/rcS脚本
 					askfirst/respawn	- 	两个类似，都表明后面的process进程结束时，又会被重启
