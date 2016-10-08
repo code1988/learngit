@@ -19,8 +19,68 @@
      */
 
 4. 线程属性(pthread_attr_t)
-    
+    线程属性对象pthread_attr_t中包含了多个属性，但pthread_attr_t的内部结构细节被隐藏在了NPTL中，应用程序通过NPTL提供的一组API来管理线程属性
+    线程属性包括以下这些：
+                线程的分离状态                  
+                线程的栈属性
+                线程的调度策略                  
+                线程的调度参数
+                线程的继承性
+                线程的作用域
+                线程的栈末尾警戒缓冲区大小
+    线程属性对象在使用前必须经过初始化，相对应的，使用完毕后也必须执行销毁
+    /* API  : int pthread_attr_init(pthread_attr_t *attr)
+     * 描述 : 初始化一个线程属性对象attr
+     * @attr    - 指向要被初始化的线程属性对象
+     *
+     * 备注 : 初始化之后，attr中存放的就是线程属性的默认值;
+     *        不允许对已经初始化的线程属性对象重复进行初始化
+     */
 
+    /* API  : int pthread_attr_destroy(pthread_attr_t *attr) 
+     * 描述 : 销毁一个线程属性对象attr
+     * @attr    - 指向要被销毁的线程属性对象
+     *
+     * 备注 : 销毁线程属性对象并不会对已经创建的线程(创建时使用了该对象)有任何影响;
+     *        线程属性对象在被销毁之后，又可以被重新初始化
+     */
+    
+    线程的分离状态属性决定了线程终止时的行为：
+            非分离的线程在结束时不会自行释放占用的系统资源，而是要等到有线程对该线程调用了pthread_join时才会完全释放;
+            已经分离的线程在结束时会立即释放自身占用的系统资源，并且其他线程也不允许再调用pthread_join来等待它的终止状态
+    /* API  : int pthread_attr_getdetachstate(const pthread_attr_t *attr,int *detachstate)
+     * 描述 : 获取线程属性对象中的分离状态属性
+     * @attr        - 指向线程属性对象
+     * @detachstate - 用于存放线程的分离状态属性:
+     *                                      PTHREAD_CREATE_DETACHED - 以分离状态启动线程 
+     *                                      PTHREAD_CREATE_JOINABLE - 以非分离状态启动线程(默认属性)
+     */
+
+    /* API  : int pthread_attr_setdetachstate(pthread_attr_t *attr,int *detachstate)
+     * 描述 : 修改线程属性对象中的分离状态属性
+     * @attr        - 指向线程属性对象
+     * @detachstate - 用于设置线程的分离状态属性
+     *
+     * 备注 : 如果创建线程前就确定不需要关心该线程的终止状态，就调用本函数提前将线程的分离状态属性设置为PTHREAD_CREATE_DETACHED
+     */
+
+    /* API  : int pthread_detach(pthread_t tid)
+     * 描述 : 分离指定线程
+     * @tid     - 要被分离的线程ID
+     *
+     * 备注 : 如果对已经存在的某个线程的终止状态不再关心，就调用本函数将其分离
+     */
+
+    线程的栈属性又包括了栈地址、栈大小以及栈末尾的警戒缓冲区大小
+    /* API  : int pthread_attr_getstack(const pthread_attr_t *attr,void **stackaddr,size_t *stacksize)
+     * 描述 : 获取线程属性对象中的栈地址和栈大小属性
+     * @attr        - 指向线程属性对象
+     * @stackaddr   - 用于存放线程的栈地址
+     * @stacksize   - 用于存放线程的栈大小
+     *
+     * 备注 : 
+     */
+    
 5. 线程创建
     /* API  : int pthread_create(pthread_t *tidp,const pthread_attr_t *attr,void *(*start_rtn)(void *),void *arg)
      * 描述 : 创建一个线程
@@ -29,6 +89,6 @@
      * @start_rtn   - 指向新创建的线程入口函数
      * @arg         - 用于作为start_rtn函数的入参
      *
-     * 备注；同进程创建使用的fork调用类似，线程创建时并不能确保哪个线程先运行
+     * 备注 : 同进程创建使用的fork调用类似，线程创建时并不能确保哪个线程先运行
      */ 
     
