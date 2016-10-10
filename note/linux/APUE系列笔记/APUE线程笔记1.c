@@ -8,17 +8,7 @@
     编写基于POSIX线程的程序时，需要在代码中加入"#include <pthread.h>"，然后在编译代码时加入"-lpthread"即可
     编写基于POSIX线程的程序时，对于出错的处理通常不要依赖errno，而是应该基于pthread系列函数返回的错误码进行出错处理
 
-3. 线程ID(pthread_t)
-    类似于进程ID的定义，线程ID用于在所在进程中唯一标识一个线程，虽然在linux中使用无符号长整型表示pthread_t，但不建议在实际操作中直接当作整数处理
-    /* API  : int pthread_equal(pthread_t tid1,pthread_t tid2)
-     * 描述 : 用来比较两个线程ID，相等返回非0，不相等返回0
-     */
-
-    /* API  : pthread_t pthread_self(void)
-     * 描述 : 获取自身的线程ID
-     */
-
-4. 线程属性(pthread_attr_t)
+3. 线程属性(pthread_attr_t)
     线程属性对象pthread_attr_t中包含了多个属性，但pthread_attr_t的内部结构细节被隐藏在了NPTL中，应用程序通过NPTL提供的一组API来管理线程属性
     线程属性包括以下这些：
                 线程的分离状态                  
@@ -131,17 +121,7 @@
      * 备注 : 虽然不被建议这么做，但是可以将guardsize的值设为0，意味着不再提供警戒缓冲区机制
      */
     
-5. 线程创建
-    /* API  : int pthread_create(pthread_t *tidp,const pthread_attr_t *attr,void *(*start_rtn)(void *),void *arg)
-     * 描述 : 创建一个线程
-     * @tidp    - 存放新创建线程的线程ID
-     * @attr    - 用于设置新创建线程的属性，NULL表示默认属性
-     * @start_rtn   - 指向新创建的线程入口函数
-     * @arg         - 用于作为start_rtn函数的入参
-     *
-     * 备注 : 同进程创建使用的fork调用类似，线程创建时并不能确保哪个线程先运行
-     */ 
-    
+
 附录：测试代码
 #include <stdio.h>
 #include <stdlib.h>
