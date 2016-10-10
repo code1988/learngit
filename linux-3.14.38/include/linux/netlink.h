@@ -22,6 +22,7 @@ enum netlink_skb_flags {
 	NETLINK_SKB_DST		= 0x8,	/* Dst set in sendto or sendmsg */
 };
 
+// netlink参数控制块
 struct netlink_skb_parms {
 	struct scm_creds	creds;		/* Skb credentials	*/
 	__u32			portid;
@@ -30,6 +31,7 @@ struct netlink_skb_parms {
 	struct sock		*sk;
 };
 
+// 将通用socket收发控制块中的cb字段自定义用于保存netlink参数控制块
 #define NETLINK_CB(skb)		(*(struct netlink_skb_parms*)&((skb)->cb))
 #define NETLINK_CREDS(skb)	(&NETLINK_CB((skb)).creds)
 
@@ -41,10 +43,11 @@ extern void netlink_table_ungrab(void);
 #define NL_CFG_F_NONROOT_SEND	(1 << 1)
 
 /* optional Netlink kernel configuration parameters */
+// netlink 内核配置参数控制块
 struct netlink_kernel_cfg {
-	unsigned int	groups;
-	unsigned int	flags;
-	void		(*input)(struct sk_buff *skb);
+	unsigned int	groups; // 多播组数量
+	unsigned int	flags;   
+	void		(*input)(struct sk_buff *skb);  // 消息接收函数
 	struct mutex	*cb_mutex;
 	void		(*bind)(int group);
 	bool		(*compare)(struct net *net, struct sock *sk);
@@ -53,6 +56,7 @@ struct netlink_kernel_cfg {
 extern struct sock *__netlink_kernel_create(struct net *net, int unit,
 					    struct module *module,
 					    struct netlink_kernel_cfg *cfg);
+// 内核创建一个netlink协议(如NETLINK_ROUTE),成功返回创建的网络层socket控制块
 static inline struct sock *
 netlink_kernel_create(struct net *net, int unit, struct netlink_kernel_cfg *cfg)
 {

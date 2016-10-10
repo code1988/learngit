@@ -179,6 +179,7 @@ enum {
 
 /**
  * struct nla_policy - attribute validation policy
+ * 属性是否有效的判断规则
  * @type: Type of attribute or NLA_UNSPEC
  * @len: Type specific length of payload
  *
@@ -210,8 +211,8 @@ enum {
  * };
  */
 struct nla_policy {
-	u16		type;
-	u16		len;
+	u16		type;   // 类型
+	u16		len;    // 长度
 };
 
 /**
@@ -257,6 +258,7 @@ int nla_append(struct sk_buff *skb, int attrlen, const void *data);
 
 /**
  * nlmsg_msg_size - length of netlink message not including padding
+ * 计算netlink消息实际长度(消息header + 消息payload）
  * @payload: length of message payload
  */
 static inline int nlmsg_msg_size(int payload)
@@ -266,6 +268,7 @@ static inline int nlmsg_msg_size(int payload)
 
 /**
  * nlmsg_total_size - length of netlink message including padding
+ * 计算netlink消息对齐后总长度（消息header + 消息payload + 尾部padding）
  * @payload: length of message payload
  */
 static inline int nlmsg_total_size(int payload)
@@ -275,6 +278,7 @@ static inline int nlmsg_total_size(int payload)
 
 /**
  * nlmsg_padlen - length of padding at the message's tail
+ * 计算netlink消息尾部padding长度
  * @payload: length of message payload
  */
 static inline int nlmsg_padlen(int payload)
@@ -284,6 +288,7 @@ static inline int nlmsg_padlen(int payload)
 
 /**
  * nlmsg_data - head of message payload
+ * 获取netlink消息payload首地址
  * @nlh: netlink message header
  */
 static inline void *nlmsg_data(const struct nlmsghdr *nlh)
@@ -293,6 +298,7 @@ static inline void *nlmsg_data(const struct nlmsghdr *nlh)
 
 /**
  * nlmsg_len - length of message payload
+ * 获取netlink消息payload长度
  * @nlh: netlink message header
  */
 static inline int nlmsg_len(const struct nlmsghdr *nlh)
@@ -302,6 +308,7 @@ static inline int nlmsg_len(const struct nlmsghdr *nlh)
 
 /**
  * nlmsg_attrdata - head of attributes data
+ * 获取netlink消息中的属性头
  * @nlh: netlink message header
  * @hdrlen: length of family specific header
  */
@@ -314,6 +321,7 @@ static inline struct nlattr *nlmsg_attrdata(const struct nlmsghdr *nlh,
 
 /**
  * nlmsg_attrlen - length of attributes data
+ * netlink属性的实际长度
  * @nlh: netlink message header
  * @hdrlen: length of family specific header
  */
@@ -354,6 +362,7 @@ nlmsg_next(const struct nlmsghdr *nlh, int *remaining)
 
 /**
  * nlmsg_parse - parse attributes of a netlink message
+ * 解析一条netlink消息的属性部分，将内部提取的每一条属性放入tb数组
  * @nlh: netlink message header
  * @hdrlen: length of family specific header
  * @tb: destination array with maxtype+1 elements
@@ -430,6 +439,7 @@ static inline int nlmsg_report(const struct nlmsghdr *nlh)
 
 /**
  * nlmsg_put - Add a new netlink message to an skb
+ * 添加一个新的netlink消息到通用socket buffer
  * @skb: socket buffer to store message in
  * @portid: netlink process id
  * @seq: sequence number of message
@@ -471,6 +481,7 @@ static inline struct nlmsghdr *nlmsg_put_answer(struct sk_buff *skb,
 
 /**
  * nlmsg_new - Allocate a new netlink message
+ * 申请一个新的netlink消息空间
  * @payload: size of the message payload
  * @flags: the type of memory to allocate.
  *
@@ -627,6 +638,7 @@ nl_dump_check_consistent(struct netlink_callback *cb,
 
 /**
  * nla_attr_size - length of attribute not including padding
+ * netlink属性的实际长度（属性header + 属性payload）
  * @payload: length of payload
  */
 static inline int nla_attr_size(int payload)
@@ -636,6 +648,7 @@ static inline int nla_attr_size(int payload)
 
 /**
  * nla_total_size - total length of attribute including padding
+ * netlink属性对齐后总长度（属性header + 属性payload + 尾部padding）
  * @payload: length of payload
  */
 static inline int nla_total_size(int payload)
@@ -645,6 +658,7 @@ static inline int nla_total_size(int payload)
 
 /**
  * nla_padlen - length of padding at the tail of attribute
+ * netlink属性尾部padding长度
  * @payload: length of payload
  */
 static inline int nla_padlen(int payload)
@@ -654,6 +668,7 @@ static inline int nla_padlen(int payload)
 
 /**
  * nla_type - attribute type
+ * 属性类型
  * @nla: netlink attribute
  */
 static inline int nla_type(const struct nlattr *nla)
@@ -663,6 +678,7 @@ static inline int nla_type(const struct nlattr *nla)
 
 /**
  * nla_data - head of payload
+ * netlink属性payload首地址
  * @nla: netlink attribute
  */
 static inline void *nla_data(const struct nlattr *nla)
@@ -672,6 +688,7 @@ static inline void *nla_data(const struct nlattr *nla)
 
 /**
  * nla_len - length of payload
+ * netlink属性payload长度
  * @nla: netlink attribute
  */
 static inline int nla_len(const struct nlattr *nla)

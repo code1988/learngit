@@ -218,6 +218,7 @@ struct sock_common {
 struct cg_proto;
 /**
   *	struct sock - network layer representation of sockets
+  *	socket 在网络层的表示
   *	@__sk_common: shared layout with inet_timewait_sock
   *	@sk_shutdown: mask of %SEND_SHUTDOWN and/or %RCV_SHUTDOWN
   *	@sk_userlocks: %SO_SNDBUF and %SO_RCVBUF settings
@@ -918,6 +919,7 @@ static inline void sk_prot_clear_nulls(struct sock *sk, int size)
 }
 
 /* Networking protocol blocks we attach to sockets.
+ * socket层到传输层的接口
  * socket layer -> transport layer interface
  * transport -> network interface is defined by struct inet_proto
  */
@@ -2235,6 +2237,7 @@ static inline void sk_eat_skb(struct sock *sk, struct sk_buff *skb, bool copied_
 }
 #endif
 
+// 从是socket控制块中获取所属的顶层网络控制块
 static inline
 struct net *sock_net(const struct sock *sk)
 {

@@ -54,6 +54,7 @@
 #include <net/rtnetlink.h>
 #include <net/net_namespace.h>
 
+// 每个协议族对应的rtnetlink处理方式
 struct rtnl_link {
 	rtnl_doit_func		doit;
 	rtnl_dumpit_func	dumpit;
@@ -100,8 +101,19 @@ int lockdep_rtnl_is_held(void)
 EXPORT_SYMBOL(lockdep_rtnl_is_held);
 #endif /* #ifdef CONFIG_PROVE_LOCKING */
 
+// 定义了rtnetlink所有协议族对应的处理方式的集合,按协议族索引,每个表项又是所有消息类型的处理方式的集合
+// --------------------------------------------------------------------------------------------------
+// | rtnl_msg_handlers[PF_UNSPEC] | -> rtnl_link + rtnl_link + rtnl_link + rtnl_link + rtnl_link +... 
+// --------------------------------------------------------------------------------------------------
+// | rtnl_msg_handlers[AF_UNIX]   | -> rtnl_link + rtnl_link + rtnl_link + rtnl_link + rtnl_link +...
+// --------------------------------------------------------------------------------------------------
+// | rtnl_msg_handlers[AF_INET]   | -> rtnl_link + rtnl_link + rtnl_link + rtnl_link + rtnl_link +...
+// --------------------------------------------------------------------------------------------------
+// |        ...                   | -> ...
+// --------------------------------------------------------------------------------------------------
 static struct rtnl_link *rtnl_msg_handlers[RTNL_FAMILY_MAX + 1];
 
+// rtnetlink消息type->index
 static inline int rtm_msgindex(int msgtype)
 {
 	int msgindex = msgtype - RTM_BASE;
@@ -116,6 +128,7 @@ static inline int rtm_msgindex(int msgtype)
 	return msgindex;
 }
 
+// 根据协议族和消息index索引得到对应的doit函数
 static rtnl_doit_func rtnl_get_doit(int protocol, int msgindex)
 {
 	struct rtnl_link *tab;
@@ -131,6 +144,7 @@ static rtnl_doit_func rtnl_get_doit(int protocol, int msgindex)
 	return tab[msgindex].doit;
 }
 
+// 根据协议族和消息index索引得到对应的dumpit函数
 static rtnl_dumpit_func rtnl_get_dumpit(int protocol, int msgindex)
 {
 	struct rtnl_link *tab;
@@ -146,6 +160,7 @@ static rtnl_dumpit_func rtnl_get_dumpit(int protocol, int msgindex)
 	return tab[msgindex].dumpit;
 }
 
+// 根据协议族和消息index索引得到对应的calcit函数
 static rtnl_calcit_func rtnl_get_calcit(int protocol, int msgindex)
 {
 	struct rtnl_link *tab;
@@ -163,6 +178,7 @@ static rtnl_calcit_func rtnl_get_calcit(int protocol, int msgindex)
 
 /**
  * __rtnl_register - Register a rtnetlink message type
+ * 注册一个rtnetlink消息类型(整个注册过程实际就是填充数组rtnl_msg_handlers的过程)
  * @protocol: Protocol family or PF_UNSPEC
  * @msgtype: rtnetlink message type
  * @doit: Function pointer called for each request message
@@ -186,11 +202,15 @@ int __rtnl_register(int protocol, int msgtype,
 	struct rtnl_link *tab;
 	int msgindex;
 
+    // 协议族合法性检测
 	BUG_ON(protocol < 0 || protocol > RTNL_FAMILY_MAX);
+    // 获取netlink消息index
 	msgindex = rtm_msgindex(msgtype);
 
+    // 根据协议族索引得到对应的rtnl_link地址,如果该协议族首次被注册，需要先申请RTM_NR_MSGTYPES数量的rtnl_link空间
 	tab = rtnl_msg_handlers[protocol];
-	if (tab == NULL) {
+	if (tab == NULL) 
+    {
 		tab = kcalloc(RTM_NR_MSGTYPES, sizeof(*tab), GFP_KERNEL);
 		if (tab == NULL)
 			return -ENOBUFS;
@@ -213,6 +233,7 @@ EXPORT_SYMBOL_GPL(__rtnl_register);
 
 /**
  * rtnl_register - Register a rtnetlink message type
+ * 注册一个rtnetlink消息类型(带出错打印)
  *
  * Identical to __rtnl_register() but panics on failure. This is useful
  * as failure of this function is very unlikely, it can only happen due
@@ -833,6 +854,7 @@ static size_t rtnl_port_size(const struct net_device *dev,
 		return port_self_size;
 }
 
+// rtnetlink消息长度
 static noinline size_t if_nlmsg_size(const struct net_device *dev,
 				     u32 ext_filter_mask)
 {
@@ -974,10 +996,12 @@ static int rtnl_fill_ifinfo(struct sk_buff *skb, struct net_device *dev,
 	struct net_device *upper_dev = netdev_master_upper_dev_get(dev);
 
 	ASSERT_RTNL();
+    // 填充一个netlink消息header
 	nlh = nlmsg_put(skb, pid, seq, type, sizeof(*ifm), flags);
 	if (nlh == NULL)
 		return -EMSGSIZE;
 
+    // 按ifinfomsg格式填充族头
 	ifm = nlmsg_data(nlh);
 	ifm->ifi_family = AF_UNSPEC;
 	ifm->__ifi_pad = 0;
@@ -1223,6 +1247,7 @@ out:
 	return skb->len;
 }
 
+// 定义了一张rtnetlink消息属性必须满足的策略表
 const struct nla_policy ifla_policy[IFLA_MAX+1] = {
 	[IFLA_IFNAME]		= { .type = NLA_STRING, .len = IFNAMSIZ-1 },
 	[IFLA_ADDRESS]		= { .type = NLA_BINARY, .len = MAX_ADDR_LEN },
@@ -2046,6 +2071,7 @@ out:
 	}
 }
 
+// 获取端口link状态
 static int rtnl_getlink(struct sk_buff *skb, struct nlmsghdr* nlh)
 {
 	struct net *net = sock_net(skb->sk);
@@ -2057,17 +2083,23 @@ static int rtnl_getlink(struct sk_buff *skb, struct nlmsghdr* nlh)
 	int err;
 	u32 ext_filter_mask = 0;
 
+    // 根据既定的每种类型的策略解析rtnetlink消息,解析出来的每条子消息分别存入tb数组对应位置
 	err = nlmsg_parse(nlh, sizeof(*ifm), tb, IFLA_MAX, ifla_policy);
 	if (err < 0)
 		return err;
 
+    // 获取接口名
 	if (tb[IFLA_IFNAME])
 		nla_strlcpy(ifname, tb[IFLA_IFNAME], IFNAMSIZ);
 
+    // 获取额外的标志字段
 	if (tb[IFLA_EXT_MASK])
 		ext_filter_mask = nla_get_u32(tb[IFLA_EXT_MASK]);
 
+    // 获取ifinfomsg格式的族头
 	ifm = nlmsg_data(nlh);
+    
+    // 根据端口号或接口名索引对应的设备
 	if (ifm->ifi_index > 0)
 		dev = __dev_get_by_index(net, ifm->ifi_index);
 	else if (tb[IFLA_IFNAME])
@@ -2075,13 +2107,16 @@ static int rtnl_getlink(struct sk_buff *skb, struct nlmsghdr* nlh)
 	else
 		return -EINVAL;
 
+    // 索引失败直接返回
 	if (dev == NULL)
 		return -ENODEV;
 
+    // 申请一个新的netlink消息空间
 	nskb = nlmsg_new(if_nlmsg_size(dev, ext_filter_mask), GFP_KERNEL);
 	if (nskb == NULL)
 		return -ENOBUFS;
 
+    // 填充一个族头为ifinfomsg格式的netlink消息(进程号、序号沿用收到的netlink消息里的)
 	err = rtnl_fill_ifinfo(nskb, dev, RTM_NEWLINK, NETLINK_CB(skb).portid,
 			       nlh->nlmsg_seq, 0, 0, ext_filter_mask);
 	if (err < 0) {
@@ -2807,42 +2842,51 @@ out:
 }
 
 /* Process one rtnetlink message. */
-
+// 处理一条完整的rtnetlink消息
 static int rtnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
 {
-	struct net *net = sock_net(skb->sk);
+	struct net *net = sock_net(skb->sk);    // 获取该rtnetlink数据所属的顶层net控制块
 	rtnl_doit_func doit;
 	int sz_idx, kind;
 	int family;
 	int type;
 	int err;
 
+    // rtnetlink消息类型合法性检测
 	type = nlh->nlmsg_type;
 	if (type > RTM_MAX)
 		return -EOPNOTSUPP;
 
+    // 获取消息index，这里type实际就是index
 	type -= RTM_BASE;
 
 	/* All the messages must have at least 1 byte length */
+    // rtnetlink消息payload长度合法性检测
 	if (nlmsg_len(nlh) < sizeof(struct rtgenmsg))
 		return 0;
 
+    // 获取rtnetlink消息的地址族
 	family = ((struct rtgenmsg *)nlmsg_data(nlh))->rtgen_family;
 	sz_idx = type>>2;
 	kind = type&3;
 
+    // 对于RTM_GETLINK以外的netlink消息，需要做权限验证
 	if (kind != 2 && !netlink_net_capable(skb, CAP_NET_ADMIN))
 		return -EPERM;
 
-	if (kind == 2 && nlh->nlmsg_flags&NLM_F_DUMP) {
+    // 对于RTM_GETLINK类型并且标记了NLM_F_DUMP的netlink消息,需要在这里做特别处理
+	if (kind == 2 && nlh->nlmsg_flags&NLM_F_DUMP) 
+    {
 		struct sock *rtnl;
 		rtnl_dumpit_func dumpit;
 		rtnl_calcit_func calcit;
 		u16 min_dump_alloc = 0;
 
+        // 根据协议族和消息index索引得到对应的dumpit函数
 		dumpit = rtnl_get_dumpit(family, type);
 		if (dumpit == NULL)
 			return -EOPNOTSUPP;
+        // 根据协议族和消息index索引得到对应的calcit函数,执行calcit
 		calcit = rtnl_get_calcit(family, type);
 		if (calcit)
 			min_dump_alloc = calcit(skb, nlh);
@@ -2860,6 +2904,7 @@ static int rtnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
 		return err;
 	}
 
+    // 根据协议族和消息index索引得到对应的doit函数,执行doit
 	doit = rtnl_get_doit(family, type);
 	if (doit == NULL)
 		return -EOPNOTSUPP;
@@ -2867,6 +2912,7 @@ static int rtnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
 	return doit(skb, nlh);
 }
 
+// 接收从用户空间过来的rtnetlink消息
 static void rtnetlink_rcv(struct sk_buff *skb)
 {
 	rtnl_lock();
@@ -2899,11 +2945,12 @@ static int rtnetlink_event(struct notifier_block *this, unsigned long event, voi
 	return NOTIFY_DONE;
 }
 
+// rtnetlink 设备底层上报控制块(包含了底层上报回调函数)
 static struct notifier_block rtnetlink_dev_notifier = {
 	.notifier_call	= rtnetlink_event,
 };
 
-
+// rtnetlink网络初始化(注册了接收函数)
 static int __net_init rtnetlink_net_init(struct net *net)
 {
 	struct sock *sk;
@@ -2914,6 +2961,7 @@ static int __net_init rtnetlink_net_init(struct net *net)
 		.flags		= NL_CFG_F_NONROOT_RECV,
 	};
 
+    // 内核创建一个netlink接口的NETLINK_ROUTE协议的socket控制块
 	sk = netlink_kernel_create(net, NETLINK_ROUTE, &cfg);
 	if (!sk)
 		return -ENOMEM;
@@ -2921,24 +2969,30 @@ static int __net_init rtnetlink_net_init(struct net *net)
 	return 0;
 }
 
+// rtnetlink网络结束
 static void __net_exit rtnetlink_net_exit(struct net *net)
 {
 	netlink_kernel_release(net->rtnl);
 	net->rtnl = NULL;
 }
 
+// 定义一个rtnetlink网络操作块(包含rtnetlink网络初始化/结束函数)
 static struct pernet_operations rtnetlink_net_ops = {
 	.init = rtnetlink_net_init,
 	.exit = rtnetlink_net_exit,
 };
 
+// netlink 路由设备初始化
 void __init rtnetlink_init(void)
 {
+    // 注册一个rtnetlink网络子系统(包含rtnetlink网络初始化/结束函数)
 	if (register_pernet_subsys(&rtnetlink_net_ops))
 		panic("rtnetlink_init: cannot initialize rtnetlink\n");
 
+    // 注册网络设备底层上报控制块(包含了底层上报回调函数)
 	register_netdevice_notifier(&rtnetlink_dev_notifier);
 
+    // 注册一部分rtnetlink消息
 	rtnl_register(PF_UNSPEC, RTM_GETLINK, rtnl_getlink,
 		      rtnl_dump_ifinfo, rtnl_calcit);
 	rtnl_register(PF_UNSPEC, RTM_SETLINK, rtnl_setlink, NULL, NULL);

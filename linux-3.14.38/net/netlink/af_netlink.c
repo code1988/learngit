@@ -86,6 +86,7 @@ static inline int netlink_is_kernel(struct sock *sk)
 	return nlk_sk(sk)->flags & NETLINK_KERNEL_SOCKET;
 }
 
+// netlink总表，其中的每个表项对应定义的netlink协议值,如NETLINK_ROUTE
 struct netlink_table *nl_table;
 EXPORT_SYMBOL_GPL(nl_table);
 
@@ -965,6 +966,7 @@ netlink_unlock_table(void)
 		wake_up(&nl_table_wait);
 }
 
+// 比较net是否相同
 static bool netlink_compare(struct net *net, struct sock *sk)
 {
 	return net_eq(sock_net(sk), net);
@@ -1143,6 +1145,7 @@ static void netlink_remove(struct sock *sk)
 	netlink_table_ungrab();
 }
 
+// 定义了一个socket层面的netlink协议
 static struct proto netlink_proto = {
 	.name	  = "NETLINK",
 	.owner	  = THIS_MODULE,
@@ -2797,7 +2800,8 @@ int netlink_rcv_skb(struct sk_buff *skb, int (*cb)(struct sk_buff *,
 	struct nlmsghdr *nlh;
 	int err;
 
-	while (skb->len >= nlmsg_total_size(0)) {
+	while (skb->len >= nlmsg_total_size(0)) 
+    {
 		int msglen;
 
 		nlh = nlmsg_hdr(skb);
@@ -3048,6 +3052,7 @@ static const struct proto_ops netlink_ops = {
 	.sendpage =	sock_no_sendpage,
 };
 
+// 定义了一个netlink协议族(包含netlink接口创建函数)
 static const struct net_proto_family netlink_family_ops = {
 	.family = PF_NETLINK,
 	.create = netlink_create,
@@ -3070,6 +3075,7 @@ static void __net_exit netlink_net_exit(struct net *net)
 #endif
 }
 
+// 添加用户态socket协议入口
 static void __init netlink_add_usersock_entry(void)
 {
 	struct listeners *listeners;
@@ -3090,6 +3096,7 @@ static void __init netlink_add_usersock_entry(void)
 	netlink_table_ungrab();
 }
 
+// 定义了一个netlink网络操作块(包含netlink网络初始化/结束函数)
 static struct pernet_operations __net_initdata netlink_net_ops = {
 	.init = netlink_net_init,
 	.exit = netlink_net_exit,
@@ -3101,15 +3108,16 @@ static int __init netlink_proto_init(void)
 	int i;
 	unsigned long limit;
 	unsigned int order;
-    // 协议注册
+    // socket层面的netlink协议注册
 	int err = proto_register(&netlink_proto, 0);
 
 	if (err != 0)
 		goto out;
 
-    // 条件检测，为真则编译错误
+    // 确保netlink参数控制块大小不超过通用的socket buffer预留的控制块大小
 	BUILD_BUG_ON(sizeof(struct netlink_skb_parms) > FIELD_SIZEOF(struct sk_buff, cb));
 
+    // 申请一张MAX_LINKS长度的netlink表
 	nl_table = kcalloc(MAX_LINKS, sizeof(*nl_table), GFP_KERNEL);
 	if (!nl_table)
 		goto panic;
@@ -3123,6 +3131,7 @@ static int __init netlink_proto_init(void)
 	limit = (1UL << order) / sizeof(struct hlist_head);
 	order = get_bitmask_order(min(limit, (unsigned long)UINT_MAX)) - 1;
 
+    // 给netlink表每个表项申请一张hash表并且注册net比较函数
 	for (i = 0; i < MAX_LINKS; i++) 
     {
 		struct nl_portid_hash *hash = &nl_table[i].hash;
@@ -3143,13 +3152,18 @@ static int __init netlink_proto_init(void)
 		nl_table[i].compare = netlink_compare;
 	}
 
+    // 初始化netlink_tap_all
 	INIT_LIST_HEAD(&netlink_tap_all);
 
+    // 添加用户态socket协议入口(即填充NETLINK_USERSOCK号表项)
 	netlink_add_usersock_entry();
 
+    // 注册netlink协议族(包含netlink接口创建函数)
 	sock_register(&netlink_family_ops);
+    // 注册一个netlink网络子系统(包含netlink网络初始化/结束函数)
 	register_pernet_subsys(&netlink_net_ops);
 	/* The netlink device handler may be needed early. */
+    // netlink 路由设备初始化
 	rtnetlink_init();
 out:
 	return err;

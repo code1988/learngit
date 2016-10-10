@@ -532,6 +532,7 @@ static void unregister_pernet_operations(struct pernet_operations *ops)
 
 /**
  *      register_pernet_subsys - register a network namespace subsystem
+ *      注册一个网络子系统
  *	@ops:  pernet operations structure for the subsystem
  *
  *	Register a subsystem which has init and exit functions

@@ -85,7 +85,8 @@ struct rtnl_link_ifmap {
  *   Contains nested attributes for address family specific attributes.
  *   Each address family may create a attribute with the address family
  *   number as type and create its own attribute structure in it.
- *
+ *   所有的属性类型集合
+ *   类似ubus中每条method的参数,嵌套规则也类似
  *   Example:
  *   [IFLA_AF_SPEC] = {
  *       [AF_INET] = {

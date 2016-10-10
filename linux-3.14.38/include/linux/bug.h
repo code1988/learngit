@@ -68,6 +68,7 @@ struct pt_regs;
  * track down.
  */
 #ifndef __OPTIMIZE__
+// 条件检测，为真则编译错误
 #define BUILD_BUG_ON(condition) ((void)sizeof(char[1 - 2*!!(condition)]))
 #else
 #define BUILD_BUG_ON(condition) \

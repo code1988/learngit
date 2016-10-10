@@ -425,12 +425,13 @@ struct rta_mfc_stats {
 	__u64	mfcs_wrong_if;
 };
 
+// 以下是几种预定义的rtnetlink消息payload部分的类型
 /****
  *		General form of address family dependent message.
  ****/
-
+// rtnetlink消息最小族头
 struct rtgenmsg {
-	unsigned char		rtgen_family;
+	unsigned char		rtgen_family;   // 协议族
 };
 
 /*****************************************************************
@@ -441,10 +442,10 @@ struct rtgenmsg {
  * passes link level specific information, not dependent
  * on network protocol.
  */
-
+// rtnetlink消息之链路层信息的族头
 struct ifinfomsg {
-	unsigned char	ifi_family;
-	unsigned char	__ifi_pad;
+	unsigned char	ifi_family;     // 协议族
+	unsigned char	__ifi_pad;      // 1字节填充，用于对齐，无含义
 	unsigned short	ifi_type;		/* ARPHRD_* */
 	int		ifi_index;		/* Link index	*/
 	unsigned	ifi_flags;		/* IFF_* flags	*/
@@ -617,6 +618,7 @@ enum rtnetlink_groups {
 #define RTNLGRP_MDB		RTNLGRP_MDB
 	__RTNLGRP_MAX
 };
+// rtnetlink 最大多播组
 #define RTNLGRP_MAX	(__RTNLGRP_MAX - 1)
 
 /* TC action piece */

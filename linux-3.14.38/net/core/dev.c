@@ -732,6 +732,7 @@ EXPORT_SYMBOL(dev_get_by_name);
 
 /**
  *	__dev_get_by_index - find a device by its ifindex
+ *	通过序号索引对应的网络设备
  *	@net: the applicable net namespace
  *	@ifindex: index of device
  *
@@ -1461,12 +1462,15 @@ static int dev_boot_phase = 1;
 
 /**
  *	register_netdevice_notifier - register a network notifier block
+ *	注册一个网络设备上报通知块
  *	@nb: notifier
  *
  *	Register a notifier to be called when network device events occur.
  *	The notifier passed is linked into the kernel structures and must
  *	not be reused until it has been unregistered. A negative errno code
  *	is returned on a failure.
+ *	当底层网络设备有事件被触发时，该通知块中的回调函数将被调用
+ *	成功调用的条件是通知块已经被注册并且一旦通知块被调用后必须重新注册
  *
  * 	When registered all registration and up events are replayed
  *	to the new notifier to allow device to have a race free

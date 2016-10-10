@@ -5,6 +5,7 @@
 #include <linux/socket.h> /* for __kernel_sa_family_t */
 #include <linux/types.h>
 
+// netlink协议，除了以下预定义的之外，还可以自定义，目前上限MAX_LINKS个
 #define NETLINK_ROUTE		0	/* Routing/device hook				*/
 #define NETLINK_UNUSED		1	/* Unused number				*/
 #define NETLINK_USERSOCK	2	/* Reserved for user mode socket protocols 	*/
@@ -32,6 +33,7 @@
 
 #define MAX_LINKS 32		
 
+// netlink地址
 struct sockaddr_nl {
 	__kernel_sa_family_t	nl_family;	/* AF_NETLINK	*/
 	unsigned short	nl_pad;		/* zero		*/
@@ -39,27 +41,27 @@ struct sockaddr_nl {
        	__u32		nl_groups;	/* multicast groups mask */
 };
 
+// netlink消息头
 struct nlmsghdr {
-	__u32		nlmsg_len;	/* Length of message including header */
-	__u16		nlmsg_type;	/* Message content */
-	__u16		nlmsg_flags;	/* Additional flags */
-	__u32		nlmsg_seq;	/* Sequence number */
-	__u32		nlmsg_pid;	/* Sending process port ID */
+	__u32		nlmsg_len;	// netlink消息总长（header + payload）
+	__u16		nlmsg_type;	// netlink消息类型
+	__u16		nlmsg_flags;// 附加的标志位,定义见下面的 NLM_F_*
+	__u32		nlmsg_seq;	// 序号（用于追踪）
+	__u32		nlmsg_pid;	// 进程ID（用于追踪）
 };
 
 /* Flags values */
-
-#define NLM_F_REQUEST		1	/* It is request message. 	*/
+#define NLM_F_REQUEST		1	// 表示消息是一个请求。所有用户首先发起的消息都要设置该标志，可以和GET request和NEW request系列标志组合
 #define NLM_F_MULTI		2	/* Multipart message, terminated by NLMSG_DONE */
 #define NLM_F_ACK		4	/* Reply with ack, with zero or error code */
 #define NLM_F_ECHO		8	/* Echo this request 		*/
 #define NLM_F_DUMP_INTR		16	/* Dump was inconsistent due to sequence change */
 
 /* Modifiers to GET request */
-#define NLM_F_ROOT	0x100	/* specify tree	root	*/
-#define NLM_F_MATCH	0x200	/* return all matching	*/
+#define NLM_F_ROOT	0x100	    // 表示被请求的数据应当整体返回用户应用，而不是一条一条返回，有该标志的request通常导致响应的消息设置NLM_F_MULTI标志
+#define NLM_F_MATCH	0x200	    // 表示被请求的数据将会通过指定的过滤器来匹配（通常是用户设置了过滤器时使用该标记）
 #define NLM_F_ATOMIC	0x400	/* atomic GET		*/
-#define NLM_F_DUMP	(NLM_F_ROOT|NLM_F_MATCH)
+#define NLM_F_DUMP	(NLM_F_ROOT|NLM_F_MATCH)            // NLM_F_ROOT和NLM_F_MATCH的合集
 
 /* Modifiers to NEW request */
 #define NLM_F_REPLACE	0x100	/* Override existing		*/
@@ -76,12 +78,13 @@ struct nlmsghdr {
    Check		NLM_F_EXCL
  */
 
+// netlink消息长度需要2^4字节对齐
 #define NLMSG_ALIGNTO	4U
 #define NLMSG_ALIGN(len) ( ((len)+NLMSG_ALIGNTO-1) & ~(NLMSG_ALIGNTO-1) )
-#define NLMSG_HDRLEN	 ((int) NLMSG_ALIGN(sizeof(struct nlmsghdr)))
-#define NLMSG_LENGTH(len) ((len) + NLMSG_HDRLEN)
-#define NLMSG_SPACE(len) NLMSG_ALIGN(NLMSG_LENGTH(len))
-#define NLMSG_DATA(nlh)  ((void*)(((char*)nlh) + NLMSG_LENGTH(0)))
+#define NLMSG_HDRLEN	 ((int) NLMSG_ALIGN(sizeof(struct nlmsghdr)))       // netlink消息头长度
+#define NLMSG_LENGTH(len) ((len) + NLMSG_HDRLEN)                            // netlink消息总长（不含payload部分的填充）
+#define NLMSG_SPACE(len) NLMSG_ALIGN(NLMSG_LENGTH(len))                     // netlink消息总长（含payload部分的填充）
+#define NLMSG_DATA(nlh)  ((void*)(((char*)nlh) + NLMSG_LENGTH(0)))          // netlink消息payload首地址
 #define NLMSG_NEXT(nlh,len)	 ((len) -= NLMSG_ALIGN((nlh)->nlmsg_len), \
 				  (struct nlmsghdr*)(((char*)(nlh)) + NLMSG_ALIGN((nlh)->nlmsg_len)))
 #define NLMSG_OK(nlh,len) ((len) >= (int)sizeof(struct nlmsghdr) && \
@@ -157,10 +160,10 @@ enum {
  * +---------------------+- - -+- - - - - - - - - -+- - -+
  *  <-------------- nlattr->nla_len -------------->
  */
-
+// 属性头
 struct nlattr {
-	__u16           nla_len;
-	__u16           nla_type;
+	__u16           nla_len;    // 属性实际长度，不包含为尾部padding
+	__u16           nla_type;   // 属性类型
 };
 
 /*

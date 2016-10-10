@@ -358,6 +358,8 @@ typedef unsigned char *sk_buff_data_t;
 
 /** 
  *	struct sk_buff - socket buffer
+ *	内核中socket收发数据都是放在该结构体中
+ *
  *	@next: Next buffer in list
  *	@prev: Previous buffer in list
  *	@tstamp: Time we arrived
@@ -440,7 +442,7 @@ struct sk_buff {
 	 * want to keep them across layers you have to do a skb_clone()
 	 * first. This is owned by whoever has the skb queued ATM.
 	 */
-	char			cb[48] __aligned(8);
+	char			cb[48] __aligned(8);    // 通用控制字段，可被各层网络模块自定义，比如netlink用它存储参数控制块netlink_skb_parms
 
 	unsigned long		_skb_refdst;
 #ifdef CONFIG_XFRM

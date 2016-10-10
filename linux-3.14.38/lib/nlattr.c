@@ -186,7 +186,8 @@ int nla_parse(struct nlattr **tb, int maxtype, const struct nlattr *head,
 
 	memset(tb, 0, sizeof(struct nlattr *) * (maxtype + 1));
 
-	nla_for_each_attr(nla, head, len, rem) {
+	nla_for_each_attr(nla, head, len, rem) 
+    {
 		u16 type = nla_type(nla);
 
 		if (type > 0 && type <= maxtype) {
@@ -231,6 +232,8 @@ struct nlattr *nla_find(const struct nlattr *head, int len, int attrtype)
 
 /**
  * nla_strlcpy - Copy string attribute payload into a sized buffer
+ * 将字符串拷贝到指定buffer，前提是该payload属性是字符串类型
+ * 如果字符串超出buffer长度，则截断,放不下的部分直接丢弃
  * @dst: where to copy the string to
  * @nla: attribute to copy the string from
  * @dstsize: size of destination buffer

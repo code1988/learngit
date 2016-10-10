@@ -20,6 +20,7 @@ struct netlink_ring {
 	atomic_t		pending;
 };
 
+// netlink套接字控制块
 struct netlink_sock {
 	/* struct sock has to be the first member of netlink_sock */
 	struct sock		sk;     // 套接口在网络层的表示
@@ -65,17 +66,18 @@ struct nl_portid_hash {
 	u32			rnd;
 };
 
+// netlink表
 struct netlink_table {
-	struct nl_portid_hash	hash;
+	struct nl_portid_hash	hash;       // hash表
 	struct hlist_head	mc_list;
 	struct listeners __rcu	*listeners;
 	unsigned int		flags;
-	unsigned int		groups;
+	unsigned int		groups;         // 多播组
 	struct mutex		*cb_mutex;
 	struct module		*module;
 	void			(*bind)(int group);
-	bool			(*compare)(struct net *net, struct sock *sock);
-	int			registered;
+	bool			(*compare)(struct net *net, struct sock *sock); // net比较函数
+	int			registered;     // 标记是否注册，1=标记 0=未标记
 };
 
 extern struct netlink_table *nl_table;
