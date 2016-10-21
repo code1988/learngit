@@ -78,11 +78,11 @@ struct nlmsghdr {
    Check		NLM_F_EXCL
  */
 
-// netlink消息长度需要2^4字节对齐
+// netlink消息长度需要4字节对齐
 #define NLMSG_ALIGNTO	4U
 #define NLMSG_ALIGN(len) ( ((len)+NLMSG_ALIGNTO-1) & ~(NLMSG_ALIGNTO-1) )
-#define NLMSG_HDRLEN	 ((int) NLMSG_ALIGN(sizeof(struct nlmsghdr)))       // netlink消息头长度
-#define NLMSG_LENGTH(len) ((len) + NLMSG_HDRLEN)                            // netlink消息总长（不含payload部分的填充）
+#define NLMSG_HDRLEN	 ((int) NLMSG_ALIGN(sizeof(struct nlmsghdr)))       // netlink消息头对齐后长度
+#define NLMSG_LENGTH(len) ((len) + NLMSG_HDRLEN)                            // netlink消息实际长（不含payload部分的填充）
 #define NLMSG_SPACE(len) NLMSG_ALIGN(NLMSG_LENGTH(len))                     // netlink消息总长（含payload部分的填充）
 #define NLMSG_DATA(nlh)  ((void*)(((char*)nlh) + NLMSG_LENGTH(0)))          // netlink消息payload首地址
 #define NLMSG_NEXT(nlh,len)	 ((len) -= NLMSG_ALIGN((nlh)->nlmsg_len), \
@@ -180,6 +180,7 @@ struct nlattr {
 #define NLA_F_NET_BYTEORDER	(1 << 14)
 #define NLA_TYPE_MASK		~(NLA_F_NESTED | NLA_F_NET_BYTEORDER)
 
+// netlink属性长度也是4字节对齐
 #define NLA_ALIGNTO		4
 #define NLA_ALIGN(len)		(((len) + NLA_ALIGNTO - 1) & ~(NLA_ALIGNTO - 1))
 #define NLA_HDRLEN		((int) NLA_ALIGN(sizeof(struct nlattr)))
