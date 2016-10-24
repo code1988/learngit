@@ -1,0 +1,13 @@
+-------------------------------------------------------------------------------------------------------------------------
++   ssize_t send(int sockfd,const void *buf,size_t len,int flags)                                                       +
++   ssize_t sendto(int sockfd,const void *buf,size_t len,int flags,const struct sockaddr *dest_addr,socklen_t addrlen)  +
++   ssize_t sendmsg(int sockfd,const struct msghdr *msg,int flags)                                                      +
+-------------------------------------------------------------------------------------------------------------------------
+flags标志可以取0或"|"以下值：
+    MSG_DONTROUTE   : 不使用网关来发包，只发送到直接联网的主机，该标志只用于路由协议族
+    MSG_DONTWAIT    : 配置成非阻塞模式，这跟调用fcntl(fd,F_SETFL,O_NONBLOCK)效果一样
+
+
+send只可用于基于连接的socket，send和write唯一的不同点是flags的存在，当flags为0时，send等于write
+sendto和sendmsg由于支持目的地址的传入，所以既可用于无连接的socket也可用于基于连接的socket
+
