@@ -3,11 +3,72 @@
 +   ssize_t sendto(int sockfd,const void *buf,size_t len,int flags,const struct sockaddr *dest_addr,socklen_t addrlen)  +
 +   ssize_t sendmsg(int sockfd,const struct msghdr *msg,int flags)                                                      +
 -------------------------------------------------------------------------------------------------------------------------
+send只可用于基于连接的socket，sendto和sendmsg由于支持目的地址的传入，所以既可用于无连接的socket也可用于基于连接的socket.
+send和write唯一的不同点是flags的存在，当flags为0时，send等于write;
+sendto和send唯一的不同点是支持目的地址传入，当面向基于连接的socket时，sendto等于send.
+sendmsg除了支持一般数据的发送，还支持多缓冲区数据发送以及附带辅助数据,这些额外功能的实现都是基于msghdr
+
+
 flags标志可以取0或"|"以下值：
     MSG_DONTROUTE   : 不使用网关来发包，只发送到直接联网的主机，该标志只用于路由协议族
     MSG_DONTWAIT    : 配置成非阻塞模式，这跟调用fcntl(fd,F_SETFL,O_NONBLOCK)效果一样
+    MSG_NOSIGNAL    : 当面向流的套接字的另一端终止连接时，继续发起请求将不会产生SIGPIPE信号
 
 
-send只可用于基于连接的socket，send和write唯一的不同点是flags的存在，当flags为0时，send等于write
-sendto和sendmsg由于支持目的地址的传入，所以既可用于无连接的socket也可用于基于连接的socket
+目的地址有以下几种常用格式：
+    1) 这是通用的套接字地址,16字节
+    struct sockaddr{
+        sa_family_t	sa_family;  // 地址族
+        char sa_data[14];       // 14字节的协议地址
+    }
+    
+    2) 这是internet下套接字的地址形式,16字节
+    struct sockaddr_in{
+        sa_family_t sin_family; // 地址族，一般就是AF_INET
+        in_port_t sin_port;     // 端口号
+        struct in_addr sin_addr;    // IP地址
+        unsigned char sin_zero[8];  // 填充0以保持和struct sockaddr同样大小
+    }
 
+    3) 这是unix本地套接字地址,110字节
+    struct sockaddr_un{
+        sa_family_t sun_family; // 地址族，固定为AF_LOCAL/AF_UNIX
+        char sun_path[108];     // 本地套接字路径名
+    }
+
+    4) 这是链路层套接字地址，20字节
+    struct sockaddr_ll{
+        unsigned short sll_family;  // 地址族，固定为AF_PACKET
+        __be16 sll_protocol;        // 上层的协议类型
+        int sll_ifindex;            // 接口类型
+        unsigned short sll_hatype;  // ARP硬件地址类型（optional）
+        unsigned char sll_pkttype;  // 分组类型（optional）
+        unsigned char sll_halen;    // MAC地址长度（optional）
+        unsigend char sll_addr[8];  // 目的MAC地址（optional）
+    }
+
+    5) 这是netlink套接字地址，12字节
+    struct sockaddr_nl{
+        unsigned short nl_family;   // 地址族，固定为AF_NETLINK
+        unsigned short nl_pad;      // 填充0
+        unsigned int nl_pid;        // 进程ID
+        unsigned int nl_groups;     // 多播组mask
+    }
+
+
+通用socket消息头：
+    struct msghdr{
+        void *msg_name;             // 消息的目的地址
+        int msg_namelen;            // 目的地址长度
+        struct iovec *msg_iov;      // 多缓冲区地址数组
+        int msg_iovlen;             // 数组长度，也就是缓冲区个数
+        void *msg_control;          // 辅助数据地址
+        int msg_controllen;         // 辅助数据长度
+        int msg_flags;              // 用于接收消息时获取消息的相关属性
+    }
+
+IO缓冲区：
+    struct iovec{
+        void *iov_base;     // buffer基地址
+        size_t iov_len;     // buffer长度
+    }
