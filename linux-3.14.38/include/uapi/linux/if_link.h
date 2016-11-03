@@ -149,10 +149,11 @@ enum {
 };
 
 
-#define IFLA_MAX (__IFLA_MAX - 1)
+#define IFLA_MAX (__IFLA_MAX - 1)   // 接口的最大属性数量
 
 /* backwards compatibility for userspace */
 #ifndef __KERNEL__
+// 获取ifinfomsg类型消息的属性结构首地址,r是ifinfomsg首地址
 #define IFLA_RTA(r)  ((struct rtattr*)(((char*)(r)) + NLMSG_ALIGN(sizeof(struct ifinfomsg))))
 #define IFLA_PAYLOAD(n) NLMSG_PAYLOAD(n,sizeof(struct ifinfomsg))
 #endif

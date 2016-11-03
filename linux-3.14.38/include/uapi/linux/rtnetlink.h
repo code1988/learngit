@@ -425,7 +425,7 @@ struct rta_mfc_stats {
 	__u64	mfcs_wrong_if;
 };
 
-// 以下是几种预定义的rtnetlink消息payload部分的类型
+// 以下是几种预定义的rtnetlink消息payload部分的族头
 /****
  *		General form of address family dependent message.
  ****/
@@ -539,7 +539,11 @@ enum {
 
 #define NDUSEROPT_MAX	(__NDUSEROPT_MAX - 1)
 
-#ifndef __KERNEL__
+/* 
+ *  RTMGRP_*宏跟RTNLGRP_*宏之间的关系：
+ *  RTMGRP_* = 1 << (RTNLGRP_* -1)
+ * */
+#ifndef __KERNEL__  // 以下宏只限于用户空间
 /* RTnetlink multicast groups - backwards compatibility for userspace */
 #define RTMGRP_LINK		1
 #define RTMGRP_NOTIFY		2

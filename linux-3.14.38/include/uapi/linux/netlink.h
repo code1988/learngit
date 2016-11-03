@@ -43,7 +43,7 @@ struct sockaddr_nl {
 
 // netlink消息头
 struct nlmsghdr {
-	__u32		nlmsg_len;	// netlink消息总长（header + payload）
+	__u32		nlmsg_len;	// netlink消息实际长（header + payload）
 	__u16		nlmsg_type;	// netlink消息类型
 	__u16		nlmsg_flags;// 附加的标志位,定义见下面的 NLM_F_*
 	__u32		nlmsg_seq;	// 序号（用于追踪）
@@ -85,8 +85,10 @@ struct nlmsghdr {
 #define NLMSG_LENGTH(len) ((len) + NLMSG_HDRLEN)                            // netlink消息实际长（不含payload部分的填充）
 #define NLMSG_SPACE(len) NLMSG_ALIGN(NLMSG_LENGTH(len))                     // netlink消息总长（含payload部分的填充）
 #define NLMSG_DATA(nlh)  ((void*)(((char*)nlh) + NLMSG_LENGTH(0)))          // netlink消息payload首地址
+// 下一条netlink消息
 #define NLMSG_NEXT(nlh,len)	 ((len) -= NLMSG_ALIGN((nlh)->nlmsg_len), \
 				  (struct nlmsghdr*)(((char*)(nlh)) + NLMSG_ALIGN((nlh)->nlmsg_len)))
+// netlink消息合法性检测
 #define NLMSG_OK(nlh,len) ((len) >= (int)sizeof(struct nlmsghdr) && \
 			   (nlh)->nlmsg_len >= sizeof(struct nlmsghdr) && \
 			   (nlh)->nlmsg_len <= (len))
