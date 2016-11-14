@@ -388,6 +388,7 @@ int ifbpf_phys_init(struct lldpd *, struct lldpd_hardware *);
 /* pattern.c */
 int pattern_match(char *, char *, int);
 
+// lldpd的总控制块
 struct lldpd {
 	int			 g_sock;
 	struct event_base	*g_base;

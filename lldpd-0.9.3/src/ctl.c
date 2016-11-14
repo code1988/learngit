@@ -35,8 +35,7 @@
  * @param name The name of the Unix socket.
  * @return The socket when successful, -1 otherwise.
  */
-int
-ctl_create(const char *name)
+int ctl_create(const char *name)
 {
 	int s;
 	struct sockaddr_un su;

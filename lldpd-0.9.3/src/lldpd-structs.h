@@ -43,6 +43,7 @@
 #include "lldp-const.h"
 
 #ifdef ENABLE_DOT1
+// 定义lldpd_ppvid尾队列元素
 struct lldpd_ppvid {
 	TAILQ_ENTRY(lldpd_ppvid) p_entries;
 	u_int8_t		p_cap_status;
@@ -52,6 +53,7 @@ MARSHAL_BEGIN(lldpd_ppvid)
 MARSHAL_TQE(lldpd_ppvid, p_entries)
 MARSHAL_END(lldpd_ppvid);
 
+// 定义lldp_vlan尾队列元素
 struct lldpd_vlan {
 	TAILQ_ENTRY(lldpd_vlan)  v_entries;
 	char			*v_name;
@@ -62,6 +64,7 @@ MARSHAL_TQE(lldpd_vlan, v_entries)
 MARSHAL_STR(lldpd_vlan, v_name)
 MARSHAL_END(lldpd_vlan);
 
+// 定义lldpd_pi尾队列元素
 struct lldpd_pi {
 	TAILQ_ENTRY(lldpd_pi)  p_entries;
 	char			*p_pi;
@@ -240,6 +243,7 @@ MARSHAL_FSTR(lldpd_custom, oui_info, oui_info_len)
 MARSHAL_END(lldpd_custom);
 #endif
 
+// 定义一个lldp端口控制块尾队列元素
 struct lldpd_port {
 	TAILQ_ENTRY(lldpd_port)	 p_entries;
 	struct lldpd_chassis	*p_chassis;    /* Attached chassis */

@@ -41,7 +41,7 @@ extern const char	*__progname;
 #endif
 
 /* Global for completion */
-static struct cmd_node *root = NULL;
+static struct cmd_node *root = NULL;    // cmd根尾队列 
 const char *ctlname = NULL;
 
 // 判断是否是lldpctl
@@ -85,8 +85,8 @@ usage()
 	exit(1);
 }
 
-static int
-is_privileged()
+// unix-domain socket权限检测(是否存在以及是否可读可写)
+static int is_privileged()
 {
 	/* Check we can access the control socket with read/write
 	 * privileges. The `access()` function uses the real UID and real GID,
@@ -260,6 +260,7 @@ readline(const char *p)
 
 /**
  * Execute a tokenized command and display its output.
+ * 执行一条经过分隔的完整命令
  *
  * @param conn The connection to lldpd.
  * @param fmt  Output format.
@@ -267,10 +268,10 @@ readline(const char *p)
  * @param argv Array of arguments.
  * @return 0 if an error occurred, 1 otherwise
  */
-static int
-cmd_exec(lldpctl_conn_t *conn, const char *fmt, int argc, const char **argv)
+static int cmd_exec(lldpctl_conn_t *conn, const char *fmt, int argc, const char **argv)
 {
 	/* Init output formatter */
+    // 初始化输出格式,默认plain
 	struct writer *w;
 
 	if      (strcmp(fmt, "plain")    == 0) w = txt_init(stdout);
@@ -290,6 +291,7 @@ cmd_exec(lldpctl_conn_t *conn, const char *fmt, int argc, const char **argv)
 	}
 
 	/* Execute command */
+    // 执行命令，传入的参数有lldp socket控制块、输出格式控制块、整棵命令树、一条完整命令、权限位
 	int rc = commands_execute(conn, w,
 	    root, argc, argv, is_privileged());
 	if (rc != 0) {
@@ -303,20 +305,22 @@ cmd_exec(lldpctl_conn_t *conn, const char *fmt, int argc, const char **argv)
 
 /**
  * Execute a command line and display its output.
+ * 解析并执行一条命令
  *
  * @param conn The connection to lldpd.
  * @param fmt  Output format.
  * @param line Line to execute.
  * @return -1 if an error occurred, 0 if nothing was executed. 1 otherwise.
  */
-static int
-parse_and_exec(lldpctl_conn_t *conn, const char *fmt, const char *line)
+static int parse_and_exec(lldpctl_conn_t *conn, const char *fmt, const char *line)
 {
 	int cargc = 0; char **cargv = NULL;
 	int n;
 	log_debug("lldpctl", "tokenize command line");
+    // 根据分隔符切分指定命令行
 	n = tokenize_line(line, &cargc, &cargv);
-	switch (n) {
+	switch (n) 
+    {
 	case -1:
 		log_warnx("lldpctl", "internal error while tokenizing");
 		return -1;
@@ -332,38 +336,50 @@ parse_and_exec(lldpctl_conn_t *conn, const char *fmt, const char *line)
 	    1;
 }
 
-static struct cmd_node*
-register_commands()
+// 注册整棵命令树
+static struct cmd_node* register_commands()
 {
+    // 创建一个cmd的root尾队列
 	root = commands_root();
+    // 注册show子命令尾队列（从属于root）
 	register_commands_show(root);
+    // 注册watch子命令尾队列（从属于root）
 	register_commands_watch(root);
+    // 注册update子命令尾队列（从属于root），并开启权限验证功能
 	commands_privileged(commands_new(
 		commands_new(root, "update", "Update information and send LLDPU on all ports",
 		    NULL, NULL, NULL),
 		NEWLINE, "Update information and send LLDPU on all ports",
 		NULL, cmd_update, NULL));
+    // 注册config/unconfig子命令尾队列（从属于root）
 	register_commands_configure(root);
+    // 注册complete子命令尾队列（从属于root），并开启隐藏功能
 	commands_hidden(commands_new(root, "complete", "Get possible completions from a given command",
 		NULL, cmd_store_env_and_pop, "complete"));
+    // 注册help子命令尾队列（从属于root）
 	commands_new(root, "help", "Get help on a possible command",
 	    NULL, cmd_store_env_and_pop, "help");
+    // 注册pause子命令尾队列（从属于root）
 	commands_new(
 		commands_new(root, "pause", "Pause lldpd operations", NULL, NULL, NULL),
 		NEWLINE, "Pause lldpd operations", NULL, cmd_pause, NULL);
+    // 注册resume命令尾队列（从属于root）
 	commands_new(
 		commands_new(root, "resume", "Resume lldpd operations", NULL, NULL, NULL),
 		NEWLINE, "Resume lldpd operations", NULL, cmd_resume, NULL);
+    // 注册exit命令尾队列（从属于root）
 	commands_new(
 		commands_new(root, "exit", "Exit interpreter", NULL, NULL, NULL),
 		NEWLINE, "Exit interpreter", NULL, cmd_exit, NULL);
 	return root;
 }
 
+// 定义一个尾队列元素结构体input，内容是char *name
 struct input {
 	TAILQ_ENTRY(input) next;
 	char *name;
 };
+// 定义一个尾队列头inputs
 TAILQ_HEAD(inputs, input);
 static int
 filter(const struct dirent *dir)
@@ -430,15 +446,18 @@ int
 main(int argc, char *argv[])
 {
 	int ch, debug = 0, use_syslog = 0, rc = EXIT_FAILURE;
-	const char *fmt = "plain";
+    // 默认采用plain格式输出lldp信息
+	const char *fmt = "plain";  
 	lldpctl_conn_t *conn = NULL;
     // lldpctl和lldpcli使用不同命令行参数（lldpcli是lldpctl的超集）
 	const char *options = is_lldpctl(argv[0])?"hdvf:u:":"hdsvf:c:u:";
 
 	int gotinputs = 0, version = 0;
 	struct inputs inputs;
+    // 初始化队列
 	TAILQ_INIT(&inputs);
 
+    // 获取本地socket地址
 	ctlname = lldpctl_get_default_transport();
 
 	signal(SIGHUP, SIG_IGN);
@@ -483,13 +502,14 @@ main(int argc, char *argv[])
 			usage();
 		}
 	}
-    printf("hello: channel = %d",use_syslog);
 
+    // 获取版本号,lldpctl时version <= 1
 	if (version) {
 		version_display(stdout, "lldpcli", version > 1);
 		exit(0);
 	}
 
+    // 打印初始化
 	if (!gotinputs) {
 		log_init(use_syslog, debug, __progname);
 		lldpctl_log_level(debug + 1);
@@ -499,15 +519,19 @@ main(int argc, char *argv[])
 	signal(SIGPIPE, SIG_IGN);
 
 	/* Register commands */
+    // 注册整棵命令树
 	root = register_commands();
 
 	/* Make a connection */
+    // 创建一个用于lldp的本地unix socket连接控制块,使用默认的同步方式收发数据
 	log_debug("lldpctl", "connect to lldpd");
 	conn = lldpctl_new_name(ctlname, NULL, NULL, NULL);
 	if (conn == NULL) goto end;
 
 	/* Process file inputs */
-	while (gotinputs && !TAILQ_EMPTY(&inputs)) {
+    // 处理输入的配置文件，lldpctl不进入这里
+	while (gotinputs && !TAILQ_EMPTY(&inputs)) 
+    {
 		/* coverity[use_after_free]
 		   TAILQ_REMOVE does the right thing */
 		struct input *first = TAILQ_FIRST(&inputs);
@@ -536,9 +560,12 @@ main(int argc, char *argv[])
 	}
 
 	/* Process additional arguments. First if we are lldpctl (interfaces) */
-	if (is_lldpctl(NULL)) {
+    // 处理额外的lldpctl命令行参数
+	if (is_lldpctl(NULL)) 
+    {
 		char *line = NULL;
-		for (int i = optind; i < argc; i++) {
+		for (int i = optind; i < argc; i++) 
+        {
 			char *prev = line;
 			if (asprintf(&line, "%s%s%s",
 				prev?prev:"show neigh ports ", argv[i],
@@ -549,6 +576,7 @@ main(int argc, char *argv[])
 			}
 			free(prev);
 		}
+        // 如果lldpctl后不带任何参数，则调用默认命令"show neigh details"
 		if (line == NULL && (line = strdup("show neigh details")) == NULL) {
 			log_warnx("lldpctl", "not enough memory to build command line");
 			goto end;
@@ -561,6 +589,7 @@ main(int argc, char *argv[])
 	}
 
 	/* Then, if we are regular lldpcli (command line) */
+    // 处理额外的lldpcli命令行参数
 	if (optind < argc) {
 		const char **cargv;
 		int cargc;

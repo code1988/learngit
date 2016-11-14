@@ -314,7 +314,8 @@ _lldpctl_do_something(lldpctl_conn_t *conn,
 {
 	ssize_t rc;
 
-	if (conn->state == CONN_STATE_IDLE) {
+	if (conn->state == CONN_STATE_IDLE) 
+    {
 		/* We need to build the message to send, then send
 		 * it. */
 		if (ctl_msg_send_unserialized(&conn->output_buffer, &conn->output_buffer_len,
@@ -325,7 +326,8 @@ _lldpctl_do_something(lldpctl_conn_t *conn,
 			conn->state_data = strdup(state_data);
 	}
 	if (conn->state == state_send &&
-	    (state_data == NULL || !strcmp(conn->state_data, state_data))) {
+	    (state_data == NULL || !strcmp(conn->state_data, state_data))) 
+    {
 		/* We need to send the currently built message */
 		rc = lldpctl_send(conn);
 		if (rc < 0)
@@ -416,8 +418,7 @@ lldpctl_get_configuration(lldpctl_conn_t *conn)
 	return NULL;
 }
 
-lldpctl_atom_t*
-lldpctl_get_interfaces(lldpctl_conn_t *conn)
+lldpctl_atom_t* lldpctl_get_interfaces(lldpctl_conn_t *conn)
 {
 	struct lldpd_interface_list *ifs;
 	void *p;

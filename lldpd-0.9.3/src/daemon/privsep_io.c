@@ -171,8 +171,8 @@ receive_fd(enum priv_context ctx)
  */
 
 /* Read all data or return 1 for error.  */
-int
-may_read(enum priv_context ctx, void *buf, size_t n)
+// 根据权限标志ctx选择读fd,做一次尝试性的读取
+int may_read(enum priv_context ctx, void *buf, size_t n)
 {
 	char *s = buf;
 	ssize_t res, pos = 0;
@@ -194,8 +194,8 @@ may_read(enum priv_context ctx, void *buf, size_t n)
 
 /* Read data with the assertion that it all must come through, or
  * else abort the process.  Based on atomicio() from openssh. */
-void
-must_read(enum priv_context ctx, void *buf, size_t n)
+// 根据权限标志ctx选择读fd,读出数据
+void must_read(enum priv_context ctx, void *buf, size_t n)
 {
 	char *s = buf;
 	ssize_t res, pos = 0;
@@ -216,8 +216,8 @@ must_read(enum priv_context ctx, void *buf, size_t n)
 
 /* Write data with the assertion that it all has to be written, or
  * else abort the process.  Based on atomicio() from openssh. */
-void
-must_write(enum priv_context ctx, const void *buf, size_t n)
+// 根据权限标志ctx选择写入的fd,写入数据
+void must_write(enum priv_context ctx, const void *buf, size_t n)
 {
 	const char *s = buf;
 	ssize_t res, pos = 0;

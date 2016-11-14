@@ -141,9 +141,9 @@ lldpd_get_hardware(struct lldpd *cfg, char *name, int index)
 /**
  * Allocate the default local port. This port will be cloned each time we need a
  * new local port.
+ * 申请并初始化一个缺省的本地端口控制块，主要是初始化几个队列头
  */
-static void
-lldpd_alloc_default_local_port(struct lldpd *cfg)
+static void lldpd_alloc_default_local_port(struct lldpd *cfg)
 {
 	struct lldpd_port *port;
 
@@ -152,11 +152,13 @@ lldpd_alloc_default_local_port(struct lldpd *cfg)
 		fatal("main", NULL);
 
 #ifdef ENABLE_DOT1
+    // 初始化3个vlan相关的队列头
 	TAILQ_INIT(&port->p_vlans);
 	TAILQ_INIT(&port->p_ppvids);
 	TAILQ_INIT(&port->p_pids);
 #endif
 #ifdef ENABLE_CUSTOM
+    // 初始化1个自定义的队列头
 	TAILQ_INIT(&port->p_custom_list);
 #endif
 	cfg->g_default_local_port = port;
@@ -1232,11 +1234,10 @@ lldpd_exit(struct lldpd *cfg)
 
 /**
  * Run lldpcli to configure lldpd.
- *
+ * 子进程运行lldpcli从/etc/lldpd.conf导入配置
  * @return PID of running lldpcli or -1 if error.
  */
-static pid_t
-lldpd_configure(int use_syslog, int debug, const char *path, const char *ctlname)
+static pid_t lldpd_configure(int use_syslog, int debug, const char *path, const char *ctlname)
 {
 	pid_t lldpcli = vfork();
 	int devnull;
@@ -1254,7 +1255,8 @@ lldpd_configure(int use_syslog, int debug, const char *path, const char *ctlname
 	}
 	log_debug("main", "invoke %s %s", path, sdebug);
 
-	switch (lldpcli) {
+	switch (lldpcli) 
+    {
 	case -1:
 		log_warn("main", "unable to fork");
 		return -1;
@@ -1613,11 +1615,13 @@ lldpd_main(int argc, char *argv[], char *envp[])
 		}
 	}
 
+    // 打印版本号
 	if (version) {
 		version_display(stdout, "lldpd", version > 1);
 		exit(0);
 	}
 
+    // 设置unix-domain socket: lldpd.socket
 	if (ctlname == NULL) ctlname = LLDPD_CTL_SOCKET;
 
 	/* Set correct smart mode */
@@ -1628,6 +1632,7 @@ lldpd_main(int argc, char *argv[], char *envp[])
 	}
 	smart = filters[i].b;
 
+    // 初始化log打印，缺省值use_syslog=1,debug=0,__progname=lldp
 	log_init(use_syslog, debug, __progname);
 	tzset();		/* Get timezone info before chroot */
 
@@ -1635,6 +1640,7 @@ lldpd_main(int argc, char *argv[], char *envp[])
 	version_check();
 
 	/* Grab uid and gid to use for priv sep */
+    // 获取uid、gid
 #ifdef ENABLE_PRIVSEP
 	if ((user = getpwnam(PRIVSEP_USER)) == NULL)
 		fatalx("main", "no " PRIVSEP_USER " user for privilege separation, please create it");
@@ -1645,9 +1651,11 @@ lldpd_main(int argc, char *argv[], char *envp[])
 #endif
 
 	/* Create and setup socket */
+    // 创建unix-domain 服务器socket
 	int retry = 1;
 	log_debug("main", "creating control socket");
-	while ((ctl = ctl_create(ctlname)) == -1) {
+	while ((ctl = ctl_create(ctlname)) == -1) 
+    {
 		if (retry-- && errno == EADDRINUSE) {
 			/* Check if a daemon is really listening */
 			int tfd;
@@ -1671,6 +1679,7 @@ lldpd_main(int argc, char *argv[], char *envp[])
 		fatalx("main", "giving up");
 	}
 #ifdef ENABLE_PRIVSEP
+    // 将/var/run/lldpd.socket的uid、gid变为lldp用户的相应值
 	if (chown(ctlname, uid, gid) == -1)
 		log_warn("main", "unable to chown control socket");
 	if (chmod(ctlname,
@@ -1686,16 +1695,20 @@ lldpd_main(int argc, char *argv[], char *envp[])
 	signal(SIGHUP, SIG_IGN);
 
 	/* Configuration with lldpcli */
-	if (lldpcli) {
+    // 运行lldpcli从/etc/lldpd.conf导入配置
+	if (lldpcli) 
+    {
 		log_debug("main", "invoking lldpcli for configuration");
 		if (lldpd_configure(use_syslog, debug, lldpcli, ctlname) == -1)
 			fatal("main", "unable to spawn lldpcli");
 	}
 
 	/* Daemonization, unless started by upstart, systemd or launchd or debug */
+    // 进程进入后台运行
 #ifndef HOST_OS_OSX
 	if (daemonize &&
-	    !lldpd_started_by_upstart() && !lldpd_started_by_systemd()) {
+	    !lldpd_started_by_upstart() && !lldpd_started_by_systemd()) 
+    {
 		int pid;
 		char *spid;
 		log_debug("main", "daemonize");
@@ -1715,12 +1728,14 @@ lldpd_main(int argc, char *argv[], char *envp[])
 
 	/* Try to read system information from /etc/os-release if possible.
 	   Fall back to lsb_release for compatibility. */
+    // 获取系统发行版本信息
 	log_debug("main", "get OS/LSB release information");
 	lsb_release = lldpd_get_os_release();
 	if (!lsb_release) {
 		lsb_release = lldpd_get_lsb_release();
 	}
 
+    // 创建父子进程，进行权限分离设置，父进程最后进入死循环,只能通过socketpair跟子进程通信，从而间接跟外界通信
 	log_debug("main", "initialize privilege separation");
 #ifdef ENABLE_PRIVSEP
 	priv_init(PRIVSEP_CHROOT, ctl, uid, gid);
@@ -1728,12 +1743,16 @@ lldpd_main(int argc, char *argv[], char *envp[])
 	priv_init(PRIVSEP_CHROOT, ctl, 0, 0);
 #endif
 
+    // 运行到这里的只会是子进程
 	/* Initialization of global configuration */
+    // 申请lldpd总控制块内存，并初始化
 	if ((cfg = (struct lldpd *)
 	    calloc(1, sizeof(struct lldpd))) == NULL)
 		fatal("main", NULL);
 
+    // 申请一个缺省的本地端口控制块
 	lldpd_alloc_default_local_port(cfg);
+
 	cfg->g_ctlname = ctlname;
 	cfg->g_ctl = ctl;
 	cfg->g_config.c_mgmt_pattern = mgmtp;

@@ -27,8 +27,8 @@
 #include "../ctl.h"
 #include "../log.h"
 
-const char*
-lldpctl_get_default_transport(void)
+// 获取cli本地unix socket地址/tmp/run/lldp.socket
+const char* lldpctl_get_default_transport(void)
 {
 	return LLDPD_CTL_SOCKET;
 }
@@ -40,9 +40,10 @@ sync_connect(lldpctl_conn_t *lldpctl)
 	return ctl_connect(lldpctl->ctlname);
 }
 
-/* Synchronously send data to remote end. */
-static ssize_t
-sync_send(lldpctl_conn_t *lldpctl,
+/* Synchronously send data to remote end. 
+ * 同步方式发送数据
+ * */
+static ssize_t sync_send(lldpctl_conn_t *lldpctl,
     const uint8_t *data, size_t length, void *user_data)
 {
 	struct lldpctl_conn_sync_t *conn = user_data;
@@ -60,9 +61,10 @@ sync_send(lldpctl_conn_t *lldpctl,
 	return nb;
 }
 
-/* Statically receive data from remote end. */
-static ssize_t
-sync_recv(lldpctl_conn_t *lldpctl,
+/* Statically receive data from remote end. 
+ * 同步方式接收数据
+ * */
+static ssize_t sync_recv(lldpctl_conn_t *lldpctl,
     const uint8_t *data, size_t length, void *user_data)
 {
 	struct lldpctl_conn_sync_t *conn = user_data;
@@ -94,8 +96,8 @@ lldpctl_new(lldpctl_send_callback send, lldpctl_recv_callback recv, void *user_d
 	return lldpctl_new_name(lldpctl_get_default_transport(), send, recv, user_data);
 }
 
-lldpctl_conn_t*
-lldpctl_new_name(const char *ctlname, lldpctl_send_callback send, lldpctl_recv_callback recv, void *user_data)
+// 创建一个用于lldpctl的unix-domain socket控制块
+lldpctl_conn_t* lldpctl_new_name(const char *ctlname, lldpctl_send_callback send, lldpctl_recv_callback recv, void *user_data)
 {
 	lldpctl_conn_t *conn = NULL;
 	struct lldpctl_conn_sync_t *data = NULL;
@@ -104,15 +106,21 @@ lldpctl_new_name(const char *ctlname, lldpctl_send_callback send, lldpctl_recv_c
 	if (send && !recv) return NULL;
 	if (recv && !send) return NULL;
 
+    // 申请unix-domain socket控制块
 	if ((conn = calloc(1, sizeof(lldpctl_conn_t))) == NULL)
 		return NULL;
 
+    // 设置本地socket地址
 	conn->ctlname = strdup(ctlname);
 	if (conn->ctlname == NULL) {
 		free(conn);
 		return NULL;
 	}
-	if (!send && !recv) {
+    
+    // 如果收发函数未定义，意味着使用默认的同步方式收发数据
+    // 否则使用一套自定义的收发函数以及数据空间
+	if (!send && !recv) \
+    {
 		if ((data = malloc(sizeof(struct lldpctl_conn_sync_t))) == NULL) {
 			free(conn);
 			return NULL;
@@ -121,7 +129,9 @@ lldpctl_new_name(const char *ctlname, lldpctl_send_callback send, lldpctl_recv_c
 		conn->send = sync_send;
 		conn->recv = sync_recv;
 		conn->user_data = data;
-	} else {
+	} 
+    else 
+    {
 		conn->send = send;
 		conn->recv = recv;
 		conn->user_data = user_data;
@@ -272,8 +282,7 @@ int lldpctl_process_conn_buffer(lldpctl_conn_t *conn)
 	return rc;
 }
 
-ssize_t
-lldpctl_send(lldpctl_conn_t *conn)
+ssize_t lldpctl_send(lldpctl_conn_t *conn)
 {
 	/* Send waiting data. */
 	ssize_t rc;

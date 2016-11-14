@@ -21,6 +21,7 @@
 
 /**
  * An element of the environment (a key and a value).
+ * 定义一个尾队列元素结构体cmd_env_el，内容是一条环境变量key-value
  */
 struct cmd_env_el {
 	TAILQ_ENTRY(cmd_env_el) next; /**< Next environment element */
@@ -30,6 +31,7 @@ struct cmd_env_el {
 
 /**
  * A stack element.
+ * 定义一个尾队列元素结构体cmd_env_stack，内容是一个尾队列元素结构体cmd_node,包含一条完整的命令以及相关的信息
  */
 struct cmd_env_stack {
 	TAILQ_ENTRY(cmd_env_stack) next; /**< Next element, down the stack */
@@ -38,13 +40,15 @@ struct cmd_env_stack {
 
 /**
  * Structure representing an environment for the current command.
- *
+ * 定义了一个结构体用于保存整个命令环境
  * An environment is a list of values stored for use for the function executing
  * as well as the current command, the current position in the command and a
  * stack for cmd_node
  */
 struct cmd_env {
+    // 定义一个尾队列头elements
 	TAILQ_HEAD(, cmd_env_el) elements; /**< List of environment variables */
+    // 定义一个尾队列头stack
 	TAILQ_HEAD(, cmd_env_stack) stack; /**< Stack */
 	int argc;		/**< Number of argument in the command */
 	int argp;		/**< Current argument */
@@ -54,6 +58,7 @@ struct cmd_env {
 /**
  * Structure representing a command node.
  *
+ * 定义一个尾队列元素结构体cmd_node，内容包含一条完整的命令以及相关的信息
  * Such a node contains a token accepted to enter the node (or @c NULL if there
  * is no token needed), a documentation string to present the user, a function
  * to validate the user input (or @c NULL if no function is needed) and a
@@ -72,28 +77,30 @@ struct cmd_node {
 
 	/**
 	 * Function validating entry in this node. Can be @c NULL.
+     * 验证函数
 	 */
 	int(*validate)(struct cmd_env*, void *);
 	/**
 	 * Function to execute when entering this node. May be @c NULL.
-	 *
+	 * 该命令对应的执行函数
 	 * This function can alter the environment
 	 */
 	int(*execute)(struct lldpctl_conn_t*, struct writer*,
 	    struct cmd_env*, void *);
 	void *arg;		/**< Magic argument for the previous two functions */
 
-	/* List of possible subentries */
+	/* List of possible subentries 
+     * 定义了可能存在的子尾队列的头
+     * */
 	TAILQ_HEAD(, cmd_node) subentries; /* List of subnodes */
 };
 
 /**
  * Create a root node.
- *
+ * 创建一个根尾队列
  * @return the root node.
  */
-struct cmd_node*
-commands_root(void)
+struct cmd_node* commands_root(void)
 {
 	return commands_new(NULL, NULL, NULL, NULL, NULL, NULL);
 }
@@ -106,8 +113,7 @@ commands_root(void)
  *
  * The node is modified. It is returned to ease chaining.
  */
-struct cmd_node*
-commands_privileged(struct cmd_node *node)
+struct cmd_node* commands_privileged(struct cmd_node *node)
 {
 	if (node) node->privileged = 1;
 	return node;
@@ -130,6 +136,7 @@ commands_hidden(struct cmd_node *node)
 
 /**
  * Create a new node acessible by any user.
+ * 创建一个尾队列元素
  *
  * @param root  The node we want to attach this node.
  * @param token Token to enter this node. Or @c NULL if no token is needed.
@@ -139,8 +146,7 @@ commands_hidden(struct cmd_node *node)
  * @param arg      Magic argument for precedent functions.
  * @return  the newly created node
  */
-struct cmd_node*
-commands_new(struct cmd_node *root,
+struct cmd_node* commands_new(struct cmd_node *root,
     const char *token, const char *doc,
     int(*validate)(struct cmd_env*, void *),
     int(*execute)(struct lldpctl_conn_t*, struct writer*,
@@ -158,6 +164,7 @@ commands_new(struct cmd_node *root,
 	new->execute = execute;
 	new->arg = arg;
 	TAILQ_INIT(&new->subentries);
+    // 如果root有效意味着新创建的尾队列是其子尾队列
 	if (root != NULL)
 		TAILQ_INSERT_TAIL(&root->subentries, new, next);
 	return new;
@@ -200,14 +207,13 @@ cmdenv_arg(struct cmd_env *env)
 
 /**
  * Get a value from the environment.
- *
+ * 根据key从环境中索引对应的value
  * @param env The environment.
  * @param key The key for the requested value.
  * @return @c NULL if not found or the requested value otherwise. If no value is
  *         associated, return the key.
  */
-const char*
-cmdenv_get(struct cmd_env *env, const char *key)
+const char* cmdenv_get(struct cmd_env *env, const char *key)
 {
 	struct cmd_env_el *el;
 	TAILQ_FOREACH(el, &env->elements, next)
@@ -272,8 +278,7 @@ cmdenv_pop(struct cmd_env *env, int n)
  * @param node The node to push.
  * @return 0 on success, -1 on error.
  */
-static int
-cmdenv_push(struct cmd_env *env, struct cmd_node *node)
+static int cmdenv_push(struct cmd_env *env, struct cmd_node *node)
 {
 	struct cmd_env_stack *el = malloc(sizeof(struct cmd_env_stack));
 	if (el == NULL) {
@@ -287,12 +292,12 @@ cmdenv_push(struct cmd_env *env, struct cmd_node *node)
 
 /**
  * Return the top of the stack, without poping it.
+ * 获取cmd_env中的栈队列的首元素中的cmd_node
  *
  * @param env The environment.
  * @return the top element or @c NULL is the stack is empty.
  */
-static struct cmd_node*
-cmdenv_top(struct cmd_env *env)
+static struct cmd_node* cmdenv_top(struct cmd_env *env)
 {
 	if (TAILQ_EMPTY(&env->stack)) return NULL;
 	return TAILQ_FIRST(&env->stack)->el;
@@ -325,6 +330,7 @@ struct candidate_word {
 
 /**
  * Execute or complete a command from the given node.
+ * 执行/完成命令
  *
  * @param conn    Connection to lldpd.
  * @param w       Writer for output.
@@ -336,14 +342,15 @@ struct candidate_word {
  * @param priv    Is the current user privileged?
  * @return 0 on success, -1 otherwise.
  */
-static int
-_commands_execute(struct lldpctl_conn_t *conn, struct writer *w,
+static int _commands_execute(struct lldpctl_conn_t *conn, struct writer *w,
     struct cmd_node *root, int argc, const char **argv,
     char **word, int all, int priv)
 {
 	int n, rc = 0, completion = (word != NULL);
 	int help = 0;		/* Are we asking for help? */
 	int complete = 0;	/* Are we asking for possible completions? */
+
+    //  定义了一个结构体用于保存当前命令以及所处的整个环境
 	struct cmd_env env = {
 		.elements = TAILQ_HEAD_INITIALIZER(env.elements),
 		.stack = TAILQ_HEAD_INITIALIZER(env.stack),
@@ -351,6 +358,7 @@ _commands_execute(struct lldpctl_conn_t *conn, struct writer *w,
 		.argv = argv,
 		.argp = 0
 	};
+    // 把整棵命令树或者其分支推入环境中的栈队列
 	cmdenv_push(&env, root);
 	if (!completion)
 		for (n = 0; n < argc; n++)
@@ -365,8 +373,12 @@ _commands_execute(struct lldpctl_conn_t *conn, struct writer *w,
 	/* When completion is in progress, we use the same algorithm than for
 	 * execution until we reach the cursor position. */
 	struct cmd_node *current = NULL;
-	while ((current = cmdenv_top(&env))) {
-		if (!completion) {
+    
+    // 从栈队列的首元素开始，遍历每个cmd_node
+	while ((current = cmdenv_top(&env))) 
+    {
+		if (!completion) 
+        {
 			help = !!cmdenv_get(&env, "help"); /* Are we asking for help? */
 			complete = !!cmdenv_get(&env, "complete"); /* Or completion? */
 		}
@@ -380,10 +392,13 @@ _commands_execute(struct lldpctl_conn_t *conn, struct writer *w,
 		if (!completion)
 			log_debug("lldpctl", "process argument %02d: `%s`",
 			    env.argp, token);
-		TAILQ_FOREACH(candidate, &current->subentries, next) {
+        // 遍历cmd_node的子命令，找出跟参数相同的子命令
+		TAILQ_FOREACH(candidate, &current->subentries, next) 
+        {
 			if (candidate->token &&
 			    !strncmp(candidate->token, token, strlen(token)) &&
-			    CAN_EXECUTE(candidate)) {
+			    CAN_EXECUTE(candidate)) 
+            {
 				if (candidate->token &&
 				    !strcmp(candidate->token, token)) {
 					/* Exact match */
@@ -400,6 +415,7 @@ _commands_execute(struct lldpctl_conn_t *conn, struct writer *w,
 				}
 			}
 		}
+        // 如果以上遍历中未找到，则匹配无名子命令
 		if (!best) {
 			/* Take first that validate */
 			TAILQ_FOREACH(candidate, &current->subentries, next) {
@@ -410,6 +426,7 @@ _commands_execute(struct lldpctl_conn_t *conn, struct writer *w,
 				}
 			}
 		}
+        // 如果连无名子命令也不匹配，则报错退出
 		if (!best && env.argp == env.argc) goto end;
 		if (!best) {
 			if (!completion)
@@ -420,7 +437,10 @@ _commands_execute(struct lldpctl_conn_t *conn, struct writer *w,
 		}
 
 		/* Push and execute */
+        // 将匹配的子命令继续推入环境中的栈队列
 		cmdenv_push(&env, best);
+
+        // 如果匹配的子命令带了执行函数，则执行
 		if (best->execute && best->execute(conn, w, &env, best->arg) != 1) {
 			rc = -1;
 			goto end;
@@ -531,6 +551,7 @@ end:
 
 /**
  * Complete the given command.
+ * 完成命令
  */
 char *
 commands_complete(struct cmd_node *root, int argc, const char **argv,
@@ -545,9 +566,9 @@ commands_complete(struct cmd_node *root, int argc, const char **argv,
 
 /**
  * Execute the given commands.
+ * 执行命令，传入的参数有lldp socket控制块、输出格式控制块、整棵命令树、一条完整命令、权限位
  */
-int
-commands_execute(struct lldpctl_conn_t *conn, struct writer *w,
+int commands_execute(struct lldpctl_conn_t *conn, struct writer *w,
     struct cmd_node *root, int argc, const char **argv, int privileged)
 {
 	return _commands_execute(conn, w, root, argc, argv, NULL, 0, privileged);
@@ -683,8 +704,7 @@ cmd_store_something_env_value(const char *what,
  * @return The next interface in the set of ports (or in all ports if no `ports`
  *         variable is present in the environment)
  */
-lldpctl_atom_t*
-cmd_iterate_on_interfaces(struct lldpctl_conn_t *conn, struct cmd_env *env)
+lldpctl_atom_t* cmd_iterate_on_interfaces(struct lldpctl_conn_t *conn, struct cmd_env *env)
 {
 	static lldpctl_atom_iter_t *iter = NULL;
 	static lldpctl_atom_t *iface_list = NULL;
@@ -765,6 +785,7 @@ cmd_iterate_on_ports(struct lldpctl_conn_t *conn, struct cmd_env *env, const cha
 
 /**
  * Restrict the command to some ports.
+ * 限制命令到具体的端口
  */
 void
 cmd_restrict_ports(struct cmd_node *root)
@@ -782,6 +803,7 @@ cmd_restrict_ports(struct cmd_node *root)
 
 /**
  * Restrict the command to specific protocol
+ * 限制命令到具体协议
  */
 void
 cmd_restrict_protocol(struct cmd_node *root)

@@ -22,13 +22,14 @@
 #include "../ctl.h"
 
 /* connection.c */
+// 用于lldp的unix-domain socket连接控制块
 struct lldpctl_conn_t {
 	/* the Unix-domain socket to connect to lldpd */
-	char *ctlname;
+	char *ctlname;  // socket 地址
 
 	/* Callback handling */
-	lldpctl_recv_callback recv; /* Receive callback */
-	lldpctl_send_callback send; /* Send callback */
+	lldpctl_recv_callback recv; /* 接收回调函数*/
+	lldpctl_send_callback send; /* 发送回调函数*/
 	void *user_data;	    /* Callback user data */
 
 	/* IO state handling. */
@@ -61,10 +62,10 @@ struct lldpctl_conn_t {
 				 * CONN_STATE_IDLE. */
 
 	/* Error handling */
-	lldpctl_error_t error;	/* Last error */
+	lldpctl_error_t error;	/* 报错回调函数*/
 
 	/* Handling notifications */
-	lldpctl_change_callback watch_cb;
+	lldpctl_change_callback watch_cb;   /* 通知回调函数 */
 	void *watch_data;
 	int watch_triggered;
 };

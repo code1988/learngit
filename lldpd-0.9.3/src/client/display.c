@@ -656,7 +656,8 @@ display_interfaces(lldpctl_conn_t *conn, struct writer *w,
 	}
 
 	tag_start(w, "lldp", "LLDP neighbors");
-	while ((iface = cmd_iterate_on_interfaces(conn, env))) {
+	while ((iface = cmd_iterate_on_interfaces(conn, env))) 
+    {
 		lldpctl_atom_t *port;
 		lldpctl_atom_t *neighbors;
 		lldpctl_atom_t *neighbor;

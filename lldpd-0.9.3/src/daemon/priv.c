@@ -71,13 +71,15 @@ static int monitored = -1;		/* Child */
 #endif
 
 /* Proxies */
-static void
-priv_ping()
+// ping 命令测试
+static void priv_ping()
 {
 	int rc;
 	enum priv_cmd cmd = PRIV_PING;
+    // 发了一个ping请求
 	must_write(PRIV_UNPRIVILEGED, &cmd, sizeof(enum priv_cmd));
 	priv_wait();
+    // 接收一个ping应答
 	must_read(PRIV_UNPRIVILEGED, &rc, sizeof(int));
 	log_debug("privsep", "monitor ready");
 }
@@ -184,8 +186,8 @@ priv_snmp_socket(struct sockaddr_un *addr)
 	return receive_fd(PRIV_UNPRIVILEGED);
 }
 
-static void
-asroot_ping()
+// ping应答函数
+static void asroot_ping()
 {
 	int rc = 1;
 	must_write(PRIV_PRIVILEGED, &rc, sizeof(int));
@@ -399,8 +401,8 @@ static struct dispatch_actions actions[] = {
 };
 
 /* Main loop, run as root */
-static void
-priv_loop(int privileged, int once)
+// 主循环，root用户(也就是父进程)运行
+static void priv_loop(int privileged, int once)
 {
 	enum priv_cmd cmd;
 	struct dispatch_actions *a;
@@ -412,7 +414,8 @@ priv_loop(int privileged, int once)
 	   fatal("privsep", "cannot continue without seccomp setup");
 #endif
 #endif
-	while (!may_read(PRIV_PRIVILEGED, &cmd, sizeof(enum priv_cmd))) {
+	while (!may_read(PRIV_PRIVILEGED, &cmd, sizeof(enum priv_cmd))) 
+    {
 		log_debug("privsep", "received command %d", cmd);
 		for (a = actions; a->function != NULL; a++) {
 			if (cmd == a->msg) {
@@ -428,9 +431,10 @@ priv_loop(int privileged, int once)
 
 /* This function is a NOOP when privilege separation is enabled. In
  * the other case, it should be called when we wait an action from the
- * privileged side. */
-void
-priv_wait() {
+ * privileged side. 
+ * ENABLE_PRIVSEP被定义了，所以该函数就是个空操作 
+ * */
+void priv_wait() {
 #ifndef ENABLE_PRIVSEP
 	/* We have no remote process on the other side. Let's emulate it. */
 	priv_loop(0, 1);
@@ -506,9 +510,9 @@ sig_chld(int sig)
 }
 
 /* Initialization */
+// 创建/var/run/lldp目录
 #define LOCALTIME "/etc/localtime"
-static void
-priv_setup_chroot(const char *chrootdir)
+static void priv_setup_chroot(const char *chrootdir)
 {
 	/* Create chroot if it does not exist */
 	if (mkdir(chrootdir, 0755) == -1) {
@@ -584,8 +588,7 @@ priv_setup_chroot(const char *chrootdir)
 }
 #endif
 
-void
-priv_init(const char *chrootdir, int ctl, uid_t uid, gid_t gid)
+void priv_init(const char *chrootdir, int ctl, uid_t uid, gid_t gid)
 {
 
 	int pair[2];
@@ -605,12 +608,15 @@ priv_init(const char *chrootdir, int ctl, uid_t uid, gid_t gid)
 	/* Spawn off monitor */
 	if ((monitored = fork()) < 0)
 		fatal("privsep", "unable to fork monitor");
-	switch (monitored) {
+	switch (monitored) 
+    {
 	case 0:
 		/* We are in the children, drop privileges */
 		if (RUNNING_ON_VALGRIND)
 			log_warnx("privsep", "running on valgrind, keep privileges");
-		else {
+		else 
+        {
+            // 子进程创建/var/run/lldp目录，并作为根目录
 			priv_setup_chroot(chrootdir);
 			if (chroot(chrootdir) == -1)
 				fatal("privsep", "unable to chroot");
@@ -618,6 +624,7 @@ priv_init(const char *chrootdir, int ctl, uid_t uid, gid_t gid)
 				fatal("privsep", "unable to chdir");
 			gidset[0] = gid;
 #ifdef HAVE_SETRESGID
+            // 分别设置真实、有效、保存过的gid
 			if (setresgid(gid, gid, gid) == -1)
 				fatal("privsep", "setresgid() failed");
 #else
@@ -630,21 +637,27 @@ priv_init(const char *chrootdir, int ctl, uid_t uid, gid_t gid)
 			if (setresuid(uid, uid, uid) == -1)
 				fatal("privsep", "setresuid() failed");
 #else
+            // 分别设置真实、有效uid
 			if (setreuid(uid, uid) == -1)
 				fatal("privsep", "setreuid() failed");
 #endif
 		}
+        // 子进程关掉pair[1]
 		close(pair[1]);
+        // 子进程做一次ping测试，测试跟父进程的通信情况
 		priv_ping();
 		break;
 	default:
 		/* We are in the monitor */
+        // 父进程关掉unix-domain socket,关掉pair[0]
 		if (ctl != -1) close(ctl);
 		close(pair[0]);
+        // 注册进程终止函数priv_exit
 		if (atexit(priv_exit) != 0)
 			fatal("privsep", "unable to set exit function");
 
 		/* Install signal handlers */
+        // 信号注册
 		const struct sigaction pass_to_child = {
 			.sa_handler = sig_pass_to_chld,
 			.sa_flags = SA_RESTART
@@ -660,9 +673,12 @@ priv_init(const char *chrootdir, int ctl, uid_t uid, gid_t gid)
 		};
 		sigaction(SIGCHLD, &child, NULL);
 
-                if (waitpid(monitored, &status, WNOHANG) != 0)
-                        /* Child is already dead */
-                        _exit(1);
+        // 检查子进程monitored是否结束
+        if (waitpid(monitored, &status, WNOHANG) != 0)
+                /* Child is already dead */
+                _exit(1);
+
+        // 父进程在这里进入主循环
 		priv_loop(pair[1], 0);
 		exit(0);
 	}

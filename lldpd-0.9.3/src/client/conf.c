@@ -24,8 +24,7 @@
 /**
  * Register `configure` and `no configure` commands.
  */
-void
-register_commands_configure(struct cmd_node *root)
+void register_commands_configure(struct cmd_node *root)
 {
 	struct cmd_node *configure = commands_new(
 		root,

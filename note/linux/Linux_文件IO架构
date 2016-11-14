@@ -1,7 +1,10 @@
 1. int fcntl(int fd,int cmd) / int fcntl(int fd,int cmd,long arg) / int fcntl(int fd,int cmd,struct flock *lock) 
     fcntl函数有以上3中调用格式，和open一样，都是用可变参数实现的，可变参数的类型和格式取决于前面的cmd参数
     fcntl函数可以改变一个已打开文件的属性，通过cmd参数实现5类功能
-        F_DUPFD         : 复制文件描述符，暂略
+        F_DUPFD         : 复制文件描述符fd，新描述符取>=arg的最小可用值，并作为返回值返回，复制成功后和源fd共享同一个文件表.
+                          该功能类似于dup()和dup2()，区别在于 -- 
+                            dup返回的新描述符就是取最小可用值而没有arg限制
+                            dup2的新描述符已经通过入参arg指定，即便arg已经被占用并打开
         F_GETFD/F_SETFD : 获取/设置文件描述符标记，目前只定义了一个文件描述符标志FD_CLOEXEC
         F_GETFL/F_SETFL : 获取/设置文件状态标记，注意跟上面的文件描述符区别，这里的状态标记指的就是open时设置的flag标记.
                           需要注意的是，F_SETFL只允许设置文件状态标记中的O_APPEND、O_ASYNC、O_NONBLOCK、O_DIRECT、O_NOATIME

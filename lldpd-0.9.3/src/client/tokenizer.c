@@ -21,14 +21,14 @@
 /**
  * Tokenize the given line. We support quoted strings and escaped characters
  * with backslash.
+ * 根据分隔符切分指定的命令行
  *
  * @param line Line to tokenize.
  * @param argv Will get an array of arguments tokenized.
  * @param argc Will get the number of tokenized arguments.
  * @return 0 on success, -1 on internal error, 1 on unmatched quotes
  */
-int
-tokenize_line(const char *line, int *argc, char ***argv)
+int tokenize_line(const char *line, int *argc, char ***argv)
 {
 	int iargc = 0; char **iargv = NULL;
 	char *ifs     = " \n\t";

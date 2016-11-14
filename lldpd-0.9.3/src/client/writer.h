@@ -19,7 +19,7 @@
 #define _WRITER_H
 
 #include <stdio.h>
-
+// 输出格式控制块
 struct writer {
 	void	* priv;
 	void	(*start)(struct writer *, const char * tag, const char * descr);

@@ -21,6 +21,7 @@
 
 /**
  * Show neighbors.
+ * show neighbors的执行函数
  *
  * The environment will contain the following keys:
  *  - C{ports} list of ports we want to restrict showing.
@@ -28,8 +29,7 @@
  *  - C{summary} if we want to show only a summary
  *  - C{detailed} for a detailed overview
  */
-static int
-cmd_show_neighbors(struct lldpctl_conn_t *conn, struct writer *w,
+static int cmd_show_neighbors(struct lldpctl_conn_t *conn, struct writer *w,
     struct cmd_env *env, void *arg)
 {
 	log_debug("lldpctl", "show neighbors data (%s) %s hidden neighbors",
@@ -50,13 +50,12 @@ cmd_show_neighbors(struct lldpctl_conn_t *conn, struct writer *w,
 
 /**
  * Show chassis.
- *
+ * Show chassis的执行函数
  * The environment will contain the following keys:
  *  - C{summary} if we want to show only a summary
  *  - C{detailed} for a detailed overview
  */
-static int
-cmd_show_chassis(struct lldpctl_conn_t *conn, struct writer *w,
+static int cmd_show_chassis(struct lldpctl_conn_t *conn, struct writer *w,
     struct cmd_env *env, void *arg)
 {
 	log_debug("lldpctl", "show chassis data (%s)",
@@ -74,13 +73,12 @@ cmd_show_chassis(struct lldpctl_conn_t *conn, struct writer *w,
 
 /**
  * Show stats.
- *
+ * Show stats 的执行函数
  * The environment will contain the following keys:
  *  - C{ports} list of ports we want to restrict showing.
  *  - C{summary} summary of stats
  */
-static int
-cmd_show_interface_stats(struct lldpctl_conn_t *conn, struct writer *w,
+static int cmd_show_interface_stats(struct lldpctl_conn_t *conn, struct writer *w,
     struct cmd_env *env, void *arg)
 {
 	log_debug("lldpctl", "show stats data");
@@ -225,9 +223,9 @@ cmd_watch_neighbors(struct lldpctl_conn_t *conn, struct writer *w,
 
 /**
  * Register common subcommands for `watch` and `show neighbors` and `show chassis'
+ * 为watch show neighbors show chassis 注册通用子命令
  */
-void
-register_common_commands(struct cmd_node *root, int neighbor)
+void register_common_commands(struct cmd_node *root, int neighbor)
 {
 	/* With more details */
 	commands_new(root,
@@ -270,11 +268,11 @@ register_summary_command(struct cmd_node *root)
 
 /**
  * Register subcommands to `show`
- *
+ * 注册show尾队列（从属于root），注册neighbors、chassis、stats、configuration、running-configuration尾队列（从属于show）
+ * 注册neighbors、chassis、stats各自末梢尾队列
  * @param root Root node
  */
-void
-register_commands_show(struct cmd_node *root)
+void register_commands_show(struct cmd_node *root)
 {
 	struct cmd_node *show = commands_new(
 		root,
@@ -305,6 +303,7 @@ register_commands_show(struct cmd_node *root)
 	    "Show neighbors data",
 	    NULL, cmd_show_neighbors, NULL);
 
+    // 为neighbors注册额外的子命令队列
 	register_common_commands(neighbors, 1);
 
 	/* Chassis data */
@@ -313,6 +312,7 @@ register_commands_show(struct cmd_node *root)
 	    "Show local chassis data",
 	    NULL, cmd_show_chassis, NULL);
 
+    // 为chassis注册额外的子命令队列
 	register_common_commands(chassis, 0);
 
 	/* Stats data */
@@ -322,6 +322,7 @@ register_commands_show(struct cmd_node *root)
 	    NULL, cmd_show_interface_stats, NULL);
 
 	cmd_restrict_ports(stats);
+    // 为stats注册额外的子命令队列
 	register_summary_command(stats);
 
 	/* Register "show configuration" and "show running-configuration" */
