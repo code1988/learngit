@@ -1830,8 +1830,7 @@ agent_log_callback(int major, int minor,
   return SNMP_ERR_NOERROR;
 }
 
-void
-agent_init(struct lldpd *cfg, const char *agentx)
+void agent_init(struct lldpd *cfg, const char *agentx)
 {
 	int rc;
 

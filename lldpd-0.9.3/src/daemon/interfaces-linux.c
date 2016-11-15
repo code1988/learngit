@@ -617,7 +617,8 @@ iflinux_add_driver(struct lldpd *cfg,
     struct interfaces_device_list *interfaces)
 {
 	struct interfaces_device *iface;
-	TAILQ_FOREACH(iface, interfaces, next) {
+	TAILQ_FOREACH(iface, interfaces, next) 
+    {
 		struct ethtool_drvinfo ethc = {
 			.cmd = ETHTOOL_GDRVINFO
 		};
@@ -750,13 +751,15 @@ iflinux_add_physical(struct lldpd *cfg,
 	}
 }
 
-void
-interfaces_update(struct lldpd *cfg)
+// 刷新接口信息
+void interfaces_update(struct lldpd *cfg)
 {
 	struct lldpd_hardware *hardware;
 	struct interfaces_device_list *interfaces;
 	struct interfaces_address_list *addresses;
+    // 获取接口设备列表
 	interfaces = netlink_get_interfaces(cfg);
+    // 获取接口地址列表
 	addresses = netlink_get_addresses(cfg);
 	if (interfaces == NULL || addresses == NULL) {
 		log_warnx("interfaces", "cannot update the list of local interfaces");

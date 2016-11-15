@@ -328,38 +328,45 @@ asroot_iface_promisc()
 	must_write(PRIV_PRIVILEGED, &rc, sizeof(rc));
 }
 
-static void
-asroot_snmp_socket()
+// 处理从子进程收到的snmp-socket命令
+static void asroot_snmp_socket()
 {
 	int sock, rc;
 	static struct sockaddr_un *addr = NULL;
 	struct sockaddr_un bogus;
 
-	if (!addr) {
+	if (!addr) 
+    {
+        // 首次收到该命令时，先申请addr空间，再从子进程读取addr数据
 		addr = (struct sockaddr_un *)malloc(sizeof(struct sockaddr_un));
 		must_read(PRIV_PRIVILEGED, addr, sizeof(struct sockaddr_un));
-	} else
+	} 
+    else
 		/* We have already been asked to connect to a socket. We will
 		 * connect to the same socket. */
 		must_read(PRIV_PRIVILEGED, &bogus, sizeof(struct sockaddr_un));
+
+    // 检测收到的地址信息是否合法
 	if (addr->sun_family != AF_UNIX)
 		fatal("privsep", "someone is trying to trick me");
 	addr->sun_path[sizeof(addr->sun_path)-1] = '\0';
 
+    // 创建unix-domain 客户端socket(非阻塞),并连接服务器
 	if ((sock = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
 		log_warn("privsep", "cannot open socket");
 		must_write(PRIV_PRIVILEGED, &sock, sizeof(int));
 		return;
 	}
-        if ((rc = connect(sock, (struct sockaddr *) addr,
-		    sizeof(struct sockaddr_un))) != 0) {
-		log_info("privsep", "cannot connect to %s: %s",
+    if ((rc = connect(sock, (struct sockaddr *) addr,
+        sizeof(struct sockaddr_un))) != 0) 
+    {
+        log_info("privsep", "cannot connect to %s: %s",
                           addr->sun_path, strerror(errno));
-		close(sock);
-		rc = -1;
-		must_write(PRIV_PRIVILEGED, &rc, sizeof(int));
-		return;
-        }
+        close(sock);
+        rc = -1;
+        must_write(PRIV_PRIVILEGED, &rc, sizeof(int));
+        return;
+    }
 
 	int flags;
 	if ((flags = fcntl(sock, F_GETFL, NULL)) < 0 ||
@@ -374,6 +381,7 @@ asroot_snmp_socket()
 	}
 
 	must_write(PRIV_PRIVILEGED, &rc, sizeof(int));
+    // 父进程将创建的unix-domain 套接字(用于跟snmp服务器通信)传送给子进程
 	send_fd(PRIV_PRIVILEGED, sock);
 	close(sock);
 }

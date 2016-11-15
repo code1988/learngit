@@ -68,8 +68,8 @@ priv_fd(enum priv_context ctx)
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-void
-send_fd(enum priv_context ctx, int fd)
+// 父子进程间传送fd（通过msghdr的msg_control字段）
+void send_fd(enum priv_context ctx, int fd)
 {
 	struct msghdr msg;
 	union {

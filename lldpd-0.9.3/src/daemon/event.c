@@ -36,8 +36,8 @@
 
 #define EVENT_BUFFER 1024
 
-static void
-levent_log_cb(int severity, const char *msg)
+// log回调函数
+static void levent_log_cb(int severity, const char *msg)
 {
 	switch (severity) {
 	case _EVENT_LOG_DEBUG: log_debug("libevent", "%s", msg); break;
@@ -103,8 +103,7 @@ levent_snmp_read(evutil_socket_t fd, short what, void *arg)
  *
  * A SNMP timeout has occurred. Call `snmp_timeout()` to handle it.
  */
-static void
-levent_snmp_timeout(evutil_socket_t fd, short what, void *arg)
+static void levent_snmp_timeout(evutil_socket_t fd, short what, void *arg)
 {
 	struct lldpd *cfg = arg;
 	(void)what; (void)fd;
@@ -223,12 +222,14 @@ levent_snmp_update(struct lldpd *cfg)
 }
 #endif /* USE_SNMP */
 
+// 定义lldpd客户端尾队列元素
 struct lldpd_one_client {
 	TAILQ_ENTRY(lldpd_one_client) next;
 	struct lldpd *cfg;
 	struct bufferevent *bev;
 	int    subscribed;	/* Is this client subscribed to changes? */
 };
+// 定义lldpd客户端尾队列头
 TAILQ_HEAD(, lldpd_one_client) lldpd_clients;
 
 static void
@@ -408,8 +409,7 @@ accept_failed:
 	levent_ctl_free_client(client);
 }
 
-static void
-levent_priv(evutil_socket_t fd, short what, void *arg)
+static void levent_priv(evutil_socket_t fd, short what, void *arg)
 {
 	struct event_base *base = arg;
 	ssize_t n;
@@ -460,8 +460,7 @@ levent_stop(evutil_socket_t fd, short what, void *arg)
 	event_base_loopbreak(base);
 }
 
-static void
-levent_update_and_send(evutil_socket_t fd, short what, void *arg)
+static void levent_update_and_send(evutil_socket_t fd, short what, void *arg)
 {
 	struct lldpd *cfg = arg;
 	struct timeval tv = { cfg->g_config.c_tx_interval, 0 };
@@ -492,12 +491,14 @@ levent_send_now(struct lldpd *cfg)
 	}
 }
 
-static void
-levent_init(struct lldpd *cfg)
+// 基于libevent的事件初始化
+static void levent_init(struct lldpd *cfg)
 {
 	/* Setup libevent */
 	log_debug("event", "initialize libevent");
+    // 设置日志回调函数
 	event_set_log_callback(levent_log_cb);
+    // 建立一个默认的event_base
 	if (!(cfg->g_base = event_base_new()))
 		fatalx("event", "unable to create a new libevent base");
 	log_info("event", "libevent %s initialized with %s method",
@@ -506,13 +507,15 @@ levent_init(struct lldpd *cfg)
 
 	/* Setup SNMP */
 #ifdef USE_SNMP
-	if (cfg->g_snmp) {
+	if (cfg->g_snmp) 
+    {
+        // 子代理初始化
 		agent_init(cfg, cfg->g_snmp_agentx);
-		cfg->g_snmp_timeout = evtimer_new(cfg->g_base,
-		    levent_snmp_timeout,
-		    cfg);
+        // 创建snmp超时事件
+		cfg->g_snmp_timeout = evtimer_new(cfg->g_base,levent_snmp_timeout,cfg);
 		if (!cfg->g_snmp_timeout)
 			fatalx("event", "unable to setup timeout function for SNMP");
+        // 为g_snmp_fds尾队列头申请空间,并初始化
 		if ((cfg->g_snmp_fds =
 			malloc(sizeof(struct ev_l))) == NULL)
 			fatalx("event", "unable to allocate memory for SNMP events");
@@ -522,25 +525,27 @@ levent_init(struct lldpd *cfg)
 
 	/* Setup loop that will run every X seconds. */
 	log_debug("event", "register loop timer");
-	if (!(cfg->g_main_loop = event_new(cfg->g_base, -1, 0,
-					   levent_update_and_send,
-					   cfg)))
+    // 创建main timer事件
+	if (!(cfg->g_main_loop = event_new(cfg->g_base, -1, 0,levent_update_and_send,cfg)))
 		fatalx("event", "unable to setup main timer");
 	event_active(cfg->g_main_loop, EV_TIMEOUT, 1);
 
 	/* Setup unix socket */
 	struct event *ctl_event;
 	log_debug("event", "register Unix socket");
+    // 初始化lldpd客户端尾队列头
 	TAILQ_INIT(&lldpd_clients);
+    // 设置lldpd cli 本地服务器fd为非阻塞
 	levent_make_socket_nonblocking(cfg->g_ctl);
-	if ((ctl_event = event_new(cfg->g_base, cfg->g_ctl,
-		    EV_READ|EV_PERSIST, levent_ctl_accept, cfg)) == NULL)
+    // 创建lldpd cli通信事件
+	if ((ctl_event = event_new(cfg->g_base, cfg->g_ctl,EV_READ|EV_PERSIST, levent_ctl_accept, cfg)) == NULL)
 		fatalx("event", "unable to setup control socket event");
 	event_add(ctl_event, NULL);
 
 	/* Somehow monitor the monitor process */
 	struct event *monitor_event;
 	log_debug("event", "monitor the monitor process");
+    // 创建和父进程通信事件
 	if ((monitor_event = event_new(cfg->g_base, priv_fd(PRIV_UNPRIVILEGED),
 		    EV_READ|EV_PERSIST, levent_priv, cfg->g_base)) == NULL)
 		fatalx("event", "unable to monitor monitor process");
@@ -548,6 +553,7 @@ levent_init(struct lldpd *cfg)
 
 	/* Signals */
 	log_debug("event", "register signals");
+    // 注册信号
 	evsignal_add(evsignal_new(cfg->g_base, SIGUSR1,
 		levent_dump, cfg->g_base),
 	    NULL);
@@ -560,9 +566,9 @@ levent_init(struct lldpd *cfg)
 }
 
 /* Initialize libevent and start the event loop */
-void
-levent_loop(struct lldpd *cfg)
+void levent_loop(struct lldpd *cfg)
 {
+    // 基于libevent的事件初始化
 	levent_init(cfg);
 	lldpd_loop(cfg);
 #ifdef USE_SNMP
@@ -727,15 +733,15 @@ levent_iface_recv(evutil_socket_t fd, short what, void *arg)
 	}
 }
 
-int
-levent_iface_subscribe(struct lldpd *cfg, int socket)
+// 订阅接口变化事件
+int levent_iface_subscribe(struct lldpd *cfg, int socket)
 {
 	log_debug("event", "subscribe to interface changes from socket %d",
 	    socket);
 	if (cfg->g_iface_cb == NULL)
 		levent_make_socket_nonblocking(socket);
-	cfg->g_iface_event = event_new(cfg->g_base, socket,
-	    EV_READ | EV_PERSIST, levent_iface_recv, cfg);
+    // 创建接口变化事件
+	cfg->g_iface_event = event_new(cfg->g_base, socket,EV_READ | EV_PERSIST, levent_iface_recv, cfg);
 	if (cfg->g_iface_event == NULL) {
 		log_warnx("event",
 		    "unable to allocate a new event for interface changes");
@@ -758,8 +764,8 @@ levent_trigger_cleanup(evutil_socket_t fd, short what, void *arg)
 	lldpd_cleanup(cfg);
 }
 
-void
-levent_schedule_cleanup(struct lldpd *cfg)
+// 设置下一次清空操作
+void levent_schedule_cleanup(struct lldpd *cfg)
 {
 	log_debug("event", "schedule next cleanup");
 	if (cfg->g_cleanup_timer != NULL) {
@@ -856,8 +862,8 @@ levent_schedule_pdu(struct lldpd_hardware *hardware)
 	}
 }
 
-int
-levent_make_socket_nonblocking(int fd)
+// 设置fd为非阻塞
+int levent_make_socket_nonblocking(int fd)
 {
 	int flags;
 	if ((flags = fcntl(fd, F_GETFL, NULL)) < 0) {

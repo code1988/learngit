@@ -33,6 +33,7 @@ struct netlink_req {
 	struct rtgenmsg gen;
 };
 
+// lldpd的netlink控制块
 struct lldpd_netlink {
 	int nl_socket;
 	/* Cache */
@@ -49,8 +50,7 @@ struct lldpd_netlink {
  * @param groups   Which groups we want to subscribe to
  * @return The opened socket or -1 on error.
  */
-static int
-netlink_connect(int protocol, unsigned groups)
+static int netlink_connect(int protocol, unsigned groups)
 {
 	int s;
 	struct sockaddr_nl local = {
@@ -85,8 +85,7 @@ netlink_connect(int protocol, unsigned groups)
  * @param family the rt family (eg AF_PACKET)
  * @return 0 on success, -1 otherwise
  */
-static int
-netlink_send(int s, int type, int family, int seq)
+static int netlink_send(int s, int type, int family, int seq)
 {
 	struct netlink_req req = {
 		.hdr = {
@@ -622,11 +621,10 @@ netlink_group_mask(int group)
 
 /**
  * Subscribe to link changes.
- *
+ * 创建协议类型为NETLINK_ROUTE的netlink接口，并加入RTNLGRP_LINK多播组，即向内核订阅了link状态变化通知
  * @return The socket we should listen to for changes.
  */
-int
-netlink_subscribe_changes()
+int netlink_subscribe_changes()
 {
 	unsigned int groups;
 
@@ -653,13 +651,13 @@ netlink_change_cb(struct lldpd *cfg)
 
 /**
  * Initialize netlink subsystem.
- *
+ * lldp的netlink子系统初始化，主要是创建了接口变化事件
+ * 可以被调用多次，但只有第一次有效
  * This can be called several times but will have effect only the first time.
  *
  * @return 0 on success, -1 otherwise
  */
-static int
-netlink_initialize(struct lldpd *cfg)
+static int netlink_initialize(struct lldpd *cfg)
 {
 	if (cfg->g_netlink) return 0;
 
@@ -671,8 +669,10 @@ netlink_initialize(struct lldpd *cfg)
 
 	/* Connect to netlink (by requesting to get notified on updates) and
 	 * request updated information right now */
+    // 创建netlink接口，并订阅link状态变化通知
 	int s = cfg->g_netlink->nl_socket = netlink_subscribe_changes();
 
+    // 申请接口地址尾队列头的内存空间,并初始化
 	struct interfaces_address_list *ifaddrs = cfg->g_netlink->addresses =
 	    malloc(sizeof(struct interfaces_address_list));
 	if (ifaddrs == NULL) {
@@ -681,6 +681,7 @@ netlink_initialize(struct lldpd *cfg)
 	}
 	TAILQ_INIT(ifaddrs);
 
+    // 申请接口设备尾队列头的内存空间,并初始化
 	struct interfaces_device_list *ifs = cfg->g_netlink->devices =
 	    malloc(sizeof(struct interfaces_device_list));
 	if (ifs == NULL) {
@@ -689,15 +690,22 @@ netlink_initialize(struct lldpd *cfg)
 	}
 	TAILQ_INIT(ifs);
 
+    // 向内核请求地址信息
 	if (netlink_send(s, RTM_GETADDR, AF_UNSPEC, 1) == -1)
 		goto end;
+    // 接收从内核返回的地址信息
 	netlink_recv(s, NULL, ifaddrs);
+
+    // 向内核请求link信息
 	if (netlink_send(s, RTM_GETLINK, AF_PACKET, 2) == -1)
 		goto end;
+    // 接收从内核返回的link信息
 	netlink_recv(s, ifs, NULL);
 
 	/* Listen to any future change */
+    // 注册接口信息变化后的回调函数
 	cfg->g_iface_cb = netlink_change_cb;
+    // 创建接口变化事件
 	if (levent_iface_subscribe(cfg, s) == -1) {
 		goto end;
 	}
@@ -726,28 +734,30 @@ netlink_cleanup(struct lldpd *cfg)
 
 /**
  * Receive the list of interfaces.
- *
+ * 获取接口设备列表
  * @return a list of interfaces.
  */
-struct interfaces_device_list*
-netlink_get_interfaces(struct lldpd *cfg)
+struct interfaces_device_list* netlink_get_interfaces(struct lldpd *cfg)
 {
+    // lldp的netlink子系统初始化，主要是创建了接口变化事件
 	if (netlink_initialize(cfg) == -1) return NULL;
 	struct interfaces_device *ifd;
 	TAILQ_FOREACH(ifd, cfg->g_netlink->devices, next) {
 		ifd->ignore = 0;
 	}
+    // 返回接口设备尾队列的头
 	return cfg->g_netlink->devices;
 }
 
 /**
  * Receive the list of addresses.
- *
+ * 获取接口地址列表
  * @return a list of addresses.
  */
-struct interfaces_address_list*
-netlink_get_addresses(struct lldpd *cfg)
+struct interfaces_address_list* netlink_get_addresses(struct lldpd *cfg)
 {
+    // lldp的netlink子系统初始化，主要是创建了接口变化事件
 	if (netlink_initialize(cfg) == -1) return NULL;
+    // 返回接口地址尾队列的头
 	return cfg->g_netlink->addresses;
 }

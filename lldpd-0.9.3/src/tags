@@ -57,9 +57,9 @@ CONN_STATE_SET_PORT_SEND	lib/atom.h	46;"	d
 CONN_STATE_SET_WATCH_RECV	lib/atom.h	49;"	d
 CONN_STATE_SET_WATCH_SEND	lib/atom.h	48;"	d
 CURRENT	client/tokenizer.c	71;"	d	file:
-CUSTOM_TLV_ADD	lldpd-structs.h	220;"	d
-CUSTOM_TLV_REMOVE	lldpd-structs.h	222;"	d
-CUSTOM_TLV_REPLACE	lldpd-structs.h	221;"	d
+CUSTOM_TLV_ADD	lldpd-structs.h	224;"	d
+CUSTOM_TLV_REMOVE	lldpd-structs.h	226;"	d
+CUSTOM_TLV_REPLACE	lldpd-structs.h	225;"	d
 DISPLAY_BRIEF	client/client.h	120;"	d
 DISPLAY_DETAILS	client/client.h	122;"	d
 DISPLAY_NORMAL	client/client.h	121;"	d
@@ -138,7 +138,7 @@ LLDPD_FAST_INIT	daemon/lldpd.h	77;"	d
 LLDPD_FAST_TX_INTERVAL	daemon/lldpd.h	76;"	d
 LLDPD_FILTER_F	daemon/lldpd.h	267;"	d
 LLDPD_MAX_NEIGHBORS	daemon/lldpd.h	75;"	d
-LLDPD_MGMT_MAXADDRSIZE	lldpd-structs.h	150;"	d
+LLDPD_MGMT_MAXADDRSIZE	lldpd-structs.h	153;"	d
 LLDPD_MODE_CDPV1	lldp-const.h	217;"	d
 LLDPD_MODE_CDPV2	lldp-const.h	218;"	d
 LLDPD_MODE_EDP	lldp-const.h	220;"	d
@@ -146,15 +146,15 @@ LLDPD_MODE_FDP	lldp-const.h	221;"	d
 LLDPD_MODE_LLDP	lldp-const.h	216;"	d
 LLDPD_MODE_MAX	lldp-const.h	222;"	d
 LLDPD_MODE_SONMP	lldp-const.h	219;"	d
-LLDPD_PORT_START_MARKER	lldpd-structs.h	257;"	d
-LLDPD_RXTX_BOTH	lldpd-structs.h	315;"	d
-LLDPD_RXTX_DISABLED	lldpd-structs.h	314;"	d
-LLDPD_RXTX_FROM_PORT	lldpd-structs.h	316;"	d
-LLDPD_RXTX_RXENABLED	lldpd-structs.h	320;"	d
-LLDPD_RXTX_RXONLY	lldpd-structs.h	313;"	d
-LLDPD_RXTX_TXENABLED	lldpd-structs.h	321;"	d
-LLDPD_RXTX_TXONLY	lldpd-structs.h	312;"	d
-LLDPD_RXTX_UNCHANGED	lldpd-structs.h	311;"	d
+LLDPD_PORT_START_MARKER	lldpd-structs.h	261;"	d
+LLDPD_RXTX_BOTH	lldpd-structs.h	319;"	d
+LLDPD_RXTX_DISABLED	lldpd-structs.h	318;"	d
+LLDPD_RXTX_FROM_PORT	lldpd-structs.h	320;"	d
+LLDPD_RXTX_RXENABLED	lldpd-structs.h	324;"	d
+LLDPD_RXTX_RXONLY	lldpd-structs.h	317;"	d
+LLDPD_RXTX_TXENABLED	lldpd-structs.h	325;"	d
+LLDPD_RXTX_TXONLY	lldpd-structs.h	316;"	d
+LLDPD_RXTX_UNCHANGED	lldpd-structs.h	315;"	d
 LLDPD_TTL	daemon/lldpd.h	73;"	d
 LLDPD_TX_HOLD	daemon/lldpd.h	72;"	d
 LLDPD_TX_INTERVAL	daemon/lldpd.h	71;"	d
@@ -428,8 +428,8 @@ LLDP_TLV_SYSTEM_CAP	daemon/lldp-tlv.h	32;"	d
 LLDP_TLV_SYSTEM_DESCR	daemon/lldp-tlv.h	31;"	d
 LLDP_TLV_SYSTEM_NAME	daemon/lldp-tlv.h	30;"	d
 LLDP_TLV_TTL	daemon/lldp-tlv.h	28;"	d
-LOCALTIME	daemon/priv.c	514;"	d	file:
-LOCAL_CHASSIS	daemon/lldpd.h	425;"	d
+LOCALTIME	daemon/priv.c	522;"	d	file:
+LOCAL_CHASSIS	daemon/lldpd.h	430;"	d
 MAC_UL_ADMINISTERED_BIT_MASK	daemon/interfaces.c	685;"	d	file:
 MARSHAL	marshal.h	121;"	d
 MARSHAL_ADD	marshal.h	82;"	d
@@ -460,9 +460,9 @@ MAX_DBG_TOKENS	log.c	41;"	d	file:
 MAX_PORTS	daemon/interfaces-linux.c	40;"	d	file:
 MINBUF	compat/getline.c	39;"	d	file:
 N	client/display.c	/^N(const char *str) {$/;"	f	file:	signature:(const char *str)
-NEIGHBOR_CHANGE_ADDED	lldpd-structs.h	518;"	d
-NEIGHBOR_CHANGE_DELETED	lldpd-structs.h	517;"	d
-NEIGHBOR_CHANGE_UPDATED	lldpd-structs.h	519;"	d
+NEIGHBOR_CHANGE_ADDED	lldpd-structs.h	523;"	d
+NEIGHBOR_CHANGE_DELETED	lldpd-structs.h	522;"	d
+NEIGHBOR_CHANGE_UPDATED	lldpd-structs.h	524;"	d
 NETLINK_BUFFER	daemon/netlink.c	29;"	d	file:
 NETSNMP_LARGE_FD_CLR	daemon/event.c	73;"	d	file:
 NETSNMP_LARGE_FD_ISSET	daemon/event.c	75;"	d	file:
@@ -526,14 +526,14 @@ SET_PORT	ctl.h	/^	SET_PORT,		\/* Set port-related information (location, power, 
 SET_STR	lib/atoms/config.c	180;"	d	file:
 SIOCGLAGG	daemon/interfaces-bsd.c	137;"	d	file:
 SMART_HIDDEN	daemon/lldpd.h	98;"	d
-SMART_INCOMING	lldpd-structs.h	365;"	d
-SMART_INCOMING_FILTER	lldpd-structs.h	359;"	d
-SMART_INCOMING_ONE_NEIGH	lldpd-structs.h	361;"	d
-SMART_INCOMING_ONE_PROTO	lldpd-structs.h	360;"	d
-SMART_OUTGOING	lldpd-structs.h	368;"	d
-SMART_OUTGOING_FILTER	lldpd-structs.h	362;"	d
-SMART_OUTGOING_ONE_NEIGH	lldpd-structs.h	364;"	d
-SMART_OUTGOING_ONE_PROTO	lldpd-structs.h	363;"	d
+SMART_INCOMING	lldpd-structs.h	369;"	d
+SMART_INCOMING_FILTER	lldpd-structs.h	363;"	d
+SMART_INCOMING_ONE_NEIGH	lldpd-structs.h	365;"	d
+SMART_INCOMING_ONE_PROTO	lldpd-structs.h	364;"	d
+SMART_OUTGOING	lldpd-structs.h	372;"	d
+SMART_OUTGOING_FILTER	lldpd-structs.h	366;"	d
+SMART_OUTGOING_ONE_NEIGH	lldpd-structs.h	368;"	d
+SMART_OUTGOING_ONE_PROTO	lldpd-structs.h	367;"	d
 SNMPTRAP_OID	daemon/agent.h	31;"	d
 SONMP_MULTICAST_ADDR	daemon/protocols/sonmp.h	21;"	d
 SONMP_SIZE	daemon/protocols/sonmp.h	27;"	d
@@ -594,7 +594,7 @@ __anon9::f_uint32	daemon/frame.h	/^	uint32_t f_uint32;$/;"	m	union:__anon9	acces
 __anon9::f_uint8	daemon/frame.h	/^	uint8_t f_uint8;$/;"	m	union:__anon9	access:public
 __lldpctl_atom_set_str_config	lib/atoms/config.c	/^__lldpctl_atom_set_str_config(struct _lldpctl_atom_config_t *c,$/;"	f	file:	signature:(struct _lldpctl_atom_config_t *c, char **local, char **global, const char *value)
 __progname	client/lldpcli.c	40;"	d	file:
-__progname	daemon/lldpd.c	74;"	d	file:
+__progname	daemon/lldpd.c	75;"	d	file:
 __tiny_variable	compat/empty.c	/^static int __tiny_variable __attribute__((__unused__)) = 0;$/;"	v	file:
 _client_handle_set_port	daemon/client.c	/^_client_handle_set_port(struct lldpd *cfg,$/;"	f	file:	signature:(struct lldpd *cfg, struct lldpd_port *port, struct lldpd_port_set *set)
 _cmd_complete	client/lldpcli.c	/^_cmd_complete(int all)$/;"	f	file:	signature:(int all)
@@ -833,7 +833,7 @@ agent_h_remote_ppvid	daemon/agent.c	/^agent_h_remote_ppvid(struct variable *vp, 
 agent_h_remote_vlan	daemon/agent.c	/^agent_h_remote_vlan(struct variable *vp, oid *name, size_t *length,$/;"	f	file:	signature:(struct variable *vp, oid *name, size_t *length, int exact, size_t *var_len, WriteMethod **write_method)
 agent_h_scalars	daemon/agent.c	/^agent_h_scalars(struct variable *vp, oid *name, size_t *length,$/;"	f	file:	signature:(struct variable *vp, oid *name, size_t *length, int exact, size_t *var_len, WriteMethod **write_method)
 agent_h_stats	daemon/agent.c	/^agent_h_stats(struct variable *vp, oid *name, size_t *length,$/;"	f	file:	signature:(struct variable *vp, oid *name, size_t *length, int exact, size_t *var_len, WriteMethod **write_method)
-agent_init	daemon/agent.c	/^agent_init(struct lldpd *cfg, const char *agentx)$/;"	f	signature:(struct lldpd *cfg, const char *agentx)
+agent_init	daemon/agent.c	/^void agent_init(struct lldpd *cfg, const char *agentx)$/;"	f	signature:(struct lldpd *cfg, const char *agentx)
 agent_init	daemon/lldpd.h	/^void		 agent_init(struct lldpd *, const char *);$/;"	p	signature:(struct lldpd *, const char *)
 agent_lldp_vars	daemon/agent.c	/^struct variable8 agent_lldp_vars[] = {$/;"	v	typeref:struct:variable8
 agent_lldp_vars_size	daemon/agent.c	/^size_t agent_lldp_vars_size(void) {$/;"	f	signature:(void)
@@ -895,7 +895,7 @@ asroot_iface_promisc_os	daemon/priv-linux.c	/^asroot_iface_promisc_os(const char
 asroot_open	daemon/lldpd.h	/^void	 asroot_open(void);$/;"	p	signature:(void)
 asroot_open	daemon/priv-linux.c	/^asroot_open()$/;"	f
 asroot_ping	daemon/priv.c	/^static void asroot_ping()$/;"	f	file:
-asroot_snmp_socket	daemon/priv.c	/^asroot_snmp_socket()$/;"	f	file:
+asroot_snmp_socket	daemon/priv.c	/^static void asroot_snmp_socket()$/;"	f	file:
 atom_buffer	lib/atom.h	/^struct atom_buffer {$/;"	s
 atom_buffer::data	lib/atom.h	/^	u_int8_t data[0];$/;"	m	struct:atom_buffer	access:public
 atom_buffer::next	lib/atom.h	/^	TAILQ_ENTRY(atom_buffer) next;$/;"	m	struct:atom_buffer	access:public
@@ -1394,27 +1394,27 @@ frame_checksum	daemon/lldpd.h	/^u_int16_t frame_checksum(const u_int8_t *, int, 
 free	lib/atom.h	/^	void                 (*free)(lldpctl_atom_t *);$/;"	m	struct:lldpctl_atom_t	access:public
 free	lib/atom.h	/^	void (*free)(lldpctl_atom_t *); \/* Optional deallocation steps *\/$/;"	m	struct:atom_builder	access:public
 function	daemon/priv.c	/^	void(*function)(void);$/;"	m	struct:dispatch_actions	file:	access:public
-g_base	daemon/lldpd.h	/^	struct event_base	*g_base;$/;"	m	struct:lldpd	typeref:struct:lldpd::event_base	access:public
-g_chassis	daemon/lldpd.h	/^	TAILQ_HEAD(, lldpd_chassis) g_chassis;$/;"	m	struct:lldpd	access:public
+g_base	daemon/lldpd.h	/^	struct event_base	*g_base;        \/\/ 指向一个默认的event_base$/;"	m	struct:lldpd	typeref:struct:lldpd::event_base	access:public
+g_chassis	daemon/lldpd.h	/^	TAILQ_HEAD(, lldpd_chassis) g_chassis;      \/\/ 保存系统功能的尾队列头$/;"	m	struct:lldpd	access:public
 g_cleanup_timer	daemon/lldpd.h	/^	struct event		*g_cleanup_timer;$/;"	m	struct:lldpd	typeref:struct:lldpd::event	access:public
-g_config	daemon/lldpd.h	/^	struct lldpd_config	 g_config;$/;"	m	struct:lldpd	typeref:struct:lldpd::lldpd_config	access:public
-g_ctl	daemon/lldpd.h	/^	int			 g_ctl;$/;"	m	struct:lldpd	access:public
-g_ctlname	daemon/lldpd.h	/^	const char		*g_ctlname;$/;"	m	struct:lldpd	access:public
-g_default_local_port	daemon/lldpd.h	/^	struct lldpd_port	*g_default_local_port;$/;"	m	struct:lldpd	typeref:struct:lldpd::lldpd_port	access:public
+g_config	daemon/lldpd.h	/^	struct lldpd_config	 g_config;      \/\/ lldp参数配置控制块$/;"	m	struct:lldpd	typeref:struct:lldpd::lldpd_config	access:public
+g_ctl	daemon/lldpd.h	/^	int			 g_ctl;                 \/\/ 记录lldpd cli unix-dimain fd$/;"	m	struct:lldpd	access:public
+g_ctlname	daemon/lldpd.h	/^	const char		*g_ctlname;         \/\/ lldpd cli 本地服务器地址 \/var\/run\/lldpd.socket$/;"	m	struct:lldpd	access:public
+g_default_local_port	daemon/lldpd.h	/^	struct lldpd_port	*g_default_local_port;  \/\/ 指向一个缺省的端口控制块尾队列元素$/;"	m	struct:lldpd	typeref:struct:lldpd::lldpd_port	access:public
 g_hardware	daemon/lldpd.h	/^	TAILQ_HEAD(, lldpd_hardware) g_hardware;$/;"	m	struct:lldpd	access:public
 g_iface_cb	daemon/lldpd.h	/^	void(*g_iface_cb)(struct lldpd *);	      \/* Called when there is an interface change *\/$/;"	m	struct:lldpd	access:public
 g_iface_event	daemon/lldpd.h	/^	struct event		*g_iface_event; \/* Triggered when there is an interface change *\/$/;"	m	struct:lldpd	typeref:struct:lldpd::event	access:public
 g_iface_timer_event	daemon/lldpd.h	/^	struct event		*g_iface_timer_event; \/* Triggered one second after last interface change *\/$/;"	m	struct:lldpd	typeref:struct:lldpd::event	access:public
 g_lastrid	daemon/lldpd.h	/^	int			 g_lastrid;$/;"	m	struct:lldpd	access:public
 g_lsb_release	daemon/lldpd.h	/^	char			*g_lsb_release;$/;"	m	struct:lldpd	access:public
-g_main_loop	daemon/lldpd.h	/^	struct event		*g_main_loop;$/;"	m	struct:lldpd	typeref:struct:lldpd::event	access:public
-g_netlink	daemon/lldpd.h	/^	struct lldpd_netlink	*g_netlink;$/;"	m	struct:lldpd	typeref:struct:lldpd::lldpd_netlink	access:public
-g_protocols	daemon/lldpd.h	/^	struct protocol		*g_protocols;$/;"	m	struct:lldpd	typeref:struct:lldpd::protocol	access:public
-g_snmp	daemon/lldpd.h	/^	int			 g_snmp;$/;"	m	struct:lldpd	access:public
-g_snmp_agentx	daemon/lldpd.h	/^	const char		*g_snmp_agentx;$/;"	m	struct:lldpd	access:public
-g_snmp_fds	daemon/lldpd.h	/^	void			*g_snmp_fds;$/;"	m	struct:lldpd	access:public
-g_snmp_timeout	daemon/lldpd.h	/^	struct event		*g_snmp_timeout;$/;"	m	struct:lldpd	typeref:struct:lldpd::event	access:public
-g_sock	daemon/lldpd.h	/^	int			 g_sock;$/;"	m	struct:lldpd	access:public
+g_main_loop	daemon/lldpd.h	/^	struct event		*g_main_loop;   \/\/ 指向主循环事件$/;"	m	struct:lldpd	typeref:struct:lldpd::event	access:public
+g_netlink	daemon/lldpd.h	/^	struct lldpd_netlink	*g_netlink; \/\/ netlink控制块$/;"	m	struct:lldpd	typeref:struct:lldpd::lldpd_netlink	access:public
+g_protocols	daemon/lldpd.h	/^	struct protocol		*g_protocols;   \/\/ 指向lldp细分协议列表$/;"	m	struct:lldpd	typeref:struct:lldpd::protocol	access:public
+g_snmp	daemon/lldpd.h	/^	int			 g_snmp;                \/\/ snmp使能标志$/;"	m	struct:lldpd	access:public
+g_snmp_agentx	daemon/lldpd.h	/^	const char		*g_snmp_agentx;     \/\/ snmp本地服务器地址 \/var\/agentX\/master$/;"	m	struct:lldpd	access:public
+g_snmp_fds	daemon/lldpd.h	/^	void			*g_snmp_fds;        \/\/ 指向snmp-fds尾队列头$/;"	m	struct:lldpd	access:public
+g_snmp_timeout	daemon/lldpd.h	/^	struct event		*g_snmp_timeout;\/\/ 指向snmp超时事件$/;"	m	struct:lldpd	typeref:struct:lldpd::event	access:public
+g_sock	daemon/lldpd.h	/^	int			 g_sock;                \/\/ 记录ioctl fd$/;"	m	struct:lldpd	access:public
 gc	marshal.c	/^struct gc {$/;"	s	file:
 gc::TAILQ_ENTRY	marshal.c	/^	TAILQ_ENTRY(gc) next;$/;"	p	struct:gc	file:	access:public
 gc::orig	marshal.c	/^	void *orig;		\/* Original reference (not valid anymore !) *\/$/;"	m	struct:gc	file:	access:public
@@ -1623,7 +1623,7 @@ interfaces_send_helper	daemon/lldpd.h	/^int interfaces_send_helper(struct lldpd 
 interfaces_setup_multicast	daemon/interfaces.c	/^interfaces_setup_multicast(struct lldpd *cfg, const char *name,$/;"	f	signature:(struct lldpd *cfg, const char *name, int remove)
 interfaces_setup_multicast	daemon/lldpd.h	/^void interfaces_setup_multicast(struct lldpd *, const char *, int);$/;"	p	signature:(struct lldpd *, const char *, int)
 interfaces_update	daemon/interfaces-bsd.c	/^interfaces_update(struct lldpd *cfg)$/;"	f	signature:(struct lldpd *cfg)
-interfaces_update	daemon/interfaces-linux.c	/^interfaces_update(struct lldpd *cfg)$/;"	f	signature:(struct lldpd *cfg)
+interfaces_update	daemon/interfaces-linux.c	/^void interfaces_update(struct lldpd *cfg)$/;"	f	signature:(struct lldpd *cfg)
 interfaces_update	daemon/interfaces-solaris.c	/^interfaces_update(struct lldpd *cfg) {$/;"	f	signature:(struct lldpd *cfg)
 interfaces_update	daemon/lldpd.h	/^void     interfaces_update(struct lldpd *);$/;"	p	signature:(struct lldpd *)
 intint	daemon/lldpd.c	/^struct intint { int a; int b; };$/;"	s	file:
@@ -1700,19 +1700,19 @@ levent_hardware_recv	daemon/event.c	/^levent_hardware_recv(evutil_socket_t fd, s
 levent_hardware_release	daemon/event.c	/^levent_hardware_release(struct lldpd_hardware *hardware)$/;"	f	signature:(struct lldpd_hardware *hardware)
 levent_hardware_release	daemon/lldpd.h	/^void	 levent_hardware_release(struct lldpd_hardware *);$/;"	p	signature:(struct lldpd_hardware *)
 levent_iface_recv	daemon/event.c	/^levent_iface_recv(evutil_socket_t fd, short what, void *arg)$/;"	f	file:	signature:(evutil_socket_t fd, short what, void *arg)
-levent_iface_subscribe	daemon/event.c	/^levent_iface_subscribe(struct lldpd *cfg, int socket)$/;"	f	signature:(struct lldpd *cfg, int socket)
+levent_iface_subscribe	daemon/event.c	/^int levent_iface_subscribe(struct lldpd *cfg, int socket)$/;"	f	signature:(struct lldpd *cfg, int socket)
 levent_iface_subscribe	daemon/lldpd.h	/^int	 levent_iface_subscribe(struct lldpd *, int);$/;"	p	signature:(struct lldpd *, int)
 levent_iface_trigger	daemon/event.c	/^levent_iface_trigger(evutil_socket_t fd, short what, void *arg)$/;"	f	file:	signature:(evutil_socket_t fd, short what, void *arg)
-levent_init	daemon/event.c	/^levent_init(struct lldpd *cfg)$/;"	f	file:	signature:(struct lldpd *cfg)
-levent_log_cb	daemon/event.c	/^levent_log_cb(int severity, const char *msg)$/;"	f	file:	signature:(int severity, const char *msg)
-levent_loop	daemon/event.c	/^levent_loop(struct lldpd *cfg)$/;"	f	signature:(struct lldpd *cfg)
+levent_init	daemon/event.c	/^static void levent_init(struct lldpd *cfg)$/;"	f	file:	signature:(struct lldpd *cfg)
+levent_log_cb	daemon/event.c	/^static void levent_log_cb(int severity, const char *msg)$/;"	f	file:	signature:(int severity, const char *msg)
+levent_loop	daemon/event.c	/^void levent_loop(struct lldpd *cfg)$/;"	f	signature:(struct lldpd *cfg)
 levent_loop	daemon/lldpd.h	/^void	 levent_loop(struct lldpd *);$/;"	p	signature:(struct lldpd *)
 levent_make_socket_blocking	daemon/event.c	/^levent_make_socket_blocking(int fd)$/;"	f	signature:(int fd)
 levent_make_socket_blocking	daemon/lldpd.h	/^int	 levent_make_socket_blocking(int);$/;"	p	signature:(int)
-levent_make_socket_nonblocking	daemon/event.c	/^levent_make_socket_nonblocking(int fd)$/;"	f	signature:(int fd)
+levent_make_socket_nonblocking	daemon/event.c	/^int levent_make_socket_nonblocking(int fd)$/;"	f	signature:(int fd)
 levent_make_socket_nonblocking	daemon/lldpd.h	/^int	 levent_make_socket_nonblocking(int);$/;"	p	signature:(int)
-levent_priv	daemon/event.c	/^levent_priv(evutil_socket_t fd, short what, void *arg)$/;"	f	file:	signature:(evutil_socket_t fd, short what, void *arg)
-levent_schedule_cleanup	daemon/event.c	/^levent_schedule_cleanup(struct lldpd *cfg)$/;"	f	signature:(struct lldpd *cfg)
+levent_priv	daemon/event.c	/^static void levent_priv(evutil_socket_t fd, short what, void *arg)$/;"	f	file:	signature:(evutil_socket_t fd, short what, void *arg)
+levent_schedule_cleanup	daemon/event.c	/^void levent_schedule_cleanup(struct lldpd *cfg)$/;"	f	signature:(struct lldpd *cfg)
 levent_schedule_cleanup	daemon/lldpd.h	/^void	 levent_schedule_cleanup(struct lldpd *);$/;"	p	signature:(struct lldpd *)
 levent_schedule_pdu	daemon/event.c	/^levent_schedule_pdu(struct lldpd_hardware *hardware)$/;"	f	signature:(struct lldpd_hardware *hardware)
 levent_schedule_pdu	daemon/lldpd.h	/^void	 levent_schedule_pdu(struct lldpd_hardware *);$/;"	p	signature:(struct lldpd_hardware *)
@@ -1722,12 +1722,12 @@ levent_send_pdu	daemon/event.c	/^levent_send_pdu(evutil_socket_t fd, short what,
 levent_snmp_add_fd	daemon/event.c	/^levent_snmp_add_fd(struct lldpd *cfg, int fd)$/;"	f	file:	signature:(struct lldpd *cfg, int fd)
 levent_snmp_fds	daemon/event.c	56;"	d	file:
 levent_snmp_read	daemon/event.c	/^levent_snmp_read(evutil_socket_t fd, short what, void *arg)$/;"	f	file:	signature:(evutil_socket_t fd, short what, void *arg)
-levent_snmp_timeout	daemon/event.c	/^levent_snmp_timeout(evutil_socket_t fd, short what, void *arg)$/;"	f	file:	signature:(evutil_socket_t fd, short what, void *arg)
+levent_snmp_timeout	daemon/event.c	/^static void levent_snmp_timeout(evutil_socket_t fd, short what, void *arg)$/;"	f	file:	signature:(evutil_socket_t fd, short what, void *arg)
 levent_snmp_update	daemon/event.c	/^levent_snmp_update(struct lldpd *cfg)$/;"	f	file:	signature:(struct lldpd *cfg)
 levent_snmp_update	daemon/event.c	/^static void levent_snmp_update(struct lldpd *);$/;"	p	file:	signature:(struct lldpd *)
 levent_stop	daemon/event.c	/^levent_stop(evutil_socket_t fd, short what, void *arg)$/;"	f	file:	signature:(evutil_socket_t fd, short what, void *arg)
 levent_trigger_cleanup	daemon/event.c	/^levent_trigger_cleanup(evutil_socket_t fd, short what, void *arg)$/;"	f	file:	signature:(evutil_socket_t fd, short what, void *arg)
-levent_update_and_send	daemon/event.c	/^levent_update_and_send(evutil_socket_t fd, short what, void *arg)$/;"	f	file:	signature:(evutil_socket_t fd, short what, void *arg)
+levent_update_and_send	daemon/event.c	/^static void levent_update_and_send(evutil_socket_t fd, short what, void *arg)$/;"	f	file:	signature:(evutil_socket_t fd, short what, void *arg)
 levent_update_now	daemon/event.c	/^levent_update_now(struct lldpd *cfg)$/;"	f	signature:(struct lldpd *cfg)
 levent_update_now	daemon/lldpd.h	/^void	 levent_update_now(struct lldpd *);$/;"	p	signature:(struct lldpd *)
 list	lib/atom.h	/^	struct lldpd_custom_list *list;$/;"	m	struct:_lldpctl_atom_custom_list_t	typeref:struct:_lldpctl_atom_custom_list_t::lldpd_custom_list	access:public
@@ -1973,27 +1973,27 @@ lldpctl_watch	lib/lldpctl.h	/^int lldpctl_watch(lldpctl_conn_t *conn);$/;"	p	sig
 lldpctl_watch_callback	lib/atom.c	/^lldpctl_watch_callback(lldpctl_conn_t *conn,$/;"	f	signature:(lldpctl_conn_t *conn, lldpctl_change_callback cb, void *data)
 lldpctl_watch_callback	lib/lldpctl.h	/^int lldpctl_watch_callback(lldpctl_conn_t *conn,$/;"	p	signature:(lldpctl_conn_t *conn, lldpctl_change_callback cb, void *data)
 lldpd	daemon/lldpd.h	/^struct lldpd {$/;"	s
-lldpd::g_base	daemon/lldpd.h	/^	struct event_base	*g_base;$/;"	m	struct:lldpd	typeref:struct:lldpd::event_base	access:public
-lldpd::g_chassis	daemon/lldpd.h	/^	TAILQ_HEAD(, lldpd_chassis) g_chassis;$/;"	m	struct:lldpd	access:public
+lldpd::g_base	daemon/lldpd.h	/^	struct event_base	*g_base;        \/\/ 指向一个默认的event_base$/;"	m	struct:lldpd	typeref:struct:lldpd::event_base	access:public
+lldpd::g_chassis	daemon/lldpd.h	/^	TAILQ_HEAD(, lldpd_chassis) g_chassis;      \/\/ 保存系统功能的尾队列头$/;"	m	struct:lldpd	access:public
 lldpd::g_cleanup_timer	daemon/lldpd.h	/^	struct event		*g_cleanup_timer;$/;"	m	struct:lldpd	typeref:struct:lldpd::event	access:public
-lldpd::g_config	daemon/lldpd.h	/^	struct lldpd_config	 g_config;$/;"	m	struct:lldpd	typeref:struct:lldpd::lldpd_config	access:public
-lldpd::g_ctl	daemon/lldpd.h	/^	int			 g_ctl;$/;"	m	struct:lldpd	access:public
-lldpd::g_ctlname	daemon/lldpd.h	/^	const char		*g_ctlname;$/;"	m	struct:lldpd	access:public
-lldpd::g_default_local_port	daemon/lldpd.h	/^	struct lldpd_port	*g_default_local_port;$/;"	m	struct:lldpd	typeref:struct:lldpd::lldpd_port	access:public
+lldpd::g_config	daemon/lldpd.h	/^	struct lldpd_config	 g_config;      \/\/ lldp参数配置控制块$/;"	m	struct:lldpd	typeref:struct:lldpd::lldpd_config	access:public
+lldpd::g_ctl	daemon/lldpd.h	/^	int			 g_ctl;                 \/\/ 记录lldpd cli unix-dimain fd$/;"	m	struct:lldpd	access:public
+lldpd::g_ctlname	daemon/lldpd.h	/^	const char		*g_ctlname;         \/\/ lldpd cli 本地服务器地址 \/var\/run\/lldpd.socket$/;"	m	struct:lldpd	access:public
+lldpd::g_default_local_port	daemon/lldpd.h	/^	struct lldpd_port	*g_default_local_port;  \/\/ 指向一个缺省的端口控制块尾队列元素$/;"	m	struct:lldpd	typeref:struct:lldpd::lldpd_port	access:public
 lldpd::g_hardware	daemon/lldpd.h	/^	TAILQ_HEAD(, lldpd_hardware) g_hardware;$/;"	m	struct:lldpd	access:public
 lldpd::g_iface_cb	daemon/lldpd.h	/^	void(*g_iface_cb)(struct lldpd *);	      \/* Called when there is an interface change *\/$/;"	m	struct:lldpd	access:public
 lldpd::g_iface_event	daemon/lldpd.h	/^	struct event		*g_iface_event; \/* Triggered when there is an interface change *\/$/;"	m	struct:lldpd	typeref:struct:lldpd::event	access:public
 lldpd::g_iface_timer_event	daemon/lldpd.h	/^	struct event		*g_iface_timer_event; \/* Triggered one second after last interface change *\/$/;"	m	struct:lldpd	typeref:struct:lldpd::event	access:public
 lldpd::g_lastrid	daemon/lldpd.h	/^	int			 g_lastrid;$/;"	m	struct:lldpd	access:public
 lldpd::g_lsb_release	daemon/lldpd.h	/^	char			*g_lsb_release;$/;"	m	struct:lldpd	access:public
-lldpd::g_main_loop	daemon/lldpd.h	/^	struct event		*g_main_loop;$/;"	m	struct:lldpd	typeref:struct:lldpd::event	access:public
-lldpd::g_netlink	daemon/lldpd.h	/^	struct lldpd_netlink	*g_netlink;$/;"	m	struct:lldpd	typeref:struct:lldpd::lldpd_netlink	access:public
-lldpd::g_protocols	daemon/lldpd.h	/^	struct protocol		*g_protocols;$/;"	m	struct:lldpd	typeref:struct:lldpd::protocol	access:public
-lldpd::g_snmp	daemon/lldpd.h	/^	int			 g_snmp;$/;"	m	struct:lldpd	access:public
-lldpd::g_snmp_agentx	daemon/lldpd.h	/^	const char		*g_snmp_agentx;$/;"	m	struct:lldpd	access:public
-lldpd::g_snmp_fds	daemon/lldpd.h	/^	void			*g_snmp_fds;$/;"	m	struct:lldpd	access:public
-lldpd::g_snmp_timeout	daemon/lldpd.h	/^	struct event		*g_snmp_timeout;$/;"	m	struct:lldpd	typeref:struct:lldpd::event	access:public
-lldpd::g_sock	daemon/lldpd.h	/^	int			 g_sock;$/;"	m	struct:lldpd	access:public
+lldpd::g_main_loop	daemon/lldpd.h	/^	struct event		*g_main_loop;   \/\/ 指向主循环事件$/;"	m	struct:lldpd	typeref:struct:lldpd::event	access:public
+lldpd::g_netlink	daemon/lldpd.h	/^	struct lldpd_netlink	*g_netlink; \/\/ netlink控制块$/;"	m	struct:lldpd	typeref:struct:lldpd::lldpd_netlink	access:public
+lldpd::g_protocols	daemon/lldpd.h	/^	struct protocol		*g_protocols;   \/\/ 指向lldp细分协议列表$/;"	m	struct:lldpd	typeref:struct:lldpd::protocol	access:public
+lldpd::g_snmp	daemon/lldpd.h	/^	int			 g_snmp;                \/\/ snmp使能标志$/;"	m	struct:lldpd	access:public
+lldpd::g_snmp_agentx	daemon/lldpd.h	/^	const char		*g_snmp_agentx;     \/\/ snmp本地服务器地址 \/var\/agentX\/master$/;"	m	struct:lldpd	access:public
+lldpd::g_snmp_fds	daemon/lldpd.h	/^	void			*g_snmp_fds;        \/\/ 指向snmp-fds尾队列头$/;"	m	struct:lldpd	access:public
+lldpd::g_snmp_timeout	daemon/lldpd.h	/^	struct event		*g_snmp_timeout;\/\/ 指向snmp超时事件$/;"	m	struct:lldpd	typeref:struct:lldpd::event	access:public
+lldpd::g_sock	daemon/lldpd.h	/^	int			 g_sock;                \/\/ 记录ioctl fd$/;"	m	struct:lldpd	access:public
 lldpd_address	lldpd-structs.h	/^union lldpd_address {$/;"	u
 lldpd_address::inet	lldpd-structs.h	/^	struct in_addr		inet;$/;"	m	union:lldpd_address	typeref:struct:lldpd_address::in_addr	access:public
 lldpd_address::inet6	lldpd-structs.h	/^	struct in6_addr		inet6;$/;"	m	union:lldpd_address	typeref:struct:lldpd_address::in6_addr	access:public
@@ -2001,7 +2001,7 @@ lldpd_address::octets	lldpd-structs.h	/^	u_int8_t		octets[LLDPD_MGMT_MAXADDRSIZE
 lldpd_af	lldpd-structs.h	/^lldpd_af(int af)$/;"	f	signature:(int af)
 lldpd_af_from_lldp_proto	daemon/protocols/lldp.c	/^lldpd_af_from_lldp_proto(int proto)$/;"	f	file:	signature:(int proto)
 lldpd_af_to_lldp_proto	daemon/protocols/lldp.c	/^lldpd_af_to_lldp_proto(int af)$/;"	f	file:	signature:(int af)
-lldpd_all_chassis_cleanup	daemon/lldpd.c	/^lldpd_all_chassis_cleanup(struct lldpd *cfg)$/;"	f	file:	signature:(struct lldpd *cfg)
+lldpd_all_chassis_cleanup	daemon/lldpd.c	/^static void lldpd_all_chassis_cleanup(struct lldpd *cfg)$/;"	f	file:	signature:(struct lldpd *cfg)
 lldpd_alloc_default_local_port	daemon/lldpd.c	/^static void lldpd_alloc_default_local_port(struct lldpd *cfg)$/;"	f	file:	signature:(struct lldpd *cfg)
 lldpd_alloc_hardware	daemon/lldpd.c	/^lldpd_alloc_hardware(struct lldpd *cfg, char *name, int index)$/;"	f	signature:(struct lldpd *cfg, char *name, int index)
 lldpd_alloc_hardware	daemon/lldpd.h	/^struct lldpd_hardware	*lldpd_alloc_hardware(struct lldpd *, char *, int);$/;"	p	signature:(struct lldpd *, char *, int)
@@ -2035,7 +2035,7 @@ lldpd_chassis_cleanup	lldpd-structs.c	/^lldpd_chassis_cleanup(struct lldpd_chass
 lldpd_chassis_cleanup	lldpd-structs.h	/^void	 lldpd_chassis_cleanup(struct lldpd_chassis *, int);$/;"	p	signature:(struct lldpd_chassis *, int)
 lldpd_chassis_mgmt_cleanup	lldpd-structs.c	/^lldpd_chassis_mgmt_cleanup(struct lldpd_chassis *chassis)$/;"	f	signature:(struct lldpd_chassis *chassis)
 lldpd_chassis_mgmt_cleanup	lldpd-structs.h	/^void	 lldpd_chassis_mgmt_cleanup(struct lldpd_chassis *);$/;"	p	signature:(struct lldpd_chassis *)
-lldpd_cleanup	daemon/lldpd.c	/^lldpd_cleanup(struct lldpd *cfg)$/;"	f	signature:(struct lldpd *cfg)
+lldpd_cleanup	daemon/lldpd.c	/^void lldpd_cleanup(struct lldpd *cfg)$/;"	f	signature:(struct lldpd *cfg)
 lldpd_cleanup	daemon/lldpd.h	/^void	 lldpd_cleanup(struct lldpd *);$/;"	p	signature:(struct lldpd *)
 lldpd_clone_port	daemon/lldpd.c	/^lldpd_clone_port(struct lldpd_port *destination, struct lldpd_port *source)$/;"	f	file:	signature:(struct lldpd_port *destination, struct lldpd_port *source)
 lldpd_config	lldpd-structs.h	/^MARSHAL_END(lldpd_config);$/;"	v
@@ -2066,7 +2066,7 @@ lldpd_config::c_tx_interval	lldpd-structs.h	/^	int c_tx_interval;	\/* Transmit i
 lldpd_config_cleanup	lldpd-structs.c	/^lldpd_config_cleanup(struct lldpd_config *config)$/;"	f	signature:(struct lldpd_config *config)
 lldpd_config_cleanup	lldpd-structs.h	/^void	 lldpd_config_cleanup(struct lldpd_config *);$/;"	p	signature:(struct lldpd_config *)
 lldpd_configure	daemon/lldpd.c	/^static pid_t lldpd_configure(int use_syslog, int debug, const char *path, const char *ctlname)$/;"	f	file:	signature:(int use_syslog, int debug, const char *path, const char *ctlname)
-lldpd_count_neighbors	daemon/lldpd.c	/^lldpd_count_neighbors(struct lldpd *cfg)$/;"	f	file:	signature:(struct lldpd *cfg)
+lldpd_count_neighbors	daemon/lldpd.c	/^static void lldpd_count_neighbors(struct lldpd *cfg)$/;"	f	file:	signature:(struct lldpd *cfg)
 lldpd_custom	lldpd-structs.h	/^MARSHAL_END(lldpd_custom);$/;"	v
 lldpd_custom	lldpd-structs.h	/^struct lldpd_custom {$/;"	s
 lldpd_custom::next	lldpd-structs.h	/^	TAILQ_ENTRY(lldpd_custom)	next;	\/* Pointer to next custom TLV *\/$/;"	m	struct:lldpd_custom	access:public
@@ -2153,7 +2153,7 @@ lldpd_interface	lldpd-structs.h	/^MARSHAL_END(lldpd_interface);$/;"	v
 lldpd_interface	lldpd-structs.h	/^struct lldpd_interface {$/;"	s
 lldpd_interface::name	lldpd-structs.h	/^	char			*name;$/;"	m	struct:lldpd_interface	access:public
 lldpd_interface::next	lldpd-structs.h	/^	TAILQ_ENTRY(lldpd_interface) next;$/;"	m	struct:lldpd_interface	access:public
-lldpd_loop	daemon/lldpd.c	/^lldpd_loop(struct lldpd *cfg)$/;"	f	signature:(struct lldpd *cfg)
+lldpd_loop	daemon/lldpd.c	/^void lldpd_loop(struct lldpd *cfg)$/;"	f	signature:(struct lldpd *cfg)
 lldpd_loop	daemon/lldpd.h	/^void	 lldpd_loop(struct lldpd *);$/;"	p	signature:(struct lldpd *)
 lldpd_main	daemon/lldpd.c	/^lldpd_main(int argc, char *argv[], char *envp[])$/;"	f	signature:(int argc, char *argv[], char *envp[])
 lldpd_main	daemon/lldpd.h	/^int	 lldpd_main(int, char **, char **);$/;"	p	signature:(int, char **, char **)
@@ -2276,8 +2276,8 @@ lldpd_send	daemon/lldpd.h	/^void	 lldpd_send(struct lldpd_hardware *);$/;"	p	sig
 lldpd_send_shutdown	daemon/lldpd.c	/^lldpd_send_shutdown(struct lldpd_hardware *hardware)$/;"	f	file:	signature:(struct lldpd_hardware *hardware)
 lldpd_started_by_systemd	daemon/lldpd.c	/^lldpd_started_by_systemd()$/;"	f	file:
 lldpd_started_by_upstart	daemon/lldpd.c	/^lldpd_started_by_upstart()$/;"	f	file:
-lldpd_update_localchassis	daemon/lldpd.c	/^lldpd_update_localchassis(struct lldpd *cfg)$/;"	f	file:	signature:(struct lldpd *cfg)
-lldpd_update_localports	daemon/lldpd.c	/^lldpd_update_localports(struct lldpd *cfg)$/;"	f	signature:(struct lldpd *cfg)
+lldpd_update_localchassis	daemon/lldpd.c	/^static void lldpd_update_localchassis(struct lldpd *cfg)$/;"	f	file:	signature:(struct lldpd *cfg)
+lldpd_update_localports	daemon/lldpd.c	/^void lldpd_update_localports(struct lldpd *cfg)$/;"	f	signature:(struct lldpd *cfg)
 lldpd_update_localports	daemon/lldpd.h	/^void	 lldpd_update_localports(struct lldpd *);$/;"	p	signature:(struct lldpd *)
 lldpd_vlan	lldpd-structs.h	/^MARSHAL_END(lldpd_vlan);$/;"	v
 lldpd_vlan	lldpd-structs.h	/^struct lldpd_vlan {$/;"	s
@@ -2396,13 +2396,13 @@ neighbor	lldpd-structs.h	/^	struct lldpd_port *neighbor;$/;"	m	struct:lldpd_neig
 netlink_change_cb	daemon/netlink.c	/^netlink_change_cb(struct lldpd *cfg)$/;"	f	file:	signature:(struct lldpd *cfg)
 netlink_cleanup	daemon/lldpd.h	/^void netlink_cleanup(struct lldpd *);$/;"	p	signature:(struct lldpd *)
 netlink_cleanup	daemon/netlink.c	/^netlink_cleanup(struct lldpd *cfg)$/;"	f	signature:(struct lldpd *cfg)
-netlink_connect	daemon/netlink.c	/^netlink_connect(int protocol, unsigned groups)$/;"	f	file:	signature:(int protocol, unsigned groups)
+netlink_connect	daemon/netlink.c	/^static int netlink_connect(int protocol, unsigned groups)$/;"	f	file:	signature:(int protocol, unsigned groups)
 netlink_get_addresses	daemon/lldpd.h	/^struct interfaces_address_list *netlink_get_addresses(struct lldpd *);$/;"	p	signature:(struct lldpd *)
-netlink_get_addresses	daemon/netlink.c	/^netlink_get_addresses(struct lldpd *cfg)$/;"	f	signature:(struct lldpd *cfg)
+netlink_get_addresses	daemon/netlink.c	/^struct interfaces_address_list* netlink_get_addresses(struct lldpd *cfg)$/;"	f	signature:(struct lldpd *cfg)
 netlink_get_interfaces	daemon/lldpd.h	/^struct interfaces_device_list  *netlink_get_interfaces(struct lldpd *);$/;"	p	signature:(struct lldpd *)
-netlink_get_interfaces	daemon/netlink.c	/^netlink_get_interfaces(struct lldpd *cfg)$/;"	f	signature:(struct lldpd *cfg)
+netlink_get_interfaces	daemon/netlink.c	/^struct interfaces_device_list* netlink_get_interfaces(struct lldpd *cfg)$/;"	f	signature:(struct lldpd *cfg)
 netlink_group_mask	daemon/netlink.c	/^netlink_group_mask(int group)$/;"	f	file:	signature:(int group)
-netlink_initialize	daemon/netlink.c	/^netlink_initialize(struct lldpd *cfg)$/;"	f	file:	signature:(struct lldpd *cfg)
+netlink_initialize	daemon/netlink.c	/^static int netlink_initialize(struct lldpd *cfg)$/;"	f	file:	signature:(struct lldpd *cfg)
 netlink_merge	daemon/netlink.c	/^netlink_merge(struct interfaces_device *old, struct interfaces_device *new)$/;"	f	signature:(struct interfaces_device *old, struct interfaces_device *new)
 netlink_parse_address	daemon/netlink.c	/^netlink_parse_address(struct nlmsghdr *msg,$/;"	f	file:	signature:(struct nlmsghdr *msg, struct interfaces_address *ifa)
 netlink_parse_link	daemon/netlink.c	/^netlink_parse_link(struct nlmsghdr *msg,$/;"	f	file:	signature:(struct nlmsghdr *msg, struct interfaces_device *iff)
@@ -2412,8 +2412,8 @@ netlink_recv	daemon/netlink.c	/^netlink_recv(int s,$/;"	f	file:	signature:(int s
 netlink_req	daemon/netlink.c	/^struct netlink_req {$/;"	s	file:
 netlink_req::gen	daemon/netlink.c	/^	struct rtgenmsg gen;$/;"	m	struct:netlink_req	typeref:struct:netlink_req::rtgenmsg	file:	access:public
 netlink_req::hdr	daemon/netlink.c	/^	struct nlmsghdr hdr;$/;"	m	struct:netlink_req	typeref:struct:netlink_req::nlmsghdr	file:	access:public
-netlink_send	daemon/netlink.c	/^netlink_send(int s, int type, int family, int seq)$/;"	f	file:	signature:(int s, int type, int family, int seq)
-netlink_subscribe_changes	daemon/netlink.c	/^netlink_subscribe_changes()$/;"	f
+netlink_send	daemon/netlink.c	/^static int netlink_send(int s, int type, int family, int seq)$/;"	f	file:	signature:(int s, int type, int family, int seq)
+netlink_subscribe_changes	daemon/netlink.c	/^int netlink_subscribe_changes()$/;"	f
 netsnmp_large_fd_set	daemon/event.c	67;"	d	file:
 netsnmp_large_fd_set_cleanup	daemon/event.c	71;"	d	file:
 netsnmp_large_fd_set_init	daemon/event.c	70;"	d	file:
@@ -2650,7 +2650,7 @@ send	daemon/lldpd.h	/^	int(*send)(PROTO_SEND_SIG);	\/* How to send a frame *\/$/
 send	lib/atom.h	/^	lldpctl_send_callback send; \/* 发送回调函数*\/$/;"	m	struct:lldpctl_conn_t	access:public
 send	lldpd-structs.h	/^	int(*send)(struct lldpd *,$/;"	m	struct:lldpd_ops	access:public
 send_fd	daemon/lldpd.h	/^void	 send_fd(enum priv_context, int);$/;"	p	signature:(enum priv_context, int)
-send_fd	daemon/privsep_io.c	/^send_fd(enum priv_context ctx, int fd)$/;"	f	signature:(enum priv_context ctx, int fd)
+send_fd	daemon/privsep_io.c	/^void send_fd(enum priv_context ctx, int fd)$/;"	f	signature:(enum priv_context ctx, int fd)
 sep	client/text_writer.c	/^static char sep[] = "-------------------------------------------------------------------------------";$/;"	v	file:
 seq	daemon/protocols/edp.c	/^static int seq = 0;$/;"	v	file:
 set	lib/atom.h	/^	lldpctl_atom_t *(*set)(lldpctl_atom_t *, lldpctl_key_t, lldpctl_atom_t *);$/;"	m	struct:lldpctl_atom_t	access:public

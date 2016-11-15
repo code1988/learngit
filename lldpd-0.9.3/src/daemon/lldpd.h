@@ -302,6 +302,7 @@ void     interfaces_update(struct lldpd *);
 #define IFACE_BOND_T     (1 << 2) /* Bond interface */
 #define IFACE_VLAN_T     (1 << 3) /* VLAN interface */
 #define IFACE_WIRELESS_T (1 << 4) /* Wireless interface */
+// 定义接口设备的尾队列元素
 struct interfaces_device {
 	TAILQ_ENTRY(interfaces_device) next;
 	int   ignore;		/* Ignore this interface */
@@ -323,6 +324,7 @@ struct interfaces_device {
 	int upper_idx;		/* Index to upper interface */
 #endif
 };
+// 定义接口地址的尾队列元素
 struct interfaces_address {
 	TAILQ_ENTRY(interfaces_address) next;
 	int index;			 /* Index */
@@ -332,8 +334,11 @@ struct interfaces_address {
 	/* The following are OS specific. */
 	/* Nothing yet. */
 };
+// 定义接口设备的的尾队列头
 TAILQ_HEAD(interfaces_device_list,  interfaces_device);
+// 定义接口地址的尾队列头
 TAILQ_HEAD(interfaces_address_list, interfaces_address);
+
 void interfaces_free_device(struct interfaces_device *);
 void interfaces_free_address(struct interfaces_address *);
 void interfaces_free_devices(struct interfaces_device_list *);
@@ -390,27 +395,27 @@ int pattern_match(char *, char *, int);
 
 // lldpd的总控制块
 struct lldpd {
-	int			 g_sock;
-	struct event_base	*g_base;
+	int			 g_sock;                // 记录ioctl fd
+	struct event_base	*g_base;        // 指向一个默认的event_base
 #ifdef USE_SNMP
 #endif
 
-	struct lldpd_config	 g_config;
+	struct lldpd_config	 g_config;      // lldp参数配置控制块
 
-	struct protocol		*g_protocols;
+	struct protocol		*g_protocols;   // 指向lldp细分协议列表
 	int			 g_lastrid;
-	struct event		*g_main_loop;
+	struct event		*g_main_loop;   // 指向主循环事件
 	struct event		*g_cleanup_timer;
 #ifdef USE_SNMP
-	int			 g_snmp;
-	struct event		*g_snmp_timeout;
-	void			*g_snmp_fds;
-	const char		*g_snmp_agentx;
+	int			 g_snmp;                // snmp使能标志
+	struct event		*g_snmp_timeout;// 指向snmp超时事件
+	void			*g_snmp_fds;        // 指向snmp-fds尾队列头
+	const char		*g_snmp_agentx;     // snmp本地服务器地址 /var/agentX/master
 #endif /* USE_SNMP */
 
 	/* Unix socket handling */
-	const char		*g_ctlname;
-	int			 g_ctl;
+	const char		*g_ctlname;         // lldpd cli 本地服务器地址 /var/run/lldpd.socket
+	int			 g_ctl;                 // 记录lldpd cli unix-dimain fd
 	struct event		*g_iface_event; /* Triggered when there is an interface change */
 	struct event		*g_iface_timer_event; /* Triggered one second after last interface change */
 	void(*g_iface_cb)(struct lldpd *);	      /* Called when there is an interface change */
@@ -418,12 +423,12 @@ struct lldpd {
 	char			*g_lsb_release;
 
 #ifdef HOST_OS_LINUX
-	struct lldpd_netlink	*g_netlink;
+	struct lldpd_netlink	*g_netlink; // netlink控制块
 #endif
 
-	struct lldpd_port	*g_default_local_port;
+	struct lldpd_port	*g_default_local_port;  // 指向一个缺省的端口控制块尾队列元素
 #define LOCAL_CHASSIS(cfg) ((struct lldpd_chassis *)(TAILQ_FIRST(&cfg->g_chassis)))
-	TAILQ_HEAD(, lldpd_chassis) g_chassis;
+	TAILQ_HEAD(, lldpd_chassis) g_chassis;      // 保存系统功能的尾队列头
 	TAILQ_HEAD(, lldpd_hardware) g_hardware;
 };
 

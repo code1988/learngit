@@ -167,6 +167,7 @@ MARSHAL_BEGIN(lldpd_mgmt)
 MARSHAL_TQE(lldpd_mgmt, m_entries)
 MARSHAL_END(lldpd_mgmt);
 
+// 定义了一个lldpd的底盘尾队列元素
 struct lldpd_chassis {
 	TAILQ_ENTRY(lldpd_chassis) c_entries;
 	u_int16_t		 c_refcount; /* Reference count by ports */
@@ -372,6 +373,7 @@ MARSHAL_END(lldpd_port_set);
 			SMART_OUTGOING_ONE_PROTO |	\
 			SMART_OUTGOING_ONE_NEIGH)
 
+// lldpd参数控制块
 struct lldpd_config {
 	int c_paused;	        /* lldpd is paused */
 	int c_tx_interval;	/* Transmit interval */

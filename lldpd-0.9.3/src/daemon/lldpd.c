@@ -41,6 +41,7 @@
 
 static void		 usage(void);
 
+// lldp细分协议列表
 static struct protocol protos[] =
 {
 	{ LLDPD_MODE_LLDP, 1, "LLDP", 'l', lldp_send, lldp_decode, NULL,
@@ -309,8 +310,7 @@ lldpd_display_neighbors(struct lldpd *cfg)
 	}
 }
 
-static void
-lldpd_count_neighbors(struct lldpd *cfg)
+static void lldpd_count_neighbors(struct lldpd *cfg)
 {
 #if HAVE_SETPROCTITLE
 	struct lldpd_chassis *chassis;
@@ -395,8 +395,8 @@ lldpd_reset_timer(struct lldpd *cfg)
 	}
 }
 
-static void
-lldpd_all_chassis_cleanup(struct lldpd *cfg)
+// 对所有的底盘信息做一次清空
+static void lldpd_all_chassis_cleanup(struct lldpd *cfg)
 {
 	struct lldpd_chassis *chassis, *chassis_next;
 	log_debug("localchassis", "cleanup all chassis");
@@ -411,15 +411,16 @@ lldpd_all_chassis_cleanup(struct lldpd *cfg)
 	}
 }
 
-void
-lldpd_cleanup(struct lldpd *cfg)
+// 对所有接口上记录的设备信息(包括本地和对端)做一遍清空操作
+void lldpd_cleanup(struct lldpd *cfg)
 {
 	struct lldpd_hardware *hardware, *hardware_next;
 
 	log_debug("localchassis", "cleanup all ports");
 
 	for (hardware = TAILQ_FIRST(&cfg->g_hardware); hardware != NULL;
-	     hardware = hardware_next) {
+	     hardware = hardware_next) 
+    {
 		hardware_next = TAILQ_NEXT(hardware, h_entries);
 		if (!hardware->h_flags) {
 			TRACE(LLDPD_INTERFACES_DELETE(hardware->h_ifname));
@@ -432,7 +433,9 @@ lldpd_cleanup(struct lldpd *cfg)
 		}
 	}
 
+    // 设置下一次清空操作
 	levent_schedule_cleanup(cfg);
+    // 对所有底盘信息做一次清空
 	lldpd_all_chassis_cleanup(cfg);
 	lldpd_count_neighbors(cfg);
 }
@@ -1088,8 +1091,8 @@ lldpd_routing_enabled(struct lldpd *cfg)
 	return routing;
 }
 
-static void
-lldpd_update_localchassis(struct lldpd *cfg)
+// 刷新本地底盘信息
+static void lldpd_update_localchassis(struct lldpd *cfg)
 {
 	struct utsname un;
 	char *hp;
@@ -1168,8 +1171,8 @@ lldpd_update_localchassis(struct lldpd *cfg)
 	}
 }
 
-void
-lldpd_update_localports(struct lldpd *cfg)
+// 刷新本地端口信息
+void lldpd_update_localports(struct lldpd *cfg)
 {
 	struct lldpd_hardware *hardware;
 
@@ -1182,13 +1185,15 @@ lldpd_update_localports(struct lldpd *cfg)
 	    hardware->h_flags = 0;
 
 	TRACE(LLDPD_INTERFACES_UPDATE());
+    // 刷新接口信息
 	interfaces_update(cfg);
+    // 对所有接口上记录的信息做一次清空
 	lldpd_cleanup(cfg);
+    // 复位定时器
 	lldpd_reset_timer(cfg);
 }
 
-void
-lldpd_loop(struct lldpd *cfg)
+void lldpd_loop(struct lldpd *cfg)
 {
 	/* Main loop.
 	   1. Update local ports information
@@ -1783,6 +1788,7 @@ lldpd_main(int argc, char *argv[], char *envp[])
 		fatal("main", "failed to get ioctl socket");
 
 	/* Description */
+    // 设置系统描述
 	if (!(cfg->g_config.c_advertise_version = advertise_version) &&
 	    lsb_release && lsb_release[strlen(lsb_release) - 1] == '\n')
 		lsb_release[strlen(lsb_release) - 1] = '\0';
@@ -1794,7 +1800,9 @@ lldpd_main(int argc, char *argv[], char *envp[])
 		cfg->g_config.c_platform = platform_override;
 
 	/* Set system capabilities */
+    // 设置系统的主要功能
 	log_debug("main", "set system capabilities");
+    // 首先申请一个lldpd底盘尾队列元素,底盘用于保存系统具有的一些能力以及TTL
 	if ((lchassis = (struct lldpd_chassis*)
 		calloc(1, sizeof(struct lldpd_chassis))) == NULL)
 		fatal("localchassis", NULL);
@@ -1821,7 +1829,8 @@ lldpd_main(int argc, char *argv[], char *envp[])
 
 	log_debug("main", "initialize protocols");
 	cfg->g_protocols = protos;
-	for (i=0; protos[i].mode != 0; i++) {
+	for (i=0; protos[i].mode != 0; i++) 
+    {
 
 		/* With -ll, disable LLDP */
 		if (protos[i].mode == LLDPD_MODE_LLDP)
@@ -1851,14 +1860,16 @@ lldpd_main(int argc, char *argv[], char *envp[])
 			log_info("main", "protocol %s enabled", protos[i].name);
 		else
 			log_info("main", "protocol %s disabled", protos[i].name);
-	    }
+	}
 
+    // 初始化g_hardware、g_chassis尾队列头,将设置好的底盘元素插入g_chassis
 	TAILQ_INIT(&cfg->g_hardware);
 	TAILQ_INIT(&cfg->g_chassis);
 	TAILQ_INSERT_TAIL(&cfg->g_chassis, lchassis, c_entries);
 	lchassis->c_refcount++; /* We should always keep a reference to local chassis */
 
 	/* Main loop */
+    // 子进程在这里准备进入主循环
 	log_debug("main", "start main loop");
 	levent_loop(cfg);
 	lchassis->c_refcount--;
