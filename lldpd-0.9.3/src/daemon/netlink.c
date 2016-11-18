@@ -388,7 +388,8 @@ netlink_recv(int s,
 		return -1;
 	}
 
-	while (!end) {
+	while (!end) 
+    {
 		ssize_t len;
 		struct nlmsghdr *msg;
 		struct sockaddr_nl peer = { .nl_family = AF_NETLINK };
@@ -443,114 +444,124 @@ retry:
 
 		for (msg = (struct nlmsghdr*)(void*)(iov.iov_base);
 		     NLMSG_OK(msg, len);
-		     msg = NLMSG_NEXT(msg, len)) {
+		     msg = NLMSG_NEXT(msg, len)) 
+        {
 			if (!(msg->nlmsg_flags & NLM_F_MULTI))
 				end = 1;
-			switch (msg->nlmsg_type) {
-			case NLMSG_DONE:
-				log_debug("netlink", "received done message");
-				end = 1;
-				break;
-			case RTM_NEWLINK:
-			case RTM_DELLINK:
-				if (!ifs) break;
-				log_debug("netlink", "received link information");
-				ifdnew = calloc(1, sizeof(struct interfaces_device));
-				if (ifdnew == NULL) {
-					log_warn("netlink", "not enough memory for another interface, give up what we have");
-					goto end;
-				}
-				if (netlink_parse_link(msg, ifdnew) == 0) {
-					/* We need to find if we already have this interface */
-					TAILQ_FOREACH(ifdold, ifs, next) {
-						if (ifdold->index == ifdnew->index) break;
-					}
-					if (msg->nlmsg_type == RTM_NEWLINK) {
-						if (ifdold == NULL) {
-							log_debug("netlink", "interface %s is new",
-							    ifdnew->name);
-							TAILQ_INSERT_TAIL(ifs, ifdnew, next);
-						} else {
-							log_debug("netlink", "interface %s/%s is updated",
-							    ifdold->name, ifdnew->name);
-							netlink_merge(ifdold, ifdnew);
-							TAILQ_INSERT_AFTER(ifs, ifdold, ifdnew, next);
-							TAILQ_REMOVE(ifs, ifdold, next);
-							interfaces_free_device(ifdold);
-						}
-					} else {
-						if (ifdold == NULL) {
-							log_warnx("netlink",
-							    "removal request for %s, but no knowledge of it",
-								ifdnew->name);
-						} else {
-							log_debug("netlink", "interface %s is to be removed",
-							    ifdold->name);
-							TAILQ_REMOVE(ifs, ifdold, next);
-							interfaces_free_device(ifdold);
-						}
-						interfaces_free_device(ifdnew);
-					}
-					link_update = 1;
-				} else {
-					interfaces_free_device(ifdnew);
-				}
-				break;
-			case RTM_NEWADDR:
-			case RTM_DELADDR:
-				if (!ifas) break;
-				log_debug("netlink", "received address information");
-				ifanew = calloc(1, sizeof(struct interfaces_address));
-				if (ifanew == NULL) {
-					log_warn("netlink", "not enough memory for another address, give what we have");
-					goto end;
-				}
-				if (netlink_parse_address(msg, ifanew) == 0) {
-					TAILQ_FOREACH(ifaold, ifas, next) {
-						if ((ifaold->index == ifanew->index) &&
-						    !memcmp(&ifaold->address, &ifanew->address,
-							sizeof(ifaold->address))) continue;
-					}
-					if (getnameinfo((struct sockaddr *)&ifanew->address,
-						sizeof(ifanew->address),
-						addr, sizeof(addr),
-						NULL, 0, NI_NUMERICHOST) != 0) {
-						strlcpy(addr, "(unknown)", sizeof(addr));
-					}
+			switch (msg->nlmsg_type) 
+            {
+                case NLMSG_DONE:
+                    log_debug("netlink", "received done message");
+                    end = 1;
+                    break;
+                case RTM_NEWLINK:
+                case RTM_DELLINK:
+                    if (!ifs) break;
+                    log_debug("netlink", "received link information");
+                    ifdnew = calloc(1, sizeof(struct interfaces_device));
+                    if (ifdnew == NULL) {
+                        log_warn("netlink", "not enough memory for another interface, give up what we have");
+                        goto end;
+                    }
+                    if (netlink_parse_link(msg, ifdnew) == 0) 
+                    {
+                        /* We need to find if we already have this interface */
+                        TAILQ_FOREACH(ifdold, ifs, next) 
+                        {
+                            if (ifdold->index == ifdnew->index) break;
+                        }
+                        if (msg->nlmsg_type == RTM_NEWLINK) 
+                        {
+                            if (ifdold == NULL) {
+                                log_debug("netlink", "interface %s is new",
+                                    ifdnew->name);
+                                TAILQ_INSERT_TAIL(ifs, ifdnew, next);
+                            } 
+                            else 
+                            {
+                                log_debug("netlink", "interface %s/%s is updated",
+                                    ifdold->name, ifdnew->name);
+                                netlink_merge(ifdold, ifdnew);
+                                TAILQ_INSERT_AFTER(ifs, ifdold, ifdnew, next);
+                                TAILQ_REMOVE(ifs, ifdold, next);
+                                interfaces_free_device(ifdold);
+                            }
+                        } 
+                        else 
+                        {
+                            if (ifdold == NULL) {
+                                log_warnx("netlink",
+                                    "removal request for %s, but no knowledge of it",
+                                    ifdnew->name);
+                            } else {
+                                log_debug("netlink", "interface %s is to be removed",
+                                    ifdold->name);
+                                TAILQ_REMOVE(ifs, ifdold, next);
+                                interfaces_free_device(ifdold);
+                            }
+                            interfaces_free_device(ifdnew);
+                        }
+                        link_update = 1;
+                    } 
+                    else {
+                        interfaces_free_device(ifdnew);
+                    }
+                    break;
+                case RTM_NEWADDR:
+                case RTM_DELADDR:
+                    if (!ifas) break;
+                    log_debug("netlink", "received address information");
+                    ifanew = calloc(1, sizeof(struct interfaces_address));
+                    if (ifanew == NULL) {
+                        log_warn("netlink", "not enough memory for another address, give what we have");
+                        goto end;
+                    }
+                    if (netlink_parse_address(msg, ifanew) == 0) {
+                        TAILQ_FOREACH(ifaold, ifas, next) {
+                            if ((ifaold->index == ifanew->index) &&
+                                !memcmp(&ifaold->address, &ifanew->address,
+                                sizeof(ifaold->address))) continue;
+                        }
+                        if (getnameinfo((struct sockaddr *)&ifanew->address,
+                            sizeof(ifanew->address),
+                            addr, sizeof(addr),
+                            NULL, 0, NI_NUMERICHOST) != 0) {
+                            strlcpy(addr, "(unknown)", sizeof(addr));
+                        }
 
-					if (msg->nlmsg_type == RTM_NEWADDR) {
-						if (ifaold == NULL) {
-							log_debug("netlink", "new address %s%%%d",
-							    addr, ifanew->index);
-							TAILQ_INSERT_TAIL(ifas, ifanew, next);
-						} else {
-							log_debug("netlink", "updated address %s%%%d",
-							    addr, ifaold->index);
-							TAILQ_INSERT_AFTER(ifas, ifaold, ifanew, next);
-							TAILQ_REMOVE(ifas, ifaold, next);
-							interfaces_free_address(ifaold);
-						}
-					} else {
-						if (ifaold == NULL) {
-							log_info("netlink",
-							    "removal request for address of %s%%%d, but no knowledge of it",
-							    addr, ifanew->index);
-						} else {
-							log_debug("netlink", "address %s%%%d is to be removed",
-							    addr, ifaold->index);
-							TAILQ_REMOVE(ifas, ifaold, next);
-							interfaces_free_address(ifaold);
-						}
-						interfaces_free_address(ifanew);
-					}
-				} else {
-					interfaces_free_address(ifanew);
-				}
-				break;
-			default:
-				log_debug("netlink",
-				    "received unhandled message type %d (len: %d)",
-				    msg->nlmsg_type, msg->nlmsg_len);
+                        if (msg->nlmsg_type == RTM_NEWADDR) {
+                            if (ifaold == NULL) {
+                                log_debug("netlink", "new address %s%%%d",
+                                    addr, ifanew->index);
+                                TAILQ_INSERT_TAIL(ifas, ifanew, next);
+                            } else {
+                                log_debug("netlink", "updated address %s%%%d",
+                                    addr, ifaold->index);
+                                TAILQ_INSERT_AFTER(ifas, ifaold, ifanew, next);
+                                TAILQ_REMOVE(ifas, ifaold, next);
+                                interfaces_free_address(ifaold);
+                            }
+                        } else {
+                            if (ifaold == NULL) {
+                                log_info("netlink",
+                                    "removal request for address of %s%%%d, but no knowledge of it",
+                                    addr, ifanew->index);
+                            } else {
+                                log_debug("netlink", "address %s%%%d is to be removed",
+                                    addr, ifaold->index);
+                                TAILQ_REMOVE(ifas, ifaold, next);
+                                interfaces_free_address(ifaold);
+                            }
+                            interfaces_free_address(ifanew);
+                        }
+                    } else {
+                        interfaces_free_address(ifanew);
+                    }
+                    break;
+                default:
+                    log_debug("netlink",
+                        "received unhandled message type %d (len: %d)",
+                        msg->nlmsg_type, msg->nlmsg_len);
 			}
 		}
 		flags = MSG_PEEK | MSG_TRUNC;

@@ -369,8 +369,7 @@ levent_ctl_event(struct bufferevent *bev, short events, void *ptr)
 	}
 }
 
-static void
-levent_ctl_accept(evutil_socket_t fd, short what, void *arg)
+static void levent_ctl_accept(evutil_socket_t fd, short what, void *arg)
 {
 	struct lldpd *cfg = arg;
 	struct lldpd_one_client *client = NULL;
@@ -690,7 +689,10 @@ levent_iface_recv(evutil_socket_t fd, short what, void *arg)
 	char buffer[EVENT_BUFFER];
 	int n;
 
-	if (cfg->g_iface_cb == NULL) {
+    // 判断接口变化回调函数是否已经注册
+	if (cfg->g_iface_cb == NULL) 
+    {
+        // 没有注册则丢弃消息
 		/* Discard the message */
 		while (1) {
 			n = read(fd, buffer, sizeof(buffer));
@@ -708,7 +710,10 @@ levent_iface_recv(evutil_socket_t fd, short what, void *arg)
 				return;
 			}
 		}
-	} else {
+	} 
+    else 
+    {
+        // 已经注册了的执行回调函数
 		cfg->g_iface_cb(cfg);
 	}
 

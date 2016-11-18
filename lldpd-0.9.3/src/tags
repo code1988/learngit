@@ -1682,7 +1682,7 @@ len	daemon/interfaces-bpf.c	/^	size_t len;		\/* Total length of the buffer *\/$/
 len	lib/atom.h	/^	size_t   len;$/;"	m	struct:_lldpctl_atom_med_caelement_t	access:public
 length	daemon/agent.c	/^	size_t          *length; \/* Length of above OID *\/$/;"	m	struct:header_index	file:	access:public
 level	client/text_writer.c	/^	int	level;$/;"	m	struct:txt_writer_private	file:	access:public
-levent_ctl_accept	daemon/event.c	/^levent_ctl_accept(evutil_socket_t fd, short what, void *arg)$/;"	f	file:	signature:(evutil_socket_t fd, short what, void *arg)
+levent_ctl_accept	daemon/event.c	/^static void levent_ctl_accept(evutil_socket_t fd, short what, void *arg)$/;"	f	file:	signature:(evutil_socket_t fd, short what, void *arg)
 levent_ctl_event	daemon/event.c	/^levent_ctl_event(struct bufferevent *bev, short events, void *ptr)$/;"	f	file:	signature:(struct bufferevent *bev, short events, void *ptr)
 levent_ctl_free_client	daemon/event.c	/^levent_ctl_free_client(struct lldpd_one_client *client)$/;"	f	file:	signature:(struct lldpd_one_client *client)
 levent_ctl_notify	daemon/event.c	/^levent_ctl_notify(char *ifname, int state, struct lldpd_port *neighbor)$/;"	f	signature:(char *ifname, int state, struct lldpd_port *neighbor)
