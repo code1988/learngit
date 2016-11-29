@@ -121,18 +121,16 @@ struct set_ring_config_OUT {
 /*******************************************************************/
 /* Get ring state */
 #define CMD_CODE_get_ring_state   108
-#define get_ring_state_ARGS       (int ring_id, RPP_RING_STATE_T *ring_state, RPP_PORT_STATE_T *primary_port_state, RPP_PORT_STATE_T *secondary_port_state)
+#define get_ring_state_ARGS       (int ring_id, RPP_RING_STATE_T *ring_state)
 #define get_ring_state_COPY_IN    ({ in->ring_id = ring_id; })
-#define get_ring_state_COPY_OUT   ({ *ring_state = out->ring_state; *primary_port_state = out->primary_port_state; *secondary_port_state = out->secondary_port_state; })
-#define get_ring_state_CALL       (in->ring_id, &out->ring_state, &out->primary_port_state, &out->secondary_port_state)
+#define get_ring_state_COPY_OUT   ({ *ring_state = out->ring_state; })
+#define get_ring_state_CALL       (in->ring_id, &out->ring_state)
 struct get_ring_state_IN {
 	int ring_id;
 };
 struct get_ring_state_OUT {
 	RPP_RING_CFG_T ring_cfg;
 	RPP_RING_STATE_T ring_state;
-	RPP_PORT_STATE_T primary_port_state;
-	RPP_PORT_STATE_T secondary_port_state;
 };
 
 /*******************************************************************/
@@ -148,6 +146,29 @@ struct set_debug_level_IN {
 struct set_debug_level_OUT {
 };
 
+/*  Get ring topo */
+#define CMD_CODE_get_ring_topo  110
+#define get_ring_topo_ARGS      (int ring_id, RPP_RING_TOPO_T *ring_topo)
+#define get_ring_topo_COPY_IN   ({ in->ring_id = ring_id; })
+#define get_ring_topo_COPY_OUT  ({ *ring_topo = out->ring_topo; })
+#define get_ring_topo_CALL      (in->ring_id, &out->ring_topo)
+struct get_ring_topo_IN {
+    int ring_id;
+};
+struct get_ring_topo_OUT {
+    RPP_RING_TOPO_T ring_topo;
+};
+
+/*  update ports link status */
+#define CMD_CODE_update_ports      111
+#define update_ports_ARGS          (void)
+#define update_ports_COPY_IN       ({ (void)0; })
+#define update_ports_COPY_OUT      ({ (void)0; })
+#define update_ports_CALL          ()
+struct update_ports_IN {
+};
+struct update_ports_OUT {
+};
 
 /***********************************************************************************
  ***********************************************************************************/

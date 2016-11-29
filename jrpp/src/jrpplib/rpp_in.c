@@ -15,9 +15,9 @@ int RPP_IN_port_link_check(rppRing_t *this,int lport,int link_status)
 
     if(link_status ^ port->link_st)
     {
-        RPP_port_link_change(port,link_status);
+        port_link_change(port,link_status);
         
-        RPP_ring_update (this);
+        ring_update (this);
     }
 
     return 0;
@@ -44,10 +44,11 @@ int RPP_IN_ring_create (rppRing_t *this)
 {
     RPP_CRITICAL_START;  
 
-    this->status            = RPP_FAULT;
-    this->node_role         = NODE_TYPE_NNKNOWN;
-    this->fail_timer.cb     = fail_timer_handler;
-    this->hello_timer.cb    = hello_timer_handler;
+    this->status                = RPP_FAULT;
+    this->node_role             = NODE_TYPE_TRANSIT;
+    this->fail_timer.cb         = fail_timer_handler;
+    this->hello_timer.cb        = hello_timer_handler;
+    this->cmd_req.cmd_timer.cb  = cmd_timer_handler;
 
     RPP_STATE_MACH_IN_LIST(node);
 
@@ -72,9 +73,8 @@ int RPP_IN_ring_enable (rppRing_t *this)
 {
 	RPP_CRITICAL_START;  
     
-    RPP_OUT_led_set(1);
-    RPP_ring_start(this);   
-	RPP_ring_update(this);
+    ring_start(this);   
+	ring_update(this);
  
     if(RPP_OUT_link_req())
     {
@@ -87,7 +87,7 @@ int RPP_IN_ring_enable (rppRing_t *this)
 	return 0;
 }
 
-int RPP_IN_ring_disable (rppRing_t *this)
+int RPP_IN_ring_disable (rppRing_t *this,eMsgNodeDownType type)
 {
 	RPP_CRITICAL_START;  
 
@@ -97,8 +97,8 @@ int RPP_IN_ring_disable (rppRing_t *this)
         return -1;
     }
 
-    RPP_ring_stop(this);
-	RPP_ring_update(this);
+    ring_stop(this,type);
+	ring_update(this);
     
 	RPP_CRITICAL_END;
 
@@ -126,6 +126,7 @@ int RPP_IN_port_create(rppRing_t *ring,int p_port,int s_port)
     RPP_STATE_MACH_IN_LIST(ballot);
     RPP_STATE_MACH_IN_LIST(transmit);
     this->owner             = ring;
+    this->peer              = this + 1;
     this->port_role         = PRIMARY_PORT;
     this->auth_timer.cb     = auth_timer_handler;
     this->ballot_timer.cb   = ballot_timer_handler;
@@ -139,6 +140,7 @@ int RPP_IN_port_create(rppRing_t *ring,int p_port,int s_port)
     RPP_STATE_MACH_IN_LIST(ballot);
     RPP_STATE_MACH_IN_LIST(transmit);
     this->owner             = ring;
+    this->peer              = this - 1;
     this->port_role         = SECONDARY_PORT;
     this->auth_timer.cb     = auth_timer_handler;
     this->ballot_timer.cb   = ballot_timer_handler;
@@ -180,26 +182,50 @@ int RPP_IN_port_get_cfg (int ring_id, int port_index, RPP_PORT_CFG_T* port_cfg)
 
 int RPP_IN_ring_get_state(rppRing_t *ring,RPP_RING_STATE_T *state)
 {
+    state->rpp_mode     = ring->rpp_mode;
     state->node_role    = ring->node_role;
     state->ring_status  = ring->status;
+    state->hello_seq    = ring->hello_syn;
     memcpy(&state->master_id,&ring->master_id,sizeof(NODE_ID_T));
     strcpy(state->m_node_st,RPP_machine_get_state(node,ring->node));
 
-    RPP_port_get_state(ring->primary,&state->primary);
-    RPP_port_get_state(ring->secondary,&state->secondary);
+    if(ring->primary != NULL)
+        port_get_state(ring->primary,&state->primary);
+    if(ring->secondary != NULL)
+        port_get_state(ring->secondary,&state->secondary);
 
+    return 0;
+}
+
+int RPP_IN_ring_get_topo(rppRing_t *ring,char *un,int fd)
+{
+    ring_get_topo(ring,un,fd);
+    ring_update (ring);
     return 0;
 }
 
 int RPP_IN_check_pdu_header (RPP_PDU_T* pdu, size_t len)
 {
-	return 0;
-}
+    if(len < sizeof(RPP_HEADER_T))
+	    return -1;
 
+    if(pdu->hdr.pid[0] != 0x00 || pdu->hdr.pid[1] != 0xbb)
+    {
+        LOG_ERROR("rpp header error");
+        return -1;
+    }
 
-int RPP_IN_enable_port (int port_index, Bool enable)
-{
-	return 0;
+    if(len >= 36 && len <= 54)
+    {
+        LOG_ERROR("ring#%d message type = %d packet has error",ntohs(*(unsigned short *)pdu->body.ring_id),pdu->body.type);
+        if(pdu->body.type == PACKET_HELLO)
+        {
+            LOG_ERROR("hello seq = %d will be abandon",ntohs(*(unsigned short *)pdu->body.hello_seq));
+        }
+        return -1;
+    }
+
+    return -1;
 }
 
 int RPP_IN_rx_pdu (rppRing_t *this, int port_index, RPP_PDU_T *pdu)
@@ -207,12 +233,15 @@ int RPP_IN_rx_pdu (rppRing_t *this, int port_index, RPP_PDU_T *pdu)
     rppPort_t *port = port_get_owner(this,port_index);
 
     if(port->link_st != LINK_UP)
+    {
+        LOG_ERROR("port %d is in link-down status");
         return -1;
+    }
     
-    if(RPP_port_rx_pdu(port,pdu))
-        return -2;
+    if(port_rx_pdu(port,pdu))
+        return -1;
 
-	RPP_ring_update(this);
+	ring_update(this);
 	return 0;
 }
 

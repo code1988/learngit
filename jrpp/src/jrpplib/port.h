@@ -6,22 +6,30 @@
 
 #include "statmch.h"
 
-#define F_MASK      0xFF
+#define F_MASK      0xFFFF
 
-#define F_TX_AUTH_REQ       0x01    
-#define F_TX_AUTH_TACK      0x02    
-#define F_TX_BALLOT_ITTV    0x04    
-#define F_TX_BALLOT_PSSV    0x08    
-#define F_TX_FORWARDING     0x10     
-#define F_TX_HELLO          0x20 
-#define F_TX_COMPLETE       0x40 
-#define F_TX_REPORT         0x80 
+#define F_TX_AUTH_REQ       0x0001    
+#define F_TX_AUTH_TACK      0x0002    
+#define F_TX_BLT_ITTV_MINUS 0x0004    
+#define F_TX_BLT_ITTV_PLUS  0x0008
+#define F_TX_BALLOT_PSSV    0x0010    
+#define F_TX_FORWARDING     0x0020     
+#define F_TX_HELLO          0x0040 
+#define F_TX_COMPLETE       0x0080 
+#define F_TX_REPORT         0x0100 
+#define F_TX_NODEDOWN       0x0200 
+#define F_TX_CMD            0x0400 
 
 typedef struct {
-    unsigned char f_auth;       // flag for auth machine
-    unsigned char f_ballot;     // flag for ballot machine
-    unsigned char f_tx;         // flag for transmit machine
-    void *opt;                  // optional parameter used for deliver data
+    unsigned char   f_auth;       // flag for auth machine
+    unsigned char   f_ballot;     // flag for ballot machine
+    unsigned short  f_tx;         // flag for transmit machine
+    union {
+        tRMsgReport down;
+        tRMsgComplete complete; 
+        tRMsgNodeDown ndown;
+        tRMsgCmd        cmd;
+    };
 }mach_flag_t;
 
 typedef struct rppPort{
@@ -37,6 +45,7 @@ typedef struct rppPort{
     struct uloop_timeout auth_timer;
     struct uloop_timeout ballot_timer;
 
+    unsigned char endpoint[MAC_LEN];
     unsigned char neighber_vaild;
     unsigned char neighber_mac[MAC_LEN];
     unsigned char neighber_port;
@@ -46,24 +55,32 @@ typedef struct rppPort{
     STATE_MACH_T *transmit;     
     STATE_MACH_T *machines;
     
-    struct rppRing *owner;     
+    struct rppRing  *owner;     
+    struct rppPort  *peer;
 }rppPort_t;
 
-int RPP_port_get_state(rppPort_t *,RPP_PORT_STATE_T *);
-int RPP_port_rx_pdu (rppPort_t *, RPP_PDU_T *);
-void RPP_port_link_change(rppPort_t *,ePortLinkState);
-int RPP_port_start(rppPort_t *);
-int RPP_port_stop(rppPort_t *);
+int port_get_state(rppPort_t *,RPP_PORT_STATE_T *);
+int port_rx_pdu (rppPort_t *, RPP_PDU_T *);
+void port_link_change(rppPort_t *,ePortLinkState);
+int port_start(rppPort_t *);
+int port_stop(rppPort_t *);
 rppPort_t *port_get_peer(rppPort_t *);
 rppPort_t *port_get_owner(struct rppRing *,unsigned char);
 NODE_ID_T *port_min_id(NODE_ID_T *,NODE_ID_T *);
-void port_forwarding_bydir(rppPort_t *, RPP_PDU_T *,NODE_ID_T *);
-void port_ballot_fwd(rppPort_t *, RPP_PDU_T *);
+void port_fwd(rppPort_t *, RPP_PDU_T *);
 int port_set_stp(rppPort_t *,ePortStpState);
 
-#ifdef RPP_DBG
-int RPP_port_trace_state_machine (PORT_T* this, char* mach_name, int enadis, int ring_id);
-#endif
+static inline void port_reset(rppPort_t *port)
+{
+    memset(&port->ballot_id,0,sizeof(BALLOT_ID_T));
+    memset(&port->flag,0,sizeof(mach_flag_t));
+    port->auth_count        = 0;
+    port->neighber_vaild    = 0;
+}
 
+static inline Bool timer_get_status(struct uloop_timeout *timer)
+{
+    return timer->pending;
+}
 #endif
 

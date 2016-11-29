@@ -13,9 +13,9 @@
 #include "ctl_socket.h"
 #include "ctl_server.h"
 
-#define msg_buf_len 1024
-unsigned char msg_inbuf[1024];
-unsigned char msg_outbuf[1024];
+#define msg_buf_len 4096
+unsigned char msg_inbuf[4096];
+unsigned char msg_outbuf[4096];
 struct epoll_event_handler ctl_handler;
 
 int ctl_handle_message(int cmd, void *inbuf, int lin, void *outbuf, int *lout)
@@ -30,7 +30,11 @@ int ctl_handle_message(int cmd, void *inbuf, int lin, void *outbuf, int *lout)
 		SERVER_MESSAGE_CASE(set_ring_config);
 		SERVER_MESSAGE_CASE(get_ring_state);
 		SERVER_MESSAGE_CASE(set_debug_level);
+		//SERVER_MESSAGE_CASE(get_ring_topo);
+		SERVER_MESSAGE_CASE(update_ports);
 
+    case CMD_CODE_get_ring_topo:
+        return 0;
 	default:
 		LOG_ERROR("CTL: Unknown command %d", cmd);
 		return -1;
@@ -56,6 +60,7 @@ void ctl_rcv_handler(uint32_t events, struct epoll_event_handler *p)
 	iov[1].iov_base = msg_inbuf;
 	iov[1].iov_len = msg_buf_len;
 	if ((l = recvmsg(p->fd, &msg, MSG_NOSIGNAL | MSG_DONTWAIT)) < 0) {
+		LOG_ERROR("CTL: Recv data error");
 		return;
 	}
 	if (msg.msg_flags != 0 || l < sizeof(mhdr) || l != sizeof(mhdr) + mhdr.lin || mhdr.lout > msg_buf_len || mhdr.cmd < 0) {
@@ -67,6 +72,13 @@ void ctl_rcv_handler(uint32_t events, struct epoll_event_handler *p)
 		mhdr.res = ctl_handle_message(mhdr.cmd, msg_inbuf, mhdr.lin, msg_outbuf, &mhdr.lout);
 	else
 		mhdr.res = ctl_handle_message(mhdr.cmd, msg_inbuf, mhdr.lin, NULL, NULL);
+
+    if(mhdr.cmd == CMD_CODE_get_ring_topo)
+    {
+        mhdr.res = CTL_get_ring_topo_s(*(int *)msg_inbuf,(char *)&sa,p->fd);
+        if(mhdr.res == 0)
+            return;
+    }
 
 	if (mhdr.res < 0)
 		mhdr.lout = 0;

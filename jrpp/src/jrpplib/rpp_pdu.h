@@ -5,6 +5,19 @@
 #include "rpp_mgmt.h"
 
 #define RPP_MSG_DATA_SIZE		36
+#define PDU_LLEN            94
+#define PDU_SLEN            90
+#define PDU_DSA_OFFSET      12
+#define PDU_VLAN_OFFSET     16
+#define DSA_TAG_BIT         0x20
+
+#define RSP_NODE_MODE_BIT   (1 << 5)
+#define RSP_NODE_STATUS_BIT (1 << 4)
+#define RSP_NODE_ROLE_BIT   (1 << 3)
+#define RSP_NODE_PRIO_BITS  (7 << 0)
+
+#define RSP_PORT_ROLE_BIT   (1 << 3)
+#define RSP_PORT_STP_BITS   (7 << 0)
 
 typedef enum {
 	RING_FAULT					= 0,
@@ -17,7 +30,8 @@ typedef enum {
     PACKET_HELLO				= 5,
     PACKET_COMPLETE				= 6,
     PACKET_COMMON				= 7,
-    PACKET_LINKDOWN				= 8,
+    PACKET_REPORT				= 8,
+    PACKET_NODEDOWN				= 9,
     PACKET_EDGE_HELLO			= 10,
     PACKET_MAJOR_FAULT			= 11,
     PACKET_COMMAND				= 20
@@ -63,14 +77,14 @@ typedef enum {
 
 typedef enum {
 	MSG_LINKDOWN_REQ_UPDATE_NODE	= 0x01,	/* Request update NodeState */
-	MSG_LINKDOWN_REQ_FLUSH_FDB		= 0x02	/* Request update NodeState and FlushFDB */
-} eMsgLinkDownType;
+	MSG_LINKDOWN_REQ_FLUSH_FDB		= 0x02,	/* Request update NodeState and FlushFDB */
+	MSG_ENDPOINT_TO_ENDPOINT        = 0x03	/* Endpoint to Endpoint report */
+} eMsgReportType;
 
 typedef enum {
-	MSG_COMMON_UPDATE_NODE			= 0x01,
-	MSG_COMMON_WITH_FLUSH_FDB		= 0x02,
-	MSG_COMMON_RING_CHAIN_READY		= 0x03
-} eMsgCommonType;
+	MSG_NODEDOWN_RING_DIS           = 0x01,	/* Ring disable */
+	MSG_NODEDOWN_RPP_DIS            = 0x02	/* RPP function disable */
+} eMsgNodeDownType;
 
 typedef enum {
 	CMD_GET_NODE_REQ				= 0x01,
@@ -93,7 +107,7 @@ typedef enum {
 	CMD_RET_NODE_NOT_LAST			= 0x00,
 	CMD_RET_LAST_NODE_CHAIN			= 0x01,
 	CMD_RET_LAST_NODE_RING			= 0x02
-} eMsgCmdRetLastNode;
+} eMsgCmdRetNode;
 
 /*************************************************************
 	                Message body struct
@@ -109,7 +123,9 @@ typedef struct {
 	unsigned char	type;
 	unsigned char	port;
 	BALLOT_ID_T		id;
-	unsigned char	run_state;
+	unsigned char	sub_type;           // optional 1, 0 = ++ballot; 1 = --ballot
+    unsigned char   mode;               // optional 2
+    unsigned char   endpoint[MAC_LEN];  // optional 3
 } tRMsgBallot;
 
 /* Hello message */
@@ -126,17 +142,43 @@ typedef struct {
 	unsigned char	type;
 } tRMsgComplete;
 
+typedef struct {
+	unsigned char ring_info;       // [5]: 环模式 [4]：环状态 [3]: 节点角色 [2-0]:节点优先级
+	BALLOT_ID_T   master_id;    
+
+    struct {
+        unsigned char port_no;      
+        unsigned char port_info;    // [3]: port role [2-0]: port stp
+        unsigned char neigbor_mac[6];
+    }port[2];
+} tCmdRspNode;
+
 /* Common message */
 typedef struct {
 	unsigned char	type;
-} tRMsgCommon;
+    union {
+        unsigned char data[35];
+        struct {
+            unsigned char ctl_mac[MAC_LEN];
+            unsigned char rsp_node;
+            union {
+                tCmdRspNode rsp_node_status;
+            };
+        };
+    };
+} tRMsgCmd;
 
-/* LinkDown message */
+/* Report message */
 typedef struct {
 	unsigned char	type;
 	unsigned char	ext_neighbor_mac[MAC_LEN];
 	unsigned char	ext_neighbor_port;
-} tRMsgLinkDown;
+} tRMsgReport;
+
+/* NodeDown message */
+typedef struct {
+	unsigned char	type;
+} tRMsgNodeDown;
 
 /* Message Body */
 typedef union {
@@ -145,8 +187,9 @@ typedef union {
 	tRMsgBallot		ballot;
 	tRMsgHello		hello;
 	tRMsgComplete	complete;
-	tRMsgCommon		common;
-	tRMsgLinkDown	linkdown;
+	tRMsgCmd        cmd;
+	tRMsgReport     report;
+    tRMsgNodeDown   nodedown;
 	//tRMsgCmd		command;
 } __attribute__((packed)) tRingMsgBody;
 
@@ -154,13 +197,13 @@ typedef union {
 	JRPP Frame struct
 	802.3 LLC header + Switch Tag + VLAN Tag + 64 Data
  *************************************************************/
-// 30bytes
+// 26bytes
 typedef struct rpp_header_t {
 	unsigned char	dst_mac[6];
 	unsigned char	src_mac[6];
 	unsigned char	dsa_tag[4];
-	unsigned char	eth_type[2];
-	unsigned char	vlan_tag[2];
+	//unsigned char	eth_type[2];
+	//unsigned char	vlan_tag[2];
 	unsigned char	len8023[2];
 	unsigned char	dsap;
 	unsigned char	ssap;

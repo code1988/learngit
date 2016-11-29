@@ -23,11 +23,12 @@ NODE_ID_T *RPP_OUT_get_nodeid(rppRing_t *);
 int RPP_OUT_flush_ports(unsigned char,unsigned char);
 int RPP_OUT_set_port_stp(int, ePortStpState,ePortLinkState);
 int RPP_OUT_tx_pdu (int, unsigned char*, size_t);
-int RPP_OUT_set_timer(struct uloop_timeout *, unsigned char);
+int RPP_OUT_set_timer(struct uloop_timeout *, int);
 int RPP_OUT_close_timer(struct uloop_timeout *);
 int RPP_OUT_l2hport(unsigned char,unsigned char *);
 int RPP_OUT_h2lport(unsigned char,unsigned char *);
 int RPP_OUT_link_req(void);
 int RPP_OUT_led_set(int);
+int RPP_OUT_cmd_rsp(unsigned char *,unsigned int,char *,int);
 #endif /* _RPP_OUT_H_ */
 

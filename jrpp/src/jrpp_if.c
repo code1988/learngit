@@ -72,22 +72,45 @@ int rpp_init(void)
     }
 
     pRpp->running   = RPP_DISABLED;
-    pRpp->ring_num  = 0;
     INIT_LIST_HEAD(&pRpp->ring);
 
     init_ring_led();
+    RPP_OUT_led_set(LED_CLOSE);
 
     return 0;
 }
 
-void br_pdu_rcv(const unsigned char *data, int len)
+void br_pdu_rcv(unsigned char *data, int len)
 {
-    RPP_PDU_T *rpp_pdu = (RPP_PDU_T *)data;
-    uint8 lport;
-
     if(pRpp == NULL || pRpp->running != RPP_ENABLED)
         return;
 
+    if(!(data[PDU_DSA_OFFSET] & DSA_TAG_BIT))
+    {
+        unsigned char *offset = data + PDU_DSA_OFFSET + 2;
+        do{
+            *offset++ = *(offset + 3);
+        }while(offset != (data + len));
+        
+        if(len != PDU_LLEN)
+        {
+            LOG_ERROR("rpp pdu(no dsa-tag) len = %d error !\n",len);
+            RPP_IN_check_pdu_header((RPP_PDU_T *)data,len);
+            return;
+        }
+    }
+    else
+    {
+        if(len != PDU_SLEN)
+        {
+            LOG_ERROR("rpp pdu(dsa-tag) len = %d error !\n",len);
+            RPP_IN_check_pdu_header((RPP_PDU_T *)data,len);
+            return;
+        }
+    }
+
+    RPP_PDU_T *rpp_pdu = (RPP_PDU_T *)data;
+    uint8 lport;
     if(RPP_OUT_h2lport(rpp_pdu->hdr.dsa_tag[1] >> 3,&lport))
     {
         LOG_ERROR("get logical port fail!\n");
@@ -99,6 +122,12 @@ void br_pdu_rcv(const unsigned char *data, int len)
     {
 		LOG_ERROR("port %d is not in any ring\n",lport);
 		return;
+    }
+
+    if(pRing->ring_id != ntohs(*(unsigned short *)rpp_pdu->body.ring_id))
+    {
+        LOG_ERROR("ring id = %d does not match[%d]!\n",ntohs(*(unsigned short *)rpp_pdu->body.ring_id),pRing->ring_id);
+        return;
     }
 
     if(pRing->enable != RING_ENABLED)
@@ -118,18 +147,58 @@ void br_notify(int br_index, int if_index, int newlink, unsigned flags)
     if(pRpp == NULL || pRpp->running != RPP_ENABLED)
         return;
 
-    ring_t *pRing = rpp_find_ring(if_index,0);
-    if(pRing == NULL)
-		return;
-
-    if(pRing->enable != RING_ENABLED)
+    if(if_index >= PORT_CPU_L || if_index <= 0)
+    {
+        log_info("skip other port");
         return;
+    }
 
-    RPP_IN_port_link_check(&pRing->rpp_ring,if_index,((flags & IFF_UP) && (flags & IFF_RUNNING))?LINK_UP:LINK_DOWN);
+    int link_st = ((flags & IFF_UP) && (flags & IFF_RUNNING))?LINK_UP:LINK_DOWN;
+    if(pRpp->mports[if_index - 1].in_rpp == 0)
+    {
+        if(link_st ^ pRpp->mports[if_index - 1].link_st)
+        {
+            pRpp->mports[if_index - 1].link_st = link_st;
+            if(link_st == LINK_UP)
+            {
+                //log_info("common port %d seting forwarding",if_index);
+                RPP_OUT_set_port_stp(if_index,FORWARDING,LINK_UP);
+            }
+        }
+    }
+    else
+    {
+        ring_t *pRing = rpp_find_ring(if_index,0);
+        if(pRing == NULL)
+            return;
+
+        if(pRing->enable != RING_ENABLED)
+            return;
+
+        RPP_IN_port_link_check(&pRing->rpp_ring,if_index,link_st);
+    }
+}
+
+void sig_kill_handler(int signo)
+{
+    log_info("----------------- recv SIGTERM signal = %d",signo);
+    ring_t *pRing,*pRing_bak;  
+    list_for_each_entry_safe(pRing, pRing_bak, &pRpp->ring, node) 
+    {
+        if(pRing->enable == RING_ENABLED)
+        {
+            RPP_IN_ring_disable(&pRing->rpp_ring,MSG_NODEDOWN_RPP_DIS);
+            pRing->enable = RING_DISABLED;
+        }
+    }
+    
+    _exit(0);
 }
 
 int RPP_OUT_flush_ports(uint8 p1,uint8 p2)
 {
+    log_info("flush ports");
+    system("echo 0 > /sys/class/net/br-lan/bridge/flush");
     if(fal_mac_flush_port(0,p1) != SW_OK || fal_mac_flush_port(0,p2) != SW_OK)
     {
         LOG_ERROR("flush port %d and port %d error!",p1,p2);
@@ -139,8 +208,10 @@ int RPP_OUT_flush_ports(uint8 p1,uint8 p2)
 	return 0;
 }
 
+#ifdef G2F8
 static const uint8 h2lport[PORT_NUM] = {[0] = 9,[1] = 10,[2] = 7,[3] = 8,[4] = 5,[5] = 6,[6] = 3,[7] = 4,[8] = 2,[10] = 1};
 static const uint8 l2hport[PORT_NUM] = {[1] = 10,[2] = 8,[3] = 6,[4] = 7,[5] = 4,[6] = 5,[7] = 2,[8] = 3,[9] = 0,[10] = 1};
+#endif
 int RPP_OUT_h2lport(uint8 hport, uint8 *lport)
 {
     if(hport == PORT_CPU_H || hport >= PORT_NUM)
@@ -177,9 +248,8 @@ int RPP_OUT_set_port_stp(int port_index, ePortStpState state,ePortLinkState link
             br_state    = BR_STATE_BLOCKING;
 			break;
 		default:
-			dot1d_state = FAL_PORT_DOT1D_STATE_DISABLED;
-            br_state    = BR_STATE_DISABLED;
-			break;
+            LOG_ERROR("state = %d is forbidden",state);
+            return -1;
 	}
 
 	if(link == LINK_UP && br_set_state(port_index, br_state)) 
@@ -206,14 +276,20 @@ const uint8 *RPP_OUT_get_mac (void)
 // 发送报文
 int RPP_OUT_tx_pdu (int port_index, unsigned char* pdu, size_t pdu_len)
 {
+    if(pdu_len != PDU_SLEN)
+    {
+		LOG_ERROR("rpp pdu len = %d is error,expect 90",pdu_len);	
+		return -1;
+    }
+
     pdu_pkt_send(port_index,pdu,pdu_len);
 	return 0;
 }
 
 // 添加定时器(秒->毫秒)
-int RPP_OUT_set_timer(struct uloop_timeout *timer, uint8 sec)
+int RPP_OUT_set_timer(struct uloop_timeout *timer, int msec)
 {
-    return timer_add(timer,(int)sec * 1000);   
+    return timer_add(timer,msec);   
 }
 
 int RPP_OUT_close_timer(struct uloop_timeout *timer)
@@ -262,6 +338,33 @@ int RPP_OUT_led_set(int value)
     return ring_led_set(value);
 }
 
+int RPP_OUT_cmd_rsp(unsigned char *buf,unsigned int len,char *un,int fd)
+{
+    struct msghdr msg;
+    struct iovec iov[2];
+	int mhdr[4] = {110,sizeof(int),len,0};
+
+    msg.msg_name        = un;
+    msg.msg_namelen     = sizeof(struct sockaddr_un);
+    msg.msg_iov         = iov;
+    msg.msg_iovlen      = 2;
+    msg.msg_control     = NULL;
+    msg.msg_controllen  = 0;
+    iov[0].iov_base     = mhdr;
+    iov[0].iov_len      = sizeof(mhdr);
+    iov[1].iov_base     = buf;
+    iov[1].iov_len      = len;
+
+	int l = sendmsg(fd, &msg, MSG_NOSIGNAL);
+    if(l != iov[0].iov_len + iov[1].iov_len)
+    {
+        LOG_ERROR("l = %d is error");
+        return -1;
+    }
+    
+    return 0;
+}
+
 /****************************************************************************************************
  *                                  API for CLI
  * *************************************************************************************************/
@@ -292,13 +395,11 @@ int CTL_enable_ring(int ring_id, int enable)
 {
     if(pRpp->running != RPP_ENABLED)
     {
-        log_info("rpp is disabled\n");
+        LOG_ERROR("rpp is disabled\n");
         return -1;
     }
 
     int r = 0;
-    
-    
     ring_t *pRing = rpp_find_ring(ring_id,1);
     if(pRing == NULL)
     {
@@ -306,18 +407,19 @@ int CTL_enable_ring(int ring_id, int enable)
 		return -1;
     }
 
+    if(pRing->rpp_ring.primary == NULL || pRing->rpp_ring.secondary == NULL)
+    {
+        LOG_ERROR("arguements for ring#%d is not completely\n", ring_id);
+        return -1;
+    }
+
     if(enable == RING_ENABLED)
     {
-        if(pRing->rpp_ring.primary == NULL || pRing->rpp_ring.secondary == NULL)
-        {
-            LOG_ERROR("arguements for ring#%d is not completely\n", ring_id);
-            return -1;
-        }
 	    r = RPP_IN_ring_enable(&pRing->rpp_ring);
     }
     else	
     { 
-        r = RPP_IN_ring_disable(&pRing->rpp_ring);
+        r = RPP_IN_ring_disable(&pRing->rpp_ring,MSG_NODEDOWN_RING_DIS);
     }
 
     if(r) 
@@ -327,6 +429,12 @@ int CTL_enable_ring(int ring_id, int enable)
 	}
 	
     pRing->enable = enable;
+
+    // update rpp-port-pool
+    RPP_RING_STATE_T state;
+    RPP_IN_ring_get_state(&pRing->rpp_ring,&state);
+    pRpp->mports[state.primary.port_no - 1].in_rpp   = enable;
+    pRpp->mports[state.secondary.port_no - 1].in_rpp = enable;
 
 	log_info("ring#%d %s success\n",ring_id,(enable == RING_ENABLED)?"enable":"disable");
 
@@ -462,13 +570,14 @@ int CTL_set_ring_config(int ring_id, RPP_RING_CFG_T *ring_cfg)
 	return 0;
 }
 
-int CTL_get_ring_config(int ring_id, RPP_RING_CFG_T *ring_cfg) 
+int CTL_get_ring_state(int ring_id, RPP_RING_STATE_T *state) 
 {
-	return 0;
-}
+    memset(state,0,sizeof(RPP_RING_STATE_T));
 
-int CTL_get_ring_state(int ring_id, RPP_RING_STATE_T *ring_state, RPP_PORT_STATE_T *p_port_state, RPP_PORT_STATE_T *s_port_state) 
-{
+    state->rpp_state = pRpp->running;
+    if(pRpp->running != RPP_ENABLED)
+        return 0;
+
     ring_t *pRing = rpp_find_ring(ring_id,1);
     if(pRing == NULL)
     {
@@ -476,9 +585,9 @@ int CTL_get_ring_state(int ring_id, RPP_RING_STATE_T *ring_state, RPP_PORT_STATE
 		return -1;
     }
 
-    ring_state->state = pRing->enable;
-    memcpy(&ring_state->node_id,&pRing->node_id,sizeof(NODE_ID_T));
-	if(RPP_IN_ring_get_state(&pRing->rpp_ring, ring_state)) 
+    state->ring_state= pRing->enable;
+    memcpy(&state->node_id,&pRing->node_id,sizeof(NODE_ID_T));
+	if(RPP_IN_ring_get_state(&pRing->rpp_ring, state)) 
     {
 		LOG_ERROR(" get ring state failed");
 		return -1;
@@ -490,7 +599,33 @@ int CTL_get_ring_state(int ring_id, RPP_RING_STATE_T *ring_state, RPP_PORT_STATE
 int CTL_set_debug_level(int level)
 {
 	log_info("CTL_set_debug_level, level=%d\n", level);
+    log_threshold(level);
 
 	return 0;
 }
 
+int CTL_get_ring_topo_s(int ring_id,char *un,int fd)
+{
+    ring_t *pRing = rpp_find_ring(ring_id,1);
+    if(pRing == NULL)
+    {
+        LOG_ERROR("can't find ring #%d", ring_id);
+        return -1;
+    }
+
+    if(pRing->enable != RING_ENABLED)
+    {
+        LOG_ERROR("ring #%d is not enable", ring_id);
+        return -1;
+    }
+
+    RPP_IN_ring_get_topo(&pRing->rpp_ring,un,fd);
+
+    return 0;
+}
+
+int CTL_update_ports(void)
+{
+    br_get_config();
+    return 0;
+}

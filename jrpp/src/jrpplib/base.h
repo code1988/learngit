@@ -18,6 +18,11 @@
 #define True        1
 #endif
 
+#define LED_OPEN    0
+#define LED_CLOSE   1
+
+#define RING_GEX    1
+
 #define JRPP_ERRORS { \
 	CHOOSE(RPP_OK),                                       \
 	CHOOSE(RPP_Cannot_Find_Ring),                         \

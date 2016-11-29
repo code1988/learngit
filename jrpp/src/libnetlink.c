@@ -285,7 +285,8 @@ int rtnl_talk(struct rtnl_handle *rtnl, struct nlmsghdr *n, pid_t peer,
 
 	iov.iov_base = buf;
 
-	while (1) {
+	while (1) 
+    {
 		iov.iov_len = sizeof(buf);
 		status = recvmsg(rtnl->fd, &msg, 0);
 
@@ -304,12 +305,14 @@ int rtnl_talk(struct rtnl_handle *rtnl, struct nlmsghdr *n, pid_t peer,
 				msg.msg_namelen);
 			return -1;
 		}
-		for (h = (struct nlmsghdr *)buf; status >= sizeof(*h);) {
+		for (h = (struct nlmsghdr *)buf; status >= sizeof(*h);) 
+        {
 			int err;
 			int len = h->nlmsg_len;
 			int l = len - sizeof(*h);
 
-			if (l < 0 || len > status) {
+			if (l < 0 || len > status) 
+            {
 				if (msg.msg_flags & MSG_TRUNC) {
 					fprintf(stderr, "Truncated message\n");
 					return -1;
@@ -321,7 +324,8 @@ int rtnl_talk(struct rtnl_handle *rtnl, struct nlmsghdr *n, pid_t peer,
 
 			if (nladdr.nl_pid != peer ||
 			    h->nlmsg_pid != rtnl->local.nl_pid ||
-			    h->nlmsg_seq != seq) {
+			    h->nlmsg_seq != seq) 
+            {
 				if (junk) {
 					err = junk(&nladdr, h, jarg);
 					if (err < 0)
@@ -334,14 +338,19 @@ int rtnl_talk(struct rtnl_handle *rtnl, struct nlmsghdr *n, pid_t peer,
 				continue;
 			}
 
-			if (h->nlmsg_type == NLMSG_ERROR) {
+			if (h->nlmsg_type == NLMSG_ERROR) 
+            {
 				struct nlmsgerr *err =
 				    (struct nlmsgerr *)NLMSG_DATA(h);
-				if (l < sizeof(struct nlmsgerr)) {
+				if (l < sizeof(struct nlmsgerr)) 
+                {
 					fprintf(stderr, "ERROR truncated\n");
-				} else {
+				} 
+                else 
+                {
 					errno = -err->error;
-					if (errno == 0) {
+					if (errno == 0) 
+                    {
 						if (answer)
 							memcpy(answer, h,
 							       h->nlmsg_len);
@@ -351,7 +360,8 @@ int rtnl_talk(struct rtnl_handle *rtnl, struct nlmsghdr *n, pid_t peer,
 				}
 				return -1;
 			}
-			if (answer) {
+			if (answer) 
+            {
 				memcpy(answer, h, h->nlmsg_len);
 				return 0;
 			}
@@ -361,10 +371,12 @@ int rtnl_talk(struct rtnl_handle *rtnl, struct nlmsghdr *n, pid_t peer,
 			status -= NLMSG_ALIGN(len);
 			h = (struct nlmsghdr *)((char *)h + NLMSG_ALIGN(len));
 		}
+
 		if (msg.msg_flags & MSG_TRUNC) {
 			fprintf(stderr, "Message truncated\n");
 			continue;
 		}
+
 		if (status) {
 			fprintf(stderr, "!!!Remnant of size %d\n", status);
 			return -1;
@@ -511,6 +523,7 @@ int addattr32(struct nlmsghdr *n, int maxlen, int type, __u32 data)
 			maxlen);
 		return -1;
 	}
+    
 	rta = NLMSG_TAIL(n);
 	rta->rta_type = type;
 	rta->rta_len = len;

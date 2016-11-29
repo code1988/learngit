@@ -10,7 +10,7 @@
 int RPP_IN_ring_create (rppRing_t *);
 int RPP_IN_ring_delete (int ring_id);
 int RPP_IN_ring_enable (rppRing_t *);
-int RPP_IN_ring_disable (rppRing_t *);
+int RPP_IN_ring_disable (rppRing_t *,eMsgNodeDownType);
 int RPP_IN_port_create (rppRing_t *,int,int);
 int RPP_IN_port_delete (rppRing_t *);
 
@@ -21,13 +21,13 @@ int RPP_IN_ring_get_cfg (int ring_id, RPP_RING_CFG_T* ring_cfg);
 int RPP_IN_port_get_cfg (int ring_id, int port_index, RPP_PORT_CFG_T* port_cfg);
 
 int RPP_IN_ring_get_state(rppRing_t *,RPP_RING_STATE_T *);
+int RPP_IN_ring_get_topo(rppRing_t *,char *,int);
 /**********************************************************************************
  *         Other functions
  **********************************************************************************/
 int RPP_IN_port_link_check(rppRing_t *,int ,int );
 int RPP_IN_port_valid(rppRing_t *,int);
 int RPP_IN_check_pdu_header (RPP_PDU_T* pdu, size_t len);
-int RPP_IN_enable_port (int port_index, Bool enable);
 int RPP_IN_rx_pdu (rppRing_t *, int , RPP_PDU_T *);
 
 const char* RPP_IN_get_error_explanation (int err_no);

@@ -79,6 +79,7 @@ static void usage(void)
 	printf("\n");
 }
 
+
 int main(int argc, char** argv)
 {
 	int c;
@@ -133,11 +134,13 @@ int main(int argc, char** argv)
 	if(ctl_server_init() < 0)   { LOG_ERROR("error: ctl_server_init() failed\n"); exit(1); }
 	if(pdu_sock_init() < 0)     { LOG_ERROR("error: pdu_sock_init() failed\n");   exit(1); }
 	if(br_init_ops() < 0)       { LOG_ERROR("error: br_init_ops() failed\n");     exit(1); }
-
+    
 	log_info("%s initialize successfully.\n", MODULE_NAME);
 	
 	signal(SIGPIPE, SIG_IGN);
+	signal(SIGCHLD, SIG_IGN);
 	signal(SIGHUP, SIG_IGN);
+    signal(SIGTERM,sig_kill_handler);
 
 	/* Loading configuration */
 	if(load_configure() == -1)
@@ -145,7 +148,7 @@ int main(int argc, char** argv)
 		LOG_ERROR("load_configure failed");
         exit(1);
     }
-	
+
 	return epoll_main_loop();
 
 help:

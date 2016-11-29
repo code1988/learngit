@@ -60,7 +60,6 @@ static struct sock_filter pdu_filter[] = {
 void pdu_pkt_send(int ifindex, const unsigned char *data, int len)
 {
 	int sendLen;
-	RPP_HEADER_T *pduHdr = (RPP_HEADER_T *)data;
 	
 	struct sockaddr_ll sl = {
 		.sll_family = AF_PACKET,
@@ -73,6 +72,7 @@ void pdu_pkt_send(int ifindex, const unsigned char *data, int len)
 	memcpy(&sl.sll_addr, data, ETH_ALEN);
 
 #if 0
+	RPP_HEADER_T *pduHdr = (RPP_HEADER_T *)data;
     unsigned short len8023 = ntohs(*(unsigned short *)pduHdr->len8023);
 	log_debug("\033[1;36mTx packet to port%2d, len=%d, len8023=%d\033[0m", ifindex, len, len8023);
 	dump_hex((void *)data, len);

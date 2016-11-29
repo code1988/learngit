@@ -183,6 +183,7 @@ int br_init_ops(void)
 		return -1;
 	}
   
+#if 0
 	if (rtnl_wilddump_request(&rth, PF_BRIDGE, RTM_GETLINK) < 0) {
 		LOG_ERROR("rtnl_wilddump_request failed\n");
 		return -1;
@@ -192,6 +193,7 @@ int br_init_ops(void)
 		LOG_ERROR("rtnl_dump_filter terminated\n");
 		return -1;
 	}
+#endif
 
 	if (fcntl(rth.fd, F_SETFL, O_NONBLOCK) < 0) {
 		LOG_ERROR("error: fcntl setting O_NONBLOCK, %m\n");
@@ -208,6 +210,7 @@ int br_init_ops(void)
 	return 0;
 }
 
+// 主动获取link状态
 int br_get_config(void)
 {
 	return (rtnl_wilddump_request(&rth, PF_BRIDGE, RTM_GETLINK) < 0)?-1:0; 

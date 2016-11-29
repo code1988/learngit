@@ -27,6 +27,8 @@ struct command {
 	const char *help;
 };
 
+static int update_f = 1;
+
 // 字符串转无符号整型
 unsigned int getuint(const char *s)
 {
@@ -85,50 +87,131 @@ static int cmd_jrpp(int argc, char *const *argv)
 	return 0;
 }
 
+static int cmd_show_topo(int argc,char *const *argv)
+{
+	int rc;
+	int ring_id = getuint(argv[1]);
+    if(ring_id > MAX_RING_ID)
+    {
+        fprintf(stderr,"Invalid arguement\n");
+        return -1;
+    }
+
+    RPP_RING_TOPO_T topo;
+    rc = CTL_get_ring_topo(ring_id,&topo);
+	if (rc) 
+    {
+		fprintf(stderr, "can't get topo for ring\n");
+		return -1;
+	}
+
+    fprintf(stderr,"get topo ok,node num = %d, [%02x:%02x:%02x:%02x:%02x:%02x]\n",topo.num,\
+            topo.node[0].node_id.addr[0],topo.node[0].node_id.addr[1],topo.node[0].node_id.addr[2],\
+            topo.node[0].node_id.addr[3],topo.node[0].node_id.addr[4],topo.node[0].node_id.addr[5]);
+    printf("Ring#%d topo information...\n",ring_id);
+    printf("    =================================================================================================================================================\n");
+    printf("    NodeId                RingMode     RingStatus     NodeRole     MasterId        PrimaryPort[Stp * Neighber]               SecdPort[Stp * Neighber]\n");
+    printf("    =================================================================================================================================================\n");
+    int idx;
+    for(idx = 0;idx < topo.num;idx++)
+    {
+        printf("    %d-%02x:%02x:%02x:%02x:%02x:%02x   %s     %s     %s     %d-%02x:%02x:%02x:%02x:%02x:%02x     Port-%d[%s * %02x:%02x:%02x:%02x:%02x:%02x]     Port-%d[%s * %02x:%02x:%02x:%02x:%02x:%02x]\n",\
+               topo.node[idx].node_id.prio,topo.node[idx].node_id.addr[0],topo.node[idx].node_id.addr[1],topo.node[idx].node_id.addr[2],\
+               topo.node[idx].node_id.addr[3],topo.node[idx].node_id.addr[4],topo.node[idx].node_id.addr[5],\
+               (topo.node[idx].rpp_mode == RPP_ENHANCED)?"Enhanced":"Compactible",\
+               (topo.node[idx].status == RPP_HEALTH)?"Health":"Fault",\
+               (topo.node[idx].node_role == NODE_TYPE_MASTER)?"Master":"Transit",\
+               topo.node[idx].master_id.prio,topo.node[idx].master_id.addr[0],topo.node[idx].master_id.addr[1],topo.node[idx].master_id.addr[2],\
+               topo.node[idx].master_id.addr[3],topo.node[idx].master_id.addr[4],topo.node[idx].master_id.addr[5],\
+               topo.node[idx].primary.port_no,(topo.node[idx].primary.stp == FORWARDING)?"Forwarding":"Blocking",\
+               topo.node[idx].primary.neighber_mac[0],topo.node[idx].primary.neighber_mac[1],topo.node[idx].primary.neighber_mac[2],\
+               topo.node[idx].primary.neighber_mac[3],topo.node[idx].primary.neighber_mac[4],topo.node[idx].primary.neighber_mac[5],\
+               topo.node[idx].secondary.port_no,(topo.node[idx].secondary.stp == FORWARDING)?"Forwarding":"Blocking",\
+               topo.node[idx].secondary.neighber_mac[0],topo.node[idx].secondary.neighber_mac[1],topo.node[idx].secondary.neighber_mac[2],\
+               topo.node[idx].secondary.neighber_mac[3],topo.node[idx].secondary.neighber_mac[4],topo.node[idx].secondary.neighber_mac[5]);
+    }
+    
+    return 0;
+}
 
 static int cmd_show_ring(int argc, char *const *argv)
 {
 	int rc;
-    int ring_id = 1;
+	int ring_id = getuint(argv[1]);
+    if(ring_id > MAX_RING_ID)
+    {
+        fprintf(stderr,"Invalid arguement\n");
+        return -1;
+    }
 
-	RPP_RING_STATE_T ring_state;
-	RPP_PORT_STATE_T pport_state, sport_state;
+	RPP_RING_STATE_T state;
 	
-    memset(&ring_state,0,sizeof(RPP_RING_STATE_T));
-	rc = CTL_get_ring_state(ring_id, &ring_state, &pport_state, &sport_state);
+    memset(&state,0,sizeof(RPP_RING_STATE_T));
+	rc = CTL_get_ring_state(ring_id, &state);
 	if (rc) 
     {
 		fprintf(stderr, "can't get state for ring\n");
 		return -1;
 	}
 
-    printf("Ring#%d information...\n\n",ring_id);
-    printf("    RingEnable  : %s\n",(ring_state.state == RING_ENABLED)?"Enable":"Disable");
-    printf("    RingState   : %s\n",(ring_state.ring_status == RPP_HEALTH)?"Health":"Fault");
-    printf("    NodeRole    : %s\n",(ring_state.node_role == NODE_TYPE_MASTER)?"Master":"Transit");
-    printf("    NodeId      : %d-%02x:%02x:%02x:%02x:%02x:%02x\n",ring_state.node_id.prio,\
-           ring_state.node_id.addr[0],ring_state.node_id.addr[1],ring_state.node_id.addr[2],\
-           ring_state.node_id.addr[3],ring_state.node_id.addr[4],ring_state.node_id.addr[5]);
-    printf("    Master      : %d-%02x:%02x:%02x:%02x:%02x:%02x\n",ring_state.master_id.prio,\
-               ring_state.master_id.addr[0],ring_state.master_id.addr[1],ring_state.master_id.addr[2],\
-               ring_state.master_id.addr[3],ring_state.master_id.addr[4],ring_state.master_id.addr[5]);
-    printf("    NodeMachine : %s\n",ring_state.m_node_st);
+    printf("			====================================================\n");
+	printf("				Rapid Ring Protect Feature is [ %s ]    \n",(state.rpp_state == RPP_ENABLED)?"Enable":"Disable");
+    printf("			====================================================\n\n");
+    printf("Ring#%d information...\n",ring_id);
+    printf("    RingEnable  : %s\n",(state.ring_state == RING_ENABLED)?"Enable":"Disable");
 
-    RPP_PORT_STATE_T *port = &ring_state.primary;
+    if(state.ring_state == RING_ENABLED)
+    {
+        printf("    RingMode    : %s\n",(state.rpp_mode == RPP_ENHANCED)?"Enhanced":"Compatible");
+        printf("    RingState   : %s\n",(state.ring_status == RPP_HEALTH)?"Health":"Fault");
+        printf("    NodeRole    : %s\n",(state.node_role == NODE_TYPE_MASTER)?"Master":"Transit");
+        printf("    NodeId      : %d-%02x:%02x:%02x:%02x:%02x:%02x\n",state.node_id.prio,\
+               state.node_id.addr[0],state.node_id.addr[1],state.node_id.addr[2],\
+               state.node_id.addr[3],state.node_id.addr[4],state.node_id.addr[5]);
+        printf("    Master      : %d-%02x:%02x:%02x:%02x:%02x:%02x\n",state.master_id.prio,\
+                   state.master_id.addr[0],state.master_id.addr[1],state.master_id.addr[2],\
+                   state.master_id.addr[3],state.master_id.addr[4],state.master_id.addr[5]);
+        printf("    NodeMachine : %s\n",state.m_node_st);
+        printf("    HelloSeq    : %d\n",state.hello_seq);
+    }
+
+    RPP_PORT_STATE_T *port = &state.primary;
     printf("\n");
-    printf("    =================================================================================\n");
-    printf("    RingPort    PortRole    Link      STP     AuthMachine     BallotMachine   TxMachine\n");
-    printf("    =================================================================================\n");
-    printf("    Port%-4d    %s    %s    %s    %s        %s          %s\n",\
-           port->port_no,(port->role == PRIMARY_PORT)?"primary":"secondary",\
-           (port->link_state == LINK_UP)?"Up":"Down",(port->dot1d_state == FORWARDING)?"Forwarding":"Blocking",\
-           port->m_auth_st,port->m_ballot_st,port->m_tx_st);
+    printf("    ===================================================================================\n");
+    printf("    RingPort    PortRole    Link      STP     AuthMachine     BallotMachine   Neighbor\n");
+    printf("    ===================================================================================\n");
+    if(port->port_no)
+    {
+        if(state.ring_state == RING_ENABLED)
+        {
+            printf("    Port%-4d    %s    %s    %s    %s        %s      [%02x:%02x:%02x:%02x:%02x:%02x]\n",\
+                   port->port_no,(port->role == PRIMARY_PORT)?"primary":"secondary",\
+                   (port->link_state == LINK_UP)?"Up":"Down",(port->dot1d_state == FORWARDING)?"Forwarding":"Blocking",\
+                   port->m_auth_st,port->m_ballot_st,port->neigbor_mac[0],port->neigbor_mac[1],port->neigbor_mac[2],\
+                   port->neigbor_mac[3],port->neigbor_mac[4],port->neigbor_mac[5]);
+        }
+        else
+        {
+            printf("    Port%-4d    %s\n",port->port_no,(port->role == PRIMARY_PORT)?"primary":"secondary");
+        }
+    }
 
-    port = &ring_state.secondary;
-    printf("    Port%-4d    %s    %s    %s    %s        %s          %s\n",\
-           port->port_no,(port->role == PRIMARY_PORT)?"primary":"secondary",\
-           (port->link_state == LINK_UP)?"Up":"Down",(port->dot1d_state == FORWARDING)?"Forwarding":"Blocking",\
-           port->m_auth_st,port->m_ballot_st,port->m_tx_st);
+    port = &state.secondary;
+    if(port->port_no)
+    {
+        if(state.ring_state == RING_ENABLED)
+        {
+            printf("    Port%-4d    %s    %s    %s    %s        %s      [%02x:%02x:%02x:%02x:%02x:%02x]\n",\
+                   port->port_no,(port->role == PRIMARY_PORT)?"primary":"secondary",\
+                   (port->link_state == LINK_UP)?"Up":"Down",(port->dot1d_state == FORWARDING)?"Forwarding":"Blocking",\
+                   port->m_auth_st,port->m_ballot_st,port->neigbor_mac[0],port->neigbor_mac[1],port->neigbor_mac[2],\
+                   port->neigbor_mac[3],port->neigbor_mac[4],port->neigbor_mac[5]);
+        }
+        else
+        {
+            printf("    Port%-4d    %s\n",port->port_no,(port->role == PRIMARY_PORT)?"primary":"secondary");
+        }
+    }
 
 	return 0;	
 }
@@ -215,7 +298,7 @@ static int cmd_set_nodeprio(int argc, char *const *argv)
         prio = 0;
     else
     {
-        LOG_ERROR("invalid arguement: [%s]!\n",argv[2]);
+        fprintf(stderr,"invalid arguement: [%s]!\n",argv[2]);
         return -1;
     }
 
@@ -259,6 +342,9 @@ static int cmd_set_ringmode(int argc, char *const *argv)
 		return -1;
 	}
 
+    if(enable == RING_ENABLED)
+        update_f = 0;
+
 	return 0;
 }
 
@@ -269,14 +355,15 @@ static int cmd_debuglevel(int argc, char *const *argv)
 
 static const struct command commands[] = {
 	{1, 0,	"jrpp",             cmd_jrpp,               "{on|off}                                           Enable/disable jrpp protocol"},			
-	{0, 0,	"showring",         cmd_show_ring,          "                                                   Show all jrpp ring"},
+	{1, 0,	"showring",         cmd_show_ring,          "<ring_id>                                          Show jrpp ring"},
+	{1, 0,	"showtopo",         cmd_show_topo,          "<ring_id>                                          Show jrpp ring topo"},
 	{1, 0,	"addring",          cmd_add_ring,           "<ring_id>                                          Add a jrpp ring (0~65535)"},
 	{1, 0,	"delring",          cmd_del_ring,           "<ring_id>                                          Delete a jrpp ring"},
 	{3, 0,	"addringport",      cmd_add_ringport,       "<ring_id> <primary_port> <secondary_port>          Add ringport for jrpp ring"},
 	{1, 0,	"delringport",      cmd_del_ringport,       "<ring_id>                                          Delete ringport for jrpp ring"},
 	{2, 0,	"setnodeprio",      cmd_set_nodeprio,       "<ring_id> <priority>                               Set node priority"},
 	{2, 0,	"setringmode",      cmd_set_ringmode,       "<ring_id> {enable|disable}                         Enable/disable jrpp ring"},		
-	{1, 0,	"debuglevel",       cmd_debuglevel,         "<level>                                            Default level=3. 1=Error 2=Info 3=Jrpp 4=Debug"},
+	{1, 0,	"debuglevel",       cmd_debuglevel,         "<level>                                            Default level=4. 0=None 1=Error 2=Info 3=Jrpp 4=Debug"},
 };
 
 const struct command *cmd_lookup(const char *cmd)
@@ -384,11 +471,11 @@ static int cmd_exec(int argc, char** argv)
 	if(argc <= 0)
 		return 1;
 	if ((cmd = cmd_lookup(argv[0])) == NULL) {
-		syslog(LOG_ERR, "Not found command '%s'\n", argv[0]);
+		fprintf(stderr, "Not found command '%s'\n", argv[0]);
 		return 1;
 	}
 	if (argc < cmd->nargs + 1 || argc > cmd->nargs + cmd->optargs + 1) {
-		syslog(LOG_ERR, "Incorrect number of arguments\n");
+		fprintf(stderr, "Incorrect number of arguments\n");
 		return 1;
 	}
 		
@@ -426,10 +513,10 @@ static void load_config(void)
                 n = cmd_tokenize_line(line, &cargc, &cargv);
                 switch (n) {
                 case -1:
-                    syslog(LOG_ERR, "error tokenizing for line '%s'", line);
+                    fprintf(stderr, "error tokenizing for line '%s'", line);
                     continue;
                 case 1:
-                    syslog(LOG_ERR, "unmatched quotes for line '%s'", line);
+                    fprintf(stderr, "unmatched quotes for line '%s'", line);
                     continue;
                 }
                 if (cargc != 0) 
@@ -440,7 +527,7 @@ static void load_config(void)
                         sprintf(pCmd + offset, "%s ", cargv[i]);
                         offset += strlen(cargv[i]) + 1;
                         if(offset > 256) {
-                            syslog(LOG_INFO, "command line is too long");
+                            fprintf(stderr, "command line is too long");
                             continue;
                         }
                     }
@@ -452,10 +539,16 @@ static void load_config(void)
             free(line);
         }
         fclose(file);
+
+        /* update ports flag is none-zero means no ring enable
+         * should update ports manually
+         */
+        if(update_f)
+            CTL_update_ports();
     } 
     else 
     {
-		syslog(LOG_ERR, "unable to open %s\n", JRPPD_CONF_NAME);
+		fprintf(stderr, "unable to open %s\n", JRPPD_CONF_NAME);
 	}
 }
 
@@ -496,7 +589,7 @@ int main(int argc, char** argv)
     {
         log_info("Process configuration file: %s\n", JRPPD_CONF_NAME);
         load_config();
-        return 1;
+        return 0;
 	}
 
 	if(argc == optind)

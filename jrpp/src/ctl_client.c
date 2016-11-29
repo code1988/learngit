@@ -12,32 +12,43 @@
 #include "log.h"
 #include "base.h"
 
+#define JRPP_CTL_PATH "/var/run/"
 static int ctl_client_fd = -1;
 
 int ctl_client_init(void)
 {
 	int s;
-	struct sockaddr_un sa_client;
-	struct sockaddr_un sa_server;
-	char tmpname[64];
+	struct sockaddr_un un;
 
-	if((s = socket(PF_UNIX, SOCK_DGRAM, 0)) < 0) {
-		LOG_ERROR("couldn't open unix socket: %m");
+	if((s = socket(PF_UNIX, SOCK_DGRAM, 0)) < 0) 
+    {
+		fprintf(stderr,"couldn't open unix socket");
 		return -1;
 	}
 
-	set_socket_address(&sa_server, CTL_SERVER_SOCK_NAME);
-	sprintf(tmpname, "JRPP_CTL_%d", getpid());
-	set_socket_address(&sa_client, tmpname);
+    struct timeval t = {5,0};
+    if(setsockopt(s,SOL_SOCKET,SO_RCVTIMEO,(char *)&t,sizeof(struct timeval)))
+    {
+		fprintf(stderr,"couldn't set recv timeout error");
+		return -1;
+    }
+
+    memset(&un,0,sizeof(struct sockaddr_un));
+    un.sun_family = AF_UNIX;
+	sprintf(un.sun_path + 1, "%s%05d", JRPP_CTL_PATH,getpid());
+    unlink(un.sun_path);
 	
-	if (bind(s, (struct sockaddr *)&sa_client, sizeof(sa_client)) != 0) {
-		LOG_ERROR("couldn't bind socket: %m");
+	if (bind(s, (struct sockaddr *)&un, sizeof(struct sockaddr_un)) != 0) 
+    {
+		fprintf(stderr,"couldn't bind socket: %m");
 		close(s);
 		return -1;
 	}
 
-	if (connect(s, (struct sockaddr *)&sa_server, sizeof(sa_server)) != 0) {
-		LOG_ERROR("couldn't connect to server");
+	set_socket_address(&un, CTL_SERVER_SOCK_NAME);
+	if (connect(s, (struct sockaddr *)&un, sizeof(struct sockaddr_un)) != 0) 
+    {
+		fprintf(stderr,"couldn't connect to server");
 		close(s);
 		return -1;
 	}
@@ -79,46 +90,26 @@ int ctl_client_send(int cmd, void *inbuf, int lin, void *outbuf, int *lout, int 
 
 	l = sendmsg(ctl_client_fd, &msg, 0);
 	if (l < 0) {
-		LOG_ERROR("error sending message to server: %m");
+		fprintf(stderr,"error sending message to server: %m");
 		return -1;
 	}
 	if (l != sizeof(mhdr) + lin) {
-		LOG_ERROR("error sending message to server: Partial write");
+		fprintf(stderr,"error sending message to server: Partial write");
 		return -1;
 	}
 
 	iov[1].iov_base = outbuf;
 	iov[1].iov_len = lout != NULL ? *lout : 0;
 
-	{
-		struct pollfd pfd;
-		int timeout = 5000;	/* 5 s */
-		int r;
-
-		pfd.fd = ctl_client_fd;
-		pfd.events = POLLIN;
-		do {
-			r = poll(&pfd, 1, timeout);
-			if (r == 0) {
-				LOG_ERROR("error getting message from server: Timeout");
-				return -1;
-			}
-			if (r < 0) {
-				LOG_ERROR("error getting message from server: poll error: %m");
-				return -1;
-			}
-		} while ((pfd.revents & (POLLERR | POLLHUP | POLLNVAL | POLLIN)) == 0);
-
-		l = recvmsg(ctl_client_fd, &msg, 0);
-		if (l < 0) {
-			LOG_ERROR("error getting message from server: %m");
-			return -1;
-		}
-		if (l < sizeof(mhdr) || l != sizeof(mhdr) + mhdr.lout || mhdr.cmd != cmd) {
-			LOG_ERROR("error getting message from server: Bad format");
-			return -1;
-		}
-	}
+    l = recvmsg(ctl_client_fd, &msg, 0);
+    if (l < 0) {
+        fprintf(stderr,"error getting message from server: %m");
+        return -1;
+    }
+    if (l < sizeof(mhdr) || l != sizeof(mhdr) + mhdr.lout || mhdr.cmd != cmd) {
+        fprintf(stderr,"error getting message from server: Bad format[%d,%d,%d]",l,mhdr.lout,mhdr.cmd);
+        return -1;
+    }
 	
 	if (lout)
 		*lout = mhdr.lout;

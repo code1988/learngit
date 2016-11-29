@@ -83,7 +83,7 @@ struct nlmsghdr {
 #define NLMSG_ALIGN(len) ( ((len)+NLMSG_ALIGNTO-1) & ~(NLMSG_ALIGNTO-1) )
 #define NLMSG_HDRLEN	 ((int) NLMSG_ALIGN(sizeof(struct nlmsghdr)))       // netlink消息头对齐后长度
 #define NLMSG_LENGTH(len) ((len) + NLMSG_HDRLEN)                            // netlink消息实际长（不含payload部分的填充）
-#define NLMSG_SPACE(len) NLMSG_ALIGN(NLMSG_LENGTH(len))                     // netlink消息总长（含payload部分的填充）
+#define NLMSG_SPACE(len) NLMSG_ALIGN(NLMSG_LENGTH(len))                     // netlink消息头 + 填充 + len + 填充
 #define NLMSG_DATA(nlh)  ((void*)(((char*)nlh) + NLMSG_LENGTH(0)))          // netlink消息payload首地址
 // 下一条netlink消息
 #define NLMSG_NEXT(nlh,len)	 ((len) -= NLMSG_ALIGN((nlh)->nlmsg_len), \

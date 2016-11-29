@@ -9,11 +9,17 @@
 #endif
 
 #define M_NAME_LEN  32
+#define MAX_NODE_NUM 100
 
 typedef enum {
 	RPP_DISABLED = 0,
 	RPP_ENABLED,
-} RPP_MODE_T;
+} RPP_STATE_T;
+
+typedef enum {
+    RPP_COMPAT,
+    RPP_ENHANCED
+}RPP_MODE_T;
 
 typedef struct {
     unsigned char prio;
@@ -30,7 +36,7 @@ typedef struct {
 typedef enum {
     RING_DISABLED = 0,
     RING_ENABLED
-} RING_MODE_T;
+} RING_STATE_T;
 
 typedef enum {
 	RPP_FAULT = 0,
@@ -40,7 +46,6 @@ typedef enum {
 typedef enum {
 	NODE_TYPE_MASTER			= 0,
 	NODE_TYPE_TRANSIT			= 1,
-	NODE_TYPE_NNKNOWN           = 2
 } eNodeType;
 
 // 环配置参数标记位
@@ -124,8 +129,8 @@ typedef struct {
  *****************************************************************/
 typedef struct {
 	unsigned long   field_mask;     // 环配置参数标记字段
-	RPP_MODE_T      rpp_enabled;    // 环使能/禁止,暂时不用
-
+    RPP_STATE_T     rpp_state;      // 环网全局使能/禁止
+	RING_STATE_T    ring_state;     // 环使能/禁止,暂时不用
 	/* protocol data */
 	unsigned char   node_priority;  // 节点优先级
 	int             hello_time;        
@@ -135,11 +140,14 @@ typedef struct {
 } RPP_RING_CFG_T;
 
 typedef struct {
-	RING_MODE_T     state;        // 环使能/禁止
+    RPP_STATE_T     rpp_state;      // 环网全局使能/禁止
+    RPP_MODE_T      rpp_mode;       // 环网模式
+	RING_STATE_T    ring_state;     // 环使能/禁止
 	NODE_ID_T       node_id;      
 	BALLOT_ID_T     master_id;    
-	RING_STATUS_T   ring_status;  // 环状态
+	RING_STATUS_T   ring_status;    // 环状态
     eNodeType       node_role;
+    unsigned short  hello_seq;
 
     char            m_node_st[M_NAME_LEN];
 
@@ -147,7 +155,29 @@ typedef struct {
     RPP_PORT_STATE_T secondary;
 } RPP_RING_STATE_T;
 
+typedef struct {
+	unsigned char   port_no;
+    unsigned char   role;
+	unsigned char   stp;
 
+	unsigned char   neighber_mac[6];
+} RPP_PORT_SIMPL_T;
+
+typedef struct {
+    unsigned char   rpp_mode;       // 环网模式
+	NODE_ID_T       node_id;      
+	BALLOT_ID_T     master_id;    
+	unsigned char   status;    // 环状态
+    unsigned char   node_role;
+
+    RPP_PORT_SIMPL_T primary;
+    RPP_PORT_SIMPL_T secondary;
+} RPP_NODE_SIMPL_T;
+
+typedef struct {
+    unsigned char       num;
+    RPP_NODE_SIMPL_T    node[MAX_NODE_NUM];
+}RPP_RING_TOPO_T;
 
 #endif
 

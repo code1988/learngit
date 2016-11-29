@@ -16,22 +16,23 @@
 	CHOOSE(TRANSMIT_FORWARD),      \
 	CHOOSE(TRANSMIT_HELLO),      \
 	CHOOSE(TRANSMIT_COMPLETE),      \
-	CHOOSE(TRANSMIT_REPORT)      \
+	CHOOSE(TRANSMIT_REPORT),      \
+	CHOOSE(TRANSMIT_NODEDOWN),      \
+	CHOOSE(TRANSMIT_COMMCMD)      \
 }
 
 #define GET_STATE_NAME RPP_transmit_get_state_name
 #include "choose.h"
 
-static Bool ballot_force = False;
 
 static RPP_PDU_T pdu_packet  = {
 	{	/* RPP_HEADER_T, 30 bytes */
 		{0x0D, 0xA4, 0x2A, 0x00, 0x00, 0x05},       /* dst_mac */
         //{0x01, 0x80, 0xc2, 0x00, 0x00, 0x00},
 		{0x00, 0x00, 0x00, 0x00, 0x00, 0x00},       /* --src_mac */ 
-		{0x40, 0x00, 0x00, 0x00},                   /* dsa */ 
-		{0x81, 0x00},                               /* ether_type: 802.1Q */
-		{0xef, 0xfe},                               /* vlan_tag: prio: 7, vid:4094 */
+		{0x60, 0x00, 0xef, 0xfe},                   /* dsa */ 
+		//{0x81, 0x00},                               /* ether_type: 802.1Q */
+		//{0xef, 0xfe},                               /* vlan_tag: prio: 7, vid:4094 */
 		{0x00, 0x48},                               /* len8023 */
 		 0xaa, 0xaa, 0x03,                          /* dsap, ssap, llc */
 		{0x0c, 0xa4, 0x2a},                         /* obtelecom */
@@ -40,7 +41,7 @@ static RPP_PDU_T pdu_packet  = {
 	{	/* RPP_BODY_T, 28 bytes + 36 bytes = 64 bytes */
 		{0x99, 0x0b},                               /* res1[2] */
 		{0x00, 0x40},                               /* length[2] */
-		 0x01,                                      /* version */
+		 0x01,                                      /* version: old platform = 1; new platform = 2*/
 		 0x00,                                      /* --packet_type */
 		{0x00,0x00},                                /* --domain_id[2] */
 		{0x00,0x00},                                /* --ring_id[2] */
@@ -88,14 +89,7 @@ static void rpp_fill_body(rppPort_t *port,unsigned char type)
         *(unsigned short *)pdu_packet.body.hello_seq    = 0;
         *(unsigned short *)pdu_packet.body.hello_time   = 0;
         *(unsigned short *)pdu_packet.body.fail_time    = 0;
-
-        if(type == PACKET_BALLOT)
-        {
-            pdu_packet.body.res3[0] = ballot_force;
-            ballot_force            = False;
-        }
-        else
-            pdu_packet.body.res3[0] = 0;
+        pdu_packet.body.res3[0]                         = 0;
     }
 }
 
@@ -130,10 +124,17 @@ static int rpp_txBallot (STATE_MACH_T* this)
     memset(&pdu_packet.body.msg,0,RPP_MSG_DATA_SIZE);
     rpp_fill_body(port,PACKET_BALLOT);
 
-    if(port->flag.f_tx & F_TX_BALLOT_ITTV)
+    if(port->flag.f_tx & F_TX_BLT_ITTV_PLUS)
     {
-        ballot->type = MSG_BALLOT_INITIATIVE;
-        port->flag.f_tx &= ~F_TX_BALLOT_ITTV;
+        ballot->type        = MSG_BALLOT_INITIATIVE;
+        ballot->sub_type    = 0;
+        port->flag.f_tx     &= ~F_TX_BLT_ITTV_PLUS;
+    }
+    else if(port->flag.f_tx & F_TX_BLT_ITTV_MINUS)
+    {
+        ballot->type        = MSG_BALLOT_INITIATIVE;
+        ballot->sub_type    = 1;
+        port->flag.f_tx     &= ~F_TX_BLT_ITTV_MINUS;
     }
     else if(port->flag.f_tx & F_TX_BALLOT_PSSV)
     {
@@ -141,6 +142,7 @@ static int rpp_txBallot (STATE_MACH_T* this)
         port->flag.f_tx &= ~F_TX_BALLOT_PSSV;
     }
 	        
+    ballot->mode = ring_get_mode(port->owner);
     ballot->port = port->port_index;
     memcpy(&ballot->id,RPP_OUT_get_nodeid(port->owner),sizeof(NODE_ID_T));
 
@@ -178,15 +180,14 @@ static int rpp_txComplete(STATE_MACH_T* this)
     memset(&pdu_packet.body.msg,0,RPP_MSG_DATA_SIZE);
     rpp_fill_body(port,PACKET_COMPLETE);
     
-    if(port->flag.opt == NULL)
+    if(port->flag.complete.type == 0)
     {
         LOG_ERROR("tmp buffer in port %d is empty",port->port_index);
         return -1;    
     }
 
-    memcpy(compl,port->flag.opt,sizeof(tRMsgComplete));
-    free(port->flag.opt);
-    port->flag.opt  = NULL;
+    memcpy(compl,&port->flag.complete,sizeof(tRMsgComplete));
+    memset(&port->flag.complete,0,sizeof(tRMsgComplete));
     port->flag.f_tx &= ~F_TX_COMPLETE;
 
     return RPP_OUT_tx_pdu (port->port_index, (unsigned char *)&pdu_packet, sizeof(RPP_PDU_T));
@@ -195,21 +196,62 @@ static int rpp_txComplete(STATE_MACH_T* this)
 static int rpp_txReport(STATE_MACH_T* this)
 {
     register rppPort_t  *port       = this->owner.port;
-    register tRMsgLinkDown *report  = &pdu_packet.body.msg.linkdown;
+    register tRMsgReport *report    = &pdu_packet.body.msg.report;
 
     memset(&pdu_packet.body.msg,0,RPP_MSG_DATA_SIZE);
-    rpp_fill_body(port,PACKET_LINKDOWN);
+    rpp_fill_body(port,PACKET_REPORT);
     
-    if(port->flag.opt == NULL)
+    if(port->flag.down.type == 0)
     {
         LOG_ERROR("tmp buffer in port %d is empty",port->port_index);
         return -1;    
     }
 
-    memcpy(report,port->flag.opt,sizeof(tRMsgLinkDown));
-    free(port->flag.opt);
-    port->flag.opt  = NULL;
+    memcpy(report,&port->flag.down,sizeof(tRMsgReport));
+    memset(&port->flag.down,0,sizeof(tRMsgReport));
     port->flag.f_tx &= ~F_TX_REPORT;
+
+    return RPP_OUT_tx_pdu (port->port_index, (unsigned char *)&pdu_packet, sizeof(RPP_PDU_T));
+}
+
+static int rpp_txNodeDown(STATE_MACH_T* this)
+{
+    register rppPort_t  *port   = this->owner.port;
+    register tRMsgNodeDown *ndown = &pdu_packet.body.msg.nodedown;
+
+    memset(&pdu_packet.body.msg,0,RPP_MSG_DATA_SIZE);
+    rpp_fill_body(port,PACKET_NODEDOWN);
+
+    if(port->flag.ndown.type == 0)
+    {
+        LOG_ERROR("tmp buffer in port %d is empty",port->port_index);
+        return -1;    
+    }
+
+    memcpy(ndown,&port->flag.ndown,sizeof(tRMsgNodeDown));
+    memset(&port->flag.ndown,0,sizeof(tRMsgNodeDown));
+    port->flag.f_tx &= ~F_TX_NODEDOWN;
+
+    return RPP_OUT_tx_pdu (port->port_index, (unsigned char *)&pdu_packet, sizeof(RPP_PDU_T));
+}
+
+static int rpp_txCommcmd(STATE_MACH_T* this)
+{
+    register rppPort_t  *port   = this->owner.port;
+    register tRMsgCmd *cmd      = &pdu_packet.body.msg.cmd;
+
+    memset(&pdu_packet.body.msg,0,RPP_MSG_DATA_SIZE);
+    rpp_fill_body(port,PACKET_COMMAND);
+
+    if(port->flag.cmd.type == 0)
+    {
+        LOG_ERROR("tmp buffer in port %d is empty",port->port_index);
+        return -1;    
+    }
+
+    memcpy(cmd,&port->flag.cmd,sizeof(tRMsgCmd));
+    memset(&port->flag.cmd,0,sizeof(tRMsgCmd));
+    port->flag.f_tx &= ~F_TX_CMD;
 
     return RPP_OUT_tx_pdu (port->port_index, (unsigned char *)&pdu_packet, sizeof(RPP_PDU_T));
 }
@@ -220,10 +262,8 @@ static int rpp_txForwarding(STATE_MACH_T* this)
 	unsigned char hport;
 		
 	RPP_OUT_l2hport(port->port_index,&hport);
-    port->fwding.hdr.dsa_tag[0] = 0x40;
+    port->fwding.hdr.dsa_tag[0] = 0x60;
     port->fwding.hdr.dsa_tag[1] = hport << 3;
-    port->fwding.hdr.dsa_tag[2] = 0x00;
-    port->fwding.hdr.dsa_tag[3] = 0x00;
 	port->fwding.body.port_id   = port->port_index;
     port->flag.f_tx             &= ~F_TX_FORWARDING;
 
@@ -268,6 +308,14 @@ void RPP_transmit_enter_state (STATE_MACH_T* this)
 			rpp_txReport(this);
             log_info("  \033[1;33m<transmit machine> port %d in send report packet status\033[0m",port->port_index);
             break;
+        case TRANSMIT_NODEDOWN:
+			rpp_txNodeDown(this);
+            log_info("  \033[1;33m<transmit machine> port %d in send nodedown packet status\033[0m",port->port_index);
+            break;
+        case TRANSMIT_COMMCMD:
+			rpp_txCommcmd(this);
+            log_info("  \033[1;33m<transmit machine> port %d in send commcmd packet status\033[0m",port->port_index);
+            break;
 	}
 }
 
@@ -283,7 +331,7 @@ Bool RPP_transmit_check_conditions (STATE_MACH_T* this)
 		case IDLE:
 			if(port->flag.f_tx & (F_TX_AUTH_REQ | F_TX_AUTH_TACK))
 				return RPP_hop_2_state (this, TRANSMIT_AUTH);
-			if(port->flag.f_tx & (F_TX_BALLOT_ITTV | F_TX_BALLOT_PSSV))
+			if(port->flag.f_tx & (F_TX_BLT_ITTV_MINUS | F_TX_BLT_ITTV_PLUS | F_TX_BALLOT_PSSV))
 				return RPP_hop_2_state (this, TRANSMIT_BALLOT);
 			if(port->flag.f_tx & F_TX_FORWARDING) 
 				return RPP_hop_2_state (this, TRANSMIT_FORWARD);
@@ -293,6 +341,10 @@ Bool RPP_transmit_check_conditions (STATE_MACH_T* this)
 				return RPP_hop_2_state (this, TRANSMIT_COMPLETE);
             if(port->flag.f_tx & F_TX_REPORT)
 				return RPP_hop_2_state (this, TRANSMIT_REPORT);
+            if(port->flag.f_tx & F_TX_NODEDOWN)
+				return RPP_hop_2_state (this, TRANSMIT_NODEDOWN);
+            if(port->flag.f_tx & F_TX_CMD)
+				return RPP_hop_2_state (this, TRANSMIT_COMMCMD);
 		    break;
         case TRANSMIT_AUTH:
             return RPP_hop_2_state(this,IDLE);
@@ -306,11 +358,11 @@ Bool RPP_transmit_check_conditions (STATE_MACH_T* this)
             return RPP_hop_2_state(this,IDLE);
         case TRANSMIT_REPORT:
             return RPP_hop_2_state(this,IDLE);
+        case TRANSMIT_NODEDOWN:
+            return RPP_hop_2_state(this,IDLE);
+        case TRANSMIT_COMMCMD:
+            return RPP_hop_2_state(this,IDLE);
 	}
 	return False;
 }
 
-void RPP_transmit_balllot_patch(Bool force)
-{
-    ballot_force = force;
-}
