@@ -43,7 +43,7 @@ struct sockaddr_nl {
 
 // netlink消息头
 struct nlmsghdr {
-	__u32		nlmsg_len;	// netlink消息实际长（header + payload）
+	__u32		nlmsg_len;	// netlink消息头 + 填充 + payload
 	__u16		nlmsg_type;	// netlink消息类型
 	__u16		nlmsg_flags;// 附加的标志位,定义见下面的 NLM_F_*
 	__u32		nlmsg_seq;	// 序号（用于追踪）
@@ -80,18 +80,19 @@ struct nlmsghdr {
 
 // netlink消息长度需要4字节对齐
 #define NLMSG_ALIGNTO	4U
-#define NLMSG_ALIGN(len) ( ((len)+NLMSG_ALIGNTO-1) & ~(NLMSG_ALIGNTO-1) )
-#define NLMSG_HDRLEN	 ((int) NLMSG_ALIGN(sizeof(struct nlmsghdr)))       // netlink消息头对齐后长度
-#define NLMSG_LENGTH(len) ((len) + NLMSG_HDRLEN)                            // netlink消息实际长（不含payload部分的填充）
+#define NLMSG_ALIGN(len) ( ((len)+NLMSG_ALIGNTO-1) & ~(NLMSG_ALIGNTO-1) )   // NLMSG_ALIGNTO字节对齐
+#define NLMSG_HDRLEN	 ((int) NLMSG_ALIGN(sizeof(struct nlmsghdr)))       // netlink消息头 + 填充
+#define NLMSG_LENGTH(len) ((len) + NLMSG_HDRLEN)                            // netlink消息头 + 填充 + len
 #define NLMSG_SPACE(len) NLMSG_ALIGN(NLMSG_LENGTH(len))                     // netlink消息头 + 填充 + len + 填充
 #define NLMSG_DATA(nlh)  ((void*)(((char*)nlh) + NLMSG_LENGTH(0)))          // netlink消息payload首地址
 // 下一条netlink消息
 #define NLMSG_NEXT(nlh,len)	 ((len) -= NLMSG_ALIGN((nlh)->nlmsg_len), \
 				  (struct nlmsghdr*)(((char*)(nlh)) + NLMSG_ALIGN((nlh)->nlmsg_len)))
-// netlink消息合法性检测
+// 单独一条netlink消息合法性检测
 #define NLMSG_OK(nlh,len) ((len) >= (int)sizeof(struct nlmsghdr) && \
 			   (nlh)->nlmsg_len >= sizeof(struct nlmsghdr) && \
 			   (nlh)->nlmsg_len <= (len))
+// 如果len = 0则意味着计算netlink消息payload长度，如果len取sizeof(family-header)意味着计算attributes长度
 #define NLMSG_PAYLOAD(nlh,len) ((nlh)->nlmsg_len - NLMSG_SPACE((len)))
 
 #define NLMSG_NOOP		0x1	/* Nothing.		*/
@@ -162,9 +163,9 @@ enum {
  * +---------------------+- - -+- - - - - - - - - -+- - -+
  *  <-------------- nlattr->nla_len -------------->
  */
-// 属性头
+// netlink消息attributes结构中的标准头格式
 struct nlattr {
-	__u16           nla_len;    // 属性实际长度，不包含为尾部padding
+	__u16           nla_len;    // 属性实际长度，不包含尾部padding
 	__u16           nla_type;   // 属性类型
 };
 

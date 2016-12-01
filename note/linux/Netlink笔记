@@ -22,50 +22,94 @@ netlink涉及的数据结构：
             RTMGRP_IPV6_IFADDR  - 当ipv6地址变动时会触发这个多播组，例如通过DHCP获取到地址后
             RTMGRP_IPV6_ROUTE   - 当ipv6路由变动时会触发这个多播组
 
-    2） netlink消息头结构
-            struct nlmsghdr {
-                unsigned int    nlmsg_len;  // 消息实际长（nlmsghdr + payload）
-                unsigned short  nlmsg_type; // 消息类型
-                unsigned short  nlmsg_flags;// 附加的标志位,用来对消息进行额外的控制,NLM_F_*
-                unsigned int    nlmsg_seq;  // 序号（用于追踪）
-                unsigned int    nlmsg_pid;  // 进程ID（用于追踪）
-            }
-
-            消息类型：
-                NETLINK_ROUTE的消息类型定义位于rtnetlink.h，RTM_*格式，这里列出常用的几个：
-                RTM_NEWLINK/RTM_DELLINK     - 当网卡变动时内核会发出这个消息
-                RTM_NEWADDR/RTM_DELADDR     - 当地址变动时内核会发出这个消息
-                RTM_NEWROUTE/RTM_DELROUTE   - 当路由变动时内核会发出这个消息
-
-            附加标志位：
-                NLM_F_REQUEST   - 表示消息是一个请求。所有用户首先发起的消息都要设置该标志，可以和GET request和NEW request系列标志组合
-                NLM_F_MULTI     - 表示消息由多个分部组成，最后一个分部的消息会标注NLMSG_DONE
-                NLM_F_ACK       - 表示这是一条ACK消息，具体内容就是承载了一个返回值（0或错误代号）
-                NLM_F_ECHO      - echo this request
-                NLM_F_DUMP_INTER
-            GET request系列的标志位：
-                NLM_F_ROOT      - 表示被请求的数据应当整体返回用户应用，而不是一条一条返回，有该标志的request通常导致响应的消息设置NLM_F_MULTI标志
-                NLM_F_MATCH     - 表示被请求的数据将会通过指定的过滤器来匹配（通常是用户设置了过滤器时使用该标记）
-                NLM_F_ATOMIC   
-                NLM_F_DUMP      - NLM_F_ROOT和NLM_F_MATCH的合集
-            NEW request系列的标志位：
-                暂略
-        
-            根据不同的消息类型，消息payload中的族头又分为不同的格式：
-                // retnetlink消息最小的族头格式
-                struct rtgenmsg {
-                    unsigned char rtgen_family;     // 协议族 
+    2） netlink消息结构： 
+            nlmsghdr + pad + payload + pad    +    nlmsghdr + pad + payload + pad    ...
+        可以看出来，netlink消息在顶层呈现数组形式平行排列，也就是说，多条netlink消息可以以数组形式一次性传输
+        ====================================================================================================
+            netlink消息头结构
+                struct nlmsghdr {
+                    unsigned int    nlmsg_len;  // 消息实际长（nlmsghdr + payload）
+                    unsigned short  nlmsg_type; // 消息类型
+                    unsigned short  nlmsg_flags;// 附加的标志位,用来对消息进行额外的控制,NLM_F_*
+                    unsigned int    nlmsg_seq;  // 序号（用于追踪）
+                    unsigned int    nlmsg_pid;  // 进程ID（用于追踪）
                 }
-                // 链路层消息的族头
-                struct ifinfomsg {
-                    unsigned char ifi_family;       // 协议族
-                    unsigned char __ifi_pad;        // 1字节填充，用于对齐，无含义
-                    unsigned short ifi_type;        // ARPHRD_* 格式   
-                    int ifi_index;                  // 接口序号
-                    unsigned ifi_flags;             // 标准的接口标志位集合，定义在/net/if.h中，IFF_* 格式
-                    unsigned ifi_change;            // IFF_* 格式
-                }
-                
+
+                消息类型：
+                    NETLINK_ROUTE的消息类型定义位于rtnetlink.h，RTM_*格式，这里列出常用的几个：
+                    RTM_NEWLINK/RTM_DELLINK     - 当网卡变动时内核会发出这个消息
+                    RTM_NEWADDR/RTM_DELADDR     - 当地址变动时内核会发出这个消息
+                    RTM_NEWROUTE/RTM_DELROUTE   - 当路由变动时内核会发出这个消息
+
+                附加标志位：
+                    NLM_F_REQUEST   - 表示消息是一个请求。所有用户首先发起的消息都要设置该标志，可以和GET request和NEW request系列标志组合
+                    NLM_F_MULTI     - 表示消息由多个分部组成，最后一个分部的消息会标注NLMSG_DONE
+                    NLM_F_ACK       - 表示这是一条ACK消息，具体内容就是承载了一个返回值（0或错误代号）
+                    NLM_F_ECHO      - echo this request
+                    NLM_F_DUMP_INTER
+                GET request系列的标志位：
+                    NLM_F_ROOT      - 表示被请求的数据应当整体返回用户应用，而不是一条一条返回，有该标志的request通常导致响应的消息设置NLM_F_MULTI标志
+                    NLM_F_MATCH     - 表示被请求的数据将会通过指定的过滤器来匹配（通常是用户设置了过滤器时使用该标记）
+                    NLM_F_ATOMIC   
+                    NLM_F_DUMP      - NLM_F_ROOT和NLM_F_MATCH的合集
+                NEW request系列的标志位：
+                    暂略
+
+            ================================================================================================
+            netlink消息payload结构:
+                family-header + pad + attributes
+            ================================================================================================
+                payload中的family-header有不同的格式可以采用：
+                    // retnetlink协议通用的族头格式
+                    struct rtgenmsg {
+                        unsigned char rtgen_family;     // 协议族 
+                    }
+                    // rtnetlink协议的网络接口消息（如RTM_NEWLINK）的族头
+                    struct ifinfomsg {
+                        unsigned char ifi_family;       // 协议族
+                        unsigned char __ifi_pad;        // 1字节填充，用于对齐，无含义
+                        unsigned short ifi_type;        // ARPHRD_* 格式   
+                        int ifi_index;                  // 接口序号
+                        unsigned ifi_flags;             // 标准的接口标志位集合，定义在/net/if.h中，IFF_* 格式
+                        unsigned ifi_change;            // IFF_* 格式
+                    }
+                    // rtnetlink协议的地址消息(如RTM_NEWADDR)的族头
+                    struct ifaddrmsg {
+                        unsigned char ifa_family;
+                        unsigned char ifa_prefixlen;
+                        unsigned char ifa_flags;
+                        unsigned char ifa_scope;
+                        unsigned int  ifa_index;
+                    }
+                    // rtnetlink协议的路由消息（如RTM_NEWROUTE）的族头
+                    struct rtmsg {
+                        unsigned char rtm_family;
+                        unsigned char rtm_dst_len;
+                        unsigned char rtm_src_len;
+                        unsigned char rtm_tos;
+                        unsigned char rtm_table;
+                        unsigned char rtm_protocol;
+                        unsigned char rtm_scope;
+                        unsigned char rtm_type;
+                        unsigned      rtm_flags;
+                    }
+                =========================================================================================================
+                payload中的attributes结构：
+                    header + pad + payload + pad    +    header + pad + payload + pad    ....
+                可以看出，每个attribute结构也是呈数组形式平行排列，也就是说，一条独立的netlink消息内可以携带多条attribute
+                =========================================================================================================
+                    attribute中的header标准形式为
+                        struct nlattr {
+                            unsigned short nla_len;     // header + pad + payload
+                            unsigned short nla_type;    // attribute类型
+                        }
+                    实际使用时，不同的netlink协议会有相应的header格式，NETLINK_ROUTE协议对应的header为
+                        struct rtattr {
+                            unsigned short rta_len;
+                            unsigned short rta_type;
+                        }
+                        rta_type跟netlink消息类型密切相关
+                    
 
 netlink socket API:
     1)  socket()函数
@@ -90,7 +134,7 @@ netlink socket API:
             如果是发往内核，nl_pid和nl_groups都应该设置为0；
             如果是发往另外一个进程的单点传输消息，nl_pid设置为接收进程的pid，nl_groups设置为0;
             如果是发送一个或多个组播消息，需要对nl_groups和每个类型组播消息进行 " | "运算(这种情况下nl_pid如何设置待考证)
-        发送netlink消息时需要一个自身的消息头，这样做是为了给所有协议类型的netlink消息提供一个通用的背景，
+        发送netlink消息时需要一个自身的消息头nlmsghdr，这样做是为了给所有协议类型的netlink消息提供一个通用的背景，
         而且kernel中的netlink部分总是认为在每个netlink消息中已经包含了消息头。
         发送netlink消息时采用的payload类型根据实际情况选择
             

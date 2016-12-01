@@ -85,7 +85,7 @@ struct rtnl_link_ifmap {
  *   Contains nested attributes for address family specific attributes.
  *   Each address family may create a attribute with the address family
  *   number as type and create its own attribute structure in it.
- *   所有的属性类型集合
+ *   网络接口消息(如RTM_GETLINK等)属性类型集合
  *   类似ubus中每条method的参数,嵌套规则也类似
  *   Example:
  *   [IFLA_AF_SPEC] = {
@@ -153,8 +153,9 @@ enum {
 
 /* backwards compatibility for userspace */
 #ifndef __KERNEL__
-// 获取ifinfomsg类型消息的属性结构首地址,r是ifinfomsg首地址
+// 获取ifinfomsg类型消息的attributes结构首地址,r是ifinfomsg首地址
 #define IFLA_RTA(r)  ((struct rtattr*)(((char*)(r)) + NLMSG_ALIGN(sizeof(struct ifinfomsg))))
+// 获取ifinfomsg类型消息的attributes长度
 #define IFLA_PAYLOAD(n) NLMSG_PAYLOAD(n,sizeof(struct ifinfomsg))
 #endif
 

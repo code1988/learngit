@@ -1506,7 +1506,7 @@ lldpd_main(int argc, char *argv[], char *envp[])
 			else
 				debug++;
 			break;
-		case 'D':
+		case 'D':   // 指定一个调试符号
 			log_accept(optarg);
 			break;
 		case 'r':
@@ -1519,14 +1519,14 @@ lldpd_main(int argc, char *argv[], char *envp[])
 			}
 			mgmtp = strdup(optarg);
 			break;
-		case 'u':
+		case 'u':   // 设置一个本地服务端地址
 			if (ctlname) {
 				fprintf(stderr, "-u can only be used once\n");
 				usage();
 			}
 			ctlname = optarg;
 			break;
-		case 'I':
+		case 'I':   // 设置一组接口名
 			if (interfaces) {
 				fprintf(stderr, "-I can only be used once\n");
 				usage();
@@ -1540,7 +1540,7 @@ lldpd_main(int argc, char *argv[], char *envp[])
 			}
 			cidp = strdup(optarg);
 			break;
-		case 'L':
+		case 'L':   // 指定lldpcli进程
 			if (strlen(optarg)) lldpcli = optarg;
 			else lldpcli = NULL;
 			break;
@@ -1548,7 +1548,7 @@ lldpd_main(int argc, char *argv[], char *envp[])
 			advertise_version = 0;
 			break;
 #ifdef ENABLE_LLDPMED
-		case 'M':
+		case 'M':   // 指定lldpmed值
 			lldpmed = strtonum(optarg, 1, 4, &errstr);
 			if (errstr) {
 				fprintf(stderr, "-M requires an argument between 1 and 4\n");
@@ -1569,7 +1569,7 @@ lldpd_main(int argc, char *argv[], char *envp[])
 		case 'x':
 			snmp = 1;
 			break;
-		case 'X':
+        case 'X':   // 指定snmp服务端地址: /var/agentx/master
 			if (agentx) {
 				fprintf(stderr, "-X can only be used once\n");
 				usage();
@@ -1584,13 +1584,13 @@ lldpd_main(int argc, char *argv[], char *envp[])
 			usage();
 #endif
 			break;
-                case 'S':
+        case 'S':   // 指定系统描述
 			if (descr_override) {
 				fprintf(stderr, "-S can only be used once\n");
 				usage();
 			}
-                        descr_override = strdup(optarg);
-                        break;
+            descr_override = strdup(optarg);
+            break;
 		case 'P':
 			if (platform_override) {
 				fprintf(stderr, "-P can only be used once\n");
@@ -1626,7 +1626,7 @@ lldpd_main(int argc, char *argv[], char *envp[])
 		exit(0);
 	}
 
-    // 设置unix-domain socket: lldpd.socket
+    // 设置unix-domain socket: /var/run/lldpd.socket
 	if (ctlname == NULL) ctlname = LLDPD_CTL_SOCKET;
 
 	/* Set correct smart mode */

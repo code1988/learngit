@@ -575,8 +575,10 @@ void levent_loop(struct lldpd *cfg)
 #endif
 
 	/* libevent loop */
+    // 使用阻塞的方式进入事件循环
 	do {
 		TRACE(LLDPD_EVENT_LOOP());
+        // 检查退出循环的原因,如果是因为调用了break/exit操作，则不再进入循环
 		if (event_base_got_break(cfg->g_base) ||
 		    event_base_got_exit(cfg->g_base))
 			break;

@@ -144,8 +144,8 @@ enum {
    Generic structure for encapsulation of optional route information.
    It is reminiscent of sockaddr, but with sa_family replaced
    with attribute type.
+   这是一个NETLINK_ROUTE协议下attribute头的通用封装，根据不同的rtnetlink消息，rta_type代表不同意义
  */
-
 struct rtattr {
 	unsigned short	rta_len;
 	unsigned short	rta_type;
@@ -154,16 +154,18 @@ struct rtattr {
 /* Macros to handle rtattributes */
 
 #define RTA_ALIGNTO	4
-#define RTA_ALIGN(len) ( ((len)+RTA_ALIGNTO-1) & ~(RTA_ALIGNTO-1) )
+#define RTA_ALIGN(len) ( ((len)+RTA_ALIGNTO-1) & ~(RTA_ALIGNTO-1) )     // RTA_ALIGNTO字节对齐
+// 判断attribute单元是否合法
 #define RTA_OK(rta,len) ((len) >= (int)sizeof(struct rtattr) && \
 			 (rta)->rta_len >= sizeof(struct rtattr) && \
 			 (rta)->rta_len <= (len))
+// 获取下一条attribute单元
 #define RTA_NEXT(rta,attrlen)	((attrlen) -= RTA_ALIGN((rta)->rta_len), \
 				 (struct rtattr*)(((char*)(rta)) + RTA_ALIGN((rta)->rta_len)))
-#define RTA_LENGTH(len)	(RTA_ALIGN(sizeof(struct rtattr)) + (len))      // 属性部分实际长度（不包含属性尾部padding）
-#define RTA_SPACE(len)	RTA_ALIGN(RTA_LENGTH(len))
-#define RTA_DATA(rta)   ((void*)(((char*)(rta)) + RTA_LENGTH(0)))
-#define RTA_PAYLOAD(rta) ((int)((rta)->rta_len) - RTA_LENGTH(0))
+#define RTA_LENGTH(len)	(RTA_ALIGN(sizeof(struct rtattr)) + (len))      // rtattr + pad + len
+#define RTA_SPACE(len)	RTA_ALIGN(RTA_LENGTH(len))                      // rtattr + pad + len + pad
+#define RTA_DATA(rta)   ((void*)(((char*)(rta)) + RTA_LENGTH(0)))       // attribute的payload首地址
+#define RTA_PAYLOAD(rta) ((int)((rta)->rta_len) - RTA_LENGTH(0))        // attribute的payload长度
 
 
 
@@ -171,7 +173,7 @@ struct rtattr {
 /******************************************************************************
  *		Definitions used in routing table administration.
  ****/
-
+// rtnetlink协议的路由消息（如RTM_NEWROUTE）的族头
 struct rtmsg {
 	unsigned char		rtm_family;
 	unsigned char		rtm_dst_len;
@@ -277,7 +279,7 @@ enum rt_class_t {
 
 
 /* Routing message attributes */
-
+// 路由消息(如RTM_GETROUTE)属性类型
 enum rtattr_type_t {
 	RTA_UNSPEC,
 	RTA_DST,
@@ -425,11 +427,11 @@ struct rta_mfc_stats {
 	__u64	mfcs_wrong_if;
 };
 
-// 以下是几种预定义的rtnetlink消息payload部分的族头
+// 以下是几种预定义的rtnetlink协议的payload结构中的的family-header
 /****
  *		General form of address family dependent message.
  ****/
-// rtnetlink消息最小族头
+// rtnetlink协议通用族头
 struct rtgenmsg {
 	unsigned char		rtgen_family;   // 协议族
 };
@@ -442,7 +444,7 @@ struct rtgenmsg {
  * passes link level specific information, not dependent
  * on network protocol.
  */
-// rtnetlink消息之链路层信息的族头
+// rtnetlink协议的网络接口消息（如RTM_GETLINK）的族头
 struct ifinfomsg {
 	unsigned char	ifi_family;     // 协议族
 	unsigned char	__ifi_pad;      // 1字节填充，用于对齐，无含义

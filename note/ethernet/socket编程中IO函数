@@ -8,6 +8,9 @@ send和write唯一的不同点是flags的存在，当flags为0时，send等于wr
 sendto和send唯一的不同点是支持目的地址传入，当面向基于连接的socket时，sendto等于send.
 sendmsg除了支持一般数据的发送，还支持多缓冲区数据发送以及附带辅助数据,这些额外功能的实现都是基于msghdr
 
+返回值：
+    发送成功返回实际发送的字节数，需要注意sendmsg实际发送的字节数应该是多个缓冲区数据总和
+    发送失败返回-1,错误见errno
 
 flags标志可以取0或"|"以下值：
     MSG_DONTROUTE   : 不使用网关来发包，只发送到直接联网的主机，该标志只用于路由协议族

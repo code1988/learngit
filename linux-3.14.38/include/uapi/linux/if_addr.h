@@ -4,6 +4,7 @@
 #include <linux/types.h>
 #include <linux/netlink.h>
 
+// rtnetlink协议的地址消息(如RTM_GETADDR)的族头
 struct ifaddrmsg {
 	__u8		ifa_family;
 	__u8		ifa_prefixlen;	/* The prefix length		*/
@@ -21,6 +22,7 @@ struct ifaddrmsg {
  *
  * IFA_FLAGS is a u32 attribute that extends the u8 field ifa_flags.
  * If present, the value from struct ifaddrmsg will be ignored.
+ * 地址消息(如RTM_GETADDR)的attribute类型
  */
 enum {
 	IFA_UNSPEC,

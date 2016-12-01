@@ -1456,14 +1456,15 @@ event_process_active(struct event_base *base)
  * Wait continuously for events.  We exit only if no events are left.
  */
 
-int
-event_dispatch(void)
+#if 0  // 已经废弃的函数
+int event_dispatch(void)
 {
 	return (event_loop(0));
 }
+#endif
 
-int
-event_base_dispatch(struct event_base *event_base)
+// event_base_loop的flags = 0版，行为类似于设置EVLOOP_ONCE时
+int event_base_dispatch(struct event_base *event_base)
 {
 	return (event_base_loop(event_base, 0));
 }
@@ -1484,28 +1485,30 @@ event_loopexit_cb(evutil_socket_t fd, short what, void *arg)
 	base->event_gotterm = 1;
 }
 
-int
-event_loopexit(const struct timeval *tv)
+#if 0  // 已经废弃的函数
+int event_loopexit(const struct timeval *tv)
 {
 	return (event_once(-1, EV_TIMEOUT, event_loopexit_cb,
 		    current_base, tv));
 }
+#endif
 
-int
-event_base_loopexit(struct event_base *event_base, const struct timeval *tv)
+// 让event base在给定时间后停止循环
+int event_base_loopexit(struct event_base *event_base, const struct timeval *tv)
 {
 	return (event_base_once(event_base, -1, EV_TIMEOUT, event_loopexit_cb,
 		    event_base, tv));
 }
 
-int
-event_loopbreak(void)
+#if 0  // 已经废弃的函数
+int event_loopbreak(void)
 {
 	return (event_base_loopbreak(current_base));
 }
+#endif
 
-int
-event_base_loopbreak(struct event_base *event_base)
+// 让event base立即停止循环
+int event_base_loopbreak(struct event_base *event_base)
 {
 	int r = 0;
 	if (event_base == NULL)
@@ -1523,8 +1526,8 @@ event_base_loopbreak(struct event_base *event_base)
 	return r;
 }
 
-int
-event_base_got_break(struct event_base *event_base)
+// 获取event base 中的break标志
+int event_base_got_break(struct event_base *event_base)
 {
 	int res;
 	EVBASE_ACQUIRE_LOCK(event_base, th_base_lock);
@@ -1533,8 +1536,8 @@ event_base_got_break(struct event_base *event_base)
 	return res;
 }
 
-int
-event_base_got_exit(struct event_base *event_base)
+// 获取event base 中的exit标志
+int event_base_got_exit(struct event_base *event_base)
 {
 	int res;
 	EVBASE_ACQUIRE_LOCK(event_base, th_base_lock);
@@ -1545,14 +1548,17 @@ event_base_got_exit(struct event_base *event_base)
 
 /* not thread safe */
 
-int
-event_loop(int flags)
+#if 0  // 已经废弃的函数
+int event_loop(int flags)
 {
 	return event_base_loop(current_base, flags);
 }
+#endif
 
-int
-event_base_loop(struct event_base *base, int flags)
+/* 执行循环
+ * flags参数决定了循环是否阻塞
+ */
+int event_base_loop(struct event_base *base, int flags)
 {
 	const struct eventop *evsel = base->evsel;
 	struct timeval tv;
@@ -2631,14 +2637,14 @@ event_queue_insert(struct event_base *base, struct event *ev, int queue)
 
 /* Functions for debugging */
 
-const char *
-event_get_version(void)
+// 获取版本号字符串
+const char *event_get_version(void)
 {
 	return (_EVENT_VERSION);
 }
 
-ev_uint32_t
-event_get_version_number(void)
+// 获取版本号数值
+ev_uint32_t event_get_version_number(void)
 {
 	return (_EVENT_NUMERIC_VERSION);
 }
@@ -2648,8 +2654,8 @@ event_get_version_number(void)
  * for all threads.
  */
 
-const char *
-event_get_method(void)
+// 获取事件处理方法:select/poll/epoll/kqueue
+const char *event_get_method(void)
 {
 	return (current_base->evsel->name);
 }
