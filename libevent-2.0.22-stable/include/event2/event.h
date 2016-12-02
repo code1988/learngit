@@ -731,7 +731,10 @@ int event_base_got_break(struct event_base *);
  */
 /**@{*/
 /** Indicates that a timeout has occurred.  It's not necessary to pass
- * this flag to event_for new()/event_assign() to get a timeout. */
+ * this flag to event_for new()/event_assign() to get a timeout. 
+ * 该标志表示超时后相应事件会被激活
+ * 构造事件时，传入该标志是被忽略的，可以在添加事件时传入
+ * */
 #define EV_TIMEOUT	0x01
 /** Wait for a socket or FD to become readable */
 #define EV_READ		0x02
@@ -744,9 +747,12 @@ int event_base_got_break(struct event_base *);
  *
  * When a persistent event with a timeout becomes activated, its timeout
  * is reset to 0.
+ * 该标志表示事件是持久的，意味着即便事件被激活进而执行回调，事件本身其实还是保持为pending状态
  */
 #define EV_PERSIST	0x10
-/** Select edge-triggered behavior, if supported by the backend. */
+/** Select edge-triggered behavior, if supported by the backend. 
+ * 该标志表示事件为边沿触发，主要影响EV_READ和EV_WRITE
+ **/
 #define EV_ET       0x20
 /**@}*/
 
@@ -757,7 +763,7 @@ int event_base_got_break(struct event_base *);
 /**@{*/
 #define evtimer_assign(ev, b, cb, arg) \
 	event_assign((ev), (b), -1, 0, (cb), (arg))
-#define evtimer_new(b, cb, arg)	       event_new((b), -1, 0, (cb), (arg))
+#define evtimer_new(b, cb, arg)	       event_new((b), -1, 0, (cb), (arg))   // 创建纯超时事件
 #define evtimer_add(ev, tv)		event_add((ev), (tv))
 #define evtimer_del(ev)			event_del(ev)
 #define evtimer_pending(ev, tv)		event_pending((ev), EV_TIMEOUT, (tv))
@@ -773,6 +779,7 @@ int event_base_got_break(struct event_base *);
 #define evsignal_add(ev, tv)		event_add((ev), (tv))
 #define evsignal_assign(ev, b, x, cb, arg)			\
 	event_assign((ev), (b), (x), EV_SIGNAL|EV_PERSIST, cb, (arg))
+// 创建信号事件
 #define evsignal_new(b, x, cb, arg)				\
 	event_new((b), (x), EV_SIGNAL|EV_PERSIST, (cb), (arg))
 #define evsignal_del(ev)		event_del(ev)

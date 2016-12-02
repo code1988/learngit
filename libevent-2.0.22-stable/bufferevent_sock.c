@@ -313,8 +313,8 @@ bufferevent_writecb(evutil_socket_t fd, short event, void *arg)
 	_bufferevent_decref_and_unlock(bufev);
 }
 
-struct bufferevent *
-bufferevent_socket_new(struct event_base *base, evutil_socket_t fd,
+// 创建基于套接字的bufferevent 
+struct bufferevent *bufferevent_socket_new(struct event_base *base, evutil_socket_t fd,
     int options)
 {
 	struct bufferevent_private *bufev_p;

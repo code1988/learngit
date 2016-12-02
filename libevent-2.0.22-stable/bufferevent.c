@@ -340,8 +340,12 @@ bufferevent_init_common(struct bufferevent_private *bufev_private,
 	return 0;
 }
 
-void
-bufferevent_setcb(struct bufferevent *bufev,
+/* 设置bufferevent的3个回调函数（需要禁用某个可以填NULL）
+ * @readcb  已经读取足够的数据时触发回调
+ * @writecb 已经写入足够的数据时触发回调
+ * @eventcb 发生错误时触发回调
+ */
+void bufferevent_setcb(struct bufferevent *bufev,
     bufferevent_data_cb readcb, bufferevent_data_cb writecb,
     bufferevent_event_cb eventcb, void *cbarg)
 {
@@ -672,8 +676,8 @@ bufferevent_decref(struct bufferevent *bufev)
 	return _bufferevent_decref_and_unlock(bufev);
 }
 
-void
-bufferevent_free(struct bufferevent *bufev)
+// 释放bufferevent
+void bufferevent_free(struct bufferevent *bufev)
 {
 	BEV_LOCK(bufev);
 	bufferevent_setcb(bufev, NULL, NULL, NULL, NULL);

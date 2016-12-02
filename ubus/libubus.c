@@ -265,7 +265,7 @@ int ubus_send_event(struct ubus_context *ctx, const char *id,
 	return ubus_complete_request(ctx, &req, 0);
 }
 
-// 缺省的ubus连接丢失回调函数
+// 缺省的ubus连接丢失回调函数,这里是结束socket连接
 static void ubus_default_connection_lost(struct ubus_context *ctx)
 {
 	if (ctx->sock.registered)
@@ -337,7 +337,7 @@ void ubus_auto_connect(struct ubus_auto_conn *conn)
 	ubus_auto_connect_cb(&conn->timer);
 }
 
-// 创建客户端并发起连接（五层封装）
+// 创建ubus客户端并发起连接（五层封装）
 struct ubus_context *ubus_connect(const char *path)
 {
 	struct ubus_context *ctx;

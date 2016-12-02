@@ -309,7 +309,7 @@ int main(int argc, char **argv)
 	uloop_init();               // 创建epoll句柄
 	signal(SIGPIPE, SIG_IGN);   // 防止对端关闭后本端程序退出
 
-    // 创建客户端（五层封装）
+    // 创建ubus客户端（五层封装）
 	ctx = ubus_connect(ubus_socket);
 	if (!ctx) {
 		fprintf(stderr, "Failed to connect to ubus\n");

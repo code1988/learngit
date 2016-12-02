@@ -464,10 +464,10 @@ NEIGHBOR_CHANGE_ADDED	lldpd-structs.h	523;"	d
 NEIGHBOR_CHANGE_DELETED	lldpd-structs.h	522;"	d
 NEIGHBOR_CHANGE_UPDATED	lldpd-structs.h	524;"	d
 NETLINK_BUFFER	daemon/netlink.c	29;"	d	file:
-NETSNMP_LARGE_FD_CLR	daemon/event.c	73;"	d	file:
-NETSNMP_LARGE_FD_ISSET	daemon/event.c	75;"	d	file:
-NETSNMP_LARGE_FD_SET	daemon/event.c	72;"	d	file:
-NETSNMP_LARGE_FD_ZERO	daemon/event.c	74;"	d	file:
+NETSNMP_LARGE_FD_CLR	daemon/event.c	75;"	d	file:
+NETSNMP_LARGE_FD_ISSET	daemon/event.c	77;"	d	file:
+NETSNMP_LARGE_FD_SET	daemon/event.c	74;"	d	file:
+NETSNMP_LARGE_FD_ZERO	daemon/event.c	76;"	d	file:
 NEWLINE	client/client.h	63;"	d
 NEWLINE	client/client.h	66;"	d
 NONE	ctl.h	/^	NONE,$/;"	e	enum:hmsg_type
@@ -1693,7 +1693,7 @@ levent_ctl_send_cb	daemon/event.c	/^levent_ctl_send_cb(void *out, int type, void
 levent_dump	daemon/event.c	/^levent_dump(evutil_socket_t fd, short what, void *arg)$/;"	f	file:	signature:(evutil_socket_t fd, short what, void *arg)
 levent_hardware_add_fd	daemon/event.c	/^levent_hardware_add_fd(struct lldpd_hardware *hardware, int fd)$/;"	f	signature:(struct lldpd_hardware *hardware, int fd)
 levent_hardware_add_fd	daemon/lldpd.h	/^void	 levent_hardware_add_fd(struct lldpd_hardware *, int);$/;"	p	signature:(struct lldpd_hardware *, int)
-levent_hardware_fds	daemon/event.c	57;"	d	file:
+levent_hardware_fds	daemon/event.c	59;"	d	file:
 levent_hardware_init	daemon/event.c	/^levent_hardware_init(struct lldpd_hardware *hardware)$/;"	f	signature:(struct lldpd_hardware *hardware)
 levent_hardware_init	daemon/lldpd.h	/^void	 levent_hardware_init(struct lldpd_hardware *);$/;"	p	signature:(struct lldpd_hardware *)
 levent_hardware_recv	daemon/event.c	/^levent_hardware_recv(evutil_socket_t fd, short what, void *arg)$/;"	f	file:	signature:(evutil_socket_t fd, short what, void *arg)
@@ -1720,7 +1720,7 @@ levent_send_now	daemon/event.c	/^levent_send_now(struct lldpd *cfg)$/;"	f	signat
 levent_send_now	daemon/lldpd.h	/^void	 levent_send_now(struct lldpd *);$/;"	p	signature:(struct lldpd *)
 levent_send_pdu	daemon/event.c	/^levent_send_pdu(evutil_socket_t fd, short what, void *arg)$/;"	f	file:	signature:(evutil_socket_t fd, short what, void *arg)
 levent_snmp_add_fd	daemon/event.c	/^levent_snmp_add_fd(struct lldpd *cfg, int fd)$/;"	f	file:	signature:(struct lldpd *cfg, int fd)
-levent_snmp_fds	daemon/event.c	56;"	d	file:
+levent_snmp_fds	daemon/event.c	58;"	d	file:
 levent_snmp_read	daemon/event.c	/^levent_snmp_read(evutil_socket_t fd, short what, void *arg)$/;"	f	file:	signature:(evutil_socket_t fd, short what, void *arg)
 levent_snmp_timeout	daemon/event.c	/^static void levent_snmp_timeout(evutil_socket_t fd, short what, void *arg)$/;"	f	file:	signature:(evutil_socket_t fd, short what, void *arg)
 levent_snmp_update	daemon/event.c	/^levent_snmp_update(struct lldpd *cfg)$/;"	f	file:	signature:(struct lldpd *cfg)
@@ -2414,9 +2414,9 @@ netlink_req::gen	daemon/netlink.c	/^	struct rtgenmsg gen;$/;"	m	struct:netlink_r
 netlink_req::hdr	daemon/netlink.c	/^	struct nlmsghdr hdr;$/;"	m	struct:netlink_req	typeref:struct:netlink_req::nlmsghdr	file:	access:public
 netlink_send	daemon/netlink.c	/^static int netlink_send(int s, int type, int family, int seq)$/;"	f	file:	signature:(int s, int type, int family, int seq)
 netlink_subscribe_changes	daemon/netlink.c	/^int netlink_subscribe_changes()$/;"	f
-netsnmp_large_fd_set	daemon/event.c	67;"	d	file:
-netsnmp_large_fd_set_cleanup	daemon/event.c	71;"	d	file:
-netsnmp_large_fd_set_init	daemon/event.c	70;"	d	file:
+netsnmp_large_fd_set	daemon/event.c	69;"	d	file:
+netsnmp_large_fd_set_cleanup	daemon/event.c	73;"	d	file:
+netsnmp_large_fd_set_init	daemon/event.c	72;"	d	file:
 netsnmp_unix	daemon/agent_priv.c	/^static oid netsnmp_unix[] = { TRANSPORT_DOMAIN_LOCAL };$/;"	v	file:
 next	daemon/lldpd.h	/^	TAILQ_ENTRY(interfaces_address) next;$/;"	m	struct:interfaces_address	access:public
 next	daemon/lldpd.h	/^	TAILQ_ENTRY(interfaces_device) next;$/;"	m	struct:interfaces_device	access:public
@@ -2669,8 +2669,8 @@ size	lib/atom.h	/^	size_t size;	\/* Size of structure to allocate *\/$/;"	m	stru
 size	lldpd-structs.h	/^	int size;$/;"	m	struct:lldpd_frame	access:public
 size	marshal.c	/^	size_t        size;$/;"	m	struct:marshal_serialized	file:	access:public
 size	marshal.h	/^	size_t  size;		\/* Size of the structure *\/$/;"	m	struct:marshal_info	access:public
-snmp_read2	daemon/event.c	68;"	d	file:
-snmp_select_info2	daemon/event.c	69;"	d	file:
+snmp_read2	daemon/event.c	70;"	d	file:
+snmp_select_info2	daemon/event.c	71;"	d	file:
 sonmp_chassis	daemon/protocols/sonmp.h	/^struct sonmp_chassis {$/;"	s
 sonmp_chassis::description	daemon/protocols/sonmp.h	/^	char *description;$/;"	m	struct:sonmp_chassis	access:public
 sonmp_chassis::type	daemon/protocols/sonmp.h	/^	int type;$/;"	m	struct:sonmp_chassis	access:public

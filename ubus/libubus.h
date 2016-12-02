@@ -144,8 +144,8 @@ struct ubus_context {
 	struct avl_tree objects;
 	struct list_head pending;
 
-	struct uloop_fd sock;           // 需要被epoll监听的fd控制块
-	struct uloop_timeout pending_timer;
+	struct uloop_fd sock;               // 需要被epoll监听的fd控制块
+	struct uloop_timeout pending_timer; // 客户端超时回调函数
 
 	uint32_t local_id;
 	uint16_t request_seq;

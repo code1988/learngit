@@ -1809,8 +1809,11 @@ event_set(struct event *ev, evutil_socket_t fd, short events,
 	EVUTIL_ASSERT(r == 0);
 }
 
-struct event *
-event_new(struct event_base *base, evutil_socket_t fd, short events, void (*cb)(evutil_socket_t, short, void *), void *arg)
+/* 创建事件，事件进入"已初始化（initial）/non-pending"状态
+ * 事件标志events决定了该事件的行为特性
+ *
+ */
+struct event *event_new(struct event_base *base, evutil_socket_t fd, short events, void (*cb)(evutil_socket_t, short, void *), void *arg)
 {
 	struct event *ev;
 	ev = mm_malloc(sizeof(struct event));
@@ -1975,8 +1978,10 @@ event_get_callback_arg(const struct event *ev)
 	return ev->ev_arg;
 }
 
-int
-event_add(struct event *ev, const struct timeval *tv)
+/* 添加事件，事件进入"pending"状态
+ * tv = NULL意味着事件不会超时
+ */
+int event_add(struct event *ev, const struct timeval *tv)
 {
 	int res;
 
@@ -2197,8 +2202,8 @@ event_add_internal(struct event *ev, const struct timeval *tv,
 	return (res);
 }
 
-int
-event_del(struct event *ev)
+// 删除事件，事件进入"non-pending"状态
+int event_del(struct event *ev)
 {
 	int res;
 
@@ -2291,8 +2296,10 @@ event_del_internal(struct event *ev)
 	return (res);
 }
 
-void
-event_active(struct event *ev, int res, short ncalls)
+/* 手动激活事件
+ * 事件不需要已经处于pending状态
+ */
+void event_active(struct event *ev, int res, short ncalls)
 {
 	if (EVUTIL_FAILURE_CHECK(!ev->ev_base)) {
 		event_warnx("%s: event has no event_base set.", __func__);

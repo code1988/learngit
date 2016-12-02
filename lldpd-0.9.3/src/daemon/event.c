@@ -47,13 +47,15 @@ static void levent_log_cb(int severity, const char *msg)
 	}
 }
 
+// 定义一个lldpd事件的通用尾队列元素
 struct lldpd_events {
 	TAILQ_ENTRY(lldpd_events) next;
 	struct event *ev;
 };
+// 定义一个lldpd事件的通用尾队列头类型
 TAILQ_HEAD(ev_l, lldpd_events);
 
-#define levent_snmp_fds(cfg)   ((struct ev_l*)(cfg)->g_snmp_fds)
+#define levent_snmp_fds(cfg)   ((struct ev_l*)(cfg)->g_snmp_fds)        // 获取g_snmp_fds尾队列头
 #define levent_hardware_fds(hardware) ((struct ev_l*)(hardware)->h_recv)
 
 #ifdef USE_SNMP
@@ -369,6 +371,7 @@ levent_ctl_event(struct bufferevent *bev, short events, void *ptr)
 	}
 }
 
+// lldpd cli服务端在这里处理一个新的连接请求
 static void levent_ctl_accept(evutil_socket_t fd, short what, void *arg)
 {
 	struct lldpd *cfg = arg;
@@ -381,6 +384,7 @@ static void levent_ctl_accept(evutil_socket_t fd, short what, void *arg)
 		log_warn("event", "unable to accept connection from socket");
 		return;
 	}
+    // 创建一个客户端尾队列元素，并插入lldpd_clients尾队列
 	client = calloc(1, sizeof(struct lldpd_one_client));
 	if (!client) {
 		log_warnx("event", "unable to allocate memory for new client");
@@ -390,6 +394,7 @@ static void levent_ctl_accept(evutil_socket_t fd, short what, void *arg)
 	client->cfg = cfg;
 	levent_make_socket_nonblocking(s);
 	TAILQ_INSERT_TAIL(&lldpd_clients, client, next);
+    // 创建一个基于套接字的bufferevent，并为其设置readcb和eventcb,最后启用该bufferevent上的读写事件监测
 	if ((client->bev = bufferevent_socket_new(cfg->g_base, s,
 		    BEV_OPT_CLOSE_ON_FREE)) == NULL) {
 		log_warnx("event", "unable to allocate a new buffer event for new client");
@@ -524,9 +529,10 @@ static void levent_init(struct lldpd *cfg)
 
 	/* Setup loop that will run every X seconds. */
 	log_debug("event", "register loop timer");
-    // 创建main timer事件
+    // 创建main loop纯超时事件
 	if (!(cfg->g_main_loop = event_new(cfg->g_base, -1, 0,levent_update_and_send,cfg)))
 		fatalx("event", "unable to setup main timer");
+    // 手动激活main loop事件
 	event_active(cfg->g_main_loop, EV_TIMEOUT, 1);
 
 	/* Setup unix socket */
@@ -552,7 +558,7 @@ static void levent_init(struct lldpd *cfg)
 
 	/* Signals */
 	log_debug("event", "register signals");
-    // 注册信号
+    // 创建信号事件
 	evsignal_add(evsignal_new(cfg->g_base, SIGUSR1,
 		levent_dump, cfg->g_base),
 	    NULL);

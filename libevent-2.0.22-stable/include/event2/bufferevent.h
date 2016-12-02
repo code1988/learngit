@@ -151,20 +151,28 @@ typedef void (*bufferevent_event_cb)(struct bufferevent *bev, short what, void *
 /** Options that can be specified when creating a bufferevent */
 enum bufferevent_options {
 	/** If set, we close the underlying file
-	 * descriptor/bufferevent/whatever when this bufferevent is freed. */
+	 * descriptor/bufferevent/whatever when this bufferevent is freed. 
+     * 该标志表示当释放bufferevent时会同时关闭底层的fd和bufferevent
+     * */
 	BEV_OPT_CLOSE_ON_FREE = (1<<0),
 
 	/** If set, and threading is enabled, operations on this bufferevent
-	 * are protected by a lock */
+	 * are protected by a lock 
+     * 该标志表示可以在多个线程中操作bufferevent
+     * */
 	BEV_OPT_THREADSAFE = (1<<1),
 
-	/** If set, callbacks are run deferred in the event loop. */
+	/** If set, callbacks are run deferred in the event loop. 
+     * 该标志表示所有回调函数都将会被延迟
+     * */
 	BEV_OPT_DEFER_CALLBACKS = (1<<2),
 
 	/** If set, callbacks are executed without locks being held on the
 	* bufferevent.  This option currently requires that
 	* BEV_OPT_DEFER_CALLBACKS also be set; a future version of Libevent
-	* might remove the requirement.*/
+	* might remove the requirement.
+    * 该标志会使执行回调时不进行锁定
+    * */
 	BEV_OPT_UNLOCK_CALLBACKS = (1<<3)
 };
 
