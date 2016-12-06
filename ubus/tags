@@ -4,121 +4,10 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
-ARCHITECTURE_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	298;"	d	file:
-ARCHITECTURE_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	301;"	d	file:
-ARCHITECTURE_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	304;"	d	file:
-ARCHITECTURE_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	307;"	d	file:
-ARCHITECTURE_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	310;"	d	file:
-ARCHITECTURE_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	313;"	d	file:
-ARCHITECTURE_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	316;"	d	file:
-ARCHITECTURE_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	320;"	d	file:
 ARRAY_SIZE	ipkg-install/usr/include/ubus_common.h	21;"	d
 ARRAY_SIZE	ubus_common.h	21;"	d
-CMAKE_BINARY_DIR	Makefile	/^CMAKE_BINARY_DIR = \/home\/code5\/Project\/OpenWrt-SDK-ar71xx-for-linux-i586-gcc-4.8-linaro_uClibc-0.9.33.2\/build_dir\/target-mips_34kc_uClibc-0.9.33.2\/ubus-2014-09-17$/;"	m
-CMAKE_BINARY_DIR	examples/Makefile	/^CMAKE_BINARY_DIR = \/home\/code5\/Project\/OpenWrt-SDK-ar71xx-for-linux-i586-gcc-4.8-linaro_uClibc-0.9.33.2\/build_dir\/target-mips_34kc_uClibc-0.9.33.2\/ubus-2014-09-17$/;"	m
-CMAKE_BINARY_DIR	lua/Makefile	/^CMAKE_BINARY_DIR = \/home\/code5\/Project\/OpenWrt-SDK-ar71xx-for-linux-i586-gcc-4.8-linaro_uClibc-0.9.33.2\/build_dir\/target-mips_34kc_uClibc-0.9.33.2\/ubus-2014-09-17$/;"	m
-CMAKE_COMMAND	Makefile	/^CMAKE_COMMAND = \/home\/code5\/Project\/OpenWrt-SDK-ar71xx-for-linux-i586-gcc-4.8-linaro_uClibc-0.9.33.2\/staging_dir\/host\/bin\/cmake$/;"	m
-CMAKE_COMMAND	examples/Makefile	/^CMAKE_COMMAND = \/home\/code5\/Project\/OpenWrt-SDK-ar71xx-for-linux-i586-gcc-4.8-linaro_uClibc-0.9.33.2\/staging_dir\/host\/bin\/cmake$/;"	m
-CMAKE_COMMAND	lua/Makefile	/^CMAKE_COMMAND = \/home\/code5\/Project\/OpenWrt-SDK-ar71xx-for-linux-i586-gcc-4.8-linaro_uClibc-0.9.33.2\/staging_dir\/host\/bin\/cmake$/;"	m
-CMAKE_EDIT_COMMAND	Makefile	/^CMAKE_EDIT_COMMAND = \/home\/code5\/Project\/OpenWrt-SDK-ar71xx-for-linux-i586-gcc-4.8-linaro_uClibc-0.9.33.2\/staging_dir\/host\/bin\/ccmake$/;"	m
-CMAKE_EDIT_COMMAND	examples/Makefile	/^CMAKE_EDIT_COMMAND = \/home\/code5\/Project\/OpenWrt-SDK-ar71xx-for-linux-i586-gcc-4.8-linaro_uClibc-0.9.33.2\/staging_dir\/host\/bin\/ccmake$/;"	m
-CMAKE_EDIT_COMMAND	lua/Makefile	/^CMAKE_EDIT_COMMAND = \/home\/code5\/Project\/OpenWrt-SDK-ar71xx-for-linux-i586-gcc-4.8-linaro_uClibc-0.9.33.2\/staging_dir\/host\/bin\/ccmake$/;"	m
-CMAKE_SOURCE_DIR	Makefile	/^CMAKE_SOURCE_DIR = \/home\/code5\/Project\/OpenWrt-SDK-ar71xx-for-linux-i586-gcc-4.8-linaro_uClibc-0.9.33.2\/build_dir\/target-mips_34kc_uClibc-0.9.33.2\/ubus-2014-09-17$/;"	m
-CMAKE_SOURCE_DIR	examples/Makefile	/^CMAKE_SOURCE_DIR = \/home\/code5\/Project\/OpenWrt-SDK-ar71xx-for-linux-i586-gcc-4.8-linaro_uClibc-0.9.33.2\/build_dir\/target-mips_34kc_uClibc-0.9.33.2\/ubus-2014-09-17$/;"	m
-CMAKE_SOURCE_DIR	lua/Makefile	/^CMAKE_SOURCE_DIR = \/home\/code5\/Project\/OpenWrt-SDK-ar71xx-for-linux-i586-gcc-4.8-linaro_uClibc-0.9.33.2\/build_dir\/target-mips_34kc_uClibc-0.9.33.2\/ubus-2014-09-17$/;"	m
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	107;"	d	file:
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	112;"	d	file:
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	119;"	d	file:
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	122;"	d	file:
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	125;"	d	file:
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	133;"	d	file:
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	13;"	d	file:
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	152;"	d	file:
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	160;"	d	file:
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	165;"	d	file:
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	170;"	d	file:
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	177;"	d	file:
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	194;"	d	file:
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	197;"	d	file:
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	200;"	d	file:
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	24;"	d	file:
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	32;"	d	file:
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	38;"	d	file:
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	44;"	d	file:
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	50;"	d	file:
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	56;"	d	file:
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	70;"	d	file:
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	77;"	d	file:
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	85;"	d	file:
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	88;"	d	file:
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	90;"	d	file:
-COMPILER_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	99;"	d	file:
-COMPILER_VERSION_MAJOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	100;"	d	file:
-COMPILER_VERSION_MAJOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	108;"	d	file:
-COMPILER_VERSION_MAJOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	114;"	d	file:
-COMPILER_VERSION_MAJOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	126;"	d	file:
-COMPILER_VERSION_MAJOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	135;"	d	file:
-COMPILER_VERSION_MAJOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	154;"	d	file:
-COMPILER_VERSION_MAJOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	15;"	d	file:
-COMPILER_VERSION_MAJOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	172;"	d	file:
-COMPILER_VERSION_MAJOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	180;"	d	file:
-COMPILER_VERSION_MAJOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	185;"	d	file:
-COMPILER_VERSION_MAJOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	25;"	d	file:
-COMPILER_VERSION_MAJOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	33;"	d	file:
-COMPILER_VERSION_MAJOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	39;"	d	file:
-COMPILER_VERSION_MAJOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	46;"	d	file:
-COMPILER_VERSION_MAJOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	52;"	d	file:
-COMPILER_VERSION_MAJOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	59;"	d	file:
-COMPILER_VERSION_MAJOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	64;"	d	file:
-COMPILER_VERSION_MAJOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	72;"	d	file:
-COMPILER_VERSION_MAJOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	79;"	d	file:
-COMPILER_VERSION_MAJOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	93;"	d	file:
-COMPILER_VERSION_MINOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	101;"	d	file:
-COMPILER_VERSION_MINOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	109;"	d	file:
-COMPILER_VERSION_MINOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	115;"	d	file:
-COMPILER_VERSION_MINOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	127;"	d	file:
-COMPILER_VERSION_MINOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	136;"	d	file:
-COMPILER_VERSION_MINOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	155;"	d	file:
-COMPILER_VERSION_MINOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	16;"	d	file:
-COMPILER_VERSION_MINOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	173;"	d	file:
-COMPILER_VERSION_MINOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	181;"	d	file:
-COMPILER_VERSION_MINOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	186;"	d	file:
-COMPILER_VERSION_MINOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	26;"	d	file:
-COMPILER_VERSION_MINOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	34;"	d	file:
-COMPILER_VERSION_MINOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	40;"	d	file:
-COMPILER_VERSION_MINOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	47;"	d	file:
-COMPILER_VERSION_MINOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	53;"	d	file:
-COMPILER_VERSION_MINOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	60;"	d	file:
-COMPILER_VERSION_MINOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	65;"	d	file:
-COMPILER_VERSION_MINOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	73;"	d	file:
-COMPILER_VERSION_MINOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	80;"	d	file:
-COMPILER_VERSION_MINOR	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	94;"	d	file:
-COMPILER_VERSION_PATCH	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	103;"	d	file:
-COMPILER_VERSION_PATCH	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	116;"	d	file:
-COMPILER_VERSION_PATCH	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	129;"	d	file:
-COMPILER_VERSION_PATCH	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	140;"	d	file:
-COMPILER_VERSION_PATCH	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	143;"	d	file:
-COMPILER_VERSION_PATCH	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	156;"	d	file:
-COMPILER_VERSION_PATCH	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	174;"	d	file:
-COMPILER_VERSION_PATCH	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	17;"	d	file:
-COMPILER_VERSION_PATCH	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	182;"	d	file:
-COMPILER_VERSION_PATCH	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	187;"	d	file:
-COMPILER_VERSION_PATCH	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	28;"	d	file:
-COMPILER_VERSION_PATCH	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	35;"	d	file:
-COMPILER_VERSION_PATCH	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	41;"	d	file:
-COMPILER_VERSION_PATCH	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	61;"	d	file:
-COMPILER_VERSION_PATCH	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	66;"	d	file:
-COMPILER_VERSION_PATCH	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	74;"	d	file:
-COMPILER_VERSION_PATCH	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	81;"	d	file:
-COMPILER_VERSION_PATCH	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	95;"	d	file:
-COMPILER_VERSION_TWEAK	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	147;"	d	file:
-COMPILER_VERSION_TWEAK	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	20;"	d	file:
 COUNT_STRING	examples/server.c	/^    COUNT_STRING,$/;"	e	enum:__anon6	file:
 COUNT_TO	examples/server.c	/^    COUNT_TO,$/;"	e	enum:__anon6	file:
-DEC	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	324;"	d	file:
-EQUALS	Makefile	/^EQUALS = =$/;"	m
-EQUALS	examples/Makefile	/^EQUALS = =$/;"	m
-EQUALS	lua/Makefile	/^EQUALS = =$/;"	m
 EVMSG_DATA	ubusd_event.c	/^	EVMSG_DATA,$/;"	e	enum:__anon3	file:
 EVMSG_ID	ubusd_event.c	/^	EVMSG_ID,$/;"	e	enum:__anon3	file:
 EVMSG_LAST	ubusd_event.c	/^	EVMSG_LAST,$/;"	e	enum:__anon3	file:
@@ -127,47 +16,10 @@ EVREG_OBJECT	ubusd_event.c	/^	EVREG_OBJECT,$/;"	e	enum:__anon2	file:
 EVREG_PATTERN	ubusd_event.c	/^	EVREG_PATTERN,$/;"	e	enum:__anon2	file:
 HELLO_ID	examples/server.c	/^	HELLO_ID,$/;"	e	enum:__anon4	file:
 HELLO_MSG	examples/server.c	/^	HELLO_MSG,$/;"	e	enum:__anon4	file:
-HEX	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	335;"	d	file:
-ID_VOID_MAIN	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	9;"	d	file:
 METANAME	lua/ubus.c	23;"	d	file:
 MODNAME	lua/ubus.c	22;"	d	file:
-PLATFORM_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	212;"	d	file:
-PLATFORM_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	215;"	d	file:
-PLATFORM_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	218;"	d	file:
-PLATFORM_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	221;"	d	file:
-PLATFORM_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	224;"	d	file:
-PLATFORM_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	227;"	d	file:
-PLATFORM_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	230;"	d	file:
-PLATFORM_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	233;"	d	file:
-PLATFORM_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	236;"	d	file:
-PLATFORM_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	239;"	d	file:
-PLATFORM_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	242;"	d	file:
-PLATFORM_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	245;"	d	file:
-PLATFORM_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	248;"	d	file:
-PLATFORM_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	251;"	d	file:
-PLATFORM_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	254;"	d	file:
-PLATFORM_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	257;"	d	file:
-PLATFORM_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	260;"	d	file:
-PLATFORM_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	263;"	d	file:
-PLATFORM_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	266;"	d	file:
-PLATFORM_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	269;"	d	file:
-PLATFORM_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	272;"	d	file:
-PLATFORM_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	275;"	d	file:
-PLATFORM_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	278;"	d	file:
-PLATFORM_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	281;"	d	file:
-PLATFORM_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	284;"	d	file:
-PLATFORM_ID	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	287;"	d	file:
 RETURN_CODE	examples/client.c	/^	RETURN_CODE,$/;"	e	enum:__anon7	file:
-RM	Makefile	/^RM = \/home\/code5\/Project\/OpenWrt-SDK-ar71xx-for-linux-i586-gcc-4.8-linaro_uClibc-0.9.33.2\/staging_dir\/host\/bin\/cmake -E remove -f$/;"	m
-RM	examples/Makefile	/^RM = \/home\/code5\/Project\/OpenWrt-SDK-ar71xx-for-linux-i586-gcc-4.8-linaro_uClibc-0.9.33.2\/staging_dir\/host\/bin\/cmake -E remove -f$/;"	m
-RM	lua/Makefile	/^RM = \/home\/code5\/Project\/OpenWrt-SDK-ar71xx-for-linux-i586-gcc-4.8-linaro_uClibc-0.9.33.2\/staging_dir\/host\/bin\/cmake -E remove -f$/;"	m
-SHELL	Makefile	/^SHELL = \/bin\/sh$/;"	m
-SHELL	examples/Makefile	/^SHELL = \/bin\/sh$/;"	m
-SHELL	lua/Makefile	/^SHELL = \/bin\/sh$/;"	m
 STATIC_IOV	libubus-io.c	30;"	d	file:
-SUFFIXES	Makefile	/^SUFFIXES =$/;"	m
-SUFFIXES	examples/Makefile	/^SUFFIXES =$/;"	m
-SUFFIXES	lua/Makefile	/^SUFFIXES =$/;"	m
 UBUSD_CLIENT_BACKLOG	ubusd.h	25;"	d
 UBUS_ATTR_ACTIVE	ipkg-install/usr/include/ubusmsg.h	/^	UBUS_ATTR_ACTIVE,$/;"	e	enum:ubus_msg_attr
 UBUS_ATTR_ACTIVE	ubusmsg.h	/^	UBUS_ATTR_ACTIVE,$/;"	e	enum:ubus_msg_attr
@@ -198,11 +50,11 @@ UBUS_ATTR_UNSPEC	ubusmsg.h	/^	UBUS_ATTR_UNSPEC,$/;"	e	enum:ubus_msg_attr
 UBUS_MAX_NOTIFY_PEERS	ipkg-install/usr/include/libubus.h	25;"	d
 UBUS_MAX_NOTIFY_PEERS	libubus.h	25;"	d
 UBUS_METHOD	ipkg-install/usr/include/libubus.h	78;"	d
-UBUS_METHOD	libubus.h	78;"	d
+UBUS_METHOD	libubus.h	79;"	d
 UBUS_METHOD_MASK	ipkg-install/usr/include/libubus.h	81;"	d
-UBUS_METHOD_MASK	libubus.h	81;"	d
+UBUS_METHOD_MASK	libubus.h	82;"	d
 UBUS_METHOD_NOARG	ipkg-install/usr/include/libubus.h	87;"	d
-UBUS_METHOD_NOARG	libubus.h	87;"	d
+UBUS_METHOD_NOARG	libubus.h	88;"	d
 UBUS_MSGBUF_REDUCTION_INTERVAL	libubus-io.c	32;"	d	file:
 UBUS_MSG_ADD_OBJECT	ipkg-install/usr/include/ubusmsg.h	/^	UBUS_MSG_ADD_OBJECT,$/;"	e	enum:ubus_msg_type
 UBUS_MSG_ADD_OBJECT	ubusmsg.h	/^	UBUS_MSG_ADD_OBJECT,$/;"	e	enum:ubus_msg_type
@@ -229,7 +81,7 @@ UBUS_MSG_SUBSCRIBE	ubusmsg.h	/^	UBUS_MSG_SUBSCRIBE,$/;"	e	enum:ubus_msg_type
 UBUS_MSG_UNSUBSCRIBE	ipkg-install/usr/include/ubusmsg.h	/^	UBUS_MSG_UNSUBSCRIBE,$/;"	e	enum:ubus_msg_type
 UBUS_MSG_UNSUBSCRIBE	ubusmsg.h	/^	UBUS_MSG_UNSUBSCRIBE,$/;"	e	enum:ubus_msg_type
 UBUS_OBJECT_TYPE	ipkg-install/usr/include/libubus.h	61;"	d
-UBUS_OBJECT_TYPE	libubus.h	61;"	d
+UBUS_OBJECT_TYPE	libubus.h	62;"	d
 UBUS_OBJ_HASH_BITS	ubusd.h	26;"	d
 UBUS_SIGNATURE_END	ipkg-install/usr/include/ubus_common.h	18;"	d
 UBUS_SIGNATURE_END	ubus_common.h	18;"	d
@@ -279,9 +131,9 @@ __UBUSMSG_H	ubusmsg.h	15;"	d
 __UBUS_COMMON_H	ipkg-install/usr/include/ubus_common.h	15;"	d
 __UBUS_COMMON_H	ubus_common.h	15;"	d
 __UBUS_METHOD	ipkg-install/usr/include/libubus.h	73;"	d
-__UBUS_METHOD	libubus.h	73;"	d
+__UBUS_METHOD	libubus.h	74;"	d
 __UBUS_METHOD_NOARG	ipkg-install/usr/include/libubus.h	69;"	d
-__UBUS_METHOD_NOARG	libubus.h	69;"	d
+__UBUS_METHOD_NOARG	libubus.h	70;"	d
 __UBUS_MSG_LAST	ipkg-install/usr/include/ubusmsg.h	/^	__UBUS_MSG_LAST,$/;"	e	enum:ubus_msg_type
 __UBUS_MSG_LAST	ubusmsg.h	/^	__UBUS_MSG_LAST,$/;"	e	enum:ubus_msg_type
 __UBUS_STATUS_LAST	ipkg-install/usr/include/ubusmsg.h	/^	__UBUS_STATUS_LAST$/;"	e	enum:ubus_msg_status
@@ -307,8 +159,8 @@ avl	ubusd_event.c	/^	struct avl_node avl;$/;"	m	struct:event_source	typeref:stru
 avl	ubusd_id.h	/^	struct avl_node avl;$/;"	m	struct:ubus_id	typeref:struct:ubus_id::avl_node
 b	cli.c	/^static struct blob_buf b;$/;"	v	typeref:struct:blob_buf	file:
 b	examples/client.c	/^static struct blob_buf b;$/;"	v	typeref:struct:blob_buf	file:
-b	examples/server.c	/^static struct blob_buf b;$/;"	v	typeref:struct:blob_buf	file:
-b	ubusd_proto.c	/^struct blob_buf b;$/;"	v	typeref:struct:blob_buf
+b	examples/server.c	/^static struct blob_buf b;           \/\/ 定义一个静态全局BLOB控制块$/;"	v	typeref:struct:blob_buf	file:
+b	ubusd_proto.c	/^struct blob_buf b;  \/\/ 定义一个BLOB$/;"	v	typeref:struct:blob_buf
 blocked	ipkg-install/usr/include/libubus.h	/^	bool blocked;$/;"	m	struct:ubus_request
 blocked	libubus.h	/^	bool blocked;$/;"	m	struct:ubus_request
 buf	lua/ubus.c	/^	struct blob_buf buf;$/;"	m	struct:ubus_lua_connection	typeref:struct:ubus_lua_connection::blob_buf	file:
@@ -321,12 +173,12 @@ cb	ipkg-install/usr/include/libubus.h	/^	ubus_handler_t cb;$/;"	m	struct:ubus_su
 cb	libubus.c	/^	ubus_lookup_handler_t cb;$/;"	m	struct:ubus_lookup_request	file:
 cb	libubus.h	/^	ubus_connect_handler_t cb;$/;"	m	struct:ubus_auto_conn
 cb	libubus.h	/^	ubus_event_handler_t cb;$/;"	m	struct:ubus_event_handler
-cb	libubus.h	/^	ubus_handler_t cb;$/;"	m	struct:ubus_subscriber
+cb	libubus.h	/^	ubus_handler_t cb;      \/\/ �ص�����$/;"	m	struct:ubus_subscriber
 cli_wait_data	cli.c	/^struct cli_wait_data {$/;"	s	file:
 client	ubusd_obj.h	/^	struct ubus_client *client;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_client
 client_cb	ubusd.c	/^static void client_cb(struct uloop_fd *sock, unsigned int events)$/;"	f	file:
 client_main	examples/client.c	/^static void client_main(void)$/;"	f	file:
-clients	ubusd_proto.c	/^static struct avl_tree clients;$/;"	v	typeref:struct:avl_tree	file:
+clients	ubusd_proto.c	/^static struct avl_tree clients;     \/\/ 客户端avl树管理结构$/;"	v	typeref:struct:avl_tree	file:
 commands	cli.c	/^} commands[] = {$/;"	v	typeref:struct:__anon8
 complete_cb	ipkg-install/usr/include/libubus.h	/^	ubus_complete_handler_t complete_cb;$/;"	m	struct:ubus_request
 complete_cb	ipkg-install/usr/include/libubus.h	/^	ubus_notify_complete_handler_t complete_cb;$/;"	m	struct:ubus_notify_request
@@ -338,7 +190,7 @@ count_policy	examples/server.c	/^static const struct blobmsg_policy count_policy
 count_timer	examples/client.c	/^static struct uloop_timeout count_timer = {$/;"	v	typeref:struct:uloop_timeout	file:
 count_to_number	examples/count.c	/^char *count_to_number(uint32_t num)$/;"	f
 ctx	examples/client.c	/^static struct ubus_context *ctx;$/;"	v	typeref:struct:ubus_context	file:
-ctx	examples/server.c	/^static struct ubus_context *ctx;$/;"	v	typeref:struct:ubus_context	file:
+ctx	examples/server.c	/^static struct ubus_context *ctx;    \/\/ 指向注册服务到ubusd的客户端的总控制块$/;"	v	typeref:struct:ubus_context	file:
 ctx	ipkg-install/usr/include/libubus.h	/^	struct ubus_context *ctx;$/;"	m	struct:ubus_request	typeref:struct:ubus_request::ubus_context
 ctx	ipkg-install/usr/include/libubus.h	/^	struct ubus_context ctx;$/;"	m	struct:ubus_auto_conn	typeref:struct:ubus_auto_conn::ubus_context
 ctx	libubus.h	/^	struct ubus_context *ctx;$/;"	m	struct:ubus_request	typeref:struct:ubus_request::ubus_context
@@ -347,9 +199,9 @@ ctx	lua/ubus.c	/^	struct ubus_context *ctx;$/;"	m	struct:ubus_lua_connection	typ
 data	examples/server.c	/^	char data[];$/;"	m	struct:hello_request	file:
 data	ipkg-install/usr/include/libubus.h	/^	struct blob_attr *data;$/;"	m	struct:ubus_msghdr_buf	typeref:struct:ubus_msghdr_buf::blob_attr
 data	libubus-req.c	/^	struct blob_attr data[];$/;"	m	struct:ubus_pending_data	typeref:struct:ubus_pending_data::blob_attr	file:
-data	libubus.h	/^	struct blob_attr *data;$/;"	m	struct:ubus_msghdr_buf	typeref:struct:ubus_msghdr_buf::blob_attr
+data	libubus.h	/^	struct blob_attr *data; \/\/ ָ��������Ϣ�ռ�$/;"	m	struct:ubus_msghdr_buf	typeref:struct:ubus_msghdr_buf::blob_attr
 data	ubusd.h	/^		struct blob_attr data;$/;"	m	struct:ubus_client::__anon1	typeref:struct:ubus_client::__anon1::blob_attr
-data	ubusd.h	/^	struct blob_attr *data;$/;"	m	struct:ubus_msg_buf	typeref:struct:ubus_msg_buf::blob_attr
+data	ubusd.h	/^	struct blob_attr *data;     \/\/ 指向BOLB属性空间(也就是消息内容)$/;"	m	struct:ubus_msg_buf	typeref:struct:ubus_msg_buf::blob_attr
 data	ubusd_obj.h	/^	struct blob_attr data[];$/;"	m	struct:ubus_method	typeref:struct:ubus_method::blob_attr
 data_cb	ipkg-install/usr/include/libubus.h	/^	ubus_data_handler_t data_cb;$/;"	m	struct:ubus_request
 data_cb	libubus.h	/^	ubus_data_handler_t data_cb;$/;"	m	struct:ubus_request
@@ -378,15 +230,15 @@ get_next_msg	libubus-io.c	/^static bool get_next_msg(struct ubus_context *ctx, i
 get_time_msec	libubus-req.c	/^static int64_t get_time_msec(void)$/;"	f	file:
 handle_client_disconnect	ubusd.c	/^static void handle_client_disconnect(struct ubus_client *cl)$/;"	f	file:
 handler	ipkg-install/usr/include/libubus.h	/^	ubus_handler_t handler;$/;"	m	struct:ubus_method
-handler	libubus.h	/^	ubus_handler_t handler;$/;"	m	struct:ubus_method
+handler	libubus.h	/^	ubus_handler_t handler; \/\/ ��Ӧ�Ĵ�������$/;"	m	struct:ubus_method
 handlers	ubusd_proto.c	/^static const ubus_cmd_cb handlers[__UBUS_MSG_LAST] = {$/;"	v	file:
 has_subscribers	ipkg-install/usr/include/libubus.h	/^	bool has_subscribers;$/;"	m	struct:ubus_object
 has_subscribers	libubus.h	/^	bool has_subscribers;$/;"	m	struct:ubus_object
 hdr	ipkg-install/usr/include/libubus.h	/^	struct ubus_msghdr hdr;$/;"	m	struct:ubus_msghdr_buf	typeref:struct:ubus_msghdr_buf::ubus_msghdr
 hdr	libubus.c	/^	struct ubus_msghdr_buf hdr;$/;"	m	struct:ubus_pending_msg	typeref:struct:ubus_pending_msg::ubus_msghdr_buf	file:
-hdr	libubus.h	/^	struct ubus_msghdr hdr;$/;"	m	struct:ubus_msghdr_buf	typeref:struct:ubus_msghdr_buf::ubus_msghdr
+hdr	libubus.h	/^	struct ubus_msghdr hdr; \/\/ ��Ϣͷ$/;"	m	struct:ubus_msghdr_buf	typeref:struct:ubus_msghdr_buf::ubus_msghdr
 hdr	ubusd.h	/^		struct ubus_msghdr hdr;$/;"	m	struct:ubus_client::__anon1	typeref:struct:ubus_client::__anon1::ubus_msghdr
-hdr	ubusd.h	/^	struct ubus_msghdr hdr;$/;"	m	struct:ubus_msg_buf	typeref:struct:ubus_msg_buf::ubus_msghdr
+hdr	ubusd.h	/^	struct ubus_msghdr hdr;     \/\/ 消息头$/;"	m	struct:ubus_msg_buf	typeref:struct:ubus_msg_buf::ubus_msghdr
 hdrbuf	ubusd.h	/^	} hdrbuf;$/;"	m	struct:ubus_client	typeref:struct:ubus_client::__anon1
 hello_policy	examples/server.c	/^static const struct blobmsg_policy hello_policy[] = {$/;"	v	typeref:struct:blobmsg_policy	file:
 hello_request	examples/server.c	/^struct hello_request {$/;"	s	file:
@@ -398,17 +250,13 @@ id	libubus.h	/^	uint32_t id;$/;"	m	struct:ubus_object
 id	libubus.h	/^	uint32_t id;$/;"	m	struct:ubus_object_data
 id	libubus.h	/^	uint32_t id;$/;"	m	struct:ubus_object_type
 id	libubus.h	/^	uint32_t id[UBUS_MAX_NOTIFY_PEERS + 1];$/;"	m	struct:ubus_notify_request
-id	ubusd.h	/^	struct ubus_id id;$/;"	m	struct:ubus_client	typeref:struct:ubus_client::ubus_id
+id	ubusd.h	/^	struct ubus_id id;          \/\/ ID用于标识不同的客户端$/;"	m	struct:ubus_client	typeref:struct:ubus_client::ubus_id
 id	ubusd_id.h	/^	uint32_t id;$/;"	m	struct:ubus_id
 id	ubusd_obj.h	/^	struct ubus_id id;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_id
 id	ubusd_obj.h	/^	struct ubus_id id;$/;"	m	struct:ubus_object_type	typeref:struct:ubus_object_type::ubus_id
 idx	examples/server.c	/^	int idx;$/;"	m	struct:hello_request	file:
-info_arch	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	/^char const* info_arch = "INFO" ":" "arch[" ARCHITECTURE_ID "]";$/;"	v
-info_compiler	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	/^char const* info_compiler = "INFO" ":" "compiler[" COMPILER_ID "]";$/;"	v
-info_platform	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	/^char const* info_platform = "INFO" ":" "platform[" PLATFORM_ID "]";$/;"	v
-info_version	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	/^char const info_version[] = {$/;"	v
 invoke_seq	ubusd_obj.h	/^	unsigned int invoke_seq;$/;"	m	struct:ubus_object
-len	ubusd.h	/^	int len;$/;"	m	struct:ubus_msg_buf
+len	ubusd.h	/^	int len;                    \/\/ 记录BLOB属性空间长度（也就是消息内容长度）$/;"	m	struct:ubus_msg_buf
 list	ipkg-install/usr/include/libubus.h	/^	struct list_head list;$/;"	m	struct:ubus_request	typeref:struct:ubus_request::list_head
 list	libubus-req.c	/^	struct list_head list;$/;"	m	struct:ubus_pending_data	typeref:struct:ubus_pending_data::list_head	file:
 list	libubus.c	/^	struct list_head list;$/;"	m	struct:ubus_pending_msg	typeref:struct:ubus_pending_msg::list_head	file:
@@ -422,8 +270,6 @@ local_id	ipkg-install/usr/include/libubus.h	/^	uint32_t local_id;$/;"	m	struct:u
 local_id	libubus.h	/^	uint32_t local_id;$/;"	m	struct:ubus_context
 lua_gettablelen	lua/ubus.c	/^static int lua_gettablelen(lua_State *L, int index)$/;"	f	file:
 luaopen_ubus	lua/ubus.c	/^luaopen_ubus(lua_State *L)$/;"	f
-main	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	/^int main(int argc, char* argv[])$/;"	f
-main	CMakeFiles/2.8.12.2/CompilerIdC/CMakeCCompilerId.c	/^void main() {}$/;"	f
 main	cli.c	/^int main(int argc, char **argv)$/;"	f
 main	examples/client.c	/^int main(int argc, char **argv)$/;"	f
 main	examples/server.c	/^int main(int argc, char **argv)$/;"	f
@@ -432,19 +278,19 @@ mask	ipkg-install/usr/include/libubus.h	/^	unsigned long mask;$/;"	m	struct:ubus
 mask	libubus.h	/^	unsigned long mask;$/;"	m	struct:ubus_method
 methods	ipkg-install/usr/include/libubus.h	/^	const struct ubus_method *methods;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_method
 methods	ipkg-install/usr/include/libubus.h	/^	const struct ubus_method *methods;$/;"	m	struct:ubus_object_type	typeref:struct:ubus_object_type::ubus_method
-methods	libubus.h	/^	const struct ubus_method *methods;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_method
-methods	libubus.h	/^	const struct ubus_method *methods;$/;"	m	struct:ubus_object_type	typeref:struct:ubus_object_type::ubus_method
+methods	libubus.h	/^	const struct ubus_method *methods;  \/\/ ָ�򷽷�$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_method
+methods	libubus.h	/^	const struct ubus_method *methods;  \/\/ ָ�򷽷�$/;"	m	struct:ubus_object_type	typeref:struct:ubus_object_type::ubus_method
 methods	ubusd_obj.h	/^	struct list_head methods;$/;"	m	struct:ubus_object_type	typeref:struct:ubus_object_type::list_head
 msgbuf	ipkg-install/usr/include/libubus.h	/^	struct ubus_msghdr_buf msgbuf;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::ubus_msghdr_buf
-msgbuf	libubus.h	/^	struct ubus_msghdr_buf msgbuf;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::ubus_msghdr_buf
+msgbuf	libubus.h	/^	struct ubus_msghdr_buf msgbuf;  \/\/ ��Ϣ���ƿ�$/;"	m	struct:ubus_context	typeref:struct:ubus_context::ubus_msghdr_buf
 msgbuf_data_len	ipkg-install/usr/include/libubus.h	/^	uint32_t msgbuf_data_len;$/;"	m	struct:ubus_context
-msgbuf_data_len	libubus.h	/^	uint32_t msgbuf_data_len;$/;"	m	struct:ubus_context
+msgbuf_data_len	libubus.h	/^	uint32_t msgbuf_data_len;       \/\/ ��¼��Ϣ�ռ��С$/;"	m	struct:ubus_context
 msgbuf_reduction_counter	ipkg-install/usr/include/libubus.h	/^	int msgbuf_reduction_counter;$/;"	m	struct:ubus_context
 msgbuf_reduction_counter	libubus.h	/^	int msgbuf_reduction_counter;$/;"	m	struct:ubus_context
 n_methods	ipkg-install/usr/include/libubus.h	/^	int n_methods;$/;"	m	struct:ubus_object
 n_methods	ipkg-install/usr/include/libubus.h	/^	int n_methods;$/;"	m	struct:ubus_object_type
-n_methods	libubus.h	/^	int n_methods;$/;"	m	struct:ubus_object
-n_methods	libubus.h	/^	int n_methods;$/;"	m	struct:ubus_object_type
+n_methods	libubus.h	/^	int n_methods;      \/\/ ��¼����������$/;"	m	struct:ubus_object
+n_methods	libubus.h	/^	int n_methods;      \/\/ ��¼����������$/;"	m	struct:ubus_object_type
 n_pending	cli.c	/^	int n_pending;$/;"	m	struct:cli_wait_data	file:
 n_policy	ipkg-install/usr/include/libubus.h	/^	int n_policy;$/;"	m	struct:ubus_method
 n_policy	libubus.h	/^	int n_policy;$/;"	m	struct:ubus_method
@@ -452,9 +298,9 @@ name	cli.c	/^	const char *name;$/;"	m	struct:__anon8	file:
 name	ipkg-install/usr/include/libubus.h	/^	const char *name;$/;"	m	struct:ubus_method
 name	ipkg-install/usr/include/libubus.h	/^	const char *name;$/;"	m	struct:ubus_object
 name	ipkg-install/usr/include/libubus.h	/^	const char *name;$/;"	m	struct:ubus_object_type
-name	libubus.h	/^	const char *name;$/;"	m	struct:ubus_method
-name	libubus.h	/^	const char *name;$/;"	m	struct:ubus_object
-name	libubus.h	/^	const char *name;$/;"	m	struct:ubus_object_type
+name	libubus.h	/^	const char *name;       \/\/ ������$/;"	m	struct:ubus_method
+name	libubus.h	/^	const char *name;   \/\/ ������$/;"	m	struct:ubus_object
+name	libubus.h	/^	const char *name;   \/\/ ������$/;"	m	struct:ubus_object_type
 name	ubusd.h	/^	const char name[];$/;"	m	struct:ubus_path
 name	ubusd_obj.h	/^	const char *name;$/;"	m	struct:ubus_method
 notify	ipkg-install/usr/include/libubus.h	/^	bool notify;$/;"	m	struct:ubus_request
@@ -463,8 +309,8 @@ notify_timer	examples/client.c	/^static struct uloop_timeout notify_timer = {$/;
 o	lua/ubus.c	/^	struct ubus_object o;$/;"	m	struct:ubus_lua_object	typeref:struct:ubus_lua_object::ubus_object	file:
 obj	ipkg-install/usr/include/libubus.h	/^	struct ubus_object obj;$/;"	m	struct:ubus_event_handler	typeref:struct:ubus_event_handler::ubus_object
 obj	ipkg-install/usr/include/libubus.h	/^	struct ubus_object obj;$/;"	m	struct:ubus_subscriber	typeref:struct:ubus_subscriber::ubus_object
+obj	libubus.h	/^	struct ubus_object obj; \/\/ ����$/;"	m	struct:ubus_subscriber	typeref:struct:ubus_subscriber::ubus_object
 obj	libubus.h	/^	struct ubus_object obj;$/;"	m	struct:ubus_event_handler	typeref:struct:ubus_event_handler::ubus_object
-obj	libubus.h	/^	struct ubus_object obj;$/;"	m	struct:ubus_subscriber	typeref:struct:ubus_subscriber::ubus_object
 obj	ubusd_event.c	/^	struct ubus_object *obj;$/;"	m	struct:event_source	typeref:struct:event_source::ubus_object	file:
 obj_event_seq	ubusd_event.c	/^static int obj_event_seq = 1;$/;"	v	file:
 obj_types	ubusd_obj.c	/^struct avl_tree obj_types;$/;"	v	typeref:struct:avl_tree
@@ -472,7 +318,7 @@ object	ipkg-install/usr/include/libubus.h	/^	uint32_t object;$/;"	m	struct:ubus_
 object	libubus.h	/^	uint32_t object;$/;"	m	struct:ubus_request_data
 objects	ipkg-install/usr/include/libubus.h	/^	struct avl_tree objects;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::avl_tree
 objects	libubus.h	/^	struct avl_tree objects;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::avl_tree
-objects	ubusd.h	/^	struct list_head objects;$/;"	m	struct:ubus_client	typeref:struct:ubus_client::list_head
+objects	ubusd.h	/^	struct list_head objects;   \/\/ 链表模块$/;"	m	struct:ubus_client	typeref:struct:ubus_client::list_head
 objects	ubusd_obj.c	/^struct avl_tree objects;$/;"	v	typeref:struct:avl_tree
 partial	ubusd_event.c	/^	bool partial;$/;"	m	struct:event_source	file:
 path	ipkg-install/usr/include/libubus.h	/^	const char *path;$/;"	m	struct:ubus_auto_conn
@@ -498,17 +344,17 @@ pending	libubus.h	/^	struct list_head pending;$/;"	m	struct:ubus_context	typeref
 pending	libubus.h	/^	struct list_head pending;$/;"	m	struct:ubus_request	typeref:struct:ubus_request::list_head
 pending	libubus.h	/^	uint32_t pending;$/;"	m	struct:ubus_notify_request
 pending_msg	ubusd.h	/^	struct ubus_msg_buf *pending_msg;$/;"	m	struct:ubus_client	typeref:struct:ubus_client::ubus_msg_buf
-pending_msg_fd	ubusd.h	/^	int pending_msg_fd;$/;"	m	struct:ubus_client
+pending_msg_fd	ubusd.h	/^	int pending_msg_fd;         \/\/ -1表示复位状态$/;"	m	struct:ubus_client
 pending_msg_offset	ubusd.h	/^	int pending_msg_offset;$/;"	m	struct:ubus_client
 pending_timer	ipkg-install/usr/include/libubus.h	/^	struct uloop_timeout pending_timer;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::uloop_timeout
-pending_timer	libubus.h	/^	struct uloop_timeout pending_timer;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::uloop_timeout
+pending_timer	libubus.h	/^	struct uloop_timeout pending_timer; \/\/ �ͻ��˳�ʱ�ص�����$/;"	m	struct:ubus_context	typeref:struct:ubus_context::uloop_timeout
 policy	ipkg-install/usr/include/libubus.h	/^	const struct blobmsg_policy *policy;$/;"	m	struct:ubus_method	typeref:struct:ubus_method::blobmsg_policy
 policy	libubus.h	/^	const struct blobmsg_policy *policy;$/;"	m	struct:ubus_method	typeref:struct:ubus_method::blobmsg_policy
 priv	ipkg-install/usr/include/libubus.h	/^	void *priv;$/;"	m	struct:ubus_request
 priv	libubus.h	/^	void *priv;$/;"	m	struct:ubus_request
 r	lua/ubus.c	/^	int r;$/;"	m	struct:ubus_lua_event	file:
 r	lua/ubus.c	/^	int r;$/;"	m	struct:ubus_lua_object	file:
-random_fd	ubusd_id.c	/^static int random_fd = -1;$/;"	v	file:
+random_fd	ubusd_id.c	/^static int random_fd = -1;  \/\/ 随机数生成文件fd$/;"	v	file:
 raw_data_cb	ipkg-install/usr/include/libubus.h	/^	ubus_data_handler_t raw_data_cb;$/;"	m	struct:ubus_request
 raw_data_cb	libubus.h	/^	ubus_data_handler_t raw_data_cb;$/;"	m	struct:ubus_request
 receive_call_result_data	cli.c	/^static void receive_call_result_data(struct ubus_request *req, int type, struct blob_attr *msg)$/;"	f	file:
@@ -516,11 +362,11 @@ receive_event	cli.c	/^static void receive_event(struct ubus_context *ctx, struct
 receive_list_result	cli.c	/^static void receive_list_result(struct ubus_context *ctx, struct ubus_object_data *obj, void *priv)$/;"	f	file:
 recv_msg	ubusd_obj.h	/^	int (*recv_msg)(struct ubus_client *client, const char *method, struct blob_attr *msg);$/;"	m	struct:ubus_object
 recv_retry	libubus-io.c	/^static int recv_retry(int fd, struct iovec *iov, bool wait, int *recv_fd)$/;"	f	file:
-refcount	ubusd.h	/^	uint32_t refcount; \/* ~0: uses external data buffer *\/$/;"	m	struct:ubus_msg_buf
+refcount	ubusd.h	/^	uint32_t refcount;          \/\/ 属性空间类型标记（~0:使用外部共享空间 1：使用内部分配空间）\/* ~0: uses external data buffer *\/$/;"	m	struct:ubus_msg_buf
 refcount	ubusd_obj.h	/^	int refcount;$/;"	m	struct:ubus_object_type
 remove_cb	ipkg-install/usr/include/libubus.h	/^	ubus_remove_handler_t remove_cb;$/;"	m	struct:ubus_subscriber
-remove_cb	libubus.h	/^	ubus_remove_handler_t remove_cb;$/;"	m	struct:ubus_subscriber
-req	examples/server.c	/^	struct ubus_request_data req;$/;"	m	struct:hello_request	typeref:struct:hello_request::ubus_request_data	file:
+remove_cb	libubus.h	/^	ubus_remove_handler_t remove_cb;    \/\/ ɾ�������Ļص�����$/;"	m	struct:ubus_subscriber
+req	examples/server.c	/^	struct ubus_request_data req;   \/\/ ubus请求控制块$/;"	m	struct:hello_request	typeref:struct:hello_request::ubus_request_data	file:
 req	ipkg-install/usr/include/libubus.h	/^	struct ubus_request req;$/;"	m	struct:ubus_notify_request	typeref:struct:ubus_notify_request::ubus_request
 req	libubus.c	/^	struct ubus_request req;$/;"	m	struct:ubus_lookup_request	typeref:struct:ubus_lookup_request::ubus_request	file:
 req	libubus.h	/^	struct ubus_request req;$/;"	m	struct:ubus_notify_request	typeref:struct:ubus_notify_request::ubus_request
@@ -529,8 +375,8 @@ request_seq	ipkg-install/usr/include/libubus.h	/^	uint16_t request_seq;$/;"	m	st
 request_seq	libubus.h	/^	uint16_t request_seq;$/;"	m	struct:ubus_context
 requests	ipkg-install/usr/include/libubus.h	/^	struct list_head requests;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::list_head
 requests	libubus.h	/^	struct list_head requests;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::list_head
-retmsg	ubusd_proto.c	/^static struct ubus_msg_buf *retmsg;$/;"	v	typeref:struct:ubus_msg_buf	file:
-retmsg_data	ubusd_proto.c	/^static int *retmsg_data;$/;"	v	file:
+retmsg	ubusd_proto.c	/^static struct ubus_msg_buf *retmsg; \/\/ 定义一个指向ububs消息控制块的指针$/;"	v	typeref:struct:ubus_msg_buf	file:
+retmsg_data	ubusd_proto.c	/^static int *retmsg_data;            \/\/ 指向ubus消息控制块的二阶属性空间的数据指针$/;"	v	file:
 return_policy	examples/client.c	/^static const struct blobmsg_policy return_policy[__RETURN_MAX] = {$/;"	v	typeref:struct:blobmsg_policy	file:
 seq	ipkg-install/usr/include/libubus.h	/^	uint16_t seq;$/;"	m	struct:ubus_request
 seq	ipkg-install/usr/include/libubus.h	/^	uint16_t seq;$/;"	m	struct:ubus_request_data
@@ -545,8 +391,8 @@ signature	ipkg-install/usr/include/libubus.h	/^	struct blob_attr *signature;$/;"
 signature	libubus.h	/^	struct blob_attr *signature;$/;"	m	struct:ubus_object_data	typeref:struct:ubus_object_data::blob_attr
 simple_output	cli.c	/^static bool simple_output = false;$/;"	v	file:
 sock	ipkg-install/usr/include/libubus.h	/^	struct uloop_fd sock;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::uloop_fd
-sock	libubus.h	/^	struct uloop_fd sock;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::uloop_fd
-sock	ubusd.h	/^	struct uloop_fd sock;$/;"	m	struct:ubus_client	typeref:struct:ubus_client::uloop_fd
+sock	libubus.h	/^	struct uloop_fd sock;               \/\/ ��Ҫ��epoll������fd���ƿ�$/;"	m	struct:ubus_context	typeref:struct:ubus_context::uloop_fd
+sock	ubusd.h	/^	struct uloop_fd sock;       \/\/ 客户端fd控制块$/;"	m	struct:ubus_client	typeref:struct:ubus_client::uloop_fd
 stack_depth	ipkg-install/usr/include/libubus.h	/^	int stack_depth;$/;"	m	struct:ubus_context
 stack_depth	libubus.h	/^	int stack_depth;$/;"	m	struct:ubus_context
 state	lua/ubus.c	/^static lua_State *state;$/;"	v	file:
@@ -574,7 +420,7 @@ test_client_subscribe_cb	examples/client.c	/^static void test_client_subscribe_c
 test_count	examples/client.c	/^static void test_count(struct uloop_timeout *timeout)$/;"	f	file:
 test_count	examples/server.c	/^static int test_count(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:
 test_count_data_cb	examples/client.c	/^static void test_count_data_cb(struct ubus_request *req,$/;"	f	file:
-test_event	examples/server.c	/^static struct ubus_subscriber test_event;$/;"	v	typeref:struct:ubus_subscriber	file:
+test_event	examples/server.c	/^static struct ubus_subscriber test_event;   \/\/ 对象的附加描述控制块$/;"	v	typeref:struct:ubus_subscriber	file:
 test_handle_remove	examples/server.c	/^test_handle_remove(struct ubus_context *ctx, struct ubus_subscriber *s,$/;"	f	file:
 test_hello	examples/server.c	/^static int test_hello(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:
 test_hello_fd_reply	examples/server.c	/^static void test_hello_fd_reply(struct uloop_timeout *t)$/;"	f	file:
@@ -586,20 +432,20 @@ test_object_type	examples/server.c	/^static struct ubus_object_type test_object_
 test_watch	examples/server.c	/^static int test_watch(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:
 timeout	cli.c	/^	struct uloop_timeout timeout;$/;"	m	struct:cli_wait_data	typeref:struct:cli_wait_data::uloop_timeout	file:
 timeout	cli.c	/^static int timeout = 30;$/;"	v	file:
-timeout	examples/server.c	/^	struct uloop_timeout timeout;$/;"	m	struct:hello_request	typeref:struct:hello_request::uloop_timeout	file:
+timeout	examples/server.c	/^	struct uloop_timeout timeout;   \/\/ 给对象hello的请求控制块定义一个超时控制块$/;"	m	struct:hello_request	typeref:struct:hello_request::uloop_timeout	file:
 timeout	lua/ubus.c	/^	int timeout;$/;"	m	struct:ubus_lua_connection	file:
 timer	ipkg-install/usr/include/libubus.h	/^	struct uloop_timeout timer;$/;"	m	struct:ubus_auto_conn	typeref:struct:ubus_auto_conn::uloop_timeout
 timer	libubus.h	/^	struct uloop_timeout timer;$/;"	m	struct:ubus_auto_conn	typeref:struct:ubus_auto_conn::uloop_timeout
-tx_queue	ubusd.h	/^	struct ubus_msg_buf *tx_queue[UBUSD_CLIENT_BACKLOG];$/;"	m	struct:ubus_client	typeref:struct:ubus_client::ubus_msg_buf
-txq_cur	ubusd.h	/^	unsigned int txq_cur, txq_tail, txq_ofs;$/;"	m	struct:ubus_client
-txq_ofs	ubusd.h	/^	unsigned int txq_cur, txq_tail, txq_ofs;$/;"	m	struct:ubus_client
-txq_tail	ubusd.h	/^	unsigned int txq_cur, txq_tail, txq_ofs;$/;"	m	struct:ubus_client
+tx_queue	ubusd.h	/^	struct ubus_msg_buf *tx_queue[UBUSD_CLIENT_BACKLOG];    \/\/ 待发送的消息池$/;"	m	struct:ubus_client	typeref:struct:ubus_client::ubus_msg_buf
+txq_cur	ubusd.h	/^	unsigned int txq_cur, txq_tail, txq_ofs;    \/\/ txq_cur:发送中的消息索引号 txq_tail:最后一个消息索引号 txq_ofs:记录已经发送的消息长度$/;"	m	struct:ubus_client
+txq_ofs	ubusd.h	/^	unsigned int txq_cur, txq_tail, txq_ofs;    \/\/ txq_cur:发送中的消息索引号 txq_tail:最后一个消息索引号 txq_ofs:记录已经发送的消息长度$/;"	m	struct:ubus_client
+txq_tail	ubusd.h	/^	unsigned int txq_cur, txq_tail, txq_ofs;    \/\/ txq_cur:发送中的消息索引号 txq_tail:最后一个消息索引号 txq_ofs:记录已经发送的消息长度$/;"	m	struct:ubus_client
 type	ipkg-install/usr/include/libubus.h	/^	struct ubus_object_type *type;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_object_type
 type	ipkg-install/usr/include/ubusmsg.h	/^	uint8_t type;$/;"	m	struct:ubus_msghdr
 type	libubus-req.c	/^	int type;$/;"	m	struct:ubus_pending_data	file:
-type	libubus.h	/^	struct ubus_object_type *type;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_object_type
+type	libubus.h	/^	struct ubus_object_type *type;  \/\/ ��������$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_object_type
 type	ubusd_obj.h	/^	struct ubus_object_type *type;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_object_type
-type	ubusmsg.h	/^	uint8_t type;$/;"	m	struct:ubus_msghdr
+type	ubusmsg.h	/^	uint8_t type;   \/\/ 记录消息类型$/;"	m	struct:ubus_msghdr
 type_id	ipkg-install/usr/include/libubus.h	/^	uint32_t type_id;$/;"	m	struct:ubus_object_data
 type_id	libubus.h	/^	uint32_t type_id;$/;"	m	struct:ubus_object_data
 ubus	lua/ubus.c	/^static const luaL_Reg ubus[] = {$/;"	v	file:
@@ -761,7 +607,7 @@ ubus_push_method_data	libubus-obj.c	/^static void ubus_push_method_data(const st
 ubus_push_object_type	libubus-obj.c	/^static bool ubus_push_object_type(const struct ubus_object_type *type)$/;"	f	file:
 ubus_queue_msg	libubus.c	/^ubus_queue_msg(struct ubus_context *ctx, struct ubus_msghdr_buf *buf)$/;"	f	file:
 ubus_reconnect	libubus-io.c	/^int ubus_reconnect(struct ubus_context *ctx, const char *path)$/;"	f
-ubus_refresh_state	libubus-io.c	/^ubus_refresh_state(struct ubus_context *ctx)$/;"	f	file:
+ubus_refresh_state	libubus-io.c	/^static void ubus_refresh_state(struct ubus_context *ctx)$/;"	f	file:
 ubus_register_event_handler	libubus.c	/^int ubus_register_event_handler(struct ubus_context *ctx,$/;"	f
 ubus_register_subscriber	libubus-sub.c	/^int ubus_register_subscriber(struct ubus_context *ctx, struct ubus_subscriber *s)$/;"	f
 ubus_remove_handler_t	ipkg-install/usr/include/libubus.h	/^typedef void (*ubus_remove_handler_t)(struct ubus_context *ctx,$/;"	t

@@ -31,7 +31,7 @@ const struct ubus_method watch_method __hidden = {
 	.handler = ubus_subscriber_cb,
 };
 
-// 注册附加描述控制块，内含一个只有方法没有对象名的对象
+// 注册阅订控制块，内含一个只有方法没有对象名的对象
 int ubus_register_subscriber(struct ubus_context *ctx, struct ubus_subscriber *s)
 {
 	struct ubus_object *obj = &s->obj;

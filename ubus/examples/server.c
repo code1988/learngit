@@ -134,20 +134,20 @@ static int test_hello(struct ubus_context *ctx, struct ubus_object *obj,
 	return 0;
 }
 
-// 对象watch的参数枚举
+// 方法watch的参数枚举
 enum {
 	WATCH_ID,
 	WATCH_COUNTER,
 	__WATCH_MAX
 };
 
-// 对象watch的策略
+// 方法watch的策略
 static const struct blobmsg_policy watch_policy[__WATCH_MAX] = {
 	[WATCH_ID] = { .name = "id", .type = BLOBMSG_TYPE_INT32 },
 	[WATCH_COUNTER] = { .name = "counter", .type = BLOBMSG_TYPE_INT32 },
 };
 
-// 附加描述控制块中删除动作的回调函数
+// 阅订者收到删除通知的回调函数
 static void
 test_handle_remove(struct ubus_context *ctx, struct ubus_subscriber *s,
                    uint32_t id)
@@ -172,6 +172,9 @@ test_notify(struct ubus_context *ctx, struct ubus_object *obj,
 	return 0;
 }
 
+/* 这是对象"test"的方法"watch"的回调函数
+ * 执行该回调函数，表示server进程将阅订指定id对应的对象上的服务
+ */
 static int test_watch(struct ubus_context *ctx, struct ubus_object *obj,
 		      struct ubus_request_data *req, const char *method,
 		      struct blob_attr *msg)
@@ -199,14 +202,14 @@ static int test_watch(struct ubus_context *ctx, struct ubus_object *obj,
 	    struct blobmsg_hdr *hdr = (struct blobmsg_hdr *) blob_data(tb[WATCH_COUNTER]);
         printf("blobmsg_hdr_len: %d, name: %s\n",hdr->namelen,hdr->name);
 
-        // 获取"id"的值
+        // 获取"counter"的值
 		msgstr = blobmsg_data(tb[WATCH_COUNTER]);
         printf("msgstr: %d\n",*(int *)msgstr);
     }
 
-	test_event.remove_cb = test_handle_remove;  // 注册附加描述控制块中删除动作的回调函数
-	test_event.cb = test_notify;                // 注册附加描述控制块中的主回调函数
-	ret = ubus_subscribe(ctx, &test_event, blobmsg_get_u32(tb[WATCH_ID]));
+	test_event.remove_cb = test_handle_remove;  // 注册通知删除时的回调函数
+	test_event.cb = test_notify;                // 注册通知到来时的回调函数
+	ret = ubus_subscribe(ctx, &test_event, blobmsg_get_u32(tb[WATCH_ID]));  // 完成阅订
 	fprintf(stderr, "Watching object %08x: %s\n", blobmsg_get_u32(tb[WATCH_ID]), ubus_strerror(ret));
 	return ret;
 }
@@ -250,7 +253,7 @@ static int test_count(struct ubus_context *ctx, struct ubus_object *obj,
 	return 0;
 }
 
-// 测试例子-对象的方法
+// 测试例子-对象的方法的集合(这里定义了3条方法)
 static const struct ubus_method test_methods[] = {
 	UBUS_METHOD("hello", test_hello, hello_policy),
 	UBUS_METHOD("watch", test_watch, watch_policy),
@@ -279,7 +282,7 @@ static void server_main(void)
 	if (ret)
 		fprintf(stderr, "Failed to add object: %s\n", ubus_strerror(ret));
 
-    // 注册附加描述控制块：test_event(内部封装了一个只有方法没有对象名的对象)
+    // 注册阅订控制块：test_event
 	ret = ubus_register_subscriber(ctx, &test_event);
 	if (ret)
 		fprintf(stderr, "Failed to add watch handler: %s\n", ubus_strerror(ret));
@@ -309,14 +312,14 @@ int main(int argc, char **argv)
 	uloop_init();               // 创建epoll句柄
 	signal(SIGPIPE, SIG_IGN);   // 防止对端关闭后本端程序退出
 
-    // 创建ubus客户端（五层封装）
+    // 创建ubus客户端并发起连接（五层封装）
 	ctx = ubus_connect(ubus_socket);
 	if (!ctx) {
 		fprintf(stderr, "Failed to connect to ubus\n");
 		return -1;
 	}
 
-    // 客户端注册fd到epoll
+    // 到这里意味着ubus客户端成功连接ubusd,注册fd到epoll
 	ubus_add_uloop(ctx);
 
     // 客户端注册服务

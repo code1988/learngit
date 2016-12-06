@@ -59,6 +59,7 @@ typedef void (*ubus_notify_complete_handler_t)(struct ubus_notify_request *req,
 					       int idx, int ret);
 typedef void (*ubus_connect_handler_t)(struct ubus_context *ctx);
 
+//给一个对象类型ubus_object_type的成员赋值
 #define UBUS_OBJECT_TYPE(_name, _methods)		\
 	{						\
 		.name = _name,				\
@@ -100,36 +101,36 @@ struct ubus_method {
 
 // 对象类型
 struct ubus_object_type {
-	const char *name;   // 对象名
+	const char *name;                   // 对象名
 	uint32_t id;
 
-	const struct ubus_method *methods;  // 指向方法
-	int n_methods;      // 记录方法的数量
+	const struct ubus_method *methods;  // 指向方法控制块数组
+	int n_methods;                      // 记录方法控制块数组的元素数量
 };
 
-// 对象
+// avl树的链表节点，构成ubus对象
 struct ubus_object {
-	struct avl_node avl;
+	struct avl_node avl;            // avl树
 
-	const char *name;   // 对象名
+	const char *name;               // 对象名
 	uint32_t id;
 
 	const char *path;
-	struct ubus_object_type *type;  // 对象类型
+	struct ubus_object_type *type;      // 对象类型
 
-	ubus_state_handler_t subscribe_cb;
+	ubus_state_handler_t subscribe_cb;  // 用于预订功能的回调
 	bool has_subscribers;
 
 	const struct ubus_method *methods;  // 指向方法
 	int n_methods;      // 记录方法的数量
 };
 
-// 对象的附加描述控制块
+// 阅订控制块
 struct ubus_subscriber {
 	struct ubus_object obj; // 对象
 
-	ubus_handler_t cb;      // 回调函数
-	ubus_remove_handler_t remove_cb;    // 删除动作的回调函数
+	ubus_handler_t cb;                  // 普通通知的回调函数
+	ubus_remove_handler_t remove_cb;    // 删除通知的回调函数
 };
 
 struct ubus_event_handler {
@@ -141,7 +142,7 @@ struct ubus_event_handler {
 // ubus客户端控制块
 struct ubus_context {
 	struct list_head requests;
-	struct avl_tree objects;
+	struct avl_tree objects;            // avl树控制块
 	struct list_head pending;
 
 	struct uloop_fd sock;               // 需要被epoll监听的fd控制块
@@ -176,10 +177,11 @@ struct ubus_request_data {
 	int fd;
 };
 
+// ubus请求控制块
 struct ubus_request {
-	struct list_head list;
+	struct list_head list;      // 链表头
 
-	struct list_head pending;
+	struct list_head pending;   // 链表头
 	int status_code;
 	bool status_msg;
 	bool blocked;
@@ -187,7 +189,7 @@ struct ubus_request {
 	bool notify;
 
 	uint32_t peer;
-	uint16_t seq;
+	uint16_t seq;               // 记录发起的请求数量
 
 	ubus_data_handler_t raw_data_cb;
 	ubus_data_handler_t data_cb;
@@ -225,7 +227,7 @@ const char *ubus_strerror(int error);
 // 客户端注册fd到epoll
 static inline void ubus_add_uloop(struct ubus_context *ctx)
 {
-    // 客户端注册fd到epoll（阻塞模式、读触发）
+    // 客户端注册fd到epoll（阻塞模式、读触发、水平触发）
 	uloop_fd_add(&ctx->sock, ULOOP_BLOCKING | ULOOP_READ);
 }
 

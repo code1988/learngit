@@ -27,6 +27,7 @@ static void test_client_subscribe_cb(struct ubus_context *ctx, struct ubus_objec
 	fprintf(stderr, "Subscribers active: %d\n", obj->has_subscribers);
 }
 
+// 定义了一个notify对象
 static struct ubus_object test_client_object = {
 	.subscribe_cb = test_client_subscribe_cb,
 };
@@ -174,12 +175,14 @@ static void client_main(void)
 	uint32_t id;
 	int ret;
 
+    // 注册一个ubus对象test_client_object(这是一个notify对象)
 	ret = ubus_add_object(ctx, &test_client_object);
 	if (ret) {
 		fprintf(stderr, "Failed to add_object object: %s\n", ubus_strerror(ret));
 		return;
 	}
 
+    // 查找对象"test"的ID号
 	if (ubus_lookup_id(ctx, "test", &id)) {
 		fprintf(stderr, "Failed to look up test object\n");
 		return;

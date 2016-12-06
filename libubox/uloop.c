@@ -403,7 +403,7 @@ int uloop_fd_add(struct uloop_fd *sock, unsigned int flags)
 	if (!(flags & (ULOOP_READ | ULOOP_WRITE)))
 		return uloop_fd_delete(sock);
 
-    // 监听套接字设置非阻塞属性
+    // 监听套接字设置非阻塞属性(这步对于服务端套接字来说是多余的，因为在usock函数中已经有了该操作)
 	if (!sock->registered && !(flags & ULOOP_BLOCKING)) {
 		fl = fcntl(sock->fd, F_GETFL, 0);
 		fl |= O_NONBLOCK;

@@ -1,0 +1,64 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+COUNT_STRING	server.c	/^    COUNT_STRING,$/;"	e	enum:__anon3	file:
+COUNT_TO	server.c	/^    COUNT_TO,$/;"	e	enum:__anon3	file:
+HELLO_ID	server.c	/^	HELLO_ID,$/;"	e	enum:__anon1	file:
+HELLO_MSG	server.c	/^	HELLO_MSG,$/;"	e	enum:__anon1	file:
+RETURN_CODE	client.c	/^	RETURN_CODE,$/;"	e	enum:__anon4	file:
+WATCH_COUNTER	server.c	/^	WATCH_COUNTER,$/;"	e	enum:__anon2	file:
+WATCH_ID	server.c	/^	WATCH_ID,$/;"	e	enum:__anon2	file:
+__COUNT_H	count.h	15;"	d
+__COUNT_MAX	server.c	/^    __COUNT_MAX$/;"	e	enum:__anon3	file:
+__HELLO_MAX	server.c	/^	__HELLO_MAX$/;"	e	enum:__anon1	file:
+__RETURN_MAX	client.c	/^	__RETURN_MAX,$/;"	e	enum:__anon4	file:
+__WATCH_MAX	server.c	/^	__WATCH_MAX$/;"	e	enum:__anon2	file:
+b	client.c	/^static struct blob_buf b;$/;"	v	typeref:struct:blob_buf	file:
+b	server.c	/^static struct blob_buf b;           \/\/ 定义一个静态全局BLOB控制块$/;"	v	typeref:struct:blob_buf	file:
+client_main	client.c	/^static void client_main(void)$/;"	f	file:	signature:(void)
+count_policy	server.c	/^static const struct blobmsg_policy count_policy[__COUNT_MAX] = {$/;"	v	typeref:struct:blobmsg_policy	file:
+count_timer	client.c	/^static struct uloop_timeout count_timer = {$/;"	v	typeref:struct:uloop_timeout	file:
+count_to_number	count.c	/^char *count_to_number(uint32_t num)$/;"	f	signature:(uint32_t num)
+count_to_number	count.h	/^char *count_to_number(uint32_t num);$/;"	p	signature:(uint32_t num)
+ctx	client.c	/^static struct ubus_context *ctx;$/;"	v	typeref:struct:ubus_context	file:
+ctx	server.c	/^static struct ubus_context *ctx;    \/\/ 指向注册服务到ubusd的客户端的总控制块$/;"	v	typeref:struct:ubus_context	file:
+data	server.c	/^	char data[];$/;"	m	struct:hello_request	file:	access:public
+fd	server.c	/^	int fd;$/;"	m	struct:hello_request	file:	access:public
+hello_policy	server.c	/^static const struct blobmsg_policy hello_policy[] = {$/;"	v	typeref:struct:blobmsg_policy	file:
+hello_request	server.c	/^struct hello_request {$/;"	s	file:
+hello_request::data	server.c	/^	char data[];$/;"	m	struct:hello_request	file:	access:public
+hello_request::fd	server.c	/^	int fd;$/;"	m	struct:hello_request	file:	access:public
+hello_request::idx	server.c	/^	int idx;$/;"	m	struct:hello_request	file:	access:public
+hello_request::req	server.c	/^	struct ubus_request_data req;   \/\/ ubus请求控制块$/;"	m	struct:hello_request	typeref:struct:hello_request::ubus_request_data	file:	access:public
+hello_request::timeout	server.c	/^	struct uloop_timeout timeout;   \/\/ 给对象hello的请求控制块定义一个超时控制块$/;"	m	struct:hello_request	typeref:struct:hello_request::uloop_timeout	file:	access:public
+idx	server.c	/^	int idx;$/;"	m	struct:hello_request	file:	access:public
+main	client.c	/^int main(int argc, char **argv)$/;"	f	signature:(int argc, char **argv)
+main	server.c	/^int main(int argc, char **argv)$/;"	f	signature:(int argc, char **argv)
+notify_timer	client.c	/^static struct uloop_timeout notify_timer = {$/;"	v	typeref:struct:uloop_timeout	file:
+req	server.c	/^	struct ubus_request_data req;   \/\/ ubus请求控制块$/;"	m	struct:hello_request	typeref:struct:hello_request::ubus_request_data	file:	access:public
+return_policy	client.c	/^static const struct blobmsg_policy return_policy[__RETURN_MAX] = {$/;"	v	typeref:struct:blobmsg_policy	file:
+server_main	server.c	/^static void server_main(void)$/;"	f	file:	signature:(void)
+test_client_complete_cb	client.c	/^static void test_client_complete_cb(struct ubus_request *req, int ret)$/;"	f	file:	signature:(struct ubus_request *req, int ret)
+test_client_fd_cb	client.c	/^static void test_client_fd_cb(struct ubus_request *req, int fd)$/;"	f	file:	signature:(struct ubus_request *req, int fd)
+test_client_fd_data_cb	client.c	/^static void test_client_fd_data_cb(struct ustream *s, int bytes)$/;"	f	file:	signature:(struct ustream *s, int bytes)
+test_client_notify_cb	client.c	/^static void test_client_notify_cb(struct uloop_timeout *timeout)$/;"	f	file:	signature:(struct uloop_timeout *timeout)
+test_client_object	client.c	/^static struct ubus_object test_client_object = {$/;"	v	typeref:struct:ubus_object	file:
+test_client_subscribe_cb	client.c	/^static void test_client_subscribe_cb(struct ubus_context *ctx, struct ubus_object *obj)$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_object *obj)
+test_count	client.c	/^static void test_count(struct uloop_timeout *timeout)$/;"	f	file:	signature:(struct uloop_timeout *timeout)
+test_count	server.c	/^static int test_count(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_object *obj, struct ubus_request_data *req, const char *method, struct blob_attr *msg)
+test_count_data_cb	client.c	/^static void test_count_data_cb(struct ubus_request *req,$/;"	f	file:	signature:(struct ubus_request *req, int type, struct blob_attr *msg)
+test_event	server.c	/^static struct ubus_subscriber test_event;   \/\/ 对象的附加描述控制块$/;"	v	typeref:struct:ubus_subscriber	file:
+test_handle_remove	server.c	/^test_handle_remove(struct ubus_context *ctx, struct ubus_subscriber *s,$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_subscriber *s, uint32_t id)
+test_hello	server.c	/^static int test_hello(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_object *obj, struct ubus_request_data *req, const char *method, struct blob_attr *msg)
+test_hello_fd_reply	server.c	/^static void test_hello_fd_reply(struct uloop_timeout *t)$/;"	f	file:	signature:(struct uloop_timeout *t)
+test_hello_reply	server.c	/^static void test_hello_reply(struct uloop_timeout *t)$/;"	f	file:	signature:(struct uloop_timeout *t)
+test_methods	server.c	/^static const struct ubus_method test_methods[] = {$/;"	v	typeref:struct:ubus_method	file:
+test_notify	server.c	/^test_notify(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_object *obj, struct ubus_request_data *req, const char *method, struct blob_attr *msg)
+test_object	server.c	/^static struct ubus_object test_object = {$/;"	v	typeref:struct:ubus_object	file:
+test_object_type	server.c	/^static struct ubus_object_type test_object_type =$/;"	v	typeref:struct:ubus_object_type	file:
+test_watch	server.c	/^static int test_watch(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_object *obj, struct ubus_request_data *req, const char *method, struct blob_attr *msg)
+timeout	server.c	/^	struct uloop_timeout timeout;   \/\/ 给对象hello的请求控制块定义一个超时控制块$/;"	m	struct:hello_request	typeref:struct:hello_request::uloop_timeout	file:	access:public
+watch_policy	server.c	/^static const struct blobmsg_policy watch_policy[__WATCH_MAX] = {$/;"	v	typeref:struct:blobmsg_policy	file:

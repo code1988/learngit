@@ -52,15 +52,13 @@ offset_to_attr(struct blob_buf *buf, int offset)
 }
 
 // 计算属性空间到缓冲区的偏移量
-static inline int
-attr_to_offset(struct blob_buf *buf, struct blob_attr *attr)
+static inline int attr_to_offset(struct blob_buf *buf, struct blob_attr *attr)
 {
 	return (char *)attr - (char *) buf->buf + BLOB_COOKIE;
 }
 
 // blob缓冲区容量调整
-bool
-blob_buf_grow(struct blob_buf *buf, int required)
+bool blob_buf_grow(struct blob_buf *buf, int required)
 {
 	int offset_head = attr_to_offset(buf, buf->head);
 
@@ -72,8 +70,7 @@ blob_buf_grow(struct blob_buf *buf, int required)
 }
 
 // 从blob缓冲区中分配一个属性空间并初始化(如果pos指向缓冲区首地址则意味着分配该blob第一个属性空间)
-static struct blob_attr *
-blob_add(struct blob_buf *buf, struct blob_attr *pos, int id, int payload)
+static struct blob_attr *blob_add(struct blob_buf *buf, struct blob_attr *pos, int id, int payload)
 {
 	int offset = attr_to_offset(buf, pos);
     // 以下计算缓冲区容量方法意味着其最小容量是包含一个struct blob_attr属性空间头的长度
@@ -101,15 +98,16 @@ blob_add(struct blob_buf *buf, struct blob_attr *pos, int id, int payload)
 	return attr;
 }
 
-// blob初始化(id - 数据类型)
-int
-blob_buf_init(struct blob_buf *buf, int id)
+/* blob初始化(id - 数据类型)
+ * 初始化完后的blob_buf拥有第一级属性空间(id = 0,空数据区)
+ */
+int blob_buf_init(struct blob_buf *buf, int id)
 {
     // 确认容量调整函数是否已经注册
 	if (!buf->grow)
 		buf->grow = blob_buffer_grow;
 
-    // 将属性空间地址初始化为缓冲区地址
+    // 将属性空间地址初始化为缓冲区首地址
 	buf->head = buf->buf;
 
     // 从缓冲区中分配第一级属性空间并初始化
@@ -140,18 +138,16 @@ blob_fill_pad(struct blob_attr *attr)
 		memset(buf + len - delta, 0, delta);
 }
 
-// 设置数据区长度
-void
-blob_set_raw_len(struct blob_attr *attr, unsigned int len)
+// 设置属性头中数据区长度
+void blob_set_raw_len(struct blob_attr *attr, unsigned int len)
 {
 	len &= BLOB_ATTR_LEN_MASK;
 	attr->id_len &= ~cpu_to_be32(BLOB_ATTR_LEN_MASK);
 	attr->id_len |= cpu_to_be32(len);
 }
 
-// 在已有的blob属性空间后面再开辟一个带数据类型的属性空间(数据区空)
-struct blob_attr *
-blob_new(struct blob_buf *buf, int id, int payload)
+// 在当前嵌套级别的领袖blob属性空间中再开辟一个带数据类型的属性空间
+struct blob_attr *blob_new(struct blob_buf *buf, int id, int payload)
 {
 	struct blob_attr *attr;
     
@@ -160,7 +156,7 @@ blob_new(struct blob_buf *buf, int id, int payload)
 	if (!attr)
 		return NULL;
 
-    // 更新已有的blob属性空间中数据区长度
+    // 更新当前嵌套级别的领袖blob的属性空间中记录的数据区长度
 	blob_set_raw_len(buf->head, blob_pad_len(buf->head) + blob_pad_len(attr));
 	return attr;
 }
@@ -187,26 +183,27 @@ blob_put_raw(struct blob_buf *buf, const void *ptr, unsigned int len)
 	return attr;
 }
 
-// 在已有的blob属性空间后面再开辟一个属性空间，并设置数据类型、填入数据
+// 在当前嵌套级别的领袖blob属性空间中再开辟一个属性空间，并设置数据类型、填入数据
 struct blob_attr *
 blob_put(struct blob_buf *buf, int id, const void *ptr, unsigned int len)
 {
 	struct blob_attr *attr;
 
-    // 在buf的属性空间后再开辟一个属性空间
+    // 在当前嵌套级别的领袖blob属性空间中再开辟一个属性空间
 	attr = blob_new(buf, id, len);
 	if (!attr)
 		return NULL;
 
-    // 新的数据区填入数据
+    // 将数据填入新开辟的属性空间所属的数据区
 	if (ptr)
 		memcpy(blob_data(attr), ptr, len);
 	return attr;
 }
 
-// 打开嵌套区
-void *
-blob_nest_start(struct blob_buf *buf, int id)
+/* 创建下一级嵌套并打开
+ * 返回上一级嵌套到整个缓冲区的偏移值，该偏移值用于返回上一级嵌套
+ */
+void *blob_nest_start(struct blob_buf *buf, int id)
 {
 	unsigned long offset = attr_to_offset(buf, buf->head);
     
@@ -218,16 +215,15 @@ blob_nest_start(struct blob_buf *buf, int id)
 }
 
 // 关闭嵌套区
-void
-blob_nest_end(struct blob_buf *buf, void *cookie)
+void blob_nest_end(struct blob_buf *buf, void *cookie)
 {
-    // 获取最外层的属性空间地址（即缓冲区首地址）
+    // 得到上一级嵌套区领袖blob属性地址
 	struct blob_attr *attr = offset_to_attr(buf, (unsigned long) cookie);
 
-    // 更新最外层属性空间数据区长度
+    // 更新上一级嵌套区领袖blob属性空间中记录的数据区长度
 	blob_set_raw_len(attr, blob_pad_len(attr) + blob_len(buf->head));
 
-    // 将head指针指向最外层的属性空间
+    // 将head指针指向上一级嵌套区领袖blob属性空间
 	buf->head = attr;
 }
 

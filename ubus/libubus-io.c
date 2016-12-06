@@ -217,7 +217,7 @@ static int recv_retry(int fd, struct iovec *iov, bool wait, int *recv_fd)
 	return total;
 }
 
-// 消息头合法性检测
+// 消息合法性检测
 static bool ubus_validate_hdr(struct ubus_msghdr *hdr)
 {
 	struct blob_attr *data = (struct blob_attr *) (hdr + 1);
@@ -328,8 +328,8 @@ void __hidden ubus_poll_data(struct ubus_context *ctx, int timeout)
 	ubus_handle_data(&ctx->sock, ULOOP_READ);
 }
 
-static void
-ubus_refresh_state(struct ubus_context *ctx)
+// 复位ubus对象表，会将已有的对象重新注册(实际情况是不存在任何有效的对象，这里就是个清空操作)
+static void ubus_refresh_state(struct ubus_context *ctx)
 {
 	struct ubus_object *obj, *tmp;
 	struct ubus_object **objs;
@@ -351,7 +351,7 @@ ubus_refresh_state(struct ubus_context *ctx)
 		ubus_add_object(ctx, objs[i]);
 }
 
-// 创建客户端(三层封装)
+// 创建ubus客户端(三层封装)
 int ubus_reconnect(struct ubus_context *ctx, const char *path)
 {
 	struct {
@@ -365,7 +365,7 @@ int ubus_reconnect(struct ubus_context *ctx, const char *path)
 	if (!path)
 		path = UBUS_UNIX_SOCKET;    // 宏定义UBUS_UNIX_SOCKET位于CMakeLists.txt
 
-    // 如果客户端fd是否已经打开，需要先关闭fd
+    // 如果客户端fd已经打开，需要先关闭fd
 	if (ctx->sock.fd >= 0) 
     {
         // 如果客户端fd控制块已经注册，则还需要删除这个fd控制块
@@ -376,7 +376,7 @@ int ubus_reconnect(struct ubus_context *ctx, const char *path)
 		close(ctx->sock.fd);
 	}
 
-    // 创建unix socket客户端,隐含了采用TCP方式（二层封装）
+    // 创建unix socket客户端，并完成跟服务器的连接
 	ctx->sock.fd = usock(USOCK_UNIX, path, NULL);
 	if (ctx->sock.fd < 0)
 		return UBUS_STATUS_CONNECTION_FAILED;
@@ -386,7 +386,7 @@ int ubus_reconnect(struct ubus_context *ctx, const char *path)
 	if (read(ctx->sock.fd, &hdr, sizeof(hdr)) != sizeof(hdr))
 		goto out_close;
 
-    // 消息头合法性检测
+    // 消息合法性检测
 	if (!ubus_validate_hdr(&hdr.hdr))
 		goto out_close;
 
@@ -394,12 +394,13 @@ int ubus_reconnect(struct ubus_context *ctx, const char *path)
 	if (hdr.hdr.type != UBUS_MSG_HELLO)
 		goto out_close;
 
-    // 拷贝消息内容到新申请的内存
+    // 申请整条hello消息长度的空间，然后先拷贝blob_attr进去
 	buf = calloc(1, blob_raw_len(&hdr.data));
 	if (!buf)
 		goto out_close;
 
 	memcpy(buf, &hdr.data, sizeof(hdr.data));
+    // 接着读取hello消息的有效部分
 	if (read(ctx->sock.fd, blob_data(buf), blob_len(buf)) != blob_len(buf))
 		goto out_free;
 
@@ -410,9 +411,10 @@ int ubus_reconnect(struct ubus_context *ctx, const char *path)
     // 到这里意味着连接握手成功
 	ret = UBUS_STATUS_OK;
 
-    // fd设置为非阻塞和close-on-exec
+    // fd设置为非阻塞和close-on-exec(这步在这里多余，因为usock函数中已经执行过)
 	fcntl(ctx->sock.fd, F_SETFL, fcntl(ctx->sock.fd, F_GETFL) | O_NONBLOCK | O_CLOEXEC);
 
+    // 复位ubus对象链表
 	ubus_refresh_state(ctx);
 
 out_free:

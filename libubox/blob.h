@@ -67,7 +67,7 @@ struct blob_attr_info {
 
 // blob模块控制块
 struct blob_buf {
-	struct blob_attr *head; // 指向blob的属性空间（属性空间其实是在缓冲区中分配的）
+	struct blob_attr *head; // 指向当前嵌套级别的领袖blob的属性空间（属性空间其实是在缓冲区中分配的，刚初始化时head和buf地址重合）
 	bool (*grow)(struct blob_buf *buf, int minlen); // 指向blob缓冲区容量调整函数
 	int buflen;             // blob缓冲区长度
 	void *buf;              // blob缓冲区指针
@@ -103,7 +103,7 @@ blob_is_extended(const struct blob_attr *attr)
 
 /*
  * blob_len: returns the length of the attribute's payload
- * 返回数据区有效长度（即上层消息总长，包含上层消息头（假如存在），不包含本层blob_attr结构长）
+ * 返回数据区payload（即上层消息总长，包含上层消息头（假如存在），不包含本层blob_attr结构长）
  */
 static inline unsigned int
 blob_len(const struct blob_attr *attr)
@@ -113,7 +113,7 @@ blob_len(const struct blob_attr *attr)
 
 /*
  * blob_raw_len: returns the complete length of an attribute (including the header)
- * 返回数据区全长（包含本层blob_attr结构长）
+ * 返回数据区全长(不带pad)（包含本层blob_attr结构长）
  */
 static inline unsigned int
 blob_raw_len(const struct blob_attr *attr)
@@ -123,7 +123,7 @@ blob_raw_len(const struct blob_attr *attr)
 
 /*
  * blob_pad_len: returns the padded length of an attribute (including the header)
- * 返回4字节对齐的数据区全长（包含本层blob_attr结构长）
+ * 返回4字节对齐的数据区全长(不带pad)（包含本层blob_attr结构长）
  */
 static inline unsigned int
 blob_pad_len(const struct blob_attr *attr)

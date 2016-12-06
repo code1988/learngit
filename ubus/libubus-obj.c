@@ -154,6 +154,7 @@ static void ubus_add_object_cb(struct ubus_request *req, int type, struct blob_a
 	avl_insert(&req->ctx->objects, &obj->avl);
 }
 
+// 嵌套填入每种方法(使用table格式)
 static void ubus_push_method_data(const struct ubus_method *m)
 {
 	void *mtbl;
@@ -171,6 +172,7 @@ static void ubus_push_method_data(const struct ubus_method *m)
 	blobmsg_close_table(&b, mtbl);
 }
 
+// 嵌套填入对象的类型
 static bool ubus_push_object_type(const struct ubus_object_type *type)
 {
 	void *s;
@@ -178,6 +180,7 @@ static bool ubus_push_object_type(const struct ubus_object_type *type)
 
 	s = blob_nest_start(&b, UBUS_ATTR_SIGNATURE);
 
+    // 嵌套填入每种方法
 	for (i = 0; i < type->n_methods; i++)
 		ubus_push_method_data(&type->methods[i]);
 
@@ -186,14 +189,18 @@ static bool ubus_push_object_type(const struct ubus_object_type *type)
 	return true;
 }
 
+// 向ubusd注册一个ubus对象
 int ubus_add_object(struct ubus_context *ctx, struct ubus_object *obj)
 {
 	struct ubus_request req;
 	int ret;
 
+    // 初始化一个blob
 	blob_buf_init(&b, 0);
 
-	if (obj->name && obj->type) {
+    // 填入一个对象名，然后如果有类型id平行填入类型id，没有则嵌套填入类型
+	if (obj->name && obj->type) 
+    {
 		blob_put_string(&b, UBUS_ATTR_OBJPATH, obj->name);
 
 		if (obj->type->id)

@@ -22,6 +22,7 @@
 #ifndef USOCK_H_
 #define USOCK_H_
 
+// API中的type是一下3种变量(通信方式、socket角色、socket类型)的集合
 #define USOCK_TCP 0
 #define USOCK_UDP 1
 

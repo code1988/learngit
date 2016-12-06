@@ -41,7 +41,9 @@ static void usock_set_flags(int sock, unsigned int type)
 		fcntl(sock, F_SETFL, fcntl(sock, F_GETFL) | O_NONBLOCK);
 }
 
-// 服务器/客户端创建（底层封装）,支持unix socket、inet socket
+/* 创建socket,如果作为服务端则执行监听，如果作为客户端则执行连接
+ * type:socket类型、服务器/客户端类型、socket角色的合集，USOCK_SERVER/USOCK_UNIX/USOCK_TCP/USOCK_UDP 
+ */
 static int usock_connect(int type, struct sockaddr *sa, int sa_len, int family, int socktype, bool server)
 {
 	int sock;
@@ -73,21 +75,25 @@ static int usock_connect(int type, struct sockaddr *sa, int sa_len, int family, 
 	return -1;
 }
 
-// 创建unix socket
+/* 创建unix socket,如果作为服务端则执行监听，如果作为客户端则执行连接
+ * type:socket类型、服务器/客户端类型、socket角色的合集，USOCK_SERVER/USOCK_UNIX/USOCK_TCP/USOCK_UDP 
+ */
 static int usock_unix(int type, const char *host)
 {
 	struct sockaddr_un sun = {.sun_family = AF_UNIX};
     bool server = !!(type & USOCK_SERVER);
     int socktype = ((type & 0xff) == USOCK_TCP) ? SOCK_STREAM : SOCK_DGRAM;
 
-    // 本地socket文件合法性检测
+    // 本地服务端socket文件路径合法性检测
 	if (strlen(host) >= sizeof(sun.sun_path)) {
 		errno = EINVAL;
 		return -1;
 	}
 	strcpy(sun.sun_path, host);
 
-    // 服务器/客户端创建(底层封装)
+    /* 创建socket,如果作为服务端则执行监听，如果作为客户端则执行连接
+     * type:socket类型、服务器/客户端类型、socket角色的合集，USOCK_SERVER/USOCK_UNIX/USOCK_TCP/USOCK_UDP 
+     */
 	return usock_connect(type, (struct sockaddr*)&sun, sizeof(sun), AF_UNIX, socktype, server);
 }
 
@@ -262,7 +268,10 @@ const char *usock_port(int port)
 	return buffer;
 }
 
-// 根据socket类型创建对应的服务器/客户端(二层封装)(type:USOCK_SERVER/USOCK_UNIX/USOCK_TCP/USOCK_UDP host:本地socket文件)
+/* 根据socket类型创建服务器/客户端
+ * type:socket类型、socket角色、服务器/客户端类型的合集，USOCK_SERVER/USOCK_UNIX/USOCK_TCP/USOCK_UDP 
+ * host:unix socket时表示服务端socket文件路径，inet socket时表示服务器IP地址)
+ */
 int usock(int type, const char *host, const char *service) {
 	int sock;
 

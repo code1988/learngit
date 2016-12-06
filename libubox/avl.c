@@ -81,14 +81,14 @@ static void avl_remove(struct avl_tree *tree, struct avl_node *node);
 
 /**
  * Initialize a new avl_tree struct
+ * 初始化一棵新的avl树
  * @param tree pointer to avl-tree
  * @param comp pointer to comparator for the tree
  * @param allow_dups true if the tree allows multiple
  *   elements with the same
  * @param ptr custom parameter for comparator
  */
-void
-avl_init(struct avl_tree *tree, avl_tree_comp comp, bool allow_dups, void *ptr)
+void avl_init(struct avl_tree *tree, avl_tree_comp comp, bool allow_dups, void *ptr)
 {
   INIT_LIST_HEAD(&tree->list_head);
   tree->root = NULL;

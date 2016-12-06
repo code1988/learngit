@@ -74,16 +74,17 @@ enum ubus_msg_type {
 	__UBUS_MSG_LAST,
 };
 
+// ubus消息类型
 enum ubus_msg_attr {
 	UBUS_ATTR_UNSPEC,
 
 	UBUS_ATTR_STATUS,
 
-	UBUS_ATTR_OBJPATH,
-	UBUS_ATTR_OBJID,
-	UBUS_ATTR_METHOD,
+	UBUS_ATTR_OBJPATH,  // 对象名
+	UBUS_ATTR_OBJID,    // 对象ID
+	UBUS_ATTR_METHOD,   // 方法
 
-	UBUS_ATTR_OBJTYPE,
+	UBUS_ATTR_OBJTYPE,  // 对象类型
 	UBUS_ATTR_SIGNATURE,
 
 	UBUS_ATTR_DATA,

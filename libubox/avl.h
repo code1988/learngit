@@ -36,6 +36,7 @@
  * If you find this software useful feel free to make a donation
  * to the project. For more information see the website or contact
  * the copyright holders.
+ * 这个avl树的头文件主要是站在链表的角度去操作avl树节点，实际的avl树操作在c文件里
  */
 
 #ifndef _AVL_H
@@ -52,6 +53,7 @@
 /**
  * This element is a member of a avl-tree. It must be contained in all
  * larger structs that should be put into a tree.
+ * 真正的avl树模块，它通常是作为一个模块嵌入在父结构中
  */
 struct avl_node {
   /**
@@ -106,23 +108,24 @@ typedef int (*avl_tree_comp) (const void *k1, const void *k2, void *ptr);
 /**
  * This struct is the central management part of an avl tree.
  * One of them is necessary for each avl_tree.
+ * avl树控制块
  */
 struct avl_tree {
   /**
    * Head of linked list node for supporting easy iteration
    * and multiple elments with the same key.
    */
-  struct list_head list_head;
+  struct list_head list_head;   // avl树链表头
 
   /**
    * pointer to the root node of the avl tree, NULL if tree is empty
    */
-  struct avl_node *root;
+  struct avl_node *root;        // 指向avl树根节点，NULL意味着空树
 
   /**
    * number of nodes in the avl tree
    */
-  unsigned int count;
+  unsigned int count;           // avl树节点数量
 
   /**
    * true if multiple nodes with the same key are
@@ -132,6 +135,7 @@ struct avl_tree {
 
   /**
    * pointer to the tree comparator
+   * 比较函数
    *
    * First two parameters are keys to compare,
    * third parameter is a copy of cmp_ptr
@@ -140,6 +144,7 @@ struct avl_tree {
 
   /**
    * custom pointer delivered to the tree comparator
+   * 自定义参数，用于传给比较函数(ubus的比较函数中未用到)
    */
   void *cmp_ptr;
 };
@@ -268,6 +273,7 @@ __avl_find_element(const struct avl_tree *tree, const void *key, size_t offset, 
 
 /**
  * This function must not be called for an empty tree
+ * 从avl树链表头节点中获取第一个avl树节点的父结构element首地址
  *
  * @param tree pointer to avl-tree
  * @param element pointer to a node element
@@ -281,6 +287,7 @@ __avl_find_element(const struct avl_tree *tree, const void *key, size_t offset, 
   container_of((tree)->list_head.next, typeof(*(element)), node_member.list)
 
 /**
+ * 从avl树链表头节点中获取最后一个avl树节点的父结构element首地址
  * @param tree pointer to tree
  * @param element pointer to a node struct that contains the avl_node
  *    (don't need to be initialized)
@@ -295,6 +302,7 @@ __avl_find_element(const struct avl_tree *tree, const void *key, size_t offset, 
 /**
  * This function must not be called for the last element of
  * an avl tree
+ * 获取下一个avl树节点的父结构element首地址
  *
  * @param element pointer to a node of the tree
  * @param node_member name of the avl_node element inside the
@@ -322,6 +330,7 @@ __avl_find_element(const struct avl_tree *tree, const void *key, size_t offset, 
  * Loop over a block of elements of a tree, used similar to a for() command.
  * This loop should not be used if elements are removed from the tree during
  * the loop.
+ * 从头遍历每个avl树节点的父结构element
  *
  * @param first pointer to first element of loop
  * @param last pointer to last element of loop
@@ -356,6 +365,7 @@ __avl_find_element(const struct avl_tree *tree, const void *key, size_t offset, 
  * Loop over all elements of an avl_tree, used similar to a for() command.
  * This loop should not be used if elements are removed from the tree during
  * the loop.
+ * 遍历每个avl树节点的父结构element
  *
  * @param tree pointer to avl-tree
  * @param element pointer to a node of the tree, this element will
@@ -533,6 +543,7 @@ __avl_find_element(const struct avl_tree *tree, const void *key, size_t offset, 
  * inside.
  * You can free the memory of the elements within the loop.
  * Do NOT call avl_delete() on the elements within the loop,
+ * 复位avl树链表表头，然后遍历avl树节点的父结构element，清零每个element中的相关成员
  *
  * @param tree pointer to avl-tree
  * @param element pointer to a node of the tree, this element will

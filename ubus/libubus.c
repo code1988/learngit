@@ -43,6 +43,7 @@ struct ubus_pending_msg {
 	struct ubus_msghdr_buf hdr;
 };
 
+// avl树的比较函数，比较k1、k2（k1 < k2返回-1,k1 > k2返回1,k1 == k2返回0）
 static int ubus_cmp_id(const void *k1, const void *k2, void *ptr)
 {
 	const uint32_t *id1 = k1, *id2 = k2;
@@ -272,7 +273,7 @@ static void ubus_default_connection_lost(struct ubus_context *ctx)
 		uloop_end();
 }
 
-// 创建客户端并发起连接(四层封装)
+// 创建ubus客户端并发起连接(四层封装)
 static int _ubus_connect(struct ubus_context *ctx, const char *path)
 {
 	ctx->sock.fd = -1;              // 复位客户端fd
@@ -285,11 +286,11 @@ static int _ubus_connect(struct ubus_context *ctx, const char *path)
 		return -1;
 	ctx->msgbuf_data_len = UBUS_MSG_CHUNK_SIZE;                     // 记录消息空间长度
 
-	INIT_LIST_HEAD(&ctx->requests);     // 初始化requests链表
-	INIT_LIST_HEAD(&ctx->pending);      // 初始化pending链表
+	INIT_LIST_HEAD(&ctx->requests);                         // 初始化requests链表
+	INIT_LIST_HEAD(&ctx->pending);                          // 初始化pending链表
 	avl_init(&ctx->objects, ubus_cmp_id, false, NULL);      // 初始化avl树
 
-    // 创建客户端并发起连接（三层封装）
+    // 创建ubus客户端并发起连接（三层封装）
 	if (ubus_reconnect(ctx, path)) {
 		free(ctx->msgbuf.data);
 		return -1;
@@ -347,7 +348,7 @@ struct ubus_context *ubus_connect(const char *path)
 	if (!ctx)
 		return NULL;
 
-    // 创建客户端并发起连接（四层封装）
+    // 创建ubus客户端并发起连接（四层封装）
 	if (_ubus_connect(ctx, path)) {
 		free(ctx);
 		ctx = NULL;

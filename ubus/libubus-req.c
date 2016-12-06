@@ -49,6 +49,7 @@ static void __ubus_process_req_data(struct ubus_request *req)
 	}
 }
 
+// ubus发起请求，同时填充ubus_request结构体
 int __hidden ubus_start_request(struct ubus_context *ctx, struct ubus_request *req,
 				struct blob_attr *msg, int cmd, uint32_t peer)
 {
@@ -210,6 +211,12 @@ int ubus_send_reply(struct ubus_context *ctx, struct ubus_request_data *req,
 	return 0;
 }
 
+/* 异步调用
+ * @obj     : 对端对象对应的id
+ * @method  : 对段对象的一种方法名
+ * @msg     : 本地提供的参数集合
+ * @req     : 需要被填充的结构,记录了本次异步调用的相关信息
+ */
 int ubus_invoke_async(struct ubus_context *ctx, uint32_t obj, const char *method,
                        struct blob_attr *msg, struct ubus_request *req)
 {
@@ -219,6 +226,7 @@ int ubus_invoke_async(struct ubus_context *ctx, uint32_t obj, const char *method
 	if (msg)
 		blob_put(&b, UBUS_ATTR_DATA, blob_data(msg), blob_len(msg));
 
+    // ubus发起异步调用的请求
 	if (ubus_start_request(ctx, req, b.head, UBUS_MSG_INVOKE, obj) < 0)
 		return UBUS_STATUS_INVALID_ARGUMENT;
 
