@@ -315,7 +315,7 @@ static int uloop_fetch_events(int timeout)
 
 #endif
 
-// 处理尚未处理的触发事件池（前提是该fd控制块已经被加入到fd_stack链表池）
+// 遍历已经触发但尚未被处理的fd池，如果跟新触发的fd吻合，则合并events集合
 static bool uloop_fd_stack_event(struct uloop_fd *fd, int events)
 {
 	struct uloop_fd_stack *cur;
@@ -323,7 +323,7 @@ static bool uloop_fd_stack_event(struct uloop_fd *fd, int events)
 	/*
 	 * Do not buffer events for level-triggered fds, they will keep firing.
 	 * Caller needs to take care of recursion issues.
-     * 不要缓存带有边沿触发属性的fd控制块
+     * 带有边沿触发属性的fd控制块不会被加入缓冲池，所以没有比较的必要
 	 */
 	if (!(fd->flags & ULOOP_EDGE_TRIGGER))
 		return false;
@@ -361,7 +361,8 @@ static void uloop_run_events(int timeout)
 	}
 
     // 处理所有被触发的事件
-	while (cur_nfds > 0) {
+	while (cur_nfds > 0) 
+    {
 		struct uloop_fd_stack stack_cur;
 		unsigned int events;
 
@@ -376,6 +377,7 @@ static void uloop_run_events(int timeout)
 		if (!fd->cb)
 			continue;
 
+        // 遍历已经触发但尚未被处理的fd池，如果跟新触发的fd吻合，则合并events集合
 		if (uloop_fd_stack_event(fd, cur->events))
 			continue;
 
