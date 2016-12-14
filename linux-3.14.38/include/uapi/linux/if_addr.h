@@ -26,9 +26,9 @@ struct ifaddrmsg {
  */
 enum {
 	IFA_UNSPEC,
-	IFA_ADDRESS,
+	IFA_ADDRESS,        // 序号对应的属性payload中保存了32位整形IPv4/IPv6地址
 	IFA_LOCAL,
-	IFA_LABEL,
+	IFA_LABEL,          // 序号对应的属性payload中保存了接口名(.e "br-lan")
 	IFA_BROADCAST,
 	IFA_ANYCAST,
 	IFA_CACHEINFO,
@@ -37,7 +37,7 @@ enum {
 	__IFA_MAX,
 };
 
-#define IFA_MAX (__IFA_MAX - 1)
+#define IFA_MAX (__IFA_MAX - 1)     // 地址的最大属性数量
 
 /* ifa_flags */
 #define IFA_F_SECONDARY		0x01

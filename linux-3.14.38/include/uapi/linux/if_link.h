@@ -103,7 +103,7 @@ enum {
 	IFLA_UNSPEC,
 	IFLA_ADDRESS,
 	IFLA_BROADCAST,
-	IFLA_IFNAME,
+	IFLA_IFNAME,        // 序号对应的属性字段保存了接口名(.e "Fex-1")
 	IFLA_MTU,
 	IFLA_LINK,
 	IFLA_QDISC,

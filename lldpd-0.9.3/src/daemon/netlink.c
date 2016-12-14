@@ -28,6 +28,7 @@
 
 #define NETLINK_BUFFER 4096
 
+// netlink请求消息的通用结构
 struct netlink_req {
 	struct nlmsghdr hdr;
 	struct rtgenmsg gen;
@@ -359,6 +360,7 @@ netlink_merge(struct interfaces_device *old, struct interfaces_device *new)
 
 /**
  * Receive netlink answer from the kernel.
+ * 接收来自kernel的netlink消息
  *
  * @param s    the netlink socket
  * @param ifs  list to store interface list or NULL if we don't

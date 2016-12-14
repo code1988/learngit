@@ -24,7 +24,7 @@ enum {
 	RTM_BASE	= 16,
 #define RTM_BASE	RTM_BASE
 
-	RTM_NEWLINK	= 16,
+	RTM_NEWLINK	= 16,               // 网卡接口信息相关
 #define RTM_NEWLINK	RTM_NEWLINK
 	RTM_DELLINK,
 #define RTM_DELLINK	RTM_DELLINK
@@ -33,14 +33,14 @@ enum {
 	RTM_SETLINK,
 #define RTM_SETLINK	RTM_SETLINK
 
-	RTM_NEWADDR	= 20,
+	RTM_NEWADDR	= 20,               // 地址（IP）信息相关
 #define RTM_NEWADDR	RTM_NEWADDR
 	RTM_DELADDR,
 #define RTM_DELADDR	RTM_DELADDR
 	RTM_GETADDR,
 #define RTM_GETADDR	RTM_GETADDR
 
-	RTM_NEWROUTE	= 24,
+	RTM_NEWROUTE	= 24,           // 路由信息相关
 #define RTM_NEWROUTE	RTM_NEWROUTE
 	RTM_DELROUTE,
 #define RTM_DELROUTE	RTM_DELROUTE
@@ -302,7 +302,7 @@ enum rtattr_type_t {
 	__RTA_MAX
 };
 
-#define RTA_MAX (__RTA_MAX - 1)
+#define RTA_MAX (__RTA_MAX - 1)     // 路由的最大属性数量
 
 #define RTM_RTA(r)  ((struct rtattr*)(((char*)(r)) + NLMSG_ALIGN(sizeof(struct rtmsg))))
 #define RTM_PAYLOAD(n) NLMSG_PAYLOAD(n,sizeof(struct rtmsg))

@@ -17,9 +17,9 @@ netlink涉及的数据结构：
             }
             NETLINK_ROUTE的多播组定义位于retnetlink.h，RTMGRP_*格式，这里列出常用的几个：
             RTMGRP_LINK         - 当网卡变动时会触发这个多播组，例如插拔网线、增减网卡设备、启用禁用接口等
-            RTMGRP_IPV4_IFADDR  - 当ipv4地址变动时会触发这个多播组，例如通过DHCP获取到地址后
+            RTMGRP_IPV4_IFADDR  - 当ipv4地址变动时会触发这个多播组，例如修改IP
             RTMGRP_IPV4_ROUTE   - 当ipv4路由变动时会触发这个多播组
-            RTMGRP_IPV6_IFADDR  - 当ipv6地址变动时会触发这个多播组，例如通过DHCP获取到地址后
+            RTMGRP_IPV6_IFADDR  - 当ipv6地址变动时会触发这个多播组，例如修改IP
             RTMGRP_IPV6_ROUTE   - 当ipv6路由变动时会触发这个多播组
 
     2） netlink消息结构： 
@@ -38,7 +38,7 @@ netlink涉及的数据结构：
                 消息类型：
                     NETLINK_ROUTE的消息类型定义位于rtnetlink.h，RTM_*格式，这里列出常用的几个：
                     RTM_NEWLINK/RTM_DELLINK     - 当网卡变动时内核会发出这个消息
-                    RTM_NEWADDR/RTM_DELADDR     - 当地址变动时内核会发出这个消息
+                    RTM_NEWADDR/RTM_DELADDR     - 当地址(IP)变动时内核会发出这个消息
                     RTM_NEWROUTE/RTM_DELROUTE   - 当路由变动时内核会发出这个消息
 
                 附加标志位：
@@ -49,7 +49,7 @@ netlink涉及的数据结构：
                     NLM_F_DUMP_INTER
                 GET request系列的标志位：
                     NLM_F_ROOT      - 表示被请求的数据应当整体返回用户应用，而不是一条一条返回，有该标志的request通常导致响应的消息设置NLM_F_MULTI标志
-                    NLM_F_MATCH     - 表示被请求的数据将会通过指定的过滤器来匹配（通常是用户设置了过滤器时使用该标记）
+                    NLM_F_MATCH     - 表示会返回所有匹配的数据
                     NLM_F_ATOMIC   
                     NLM_F_DUMP      - NLM_F_ROOT和NLM_F_MATCH的合集
                 NEW request系列的标志位：
@@ -75,7 +75,7 @@ netlink涉及的数据结构：
                     }
                     // rtnetlink协议的地址消息(如RTM_NEWADDR)的族头
                     struct ifaddrmsg {
-                        unsigned char ifa_family;
+                        unsigned char ifa_family;       // 协议族
                         unsigned char ifa_prefixlen;
                         unsigned char ifa_flags;
                         unsigned char ifa_scope;

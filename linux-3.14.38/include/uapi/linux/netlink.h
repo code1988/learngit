@@ -59,7 +59,7 @@ struct nlmsghdr {
 
 /* Modifiers to GET request */
 #define NLM_F_ROOT	0x100	    // 表示被请求的数据应当整体返回用户应用，而不是一条一条返回，有该标志的request通常导致响应的消息设置NLM_F_MULTI标志
-#define NLM_F_MATCH	0x200	    // 表示被请求的数据将会通过指定的过滤器来匹配（通常是用户设置了过滤器时使用该标记）
+#define NLM_F_MATCH	0x200	    // 表示会返回所有匹配的数据
 #define NLM_F_ATOMIC	0x400	/* atomic GET		*/
 #define NLM_F_DUMP	(NLM_F_ROOT|NLM_F_MATCH)            // NLM_F_ROOT和NLM_F_MATCH的合集
 
@@ -102,6 +102,7 @@ struct nlmsghdr {
 
 #define NLMSG_MIN_TYPE		0x10	/* < 0x10: reserved control messages */
 
+// NLMSG_ERROR错误消息的数据结构，位于NLMSG_DATA(nlh)地址上
 struct nlmsgerr {
 	int		error;
 	struct nlmsghdr msg;
