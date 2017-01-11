@@ -198,7 +198,7 @@ int ubus_add_object(struct ubus_context *ctx, struct ubus_object *obj)
     // 初始化一个blob
 	blob_buf_init(&b, 0);
 
-    // 填入一个对象名，然后如果有类型id平行填入类型id，没有则嵌套填入类型
+    // 如果定义了对象名和对象类型,填入一个对象名，然后如果有类型id填入类型id，没有则嵌套填入类型
 	if (obj->name && obj->type) 
     {
 		blob_put_string(&b, UBUS_ATTR_OBJPATH, obj->name);
@@ -209,15 +209,18 @@ int ubus_add_object(struct ubus_context *ctx, struct ubus_object *obj)
 			return UBUS_STATUS_INVALID_ARGUMENT;
 	}
 
+    // ubus首先发起添加ubus对象的请求
 	if (ubus_start_request(ctx, &req, b.head, UBUS_MSG_ADD_OBJECT, 0) < 0)
 		return UBUS_STATUS_INVALID_ARGUMENT;
 
+    // ubus然后提交具体的ubus对象信息
 	req.raw_data_cb = ubus_add_object_cb;
 	req.priv = obj;
 	ret = ubus_complete_request(ctx, &req, 0);
 	if (ret)
 		return ret;
 
+    // ubusd守护进程会为每个新加入的ubus对象分配一个唯一的ID号
 	if (!obj->id)
 		return UBUS_STATUS_NO_DATA;
 

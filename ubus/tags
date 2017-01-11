@@ -28,15 +28,15 @@ UBUS_ATTR_DATA	ubusmsg.h	/^	UBUS_ATTR_DATA,$/;"	e	enum:ubus_msg_attr
 UBUS_ATTR_MAX	ipkg-install/usr/include/ubusmsg.h	/^	UBUS_ATTR_MAX,$/;"	e	enum:ubus_msg_attr
 UBUS_ATTR_MAX	ubusmsg.h	/^	UBUS_ATTR_MAX,$/;"	e	enum:ubus_msg_attr
 UBUS_ATTR_METHOD	ipkg-install/usr/include/ubusmsg.h	/^	UBUS_ATTR_METHOD,$/;"	e	enum:ubus_msg_attr
-UBUS_ATTR_METHOD	ubusmsg.h	/^	UBUS_ATTR_METHOD,$/;"	e	enum:ubus_msg_attr
+UBUS_ATTR_METHOD	ubusmsg.h	/^	UBUS_ATTR_METHOD,   \/\/ æ–¹æ³•$/;"	e	enum:ubus_msg_attr
 UBUS_ATTR_NO_REPLY	ipkg-install/usr/include/ubusmsg.h	/^	UBUS_ATTR_NO_REPLY,$/;"	e	enum:ubus_msg_attr
 UBUS_ATTR_NO_REPLY	ubusmsg.h	/^	UBUS_ATTR_NO_REPLY,$/;"	e	enum:ubus_msg_attr
 UBUS_ATTR_OBJID	ipkg-install/usr/include/ubusmsg.h	/^	UBUS_ATTR_OBJID,$/;"	e	enum:ubus_msg_attr
-UBUS_ATTR_OBJID	ubusmsg.h	/^	UBUS_ATTR_OBJID,$/;"	e	enum:ubus_msg_attr
+UBUS_ATTR_OBJID	ubusmsg.h	/^	UBUS_ATTR_OBJID,    \/\/ å¯¹è±¡ID$/;"	e	enum:ubus_msg_attr
 UBUS_ATTR_OBJPATH	ipkg-install/usr/include/ubusmsg.h	/^	UBUS_ATTR_OBJPATH,$/;"	e	enum:ubus_msg_attr
-UBUS_ATTR_OBJPATH	ubusmsg.h	/^	UBUS_ATTR_OBJPATH,$/;"	e	enum:ubus_msg_attr
+UBUS_ATTR_OBJPATH	ubusmsg.h	/^	UBUS_ATTR_OBJPATH,  \/\/ å¯¹è±¡å$/;"	e	enum:ubus_msg_attr
 UBUS_ATTR_OBJTYPE	ipkg-install/usr/include/ubusmsg.h	/^	UBUS_ATTR_OBJTYPE,$/;"	e	enum:ubus_msg_attr
-UBUS_ATTR_OBJTYPE	ubusmsg.h	/^	UBUS_ATTR_OBJTYPE,$/;"	e	enum:ubus_msg_attr
+UBUS_ATTR_OBJTYPE	ubusmsg.h	/^	UBUS_ATTR_OBJTYPE,  \/\/ å¯¹è±¡ç±»å‹$/;"	e	enum:ubus_msg_attr
 UBUS_ATTR_SIGNATURE	ipkg-install/usr/include/ubusmsg.h	/^	UBUS_ATTR_SIGNATURE,$/;"	e	enum:ubus_msg_attr
 UBUS_ATTR_SIGNATURE	ubusmsg.h	/^	UBUS_ATTR_SIGNATURE,$/;"	e	enum:ubus_msg_attr
 UBUS_ATTR_STATUS	ipkg-install/usr/include/ubusmsg.h	/^	UBUS_ATTR_STATUS,$/;"	e	enum:ubus_msg_attr
@@ -50,11 +50,11 @@ UBUS_ATTR_UNSPEC	ubusmsg.h	/^	UBUS_ATTR_UNSPEC,$/;"	e	enum:ubus_msg_attr
 UBUS_MAX_NOTIFY_PEERS	ipkg-install/usr/include/libubus.h	25;"	d
 UBUS_MAX_NOTIFY_PEERS	libubus.h	25;"	d
 UBUS_METHOD	ipkg-install/usr/include/libubus.h	78;"	d
-UBUS_METHOD	libubus.h	79;"	d
+UBUS_METHOD	libubus.h	80;"	d
 UBUS_METHOD_MASK	ipkg-install/usr/include/libubus.h	81;"	d
-UBUS_METHOD_MASK	libubus.h	82;"	d
+UBUS_METHOD_MASK	libubus.h	83;"	d
 UBUS_METHOD_NOARG	ipkg-install/usr/include/libubus.h	87;"	d
-UBUS_METHOD_NOARG	libubus.h	88;"	d
+UBUS_METHOD_NOARG	libubus.h	89;"	d
 UBUS_MSGBUF_REDUCTION_INTERVAL	libubus-io.c	32;"	d	file:
 UBUS_MSG_ADD_OBJECT	ipkg-install/usr/include/ubusmsg.h	/^	UBUS_MSG_ADD_OBJECT,$/;"	e	enum:ubus_msg_type
 UBUS_MSG_ADD_OBJECT	ubusmsg.h	/^	UBUS_MSG_ADD_OBJECT,$/;"	e	enum:ubus_msg_type
@@ -81,7 +81,7 @@ UBUS_MSG_SUBSCRIBE	ubusmsg.h	/^	UBUS_MSG_SUBSCRIBE,$/;"	e	enum:ubus_msg_type
 UBUS_MSG_UNSUBSCRIBE	ipkg-install/usr/include/ubusmsg.h	/^	UBUS_MSG_UNSUBSCRIBE,$/;"	e	enum:ubus_msg_type
 UBUS_MSG_UNSUBSCRIBE	ubusmsg.h	/^	UBUS_MSG_UNSUBSCRIBE,$/;"	e	enum:ubus_msg_type
 UBUS_OBJECT_TYPE	ipkg-install/usr/include/libubus.h	61;"	d
-UBUS_OBJECT_TYPE	libubus.h	62;"	d
+UBUS_OBJECT_TYPE	libubus.h	63;"	d
 UBUS_OBJ_HASH_BITS	ubusd.h	26;"	d
 UBUS_SIGNATURE_END	ipkg-install/usr/include/ubus_common.h	18;"	d
 UBUS_SIGNATURE_END	ubus_common.h	18;"	d
@@ -131,563 +131,860 @@ __UBUSMSG_H	ubusmsg.h	15;"	d
 __UBUS_COMMON_H	ipkg-install/usr/include/ubus_common.h	15;"	d
 __UBUS_COMMON_H	ubus_common.h	15;"	d
 __UBUS_METHOD	ipkg-install/usr/include/libubus.h	73;"	d
-__UBUS_METHOD	libubus.h	74;"	d
+__UBUS_METHOD	libubus.h	75;"	d
 __UBUS_METHOD_NOARG	ipkg-install/usr/include/libubus.h	69;"	d
-__UBUS_METHOD_NOARG	libubus.h	70;"	d
+__UBUS_METHOD_NOARG	libubus.h	71;"	d
 __UBUS_MSG_LAST	ipkg-install/usr/include/ubusmsg.h	/^	__UBUS_MSG_LAST,$/;"	e	enum:ubus_msg_type
 __UBUS_MSG_LAST	ubusmsg.h	/^	__UBUS_MSG_LAST,$/;"	e	enum:ubus_msg_type
 __UBUS_STATUS_LAST	ipkg-install/usr/include/ubusmsg.h	/^	__UBUS_STATUS_LAST$/;"	e	enum:ubus_msg_status
 __UBUS_STATUS_LAST	ubusmsg.h	/^	__UBUS_STATUS_LAST$/;"	e	enum:ubus_msg_status
 __WATCH_MAX	examples/server.c	/^	__WATCH_MAX$/;"	e	enum:__anon5	file:
+__anon8::cb	cli.c	/^	int (*cb)(struct ubus_context *ctx, int argc, char **argv);$/;"	m	struct:__anon8	file:	access:public
+__anon8::name	cli.c	/^	const char *name;$/;"	m	struct:__anon8	file:	access:public
 __hidden	libubus-sub.c	/^const struct ubus_method watch_method __hidden = {$/;"	v	typeref:struct:watch_method
 __hidden	libubus.c	/^struct blob_buf b __hidden = {};$/;"	v	typeref:struct:b
 __packetdata	ipkg-install/usr/include/ubusmsg.h	/^} __packetdata;$/;"	v	typeref:struct:ubus_msghdr
 __packetdata	ipkg-install/usr/include/ubusmsg.h	20;"	d
 __packetdata	ubusmsg.h	/^} __packetdata;$/;"	v	typeref:struct:ubus_msghdr
 __packetdata	ubusmsg.h	20;"	d
-__ubus_notify_async	libubus-req.c	/^__ubus_notify_async(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:
-__ubus_process_req_data	libubus-req.c	/^static void __ubus_process_req_data(struct ubus_request *req)$/;"	f	file:
+__ubus_notify_async	libubus-req.c	/^__ubus_notify_async(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_object *obj, const char *type, struct blob_attr *msg, struct ubus_notify_request *req, bool reply)
+__ubus_process_req_data	libubus-req.c	/^static void __ubus_process_req_data(struct ubus_request *req)$/;"	f	file:	signature:(struct ubus_request *req)
 __ubus_strerror	libubus.c	/^const char *__ubus_strerror[__UBUS_STATUS_LAST] = {$/;"	v
-__ubus_subscribe_request	libubus-sub.c	/^__ubus_subscribe_request(struct ubus_context *ctx, struct ubus_object *obj, uint32_t id, int type)$/;"	f	file:
-_ubus_connect	libubus.c	/^static int _ubus_connect(struct ubus_context *ctx, const char *path)$/;"	f	file:
-alloc_msg_buf	libubus-io.c	/^static bool alloc_msg_buf(struct ubus_context *ctx, int len)$/;"	f	file:
+__ubus_subscribe_request	libubus-sub.c	/^__ubus_subscribe_request(struct ubus_context *ctx, struct ubus_object *obj, uint32_t id, int type)$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_object *obj, uint32_t id, int type)
+_ubus_connect	libubus.c	/^static int _ubus_connect(struct ubus_context *ctx, const char *path)$/;"	f	file:	signature:(struct ubus_context *ctx, const char *path)
+alloc_msg_buf	libubus-io.c	/^static bool alloc_msg_buf(struct ubus_context *ctx, int len)$/;"	f	file:	signature:(struct ubus_context *ctx, int len)
 attrbuf	libubus-io.c	/^static struct blob_attr *attrbuf[UBUS_ATTR_MAX];$/;"	v	typeref:struct:blob_attr	file:
 attrbuf	ubusd_proto.c	/^static struct blob_attr *attrbuf[UBUS_ATTR_MAX];$/;"	v	typeref:struct:blob_attr	file:
-avl	ipkg-install/usr/include/libubus.h	/^	struct avl_node avl;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::avl_node
-avl	libubus.h	/^	struct avl_node avl;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::avl_node
-avl	ubusd_event.c	/^	struct avl_node avl;$/;"	m	struct:event_source	typeref:struct:event_source::avl_node	file:
-avl	ubusd_id.h	/^	struct avl_node avl;$/;"	m	struct:ubus_id	typeref:struct:ubus_id::avl_node
+avl	ipkg-install/usr/include/libubus.h	/^	struct avl_node avl;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::avl_node	access:public
+avl	libubus.h	/^	struct avl_node avl;            \/\/ avlÊ÷$/;"	m	struct:ubus_object	typeref:struct:ubus_object::avl_node	access:public
+avl	ubusd_event.c	/^	struct avl_node avl;$/;"	m	struct:event_source	typeref:struct:event_source::avl_node	file:	access:public
+avl	ubusd_id.h	/^	struct avl_node avl;$/;"	m	struct:ubus_id	typeref:struct:ubus_id::avl_node	access:public
 b	cli.c	/^static struct blob_buf b;$/;"	v	typeref:struct:blob_buf	file:
 b	examples/client.c	/^static struct blob_buf b;$/;"	v	typeref:struct:blob_buf	file:
 b	examples/server.c	/^static struct blob_buf b;           \/\/ å®šä¹‰ä¸€ä¸ªé™æ€å…¨å±€BLOBæ§åˆ¶å—$/;"	v	typeref:struct:blob_buf	file:
 b	ubusd_proto.c	/^struct blob_buf b;  \/\/ å®šä¹‰ä¸€ä¸ªBLOB$/;"	v	typeref:struct:blob_buf
-blocked	ipkg-install/usr/include/libubus.h	/^	bool blocked;$/;"	m	struct:ubus_request
-blocked	libubus.h	/^	bool blocked;$/;"	m	struct:ubus_request
-buf	lua/ubus.c	/^	struct blob_buf buf;$/;"	m	struct:ubus_lua_connection	typeref:struct:ubus_lua_connection::blob_buf	file:
-cancelled	ipkg-install/usr/include/libubus.h	/^	bool cancelled;$/;"	m	struct:ubus_request
-cancelled	libubus.h	/^	bool cancelled;$/;"	m	struct:ubus_request
-cb	cli.c	/^	int (*cb)(struct ubus_context *ctx, int argc, char **argv);$/;"	m	struct:__anon8	file:
-cb	ipkg-install/usr/include/libubus.h	/^	ubus_connect_handler_t cb;$/;"	m	struct:ubus_auto_conn
-cb	ipkg-install/usr/include/libubus.h	/^	ubus_event_handler_t cb;$/;"	m	struct:ubus_event_handler
-cb	ipkg-install/usr/include/libubus.h	/^	ubus_handler_t cb;$/;"	m	struct:ubus_subscriber
-cb	libubus.c	/^	ubus_lookup_handler_t cb;$/;"	m	struct:ubus_lookup_request	file:
-cb	libubus.h	/^	ubus_connect_handler_t cb;$/;"	m	struct:ubus_auto_conn
-cb	libubus.h	/^	ubus_event_handler_t cb;$/;"	m	struct:ubus_event_handler
-cb	libubus.h	/^	ubus_handler_t cb;      \/\/ »Øµ÷º¯Êı$/;"	m	struct:ubus_subscriber
+blocked	ipkg-install/usr/include/libubus.h	/^	bool blocked;$/;"	m	struct:ubus_request	access:public
+blocked	libubus.h	/^	bool blocked;$/;"	m	struct:ubus_request	access:public
+buf	lua/ubus.c	/^	struct blob_buf buf;$/;"	m	struct:ubus_lua_connection	typeref:struct:ubus_lua_connection::blob_buf	file:	access:public
+cancelled	ipkg-install/usr/include/libubus.h	/^	bool cancelled;$/;"	m	struct:ubus_request	access:public
+cancelled	libubus.h	/^	bool cancelled;$/;"	m	struct:ubus_request	access:public
+cb	cli.c	/^	int (*cb)(struct ubus_context *ctx, int argc, char **argv);$/;"	m	struct:__anon8	file:	access:public
+cb	ipkg-install/usr/include/libubus.h	/^	ubus_connect_handler_t cb;$/;"	m	struct:ubus_auto_conn	access:public
+cb	ipkg-install/usr/include/libubus.h	/^	ubus_event_handler_t cb;$/;"	m	struct:ubus_event_handler	access:public
+cb	ipkg-install/usr/include/libubus.h	/^	ubus_handler_t cb;$/;"	m	struct:ubus_subscriber	access:public
+cb	libubus.c	/^	ubus_lookup_handler_t cb;$/;"	m	struct:ubus_lookup_request	file:	access:public
+cb	libubus.h	/^	ubus_connect_handler_t cb;$/;"	m	struct:ubus_auto_conn	access:public
+cb	libubus.h	/^	ubus_event_handler_t cb;$/;"	m	struct:ubus_event_handler	access:public
+cb	libubus.h	/^	ubus_handler_t cb;                  \/\/ ÆÕÍ¨Í¨ÖªµÄ»Øµ÷º¯Êı$/;"	m	struct:ubus_subscriber	access:public
 cli_wait_data	cli.c	/^struct cli_wait_data {$/;"	s	file:
-client	ubusd_obj.h	/^	struct ubus_client *client;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_client
-client_cb	ubusd.c	/^static void client_cb(struct uloop_fd *sock, unsigned int events)$/;"	f	file:
-client_main	examples/client.c	/^static void client_main(void)$/;"	f	file:
+cli_wait_data::ev	cli.c	/^	struct ubus_event_handler ev;$/;"	m	struct:cli_wait_data	typeref:struct:cli_wait_data::ubus_event_handler	file:	access:public
+cli_wait_data::n_pending	cli.c	/^	int n_pending;$/;"	m	struct:cli_wait_data	file:	access:public
+cli_wait_data::pending	cli.c	/^	char **pending;$/;"	m	struct:cli_wait_data	file:	access:public
+cli_wait_data::timeout	cli.c	/^	struct uloop_timeout timeout;$/;"	m	struct:cli_wait_data	typeref:struct:cli_wait_data::uloop_timeout	file:	access:public
+client	ubusd_obj.h	/^	struct ubus_client *client;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_client	access:public
+client_cb	ubusd.c	/^static void client_cb(struct uloop_fd *sock, unsigned int events)$/;"	f	file:	signature:(struct uloop_fd *sock, unsigned int events)
+client_main	examples/client.c	/^static void client_main(void)$/;"	f	file:	signature:(void)
 clients	ubusd_proto.c	/^static struct avl_tree clients;     \/\/ å®¢æˆ·ç«¯avlæ ‘ç®¡ç†ç»“æ„$/;"	v	typeref:struct:avl_tree	file:
 commands	cli.c	/^} commands[] = {$/;"	v	typeref:struct:__anon8
-complete_cb	ipkg-install/usr/include/libubus.h	/^	ubus_complete_handler_t complete_cb;$/;"	m	struct:ubus_request
-complete_cb	ipkg-install/usr/include/libubus.h	/^	ubus_notify_complete_handler_t complete_cb;$/;"	m	struct:ubus_notify_request
-complete_cb	libubus.h	/^	ubus_complete_handler_t complete_cb;$/;"	m	struct:ubus_request
-complete_cb	libubus.h	/^	ubus_notify_complete_handler_t complete_cb;$/;"	m	struct:ubus_notify_request
-connection_lost	ipkg-install/usr/include/libubus.h	/^	void (*connection_lost)(struct ubus_context *ctx);$/;"	m	struct:ubus_context
-connection_lost	libubus.h	/^	void (*connection_lost)(struct ubus_context *ctx);$/;"	m	struct:ubus_context
+complete_cb	ipkg-install/usr/include/libubus.h	/^	ubus_complete_handler_t complete_cb;$/;"	m	struct:ubus_request	access:public
+complete_cb	ipkg-install/usr/include/libubus.h	/^	ubus_notify_complete_handler_t complete_cb;$/;"	m	struct:ubus_notify_request	access:public
+complete_cb	libubus.h	/^	ubus_complete_handler_t complete_cb;$/;"	m	struct:ubus_request	access:public
+complete_cb	libubus.h	/^	ubus_notify_complete_handler_t complete_cb;$/;"	m	struct:ubus_notify_request	access:public
+connection_lost	ipkg-install/usr/include/libubus.h	/^	void (*connection_lost)(struct ubus_context *ctx);$/;"	m	struct:ubus_context	access:public
+connection_lost	libubus.h	/^	void (*connection_lost)(struct ubus_context *ctx);$/;"	m	struct:ubus_context	access:public
 count_policy	examples/server.c	/^static const struct blobmsg_policy count_policy[__COUNT_MAX] = {$/;"	v	typeref:struct:blobmsg_policy	file:
 count_timer	examples/client.c	/^static struct uloop_timeout count_timer = {$/;"	v	typeref:struct:uloop_timeout	file:
-count_to_number	examples/count.c	/^char *count_to_number(uint32_t num)$/;"	f
+count_to_number	examples/count.c	/^char *count_to_number(uint32_t num)$/;"	f	signature:(uint32_t num)
+count_to_number	examples/count.h	/^char *count_to_number(uint32_t num);$/;"	p	signature:(uint32_t num)
 ctx	examples/client.c	/^static struct ubus_context *ctx;$/;"	v	typeref:struct:ubus_context	file:
 ctx	examples/server.c	/^static struct ubus_context *ctx;    \/\/ æŒ‡å‘æ³¨å†ŒæœåŠ¡åˆ°ubusdçš„å®¢æˆ·ç«¯çš„æ€»æ§åˆ¶å—$/;"	v	typeref:struct:ubus_context	file:
-ctx	ipkg-install/usr/include/libubus.h	/^	struct ubus_context *ctx;$/;"	m	struct:ubus_request	typeref:struct:ubus_request::ubus_context
-ctx	ipkg-install/usr/include/libubus.h	/^	struct ubus_context ctx;$/;"	m	struct:ubus_auto_conn	typeref:struct:ubus_auto_conn::ubus_context
-ctx	libubus.h	/^	struct ubus_context *ctx;$/;"	m	struct:ubus_request	typeref:struct:ubus_request::ubus_context
-ctx	libubus.h	/^	struct ubus_context ctx;$/;"	m	struct:ubus_auto_conn	typeref:struct:ubus_auto_conn::ubus_context
-ctx	lua/ubus.c	/^	struct ubus_context *ctx;$/;"	m	struct:ubus_lua_connection	typeref:struct:ubus_lua_connection::ubus_context	file:
-data	examples/server.c	/^	char data[];$/;"	m	struct:hello_request	file:
-data	ipkg-install/usr/include/libubus.h	/^	struct blob_attr *data;$/;"	m	struct:ubus_msghdr_buf	typeref:struct:ubus_msghdr_buf::blob_attr
-data	libubus-req.c	/^	struct blob_attr data[];$/;"	m	struct:ubus_pending_data	typeref:struct:ubus_pending_data::blob_attr	file:
-data	libubus.h	/^	struct blob_attr *data; \/\/ Ö¸Ïò·ÖÅäµÄÏûÏ¢¿Õ¼ä$/;"	m	struct:ubus_msghdr_buf	typeref:struct:ubus_msghdr_buf::blob_attr
-data	ubusd.h	/^		struct blob_attr data;$/;"	m	struct:ubus_client::__anon1	typeref:struct:ubus_client::__anon1::blob_attr
-data	ubusd.h	/^	struct blob_attr *data;     \/\/ æŒ‡å‘BOLBå±æ€§ç©ºé—´(ä¹Ÿå°±æ˜¯æ¶ˆæ¯å†…å®¹)$/;"	m	struct:ubus_msg_buf	typeref:struct:ubus_msg_buf::blob_attr
-data	ubusd_obj.h	/^	struct blob_attr data[];$/;"	m	struct:ubus_method	typeref:struct:ubus_method::blob_attr
-data_cb	ipkg-install/usr/include/libubus.h	/^	ubus_data_handler_t data_cb;$/;"	m	struct:ubus_request
-data_cb	libubus.h	/^	ubus_data_handler_t data_cb;$/;"	m	struct:ubus_request
-deferred	ipkg-install/usr/include/libubus.h	/^	bool deferred;$/;"	m	struct:ubus_request_data
-deferred	libubus.h	/^	bool deferred;$/;"	m	struct:ubus_request_data
-e	lua/ubus.c	/^	struct ubus_event_handler e;$/;"	m	struct:ubus_lua_event	typeref:struct:ubus_lua_event::ubus_event_handler	file:
-ev	cli.c	/^	struct ubus_event_handler ev;$/;"	m	struct:cli_wait_data	typeref:struct:cli_wait_data::ubus_event_handler	file:
+ctx	ipkg-install/usr/include/libubus.h	/^	struct ubus_context *ctx;$/;"	m	struct:ubus_request	typeref:struct:ubus_request::ubus_context	access:public
+ctx	ipkg-install/usr/include/libubus.h	/^	struct ubus_context ctx;$/;"	m	struct:ubus_auto_conn	typeref:struct:ubus_auto_conn::ubus_context	access:public
+ctx	libubus.h	/^	struct ubus_context *ctx;$/;"	m	struct:ubus_request	typeref:struct:ubus_request::ubus_context	access:public
+ctx	libubus.h	/^	struct ubus_context ctx;$/;"	m	struct:ubus_auto_conn	typeref:struct:ubus_auto_conn::ubus_context	access:public
+ctx	lua/ubus.c	/^	struct ubus_context *ctx;$/;"	m	struct:ubus_lua_connection	typeref:struct:ubus_lua_connection::ubus_context	file:	access:public
+data	examples/server.c	/^	char data[];$/;"	m	struct:hello_request	file:	access:public
+data	ipkg-install/usr/include/libubus.h	/^	struct blob_attr *data;$/;"	m	struct:ubus_msghdr_buf	typeref:struct:ubus_msghdr_buf::blob_attr	access:public
+data	libubus-req.c	/^	struct blob_attr data[];$/;"	m	struct:ubus_pending_data	typeref:struct:ubus_pending_data::blob_attr	file:	access:public
+data	libubus.h	/^	struct blob_attr *data; \/\/ Ö¸Ïò·ÖÅäµÄÏûÏ¢¿Õ¼ä$/;"	m	struct:ubus_msghdr_buf	typeref:struct:ubus_msghdr_buf::blob_attr	access:public
+data	ubusd.h	/^		struct blob_attr data;$/;"	m	struct:ubus_client::__anon1	typeref:struct:ubus_client::__anon1::blob_attr	access:public
+data	ubusd.h	/^	struct blob_attr *data;     \/\/ æŒ‡å‘BOLBå±æ€§ç©ºé—´(ä¹Ÿå°±æ˜¯æ¶ˆæ¯å†…å®¹)$/;"	m	struct:ubus_msg_buf	typeref:struct:ubus_msg_buf::blob_attr	access:public
+data	ubusd_obj.h	/^	struct blob_attr data[];$/;"	m	struct:ubus_method	typeref:struct:ubus_method::blob_attr	access:public
+data_cb	ipkg-install/usr/include/libubus.h	/^	ubus_data_handler_t data_cb;$/;"	m	struct:ubus_request	access:public
+data_cb	libubus.h	/^	ubus_data_handler_t data_cb;$/;"	m	struct:ubus_request	access:public
+deferred	ipkg-install/usr/include/libubus.h	/^	bool deferred;$/;"	m	struct:ubus_request_data	access:public
+deferred	libubus.h	/^	bool deferred;$/;"	m	struct:ubus_request_data	access:public
+e	lua/ubus.c	/^	struct ubus_event_handler e;$/;"	m	struct:ubus_lua_event	typeref:struct:ubus_lua_event::ubus_event_handler	file:	access:public
+ev	cli.c	/^	struct ubus_event_handler ev;$/;"	m	struct:cli_wait_data	typeref:struct:cli_wait_data::ubus_event_handler	file:	access:public
 ev_policy	ubusd_event.c	/^static struct blobmsg_policy ev_policy[] = {$/;"	v	typeref:struct:blobmsg_policy	file:
 event_fill_cb	ubusd_event.c	/^typedef struct ubus_msg_buf *(*event_fill_cb)(void *priv, const char *id);$/;"	t	typeref:struct:event_fill_cb	file:
 event_method	libubus.c	/^static const struct ubus_method event_method = {$/;"	v	typeref:struct:ubus_method	file:
 event_obj	ubusd_event.c	/^static struct ubus_object *event_obj;$/;"	v	typeref:struct:ubus_object	file:
-event_seen	ubusd_obj.h	/^	int event_seen;$/;"	m	struct:ubus_object
+event_seen	ubusd_obj.h	/^	int event_seen;$/;"	m	struct:ubus_object	access:public
 event_seq	ubusd_event.c	/^static int event_seq = 0;$/;"	v	file:
 event_source	ubusd_event.c	/^struct event_source {$/;"	s	file:
-events	ubusd_obj.h	/^	struct list_head events;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::list_head
+event_source::avl	ubusd_event.c	/^	struct avl_node avl;$/;"	m	struct:event_source	typeref:struct:event_source::avl_node	file:	access:public
+event_source::list	ubusd_event.c	/^	struct list_head list;$/;"	m	struct:event_source	typeref:struct:event_source::list_head	file:	access:public
+event_source::obj	ubusd_event.c	/^	struct ubus_object *obj;$/;"	m	struct:event_source	typeref:struct:event_source::ubus_object	file:	access:public
+event_source::partial	ubusd_event.c	/^	bool partial;$/;"	m	struct:event_source	file:	access:public
+events	ubusd_obj.h	/^	struct list_head events;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::list_head	access:public
 evr_policy	ubusd_event.c	/^static struct blobmsg_policy evr_policy[] = {$/;"	v	typeref:struct:blobmsg_policy	file:
-fd	examples/server.c	/^	int fd;$/;"	m	struct:hello_request	file:
-fd	ipkg-install/usr/include/libubus.h	/^	int fd;$/;"	m	struct:ubus_request_data
-fd	libubus.h	/^	int fd;$/;"	m	struct:ubus_request_data
-fd	ubusd.h	/^	int fd;$/;"	m	struct:ubus_msg_buf
-fd_cb	ipkg-install/usr/include/libubus.h	/^	ubus_fd_handler_t fd_cb;$/;"	m	struct:ubus_request
-fd_cb	libubus.h	/^	ubus_fd_handler_t fd_cb;$/;"	m	struct:ubus_request
-format_type	cli.c	/^static const char *format_type(void *priv, struct blob_attr *attr)$/;"	f	file:
-get_next_connection	ubusd.c	/^static bool get_next_connection(int fd)$/;"	f	file:
-get_next_msg	libubus-io.c	/^static bool get_next_msg(struct ubus_context *ctx, int *recv_fd)$/;"	f	file:
-get_time_msec	libubus-req.c	/^static int64_t get_time_msec(void)$/;"	f	file:
-handle_client_disconnect	ubusd.c	/^static void handle_client_disconnect(struct ubus_client *cl)$/;"	f	file:
-handler	ipkg-install/usr/include/libubus.h	/^	ubus_handler_t handler;$/;"	m	struct:ubus_method
-handler	libubus.h	/^	ubus_handler_t handler; \/\/ ¶ÔÓ¦µÄ´¦Àíº¯Êı$/;"	m	struct:ubus_method
+fd	examples/server.c	/^	int fd;$/;"	m	struct:hello_request	file:	access:public
+fd	ipkg-install/usr/include/libubus.h	/^	int fd;$/;"	m	struct:ubus_request_data	access:public
+fd	libubus.h	/^	int fd;$/;"	m	struct:ubus_request_data	access:public
+fd	ubusd.h	/^	int fd;$/;"	m	struct:ubus_msg_buf	access:public
+fd_cb	ipkg-install/usr/include/libubus.h	/^	ubus_fd_handler_t fd_cb;$/;"	m	struct:ubus_request	access:public
+fd_cb	libubus.h	/^	ubus_fd_handler_t fd_cb;$/;"	m	struct:ubus_request	access:public
+format_type	cli.c	/^static const char *format_type(void *priv, struct blob_attr *attr)$/;"	f	file:	signature:(void *priv, struct blob_attr *attr)
+get_next_connection	ubusd.c	/^static bool get_next_connection(int fd)$/;"	f	file:	signature:(int fd)
+get_next_msg	libubus-io.c	/^static bool get_next_msg(struct ubus_context *ctx, int *recv_fd)$/;"	f	file:	signature:(struct ubus_context *ctx, int *recv_fd)
+get_time_msec	libubus-req.c	/^static int64_t get_time_msec(void)$/;"	f	file:	signature:(void)
+handle_client_disconnect	ubusd.c	/^static void handle_client_disconnect(struct ubus_client *cl)$/;"	f	file:	signature:(struct ubus_client *cl)
+handler	ipkg-install/usr/include/libubus.h	/^	ubus_handler_t handler;$/;"	m	struct:ubus_method	access:public
+handler	libubus.h	/^	ubus_handler_t handler; \/\/ ¶ÔÓ¦µÄ´¦Àíº¯Êı$/;"	m	struct:ubus_method	access:public
 handlers	ubusd_proto.c	/^static const ubus_cmd_cb handlers[__UBUS_MSG_LAST] = {$/;"	v	file:
-has_subscribers	ipkg-install/usr/include/libubus.h	/^	bool has_subscribers;$/;"	m	struct:ubus_object
-has_subscribers	libubus.h	/^	bool has_subscribers;$/;"	m	struct:ubus_object
-hdr	ipkg-install/usr/include/libubus.h	/^	struct ubus_msghdr hdr;$/;"	m	struct:ubus_msghdr_buf	typeref:struct:ubus_msghdr_buf::ubus_msghdr
-hdr	libubus.c	/^	struct ubus_msghdr_buf hdr;$/;"	m	struct:ubus_pending_msg	typeref:struct:ubus_pending_msg::ubus_msghdr_buf	file:
-hdr	libubus.h	/^	struct ubus_msghdr hdr; \/\/ ÏûÏ¢Í·$/;"	m	struct:ubus_msghdr_buf	typeref:struct:ubus_msghdr_buf::ubus_msghdr
-hdr	ubusd.h	/^		struct ubus_msghdr hdr;$/;"	m	struct:ubus_client::__anon1	typeref:struct:ubus_client::__anon1::ubus_msghdr
-hdr	ubusd.h	/^	struct ubus_msghdr hdr;     \/\/ æ¶ˆæ¯å¤´$/;"	m	struct:ubus_msg_buf	typeref:struct:ubus_msg_buf::ubus_msghdr
-hdrbuf	ubusd.h	/^	} hdrbuf;$/;"	m	struct:ubus_client	typeref:struct:ubus_client::__anon1
+has_subscribers	ipkg-install/usr/include/libubus.h	/^	bool has_subscribers;$/;"	m	struct:ubus_object	access:public
+has_subscribers	libubus.h	/^	bool has_subscribers;$/;"	m	struct:ubus_object	access:public
+hdr	ipkg-install/usr/include/libubus.h	/^	struct ubus_msghdr hdr;$/;"	m	struct:ubus_msghdr_buf	typeref:struct:ubus_msghdr_buf::ubus_msghdr	access:public
+hdr	libubus.c	/^	struct ubus_msghdr_buf hdr;$/;"	m	struct:ubus_pending_msg	typeref:struct:ubus_pending_msg::ubus_msghdr_buf	file:	access:public
+hdr	libubus.h	/^	struct ubus_msghdr hdr; \/\/ ÏûÏ¢Í·$/;"	m	struct:ubus_msghdr_buf	typeref:struct:ubus_msghdr_buf::ubus_msghdr	access:public
+hdr	ubusd.h	/^		struct ubus_msghdr hdr;$/;"	m	struct:ubus_client::__anon1	typeref:struct:ubus_client::__anon1::ubus_msghdr	access:public
+hdr	ubusd.h	/^	struct ubus_msghdr hdr;     \/\/ æ¶ˆæ¯å¤´$/;"	m	struct:ubus_msg_buf	typeref:struct:ubus_msg_buf::ubus_msghdr	access:public
+hdrbuf	ubusd.h	/^	} hdrbuf;$/;"	m	struct:ubus_client	typeref:struct:ubus_client::__anon1	access:public
 hello_policy	examples/server.c	/^static const struct blobmsg_policy hello_policy[] = {$/;"	v	typeref:struct:blobmsg_policy	file:
 hello_request	examples/server.c	/^struct hello_request {$/;"	s	file:
-id	ipkg-install/usr/include/libubus.h	/^	uint32_t id;$/;"	m	struct:ubus_object
-id	ipkg-install/usr/include/libubus.h	/^	uint32_t id;$/;"	m	struct:ubus_object_data
-id	ipkg-install/usr/include/libubus.h	/^	uint32_t id;$/;"	m	struct:ubus_object_type
-id	ipkg-install/usr/include/libubus.h	/^	uint32_t id[UBUS_MAX_NOTIFY_PEERS + 1];$/;"	m	struct:ubus_notify_request
-id	libubus.h	/^	uint32_t id;$/;"	m	struct:ubus_object
-id	libubus.h	/^	uint32_t id;$/;"	m	struct:ubus_object_data
-id	libubus.h	/^	uint32_t id;$/;"	m	struct:ubus_object_type
-id	libubus.h	/^	uint32_t id[UBUS_MAX_NOTIFY_PEERS + 1];$/;"	m	struct:ubus_notify_request
-id	ubusd.h	/^	struct ubus_id id;          \/\/ IDç”¨äºæ ‡è¯†ä¸åŒçš„å®¢æˆ·ç«¯$/;"	m	struct:ubus_client	typeref:struct:ubus_client::ubus_id
-id	ubusd_id.h	/^	uint32_t id;$/;"	m	struct:ubus_id
-id	ubusd_obj.h	/^	struct ubus_id id;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_id
-id	ubusd_obj.h	/^	struct ubus_id id;$/;"	m	struct:ubus_object_type	typeref:struct:ubus_object_type::ubus_id
-idx	examples/server.c	/^	int idx;$/;"	m	struct:hello_request	file:
-invoke_seq	ubusd_obj.h	/^	unsigned int invoke_seq;$/;"	m	struct:ubus_object
-len	ubusd.h	/^	int len;                    \/\/ è®°å½•BLOBå±æ€§ç©ºé—´é•¿åº¦ï¼ˆä¹Ÿå°±æ˜¯æ¶ˆæ¯å†…å®¹é•¿åº¦ï¼‰$/;"	m	struct:ubus_msg_buf
-list	ipkg-install/usr/include/libubus.h	/^	struct list_head list;$/;"	m	struct:ubus_request	typeref:struct:ubus_request::list_head
-list	libubus-req.c	/^	struct list_head list;$/;"	m	struct:ubus_pending_data	typeref:struct:ubus_pending_data::list_head	file:
-list	libubus.c	/^	struct list_head list;$/;"	m	struct:ubus_pending_msg	typeref:struct:ubus_pending_msg::list_head	file:
-list	libubus.h	/^	struct list_head list;$/;"	m	struct:ubus_request	typeref:struct:ubus_request::list_head
-list	ubusd.h	/^	struct list_head list;$/;"	m	struct:ubus_path	typeref:struct:ubus_path::list_head
-list	ubusd_event.c	/^	struct list_head list;$/;"	m	struct:event_source	typeref:struct:event_source::list_head	file:
-list	ubusd_obj.h	/^	struct list_head list, target_list;$/;"	m	struct:ubus_subscription	typeref:struct:ubus_subscription::list_head
-list	ubusd_obj.h	/^	struct list_head list;$/;"	m	struct:ubus_method	typeref:struct:ubus_method::list_head
-list	ubusd_obj.h	/^	struct list_head list;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::list_head
-local_id	ipkg-install/usr/include/libubus.h	/^	uint32_t local_id;$/;"	m	struct:ubus_context
-local_id	libubus.h	/^	uint32_t local_id;$/;"	m	struct:ubus_context
-lua_gettablelen	lua/ubus.c	/^static int lua_gettablelen(lua_State *L, int index)$/;"	f	file:
-luaopen_ubus	lua/ubus.c	/^luaopen_ubus(lua_State *L)$/;"	f
-main	cli.c	/^int main(int argc, char **argv)$/;"	f
-main	examples/client.c	/^int main(int argc, char **argv)$/;"	f
-main	examples/server.c	/^int main(int argc, char **argv)$/;"	f
-main	ubusd.c	/^int main(int argc, char **argv)$/;"	f
-mask	ipkg-install/usr/include/libubus.h	/^	unsigned long mask;$/;"	m	struct:ubus_method
-mask	libubus.h	/^	unsigned long mask;$/;"	m	struct:ubus_method
-methods	ipkg-install/usr/include/libubus.h	/^	const struct ubus_method *methods;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_method
-methods	ipkg-install/usr/include/libubus.h	/^	const struct ubus_method *methods;$/;"	m	struct:ubus_object_type	typeref:struct:ubus_object_type::ubus_method
-methods	libubus.h	/^	const struct ubus_method *methods;  \/\/ Ö¸Ïò·½·¨$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_method
-methods	libubus.h	/^	const struct ubus_method *methods;  \/\/ Ö¸Ïò·½·¨$/;"	m	struct:ubus_object_type	typeref:struct:ubus_object_type::ubus_method
-methods	ubusd_obj.h	/^	struct list_head methods;$/;"	m	struct:ubus_object_type	typeref:struct:ubus_object_type::list_head
-msgbuf	ipkg-install/usr/include/libubus.h	/^	struct ubus_msghdr_buf msgbuf;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::ubus_msghdr_buf
-msgbuf	libubus.h	/^	struct ubus_msghdr_buf msgbuf;  \/\/ ÏûÏ¢¿ØÖÆ¿é$/;"	m	struct:ubus_context	typeref:struct:ubus_context::ubus_msghdr_buf
-msgbuf_data_len	ipkg-install/usr/include/libubus.h	/^	uint32_t msgbuf_data_len;$/;"	m	struct:ubus_context
-msgbuf_data_len	libubus.h	/^	uint32_t msgbuf_data_len;       \/\/ ¼ÇÂ¼ÏûÏ¢¿Õ¼ä´óĞ¡$/;"	m	struct:ubus_context
-msgbuf_reduction_counter	ipkg-install/usr/include/libubus.h	/^	int msgbuf_reduction_counter;$/;"	m	struct:ubus_context
-msgbuf_reduction_counter	libubus.h	/^	int msgbuf_reduction_counter;$/;"	m	struct:ubus_context
-n_methods	ipkg-install/usr/include/libubus.h	/^	int n_methods;$/;"	m	struct:ubus_object
-n_methods	ipkg-install/usr/include/libubus.h	/^	int n_methods;$/;"	m	struct:ubus_object_type
-n_methods	libubus.h	/^	int n_methods;      \/\/ ¼ÇÂ¼·½·¨µÄÊıÁ¿$/;"	m	struct:ubus_object
-n_methods	libubus.h	/^	int n_methods;      \/\/ ¼ÇÂ¼·½·¨µÄÊıÁ¿$/;"	m	struct:ubus_object_type
-n_pending	cli.c	/^	int n_pending;$/;"	m	struct:cli_wait_data	file:
-n_policy	ipkg-install/usr/include/libubus.h	/^	int n_policy;$/;"	m	struct:ubus_method
-n_policy	libubus.h	/^	int n_policy;$/;"	m	struct:ubus_method
-name	cli.c	/^	const char *name;$/;"	m	struct:__anon8	file:
-name	ipkg-install/usr/include/libubus.h	/^	const char *name;$/;"	m	struct:ubus_method
-name	ipkg-install/usr/include/libubus.h	/^	const char *name;$/;"	m	struct:ubus_object
-name	ipkg-install/usr/include/libubus.h	/^	const char *name;$/;"	m	struct:ubus_object_type
-name	libubus.h	/^	const char *name;       \/\/ ·½·¨Ãû$/;"	m	struct:ubus_method
-name	libubus.h	/^	const char *name;   \/\/ ¶ÔÏóÃû$/;"	m	struct:ubus_object
-name	libubus.h	/^	const char *name;   \/\/ ¶ÔÏóÃû$/;"	m	struct:ubus_object_type
-name	ubusd.h	/^	const char name[];$/;"	m	struct:ubus_path
-name	ubusd_obj.h	/^	const char *name;$/;"	m	struct:ubus_method
-notify	ipkg-install/usr/include/libubus.h	/^	bool notify;$/;"	m	struct:ubus_request
-notify	libubus.h	/^	bool notify;$/;"	m	struct:ubus_request
+hello_request::data	examples/server.c	/^	char data[];$/;"	m	struct:hello_request	file:	access:public
+hello_request::fd	examples/server.c	/^	int fd;$/;"	m	struct:hello_request	file:	access:public
+hello_request::idx	examples/server.c	/^	int idx;$/;"	m	struct:hello_request	file:	access:public
+hello_request::req	examples/server.c	/^	struct ubus_request_data req;   \/\/ ubusè¯·æ±‚æ§åˆ¶å—$/;"	m	struct:hello_request	typeref:struct:hello_request::ubus_request_data	file:	access:public
+hello_request::timeout	examples/server.c	/^	struct uloop_timeout timeout;   \/\/ ç»™å¯¹è±¡helloçš„è¯·æ±‚æ§åˆ¶å—å®šä¹‰ä¸€ä¸ªè¶…æ—¶æ§åˆ¶å—$/;"	m	struct:hello_request	typeref:struct:hello_request::uloop_timeout	file:	access:public
+id	ipkg-install/usr/include/libubus.h	/^	uint32_t id;$/;"	m	struct:ubus_object	access:public
+id	ipkg-install/usr/include/libubus.h	/^	uint32_t id;$/;"	m	struct:ubus_object_data	access:public
+id	ipkg-install/usr/include/libubus.h	/^	uint32_t id;$/;"	m	struct:ubus_object_type	access:public
+id	ipkg-install/usr/include/libubus.h	/^	uint32_t id[UBUS_MAX_NOTIFY_PEERS + 1];$/;"	m	struct:ubus_notify_request	access:public
+id	libubus.h	/^	uint32_t id;$/;"	m	struct:ubus_object	access:public
+id	libubus.h	/^	uint32_t id;$/;"	m	struct:ubus_object_data	access:public
+id	libubus.h	/^	uint32_t id;$/;"	m	struct:ubus_object_type	access:public
+id	libubus.h	/^	uint32_t id[UBUS_MAX_NOTIFY_PEERS + 1];$/;"	m	struct:ubus_notify_request	access:public
+id	ubusd.h	/^	struct ubus_id id;          \/\/ IDç”¨äºæ ‡è¯†ä¸åŒçš„å®¢æˆ·ç«¯$/;"	m	struct:ubus_client	typeref:struct:ubus_client::ubus_id	access:public
+id	ubusd_id.h	/^	uint32_t id;$/;"	m	struct:ubus_id	access:public
+id	ubusd_obj.h	/^	struct ubus_id id;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_id	access:public
+id	ubusd_obj.h	/^	struct ubus_id id;$/;"	m	struct:ubus_object_type	typeref:struct:ubus_object_type::ubus_id	access:public
+idx	examples/server.c	/^	int idx;$/;"	m	struct:hello_request	file:	access:public
+invoke_seq	ubusd_obj.h	/^	unsigned int invoke_seq;$/;"	m	struct:ubus_object	access:public
+len	ubusd.h	/^	int len;                    \/\/ è®°å½•BLOBå±æ€§ç©ºé—´é•¿åº¦ï¼ˆä¹Ÿå°±æ˜¯æ¶ˆæ¯å†…å®¹é•¿åº¦ï¼‰$/;"	m	struct:ubus_msg_buf	access:public
+list	ipkg-install/usr/include/libubus.h	/^	struct list_head list;$/;"	m	struct:ubus_request	typeref:struct:ubus_request::list_head	access:public
+list	libubus-req.c	/^	struct list_head list;$/;"	m	struct:ubus_pending_data	typeref:struct:ubus_pending_data::list_head	file:	access:public
+list	libubus.c	/^	struct list_head list;$/;"	m	struct:ubus_pending_msg	typeref:struct:ubus_pending_msg::list_head	file:	access:public
+list	libubus.h	/^	struct list_head list;      \/\/ Á´±íÍ·$/;"	m	struct:ubus_request	typeref:struct:ubus_request::list_head	access:public
+list	ubusd.h	/^	struct list_head list;$/;"	m	struct:ubus_path	typeref:struct:ubus_path::list_head	access:public
+list	ubusd_event.c	/^	struct list_head list;$/;"	m	struct:event_source	typeref:struct:event_source::list_head	file:	access:public
+list	ubusd_obj.h	/^	struct list_head list, target_list;$/;"	m	struct:ubus_subscription	typeref:struct:ubus_subscription::list_head	access:public
+list	ubusd_obj.h	/^	struct list_head list;$/;"	m	struct:ubus_method	typeref:struct:ubus_method::list_head	access:public
+list	ubusd_obj.h	/^	struct list_head list;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::list_head	access:public
+local_id	ipkg-install/usr/include/libubus.h	/^	uint32_t local_id;$/;"	m	struct:ubus_context	access:public
+local_id	libubus.h	/^	uint32_t local_id;$/;"	m	struct:ubus_context	access:public
+lua_gettablelen	lua/ubus.c	/^static int lua_gettablelen(lua_State *L, int index)$/;"	f	file:	signature:(lua_State *L, int index)
+luaopen_ubus	lua/ubus.c	/^int luaopen_ubus(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+luaopen_ubus	lua/ubus.c	/^luaopen_ubus(lua_State *L)$/;"	f	signature:(lua_State *L)
+main	cli.c	/^int main(int argc, char **argv)$/;"	f	signature:(int argc, char **argv)
+main	examples/client.c	/^int main(int argc, char **argv)$/;"	f	signature:(int argc, char **argv)
+main	examples/server.c	/^int main(int argc, char **argv)$/;"	f	signature:(int argc, char **argv)
+main	ubusd.c	/^int main(int argc, char **argv)$/;"	f	signature:(int argc, char **argv)
+mask	ipkg-install/usr/include/libubus.h	/^	unsigned long mask;$/;"	m	struct:ubus_method	access:public
+mask	libubus.h	/^	unsigned long mask;$/;"	m	struct:ubus_method	access:public
+methods	ipkg-install/usr/include/libubus.h	/^	const struct ubus_method *methods;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_method	access:public
+methods	ipkg-install/usr/include/libubus.h	/^	const struct ubus_method *methods;$/;"	m	struct:ubus_object_type	typeref:struct:ubus_object_type::ubus_method	access:public
+methods	libubus.h	/^	const struct ubus_method *methods;  \/\/ Ö¸Ïò·½·¨$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_method	access:public
+methods	libubus.h	/^	const struct ubus_method *methods;  \/\/ Ö¸Ïò·½·¨¿ØÖÆ¿éÊı×é$/;"	m	struct:ubus_object_type	typeref:struct:ubus_object_type::ubus_method	access:public
+methods	ubusd_obj.h	/^	struct list_head methods;$/;"	m	struct:ubus_object_type	typeref:struct:ubus_object_type::list_head	access:public
+msgbuf	ipkg-install/usr/include/libubus.h	/^	struct ubus_msghdr_buf msgbuf;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::ubus_msghdr_buf	access:public
+msgbuf	libubus.h	/^	struct ubus_msghdr_buf msgbuf;  \/\/ ÏûÏ¢¿ØÖÆ¿é$/;"	m	struct:ubus_context	typeref:struct:ubus_context::ubus_msghdr_buf	access:public
+msgbuf_data_len	ipkg-install/usr/include/libubus.h	/^	uint32_t msgbuf_data_len;$/;"	m	struct:ubus_context	access:public
+msgbuf_data_len	libubus.h	/^	uint32_t msgbuf_data_len;       \/\/ ¼ÇÂ¼ÏûÏ¢¿Õ¼ä´óĞ¡$/;"	m	struct:ubus_context	access:public
+msgbuf_reduction_counter	ipkg-install/usr/include/libubus.h	/^	int msgbuf_reduction_counter;$/;"	m	struct:ubus_context	access:public
+msgbuf_reduction_counter	libubus.h	/^	int msgbuf_reduction_counter;$/;"	m	struct:ubus_context	access:public
+n_methods	ipkg-install/usr/include/libubus.h	/^	int n_methods;$/;"	m	struct:ubus_object	access:public
+n_methods	ipkg-install/usr/include/libubus.h	/^	int n_methods;$/;"	m	struct:ubus_object_type	access:public
+n_methods	libubus.h	/^	int n_methods;                      \/\/ ¼ÇÂ¼·½·¨¿ØÖÆ¿éÊı×éµÄÔªËØÊıÁ¿$/;"	m	struct:ubus_object_type	access:public
+n_methods	libubus.h	/^	int n_methods;      \/\/ ¼ÇÂ¼·½·¨µÄÊıÁ¿$/;"	m	struct:ubus_object	access:public
+n_pending	cli.c	/^	int n_pending;$/;"	m	struct:cli_wait_data	file:	access:public
+n_policy	ipkg-install/usr/include/libubus.h	/^	int n_policy;$/;"	m	struct:ubus_method	access:public
+n_policy	libubus.h	/^	int n_policy;$/;"	m	struct:ubus_method	access:public
+name	cli.c	/^	const char *name;$/;"	m	struct:__anon8	file:	access:public
+name	ipkg-install/usr/include/libubus.h	/^	const char *name;$/;"	m	struct:ubus_method	access:public
+name	ipkg-install/usr/include/libubus.h	/^	const char *name;$/;"	m	struct:ubus_object	access:public
+name	ipkg-install/usr/include/libubus.h	/^	const char *name;$/;"	m	struct:ubus_object_type	access:public
+name	libubus.h	/^	const char *name;                   \/\/ ¶ÔÏóÃû$/;"	m	struct:ubus_object_type	access:public
+name	libubus.h	/^	const char *name;               \/\/ ¶ÔÏóÃû$/;"	m	struct:ubus_object	access:public
+name	libubus.h	/^	const char *name;       \/\/ ·½·¨Ãû$/;"	m	struct:ubus_method	access:public
+name	ubusd.h	/^	const char name[];$/;"	m	struct:ubus_path	access:public
+name	ubusd_obj.h	/^	const char *name;$/;"	m	struct:ubus_method	access:public
+notify	ipkg-install/usr/include/libubus.h	/^	bool notify;$/;"	m	struct:ubus_request	access:public
+notify	libubus.h	/^	bool notify;$/;"	m	struct:ubus_request	access:public
 notify_timer	examples/client.c	/^static struct uloop_timeout notify_timer = {$/;"	v	typeref:struct:uloop_timeout	file:
-o	lua/ubus.c	/^	struct ubus_object o;$/;"	m	struct:ubus_lua_object	typeref:struct:ubus_lua_object::ubus_object	file:
-obj	ipkg-install/usr/include/libubus.h	/^	struct ubus_object obj;$/;"	m	struct:ubus_event_handler	typeref:struct:ubus_event_handler::ubus_object
-obj	ipkg-install/usr/include/libubus.h	/^	struct ubus_object obj;$/;"	m	struct:ubus_subscriber	typeref:struct:ubus_subscriber::ubus_object
-obj	libubus.h	/^	struct ubus_object obj; \/\/ ¶ÔÏó$/;"	m	struct:ubus_subscriber	typeref:struct:ubus_subscriber::ubus_object
-obj	libubus.h	/^	struct ubus_object obj;$/;"	m	struct:ubus_event_handler	typeref:struct:ubus_event_handler::ubus_object
-obj	ubusd_event.c	/^	struct ubus_object *obj;$/;"	m	struct:event_source	typeref:struct:event_source::ubus_object	file:
+o	lua/ubus.c	/^	struct ubus_object o;$/;"	m	struct:ubus_lua_object	typeref:struct:ubus_lua_object::ubus_object	file:	access:public
+obj	ipkg-install/usr/include/libubus.h	/^	struct ubus_object obj;$/;"	m	struct:ubus_event_handler	typeref:struct:ubus_event_handler::ubus_object	access:public
+obj	ipkg-install/usr/include/libubus.h	/^	struct ubus_object obj;$/;"	m	struct:ubus_subscriber	typeref:struct:ubus_subscriber::ubus_object	access:public
+obj	libubus.h	/^	struct ubus_object obj; \/\/ ¶ÔÏó$/;"	m	struct:ubus_subscriber	typeref:struct:ubus_subscriber::ubus_object	access:public
+obj	libubus.h	/^	struct ubus_object obj;$/;"	m	struct:ubus_event_handler	typeref:struct:ubus_event_handler::ubus_object	access:public
+obj	ubusd_event.c	/^	struct ubus_object *obj;$/;"	m	struct:event_source	typeref:struct:event_source::ubus_object	file:	access:public
 obj_event_seq	ubusd_event.c	/^static int obj_event_seq = 1;$/;"	v	file:
 obj_types	ubusd_obj.c	/^struct avl_tree obj_types;$/;"	v	typeref:struct:avl_tree
-object	ipkg-install/usr/include/libubus.h	/^	uint32_t object;$/;"	m	struct:ubus_request_data
-object	libubus.h	/^	uint32_t object;$/;"	m	struct:ubus_request_data
-objects	ipkg-install/usr/include/libubus.h	/^	struct avl_tree objects;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::avl_tree
-objects	libubus.h	/^	struct avl_tree objects;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::avl_tree
-objects	ubusd.h	/^	struct list_head objects;   \/\/ é“¾è¡¨æ¨¡å—$/;"	m	struct:ubus_client	typeref:struct:ubus_client::list_head
+object	ipkg-install/usr/include/libubus.h	/^	uint32_t object;$/;"	m	struct:ubus_request_data	access:public
+object	libubus.h	/^	uint32_t object;$/;"	m	struct:ubus_request_data	access:public
+objects	ipkg-install/usr/include/libubus.h	/^	struct avl_tree objects;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::avl_tree	access:public
+objects	libubus.h	/^	struct avl_tree objects;            \/\/ avlÊ÷¿ØÖÆ¿é$/;"	m	struct:ubus_context	typeref:struct:ubus_context::avl_tree	access:public
+objects	ubusd.h	/^	struct list_head objects;   \/\/ é“¾è¡¨æ¨¡å—$/;"	m	struct:ubus_client	typeref:struct:ubus_client::list_head	access:public
 objects	ubusd_obj.c	/^struct avl_tree objects;$/;"	v	typeref:struct:avl_tree
-partial	ubusd_event.c	/^	bool partial;$/;"	m	struct:event_source	file:
-path	ipkg-install/usr/include/libubus.h	/^	const char *path;$/;"	m	struct:ubus_auto_conn
-path	ipkg-install/usr/include/libubus.h	/^	const char *path;$/;"	m	struct:ubus_object
-path	ipkg-install/usr/include/libubus.h	/^	const char *path;$/;"	m	struct:ubus_object_data
-path	libubus.h	/^	const char *path;$/;"	m	struct:ubus_auto_conn
-path	libubus.h	/^	const char *path;$/;"	m	struct:ubus_object
-path	libubus.h	/^	const char *path;$/;"	m	struct:ubus_object_data
+partial	ubusd_event.c	/^	bool partial;$/;"	m	struct:event_source	file:	access:public
+path	ipkg-install/usr/include/libubus.h	/^	const char *path;$/;"	m	struct:ubus_auto_conn	access:public
+path	ipkg-install/usr/include/libubus.h	/^	const char *path;$/;"	m	struct:ubus_object	access:public
+path	ipkg-install/usr/include/libubus.h	/^	const char *path;$/;"	m	struct:ubus_object_data	access:public
+path	libubus.h	/^	const char *path;$/;"	m	struct:ubus_auto_conn	access:public
+path	libubus.h	/^	const char *path;$/;"	m	struct:ubus_object	access:public
+path	libubus.h	/^	const char *path;$/;"	m	struct:ubus_object_data	access:public
 path	ubusd_obj.c	/^struct avl_tree path;$/;"	v	typeref:struct:avl_tree
-path	ubusd_obj.h	/^	struct avl_node path;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::avl_node
+path	ubusd_obj.h	/^	struct avl_node path;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::avl_node	access:public
 patterns	ubusd_event.c	/^static struct avl_tree patterns;$/;"	v	typeref:struct:avl_tree	file:
-peer	ipkg-install/usr/include/libubus.h	/^	uint32_t peer;$/;"	m	struct:ubus_request
-peer	ipkg-install/usr/include/libubus.h	/^	uint32_t peer;$/;"	m	struct:ubus_request_data
-peer	ipkg-install/usr/include/ubusmsg.h	/^	uint32_t peer;$/;"	m	struct:ubus_msghdr
-peer	libubus.h	/^	uint32_t peer;$/;"	m	struct:ubus_request
-peer	libubus.h	/^	uint32_t peer;$/;"	m	struct:ubus_request_data
-peer	ubusmsg.h	/^	uint32_t peer;$/;"	m	struct:ubus_msghdr
-pending	cli.c	/^	char **pending;$/;"	m	struct:cli_wait_data	file:
-pending	ipkg-install/usr/include/libubus.h	/^	struct list_head pending;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::list_head
-pending	ipkg-install/usr/include/libubus.h	/^	struct list_head pending;$/;"	m	struct:ubus_request	typeref:struct:ubus_request::list_head
-pending	ipkg-install/usr/include/libubus.h	/^	uint32_t pending;$/;"	m	struct:ubus_notify_request
-pending	libubus.h	/^	struct list_head pending;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::list_head
-pending	libubus.h	/^	struct list_head pending;$/;"	m	struct:ubus_request	typeref:struct:ubus_request::list_head
-pending	libubus.h	/^	uint32_t pending;$/;"	m	struct:ubus_notify_request
-pending_msg	ubusd.h	/^	struct ubus_msg_buf *pending_msg;$/;"	m	struct:ubus_client	typeref:struct:ubus_client::ubus_msg_buf
-pending_msg_fd	ubusd.h	/^	int pending_msg_fd;         \/\/ -1è¡¨ç¤ºå¤ä½çŠ¶æ€$/;"	m	struct:ubus_client
-pending_msg_offset	ubusd.h	/^	int pending_msg_offset;$/;"	m	struct:ubus_client
-pending_timer	ipkg-install/usr/include/libubus.h	/^	struct uloop_timeout pending_timer;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::uloop_timeout
-pending_timer	libubus.h	/^	struct uloop_timeout pending_timer; \/\/ ¿Í»§¶Ë³¬Ê±»Øµ÷º¯Êı$/;"	m	struct:ubus_context	typeref:struct:ubus_context::uloop_timeout
-policy	ipkg-install/usr/include/libubus.h	/^	const struct blobmsg_policy *policy;$/;"	m	struct:ubus_method	typeref:struct:ubus_method::blobmsg_policy
-policy	libubus.h	/^	const struct blobmsg_policy *policy;$/;"	m	struct:ubus_method	typeref:struct:ubus_method::blobmsg_policy
-priv	ipkg-install/usr/include/libubus.h	/^	void *priv;$/;"	m	struct:ubus_request
-priv	libubus.h	/^	void *priv;$/;"	m	struct:ubus_request
-r	lua/ubus.c	/^	int r;$/;"	m	struct:ubus_lua_event	file:
-r	lua/ubus.c	/^	int r;$/;"	m	struct:ubus_lua_object	file:
+peer	ipkg-install/usr/include/libubus.h	/^	uint32_t peer;$/;"	m	struct:ubus_request	access:public
+peer	ipkg-install/usr/include/libubus.h	/^	uint32_t peer;$/;"	m	struct:ubus_request_data	access:public
+peer	ipkg-install/usr/include/ubusmsg.h	/^	uint32_t peer;$/;"	m	struct:ubus_msghdr	access:public
+peer	libubus.h	/^	uint32_t peer;$/;"	m	struct:ubus_request	access:public
+peer	libubus.h	/^	uint32_t peer;$/;"	m	struct:ubus_request_data	access:public
+peer	ubusmsg.h	/^	uint32_t peer;$/;"	m	struct:ubus_msghdr	access:public
+pending	cli.c	/^	char **pending;$/;"	m	struct:cli_wait_data	file:	access:public
+pending	ipkg-install/usr/include/libubus.h	/^	struct list_head pending;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::list_head	access:public
+pending	ipkg-install/usr/include/libubus.h	/^	struct list_head pending;$/;"	m	struct:ubus_request	typeref:struct:ubus_request::list_head	access:public
+pending	ipkg-install/usr/include/libubus.h	/^	uint32_t pending;$/;"	m	struct:ubus_notify_request	access:public
+pending	libubus.h	/^	struct list_head pending;   \/\/ Á´±íÍ·$/;"	m	struct:ubus_request	typeref:struct:ubus_request::list_head	access:public
+pending	libubus.h	/^	struct list_head pending;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::list_head	access:public
+pending	libubus.h	/^	uint32_t pending;$/;"	m	struct:ubus_notify_request	access:public
+pending_msg	ubusd.h	/^	struct ubus_msg_buf *pending_msg;$/;"	m	struct:ubus_client	typeref:struct:ubus_client::ubus_msg_buf	access:public
+pending_msg_fd	ubusd.h	/^	int pending_msg_fd;         \/\/ -1è¡¨ç¤ºå¤ä½çŠ¶æ€$/;"	m	struct:ubus_client	access:public
+pending_msg_offset	ubusd.h	/^	int pending_msg_offset;$/;"	m	struct:ubus_client	access:public
+pending_timer	ipkg-install/usr/include/libubus.h	/^	struct uloop_timeout pending_timer;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::uloop_timeout	access:public
+pending_timer	libubus.h	/^	struct uloop_timeout pending_timer; \/\/ ¿Í»§¶Ë³¬Ê±»Øµ÷º¯Êı$/;"	m	struct:ubus_context	typeref:struct:ubus_context::uloop_timeout	access:public
+policy	ipkg-install/usr/include/libubus.h	/^	const struct blobmsg_policy *policy;$/;"	m	struct:ubus_method	typeref:struct:ubus_method::blobmsg_policy	access:public
+policy	libubus.h	/^	const struct blobmsg_policy *policy;$/;"	m	struct:ubus_method	typeref:struct:ubus_method::blobmsg_policy	access:public
+priv	ipkg-install/usr/include/libubus.h	/^	void *priv;$/;"	m	struct:ubus_request	access:public
+priv	libubus.h	/^	void *priv;$/;"	m	struct:ubus_request	access:public
+r	lua/ubus.c	/^	int r;$/;"	m	struct:ubus_lua_event	file:	access:public
+r	lua/ubus.c	/^	int r;$/;"	m	struct:ubus_lua_object	file:	access:public
 random_fd	ubusd_id.c	/^static int random_fd = -1;  \/\/ éšæœºæ•°ç”Ÿæˆæ–‡ä»¶fd$/;"	v	file:
-raw_data_cb	ipkg-install/usr/include/libubus.h	/^	ubus_data_handler_t raw_data_cb;$/;"	m	struct:ubus_request
-raw_data_cb	libubus.h	/^	ubus_data_handler_t raw_data_cb;$/;"	m	struct:ubus_request
-receive_call_result_data	cli.c	/^static void receive_call_result_data(struct ubus_request *req, int type, struct blob_attr *msg)$/;"	f	file:
-receive_event	cli.c	/^static void receive_event(struct ubus_context *ctx, struct ubus_event_handler *ev,$/;"	f	file:
-receive_list_result	cli.c	/^static void receive_list_result(struct ubus_context *ctx, struct ubus_object_data *obj, void *priv)$/;"	f	file:
-recv_msg	ubusd_obj.h	/^	int (*recv_msg)(struct ubus_client *client, const char *method, struct blob_attr *msg);$/;"	m	struct:ubus_object
-recv_retry	libubus-io.c	/^static int recv_retry(int fd, struct iovec *iov, bool wait, int *recv_fd)$/;"	f	file:
-refcount	ubusd.h	/^	uint32_t refcount;          \/\/ å±æ€§ç©ºé—´ç±»å‹æ ‡è®°ï¼ˆ~0:ä½¿ç”¨å¤–éƒ¨å…±äº«ç©ºé—´ 1ï¼šä½¿ç”¨å†…éƒ¨åˆ†é…ç©ºé—´ï¼‰\/* ~0: uses external data buffer *\/$/;"	m	struct:ubus_msg_buf
-refcount	ubusd_obj.h	/^	int refcount;$/;"	m	struct:ubus_object_type
-remove_cb	ipkg-install/usr/include/libubus.h	/^	ubus_remove_handler_t remove_cb;$/;"	m	struct:ubus_subscriber
-remove_cb	libubus.h	/^	ubus_remove_handler_t remove_cb;    \/\/ É¾³ı¶¯×÷µÄ»Øµ÷º¯Êı$/;"	m	struct:ubus_subscriber
-req	examples/server.c	/^	struct ubus_request_data req;   \/\/ ubusè¯·æ±‚æ§åˆ¶å—$/;"	m	struct:hello_request	typeref:struct:hello_request::ubus_request_data	file:
-req	ipkg-install/usr/include/libubus.h	/^	struct ubus_request req;$/;"	m	struct:ubus_notify_request	typeref:struct:ubus_notify_request::ubus_request
-req	libubus.c	/^	struct ubus_request req;$/;"	m	struct:ubus_lookup_request	typeref:struct:ubus_lookup_request::ubus_request	file:
-req	libubus.h	/^	struct ubus_request req;$/;"	m	struct:ubus_notify_request	typeref:struct:ubus_notify_request::ubus_request
-req_data_cb	libubus-req.c	/^static void req_data_cb(struct ubus_request *req, int type, struct blob_attr *data)$/;"	f	file:
-request_seq	ipkg-install/usr/include/libubus.h	/^	uint16_t request_seq;$/;"	m	struct:ubus_context
-request_seq	libubus.h	/^	uint16_t request_seq;$/;"	m	struct:ubus_context
-requests	ipkg-install/usr/include/libubus.h	/^	struct list_head requests;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::list_head
-requests	libubus.h	/^	struct list_head requests;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::list_head
+raw_data_cb	ipkg-install/usr/include/libubus.h	/^	ubus_data_handler_t raw_data_cb;$/;"	m	struct:ubus_request	access:public
+raw_data_cb	libubus.h	/^	ubus_data_handler_t raw_data_cb;$/;"	m	struct:ubus_request	access:public
+receive_call_result_data	cli.c	/^static void receive_call_result_data(struct ubus_request *req, int type, struct blob_attr *msg)$/;"	f	file:	signature:(struct ubus_request *req, int type, struct blob_attr *msg)
+receive_event	cli.c	/^static void receive_event(struct ubus_context *ctx, struct ubus_event_handler *ev,$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_event_handler *ev, const char *type, struct blob_attr *msg)
+receive_list_result	cli.c	/^static void receive_list_result(struct ubus_context *ctx, struct ubus_object_data *obj, void *priv)$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_object_data *obj, void *priv)
+recv_msg	ubusd_obj.h	/^	int (*recv_msg)(struct ubus_client *client, const char *method, struct blob_attr *msg);$/;"	m	struct:ubus_object	access:public
+recv_retry	libubus-io.c	/^static int recv_retry(int fd, struct iovec *iov, bool wait, int *recv_fd)$/;"	f	file:	signature:(int fd, struct iovec *iov, bool wait, int *recv_fd)
+refcount	ubusd.h	/^	uint32_t refcount;          \/\/ å±æ€§ç©ºé—´ç±»å‹æ ‡è®°ï¼ˆ~0:ä½¿ç”¨å¤–éƒ¨å…±äº«ç©ºé—´ 1ï¼šä½¿ç”¨å†…éƒ¨åˆ†é…ç©ºé—´ï¼‰\/* ~0: uses external data buffer *\/$/;"	m	struct:ubus_msg_buf	access:public
+refcount	ubusd_obj.h	/^	int refcount;$/;"	m	struct:ubus_object_type	access:public
+remove_cb	ipkg-install/usr/include/libubus.h	/^	ubus_remove_handler_t remove_cb;$/;"	m	struct:ubus_subscriber	access:public
+remove_cb	libubus.h	/^	ubus_remove_handler_t remove_cb;    \/\/ É¾³ıÍ¨ÖªµÄ»Øµ÷º¯Êı$/;"	m	struct:ubus_subscriber	access:public
+req	examples/server.c	/^	struct ubus_request_data req;   \/\/ ubusè¯·æ±‚æ§åˆ¶å—$/;"	m	struct:hello_request	typeref:struct:hello_request::ubus_request_data	file:	access:public
+req	ipkg-install/usr/include/libubus.h	/^	struct ubus_request req;$/;"	m	struct:ubus_notify_request	typeref:struct:ubus_notify_request::ubus_request	access:public
+req	libubus.c	/^	struct ubus_request req;$/;"	m	struct:ubus_lookup_request	typeref:struct:ubus_lookup_request::ubus_request	file:	access:public
+req	libubus.h	/^	struct ubus_request req;$/;"	m	struct:ubus_notify_request	typeref:struct:ubus_notify_request::ubus_request	access:public
+req_data_cb	libubus-req.c	/^static void req_data_cb(struct ubus_request *req, int type, struct blob_attr *data)$/;"	f	file:	signature:(struct ubus_request *req, int type, struct blob_attr *data)
+request_seq	ipkg-install/usr/include/libubus.h	/^	uint16_t request_seq;$/;"	m	struct:ubus_context	access:public
+request_seq	libubus.h	/^	uint16_t request_seq;$/;"	m	struct:ubus_context	access:public
+requests	ipkg-install/usr/include/libubus.h	/^	struct list_head requests;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::list_head	access:public
+requests	libubus.h	/^	struct list_head requests;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::list_head	access:public
 retmsg	ubusd_proto.c	/^static struct ubus_msg_buf *retmsg; \/\/ å®šä¹‰ä¸€ä¸ªæŒ‡å‘ububsæ¶ˆæ¯æ§åˆ¶å—çš„æŒ‡é’ˆ$/;"	v	typeref:struct:ubus_msg_buf	file:
 retmsg_data	ubusd_proto.c	/^static int *retmsg_data;            \/\/ æŒ‡å‘ubusæ¶ˆæ¯æ§åˆ¶å—çš„äºŒé˜¶å±æ€§ç©ºé—´çš„æ•°æ®æŒ‡é’ˆ$/;"	v	file:
 return_policy	examples/client.c	/^static const struct blobmsg_policy return_policy[__RETURN_MAX] = {$/;"	v	typeref:struct:blobmsg_policy	file:
-seq	ipkg-install/usr/include/libubus.h	/^	uint16_t seq;$/;"	m	struct:ubus_request
-seq	ipkg-install/usr/include/libubus.h	/^	uint16_t seq;$/;"	m	struct:ubus_request_data
-seq	ipkg-install/usr/include/ubusmsg.h	/^	uint16_t seq;$/;"	m	struct:ubus_msghdr
-seq	libubus.h	/^	uint16_t seq;$/;"	m	struct:ubus_request
-seq	libubus.h	/^	uint16_t seq;$/;"	m	struct:ubus_request_data
-seq	ubusmsg.h	/^	uint16_t seq;$/;"	m	struct:ubus_msghdr
-server_cb	ubusd.c	/^static void server_cb(struct uloop_fd *fd, unsigned int events)$/;"	f	file:
+seq	ipkg-install/usr/include/libubus.h	/^	uint16_t seq;$/;"	m	struct:ubus_request	access:public
+seq	ipkg-install/usr/include/libubus.h	/^	uint16_t seq;$/;"	m	struct:ubus_request_data	access:public
+seq	ipkg-install/usr/include/ubusmsg.h	/^	uint16_t seq;$/;"	m	struct:ubus_msghdr	access:public
+seq	libubus.h	/^	uint16_t seq;               \/\/ ¼ÇÂ¼·¢ÆğµÄÇëÇóÊıÁ¿$/;"	m	struct:ubus_request	access:public
+seq	libubus.h	/^	uint16_t seq;$/;"	m	struct:ubus_request_data	access:public
+seq	ubusmsg.h	/^	uint16_t seq;$/;"	m	struct:ubus_msghdr	access:public
+server_cb	ubusd.c	/^static void server_cb(struct uloop_fd *fd, unsigned int events)$/;"	f	file:	signature:(struct uloop_fd *fd, unsigned int events)
 server_fd	ubusd.c	/^static struct uloop_fd server_fd = {$/;"	v	typeref:struct:uloop_fd	file:
-server_main	examples/server.c	/^static void server_main(void)$/;"	f	file:
-signature	ipkg-install/usr/include/libubus.h	/^	struct blob_attr *signature;$/;"	m	struct:ubus_object_data	typeref:struct:ubus_object_data::blob_attr
-signature	libubus.h	/^	struct blob_attr *signature;$/;"	m	struct:ubus_object_data	typeref:struct:ubus_object_data::blob_attr
+server_main	examples/server.c	/^static void server_main(void)$/;"	f	file:	signature:(void)
+signature	ipkg-install/usr/include/libubus.h	/^	struct blob_attr *signature;$/;"	m	struct:ubus_object_data	typeref:struct:ubus_object_data::blob_attr	access:public
+signature	libubus.h	/^	struct blob_attr *signature;$/;"	m	struct:ubus_object_data	typeref:struct:ubus_object_data::blob_attr	access:public
 simple_output	cli.c	/^static bool simple_output = false;$/;"	v	file:
-sock	ipkg-install/usr/include/libubus.h	/^	struct uloop_fd sock;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::uloop_fd
-sock	libubus.h	/^	struct uloop_fd sock;               \/\/ ĞèÒª±»epoll¼àÌıµÄfd¿ØÖÆ¿é$/;"	m	struct:ubus_context	typeref:struct:ubus_context::uloop_fd
-sock	ubusd.h	/^	struct uloop_fd sock;       \/\/ å®¢æˆ·ç«¯fdæ§åˆ¶å—$/;"	m	struct:ubus_client	typeref:struct:ubus_client::uloop_fd
-stack_depth	ipkg-install/usr/include/libubus.h	/^	int stack_depth;$/;"	m	struct:ubus_context
-stack_depth	libubus.h	/^	int stack_depth;$/;"	m	struct:ubus_context
+sock	ipkg-install/usr/include/libubus.h	/^	struct uloop_fd sock;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::uloop_fd	access:public
+sock	libubus.h	/^	struct uloop_fd sock;               \/\/ ĞèÒª±»epoll¼àÌıµÄfd¿ØÖÆ¿é$/;"	m	struct:ubus_context	typeref:struct:ubus_context::uloop_fd	access:public
+sock	ubusd.h	/^	struct uloop_fd sock;       \/\/ å®¢æˆ·ç«¯fdæ§åˆ¶å—$/;"	m	struct:ubus_client	typeref:struct:ubus_client::uloop_fd	access:public
+stack_depth	ipkg-install/usr/include/libubus.h	/^	int stack_depth;$/;"	m	struct:ubus_context	access:public
+stack_depth	libubus.h	/^	int stack_depth;$/;"	m	struct:ubus_context	access:public
 state	lua/ubus.c	/^static lua_State *state;$/;"	v	file:
-status_cb	ipkg-install/usr/include/libubus.h	/^	ubus_notify_complete_handler_t status_cb;$/;"	m	struct:ubus_notify_request
-status_cb	libubus.h	/^	ubus_notify_complete_handler_t status_cb;$/;"	m	struct:ubus_notify_request
-status_code	ipkg-install/usr/include/libubus.h	/^	int status_code;$/;"	m	struct:ubus_request
-status_code	libubus.h	/^	int status_code;$/;"	m	struct:ubus_request
-status_msg	ipkg-install/usr/include/libubus.h	/^	bool status_msg;$/;"	m	struct:ubus_request
-status_msg	libubus.h	/^	bool status_msg;$/;"	m	struct:ubus_request
-strmatch_len	ubusd_event.c	/^static bool strmatch_len(const char *s1, const char *s2, int *len)$/;"	f	file:
-subscribe_cb	ipkg-install/usr/include/libubus.h	/^	ubus_state_handler_t subscribe_cb;$/;"	m	struct:ubus_object
-subscribe_cb	libubus.h	/^	ubus_state_handler_t subscribe_cb;$/;"	m	struct:ubus_object
-subscriber	ubusd_obj.h	/^	struct ubus_object *subscriber, *target;$/;"	m	struct:ubus_subscription	typeref:struct:ubus_subscription::ubus_object
-subscribers	ubusd_obj.h	/^	struct list_head subscribers, target_list;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::list_head
-target	ubusd_obj.h	/^	struct ubus_object *subscriber, *target;$/;"	m	struct:ubus_subscription	typeref:struct:ubus_subscription::
-target_list	ubusd_obj.h	/^	struct list_head list, target_list;$/;"	m	struct:ubus_subscription	typeref:struct:ubus_subscription::
-target_list	ubusd_obj.h	/^	struct list_head subscribers, target_list;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::
+status_cb	ipkg-install/usr/include/libubus.h	/^	ubus_notify_complete_handler_t status_cb;$/;"	m	struct:ubus_notify_request	access:public
+status_cb	libubus.h	/^	ubus_notify_complete_handler_t status_cb;$/;"	m	struct:ubus_notify_request	access:public
+status_code	ipkg-install/usr/include/libubus.h	/^	int status_code;$/;"	m	struct:ubus_request	access:public
+status_code	libubus.h	/^	int status_code;$/;"	m	struct:ubus_request	access:public
+status_msg	ipkg-install/usr/include/libubus.h	/^	bool status_msg;$/;"	m	struct:ubus_request	access:public
+status_msg	libubus.h	/^	bool status_msg;$/;"	m	struct:ubus_request	access:public
+strmatch_len	ubusd_event.c	/^static bool strmatch_len(const char *s1, const char *s2, int *len)$/;"	f	file:	signature:(const char *s1, const char *s2, int *len)
+subscribe_cb	ipkg-install/usr/include/libubus.h	/^	ubus_state_handler_t subscribe_cb;$/;"	m	struct:ubus_object	access:public
+subscribe_cb	libubus.h	/^	ubus_state_handler_t subscribe_cb;  \/\/ ÓÃÓÚÔ¤¶©¹¦ÄÜµÄ»Øµ÷$/;"	m	struct:ubus_object	access:public
+subscriber	ubusd_obj.h	/^	struct ubus_object *subscriber, *target;$/;"	m	struct:ubus_subscription	typeref:struct:ubus_subscription::ubus_object	access:public
+subscribers	ubusd_obj.h	/^	struct list_head subscribers, target_list;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::list_head	access:public
+target	ubusd_obj.h	/^	struct ubus_object *subscriber, *target;$/;"	m	struct:ubus_subscription	typeref:struct:ubus_subscription::	access:public
+target_list	ubusd_obj.h	/^	struct list_head list, target_list;$/;"	m	struct:ubus_subscription	typeref:struct:ubus_subscription::	access:public
+target_list	ubusd_obj.h	/^	struct list_head subscribers, target_list;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::	access:public
 test 	lua/test.lua	/^	test = function(msg)$/;"	f
-test_client_complete_cb	examples/client.c	/^static void test_client_complete_cb(struct ubus_request *req, int ret)$/;"	f	file:
-test_client_fd_cb	examples/client.c	/^static void test_client_fd_cb(struct ubus_request *req, int fd)$/;"	f	file:
-test_client_fd_data_cb	examples/client.c	/^static void test_client_fd_data_cb(struct ustream *s, int bytes)$/;"	f	file:
-test_client_notify_cb	examples/client.c	/^static void test_client_notify_cb(struct uloop_timeout *timeout)$/;"	f	file:
+test_client_complete_cb	examples/client.c	/^static void test_client_complete_cb(struct ubus_request *req, int ret)$/;"	f	file:	signature:(struct ubus_request *req, int ret)
+test_client_fd_cb	examples/client.c	/^static void test_client_fd_cb(struct ubus_request *req, int fd)$/;"	f	file:	signature:(struct ubus_request *req, int fd)
+test_client_fd_data_cb	examples/client.c	/^static void test_client_fd_data_cb(struct ustream *s, int bytes)$/;"	f	file:	signature:(struct ustream *s, int bytes)
+test_client_notify_cb	examples/client.c	/^static void test_client_notify_cb(struct uloop_timeout *timeout)$/;"	f	file:	signature:(struct uloop_timeout *timeout)
 test_client_object	examples/client.c	/^static struct ubus_object test_client_object = {$/;"	v	typeref:struct:ubus_object	file:
-test_client_subscribe_cb	examples/client.c	/^static void test_client_subscribe_cb(struct ubus_context *ctx, struct ubus_object *obj)$/;"	f	file:
-test_count	examples/client.c	/^static void test_count(struct uloop_timeout *timeout)$/;"	f	file:
-test_count	examples/server.c	/^static int test_count(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:
-test_count_data_cb	examples/client.c	/^static void test_count_data_cb(struct ubus_request *req,$/;"	f	file:
-test_event	examples/server.c	/^static struct ubus_subscriber test_event;   \/\/ å¯¹è±¡çš„é™„åŠ æè¿°æ§åˆ¶å—$/;"	v	typeref:struct:ubus_subscriber	file:
-test_handle_remove	examples/server.c	/^test_handle_remove(struct ubus_context *ctx, struct ubus_subscriber *s,$/;"	f	file:
-test_hello	examples/server.c	/^static int test_hello(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:
-test_hello_fd_reply	examples/server.c	/^static void test_hello_fd_reply(struct uloop_timeout *t)$/;"	f	file:
-test_hello_reply	examples/server.c	/^static void test_hello_reply(struct uloop_timeout *t)$/;"	f	file:
+test_client_subscribe_cb	examples/client.c	/^static void test_client_subscribe_cb(struct ubus_context *ctx, struct ubus_object *obj)$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_object *obj)
+test_count	examples/client.c	/^static void test_count(struct uloop_timeout *timeout)$/;"	f	file:	signature:(struct uloop_timeout *timeout)
+test_count	examples/server.c	/^static int test_count(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_object *obj, struct ubus_request_data *req, const char *method, struct blob_attr *msg)
+test_count_data_cb	examples/client.c	/^static void test_count_data_cb(struct ubus_request *req,$/;"	f	file:	signature:(struct ubus_request *req, int type, struct blob_attr *msg)
+test_event	examples/server.c	/^static struct ubus_subscriber test_event;   \/\/ å¯¹è±¡çš„é˜…è®¢æ§åˆ¶å—$/;"	v	typeref:struct:ubus_subscriber	file:
+test_handle_remove	examples/server.c	/^test_handle_remove(struct ubus_context *ctx, struct ubus_subscriber *s,$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_subscriber *s, uint32_t id)
+test_hello	examples/server.c	/^static int test_hello(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_object *obj, struct ubus_request_data *req, const char *method, struct blob_attr *msg)
+test_hello_fd_reply	examples/server.c	/^static void test_hello_fd_reply(struct uloop_timeout *t)$/;"	f	file:	signature:(struct uloop_timeout *t)
+test_hello_reply	examples/server.c	/^static void test_hello_reply(struct uloop_timeout *t)$/;"	f	file:	signature:(struct uloop_timeout *t)
 test_methods	examples/server.c	/^static const struct ubus_method test_methods[] = {$/;"	v	typeref:struct:ubus_method	file:
-test_notify	examples/server.c	/^test_notify(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:
+test_notify	examples/server.c	/^test_notify(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_object *obj, struct ubus_request_data *req, const char *method, struct blob_attr *msg)
 test_object	examples/server.c	/^static struct ubus_object test_object = {$/;"	v	typeref:struct:ubus_object	file:
 test_object_type	examples/server.c	/^static struct ubus_object_type test_object_type =$/;"	v	typeref:struct:ubus_object_type	file:
-test_watch	examples/server.c	/^static int test_watch(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:
-timeout	cli.c	/^	struct uloop_timeout timeout;$/;"	m	struct:cli_wait_data	typeref:struct:cli_wait_data::uloop_timeout	file:
+test_watch	examples/server.c	/^static int test_watch(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_object *obj, struct ubus_request_data *req, const char *method, struct blob_attr *msg)
+timeout	cli.c	/^	struct uloop_timeout timeout;$/;"	m	struct:cli_wait_data	typeref:struct:cli_wait_data::uloop_timeout	file:	access:public
 timeout	cli.c	/^static int timeout = 30;$/;"	v	file:
-timeout	examples/server.c	/^	struct uloop_timeout timeout;   \/\/ ç»™å¯¹è±¡helloçš„è¯·æ±‚æ§åˆ¶å—å®šä¹‰ä¸€ä¸ªè¶…æ—¶æ§åˆ¶å—$/;"	m	struct:hello_request	typeref:struct:hello_request::uloop_timeout	file:
-timeout	lua/ubus.c	/^	int timeout;$/;"	m	struct:ubus_lua_connection	file:
-timer	ipkg-install/usr/include/libubus.h	/^	struct uloop_timeout timer;$/;"	m	struct:ubus_auto_conn	typeref:struct:ubus_auto_conn::uloop_timeout
-timer	libubus.h	/^	struct uloop_timeout timer;$/;"	m	struct:ubus_auto_conn	typeref:struct:ubus_auto_conn::uloop_timeout
-tx_queue	ubusd.h	/^	struct ubus_msg_buf *tx_queue[UBUSD_CLIENT_BACKLOG];    \/\/ å¾…å‘é€çš„æ¶ˆæ¯æ± $/;"	m	struct:ubus_client	typeref:struct:ubus_client::ubus_msg_buf
-txq_cur	ubusd.h	/^	unsigned int txq_cur, txq_tail, txq_ofs;    \/\/ txq_cur:å‘é€ä¸­çš„æ¶ˆæ¯ç´¢å¼•å· txq_tail:æœ€åä¸€ä¸ªæ¶ˆæ¯ç´¢å¼•å· txq_ofs:è®°å½•å·²ç»å‘é€çš„æ¶ˆæ¯é•¿åº¦$/;"	m	struct:ubus_client
-txq_ofs	ubusd.h	/^	unsigned int txq_cur, txq_tail, txq_ofs;    \/\/ txq_cur:å‘é€ä¸­çš„æ¶ˆæ¯ç´¢å¼•å· txq_tail:æœ€åä¸€ä¸ªæ¶ˆæ¯ç´¢å¼•å· txq_ofs:è®°å½•å·²ç»å‘é€çš„æ¶ˆæ¯é•¿åº¦$/;"	m	struct:ubus_client
-txq_tail	ubusd.h	/^	unsigned int txq_cur, txq_tail, txq_ofs;    \/\/ txq_cur:å‘é€ä¸­çš„æ¶ˆæ¯ç´¢å¼•å· txq_tail:æœ€åä¸€ä¸ªæ¶ˆæ¯ç´¢å¼•å· txq_ofs:è®°å½•å·²ç»å‘é€çš„æ¶ˆæ¯é•¿åº¦$/;"	m	struct:ubus_client
-type	ipkg-install/usr/include/libubus.h	/^	struct ubus_object_type *type;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_object_type
-type	ipkg-install/usr/include/ubusmsg.h	/^	uint8_t type;$/;"	m	struct:ubus_msghdr
-type	libubus-req.c	/^	int type;$/;"	m	struct:ubus_pending_data	file:
-type	libubus.h	/^	struct ubus_object_type *type;  \/\/ ¶ÔÏóÀàĞÍ$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_object_type
-type	ubusd_obj.h	/^	struct ubus_object_type *type;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_object_type
-type	ubusmsg.h	/^	uint8_t type;   \/\/ è®°å½•æ¶ˆæ¯ç±»å‹$/;"	m	struct:ubus_msghdr
-type_id	ipkg-install/usr/include/libubus.h	/^	uint32_t type_id;$/;"	m	struct:ubus_object_data
-type_id	libubus.h	/^	uint32_t type_id;$/;"	m	struct:ubus_object_data
+timeout	examples/server.c	/^	struct uloop_timeout timeout;   \/\/ ç»™å¯¹è±¡helloçš„è¯·æ±‚æ§åˆ¶å—å®šä¹‰ä¸€ä¸ªè¶…æ—¶æ§åˆ¶å—$/;"	m	struct:hello_request	typeref:struct:hello_request::uloop_timeout	file:	access:public
+timeout	lua/ubus.c	/^	int timeout;$/;"	m	struct:ubus_lua_connection	file:	access:public
+timer	ipkg-install/usr/include/libubus.h	/^	struct uloop_timeout timer;$/;"	m	struct:ubus_auto_conn	typeref:struct:ubus_auto_conn::uloop_timeout	access:public
+timer	libubus.h	/^	struct uloop_timeout timer;$/;"	m	struct:ubus_auto_conn	typeref:struct:ubus_auto_conn::uloop_timeout	access:public
+tx_queue	ubusd.h	/^	struct ubus_msg_buf *tx_queue[UBUSD_CLIENT_BACKLOG];    \/\/ å¾…å‘é€çš„æ¶ˆæ¯æ± $/;"	m	struct:ubus_client	typeref:struct:ubus_client::ubus_msg_buf	access:public
+txq_cur	ubusd.h	/^	unsigned int txq_cur, txq_tail, txq_ofs;    \/\/ txq_cur:å‘é€ä¸­çš„æ¶ˆæ¯ç´¢å¼•å· txq_tail:æœ€åä¸€ä¸ªæ¶ˆæ¯ç´¢å¼•å· txq_ofs:è®°å½•å·²ç»å‘é€çš„æ¶ˆæ¯é•¿åº¦$/;"	m	struct:ubus_client	access:public
+txq_ofs	ubusd.h	/^	unsigned int txq_cur, txq_tail, txq_ofs;    \/\/ txq_cur:å‘é€ä¸­çš„æ¶ˆæ¯ç´¢å¼•å· txq_tail:æœ€åä¸€ä¸ªæ¶ˆæ¯ç´¢å¼•å· txq_ofs:è®°å½•å·²ç»å‘é€çš„æ¶ˆæ¯é•¿åº¦$/;"	m	struct:ubus_client	access:public
+txq_tail	ubusd.h	/^	unsigned int txq_cur, txq_tail, txq_ofs;    \/\/ txq_cur:å‘é€ä¸­çš„æ¶ˆæ¯ç´¢å¼•å· txq_tail:æœ€åä¸€ä¸ªæ¶ˆæ¯ç´¢å¼•å· txq_ofs:è®°å½•å·²ç»å‘é€çš„æ¶ˆæ¯é•¿åº¦$/;"	m	struct:ubus_client	access:public
+type	ipkg-install/usr/include/libubus.h	/^	struct ubus_object_type *type;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_object_type	access:public
+type	ipkg-install/usr/include/ubusmsg.h	/^	uint8_t type;$/;"	m	struct:ubus_msghdr	access:public
+type	libubus-req.c	/^	int type;$/;"	m	struct:ubus_pending_data	file:	access:public
+type	libubus.h	/^	struct ubus_object_type *type;      \/\/ ¶ÔÏóÀàĞÍ$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_object_type	access:public
+type	ubusd_obj.h	/^	struct ubus_object_type *type;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_object_type	access:public
+type	ubusmsg.h	/^	uint8_t type;   \/\/ è®°å½•æ¶ˆæ¯ç±»å‹$/;"	m	struct:ubus_msghdr	access:public
+type_id	ipkg-install/usr/include/libubus.h	/^	uint32_t type_id;$/;"	m	struct:ubus_object_data	access:public
+type_id	libubus.h	/^	uint32_t type_id;$/;"	m	struct:ubus_object_data	access:public
 ubus	lua/ubus.c	/^static const luaL_Reg ubus[] = {$/;"	v	file:
-ubus_abort_request	libubus-req.c	/^void ubus_abort_request(struct ubus_context *ctx, struct ubus_request *req)$/;"	f
-ubus_add_object	libubus-obj.c	/^int ubus_add_object(struct ubus_context *ctx, struct ubus_object *obj)$/;"	f
-ubus_add_object_cb	libubus-obj.c	/^static void ubus_add_object_cb(struct ubus_request *req, int type, struct blob_attr *msg)$/;"	f	file:
-ubus_add_uloop	ipkg-install/usr/include/libubus.h	/^static inline void ubus_add_uloop(struct ubus_context *ctx)$/;"	f
-ubus_add_uloop	libubus.h	/^static inline void ubus_add_uloop(struct ubus_context *ctx)$/;"	f
-ubus_alloc_id	ubusd_id.c	/^bool ubus_alloc_id(struct avl_tree *tree, struct ubus_id *id, uint32_t val)$/;"	f
+ubus_abort_request	ipkg-install/usr/include/libubus.h	/^void ubus_abort_request(struct ubus_context *ctx, struct ubus_request *req);$/;"	p	signature:(struct ubus_context *ctx, struct ubus_request *req)
+ubus_abort_request	libubus-req.c	/^void ubus_abort_request(struct ubus_context *ctx, struct ubus_request *req)$/;"	f	signature:(struct ubus_context *ctx, struct ubus_request *req)
+ubus_abort_request	libubus.h	/^void ubus_abort_request(struct ubus_context *ctx, struct ubus_request *req);$/;"	p	signature:(struct ubus_context *ctx, struct ubus_request *req)
+ubus_add_object	ipkg-install/usr/include/libubus.h	/^int ubus_add_object(struct ubus_context *ctx, struct ubus_object *obj);$/;"	p	signature:(struct ubus_context *ctx, struct ubus_object *obj)
+ubus_add_object	libubus-obj.c	/^int ubus_add_object(struct ubus_context *ctx, struct ubus_object *obj)$/;"	f	signature:(struct ubus_context *ctx, struct ubus_object *obj)
+ubus_add_object	libubus.h	/^int ubus_add_object(struct ubus_context *ctx, struct ubus_object *obj);$/;"	p	signature:(struct ubus_context *ctx, struct ubus_object *obj)
+ubus_add_object_cb	libubus-obj.c	/^static void ubus_add_object_cb(struct ubus_request *req, int type, struct blob_attr *msg)$/;"	f	file:	signature:(struct ubus_request *req, int type, struct blob_attr *msg)
+ubus_add_uloop	ipkg-install/usr/include/libubus.h	/^static inline void ubus_add_uloop(struct ubus_context *ctx)$/;"	f	signature:(struct ubus_context *ctx)
+ubus_add_uloop	libubus.h	/^static inline void ubus_add_uloop(struct ubus_context *ctx)$/;"	f	signature:(struct ubus_context *ctx)
+ubus_alloc_id	ubusd_id.c	/^bool ubus_alloc_id(struct avl_tree *tree, struct ubus_id *id, uint32_t val)$/;"	f	signature:(struct avl_tree *tree, struct ubus_id *id, uint32_t val)
+ubus_alloc_id	ubusd_id.h	/^bool ubus_alloc_id(struct avl_tree *tree, struct ubus_id *id, uint32_t val);$/;"	p	signature:(struct avl_tree *tree, struct ubus_id *id, uint32_t val)
 ubus_auto_conn	ipkg-install/usr/include/libubus.h	/^struct ubus_auto_conn {$/;"	s
 ubus_auto_conn	libubus.h	/^struct ubus_auto_conn {$/;"	s
-ubus_auto_connect	libubus.c	/^void ubus_auto_connect(struct ubus_auto_conn *conn)$/;"	f
-ubus_auto_connect_cb	libubus.c	/^static void ubus_auto_connect_cb(struct uloop_timeout *timeout)$/;"	f	file:
-ubus_auto_disconnect_cb	libubus.c	/^static void ubus_auto_disconnect_cb(struct ubus_context *ctx)$/;"	f	file:
-ubus_auto_reconnect_cb	libubus.c	/^static void ubus_auto_reconnect_cb(struct uloop_timeout *timeout)$/;"	f	file:
-ubus_cli_call	cli.c	/^static int ubus_cli_call(struct ubus_context *ctx, int argc, char **argv)$/;"	f	file:
-ubus_cli_list	cli.c	/^static int ubus_cli_list(struct ubus_context *ctx, int argc, char **argv)$/;"	f	file:
-ubus_cli_listen	cli.c	/^static int ubus_cli_listen(struct ubus_context *ctx, int argc, char **argv)$/;"	f	file:
-ubus_cli_send	cli.c	/^static int ubus_cli_send(struct ubus_context *ctx, int argc, char **argv)$/;"	f	file:
-ubus_cli_wait_for	cli.c	/^static int ubus_cli_wait_for(struct ubus_context *ctx, int argc, char **argv)$/;"	f	file:
+ubus_auto_conn::cb	ipkg-install/usr/include/libubus.h	/^	ubus_connect_handler_t cb;$/;"	m	struct:ubus_auto_conn	access:public
+ubus_auto_conn::cb	libubus.h	/^	ubus_connect_handler_t cb;$/;"	m	struct:ubus_auto_conn	access:public
+ubus_auto_conn::ctx	ipkg-install/usr/include/libubus.h	/^	struct ubus_context ctx;$/;"	m	struct:ubus_auto_conn	typeref:struct:ubus_auto_conn::ubus_context	access:public
+ubus_auto_conn::ctx	libubus.h	/^	struct ubus_context ctx;$/;"	m	struct:ubus_auto_conn	typeref:struct:ubus_auto_conn::ubus_context	access:public
+ubus_auto_conn::path	ipkg-install/usr/include/libubus.h	/^	const char *path;$/;"	m	struct:ubus_auto_conn	access:public
+ubus_auto_conn::path	libubus.h	/^	const char *path;$/;"	m	struct:ubus_auto_conn	access:public
+ubus_auto_conn::timer	ipkg-install/usr/include/libubus.h	/^	struct uloop_timeout timer;$/;"	m	struct:ubus_auto_conn	typeref:struct:ubus_auto_conn::uloop_timeout	access:public
+ubus_auto_conn::timer	libubus.h	/^	struct uloop_timeout timer;$/;"	m	struct:ubus_auto_conn	typeref:struct:ubus_auto_conn::uloop_timeout	access:public
+ubus_auto_connect	ipkg-install/usr/include/libubus.h	/^void ubus_auto_connect(struct ubus_auto_conn *conn);$/;"	p	signature:(struct ubus_auto_conn *conn)
+ubus_auto_connect	libubus.c	/^void ubus_auto_connect(struct ubus_auto_conn *conn)$/;"	f	signature:(struct ubus_auto_conn *conn)
+ubus_auto_connect	libubus.h	/^void ubus_auto_connect(struct ubus_auto_conn *conn);$/;"	p	signature:(struct ubus_auto_conn *conn)
+ubus_auto_connect_cb	libubus.c	/^static void ubus_auto_connect_cb(struct uloop_timeout *timeout)$/;"	f	file:	signature:(struct uloop_timeout *timeout)
+ubus_auto_disconnect_cb	libubus.c	/^static void ubus_auto_disconnect_cb(struct ubus_context *ctx)$/;"	f	file:	signature:(struct ubus_context *ctx)
+ubus_auto_reconnect_cb	libubus.c	/^static void ubus_auto_reconnect_cb(struct uloop_timeout *timeout)$/;"	f	file:	signature:(struct uloop_timeout *timeout)
+ubus_cli_call	cli.c	/^static int ubus_cli_call(struct ubus_context *ctx, int argc, char **argv)$/;"	f	file:	signature:(struct ubus_context *ctx, int argc, char **argv)
+ubus_cli_list	cli.c	/^static int ubus_cli_list(struct ubus_context *ctx, int argc, char **argv)$/;"	f	file:	signature:(struct ubus_context *ctx, int argc, char **argv)
+ubus_cli_listen	cli.c	/^static int ubus_cli_listen(struct ubus_context *ctx, int argc, char **argv)$/;"	f	file:	signature:(struct ubus_context *ctx, int argc, char **argv)
+ubus_cli_send	cli.c	/^static int ubus_cli_send(struct ubus_context *ctx, int argc, char **argv)$/;"	f	file:	signature:(struct ubus_context *ctx, int argc, char **argv)
+ubus_cli_wait_for	cli.c	/^static int ubus_cli_wait_for(struct ubus_context *ctx, int argc, char **argv)$/;"	f	file:	signature:(struct ubus_context *ctx, int argc, char **argv)
 ubus_client	ubusd.h	/^struct ubus_client {$/;"	s
+ubus_client::__anon1::data	ubusd.h	/^		struct blob_attr data;$/;"	m	struct:ubus_client::__anon1	typeref:struct:ubus_client::__anon1::blob_attr	access:public
+ubus_client::__anon1::hdr	ubusd.h	/^		struct ubus_msghdr hdr;$/;"	m	struct:ubus_client::__anon1	typeref:struct:ubus_client::__anon1::ubus_msghdr	access:public
+ubus_client::hdrbuf	ubusd.h	/^	} hdrbuf;$/;"	m	struct:ubus_client	typeref:struct:ubus_client::__anon1	access:public
+ubus_client::id	ubusd.h	/^	struct ubus_id id;          \/\/ IDç”¨äºæ ‡è¯†ä¸åŒçš„å®¢æˆ·ç«¯$/;"	m	struct:ubus_client	typeref:struct:ubus_client::ubus_id	access:public
+ubus_client::objects	ubusd.h	/^	struct list_head objects;   \/\/ é“¾è¡¨æ¨¡å—$/;"	m	struct:ubus_client	typeref:struct:ubus_client::list_head	access:public
+ubus_client::pending_msg	ubusd.h	/^	struct ubus_msg_buf *pending_msg;$/;"	m	struct:ubus_client	typeref:struct:ubus_client::ubus_msg_buf	access:public
+ubus_client::pending_msg_fd	ubusd.h	/^	int pending_msg_fd;         \/\/ -1è¡¨ç¤ºå¤ä½çŠ¶æ€$/;"	m	struct:ubus_client	access:public
+ubus_client::pending_msg_offset	ubusd.h	/^	int pending_msg_offset;$/;"	m	struct:ubus_client	access:public
+ubus_client::sock	ubusd.h	/^	struct uloop_fd sock;       \/\/ å®¢æˆ·ç«¯fdæ§åˆ¶å—$/;"	m	struct:ubus_client	typeref:struct:ubus_client::uloop_fd	access:public
+ubus_client::tx_queue	ubusd.h	/^	struct ubus_msg_buf *tx_queue[UBUSD_CLIENT_BACKLOG];    \/\/ å¾…å‘é€çš„æ¶ˆæ¯æ± $/;"	m	struct:ubus_client	typeref:struct:ubus_client::ubus_msg_buf	access:public
+ubus_client::txq_cur	ubusd.h	/^	unsigned int txq_cur, txq_tail, txq_ofs;    \/\/ txq_cur:å‘é€ä¸­çš„æ¶ˆæ¯ç´¢å¼•å· txq_tail:æœ€åä¸€ä¸ªæ¶ˆæ¯ç´¢å¼•å· txq_ofs:è®°å½•å·²ç»å‘é€çš„æ¶ˆæ¯é•¿åº¦$/;"	m	struct:ubus_client	access:public
+ubus_client::txq_ofs	ubusd.h	/^	unsigned int txq_cur, txq_tail, txq_ofs;    \/\/ txq_cur:å‘é€ä¸­çš„æ¶ˆæ¯ç´¢å¼•å· txq_tail:æœ€åä¸€ä¸ªæ¶ˆæ¯ç´¢å¼•å· txq_ofs:è®°å½•å·²ç»å‘é€çš„æ¶ˆæ¯é•¿åº¦$/;"	m	struct:ubus_client	access:public
+ubus_client::txq_tail	ubusd.h	/^	unsigned int txq_cur, txq_tail, txq_ofs;    \/\/ txq_cur:å‘é€ä¸­çš„æ¶ˆæ¯ç´¢å¼•å· txq_tail:æœ€åä¸€ä¸ªæ¶ˆæ¯ç´¢å¼•å· txq_ofs:è®°å½•å·²ç»å‘é€çš„æ¶ˆæ¯é•¿åº¦$/;"	m	struct:ubus_client	access:public
 ubus_cmd_cb	ubusd_proto.c	/^typedef int (*ubus_cmd_cb)(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr);$/;"	t	file:
-ubus_cmp_id	libubus.c	/^static int ubus_cmp_id(const void *k1, const void *k2, void *ptr)$/;"	f	file:
-ubus_cmp_id	ubusd_id.c	/^static int ubus_cmp_id(const void *k1, const void *k2, void *ptr)$/;"	f	file:
-ubus_complete_deferred_request	libubus-req.c	/^void ubus_complete_deferred_request(struct ubus_context *ctx, struct ubus_request_data *req, int ret)$/;"	f
+ubus_cmp_id	libubus.c	/^static int ubus_cmp_id(const void *k1, const void *k2, void *ptr)$/;"	f	file:	signature:(const void *k1, const void *k2, void *ptr)
+ubus_cmp_id	ubusd_id.c	/^static int ubus_cmp_id(const void *k1, const void *k2, void *ptr)$/;"	f	file:	signature:(const void *k1, const void *k2, void *ptr)
+ubus_complete_deferred_request	ipkg-install/usr/include/libubus.h	/^void ubus_complete_deferred_request(struct ubus_context *ctx,$/;"	p	signature:(struct ubus_context *ctx, struct ubus_request_data *req, int ret)
+ubus_complete_deferred_request	libubus-req.c	/^void ubus_complete_deferred_request(struct ubus_context *ctx, struct ubus_request_data *req, int ret)$/;"	f	signature:(struct ubus_context *ctx, struct ubus_request_data *req, int ret)
+ubus_complete_deferred_request	libubus.h	/^void ubus_complete_deferred_request(struct ubus_context *ctx,$/;"	p	signature:(struct ubus_context *ctx, struct ubus_request_data *req, int ret)
 ubus_complete_handler_t	ipkg-install/usr/include/libubus.h	/^typedef void (*ubus_complete_handler_t)(struct ubus_request *req, int ret);$/;"	t
 ubus_complete_handler_t	libubus.h	/^typedef void (*ubus_complete_handler_t)(struct ubus_request *req, int ret);$/;"	t
-ubus_complete_request	libubus-req.c	/^int ubus_complete_request(struct ubus_context *ctx, struct ubus_request *req,$/;"	f
-ubus_complete_request_async	libubus-req.c	/^void ubus_complete_request_async(struct ubus_context *ctx, struct ubus_request *req)$/;"	f
-ubus_connect	libubus.c	/^struct ubus_context *ubus_connect(const char *path)$/;"	f
+ubus_complete_request	ipkg-install/usr/include/libubus.h	/^int ubus_complete_request(struct ubus_context *ctx, struct ubus_request *req,$/;"	p	signature:(struct ubus_context *ctx, struct ubus_request *req, int timeout)
+ubus_complete_request	libubus-req.c	/^int ubus_complete_request(struct ubus_context *ctx, struct ubus_request *req,$/;"	f	signature:(struct ubus_context *ctx, struct ubus_request *req, int req_timeout)
+ubus_complete_request	libubus.h	/^int ubus_complete_request(struct ubus_context *ctx, struct ubus_request *req,$/;"	p	signature:(struct ubus_context *ctx, struct ubus_request *req, int timeout)
+ubus_complete_request_async	ipkg-install/usr/include/libubus.h	/^void ubus_complete_request_async(struct ubus_context *ctx,$/;"	p	signature:(struct ubus_context *ctx, struct ubus_request *req)
+ubus_complete_request_async	libubus-req.c	/^void ubus_complete_request_async(struct ubus_context *ctx, struct ubus_request *req)$/;"	f	signature:(struct ubus_context *ctx, struct ubus_request *req)
+ubus_complete_request_async	libubus.h	/^void ubus_complete_request_async(struct ubus_context *ctx,$/;"	p	signature:(struct ubus_context *ctx, struct ubus_request *req)
+ubus_connect	ipkg-install/usr/include/libubus.h	/^struct ubus_context *ubus_connect(const char *path);$/;"	p	signature:(const char *path)
+ubus_connect	libubus.c	/^struct ubus_context *ubus_connect(const char *path)$/;"	f	signature:(const char *path)
+ubus_connect	libubus.h	/^struct ubus_context *ubus_connect(const char *path);$/;"	p	signature:(const char *path)
 ubus_connect_handler_t	ipkg-install/usr/include/libubus.h	/^typedef void (*ubus_connect_handler_t)(struct ubus_context *ctx);$/;"	t
 ubus_connect_handler_t	libubus.h	/^typedef void (*ubus_connect_handler_t)(struct ubus_context *ctx);$/;"	t
 ubus_context	ipkg-install/usr/include/libubus.h	/^struct ubus_context {$/;"	s
 ubus_context	libubus.h	/^struct ubus_context {$/;"	s
-ubus_create_obj_method	ubusd_obj.c	/^static bool ubus_create_obj_method(struct ubus_object_type *type, struct blob_attr *attr)$/;"	f	file:
-ubus_create_obj_type	ubusd_obj.c	/^static struct ubus_object_type *ubus_create_obj_type(struct blob_attr *sig)$/;"	f	file:
+ubus_context::connection_lost	ipkg-install/usr/include/libubus.h	/^	void (*connection_lost)(struct ubus_context *ctx);$/;"	m	struct:ubus_context	access:public
+ubus_context::connection_lost	libubus.h	/^	void (*connection_lost)(struct ubus_context *ctx);$/;"	m	struct:ubus_context	access:public
+ubus_context::local_id	ipkg-install/usr/include/libubus.h	/^	uint32_t local_id;$/;"	m	struct:ubus_context	access:public
+ubus_context::local_id	libubus.h	/^	uint32_t local_id;$/;"	m	struct:ubus_context	access:public
+ubus_context::msgbuf	ipkg-install/usr/include/libubus.h	/^	struct ubus_msghdr_buf msgbuf;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::ubus_msghdr_buf	access:public
+ubus_context::msgbuf	libubus.h	/^	struct ubus_msghdr_buf msgbuf;  \/\/ ÏûÏ¢¿ØÖÆ¿é$/;"	m	struct:ubus_context	typeref:struct:ubus_context::ubus_msghdr_buf	access:public
+ubus_context::msgbuf_data_len	ipkg-install/usr/include/libubus.h	/^	uint32_t msgbuf_data_len;$/;"	m	struct:ubus_context	access:public
+ubus_context::msgbuf_data_len	libubus.h	/^	uint32_t msgbuf_data_len;       \/\/ ¼ÇÂ¼ÏûÏ¢¿Õ¼ä´óĞ¡$/;"	m	struct:ubus_context	access:public
+ubus_context::msgbuf_reduction_counter	ipkg-install/usr/include/libubus.h	/^	int msgbuf_reduction_counter;$/;"	m	struct:ubus_context	access:public
+ubus_context::msgbuf_reduction_counter	libubus.h	/^	int msgbuf_reduction_counter;$/;"	m	struct:ubus_context	access:public
+ubus_context::objects	ipkg-install/usr/include/libubus.h	/^	struct avl_tree objects;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::avl_tree	access:public
+ubus_context::objects	libubus.h	/^	struct avl_tree objects;            \/\/ avlÊ÷¿ØÖÆ¿é$/;"	m	struct:ubus_context	typeref:struct:ubus_context::avl_tree	access:public
+ubus_context::pending	ipkg-install/usr/include/libubus.h	/^	struct list_head pending;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::list_head	access:public
+ubus_context::pending	libubus.h	/^	struct list_head pending;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::list_head	access:public
+ubus_context::pending_timer	ipkg-install/usr/include/libubus.h	/^	struct uloop_timeout pending_timer;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::uloop_timeout	access:public
+ubus_context::pending_timer	libubus.h	/^	struct uloop_timeout pending_timer; \/\/ ¿Í»§¶Ë³¬Ê±»Øµ÷º¯Êı$/;"	m	struct:ubus_context	typeref:struct:ubus_context::uloop_timeout	access:public
+ubus_context::request_seq	ipkg-install/usr/include/libubus.h	/^	uint16_t request_seq;$/;"	m	struct:ubus_context	access:public
+ubus_context::request_seq	libubus.h	/^	uint16_t request_seq;$/;"	m	struct:ubus_context	access:public
+ubus_context::requests	ipkg-install/usr/include/libubus.h	/^	struct list_head requests;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::list_head	access:public
+ubus_context::requests	libubus.h	/^	struct list_head requests;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::list_head	access:public
+ubus_context::sock	ipkg-install/usr/include/libubus.h	/^	struct uloop_fd sock;$/;"	m	struct:ubus_context	typeref:struct:ubus_context::uloop_fd	access:public
+ubus_context::sock	libubus.h	/^	struct uloop_fd sock;               \/\/ ĞèÒª±»epoll¼àÌıµÄfd¿ØÖÆ¿é$/;"	m	struct:ubus_context	typeref:struct:ubus_context::uloop_fd	access:public
+ubus_context::stack_depth	ipkg-install/usr/include/libubus.h	/^	int stack_depth;$/;"	m	struct:ubus_context	access:public
+ubus_context::stack_depth	libubus.h	/^	int stack_depth;$/;"	m	struct:ubus_context	access:public
+ubus_create_obj_method	ubusd_obj.c	/^static bool ubus_create_obj_method(struct ubus_object_type *type, struct blob_attr *attr)$/;"	f	file:	signature:(struct ubus_object_type *type, struct blob_attr *attr)
+ubus_create_obj_type	ubusd_obj.c	/^static struct ubus_object_type *ubus_create_obj_type(struct blob_attr *sig)$/;"	f	file:	signature:(struct blob_attr *sig)
 ubus_data_handler_t	ipkg-install/usr/include/libubus.h	/^typedef void (*ubus_data_handler_t)(struct ubus_request *req,$/;"	t
 ubus_data_handler_t	libubus.h	/^typedef void (*ubus_data_handler_t)(struct ubus_request *req,$/;"	t
-ubus_default_connection_lost	libubus.c	/^static void ubus_default_connection_lost(struct ubus_context *ctx)$/;"	f	file:
-ubus_defer_request	ipkg-install/usr/include/libubus.h	/^static inline void ubus_defer_request(struct ubus_context *ctx,$/;"	f
-ubus_defer_request	libubus.h	/^static inline void ubus_defer_request(struct ubus_context *ctx,$/;"	f
-ubus_event_cb	libubus.c	/^static int ubus_event_cb(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:
+ubus_default_connection_lost	libubus.c	/^static void ubus_default_connection_lost(struct ubus_context *ctx)$/;"	f	file:	signature:(struct ubus_context *ctx)
+ubus_defer_request	ipkg-install/usr/include/libubus.h	/^static inline void ubus_defer_request(struct ubus_context *ctx,$/;"	f	signature:(struct ubus_context *ctx, struct ubus_request_data *req, struct ubus_request_data *new_req)
+ubus_defer_request	libubus.h	/^static inline void ubus_defer_request(struct ubus_context *ctx,$/;"	f	signature:(struct ubus_context *ctx, struct ubus_request_data *req, struct ubus_request_data *new_req)
+ubus_event_cb	libubus.c	/^static int ubus_event_cb(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_object *obj, struct ubus_request_data *req, const char *method, struct blob_attr *msg)
 ubus_event_handler	ipkg-install/usr/include/libubus.h	/^struct ubus_event_handler {$/;"	s
 ubus_event_handler	libubus.h	/^struct ubus_event_handler {$/;"	s
-ubus_event_handler	lua/ubus.c	/^ubus_event_handler(struct ubus_context *ctx, struct ubus_event_handler *ev,$/;"	f	file:
+ubus_event_handler	lua/ubus.c	/^ubus_event_handler(struct ubus_context *ctx, struct ubus_event_handler *ev,$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_event_handler *ev, const char *type, struct blob_attr *msg)
+ubus_event_handler::cb	ipkg-install/usr/include/libubus.h	/^	ubus_event_handler_t cb;$/;"	m	struct:ubus_event_handler	access:public
+ubus_event_handler::cb	libubus.h	/^	ubus_event_handler_t cb;$/;"	m	struct:ubus_event_handler	access:public
+ubus_event_handler::obj	ipkg-install/usr/include/libubus.h	/^	struct ubus_object obj;$/;"	m	struct:ubus_event_handler	typeref:struct:ubus_event_handler::ubus_object	access:public
+ubus_event_handler::obj	libubus.h	/^	struct ubus_object obj;$/;"	m	struct:ubus_event_handler	typeref:struct:ubus_event_handler::ubus_object	access:public
 ubus_event_handler_t	ipkg-install/usr/include/libubus.h	/^typedef void (*ubus_event_handler_t)(struct ubus_context *ctx, struct ubus_event_handler *ev,$/;"	t
 ubus_event_handler_t	libubus.h	/^typedef void (*ubus_event_handler_t)(struct ubus_context *ctx, struct ubus_event_handler *ev,$/;"	t
 ubus_fd_handler_t	ipkg-install/usr/include/libubus.h	/^typedef void (*ubus_fd_handler_t)(struct ubus_request *req, int fd);$/;"	t
 ubus_fd_handler_t	libubus.h	/^typedef void (*ubus_fd_handler_t)(struct ubus_request *req, int fd);$/;"	t
-ubus_find_id	ubusd_id.h	/^static inline struct ubus_id *ubus_find_id(struct avl_tree *tree, uint32_t id)$/;"	f
-ubus_find_notify_id	libubus-req.c	/^ubus_find_notify_id(struct ubus_notify_request *n, uint32_t objid)$/;"	f	file:
-ubus_find_request	libubus-req.c	/^ubus_find_request(struct ubus_context *ctx, uint32_t seq, uint32_t peer, int *id)$/;"	f	file:
-ubus_free	libubus.c	/^void ubus_free(struct ubus_context *ctx)$/;"	f
-ubus_free_id	ubusd_id.h	/^static inline void ubus_free_id(struct avl_tree *tree, struct ubus_id *id)$/;"	f
-ubus_get_obj_type	ubusd_obj.c	/^static struct ubus_object_type *ubus_get_obj_type(uint32_t obj_id)$/;"	f	file:
-ubus_get_status	libubus-req.c	/^static bool ubus_get_status(struct ubus_msghdr_buf *buf, int *ret)$/;"	f	file:
-ubus_handle_data	libubus-io.c	/^void __hidden ubus_handle_data(struct uloop_fd *u, unsigned int events)$/;"	f
-ubus_handle_event	ipkg-install/usr/include/libubus.h	/^static inline void ubus_handle_event(struct ubus_context *ctx)$/;"	f
-ubus_handle_event	libubus.h	/^static inline void ubus_handle_event(struct ubus_context *ctx)$/;"	f
+ubus_find_id	ubusd_id.h	/^static inline struct ubus_id *ubus_find_id(struct avl_tree *tree, uint32_t id)$/;"	f	signature:(struct avl_tree *tree, uint32_t id)
+ubus_find_notify_id	libubus-req.c	/^ubus_find_notify_id(struct ubus_notify_request *n, uint32_t objid)$/;"	f	file:	signature:(struct ubus_notify_request *n, uint32_t objid)
+ubus_find_request	libubus-req.c	/^ubus_find_request(struct ubus_context *ctx, uint32_t seq, uint32_t peer, int *id)$/;"	f	file:	signature:(struct ubus_context *ctx, uint32_t seq, uint32_t peer, int *id)
+ubus_free	ipkg-install/usr/include/libubus.h	/^void ubus_free(struct ubus_context *ctx);$/;"	p	signature:(struct ubus_context *ctx)
+ubus_free	libubus.c	/^void ubus_free(struct ubus_context *ctx)$/;"	f	signature:(struct ubus_context *ctx)
+ubus_free	libubus.h	/^void ubus_free(struct ubus_context *ctx);$/;"	p	signature:(struct ubus_context *ctx)
+ubus_free_id	ubusd_id.h	/^static inline void ubus_free_id(struct avl_tree *tree, struct ubus_id *id)$/;"	f	signature:(struct avl_tree *tree, struct ubus_id *id)
+ubus_get_obj_type	ubusd_obj.c	/^static struct ubus_object_type *ubus_get_obj_type(uint32_t obj_id)$/;"	f	file:	signature:(uint32_t obj_id)
+ubus_get_status	libubus-req.c	/^static bool ubus_get_status(struct ubus_msghdr_buf *buf, int *ret)$/;"	f	file:	signature:(struct ubus_msghdr_buf *buf, int *ret)
+ubus_handle_data	libubus-internal.h	/^void ubus_handle_data(struct uloop_fd *u, unsigned int events);$/;"	p	signature:(struct uloop_fd *u, unsigned int events)
+ubus_handle_data	libubus-io.c	/^void __hidden ubus_handle_data(struct uloop_fd *u, unsigned int events)$/;"	f	signature:(struct uloop_fd *u, unsigned int events)
+ubus_handle_event	ipkg-install/usr/include/libubus.h	/^static inline void ubus_handle_event(struct ubus_context *ctx)$/;"	f	signature:(struct ubus_context *ctx)
+ubus_handle_event	libubus.h	/^static inline void ubus_handle_event(struct ubus_context *ctx)$/;"	f	signature:(struct ubus_context *ctx)
 ubus_handler_t	ipkg-install/usr/include/libubus.h	/^typedef int (*ubus_handler_t)(struct ubus_context *ctx, struct ubus_object *obj,$/;"	t
 ubus_handler_t	libubus.h	/^typedef int (*ubus_handler_t)(struct ubus_context *ctx, struct ubus_object *obj,$/;"	t
 ubus_id	ubusd_id.h	/^struct ubus_id {$/;"	s
-ubus_init_id_tree	ubusd_id.c	/^void ubus_init_id_tree(struct avl_tree *tree)$/;"	f
-ubus_init_string_tree	ubusd_id.c	/^void ubus_init_string_tree(struct avl_tree *tree, bool dup)$/;"	f
-ubus_invoke	libubus-req.c	/^int ubus_invoke(struct ubus_context *ctx, uint32_t obj, const char *method,$/;"	f
-ubus_invoke_async	libubus-req.c	/^int ubus_invoke_async(struct ubus_context *ctx, uint32_t obj, const char *method,$/;"	f
-ubus_lookup	libubus.c	/^int ubus_lookup(struct ubus_context *ctx, const char *path,$/;"	f
-ubus_lookup_cb	libubus.c	/^static void ubus_lookup_cb(struct ubus_request *ureq, int type, struct blob_attr *msg)$/;"	f	file:
+ubus_id::avl	ubusd_id.h	/^	struct avl_node avl;$/;"	m	struct:ubus_id	typeref:struct:ubus_id::avl_node	access:public
+ubus_id::id	ubusd_id.h	/^	uint32_t id;$/;"	m	struct:ubus_id	access:public
+ubus_init_id_tree	ubusd_id.c	/^void ubus_init_id_tree(struct avl_tree *tree)$/;"	f	signature:(struct avl_tree *tree)
+ubus_init_id_tree	ubusd_id.h	/^void ubus_init_id_tree(struct avl_tree *tree);$/;"	p	signature:(struct avl_tree *tree)
+ubus_init_string_tree	ubusd_id.c	/^void ubus_init_string_tree(struct avl_tree *tree, bool dup)$/;"	f	signature:(struct avl_tree *tree, bool dup)
+ubus_init_string_tree	ubusd_id.h	/^void ubus_init_string_tree(struct avl_tree *tree, bool dup);$/;"	p	signature:(struct avl_tree *tree, bool dup)
+ubus_invoke	ipkg-install/usr/include/libubus.h	/^int ubus_invoke(struct ubus_context *ctx, uint32_t obj, const char *method,$/;"	p	signature:(struct ubus_context *ctx, uint32_t obj, const char *method, struct blob_attr *msg, ubus_data_handler_t cb, void *priv, int timeout)
+ubus_invoke	libubus-req.c	/^int ubus_invoke(struct ubus_context *ctx, uint32_t obj, const char *method,$/;"	f	signature:(struct ubus_context *ctx, uint32_t obj, const char *method, struct blob_attr *msg, ubus_data_handler_t cb, void *priv, int timeout)
+ubus_invoke	libubus.h	/^int ubus_invoke(struct ubus_context *ctx, uint32_t obj, const char *method,$/;"	p	signature:(struct ubus_context *ctx, uint32_t obj, const char *method, struct blob_attr *msg, ubus_data_handler_t cb, void *priv, int timeout)
+ubus_invoke_async	ipkg-install/usr/include/libubus.h	/^int ubus_invoke_async(struct ubus_context *ctx, uint32_t obj, const char *method,$/;"	p	signature:(struct ubus_context *ctx, uint32_t obj, const char *method, struct blob_attr *msg, struct ubus_request *req)
+ubus_invoke_async	libubus-req.c	/^int ubus_invoke_async(struct ubus_context *ctx, uint32_t obj, const char *method,$/;"	f	signature:(struct ubus_context *ctx, uint32_t obj, const char *method, struct blob_attr *msg, struct ubus_request *req)
+ubus_invoke_async	libubus.h	/^int ubus_invoke_async(struct ubus_context *ctx, uint32_t obj, const char *method,$/;"	p	signature:(struct ubus_context *ctx, uint32_t obj, const char *method, struct blob_attr *msg, struct ubus_request *req)
+ubus_lookup	ipkg-install/usr/include/libubus.h	/^int ubus_lookup(struct ubus_context *ctx, const char *path,$/;"	p	signature:(struct ubus_context *ctx, const char *path, ubus_lookup_handler_t cb, void *priv)
+ubus_lookup	libubus.c	/^int ubus_lookup(struct ubus_context *ctx, const char *path,$/;"	f	signature:(struct ubus_context *ctx, const char *path, ubus_lookup_handler_t cb, void *priv)
+ubus_lookup	libubus.h	/^int ubus_lookup(struct ubus_context *ctx, const char *path,$/;"	p	signature:(struct ubus_context *ctx, const char *path, ubus_lookup_handler_t cb, void *priv)
+ubus_lookup_cb	libubus.c	/^static void ubus_lookup_cb(struct ubus_request *ureq, int type, struct blob_attr *msg)$/;"	f	file:	signature:(struct ubus_request *ureq, int type, struct blob_attr *msg)
 ubus_lookup_handler_t	ipkg-install/usr/include/libubus.h	/^typedef void (*ubus_lookup_handler_t)(struct ubus_context *ctx,$/;"	t
 ubus_lookup_handler_t	libubus.h	/^typedef void (*ubus_lookup_handler_t)(struct ubus_context *ctx,$/;"	t
-ubus_lookup_id	libubus.c	/^int ubus_lookup_id(struct ubus_context *ctx, const char *path, uint32_t *id)$/;"	f
-ubus_lookup_id_cb	libubus.c	/^static void ubus_lookup_id_cb(struct ubus_request *req, int type, struct blob_attr *msg)$/;"	f	file:
+ubus_lookup_id	ipkg-install/usr/include/libubus.h	/^int ubus_lookup_id(struct ubus_context *ctx, const char *path, uint32_t *id);$/;"	p	signature:(struct ubus_context *ctx, const char *path, uint32_t *id)
+ubus_lookup_id	libubus.c	/^int ubus_lookup_id(struct ubus_context *ctx, const char *path, uint32_t *id)$/;"	f	signature:(struct ubus_context *ctx, const char *path, uint32_t *id)
+ubus_lookup_id	libubus.h	/^int ubus_lookup_id(struct ubus_context *ctx, const char *path, uint32_t *id);$/;"	p	signature:(struct ubus_context *ctx, const char *path, uint32_t *id)
+ubus_lookup_id_cb	libubus.c	/^static void ubus_lookup_id_cb(struct ubus_request *req, int type, struct blob_attr *msg)$/;"	f	file:	signature:(struct ubus_request *req, int type, struct blob_attr *msg)
 ubus_lookup_request	libubus.c	/^struct ubus_lookup_request {$/;"	s	file:
-ubus_lua__gc	lua/ubus.c	/^ubus_lua__gc(lua_State *L)$/;"	f	file:
-ubus_lua_add	lua/ubus.c	/^static int ubus_lua_add(lua_State *L)$/;"	f	file:
-ubus_lua_call	lua/ubus.c	/^ubus_lua_call(lua_State *L)$/;"	f	file:
-ubus_lua_call_cb	lua/ubus.c	/^ubus_lua_call_cb(struct ubus_request *req, int type, struct blob_attr *msg)$/;"	f	file:
-ubus_lua_connect	lua/ubus.c	/^ubus_lua_connect(lua_State *L)$/;"	f	file:
+ubus_lookup_request::cb	libubus.c	/^	ubus_lookup_handler_t cb;$/;"	m	struct:ubus_lookup_request	file:	access:public
+ubus_lookup_request::req	libubus.c	/^	struct ubus_request req;$/;"	m	struct:ubus_lookup_request	typeref:struct:ubus_lookup_request::ubus_request	file:	access:public
+ubus_lua__gc	lua/ubus.c	/^ubus_lua__gc(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+ubus_lua_add	lua/ubus.c	/^static int ubus_lua_add(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+ubus_lua_call	lua/ubus.c	/^ubus_lua_call(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+ubus_lua_call_cb	lua/ubus.c	/^ubus_lua_call_cb(struct ubus_request *req, int type, struct blob_attr *msg)$/;"	f	file:	signature:(struct ubus_request *req, int type, struct blob_attr *msg)
+ubus_lua_connect	lua/ubus.c	/^ubus_lua_connect(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
 ubus_lua_connection	lua/ubus.c	/^struct ubus_lua_connection {$/;"	s	file:
+ubus_lua_connection::buf	lua/ubus.c	/^	struct blob_buf buf;$/;"	m	struct:ubus_lua_connection	typeref:struct:ubus_lua_connection::blob_buf	file:	access:public
+ubus_lua_connection::ctx	lua/ubus.c	/^	struct ubus_context *ctx;$/;"	m	struct:ubus_lua_connection	typeref:struct:ubus_lua_connection::ubus_context	file:	access:public
+ubus_lua_connection::timeout	lua/ubus.c	/^	int timeout;$/;"	m	struct:ubus_lua_connection	file:	access:public
 ubus_lua_event	lua/ubus.c	/^struct ubus_lua_event {$/;"	s	file:
-ubus_lua_format_blob	lua/ubus.c	/^ubus_lua_format_blob(lua_State *L, struct blob_buf *b, bool table)$/;"	f	file:
-ubus_lua_format_blob_array	lua/ubus.c	/^ubus_lua_format_blob_array(lua_State *L, struct blob_buf *b, bool table)$/;"	f	file:
-ubus_lua_format_blob_is_array	lua/ubus.c	/^ubus_lua_format_blob_is_array(lua_State *L)$/;"	f	file:
-ubus_lua_listen	lua/ubus.c	/^ubus_lua_listen(lua_State *L) {$/;"	f	file:
-ubus_lua_load_event	lua/ubus.c	/^ubus_lua_load_event(lua_State *L)$/;"	f	file:
-ubus_lua_load_methods	lua/ubus.c	/^static int ubus_lua_load_methods(lua_State *L, struct ubus_method *m)$/;"	f	file:
-ubus_lua_load_object	lua/ubus.c	/^static struct ubus_object* ubus_lua_load_object(lua_State *L)$/;"	f	file:
+ubus_lua_event::e	lua/ubus.c	/^	struct ubus_event_handler e;$/;"	m	struct:ubus_lua_event	typeref:struct:ubus_lua_event::ubus_event_handler	file:	access:public
+ubus_lua_event::r	lua/ubus.c	/^	int r;$/;"	m	struct:ubus_lua_event	file:	access:public
+ubus_lua_format_blob	lua/ubus.c	/^ubus_lua_format_blob(lua_State *L, struct blob_buf *b, bool table)$/;"	f	file:	signature:(lua_State *L, struct blob_buf *b, bool table)
+ubus_lua_format_blob_array	lua/ubus.c	/^ubus_lua_format_blob_array(lua_State *L, struct blob_buf *b, bool table)$/;"	f	file:	signature:(lua_State *L, struct blob_buf *b, bool table)
+ubus_lua_format_blob_array	lua/ubus.c	/^ubus_lua_format_blob_array(lua_State *L, struct blob_buf *b, bool table);$/;"	p	file:	signature:(lua_State *L, struct blob_buf *b, bool table)
+ubus_lua_format_blob_is_array	lua/ubus.c	/^ubus_lua_format_blob_is_array(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+ubus_lua_listen	lua/ubus.c	/^ubus_lua_listen(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+ubus_lua_load_event	lua/ubus.c	/^ubus_lua_load_event(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+ubus_lua_load_methods	lua/ubus.c	/^static int ubus_lua_load_methods(lua_State *L, struct ubus_method *m)$/;"	f	file:	signature:(lua_State *L, struct ubus_method *m)
+ubus_lua_load_object	lua/ubus.c	/^static struct ubus_object* ubus_lua_load_object(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
 ubus_lua_object	lua/ubus.c	/^struct ubus_lua_object {$/;"	s	file:
-ubus_lua_objects	lua/ubus.c	/^ubus_lua_objects(lua_State *L)$/;"	f	file:
-ubus_lua_objects_cb	lua/ubus.c	/^ubus_lua_objects_cb(struct ubus_context *c, struct ubus_object_data *o, void *p)$/;"	f	file:
-ubus_lua_parse_blob	lua/ubus.c	/^ubus_lua_parse_blob(lua_State *L, struct blob_attr *attr, bool table)$/;"	f	file:
-ubus_lua_parse_blob_array	lua/ubus.c	/^ubus_lua_parse_blob_array(lua_State *L, struct blob_attr *attr, int len, bool table)$/;"	f	file:
-ubus_lua_reply	lua/ubus.c	/^static int ubus_lua_reply(lua_State *L)$/;"	f	file:
-ubus_lua_send	lua/ubus.c	/^ubus_lua_send(lua_State *L)$/;"	f	file:
-ubus_lua_signatures	lua/ubus.c	/^ubus_lua_signatures(lua_State *L)$/;"	f	file:
-ubus_lua_signatures_cb	lua/ubus.c	/^ubus_lua_signatures_cb(struct ubus_context *c, struct ubus_object_data *o, void *p)$/;"	f	file:
+ubus_lua_object::o	lua/ubus.c	/^	struct ubus_object o;$/;"	m	struct:ubus_lua_object	typeref:struct:ubus_lua_object::ubus_object	file:	access:public
+ubus_lua_object::r	lua/ubus.c	/^	int r;$/;"	m	struct:ubus_lua_object	file:	access:public
+ubus_lua_objects	lua/ubus.c	/^ubus_lua_objects(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+ubus_lua_objects_cb	lua/ubus.c	/^ubus_lua_objects_cb(struct ubus_context *c, struct ubus_object_data *o, void *p)$/;"	f	file:	signature:(struct ubus_context *c, struct ubus_object_data *o, void *p)
+ubus_lua_parse_blob	lua/ubus.c	/^ubus_lua_parse_blob(lua_State *L, struct blob_attr *attr, bool table)$/;"	f	file:	signature:(lua_State *L, struct blob_attr *attr, bool table)
+ubus_lua_parse_blob	lua/ubus.c	/^ubus_lua_parse_blob(lua_State *L, struct blob_attr *attr, bool table);$/;"	p	file:	signature:(lua_State *L, struct blob_attr *attr, bool table)
+ubus_lua_parse_blob_array	lua/ubus.c	/^ubus_lua_parse_blob_array(lua_State *L, struct blob_attr *attr, int len, bool table)$/;"	f	file:	signature:(lua_State *L, struct blob_attr *attr, int len, bool table)
+ubus_lua_reply	lua/ubus.c	/^static int ubus_lua_reply(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+ubus_lua_send	lua/ubus.c	/^ubus_lua_send(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+ubus_lua_signatures	lua/ubus.c	/^ubus_lua_signatures(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+ubus_lua_signatures_cb	lua/ubus.c	/^ubus_lua_signatures_cb(struct ubus_context *c, struct ubus_object_data *o, void *p)$/;"	f	file:	signature:(struct ubus_context *c, struct ubus_object_data *o, void *p)
 ubus_method	ipkg-install/usr/include/libubus.h	/^struct ubus_method {$/;"	s
 ubus_method	libubus.h	/^struct ubus_method {$/;"	s
 ubus_method	ubusd_obj.h	/^struct ubus_method {$/;"	s
-ubus_method_handler	lua/ubus.c	/^ubus_method_handler(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:
+ubus_method::data	ubusd_obj.h	/^	struct blob_attr data[];$/;"	m	struct:ubus_method	typeref:struct:ubus_method::blob_attr	access:public
+ubus_method::handler	ipkg-install/usr/include/libubus.h	/^	ubus_handler_t handler;$/;"	m	struct:ubus_method	access:public
+ubus_method::handler	libubus.h	/^	ubus_handler_t handler; \/\/ ¶ÔÓ¦µÄ´¦Àíº¯Êı$/;"	m	struct:ubus_method	access:public
+ubus_method::list	ubusd_obj.h	/^	struct list_head list;$/;"	m	struct:ubus_method	typeref:struct:ubus_method::list_head	access:public
+ubus_method::mask	ipkg-install/usr/include/libubus.h	/^	unsigned long mask;$/;"	m	struct:ubus_method	access:public
+ubus_method::mask	libubus.h	/^	unsigned long mask;$/;"	m	struct:ubus_method	access:public
+ubus_method::n_policy	ipkg-install/usr/include/libubus.h	/^	int n_policy;$/;"	m	struct:ubus_method	access:public
+ubus_method::n_policy	libubus.h	/^	int n_policy;$/;"	m	struct:ubus_method	access:public
+ubus_method::name	ipkg-install/usr/include/libubus.h	/^	const char *name;$/;"	m	struct:ubus_method	access:public
+ubus_method::name	libubus.h	/^	const char *name;       \/\/ ·½·¨Ãû$/;"	m	struct:ubus_method	access:public
+ubus_method::name	ubusd_obj.h	/^	const char *name;$/;"	m	struct:ubus_method	access:public
+ubus_method::policy	ipkg-install/usr/include/libubus.h	/^	const struct blobmsg_policy *policy;$/;"	m	struct:ubus_method	typeref:struct:ubus_method::blobmsg_policy	access:public
+ubus_method::policy	libubus.h	/^	const struct blobmsg_policy *policy;$/;"	m	struct:ubus_method	typeref:struct:ubus_method::blobmsg_policy	access:public
+ubus_method_handler	lua/ubus.c	/^ubus_method_handler(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_object *obj, struct ubus_request_data *req, const char *method, struct blob_attr *msg)
 ubus_msg_attr	ipkg-install/usr/include/ubusmsg.h	/^enum ubus_msg_attr {$/;"	g
 ubus_msg_attr	ubusmsg.h	/^enum ubus_msg_attr {$/;"	g
 ubus_msg_buf	ubusd.h	/^struct ubus_msg_buf {$/;"	s
-ubus_msg_close_fd	ubusd_proto.c	/^static void ubus_msg_close_fd(struct ubus_msg_buf *ub)$/;"	f	file:
-ubus_msg_dequeue	ubusd.c	/^static void ubus_msg_dequeue(struct ubus_client *cl)$/;"	f	file:
-ubus_msg_enqueue	ubusd.c	/^static void ubus_msg_enqueue(struct ubus_client *cl, struct ubus_msg_buf *ub)$/;"	f	file:
-ubus_msg_free	ubusd.c	/^void ubus_msg_free(struct ubus_msg_buf *ub)$/;"	f
-ubus_msg_from_blob	ubusd_proto.c	/^static struct ubus_msg_buf *ubus_msg_from_blob(bool shared)$/;"	f	file:
-ubus_msg_head	ubusd.c	/^static struct ubus_msg_buf *ubus_msg_head(struct ubus_client *cl)$/;"	f	file:
-ubus_msg_init	ubusd_proto.c	/^static void ubus_msg_init(struct ubus_msg_buf *ub, uint8_t type, uint16_t seq, uint32_t peer)$/;"	f	file:
-ubus_msg_new	ubusd.c	/^struct ubus_msg_buf *ubus_msg_new(void *data, int len, bool shared)$/;"	f
-ubus_msg_ref	ubusd.c	/^static struct ubus_msg_buf *ubus_msg_ref(struct ubus_msg_buf *ub)$/;"	f	file:
-ubus_msg_send	ubusd.c	/^void ubus_msg_send(struct ubus_client *cl, struct ubus_msg_buf *ub, bool free)$/;"	f
+ubus_msg_buf::data	ubusd.h	/^	struct blob_attr *data;     \/\/ æŒ‡å‘BOLBå±æ€§ç©ºé—´(ä¹Ÿå°±æ˜¯æ¶ˆæ¯å†…å®¹)$/;"	m	struct:ubus_msg_buf	typeref:struct:ubus_msg_buf::blob_attr	access:public
+ubus_msg_buf::fd	ubusd.h	/^	int fd;$/;"	m	struct:ubus_msg_buf	access:public
+ubus_msg_buf::hdr	ubusd.h	/^	struct ubus_msghdr hdr;     \/\/ æ¶ˆæ¯å¤´$/;"	m	struct:ubus_msg_buf	typeref:struct:ubus_msg_buf::ubus_msghdr	access:public
+ubus_msg_buf::len	ubusd.h	/^	int len;                    \/\/ è®°å½•BLOBå±æ€§ç©ºé—´é•¿åº¦ï¼ˆä¹Ÿå°±æ˜¯æ¶ˆæ¯å†…å®¹é•¿åº¦ï¼‰$/;"	m	struct:ubus_msg_buf	access:public
+ubus_msg_buf::refcount	ubusd.h	/^	uint32_t refcount;          \/\/ å±æ€§ç©ºé—´ç±»å‹æ ‡è®°ï¼ˆ~0:ä½¿ç”¨å¤–éƒ¨å…±äº«ç©ºé—´ 1ï¼šä½¿ç”¨å†…éƒ¨åˆ†é…ç©ºé—´ï¼‰\/* ~0: uses external data buffer *\/$/;"	m	struct:ubus_msg_buf	access:public
+ubus_msg_close_fd	ubusd_proto.c	/^static void ubus_msg_close_fd(struct ubus_msg_buf *ub)$/;"	f	file:	signature:(struct ubus_msg_buf *ub)
+ubus_msg_dequeue	ubusd.c	/^static void ubus_msg_dequeue(struct ubus_client *cl)$/;"	f	file:	signature:(struct ubus_client *cl)
+ubus_msg_enqueue	ubusd.c	/^static void ubus_msg_enqueue(struct ubus_client *cl, struct ubus_msg_buf *ub)$/;"	f	file:	signature:(struct ubus_client *cl, struct ubus_msg_buf *ub)
+ubus_msg_free	ubusd.c	/^void ubus_msg_free(struct ubus_msg_buf *ub)$/;"	f	signature:(struct ubus_msg_buf *ub)
+ubus_msg_free	ubusd.h	/^void ubus_msg_free(struct ubus_msg_buf *ub);$/;"	p	signature:(struct ubus_msg_buf *ub)
+ubus_msg_from_blob	ubusd_proto.c	/^static struct ubus_msg_buf *ubus_msg_from_blob(bool shared)$/;"	f	file:	signature:(bool shared)
+ubus_msg_head	ubusd.c	/^static struct ubus_msg_buf *ubus_msg_head(struct ubus_client *cl)$/;"	f	file:	signature:(struct ubus_client *cl)
+ubus_msg_init	ubusd_proto.c	/^static void ubus_msg_init(struct ubus_msg_buf *ub, uint8_t type, uint16_t seq, uint32_t peer)$/;"	f	file:	signature:(struct ubus_msg_buf *ub, uint8_t type, uint16_t seq, uint32_t peer)
+ubus_msg_new	ubusd.c	/^struct ubus_msg_buf *ubus_msg_new(void *data, int len, bool shared)$/;"	f	signature:(void *data, int len, bool shared)
+ubus_msg_new	ubusd.h	/^struct ubus_msg_buf *ubus_msg_new(void *data, int len, bool shared);$/;"	p	signature:(void *data, int len, bool shared)
+ubus_msg_ref	ubusd.c	/^static struct ubus_msg_buf *ubus_msg_ref(struct ubus_msg_buf *ub)$/;"	f	file:	signature:(struct ubus_msg_buf *ub)
+ubus_msg_send	ubusd.c	/^void ubus_msg_send(struct ubus_client *cl, struct ubus_msg_buf *ub, bool free)$/;"	f	signature:(struct ubus_client *cl, struct ubus_msg_buf *ub, bool free)
+ubus_msg_send	ubusd.h	/^void ubus_msg_send(struct ubus_client *cl, struct ubus_msg_buf *ub, bool free);$/;"	p	signature:(struct ubus_client *cl, struct ubus_msg_buf *ub, bool free)
 ubus_msg_status	ipkg-install/usr/include/ubusmsg.h	/^enum ubus_msg_status {$/;"	g
 ubus_msg_status	ubusmsg.h	/^enum ubus_msg_status {$/;"	g
 ubus_msg_type	ipkg-install/usr/include/ubusmsg.h	/^enum ubus_msg_type {$/;"	g
 ubus_msg_type	ubusmsg.h	/^enum ubus_msg_type {$/;"	g
-ubus_msg_writev	ubusd.c	/^static int ubus_msg_writev(int fd, struct ubus_msg_buf *ub, int offset)$/;"	f	file:
+ubus_msg_writev	ubusd.c	/^static int ubus_msg_writev(int fd, struct ubus_msg_buf *ub, int offset)$/;"	f	file:	signature:(int fd, struct ubus_msg_buf *ub, int offset)
 ubus_msghdr	ipkg-install/usr/include/ubusmsg.h	/^struct ubus_msghdr {$/;"	s
 ubus_msghdr	ubusmsg.h	/^struct ubus_msghdr {$/;"	s
+ubus_msghdr::peer	ipkg-install/usr/include/ubusmsg.h	/^	uint32_t peer;$/;"	m	struct:ubus_msghdr	access:public
+ubus_msghdr::peer	ubusmsg.h	/^	uint32_t peer;$/;"	m	struct:ubus_msghdr	access:public
+ubus_msghdr::seq	ipkg-install/usr/include/ubusmsg.h	/^	uint16_t seq;$/;"	m	struct:ubus_msghdr	access:public
+ubus_msghdr::seq	ubusmsg.h	/^	uint16_t seq;$/;"	m	struct:ubus_msghdr	access:public
+ubus_msghdr::type	ipkg-install/usr/include/ubusmsg.h	/^	uint8_t type;$/;"	m	struct:ubus_msghdr	access:public
+ubus_msghdr::type	ubusmsg.h	/^	uint8_t type;   \/\/ è®°å½•æ¶ˆæ¯ç±»å‹$/;"	m	struct:ubus_msghdr	access:public
+ubus_msghdr::version	ipkg-install/usr/include/ubusmsg.h	/^	uint8_t version;$/;"	m	struct:ubus_msghdr	access:public
+ubus_msghdr::version	ubusmsg.h	/^	uint8_t version;$/;"	m	struct:ubus_msghdr	access:public
 ubus_msghdr_buf	ipkg-install/usr/include/libubus.h	/^struct ubus_msghdr_buf {$/;"	s
 ubus_msghdr_buf	libubus.h	/^struct ubus_msghdr_buf {$/;"	s
-ubus_notify	libubus-req.c	/^int ubus_notify(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f
-ubus_notify_async	libubus-req.c	/^int ubus_notify_async(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f
-ubus_notify_complete_cb	libubus-req.c	/^ubus_notify_complete_cb(struct ubus_request *req, int ret)$/;"	f	file:
+ubus_msghdr_buf::data	ipkg-install/usr/include/libubus.h	/^	struct blob_attr *data;$/;"	m	struct:ubus_msghdr_buf	typeref:struct:ubus_msghdr_buf::blob_attr	access:public
+ubus_msghdr_buf::data	libubus.h	/^	struct blob_attr *data; \/\/ Ö¸Ïò·ÖÅäµÄÏûÏ¢¿Õ¼ä$/;"	m	struct:ubus_msghdr_buf	typeref:struct:ubus_msghdr_buf::blob_attr	access:public
+ubus_msghdr_buf::hdr	ipkg-install/usr/include/libubus.h	/^	struct ubus_msghdr hdr;$/;"	m	struct:ubus_msghdr_buf	typeref:struct:ubus_msghdr_buf::ubus_msghdr	access:public
+ubus_msghdr_buf::hdr	libubus.h	/^	struct ubus_msghdr hdr; \/\/ ÏûÏ¢Í·$/;"	m	struct:ubus_msghdr_buf	typeref:struct:ubus_msghdr_buf::ubus_msghdr	access:public
+ubus_notify	ipkg-install/usr/include/libubus.h	/^int ubus_notify(struct ubus_context *ctx, struct ubus_object *obj,$/;"	p	signature:(struct ubus_context *ctx, struct ubus_object *obj, const char *type, struct blob_attr *msg, int timeout)
+ubus_notify	libubus-req.c	/^int ubus_notify(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	signature:(struct ubus_context *ctx, struct ubus_object *obj, const char *type, struct blob_attr *msg, int timeout)
+ubus_notify	libubus.h	/^int ubus_notify(struct ubus_context *ctx, struct ubus_object *obj,$/;"	p	signature:(struct ubus_context *ctx, struct ubus_object *obj, const char *type, struct blob_attr *msg, int timeout)
+ubus_notify_async	ipkg-install/usr/include/libubus.h	/^int ubus_notify_async(struct ubus_context *ctx, struct ubus_object *obj,$/;"	p	signature:(struct ubus_context *ctx, struct ubus_object *obj, const char *type, struct blob_attr *msg, struct ubus_notify_request *req)
+ubus_notify_async	libubus-req.c	/^int ubus_notify_async(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	signature:(struct ubus_context *ctx, struct ubus_object *obj, const char *type, struct blob_attr *msg, struct ubus_notify_request *req)
+ubus_notify_async	libubus.h	/^int ubus_notify_async(struct ubus_context *ctx, struct ubus_object *obj,$/;"	p	signature:(struct ubus_context *ctx, struct ubus_object *obj, const char *type, struct blob_attr *msg, struct ubus_notify_request *req)
+ubus_notify_complete_cb	libubus-req.c	/^ubus_notify_complete_cb(struct ubus_request *req, int ret)$/;"	f	file:	signature:(struct ubus_request *req, int ret)
 ubus_notify_complete_handler_t	ipkg-install/usr/include/libubus.h	/^typedef void (*ubus_notify_complete_handler_t)(struct ubus_notify_request *req,$/;"	t
 ubus_notify_complete_handler_t	libubus.h	/^typedef void (*ubus_notify_complete_handler_t)(struct ubus_notify_request *req,$/;"	t
 ubus_notify_request	ipkg-install/usr/include/libubus.h	/^struct ubus_notify_request {$/;"	s
 ubus_notify_request	libubus.h	/^struct ubus_notify_request {$/;"	s
-ubus_notify_subscription	ubusd_proto.c	/^void ubus_notify_subscription(struct ubus_object *obj)$/;"	f
-ubus_notify_unsubscribe	ubusd_proto.c	/^void ubus_notify_unsubscribe(struct ubus_subscription *s)$/;"	f
+ubus_notify_request::complete_cb	ipkg-install/usr/include/libubus.h	/^	ubus_notify_complete_handler_t complete_cb;$/;"	m	struct:ubus_notify_request	access:public
+ubus_notify_request::complete_cb	libubus.h	/^	ubus_notify_complete_handler_t complete_cb;$/;"	m	struct:ubus_notify_request	access:public
+ubus_notify_request::id	ipkg-install/usr/include/libubus.h	/^	uint32_t id[UBUS_MAX_NOTIFY_PEERS + 1];$/;"	m	struct:ubus_notify_request	access:public
+ubus_notify_request::id	libubus.h	/^	uint32_t id[UBUS_MAX_NOTIFY_PEERS + 1];$/;"	m	struct:ubus_notify_request	access:public
+ubus_notify_request::pending	ipkg-install/usr/include/libubus.h	/^	uint32_t pending;$/;"	m	struct:ubus_notify_request	access:public
+ubus_notify_request::pending	libubus.h	/^	uint32_t pending;$/;"	m	struct:ubus_notify_request	access:public
+ubus_notify_request::req	ipkg-install/usr/include/libubus.h	/^	struct ubus_request req;$/;"	m	struct:ubus_notify_request	typeref:struct:ubus_notify_request::ubus_request	access:public
+ubus_notify_request::req	libubus.h	/^	struct ubus_request req;$/;"	m	struct:ubus_notify_request	typeref:struct:ubus_notify_request::ubus_request	access:public
+ubus_notify_request::status_cb	ipkg-install/usr/include/libubus.h	/^	ubus_notify_complete_handler_t status_cb;$/;"	m	struct:ubus_notify_request	access:public
+ubus_notify_request::status_cb	libubus.h	/^	ubus_notify_complete_handler_t status_cb;$/;"	m	struct:ubus_notify_request	access:public
+ubus_notify_subscription	ubusd_obj.h	/^void ubus_notify_subscription(struct ubus_object *obj);$/;"	p	signature:(struct ubus_object *obj)
+ubus_notify_subscription	ubusd_proto.c	/^void ubus_notify_subscription(struct ubus_object *obj)$/;"	f	signature:(struct ubus_object *obj)
+ubus_notify_unsubscribe	ubusd_obj.h	/^void ubus_notify_unsubscribe(struct ubus_subscription *s);$/;"	p	signature:(struct ubus_subscription *s)
+ubus_notify_unsubscribe	ubusd_proto.c	/^void ubus_notify_unsubscribe(struct ubus_subscription *s)$/;"	f	signature:(struct ubus_subscription *s)
 ubus_object	ipkg-install/usr/include/libubus.h	/^struct ubus_object {$/;"	s
 ubus_object	libubus.h	/^struct ubus_object {$/;"	s
 ubus_object	ubusd_obj.h	/^struct ubus_object {$/;"	s
+ubus_object::avl	ipkg-install/usr/include/libubus.h	/^	struct avl_node avl;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::avl_node	access:public
+ubus_object::avl	libubus.h	/^	struct avl_node avl;            \/\/ avlÊ÷$/;"	m	struct:ubus_object	typeref:struct:ubus_object::avl_node	access:public
+ubus_object::client	ubusd_obj.h	/^	struct ubus_client *client;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_client	access:public
+ubus_object::event_seen	ubusd_obj.h	/^	int event_seen;$/;"	m	struct:ubus_object	access:public
+ubus_object::events	ubusd_obj.h	/^	struct list_head events;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::list_head	access:public
+ubus_object::has_subscribers	ipkg-install/usr/include/libubus.h	/^	bool has_subscribers;$/;"	m	struct:ubus_object	access:public
+ubus_object::has_subscribers	libubus.h	/^	bool has_subscribers;$/;"	m	struct:ubus_object	access:public
+ubus_object::id	ipkg-install/usr/include/libubus.h	/^	uint32_t id;$/;"	m	struct:ubus_object	access:public
+ubus_object::id	libubus.h	/^	uint32_t id;$/;"	m	struct:ubus_object	access:public
+ubus_object::id	ubusd_obj.h	/^	struct ubus_id id;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_id	access:public
+ubus_object::invoke_seq	ubusd_obj.h	/^	unsigned int invoke_seq;$/;"	m	struct:ubus_object	access:public
+ubus_object::list	ubusd_obj.h	/^	struct list_head list;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::list_head	access:public
+ubus_object::methods	ipkg-install/usr/include/libubus.h	/^	const struct ubus_method *methods;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_method	access:public
+ubus_object::methods	libubus.h	/^	const struct ubus_method *methods;  \/\/ Ö¸Ïò·½·¨$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_method	access:public
+ubus_object::n_methods	ipkg-install/usr/include/libubus.h	/^	int n_methods;$/;"	m	struct:ubus_object	access:public
+ubus_object::n_methods	libubus.h	/^	int n_methods;      \/\/ ¼ÇÂ¼·½·¨µÄÊıÁ¿$/;"	m	struct:ubus_object	access:public
+ubus_object::name	ipkg-install/usr/include/libubus.h	/^	const char *name;$/;"	m	struct:ubus_object	access:public
+ubus_object::name	libubus.h	/^	const char *name;               \/\/ ¶ÔÏóÃû$/;"	m	struct:ubus_object	access:public
+ubus_object::path	ipkg-install/usr/include/libubus.h	/^	const char *path;$/;"	m	struct:ubus_object	access:public
+ubus_object::path	libubus.h	/^	const char *path;$/;"	m	struct:ubus_object	access:public
+ubus_object::path	ubusd_obj.h	/^	struct avl_node path;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::avl_node	access:public
+ubus_object::recv_msg	ubusd_obj.h	/^	int (*recv_msg)(struct ubus_client *client, const char *method, struct blob_attr *msg);$/;"	m	struct:ubus_object	access:public
+ubus_object::subscribe_cb	ipkg-install/usr/include/libubus.h	/^	ubus_state_handler_t subscribe_cb;$/;"	m	struct:ubus_object	access:public
+ubus_object::subscribe_cb	libubus.h	/^	ubus_state_handler_t subscribe_cb;  \/\/ ÓÃÓÚÔ¤¶©¹¦ÄÜµÄ»Øµ÷$/;"	m	struct:ubus_object	access:public
+ubus_object::subscribers	ubusd_obj.h	/^	struct list_head subscribers, target_list;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::list_head	access:public
+ubus_object::target_list	ubusd_obj.h	/^	struct list_head subscribers, target_list;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::	access:public
+ubus_object::type	ipkg-install/usr/include/libubus.h	/^	struct ubus_object_type *type;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_object_type	access:public
+ubus_object::type	libubus.h	/^	struct ubus_object_type *type;      \/\/ ¶ÔÏóÀàĞÍ$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_object_type	access:public
+ubus_object::type	ubusd_obj.h	/^	struct ubus_object_type *type;$/;"	m	struct:ubus_object	typeref:struct:ubus_object::ubus_object_type	access:public
 ubus_object_data	ipkg-install/usr/include/libubus.h	/^struct ubus_object_data {$/;"	s
 ubus_object_data	libubus.h	/^struct ubus_object_data {$/;"	s
+ubus_object_data::id	ipkg-install/usr/include/libubus.h	/^	uint32_t id;$/;"	m	struct:ubus_object_data	access:public
+ubus_object_data::id	libubus.h	/^	uint32_t id;$/;"	m	struct:ubus_object_data	access:public
+ubus_object_data::path	ipkg-install/usr/include/libubus.h	/^	const char *path;$/;"	m	struct:ubus_object_data	access:public
+ubus_object_data::path	libubus.h	/^	const char *path;$/;"	m	struct:ubus_object_data	access:public
+ubus_object_data::signature	ipkg-install/usr/include/libubus.h	/^	struct blob_attr *signature;$/;"	m	struct:ubus_object_data	typeref:struct:ubus_object_data::blob_attr	access:public
+ubus_object_data::signature	libubus.h	/^	struct blob_attr *signature;$/;"	m	struct:ubus_object_data	typeref:struct:ubus_object_data::blob_attr	access:public
+ubus_object_data::type_id	ipkg-install/usr/include/libubus.h	/^	uint32_t type_id;$/;"	m	struct:ubus_object_data	access:public
+ubus_object_data::type_id	libubus.h	/^	uint32_t type_id;$/;"	m	struct:ubus_object_data	access:public
 ubus_object_type	ipkg-install/usr/include/libubus.h	/^struct ubus_object_type {$/;"	s
 ubus_object_type	libubus.h	/^struct ubus_object_type {$/;"	s
 ubus_object_type	ubusd_obj.h	/^struct ubus_object_type {$/;"	s
-ubus_parse_msg	libubus-io.c	/^__hidden struct blob_attr **ubus_parse_msg(struct blob_attr *msg)$/;"	f
-ubus_parse_msg	ubusd_proto.c	/^static struct blob_attr **ubus_parse_msg(struct blob_attr *msg)$/;"	f	file:
+ubus_object_type::id	ipkg-install/usr/include/libubus.h	/^	uint32_t id;$/;"	m	struct:ubus_object_type	access:public
+ubus_object_type::id	libubus.h	/^	uint32_t id;$/;"	m	struct:ubus_object_type	access:public
+ubus_object_type::id	ubusd_obj.h	/^	struct ubus_id id;$/;"	m	struct:ubus_object_type	typeref:struct:ubus_object_type::ubus_id	access:public
+ubus_object_type::methods	ipkg-install/usr/include/libubus.h	/^	const struct ubus_method *methods;$/;"	m	struct:ubus_object_type	typeref:struct:ubus_object_type::ubus_method	access:public
+ubus_object_type::methods	libubus.h	/^	const struct ubus_method *methods;  \/\/ Ö¸Ïò·½·¨¿ØÖÆ¿éÊı×é$/;"	m	struct:ubus_object_type	typeref:struct:ubus_object_type::ubus_method	access:public
+ubus_object_type::methods	ubusd_obj.h	/^	struct list_head methods;$/;"	m	struct:ubus_object_type	typeref:struct:ubus_object_type::list_head	access:public
+ubus_object_type::n_methods	ipkg-install/usr/include/libubus.h	/^	int n_methods;$/;"	m	struct:ubus_object_type	access:public
+ubus_object_type::n_methods	libubus.h	/^	int n_methods;                      \/\/ ¼ÇÂ¼·½·¨¿ØÖÆ¿éÊı×éµÄÔªËØÊıÁ¿$/;"	m	struct:ubus_object_type	access:public
+ubus_object_type::name	ipkg-install/usr/include/libubus.h	/^	const char *name;$/;"	m	struct:ubus_object_type	access:public
+ubus_object_type::name	libubus.h	/^	const char *name;                   \/\/ ¶ÔÏóÃû$/;"	m	struct:ubus_object_type	access:public
+ubus_object_type::refcount	ubusd_obj.h	/^	int refcount;$/;"	m	struct:ubus_object_type	access:public
+ubus_parse_msg	libubus-internal.h	/^struct blob_attr **ubus_parse_msg(struct blob_attr *msg);$/;"	p	signature:(struct blob_attr *msg)
+ubus_parse_msg	libubus-io.c	/^__hidden struct blob_attr **ubus_parse_msg(struct blob_attr *msg)$/;"	f	signature:(struct blob_attr *msg)
+ubus_parse_msg	ubusd_proto.c	/^static struct blob_attr **ubus_parse_msg(struct blob_attr *msg)$/;"	f	file:	signature:(struct blob_attr *msg)
 ubus_path	ubusd.h	/^struct ubus_path {$/;"	s
+ubus_path::list	ubusd.h	/^	struct list_head list;$/;"	m	struct:ubus_path	typeref:struct:ubus_path::list_head	access:public
+ubus_path::name	ubusd.h	/^	const char name[];$/;"	m	struct:ubus_path	access:public
 ubus_pending_data	libubus-req.c	/^struct ubus_pending_data {$/;"	s	file:
+ubus_pending_data::data	libubus-req.c	/^	struct blob_attr data[];$/;"	m	struct:ubus_pending_data	typeref:struct:ubus_pending_data::blob_attr	file:	access:public
+ubus_pending_data::list	libubus-req.c	/^	struct list_head list;$/;"	m	struct:ubus_pending_data	typeref:struct:ubus_pending_data::list_head	file:	access:public
+ubus_pending_data::type	libubus-req.c	/^	int type;$/;"	m	struct:ubus_pending_data	file:	access:public
 ubus_pending_msg	libubus.c	/^struct ubus_pending_msg {$/;"	s	file:
+ubus_pending_msg::hdr	libubus.c	/^	struct ubus_msghdr_buf hdr;$/;"	m	struct:ubus_pending_msg	typeref:struct:ubus_pending_msg::ubus_msghdr_buf	file:	access:public
+ubus_pending_msg::list	libubus.c	/^	struct list_head list;$/;"	m	struct:ubus_pending_msg	typeref:struct:ubus_pending_msg::list_head	file:	access:public
 ubus_policy	libubus-io.c	/^static const struct blob_attr_info ubus_policy[UBUS_ATTR_MAX] = {$/;"	v	typeref:struct:blob_attr_info	file:
 ubus_policy	ubusd_proto.c	/^static const struct blob_attr_info ubus_policy[UBUS_ATTR_MAX] = {$/;"	v	typeref:struct:blob_attr_info	file:
-ubus_poll_data	libubus-io.c	/^void __hidden ubus_poll_data(struct ubus_context *ctx, int timeout)$/;"	f
-ubus_process_invoke	libubus-obj.c	/^ubus_process_invoke(struct ubus_context *ctx, struct ubus_msghdr *hdr,$/;"	f	file:
-ubus_process_msg	libubus.c	/^ubus_process_msg(struct ubus_context *ctx, struct ubus_msghdr_buf *buf, int fd)$/;"	f
-ubus_process_notify	libubus-obj.c	/^ubus_process_notify(struct ubus_context *ctx, struct ubus_msghdr *hdr,$/;"	f	file:
-ubus_process_notify_status	libubus-req.c	/^static void ubus_process_notify_status(struct ubus_request *req, int id, struct ubus_msghdr_buf *buf)$/;"	f	file:
-ubus_process_obj_msg	libubus-obj.c	/^void __hidden ubus_process_obj_msg(struct ubus_context *ctx, struct ubus_msghdr_buf *buf)$/;"	f
-ubus_process_pending_msg	libubus.c	/^static void ubus_process_pending_msg(struct uloop_timeout *timeout)$/;"	f	file:
-ubus_process_req_data	libubus-req.c	/^ubus_process_req_data(struct ubus_request *req, struct ubus_msghdr_buf *buf)$/;"	f	file:
-ubus_process_req_msg	libubus-req.c	/^void __hidden ubus_process_req_msg(struct ubus_context *ctx, struct ubus_msghdr_buf *buf, int fd)$/;"	f
-ubus_process_req_status	libubus-req.c	/^ubus_process_req_status(struct ubus_request *req, struct ubus_msghdr_buf *buf)$/;"	f	file:
-ubus_process_unsubscribe	libubus-obj.c	/^ubus_process_unsubscribe(struct ubus_context *ctx, struct ubus_msghdr *hdr,$/;"	f	file:
-ubus_push_method_data	libubus-obj.c	/^static void ubus_push_method_data(const struct ubus_method *m)$/;"	f	file:
-ubus_push_object_type	libubus-obj.c	/^static bool ubus_push_object_type(const struct ubus_object_type *type)$/;"	f	file:
-ubus_queue_msg	libubus.c	/^ubus_queue_msg(struct ubus_context *ctx, struct ubus_msghdr_buf *buf)$/;"	f	file:
-ubus_reconnect	libubus-io.c	/^int ubus_reconnect(struct ubus_context *ctx, const char *path)$/;"	f
-ubus_refresh_state	libubus-io.c	/^static void ubus_refresh_state(struct ubus_context *ctx)$/;"	f	file:
-ubus_register_event_handler	libubus.c	/^int ubus_register_event_handler(struct ubus_context *ctx,$/;"	f
-ubus_register_subscriber	libubus-sub.c	/^int ubus_register_subscriber(struct ubus_context *ctx, struct ubus_subscriber *s)$/;"	f
+ubus_poll_data	libubus-internal.h	/^void __hidden ubus_poll_data(struct ubus_context *ctx, int timeout);$/;"	p	signature:(struct ubus_context *ctx, int timeout)
+ubus_poll_data	libubus-io.c	/^void __hidden ubus_poll_data(struct ubus_context *ctx, int timeout)$/;"	f	signature:(struct ubus_context *ctx, int timeout)
+ubus_process_invoke	libubus-obj.c	/^ubus_process_invoke(struct ubus_context *ctx, struct ubus_msghdr *hdr,$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_msghdr *hdr, struct ubus_object *obj, struct blob_attr **attrbuf)
+ubus_process_msg	libubus-internal.h	/^void ubus_process_msg(struct ubus_context *ctx, struct ubus_msghdr_buf *buf, int fd);$/;"	p	signature:(struct ubus_context *ctx, struct ubus_msghdr_buf *buf, int fd)
+ubus_process_msg	libubus.c	/^ubus_process_msg(struct ubus_context *ctx, struct ubus_msghdr_buf *buf, int fd)$/;"	f	signature:(struct ubus_context *ctx, struct ubus_msghdr_buf *buf, int fd)
+ubus_process_notify	libubus-obj.c	/^ubus_process_notify(struct ubus_context *ctx, struct ubus_msghdr *hdr,$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_msghdr *hdr, struct ubus_object *obj, struct blob_attr **attrbuf)
+ubus_process_notify_status	libubus-req.c	/^static void ubus_process_notify_status(struct ubus_request *req, int id, struct ubus_msghdr_buf *buf)$/;"	f	file:	signature:(struct ubus_request *req, int id, struct ubus_msghdr_buf *buf)
+ubus_process_obj_msg	libubus-internal.h	/^void ubus_process_obj_msg(struct ubus_context *ctx, struct ubus_msghdr_buf *buf);$/;"	p	signature:(struct ubus_context *ctx, struct ubus_msghdr_buf *buf)
+ubus_process_obj_msg	libubus-obj.c	/^void __hidden ubus_process_obj_msg(struct ubus_context *ctx, struct ubus_msghdr_buf *buf)$/;"	f	signature:(struct ubus_context *ctx, struct ubus_msghdr_buf *buf)
+ubus_process_pending_msg	libubus.c	/^static void ubus_process_pending_msg(struct uloop_timeout *timeout)$/;"	f	file:	signature:(struct uloop_timeout *timeout)
+ubus_process_req_data	libubus-req.c	/^ubus_process_req_data(struct ubus_request *req, struct ubus_msghdr_buf *buf)$/;"	f	file:	signature:(struct ubus_request *req, struct ubus_msghdr_buf *buf)
+ubus_process_req_msg	libubus-internal.h	/^void ubus_process_req_msg(struct ubus_context *ctx, struct ubus_msghdr_buf *buf, int fd);$/;"	p	signature:(struct ubus_context *ctx, struct ubus_msghdr_buf *buf, int fd)
+ubus_process_req_msg	libubus-req.c	/^void __hidden ubus_process_req_msg(struct ubus_context *ctx, struct ubus_msghdr_buf *buf, int fd)$/;"	f	signature:(struct ubus_context *ctx, struct ubus_msghdr_buf *buf, int fd)
+ubus_process_req_status	libubus-req.c	/^ubus_process_req_status(struct ubus_request *req, struct ubus_msghdr_buf *buf)$/;"	f	file:	signature:(struct ubus_request *req, struct ubus_msghdr_buf *buf)
+ubus_process_unsubscribe	libubus-obj.c	/^ubus_process_unsubscribe(struct ubus_context *ctx, struct ubus_msghdr *hdr,$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_msghdr *hdr, struct ubus_object *obj, struct blob_attr **attrbuf)
+ubus_push_method_data	libubus-obj.c	/^static void ubus_push_method_data(const struct ubus_method *m)$/;"	f	file:	signature:(const struct ubus_method *m)
+ubus_push_object_type	libubus-obj.c	/^static bool ubus_push_object_type(const struct ubus_object_type *type)$/;"	f	file:	signature:(const struct ubus_object_type *type)
+ubus_queue_msg	libubus.c	/^ubus_queue_msg(struct ubus_context *ctx, struct ubus_msghdr_buf *buf)$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_msghdr_buf *buf)
+ubus_reconnect	ipkg-install/usr/include/libubus.h	/^int ubus_reconnect(struct ubus_context *ctx, const char *path);$/;"	p	signature:(struct ubus_context *ctx, const char *path)
+ubus_reconnect	libubus-io.c	/^int ubus_reconnect(struct ubus_context *ctx, const char *path)$/;"	f	signature:(struct ubus_context *ctx, const char *path)
+ubus_reconnect	libubus.h	/^int ubus_reconnect(struct ubus_context *ctx, const char *path);$/;"	p	signature:(struct ubus_context *ctx, const char *path)
+ubus_refresh_state	libubus-io.c	/^static void ubus_refresh_state(struct ubus_context *ctx)$/;"	f	file:	signature:(struct ubus_context *ctx)
+ubus_register_event_handler	ipkg-install/usr/include/libubus.h	/^int ubus_register_event_handler(struct ubus_context *ctx,$/;"	p	signature:(struct ubus_context *ctx, struct ubus_event_handler *ev, const char *pattern)
+ubus_register_event_handler	libubus.c	/^int ubus_register_event_handler(struct ubus_context *ctx,$/;"	f	signature:(struct ubus_context *ctx, struct ubus_event_handler *ev, const char *pattern)
+ubus_register_event_handler	libubus.h	/^int ubus_register_event_handler(struct ubus_context *ctx,$/;"	p	signature:(struct ubus_context *ctx, struct ubus_event_handler *ev, const char *pattern)
+ubus_register_subscriber	ipkg-install/usr/include/libubus.h	/^int ubus_register_subscriber(struct ubus_context *ctx, struct ubus_subscriber *obj);$/;"	p	signature:(struct ubus_context *ctx, struct ubus_subscriber *obj)
+ubus_register_subscriber	libubus-sub.c	/^int ubus_register_subscriber(struct ubus_context *ctx, struct ubus_subscriber *s)$/;"	f	signature:(struct ubus_context *ctx, struct ubus_subscriber *s)
+ubus_register_subscriber	libubus.h	/^int ubus_register_subscriber(struct ubus_context *ctx, struct ubus_subscriber *obj);$/;"	p	signature:(struct ubus_context *ctx, struct ubus_subscriber *obj)
 ubus_remove_handler_t	ipkg-install/usr/include/libubus.h	/^typedef void (*ubus_remove_handler_t)(struct ubus_context *ctx,$/;"	t
 ubus_remove_handler_t	libubus.h	/^typedef void (*ubus_remove_handler_t)(struct ubus_context *ctx,$/;"	t
-ubus_remove_object	libubus-obj.c	/^int ubus_remove_object(struct ubus_context *ctx, struct ubus_object *obj)$/;"	f
-ubus_remove_object_cb	libubus-obj.c	/^static void ubus_remove_object_cb(struct ubus_request *req, int type, struct blob_attr *msg)$/;"	f	file:
-ubus_reply_from_blob	ubusd_proto.c	/^static struct ubus_msg_buf *ubus_reply_from_blob(struct ubus_msg_buf *ub, bool shared)$/;"	f	file:
-ubus_req_complete_cb	libubus-req.c	/^ubus_req_complete_cb(struct ubus_request *req)$/;"	f	file:
+ubus_remove_object	ipkg-install/usr/include/libubus.h	/^int ubus_remove_object(struct ubus_context *ctx, struct ubus_object *obj);$/;"	p	signature:(struct ubus_context *ctx, struct ubus_object *obj)
+ubus_remove_object	libubus-obj.c	/^int ubus_remove_object(struct ubus_context *ctx, struct ubus_object *obj)$/;"	f	signature:(struct ubus_context *ctx, struct ubus_object *obj)
+ubus_remove_object	libubus.h	/^int ubus_remove_object(struct ubus_context *ctx, struct ubus_object *obj);$/;"	p	signature:(struct ubus_context *ctx, struct ubus_object *obj)
+ubus_remove_object_cb	libubus-obj.c	/^static void ubus_remove_object_cb(struct ubus_request *req, int type, struct blob_attr *msg)$/;"	f	file:	signature:(struct ubus_request *req, int type, struct blob_attr *msg)
+ubus_reply_from_blob	ubusd_proto.c	/^static struct ubus_msg_buf *ubus_reply_from_blob(struct ubus_msg_buf *ub, bool shared)$/;"	f	file:	signature:(struct ubus_msg_buf *ub, bool shared)
+ubus_req_complete_cb	libubus-req.c	/^ubus_req_complete_cb(struct ubus_request *req)$/;"	f	file:	signature:(struct ubus_request *req)
 ubus_request	ipkg-install/usr/include/libubus.h	/^struct ubus_request {$/;"	s
 ubus_request	libubus.h	/^struct ubus_request {$/;"	s
+ubus_request::blocked	ipkg-install/usr/include/libubus.h	/^	bool blocked;$/;"	m	struct:ubus_request	access:public
+ubus_request::blocked	libubus.h	/^	bool blocked;$/;"	m	struct:ubus_request	access:public
+ubus_request::cancelled	ipkg-install/usr/include/libubus.h	/^	bool cancelled;$/;"	m	struct:ubus_request	access:public
+ubus_request::cancelled	libubus.h	/^	bool cancelled;$/;"	m	struct:ubus_request	access:public
+ubus_request::complete_cb	ipkg-install/usr/include/libubus.h	/^	ubus_complete_handler_t complete_cb;$/;"	m	struct:ubus_request	access:public
+ubus_request::complete_cb	libubus.h	/^	ubus_complete_handler_t complete_cb;$/;"	m	struct:ubus_request	access:public
+ubus_request::ctx	ipkg-install/usr/include/libubus.h	/^	struct ubus_context *ctx;$/;"	m	struct:ubus_request	typeref:struct:ubus_request::ubus_context	access:public
+ubus_request::ctx	libubus.h	/^	struct ubus_context *ctx;$/;"	m	struct:ubus_request	typeref:struct:ubus_request::ubus_context	access:public
+ubus_request::data_cb	ipkg-install/usr/include/libubus.h	/^	ubus_data_handler_t data_cb;$/;"	m	struct:ubus_request	access:public
+ubus_request::data_cb	libubus.h	/^	ubus_data_handler_t data_cb;$/;"	m	struct:ubus_request	access:public
+ubus_request::fd_cb	ipkg-install/usr/include/libubus.h	/^	ubus_fd_handler_t fd_cb;$/;"	m	struct:ubus_request	access:public
+ubus_request::fd_cb	libubus.h	/^	ubus_fd_handler_t fd_cb;$/;"	m	struct:ubus_request	access:public
+ubus_request::list	ipkg-install/usr/include/libubus.h	/^	struct list_head list;$/;"	m	struct:ubus_request	typeref:struct:ubus_request::list_head	access:public
+ubus_request::list	libubus.h	/^	struct list_head list;      \/\/ Á´±íÍ·$/;"	m	struct:ubus_request	typeref:struct:ubus_request::list_head	access:public
+ubus_request::notify	ipkg-install/usr/include/libubus.h	/^	bool notify;$/;"	m	struct:ubus_request	access:public
+ubus_request::notify	libubus.h	/^	bool notify;$/;"	m	struct:ubus_request	access:public
+ubus_request::peer	ipkg-install/usr/include/libubus.h	/^	uint32_t peer;$/;"	m	struct:ubus_request	access:public
+ubus_request::peer	libubus.h	/^	uint32_t peer;$/;"	m	struct:ubus_request	access:public
+ubus_request::pending	ipkg-install/usr/include/libubus.h	/^	struct list_head pending;$/;"	m	struct:ubus_request	typeref:struct:ubus_request::list_head	access:public
+ubus_request::pending	libubus.h	/^	struct list_head pending;   \/\/ Á´±íÍ·$/;"	m	struct:ubus_request	typeref:struct:ubus_request::list_head	access:public
+ubus_request::priv	ipkg-install/usr/include/libubus.h	/^	void *priv;$/;"	m	struct:ubus_request	access:public
+ubus_request::priv	libubus.h	/^	void *priv;$/;"	m	struct:ubus_request	access:public
+ubus_request::raw_data_cb	ipkg-install/usr/include/libubus.h	/^	ubus_data_handler_t raw_data_cb;$/;"	m	struct:ubus_request	access:public
+ubus_request::raw_data_cb	libubus.h	/^	ubus_data_handler_t raw_data_cb;$/;"	m	struct:ubus_request	access:public
+ubus_request::seq	ipkg-install/usr/include/libubus.h	/^	uint16_t seq;$/;"	m	struct:ubus_request	access:public
+ubus_request::seq	libubus.h	/^	uint16_t seq;               \/\/ ¼ÇÂ¼·¢ÆğµÄÇëÇóÊıÁ¿$/;"	m	struct:ubus_request	access:public
+ubus_request::status_code	ipkg-install/usr/include/libubus.h	/^	int status_code;$/;"	m	struct:ubus_request	access:public
+ubus_request::status_code	libubus.h	/^	int status_code;$/;"	m	struct:ubus_request	access:public
+ubus_request::status_msg	ipkg-install/usr/include/libubus.h	/^	bool status_msg;$/;"	m	struct:ubus_request	access:public
+ubus_request::status_msg	libubus.h	/^	bool status_msg;$/;"	m	struct:ubus_request	access:public
 ubus_request_data	ipkg-install/usr/include/libubus.h	/^struct ubus_request_data {$/;"	s
 ubus_request_data	libubus.h	/^struct ubus_request_data {$/;"	s
-ubus_request_set_fd	ipkg-install/usr/include/libubus.h	/^static inline void ubus_request_set_fd(struct ubus_context *ctx,$/;"	f
-ubus_request_set_fd	libubus.h	/^static inline void ubus_request_set_fd(struct ubus_context *ctx,$/;"	f
-ubus_send_event	libubus.c	/^int ubus_send_event(struct ubus_context *ctx, const char *id,$/;"	f
-ubus_send_msg	libubus-io.c	/^int __hidden ubus_send_msg(struct ubus_context *ctx, uint32_t seq,$/;"	f
-ubus_send_msg_from_blob	ubusd_proto.c	/^ubus_send_msg_from_blob(struct ubus_client *cl, struct ubus_msg_buf *ub,$/;"	f	file:
-ubus_send_reply	libubus-req.c	/^int ubus_send_reply(struct ubus_context *ctx, struct ubus_request_data *req,$/;"	f
-ubus_set_req_status	libubus-req.c	/^ubus_set_req_status(struct ubus_request *req, int ret)$/;"	f	file:
-ubus_start_request	libubus-req.c	/^int __hidden ubus_start_request(struct ubus_context *ctx, struct ubus_request *req,$/;"	f
+ubus_request_data::deferred	ipkg-install/usr/include/libubus.h	/^	bool deferred;$/;"	m	struct:ubus_request_data	access:public
+ubus_request_data::deferred	libubus.h	/^	bool deferred;$/;"	m	struct:ubus_request_data	access:public
+ubus_request_data::fd	ipkg-install/usr/include/libubus.h	/^	int fd;$/;"	m	struct:ubus_request_data	access:public
+ubus_request_data::fd	libubus.h	/^	int fd;$/;"	m	struct:ubus_request_data	access:public
+ubus_request_data::object	ipkg-install/usr/include/libubus.h	/^	uint32_t object;$/;"	m	struct:ubus_request_data	access:public
+ubus_request_data::object	libubus.h	/^	uint32_t object;$/;"	m	struct:ubus_request_data	access:public
+ubus_request_data::peer	ipkg-install/usr/include/libubus.h	/^	uint32_t peer;$/;"	m	struct:ubus_request_data	access:public
+ubus_request_data::peer	libubus.h	/^	uint32_t peer;$/;"	m	struct:ubus_request_data	access:public
+ubus_request_data::seq	ipkg-install/usr/include/libubus.h	/^	uint16_t seq;$/;"	m	struct:ubus_request_data	access:public
+ubus_request_data::seq	libubus.h	/^	uint16_t seq;$/;"	m	struct:ubus_request_data	access:public
+ubus_request_set_fd	ipkg-install/usr/include/libubus.h	/^static inline void ubus_request_set_fd(struct ubus_context *ctx,$/;"	f	signature:(struct ubus_context *ctx, struct ubus_request_data *req, int fd)
+ubus_request_set_fd	libubus.h	/^static inline void ubus_request_set_fd(struct ubus_context *ctx,$/;"	f	signature:(struct ubus_context *ctx, struct ubus_request_data *req, int fd)
+ubus_send_event	ipkg-install/usr/include/libubus.h	/^int ubus_send_event(struct ubus_context *ctx, const char *id,$/;"	p	signature:(struct ubus_context *ctx, const char *id, struct blob_attr *data)
+ubus_send_event	libubus.c	/^int ubus_send_event(struct ubus_context *ctx, const char *id,$/;"	f	signature:(struct ubus_context *ctx, const char *id, struct blob_attr *data)
+ubus_send_event	libubus.h	/^int ubus_send_event(struct ubus_context *ctx, const char *id,$/;"	p	signature:(struct ubus_context *ctx, const char *id, struct blob_attr *data)
+ubus_send_msg	libubus-internal.h	/^int ubus_send_msg(struct ubus_context *ctx, uint32_t seq,$/;"	p	signature:(struct ubus_context *ctx, uint32_t seq, struct blob_attr *msg, int cmd, uint32_t peer, int fd)
+ubus_send_msg	libubus-io.c	/^int __hidden ubus_send_msg(struct ubus_context *ctx, uint32_t seq,$/;"	f	signature:(struct ubus_context *ctx, uint32_t seq, struct blob_attr *msg, int cmd, uint32_t peer, int fd)
+ubus_send_msg_from_blob	ubusd_proto.c	/^ubus_send_msg_from_blob(struct ubus_client *cl, struct ubus_msg_buf *ub,$/;"	f	file:	signature:(struct ubus_client *cl, struct ubus_msg_buf *ub, uint8_t type)
+ubus_send_reply	ipkg-install/usr/include/libubus.h	/^int ubus_send_reply(struct ubus_context *ctx, struct ubus_request_data *req,$/;"	p	signature:(struct ubus_context *ctx, struct ubus_request_data *req, struct blob_attr *msg)
+ubus_send_reply	libubus-req.c	/^int ubus_send_reply(struct ubus_context *ctx, struct ubus_request_data *req,$/;"	f	signature:(struct ubus_context *ctx, struct ubus_request_data *req, struct blob_attr *msg)
+ubus_send_reply	libubus.h	/^int ubus_send_reply(struct ubus_context *ctx, struct ubus_request_data *req,$/;"	p	signature:(struct ubus_context *ctx, struct ubus_request_data *req, struct blob_attr *msg)
+ubus_set_req_status	libubus-req.c	/^ubus_set_req_status(struct ubus_request *req, int ret)$/;"	f	file:	signature:(struct ubus_request *req, int ret)
+ubus_start_request	libubus-internal.h	/^int __hidden ubus_start_request(struct ubus_context *ctx, struct ubus_request *req,$/;"	p	signature:(struct ubus_context *ctx, struct ubus_request *req, struct blob_attr *msg, int cmd, uint32_t peer)
+ubus_start_request	libubus-req.c	/^int __hidden ubus_start_request(struct ubus_context *ctx, struct ubus_request *req,$/;"	f	signature:(struct ubus_context *ctx, struct ubus_request *req, struct blob_attr *msg, int cmd, uint32_t peer)
 ubus_state_handler_t	ipkg-install/usr/include/libubus.h	/^typedef void (*ubus_state_handler_t)(struct ubus_context *ctx, struct ubus_object *obj);$/;"	t
 ubus_state_handler_t	libubus.h	/^typedef void (*ubus_state_handler_t)(struct ubus_context *ctx, struct ubus_object *obj);$/;"	t
-ubus_strerror	libubus.c	/^const char *ubus_strerror(int error)$/;"	f
-ubus_subscribe	libubus-sub.c	/^int ubus_subscribe(struct ubus_context *ctx, struct ubus_subscriber *obj, uint32_t id)$/;"	f
-ubus_subscribe	ubusd_obj.c	/^void ubus_subscribe(struct ubus_object *obj, struct ubus_object *target)$/;"	f
+ubus_strerror	ipkg-install/usr/include/libubus.h	/^const char *ubus_strerror(int error);$/;"	p	signature:(int error)
+ubus_strerror	libubus.c	/^const char *ubus_strerror(int error)$/;"	f	signature:(int error)
+ubus_strerror	libubus.h	/^const char *ubus_strerror(int error);$/;"	p	signature:(int error)
+ubus_subscribe	ipkg-install/usr/include/libubus.h	/^int ubus_subscribe(struct ubus_context *ctx, struct ubus_subscriber *obj, uint32_t id);$/;"	p	signature:(struct ubus_context *ctx, struct ubus_subscriber *obj, uint32_t id)
+ubus_subscribe	libubus-sub.c	/^int ubus_subscribe(struct ubus_context *ctx, struct ubus_subscriber *obj, uint32_t id)$/;"	f	signature:(struct ubus_context *ctx, struct ubus_subscriber *obj, uint32_t id)
+ubus_subscribe	libubus.h	/^int ubus_subscribe(struct ubus_context *ctx, struct ubus_subscriber *obj, uint32_t id);$/;"	p	signature:(struct ubus_context *ctx, struct ubus_subscriber *obj, uint32_t id)
+ubus_subscribe	ubusd_obj.c	/^void ubus_subscribe(struct ubus_object *obj, struct ubus_object *target)$/;"	f	signature:(struct ubus_object *obj, struct ubus_object *target)
+ubus_subscribe	ubusd_obj.h	/^void ubus_subscribe(struct ubus_object *obj, struct ubus_object *target);$/;"	p	signature:(struct ubus_object *obj, struct ubus_object *target)
 ubus_subscriber	ipkg-install/usr/include/libubus.h	/^struct ubus_subscriber {$/;"	s
 ubus_subscriber	libubus.h	/^struct ubus_subscriber {$/;"	s
-ubus_subscriber_cb	libubus-sub.c	/^static int ubus_subscriber_cb(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:
+ubus_subscriber::cb	ipkg-install/usr/include/libubus.h	/^	ubus_handler_t cb;$/;"	m	struct:ubus_subscriber	access:public
+ubus_subscriber::cb	libubus.h	/^	ubus_handler_t cb;                  \/\/ ÆÕÍ¨Í¨ÖªµÄ»Øµ÷º¯Êı$/;"	m	struct:ubus_subscriber	access:public
+ubus_subscriber::obj	ipkg-install/usr/include/libubus.h	/^	struct ubus_object obj;$/;"	m	struct:ubus_subscriber	typeref:struct:ubus_subscriber::ubus_object	access:public
+ubus_subscriber::obj	libubus.h	/^	struct ubus_object obj; \/\/ ¶ÔÏó$/;"	m	struct:ubus_subscriber	typeref:struct:ubus_subscriber::ubus_object	access:public
+ubus_subscriber::remove_cb	ipkg-install/usr/include/libubus.h	/^	ubus_remove_handler_t remove_cb;$/;"	m	struct:ubus_subscriber	access:public
+ubus_subscriber::remove_cb	libubus.h	/^	ubus_remove_handler_t remove_cb;    \/\/ É¾³ıÍ¨ÖªµÄ»Øµ÷º¯Êı$/;"	m	struct:ubus_subscriber	access:public
+ubus_subscriber_cb	libubus-sub.c	/^static int ubus_subscriber_cb(struct ubus_context *ctx, struct ubus_object *obj,$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_object *obj, struct ubus_request_data *req, const char *method, struct blob_attr *msg)
 ubus_subscription	ubusd_obj.h	/^struct ubus_subscription {$/;"	s
-ubus_sync_req_cb	libubus-req.c	/^static void ubus_sync_req_cb(struct ubus_request *req, int ret)$/;"	f	file:
-ubus_unref_object_type	ubusd_obj.c	/^static void ubus_unref_object_type(struct ubus_object_type *type)$/;"	f	file:
-ubus_unregister_event_handler	ipkg-install/usr/include/libubus.h	/^static inline int ubus_unregister_event_handler(struct ubus_context *ctx,$/;"	f
-ubus_unregister_event_handler	libubus.h	/^static inline int ubus_unregister_event_handler(struct ubus_context *ctx,$/;"	f
-ubus_unregister_subscriber	ipkg-install/usr/include/libubus.h	/^ubus_unregister_subscriber(struct ubus_context *ctx, struct ubus_subscriber *obj)$/;"	f
-ubus_unregister_subscriber	libubus.h	/^ubus_unregister_subscriber(struct ubus_context *ctx, struct ubus_subscriber *obj)$/;"	f
-ubus_unsubscribe	libubus-sub.c	/^int ubus_unsubscribe(struct ubus_context *ctx, struct ubus_subscriber *obj, uint32_t id)$/;"	f
-ubus_unsubscribe	ubusd_obj.c	/^void ubus_unsubscribe(struct ubus_subscription *s)$/;"	f
-ubus_validate_hdr	libubus-io.c	/^static bool ubus_validate_hdr(struct ubus_msghdr *hdr)$/;"	f	file:
-ubusd_alloc_event_pattern	ubusd_event.c	/^static int ubusd_alloc_event_pattern(struct ubus_client *cl, struct blob_attr *msg)$/;"	f	file:
-ubusd_create_event_from_msg	ubusd_event.c	/^ubusd_create_event_from_msg(void *priv, const char *id)$/;"	f	file:
-ubusd_create_object	ubusd_obj.c	/^struct ubus_object *ubusd_create_object(struct ubus_client *cl, struct blob_attr **attr)$/;"	f
-ubusd_create_object_event_msg	ubusd_event.c	/^ubusd_create_object_event_msg(void *priv, const char *id)$/;"	f	file:
-ubusd_create_object_internal	ubusd_obj.c	/^struct ubus_object *ubusd_create_object_internal(struct ubus_object_type *type, uint32_t id)$/;"	f
-ubusd_delete_event_source	ubusd_event.c	/^static void ubusd_delete_event_source(struct event_source *evs)$/;"	f	file:
-ubusd_event_cleanup_object	ubusd_event.c	/^void ubusd_event_cleanup_object(struct ubus_object *obj)$/;"	f
-ubusd_event_init	ubusd_event.c	/^void ubusd_event_init(void)$/;"	f
-ubusd_event_recv	ubusd_event.c	/^static int ubusd_event_recv(struct ubus_client *cl, const char *method, struct blob_attr *msg)$/;"	f	file:
-ubusd_find_object	ubusd_obj.h	/^static inline struct ubus_object *ubusd_find_object(uint32_t objid)$/;"	f
-ubusd_forward_event	ubusd_event.c	/^static int ubusd_forward_event(struct ubus_client *cl, struct blob_attr *msg)$/;"	f	file:
-ubusd_forward_invoke	ubusd_proto.c	/^ubusd_forward_invoke(struct ubus_object *obj, const char *method,$/;"	f	file:
-ubusd_free_object	ubusd_obj.c	/^void ubusd_free_object(struct ubus_object *obj)$/;"	f
-ubusd_get_client_by_id	ubusd_proto.c	/^static struct ubus_client *ubusd_get_client_by_id(uint32_t id)$/;"	f	file:
-ubusd_handle_add_object	ubusd_proto.c	/^static int ubusd_handle_add_object(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)$/;"	f	file:
-ubusd_handle_add_watch	ubusd_proto.c	/^static int ubusd_handle_add_watch(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)$/;"	f	file:
-ubusd_handle_invoke	ubusd_proto.c	/^static int ubusd_handle_invoke(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)$/;"	f	file:
-ubusd_handle_lookup	ubusd_proto.c	/^static int ubusd_handle_lookup(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)$/;"	f	file:
-ubusd_handle_notify	ubusd_proto.c	/^static int ubusd_handle_notify(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)$/;"	f	file:
-ubusd_handle_remove_object	ubusd_proto.c	/^static int ubusd_handle_remove_object(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)$/;"	f	file:
-ubusd_handle_remove_watch	ubusd_proto.c	/^static int ubusd_handle_remove_watch(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)$/;"	f	file:
-ubusd_handle_response	ubusd_proto.c	/^static int ubusd_handle_response(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)$/;"	f	file:
-ubusd_obj_init	ubusd_obj.c	/^static void __constructor ubusd_obj_init(void)$/;"	f	file:
-ubusd_proto_free_client	ubusd_proto.c	/^void ubusd_proto_free_client(struct ubus_client *cl)$/;"	f
-ubusd_proto_init	ubusd_proto.c	/^static void __constructor ubusd_proto_init(void)$/;"	f	file:
-ubusd_proto_new_client	ubusd_proto.c	/^struct ubus_client *ubusd_proto_new_client(int fd, uloop_fd_handler cb)$/;"	f
-ubusd_proto_receive_message	ubusd_proto.c	/^void ubusd_proto_receive_message(struct ubus_client *cl, struct ubus_msg_buf *ub)$/;"	f
-ubusd_send_event	ubusd_event.c	/^static int ubusd_send_event(struct ubus_client *cl, const char *id,$/;"	f	file:
-ubusd_send_event_msg	ubusd_event.c	/^static void ubusd_send_event_msg(struct ubus_msg_buf **ub, struct ubus_client *cl,$/;"	f	file:
-ubusd_send_hello	ubusd_proto.c	/^static bool ubusd_send_hello(struct ubus_client *cl)$/;"	f	file:
-ubusd_send_obj	ubusd_proto.c	/^static void ubusd_send_obj(struct ubus_client *cl, struct ubus_msg_buf *ub, struct ubus_object *obj)$/;"	f	file:
-ubusd_send_obj_event	ubusd_event.c	/^void ubusd_send_obj_event(struct ubus_object *obj, bool add)$/;"	f
-ubusd_send_pong	ubusd_proto.c	/^static int ubusd_send_pong(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)$/;"	f	file:
-usage	cli.c	/^static int usage(const char *prog)$/;"	f	file:
-usage	ubusd.c	/^static int usage(const char *progname)$/;"	f	file:
+ubus_subscription::list	ubusd_obj.h	/^	struct list_head list, target_list;$/;"	m	struct:ubus_subscription	typeref:struct:ubus_subscription::list_head	access:public
+ubus_subscription::subscriber	ubusd_obj.h	/^	struct ubus_object *subscriber, *target;$/;"	m	struct:ubus_subscription	typeref:struct:ubus_subscription::ubus_object	access:public
+ubus_subscription::target	ubusd_obj.h	/^	struct ubus_object *subscriber, *target;$/;"	m	struct:ubus_subscription	typeref:struct:ubus_subscription::	access:public
+ubus_subscription::target_list	ubusd_obj.h	/^	struct list_head list, target_list;$/;"	m	struct:ubus_subscription	typeref:struct:ubus_subscription::	access:public
+ubus_sync_req_cb	libubus-req.c	/^static void ubus_sync_req_cb(struct ubus_request *req, int ret)$/;"	f	file:	signature:(struct ubus_request *req, int ret)
+ubus_unref_object_type	ubusd_obj.c	/^static void ubus_unref_object_type(struct ubus_object_type *type)$/;"	f	file:	signature:(struct ubus_object_type *type)
+ubus_unregister_event_handler	ipkg-install/usr/include/libubus.h	/^static inline int ubus_unregister_event_handler(struct ubus_context *ctx,$/;"	f	signature:(struct ubus_context *ctx, struct ubus_event_handler *ev)
+ubus_unregister_event_handler	libubus.h	/^static inline int ubus_unregister_event_handler(struct ubus_context *ctx,$/;"	f	signature:(struct ubus_context *ctx, struct ubus_event_handler *ev)
+ubus_unregister_subscriber	ipkg-install/usr/include/libubus.h	/^ubus_unregister_subscriber(struct ubus_context *ctx, struct ubus_subscriber *obj)$/;"	f	signature:(struct ubus_context *ctx, struct ubus_subscriber *obj)
+ubus_unregister_subscriber	libubus.h	/^ubus_unregister_subscriber(struct ubus_context *ctx, struct ubus_subscriber *obj)$/;"	f	signature:(struct ubus_context *ctx, struct ubus_subscriber *obj)
+ubus_unsubscribe	ipkg-install/usr/include/libubus.h	/^int ubus_unsubscribe(struct ubus_context *ctx, struct ubus_subscriber *obj, uint32_t id);$/;"	p	signature:(struct ubus_context *ctx, struct ubus_subscriber *obj, uint32_t id)
+ubus_unsubscribe	libubus-sub.c	/^int ubus_unsubscribe(struct ubus_context *ctx, struct ubus_subscriber *obj, uint32_t id)$/;"	f	signature:(struct ubus_context *ctx, struct ubus_subscriber *obj, uint32_t id)
+ubus_unsubscribe	libubus.h	/^int ubus_unsubscribe(struct ubus_context *ctx, struct ubus_subscriber *obj, uint32_t id);$/;"	p	signature:(struct ubus_context *ctx, struct ubus_subscriber *obj, uint32_t id)
+ubus_unsubscribe	ubusd_obj.c	/^void ubus_unsubscribe(struct ubus_subscription *s)$/;"	f	signature:(struct ubus_subscription *s)
+ubus_unsubscribe	ubusd_obj.h	/^void ubus_unsubscribe(struct ubus_subscription *s);$/;"	p	signature:(struct ubus_subscription *s)
+ubus_validate_hdr	libubus-io.c	/^static bool ubus_validate_hdr(struct ubus_msghdr *hdr)$/;"	f	file:	signature:(struct ubus_msghdr *hdr)
+ubusd_alloc_event_pattern	ubusd_event.c	/^static int ubusd_alloc_event_pattern(struct ubus_client *cl, struct blob_attr *msg)$/;"	f	file:	signature:(struct ubus_client *cl, struct blob_attr *msg)
+ubusd_create_event_from_msg	ubusd_event.c	/^ubusd_create_event_from_msg(void *priv, const char *id)$/;"	f	file:	signature:(void *priv, const char *id)
+ubusd_create_object	ubusd_obj.c	/^struct ubus_object *ubusd_create_object(struct ubus_client *cl, struct blob_attr **attr)$/;"	f	signature:(struct ubus_client *cl, struct blob_attr **attr)
+ubusd_create_object	ubusd_obj.h	/^struct ubus_object *ubusd_create_object(struct ubus_client *cl, struct blob_attr **attr);$/;"	p	signature:(struct ubus_client *cl, struct blob_attr **attr)
+ubusd_create_object_event_msg	ubusd_event.c	/^ubusd_create_object_event_msg(void *priv, const char *id)$/;"	f	file:	signature:(void *priv, const char *id)
+ubusd_create_object_internal	ubusd_obj.c	/^struct ubus_object *ubusd_create_object_internal(struct ubus_object_type *type, uint32_t id)$/;"	f	signature:(struct ubus_object_type *type, uint32_t id)
+ubusd_create_object_internal	ubusd_obj.h	/^struct ubus_object *ubusd_create_object_internal(struct ubus_object_type *type, uint32_t id);$/;"	p	signature:(struct ubus_object_type *type, uint32_t id)
+ubusd_delete_event_source	ubusd_event.c	/^static void ubusd_delete_event_source(struct event_source *evs)$/;"	f	file:	signature:(struct event_source *evs)
+ubusd_event_cleanup_object	ubusd.h	/^void ubusd_event_cleanup_object(struct ubus_object *obj);$/;"	p	signature:(struct ubus_object *obj)
+ubusd_event_cleanup_object	ubusd_event.c	/^void ubusd_event_cleanup_object(struct ubus_object *obj)$/;"	f	signature:(struct ubus_object *obj)
+ubusd_event_init	ubusd.h	/^void ubusd_event_init(void);$/;"	p	signature:(void)
+ubusd_event_init	ubusd_event.c	/^void ubusd_event_init(void)$/;"	f	signature:(void)
+ubusd_event_recv	ubusd_event.c	/^static int ubusd_event_recv(struct ubus_client *cl, const char *method, struct blob_attr *msg)$/;"	f	file:	signature:(struct ubus_client *cl, const char *method, struct blob_attr *msg)
+ubusd_find_object	ubusd_obj.h	/^static inline struct ubus_object *ubusd_find_object(uint32_t objid)$/;"	f	signature:(uint32_t objid)
+ubusd_forward_event	ubusd_event.c	/^static int ubusd_forward_event(struct ubus_client *cl, struct blob_attr *msg)$/;"	f	file:	signature:(struct ubus_client *cl, struct blob_attr *msg)
+ubusd_forward_invoke	ubusd_proto.c	/^ubusd_forward_invoke(struct ubus_object *obj, const char *method,$/;"	f	file:	signature:(struct ubus_object *obj, const char *method, struct ubus_msg_buf *ub, struct blob_attr *data)
+ubusd_free_object	ubusd_obj.c	/^void ubusd_free_object(struct ubus_object *obj)$/;"	f	signature:(struct ubus_object *obj)
+ubusd_free_object	ubusd_obj.h	/^void ubusd_free_object(struct ubus_object *obj);$/;"	p	signature:(struct ubus_object *obj)
+ubusd_get_client_by_id	ubusd_proto.c	/^static struct ubus_client *ubusd_get_client_by_id(uint32_t id)$/;"	f	file:	signature:(uint32_t id)
+ubusd_handle_add_object	ubusd_proto.c	/^static int ubusd_handle_add_object(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)$/;"	f	file:	signature:(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)
+ubusd_handle_add_watch	ubusd_proto.c	/^static int ubusd_handle_add_watch(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)$/;"	f	file:	signature:(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)
+ubusd_handle_invoke	ubusd_proto.c	/^static int ubusd_handle_invoke(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)$/;"	f	file:	signature:(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)
+ubusd_handle_lookup	ubusd_proto.c	/^static int ubusd_handle_lookup(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)$/;"	f	file:	signature:(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)
+ubusd_handle_notify	ubusd_proto.c	/^static int ubusd_handle_notify(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)$/;"	f	file:	signature:(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)
+ubusd_handle_remove_object	ubusd_proto.c	/^static int ubusd_handle_remove_object(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)$/;"	f	file:	signature:(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)
+ubusd_handle_remove_watch	ubusd_proto.c	/^static int ubusd_handle_remove_watch(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)$/;"	f	file:	signature:(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)
+ubusd_handle_response	ubusd_proto.c	/^static int ubusd_handle_response(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)$/;"	f	file:	signature:(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)
+ubusd_obj_init	ubusd_obj.c	/^static void __constructor ubusd_obj_init(void)$/;"	f	file:	signature:(void)
+ubusd_proto_free_client	ubusd.h	/^void ubusd_proto_free_client(struct ubus_client *cl);$/;"	p	signature:(struct ubus_client *cl)
+ubusd_proto_free_client	ubusd_proto.c	/^void ubusd_proto_free_client(struct ubus_client *cl)$/;"	f	signature:(struct ubus_client *cl)
+ubusd_proto_init	ubusd_proto.c	/^static void __constructor ubusd_proto_init(void)$/;"	f	file:	signature:(void)
+ubusd_proto_new_client	ubusd.h	/^struct ubus_client *ubusd_proto_new_client(int fd, uloop_fd_handler cb);$/;"	p	signature:(int fd, uloop_fd_handler cb)
+ubusd_proto_new_client	ubusd_proto.c	/^struct ubus_client *ubusd_proto_new_client(int fd, uloop_fd_handler cb)$/;"	f	signature:(int fd, uloop_fd_handler cb)
+ubusd_proto_receive_message	ubusd.h	/^void ubusd_proto_receive_message(struct ubus_client *cl, struct ubus_msg_buf *ub);$/;"	p	signature:(struct ubus_client *cl, struct ubus_msg_buf *ub)
+ubusd_proto_receive_message	ubusd_proto.c	/^void ubusd_proto_receive_message(struct ubus_client *cl, struct ubus_msg_buf *ub)$/;"	f	signature:(struct ubus_client *cl, struct ubus_msg_buf *ub)
+ubusd_send_event	ubusd_event.c	/^static int ubusd_send_event(struct ubus_client *cl, const char *id,$/;"	f	file:	signature:(struct ubus_client *cl, const char *id, event_fill_cb fill_cb, void *cb_priv)
+ubusd_send_event_msg	ubusd_event.c	/^static void ubusd_send_event_msg(struct ubus_msg_buf **ub, struct ubus_client *cl,$/;"	f	file:	signature:(struct ubus_msg_buf **ub, struct ubus_client *cl, struct ubus_object *obj, const char *id, event_fill_cb fill_cb, void *cb_priv)
+ubusd_send_hello	ubusd_proto.c	/^static bool ubusd_send_hello(struct ubus_client *cl)$/;"	f	file:	signature:(struct ubus_client *cl)
+ubusd_send_obj	ubusd_proto.c	/^static void ubusd_send_obj(struct ubus_client *cl, struct ubus_msg_buf *ub, struct ubus_object *obj)$/;"	f	file:	signature:(struct ubus_client *cl, struct ubus_msg_buf *ub, struct ubus_object *obj)
+ubusd_send_obj_event	ubusd.h	/^void ubusd_send_obj_event(struct ubus_object *obj, bool add);$/;"	p	signature:(struct ubus_object *obj, bool add)
+ubusd_send_obj_event	ubusd_event.c	/^void ubusd_send_obj_event(struct ubus_object *obj, bool add)$/;"	f	signature:(struct ubus_object *obj, bool add)
+ubusd_send_pong	ubusd_proto.c	/^static int ubusd_send_pong(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)$/;"	f	file:	signature:(struct ubus_client *cl, struct ubus_msg_buf *ub, struct blob_attr **attr)
+usage	cli.c	/^static int usage(const char *prog)$/;"	f	file:	signature:(const char *prog)
+usage	ubusd.c	/^static int usage(const char *progname)$/;"	f	file:	signature:(const char *progname)
 verbose	cli.c	/^static int verbose = 0;$/;"	v	file:
-version	ipkg-install/usr/include/ubusmsg.h	/^	uint8_t version;$/;"	m	struct:ubus_msghdr
-version	ubusmsg.h	/^	uint8_t version;$/;"	m	struct:ubus_msghdr
-wait_check_object	cli.c	/^static void wait_check_object(struct cli_wait_data *data, const char *path)$/;"	f	file:
-wait_data	libubus-io.c	/^static void wait_data(int fd, bool write)$/;"	f	file:
-wait_event_cb	cli.c	/^static void wait_event_cb(struct ubus_context *ctx, struct ubus_event_handler *ev,$/;"	f	file:
-wait_list_cb	cli.c	/^static void wait_list_cb(struct ubus_context *ctx, struct ubus_object_data *obj, void *priv)$/;"	f	file:
-wait_timeout	cli.c	/^static void wait_timeout(struct uloop_timeout *timeout)$/;"	f	file:
+version	ipkg-install/usr/include/ubusmsg.h	/^	uint8_t version;$/;"	m	struct:ubus_msghdr	access:public
+version	ubusmsg.h	/^	uint8_t version;$/;"	m	struct:ubus_msghdr	access:public
+wait_check_object	cli.c	/^static void wait_check_object(struct cli_wait_data *data, const char *path)$/;"	f	file:	signature:(struct cli_wait_data *data, const char *path)
+wait_data	libubus-io.c	/^static void wait_data(int fd, bool write)$/;"	f	file:	signature:(int fd, bool write)
+wait_event_cb	cli.c	/^static void wait_event_cb(struct ubus_context *ctx, struct ubus_event_handler *ev,$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_event_handler *ev, const char *type, struct blob_attr *msg)
+wait_list_cb	cli.c	/^static void wait_list_cb(struct ubus_context *ctx, struct ubus_object_data *obj, void *priv)$/;"	f	file:	signature:(struct ubus_context *ctx, struct ubus_object_data *obj, void *priv)
+wait_timeout	cli.c	/^static void wait_timeout(struct uloop_timeout *timeout)$/;"	f	file:	signature:(struct uloop_timeout *timeout)
 watch_policy	examples/server.c	/^static const struct blobmsg_policy watch_policy[__WATCH_MAX] = {$/;"	v	typeref:struct:blobmsg_policy	file:
-writev_retry	libubus-io.c	/^static int writev_retry(int fd, struct iovec *iov, int iov_len, int sock_fd)$/;"	f	file:
+writev_retry	libubus-io.c	/^static int writev_retry(int fd, struct iovec *iov, int iov_len, int sock_fd)$/;"	f	file:	signature:(int fd, struct iovec *iov, int iov_len, int sock_fd)

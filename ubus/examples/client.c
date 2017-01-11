@@ -32,6 +32,7 @@ static struct ubus_object test_client_object = {
 	.subscribe_cb = test_client_subscribe_cb,
 };
 
+// 被阅订方发出方法名为"ping"的通知,通知的具体内容是"counter",频率 max次/s
 static void test_client_notify_cb(struct uloop_timeout *timeout)
 {
 	static int counter = 0;
@@ -188,11 +189,14 @@ static void client_main(void)
 		return;
 	}
 
+    // 以下通过调用"test"对象的"watch"方法,传递本对象的ID号,用于阅订
 	blob_buf_init(&b, 0);
 	blobmsg_add_u32(&b, "id", test_client_object.id);
 	ubus_invoke(ctx, id, "watch", b.head, NULL, 0, 3000);
+    // 尝试发起通知
 	test_client_notify_cb(&notify_timer);
 
+    // 以下通过调用"test"对象的"hello"方法，传递"msg"的参数值给对端，这里用来测试异步调用
 	blob_buf_init(&b, 0);
 	blobmsg_add_string(&b, "msg", "blah");
 	ubus_invoke_async(ctx, id, "hello", b.head, &req);
@@ -200,6 +204,7 @@ static void client_main(void)
 	req.complete_cb = test_client_complete_cb;
 	ubus_complete_request_async(ctx, &req);
 
+    // 以下是通过定时器来测试同步调用，包括对返回数据的处理
 	uloop_timeout_set(&count_timer, 2000);
 
 	uloop_run();

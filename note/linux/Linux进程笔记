@@ -1,0 +1,33 @@
+                                            进程环境
+----------------------------------------------------------------------------------------------------
+1. 进程终止
+    有5种方式可以使进程正常终止：
+                1）从main返回
+                2）调用exit
+                3）调用_exit或_Exit
+                4）最后一个线程从其启动例程返回
+                5）最后一个线程调用pthread_exit
+
+    exit/_exit/_Exit这3个函数的区别：_exit和_Exit立即进入内核,而exit则先执行一些清理动作(包括调用执行事先注册了的终止处理函数，fclose所有标准I/O等)，然后调用_exit/_Exit
+                                     
+    atexit函数用于注册终止处理函数，原型如下：
+        int atexit(void (*func)(void))
+    这些终止处理函数将由exit自动调用，exit调用它们的顺序和它们被注册时的顺序正好相反，也就是第一个注册的终止处理函数将会被最后调用
+
+2. 环境变量
+    每个进程在被创建的时候都会收到一张命令行参数表和一张环境变量表，通常两张表都位于本进程存储空间的顶部（栈之上）
+    
+    获取环境变量的方法：
+        char *getenv(const char *name);     // 函数返回一个指针，指向name=value字符串中的value
+    修改环境变量的方法：
+        int setenv(const char *name,const char *value,int rewrite); // 开辟一块堆内存，放入name=value字符串.如果环境中name已经存在，则根据rewrite值决定是否进行覆盖
+        int putenv(char *str);                                      // 将形式为name=value的字符串地址(字符串空间不能是在栈上分配的)直接放到环境表中，如果name已经存在，则先删除原来的定义
+        int unsetenv(const char *name);                             // 删除name的环境变量，即使不存在也不返回错误
+    
+3. 非局部跳转
+    不同于普通C语言的goto语句在一个函数内进行跳转，非局部跳转可以在栈上进行跨函数跳转，从而返回到当前函数调用路径上的某个函数中。通过2个函数来实现：
+            int setjmp(jmp_buf env);            // 直接调用时返回0；从longjmp调用时返回非0值
+            void longjmp(jmp_buf env,int val);  // 调用该函数可以返回到上次执行setjmp的位置
+    参数env包含了恢复栈状态的所有信息，由setjmp生成导出，由longjmp导入恢复，所以参数env必须是全局性质的;
+    根据返回值的不同，一个setjmp可以对应多一个longjmp，因为setjmp的返回值对应了longjmp传入的val.
+

@@ -179,6 +179,7 @@ static void ubus_lookup_id_cb(struct ubus_request *req, int type, struct blob_at
 	*id = blob_get_u32(attr[UBUS_ATTR_OBJID]);
 }
 
+// 根据对象名查找对应的ID号
 int ubus_lookup_id(struct ubus_context *ctx, const char *path, uint32_t *id)
 {
 	struct ubus_request req;

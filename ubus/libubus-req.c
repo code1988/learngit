@@ -213,7 +213,7 @@ int ubus_send_reply(struct ubus_context *ctx, struct ubus_request_data *req,
 
 /* 异步调用
  * @obj     : 对端对象对应的id
- * @method  : 对段对象的一种方法名
+ * @method  : 对端对象的一种方法名
  * @msg     : 本地提供的参数集合
  * @req     : 需要被填充的结构,记录了本次异步调用的相关信息
  */
@@ -233,6 +233,10 @@ int ubus_invoke_async(struct ubus_context *ctx, uint32_t obj, const char *method
 	return 0;
 }
 
+/* 同步调用
+ * @obj     : 对端对象对应的id
+ * @method  : 对端对象的一种方法名
+ **/
 int ubus_invoke(struct ubus_context *ctx, uint32_t obj, const char *method,
                 struct blob_attr *msg, ubus_data_handler_t cb, void *priv,
 		int timeout)
@@ -297,6 +301,11 @@ int ubus_notify_async(struct ubus_context *ctx, struct ubus_object *obj,
 	return __ubus_notify_async(ctx, obj, type, msg, req, true);
 }
 
+/* ubus被阅订方发出通知
+ * @obj     : 本端发出通知的ubus对象
+ * @type    : 方法名
+ * @msg     : 该通知携带的具体消息
+ */
 int ubus_notify(struct ubus_context *ctx, struct ubus_object *obj,
 		const char *type, struct blob_attr *msg, int timeout)
 {

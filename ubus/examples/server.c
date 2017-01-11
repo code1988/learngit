@@ -19,7 +19,7 @@
 #include "count.h"
 
 static struct ubus_context *ctx;    // 指向注册服务到ubusd的客户端的总控制块
-static struct ubus_subscriber test_event;   // 对象的附加描述控制块
+static struct ubus_subscriber test_event;   // 对象的阅订控制块
 static struct blob_buf b;           // 定义一个静态全局BLOB控制块
 
 // 对象hello的参数枚举
@@ -93,35 +93,18 @@ static int test_hello(struct ubus_context *ctx, struct ubus_object *obj,
 	const char *format = "%s received a message: %s";
 	const char *msgstr = "(unknown)";
 
-    printf(">>>>>>>>>>>>>>> method: %s\n",method);
-    printf("msg->id_len: %08x, blob_len(msg): %d\n",msg->id_len,blob_len(msg));
     // 解析消息，根据预先设置的策略过滤
 	blobmsg_parse(hello_policy, ARRAY_SIZE(hello_policy), tb, blob_data(msg), blob_len(msg));
 
-	if (tb[HELLO_ID])
-    {
-        printf("tb[HELLO_ID]->id_len: %08x\n",tb[HELLO_ID]->id_len);
-	    struct blobmsg_hdr *hdr = (struct blobmsg_hdr *) blob_data(tb[HELLO_ID]);
-        printf("blobmsg_hdr_len: %d, name: %s\n",hdr->namelen,hdr->name);
-        printf("actual name len: %d\n",BLOBMSG_PADDING(sizeof(struct blobmsg_hdr) + be16_to_cpu(hdr->namelen) + 1));
-
-        // 获取"id"的值
-		msgstr = blobmsg_data(tb[HELLO_ID]);
-        printf("msgstr: %d\n",*(int *)msgstr);
-    }
 	if (tb[HELLO_MSG])
     {
-        printf("tb[HELLO_MSG]->id_len: %08x\n",tb[HELLO_MSG]->id_len);
 	    struct blobmsg_hdr *hdr = (struct blobmsg_hdr *) blob_data(tb[HELLO_MSG]);
-        printf("blobmsg_hdr_len: %d, name: %s\n",hdr->namelen,hdr->name);
-        printf("actual name len: %d\n",BLOBMSG_PADDING(sizeof(struct blobmsg_hdr) + be16_to_cpu(hdr->namelen) + 1));
 
         // 获取"msg"的值
 		msgstr = blobmsg_data(tb[HELLO_MSG]);
-        printf("msgstr: %s\n",msgstr);
     }
 
-    // 回复的字符串组织
+    // 组织回复的字符串
 	hreq = calloc(1, sizeof(*hreq) + strlen(format) + strlen(obj->name) + strlen(msgstr) + 1);
 	sprintf(hreq->data, format, obj->name, msgstr);
     printf("hello request data: %s\n",hreq->data);   // "test received a message: code"
@@ -155,7 +138,7 @@ test_handle_remove(struct ubus_context *ctx, struct ubus_subscriber *s,
 	fprintf(stderr, "Object %08x went away\n", id);
 }
 
-// 附加描述控制块中的主回调函数
+// 阅订者收到普通通知的回调函数
 static int
 test_notify(struct ubus_context *ctx, struct ubus_object *obj,
 	    struct ubus_request_data *req, const char *method,
