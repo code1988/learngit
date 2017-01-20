@@ -121,6 +121,7 @@ static void cpu_idle_loop(void)
 	}
 }
 
+// 这个就是0号进程，永远位于内核中
 void cpu_startup_entry(enum cpuhp_state state)
 {
 	/*
@@ -140,5 +141,7 @@ void cpu_startup_entry(enum cpuhp_state state)
 #endif
 	__current_set_polling();
 	arch_cpu_idle_prepare();
+
+	// 0号进程在执行完一些初始化后，最后进入IDLE状态
 	cpu_idle_loop();
 }

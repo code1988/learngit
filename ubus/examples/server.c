@@ -22,14 +22,14 @@ static struct ubus_context *ctx;    // 指向注册服务到ubusd的客户端的
 static struct ubus_subscriber test_event;   // 对象的阅订控制块
 static struct blob_buf b;           // 定义一个静态全局BLOB控制块
 
-// 对象hello的参数枚举
+// 方法hello的参数枚举
 enum {
 	HELLO_ID,
 	HELLO_MSG,
 	__HELLO_MAX
 };
 
-// 对象hello的策略
+// 方法hello的策略
 static const struct blobmsg_policy hello_policy[] = {
 	[HELLO_ID] = { .name = "id", .type = BLOBMSG_TYPE_INT32 },
 	[HELLO_MSG] = { .name = "msg", .type = BLOBMSG_TYPE_STRING },

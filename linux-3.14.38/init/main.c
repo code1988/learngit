@@ -379,6 +379,7 @@ static noinline void __init_refok rest_init(void)
 	 * the init task will end up wanting to create kthreads, which, if
 	 * we schedule it before we create kthreadd, will OOPS.
 	 */
+	// 这里创建了一个内核线程kernel_init,它最后会创建一个用户态的init进程
 	kernel_thread(kernel_init, NULL, CLONE_FS | CLONE_SIGHAND);
 	numa_default_policy();
 	pid = kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);
@@ -394,6 +395,7 @@ static noinline void __init_refok rest_init(void)
 	init_idle_bootup_task(current);
 	schedule_preempt_disabled();
 	/* Call into cpu_idle with preempt disabled */
+	// 这里将会进入一个while（1）循环，这就是进程0
 	cpu_startup_entry(CPUHP_ONLINE);
 }
 
@@ -476,6 +478,7 @@ static void __init mm_init(void)
 	vmalloc_init();
 }
 
+// 这里是linux系统C语言入口，在这之前都是汇编
 asmlinkage void __init start_kernel(void)
 {
 	char * command_line;
@@ -837,6 +840,7 @@ static int try_to_run_init_process(const char *init_filename)
 
 static noinline void __init kernel_init_freeable(void);
 
+// 这个内核线程最后会创建一个用户态的init进程，整个系统的初始化流程也就在这里从内核态切换到用户态
 static int __ref kernel_init(void *unused)
 {
 	int ret;
@@ -872,6 +876,7 @@ static int __ref kernel_init(void *unused)
 		pr_err("Failed to execute %s (error %d).  Attempting defaults...\n",
 			execute_command, ret);
 	}
+	// 尝试打开以下这些文件，只要找到任何一个，就会去执行,系统也就是从这里开始正式进入用户态
 	if (!try_to_run_init_process("/sbin/init") ||
 	    !try_to_run_init_process("/etc/init") ||
 	    !try_to_run_init_process("/bin/init") ||
