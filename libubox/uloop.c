@@ -51,7 +51,7 @@ struct uloop_fd_stack {
 	unsigned int events;
 };
 
-static struct uloop_fd_stack *fd_stack = NULL;  // 指向存储尚未处理的触发fd控制块的链表
+static struct uloop_fd_stack *fd_stack = NULL;  // 指向存储尚未处理的触发fd控制块的链表头部,这个链表池实际应该是并没有被用起来
 
 #define ULOOP_MAX_EVENTS 10 // epoll监听池容纳事件的最大数量,不超过epoll_create函数的size
 
@@ -315,7 +315,7 @@ static int uloop_fetch_events(int timeout)
 
 #endif
 
-// 遍历已经触发但尚未被处理的fd池，如果跟新触发的fd吻合，则合并events集合
+// 遍历已经触发但尚未被处理的fd池fd_stack，如果跟新触发的fd吻合，则合并events集合(入参events赋值1来达到清楚节点的效果)
 static bool uloop_fd_stack_event(struct uloop_fd *fd, int events)
 {
 	struct uloop_fd_stack *cur;
@@ -323,7 +323,7 @@ static bool uloop_fd_stack_event(struct uloop_fd *fd, int events)
 	/*
 	 * Do not buffer events for level-triggered fds, they will keep firing.
 	 * Caller needs to take care of recursion issues.
-     * 带有边沿触发属性的fd控制块不会被加入缓冲池，所以没有比较的必要
+     * 带有水平触发属性的fd控制块不会被加入缓冲池，因为它们会一直触发epoll（如果没有被处理）
 	 */
 	if (!(fd->flags & ULOOP_EDGE_TRIGGER))
 		return false;
@@ -345,7 +345,9 @@ static bool uloop_fd_stack_event(struct uloop_fd *fd, int events)
 	return false;
 }
 
-// 等待获取事件、处理事件(特别要注意，timeout值是跟定时器链表首节点中的定时值相关的;epoll的超时处理是在上级函数里完成的)
+/* 等待获取事件、处理事件
+ * 特别要注意，timeout值是跟定时器链表首节点中的定时值相关的;epoll的超时处理是在上级函数里完成的;本函数一次只能处理一个fd
+ */
 static void uloop_run_events(int timeout)
 {
 	struct uloop_fd_event *cur;
@@ -360,7 +362,11 @@ static void uloop_run_events(int timeout)
 			cur_nfds = 0;
 	}
 
-    // 处理所有被触发的事件
+    /* 处理当前被触发的事件
+    *  注意：当前函数不一定执行一遍就可以处理完所有的cur_nfds数量的当前被触发fd, 
+    *  因为该while只能执行一个xfd事件,xfd之前的fd都会被缓存到fd_stack池,
+    *  xfd之后的fd要等待下一次进入当前函数再被处理
+    */
 	while (cur_nfds > 0) 
     {
 		struct uloop_fd_stack stack_cur;
@@ -377,13 +383,15 @@ static void uloop_run_events(int timeout)
 		if (!fd->cb)
 			continue;
 
-        // 遍历已经触发但尚未被处理的fd池，如果跟新触发的fd吻合，则合并events集合
+        // 遍历已经触发但尚未被处理的fd池fd_stack，如果跟新触发的fd吻合，则将新触发events合并进去
 		if (uloop_fd_stack_event(fd, cur->events))
 			continue;
 
+        // 运行到这里意味着新触发的fd在fd_stack中并没有相同的节点，或者该fd不支持缓存（携带了水平触发属性），那么将该fd作为一个新节点插到fd_stack链表头部
 		stack_cur.next = fd_stack;
 		stack_cur.fd = fd;
 		fd_stack = &stack_cur;
+          
 		do {
 			stack_cur.events = 0;
 			fd->cb(fd, events);
@@ -395,7 +403,7 @@ static void uloop_run_events(int timeout)
 	}
 }
 
-// 将需要监听的fd以及要对其监听的事件类型注册到epoll(3级封装)
+// 将需要监听的fd以及要对其监听的事件类型注册到epoll(3级封装,默认拥有水平触发、非阻塞的特性)
 int uloop_fd_add(struct uloop_fd *sock, unsigned int flags)
 {
 	unsigned int fl;

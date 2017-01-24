@@ -227,7 +227,7 @@ const char *ubus_strerror(int error);
 // 客户端注册fd到epoll
 static inline void ubus_add_uloop(struct ubus_context *ctx)
 {
-    // 客户端注册fd到epoll（阻塞模式、读触发、水平触发）
+    // 客户端注册fd到epoll,读触发,(这里调用ULOOP_BLOCKING的逻辑本意也许是说该fd之前已经做了NOBLOCKING操作，这里不用再做，但是写法上值得商榷)
 	uloop_fd_add(&ctx->sock, ULOOP_BLOCKING | ULOOP_READ);
 }
 
