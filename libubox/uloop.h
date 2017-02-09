@@ -57,6 +57,7 @@ typedef void (*uloop_process_handler)(struct uloop_process *c, int ret);
 #endif
 
 #define ULOOP_ERROR_CB		(1 << 6)
+#define ULOOP_PRI           (1 << 7)
 
 // 需要被epoll监听的fd管理块
 struct uloop_fd
