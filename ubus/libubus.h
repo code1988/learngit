@@ -118,8 +118,8 @@ struct ubus_object {
 	const char *path;
 	struct ubus_object_type *type;      // 对象类型
 
-	ubus_state_handler_t subscribe_cb;  // 用于预订功能的回调
-	bool has_subscribers;
+	ubus_state_handler_t subscribe_cb;  // 提供阅订服务者使用，当本服务有被阅订时触发此回调
+	bool has_subscribers;               // 提供阅订服务者使用，记录了本服务当前被阅订的数量
 
 	const struct ubus_method *methods;  // 指向方法
 	int n_methods;      // 记录方法的数量
