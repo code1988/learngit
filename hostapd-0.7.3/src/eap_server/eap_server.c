@@ -17,7 +17,7 @@
  * from RFC 4137) are mixed in. This functionality is enabled by setting
  * backend_auth configuration variable to TRUE.
  * 本文件就定义了1个状态机
- *              EAP Full Authenticator state machine
+ *              EAP Full Authenticator state machine(下面简称EAP SM)
  *
  * 备注：该状态机定义在RFC4137 Chapter-7
  *       本文件只供认证系统方使用，所有内容不面向请求者方
@@ -603,7 +603,7 @@ SM_STATE(EAP, SUCCESS2)
 	sm->start_reauth = TRUE;
 }
 
-// sm_EAP_Step(struct eap_sm *sm)
+// 检查EAP SM 的条件变量，然后根据情况进行状态切换
 SM_STEP(EAP)
 {
 	if (sm->eap_if.eapRestart && sm->eap_if.portEnabled)
@@ -1181,6 +1181,7 @@ static Boolean eap_sm_Policy_doPickUp(struct eap_sm *sm, EapType method)
  * eap_server_sm_step - Step EAP server state machine
  * @sm: Pointer to EAP state machine allocated with eap_server_sm_init()
  * Returns: 1 if EAP state was changed or 0 if not
+ * 开始进行eap层状态机自平衡
  *
  * This function advances EAP state machine to a new state to match with the
  * current variables. This should be called whenever variables used by the EAP
@@ -1192,6 +1193,7 @@ int eap_server_sm_step(struct eap_sm *sm)
 	do {
 		sm->changed = FALSE;
 		SM_STEP_RUN(EAP);
+        // EAP SM 有过状态切换就返回
 		if (sm->changed)
 			res = 1;
 	} while (sm->changed);
@@ -1217,7 +1219,7 @@ static void eap_user_free(struct eap_user *user)
  * Returns: Pointer to the allocated EAP state machine or %NULL on failure
  *
  * This function allocates and initializes an EAP state machine.
- * 创建EAP 服务器状态机
+ * 创建认证系统的EAP SM
  */
 struct eap_sm * eap_server_sm_init(void *eapol_ctx,
 				   struct eapol_callbacks *eapol_cb,

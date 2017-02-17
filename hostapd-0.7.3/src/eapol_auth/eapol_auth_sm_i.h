@@ -47,9 +47,9 @@ struct eapol_authenticator {
  */
 struct eapol_state_machine {
 	/* timers */
-	int aWhile;     // 用于后台认证状态机，定义了认证者和EAP之间交互的超时时间,超时值为serverTimeout(也就是BE_AUTH_DEFAULT_serverTimeout)
-	int quietWhile; // 用于认证者的状态机，此时间内认证者不会接受任何请求者，超时值为quietPeriod(也就是AUTH_PAE_DEFAULT_quietPeriod)
-	int reAuthWhen; // 用于重认证定时器状态机，定义了允许请求者重认证的间隔,超时值为reAuthPeriod
+	int aWhile;     // 用于BE_AUTH SM ，定义了eapol层递交eapoleap报文给eap层，然后等待回复的计时,超时值为serverTimeout(也就是BE_AUTH_DEFAULT_serverTimeout)
+	int quietWhile; // 用于AUTH_PAE SM，此时间内认证者不会接受任何请求者，超时值为quietPeriod(也就是AUTH_PAE_DEFAULT_quietPeriod)
+	int reAuthWhen; // 用于REAUTH_TIMER SM ，定义了允许请求者重认证的间隔,超时值为reAuthPeriod
 
 	/**********************************************  global variables   ***********************************************************************/
 	Boolean authAbort;  // AUTH_PAE SM 进入ABORTING状态时设置TRUE；BE_AUTH SM 进入INITIALIZE状态时设置FALSE
@@ -58,7 +58,7 @@ struct eapol_state_machine {
 	Boolean authStart;  // AUTH_PAE SM 进入AUTHENTICATING状态时设置TRUE；BE_AUTH SM 进入IDLE状态时设置FALSE
 	Boolean authTimeout;// BE_AUTH SM 进入TIMEOUT状态时设置TRUE；AUTH_PAE SM 进入AUTHENTICATING状态时设置FALSE
 	Boolean authSuccess;// BE_AUTH SM 进入SUCCESS状态时设置TRUE；AUTH_PAE SM 进入AUTHENTICATING状态时设置FALSE
-	Boolean eapolEap;   // 作为认证者，接收到承载了EAP-PACKET的EAPOL报文时设置TRUE；BE_AUTH SM 进入REQUEST(非标准)/RESPONSE状态时设置FALSE
+	Boolean eapolEap;   // 作为认证者，接收到承载了EAP-PACKET(通常是一个resp)的EAPOL报文时设置TRUE；BE_AUTH SM 进入REQUEST(非标准)/RESPONSE状态时设置FALSE
 	Boolean initialize; // 当该标志强制初始化eapol层所有状态机
 	Boolean keyDone;
 	Boolean keyRun;     // BE_AUTH SM 进入SUCCESS状态时设置TRUE；AUTH_PAE SM 进入AUTHENTICATING/ABORTING状态时设置FALSE
@@ -81,7 +81,7 @@ struct eapol_state_machine {
 	PortTypes portMode;     // 状态机私有的端口模式,初始化时设置Auto，进入FORCE_AUTH状态时设置ForceAuthorized，进入FORCE_UNAUTH状态时设置ForceUnauthorized
 	unsigned int reAuthCount;   // 状态机进入CONNECTING状态时累加，一旦超过reAuthMax则进入DISCONNECTED状态，进入DISCONNECTED/AUTHENTICATED时清0
 	/* constants */
-	unsigned int quietPeriod; /* default 60; 0..65535 静默时间,应该是认证失败后到重新认证的间隔*/
+	unsigned int quietPeriod; /* default 60; 0..65535 静默时间,应该是认证失败后到重新认证的间隔，用于设置定时器quietWhile*/
 #define AUTH_PAE_DEFAULT_quietPeriod 60
 	unsigned int reAuthMax; /* default 2 重认证次数*/
 #define AUTH_PAE_DEFAULT_reAuthMax 2
@@ -104,23 +104,23 @@ struct eapol_state_machine {
 	       BE_AUTH_IGNORE
 	} be_auth_state;    // 后台认证状态机
 	/* constants */
-	unsigned int serverTimeout; /* default 30; 1..X 后台服务器认证超时时间*/
+	unsigned int serverTimeout; /* default 30; 1..X 后台服务器认证超时时间，用于设置定时器aWhile*/
 #define BE_AUTH_DEFAULT_serverTimeout 30
 	/* counters */
-	Counter backendResponses;
+	Counter backendResponses;                       // 记录了BE_AUTH SM 发送给EAP层response的数量
 	Counter backendAccessChallenges;
 	Counter backendOtherRequestsToSupplicant;       // 记录了BE_AUTH SM 发送给请求者request的数量
 	Counter backendAuthSuccesses;
-	Counter backendAuthFails;
+	Counter backendAuthFails;                       // 记录了BE_AUTH SM 从RESPONSE进入FAIL的数量
 
 	/**********************************     Reauthentication Timer state machine    **********************************************************/
 	enum { REAUTH_TIMER_INITIALIZE, REAUTH_TIMER_REAUTHENTICATE
 	} reauth_timer_state;   // 重认证定时器状态机
 	/* constants */
-	unsigned int reAuthPeriod; /* default 3600 s 重认证周期*/
+	unsigned int reAuthPeriod; /* default 3600 s 重认证周期,用于设置重认证定时器reAuthWhen */
 	Boolean reAuthEnabled;  // 重认证功能使能位(只用于认证系统)
 
-	/* Authenticator Key Transmit state machine */
+	/***********************************    Authenticator Key Transmit state machine    ******************************************************/
 	enum { AUTH_KEY_TX_NO_KEY_TRANSMIT, AUTH_KEY_TX_KEY_TRANSMIT
 	} auth_key_tx_state;    // 认证者key发送状态机
 
@@ -130,11 +130,11 @@ struct eapol_state_machine {
 	Boolean rxKey;
 
 	/************************************   Controlled Directions state machine  *************************************************************/
-	enum { CTRL_DIR_FORCE_BOTH, CTRL_DIR_IN_OR_BOTH } ctrl_dir_state;   // 控制方向状态机
+	enum { CTRL_DIR_FORCE_BOTH, CTRL_DIR_IN_OR_BOTH } ctrl_dir_state;   // 受控方向状态机
 	/* variables */
-	ControlledDirection adminControlledDirections;
-	ControlledDirection operControlledDirections;
-	Boolean operEdge;
+	ControlledDirection adminControlledDirections;      // 受控方向，本值不会被CTRL_DIR SM修改
+	ControlledDirection operControlledDirections;       // 受控方向，本值会被CTRL_DIR SM写入adminControlledDirections
+	Boolean operEdge;                                   // 端口没有开启VLAN时，此标志位设置为TRUE
 
 	/* Authenticator Statistics Table */
 	Counter dot1xAuthEapolFramesRx;         // 记录了接收eapol帧数量
@@ -176,7 +176,7 @@ struct eapol_state_machine {
 	struct eap_sm *eap;
 
 	Boolean initializing; /* in process of initializing state machines 标志位，表示正在进行状态机初始化*/
-	Boolean changed;    // 记录状态机的状态是否发生变化
+	Boolean changed;    // 记录eapol层状态机组的状态是否发生变化
 
 	struct eapol_authenticator *eapol;  // 指向eapol认证控制块
 

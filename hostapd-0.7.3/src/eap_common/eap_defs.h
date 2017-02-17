@@ -33,6 +33,7 @@ struct eap_hdr {
 #pragma pack(pop)
 #endif /* _MSC_VER */
 
+// CODE字段
 enum { EAP_CODE_REQUEST = 1, EAP_CODE_RESPONSE = 2, EAP_CODE_SUCCESS = 3,
        EAP_CODE_FAILURE = 4 };
 
@@ -41,6 +42,7 @@ enum { EAP_CODE_REQUEST = 1, EAP_CODE_RESPONSE = 2, EAP_CODE_SUCCESS = 3,
 
 /*
  * EAP Method Types as allocated by IANA:
+ * TYPE字段
  * http://www.iana.org/assignments/eap-numbers
  */
 typedef enum {

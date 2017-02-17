@@ -121,33 +121,33 @@ struct eap_sm {
 	/* Full authenticator state machine local variables */
 
 	/* Long-term (maintained betwen packets) */
-	EapType currentMethod;
-	int currentId;
+	EapType currentMethod;      // 当前的EAP-TYPE，也可理解为当前使用的EAP方法
+	int currentId;              // 当前的EAP-ID (0~255)
 	enum {
 		METHOD_PROPOSED, METHOD_CONTINUE, METHOD_END
 	} methodState;
-	int retransCount;
-	struct wpabuf *lastReqData;
+	int retransCount;           // 当前的重传次数
+	struct wpabuf *lastReqData; // 保存了最近一次发送给eapol层的eap-req数据
 	int methodTimeout;
 
 	/* Short-term (not maintained between packets) */
-	Boolean rxResp;
-	int respId;
-	EapType respMethod;
-	int respVendor;
-	u32 respVendorMethod;
-	Boolean ignore;
+	Boolean rxResp;         // 接收到eap-resp包设置TRUE
+	int respId;             // 当前接收到的eap-resp包中的ID
+	EapType respMethod;     // 当前接收到的eap-resp包中的TYPE
+	int respVendor;         // 当前接收到的eap-resp包中的Vendor
+	u32 respVendorMethod;   // 当前接收到的eap-resp包中的VendorMethod
+	Boolean ignore;         // 此标志位用于决定是否丢弃当前收到的报文
 	enum {
 		DECISION_SUCCESS, DECISION_FAILURE, DECISION_CONTINUE,
 		DECISION_PASSTHROUGH
-	} decision;
+	} decision;             // SELECT_ACTION状态中使用，临时存储策略用
 
 	/* Miscellaneous variables */
 	const struct eap_method *m; /* selected EAP method */
 	/* not defined in RFC 4137 */
 	Boolean changed;
-	void *eapol_ctx, *msg_ctx;
-	struct eapol_callbacks *eapol_cb;
+	void *eapol_ctx, *msg_ctx;          // 分别指向状态机统一管理块
+	struct eapol_callbacks *eapol_cb;   // 指向依赖的eapol层接口函数集合
 	void *eap_method_priv;
 	u8 *identity;
 	size_t identity_len;

@@ -14,9 +14,10 @@
  *          Authenticator PAE state machine(下面简称AUTH_PAE SM)                - 认证者PAE状态机,负责和PACP相关的算法及处理工作
  *          Backend Authentication state machine(下面简称BE_AUTH SM)            - 后台认证状态机，实现最终认证工作（标准是建议这部分工作放到radius服务器）
  *          Reauthentication Timer state machine(下面简称REAUTH_TIMER SM)       - 重认证定时器状态机
- *          Authenticator Key Transmit state machine(下面简称AUTH_KEY_TX SM)    - 认证者key发送状态机
- *          Key Receive state machine(下面简称KEY_RX SM)                        - 认证者key接收状态机
+ *          Authenticator Key Transmit state machine(下面简称AUTH_KEY_TX SM)    - 认证者key发送状态机，802.11环境下使用
+ *          Key Receive state machine(下面简称KEY_RX SM)                        - 认证者key接收状态机，802.11环境下使用
  *          Controlled Directions state machine(下面简称CTRL_DIR SM)            - 受控方向状态机
+ *          Port Timers state machine(下面简称PORT_TIMER SM)
  *
  * 备注： 1. 以上6个状态机定义全部来自IEEE 802.1X-2004 Chapter-8.2
  *        2. 本文件的6个状态机全部用于NAS，也就是说，本文件只会被NAS设备调用
@@ -168,11 +169,13 @@ static void eapol_auth_tx_req(struct eapol_state_machine *sm)
  *
  * This statemachine is implemented as a function that will be called
  * once a second as a registered event loop timeout.
+ * 1s进入一次，实现了PORT_TIMER SM
  */
 static void eapol_port_timers_tick(void *eloop_ctx, void *timeout_ctx)
 {
 	struct eapol_state_machine *state = timeout_ctx;
 
+    // aWhile每秒递减，直到超时
 	if (state->aWhile > 0) {
 		state->aWhile--;
 		if (state->aWhile == 0) {
@@ -182,6 +185,7 @@ static void eapol_port_timers_tick(void *eloop_ctx, void *timeout_ctx)
 		}
 	}
 
+    // quietWhile每秒递减，直到超时
 	if (state->quietWhile > 0) {
 		state->quietWhile--;
 		if (state->quietWhile == 0) {
@@ -191,6 +195,7 @@ static void eapol_port_timers_tick(void *eloop_ctx, void *timeout_ctx)
 		}
 	}
 
+    // reAuthWhen每秒递减，直到超时
 	if (state->reAuthWhen > 0) {
 		state->reAuthWhen--;
 		if (state->reAuthWhen == 0) {
@@ -200,6 +205,7 @@ static void eapol_port_timers_tick(void *eloop_ctx, void *timeout_ctx)
 		}
 	}
 
+    // EAPOL->EAP交互定时器retransWhile每秒递减，直到超时
 	if (state->eap_if->retransWhile > 0) {
 		state->eap_if->retransWhile--;
 		if (state->eap_if->retransWhile == 0) {
@@ -209,8 +215,10 @@ static void eapol_port_timers_tick(void *eloop_ctx, void *timeout_ctx)
 		}
 	}
 
+    // 运行状态机组自平衡流程
 	eapol_sm_step_run(state);
 
+    // 循环注册1s定时器
 	eloop_register_timeout(1, 0, eapol_port_timers_tick, eloop_ctx, state);
 }
 
@@ -559,7 +567,16 @@ SM_STATE(BE_AUTH, REQUEST)
 	sm->eapolEap = FALSE;
 }
 
-// BE_AUTH SM进入RESPONSE状态的EA
+/* BE_AUTH SM进入RESPONSE状态的EA:
+ *      1. 清除authTimeout标志
+ *      2. 清除eapolEap标志
+ *      3. 清除EAP->EAPOL交互标志eapNoReq
+ *      4. 开启aWhile定时器，用于计时eapol层将eapoleap报文递交给eap层，然后等待
+ *      5. EAPOL->EAP交互标志eapResp设置TRUE，用于通知EAP层接收一个eap-reap报文
+ *      6. 累加计数器
+ *
+ * 备注：标准要求的sendRespToServer函数并未做实现
+ */
 SM_STATE(BE_AUTH, RESPONSE)
 {
 	SM_ENTRY_MA(BE_AUTH, RESPONSE, be_auth);
@@ -598,7 +615,9 @@ SM_STATE(BE_AUTH, FAIL)
 	sm->authFail = TRUE;
 }
 
-// BE_AUTH SM进入TIMEOUT状态的EA
+/* BE_AUTH SM进入TIMEOUT状态的EA:
+ *      authTimeout标志设置为TRUE，用于通知AUTH_PAE SM
+ */
 SM_STATE(BE_AUTH, TIMEOUT)
 {
 	SM_ENTRY_MA(BE_AUTH, TIMEOUT, be_auth);
@@ -607,7 +626,7 @@ SM_STATE(BE_AUTH, TIMEOUT)
 }
 
 /* BE_AUTH SM进入IDLE状态的EA:
- *      1. 清除authStart标志
+ *      清除authStart标志
  */
 SM_STATE(BE_AUTH, IDLE)
 {
@@ -616,7 +635,9 @@ SM_STATE(BE_AUTH, IDLE)
 	sm->authStart = FALSE;
 }
 
-// BE_AUTH SM进入IGNORE状态的EA
+/* BE_AUTH SM进入IGNORE状态的EA:
+ *      清除EAP->EAPOL交互标志eapNoReq
+ */
 SM_STATE(BE_AUTH, IGNORE)
 {
 	SM_ENTRY_MA(BE_AUTH, IGNORE, be_auth);
@@ -640,37 +661,37 @@ SM_STEP(BE_AUTH)
 	case BE_AUTH_INITIALIZE:        // 当前处于INITIALIZE状态的话，无条件进入IDLE状态
 		SM_ENTER(BE_AUTH, IDLE);
 		break;
-	case BE_AUTH_REQUEST:           // 当前处于REQUEST状态的话，需要分为3种情况进行处理：
-		if (sm->eapolEap)
+	case BE_AUTH_REQUEST:                   // 当前处于REQUEST状态的话，需要分为3种情况进行处理：
+		if (sm->eapolEap)                   //  1. 如果eapolEap标志被置位，则进入RESPONSE状态(这种应该是标准流程)
 			SM_ENTER(BE_AUTH, RESPONSE);
-		else if (sm->eap_if->eapReq)
+		else if (sm->eap_if->eapReq)        //  2. 如果EAP层设置了eapReq标志，则进入REQUEST状态(这种自循环应该是EAP层重传机制导致的)
 			SM_ENTER(BE_AUTH, REQUEST);
-		else if (sm->eap_if->eapTimeout)
-			SM_ENTER(BE_AUTH, TIMEOUT);
+		else if (sm->eap_if->eapTimeout)    //  3. 如果EAP层设置了eapTimeout标志，则进入TIMEOUT状态(这种情况应该是EAP层重传超时导致的)
+			SM_ENTER(BE_AUTH, TIMEOUT); // (这里是否应该调用SM_ENTER_GLOBAL)
 		break;
-	case BE_AUTH_RESPONSE:
-		if (sm->eap_if->eapNoReq)
+	case BE_AUTH_RESPONSE:                  // 当前处于RESPONSE状态的话，需要分为5种情况进行处理：
+		if (sm->eap_if->eapNoReq)           //  1. 如果EAP层设置了eapNoReq标志，则进入IGNORE状态
 			SM_ENTER(BE_AUTH, IGNORE);
-		if (sm->eap_if->eapReq) {
+		if (sm->eap_if->eapReq) {           //  2. 如果EAP层设置了eapReq标志，则进入REQUEST状态
 			sm->backendAccessChallenges++;
 			SM_ENTER(BE_AUTH, REQUEST);
-		} else if (sm->aWhile == 0)
-			SM_ENTER(BE_AUTH, TIMEOUT);
-		else if (sm->eap_if->eapFail) {
+		} else if (sm->aWhile == 0)         //  3. 如果aWhile定时器超时，则进入TIMEOUT状态
+			SM_ENTER(BE_AUTH, TIMEOUT); // (这里是否应该调用SM_ENTER_GLOBAL)
+		else if (sm->eap_if->eapFail) {     //  4. 如果EAP层设置了eapFail标志，则进入FAIL状态，并累加相应计数器
 			sm->backendAuthFails++;
 			SM_ENTER(BE_AUTH, FAIL);
-		} else if (sm->eap_if->eapSuccess) {
+		} else if (sm->eap_if->eapSuccess) {//  5. 如果EAP层设置了eapSuccess标志，则进入SUCCESS状态，并累加相应计数器
 			sm->backendAuthSuccesses++;
-			SM_ENTER(BE_AUTH, SUCCESS);
+			SM_ENTER(BE_AUTH, SUCCESS); // (这里是否应该调用SM_ENTER_GLOBAL)
 		}
 		break;
-	case BE_AUTH_SUCCESS:
+	case BE_AUTH_SUCCESS:                   // 当前处于SUCCESS状态的话，无条件进入IDLE状态
 		SM_ENTER(BE_AUTH, IDLE);
 		break;
-	case BE_AUTH_FAIL:
+	case BE_AUTH_FAIL:                      // 当前处于FAIL状态的话，无条件进入IDLE状态
 		SM_ENTER(BE_AUTH, IDLE);
 		break;
-	case BE_AUTH_TIMEOUT:
+	case BE_AUTH_TIMEOUT:                   // 当前处于TIMEOUT状态的话，无条件进入IDLE状态
 		SM_ENTER(BE_AUTH, IDLE);
 		break;
 	case BE_AUTH_IDLE:                                      // 当前处于IDLE状态的话，需要分为3种情况进行处理：
@@ -678,16 +699,16 @@ SM_STEP(BE_AUTH)
 			SM_ENTER(BE_AUTH, FAIL);
 		else if (sm->eap_if->eapReq && sm->authStart)       //  2. 如果EAP层设置了eapReq标志，并且AUTH_PAE SM设置了authStart标志，则进入REQUEST状态
 			SM_ENTER(BE_AUTH, REQUEST);
-		else if (sm->eap_if->eapSuccess && sm->authStart)   //  3. 如果EAP层设置了eapFail标志，并且AUTH_PAE SM设置了authStart标志，则进入SUCCESS状态
-			SM_ENTER(BE_AUTH, SUCCESS);
+		else if (sm->eap_if->eapSuccess && sm->authStart)   //  3. 如果EAP层设置了eapSuccess标志，并且AUTH_PAE SM设置了authStart标志，则进入SUCCESS状态
+			SM_ENTER(BE_AUTH, SUCCESS);                     // (这里是否应该调用SM_ENTER_GLOBAL)
 		break;
-	case BE_AUTH_IGNORE:
-		if (sm->eapolEap)
+	case BE_AUTH_IGNORE:                            // 当前处于IGNORE状态的话，需要分为3种情况进行处理：
+		if (sm->eapolEap)                           //  1. 如果eapolEap标志被置位，则进入RESPONSE状态
 			SM_ENTER(BE_AUTH, RESPONSE);
-		else if (sm->eap_if->eapReq)
+		else if (sm->eap_if->eapReq)                //  2. 如果EAP层设置了eapReq标志，则进入REQUEST状态
 			SM_ENTER(BE_AUTH, REQUEST);
-		else if (sm->eap_if->eapTimeout)
-			SM_ENTER(BE_AUTH, TIMEOUT);
+		else if (sm->eap_if->eapTimeout)            //  3. 如果EAP层设置了eapTimeout标志，则进入TIMEOUT状态
+			SM_ENTER(BE_AUTH, TIMEOUT);     // (这里是否应该调用SM_ENTER_GLOBAL)
 		break;
 	}
 }
@@ -695,7 +716,9 @@ SM_STEP(BE_AUTH)
 
 
 /* Reauthentication Timer state machine */
-// 定义了重认证定时器状态机
+/* REAUTH_TIMER SM进入INITIALIZE状态的EA:
+ *      开启/刷新 重认证定时器
+ */
 SM_STATE(REAUTH_TIMER, INITIALIZE)
 {
 	SM_ENTRY_MA(REAUTH_TIMER, INITIALIZE, reauth_timer);
@@ -703,7 +726,10 @@ SM_STATE(REAUTH_TIMER, INITIALIZE)
 	sm->reAuthWhen = sm->reAuthPeriod;
 }
 
-
+/* REAUTH_TIMER SM进入REAUTHENTICATE状态的EA:
+ *      1. reAuthenticate标志设置为TRUE，用于通知AUTH_PAE SM
+ *      2. 调用了一个eapol层事件回调函数，实际应该没有做任何事
+ */
 SM_STATE(REAUTH_TIMER, REAUTHENTICATE)
 {
 	SM_ENTRY_MA(REAUTH_TIMER, REAUTHENTICATE, reauth_timer);
@@ -713,9 +739,14 @@ SM_STATE(REAUTH_TIMER, REAUTHENTICATE)
 				  EAPOL_AUTH_REAUTHENTICATE);
 }
 
-
+// 检查REAUTH_TIMER SM 的条件变量，然后根据情况进行状态切换
 SM_STEP(REAUTH_TIMER)
 {
+    // 进入INITIALIZE条件(满足以下任何一条即可)：
+    //  1. 受控端口的全局控制模式非Auto
+    //  2. 全局的强制初始化标志被置位
+    //  3. 全局的端口当前状态为未授权
+    //  4. 重认证功能关闭
 	if (sm->portControl != Auto || sm->initialize ||
 	    sm->authPortStatus == Unauthorized || !sm->reAuthEnabled) {
 		SM_ENTER_GLOBAL(REAUTH_TIMER, INITIALIZE);
@@ -723,11 +754,11 @@ SM_STEP(REAUTH_TIMER)
 	}
 
 	switch (sm->reauth_timer_state) {
-	case REAUTH_TIMER_INITIALIZE:
+	case REAUTH_TIMER_INITIALIZE:           // 处于INITIALIZE状态的REAUTH_TIMER SM将一直等待，直到重认证定时器超时，进入REAUTHENTICATE状态
 		if (sm->reAuthWhen == 0)
-			SM_ENTER(REAUTH_TIMER, REAUTHENTICATE);
+			SM_ENTER(REAUTH_TIMER, REAUTHENTICATE); // (这里是否应该调用SM_ENTER_GLOBAL)
 		break;
-	case REAUTH_TIMER_REAUTHENTICATE:
+	case REAUTH_TIMER_REAUTHENTICATE:       // 当前处于REAUTHENTICATE状态的话，无条件进入INITIALIZE状态
 		SM_ENTER(REAUTH_TIMER, INITIALIZE);
 		break;
 	}
@@ -736,7 +767,9 @@ SM_STEP(REAUTH_TIMER)
 
 
 /* Authenticator Key Transmit state machine */
-// 定义了认证者key发送状态机
+/* REAUTH_TIMER SM进入NO_KEY_TRANSMIT状态的EA:
+ *      只进行了状态切换，没做任何事
+ */
 SM_STATE(AUTH_KEY_TX, NO_KEY_TRANSMIT)
 {
 	SM_ENTRY_MA(AUTH_KEY_TX, NO_KEY_TRANSMIT, auth_key_tx);
@@ -753,8 +786,12 @@ SM_STATE(AUTH_KEY_TX, KEY_TRANSMIT)
 }
 
 
+// 检查AUTH_KEY_TX SM 的条件变量，然后根据情况进行状态切换
 SM_STEP(AUTH_KEY_TX)
 {
+    // 进入NO_KEY_TRANSMIT条件(满足以下任何一条即可)：
+    //  1. 全局的强制初始化标志被置位
+    //  2. 受控端口的全局控制模式非Auto
 	if (sm->initialize || sm->portControl != Auto) {
 		SM_ENTER_GLOBAL(AUTH_KEY_TX, NO_KEY_TRANSMIT);
 		return;
@@ -816,23 +853,28 @@ SM_STEP(KEY_RX)
 
 
 /* Controlled Directions state machine */
-// 定义了受控方向状态机
+/* REAUTH_TIMER SM进入FORCE_BOTH状态的EA:
+ *
+ */
 SM_STATE(CTRL_DIR, FORCE_BOTH)
 {
 	SM_ENTRY_MA(CTRL_DIR, FORCE_BOTH, ctrl_dir);
 	sm->operControlledDirections = Both;
 }
 
-
+/* REAUTH_TIMER SM进入IN_OR_BOTH状态的EA:
+ *      设置受控方向为配置值
+ */
 SM_STATE(CTRL_DIR, IN_OR_BOTH)
 {
 	SM_ENTRY_MA(CTRL_DIR, IN_OR_BOTH, ctrl_dir);
 	sm->operControlledDirections = sm->adminControlledDirections;
 }
 
-
+// 检查CTRL_DIR SM 的条件变量，然后根据情况进行状态切换
 SM_STEP(CTRL_DIR)
 {
+    // 当全局的强制初始化标志被置位，则进入IN_OR_BOTH状态
 	if (sm->initialize) {
 		SM_ENTER_GLOBAL(CTRL_DIR, IN_OR_BOTH);
 		return;
@@ -843,19 +885,19 @@ SM_STEP(CTRL_DIR)
 		if (sm->eap_if->portEnabled && sm->operEdge)
 			SM_ENTER(CTRL_DIR, IN_OR_BOTH);
 		break;
-	case CTRL_DIR_IN_OR_BOTH:
-		if (sm->operControlledDirections !=
+	case CTRL_DIR_IN_OR_BOTH:                           // 处于IN_OR_BOTH状态的CTRL_DIR SM，需要分为以下2种情况进系处理：
+		if (sm->operControlledDirections !=             //  1. 如果检测到adminControlledDirections状态被改变，则进入IN_OR_BOTH状态进行刷新
 		    sm->adminControlledDirections)
 			SM_ENTER(CTRL_DIR, IN_OR_BOTH);
-		if (!sm->eap_if->portEnabled || !sm->operEdge)
-			SM_ENTER(CTRL_DIR, FORCE_BOTH);
+		if (!sm->eap_if->portEnabled || !sm->operEdge)  //  2.1 如果检测到EAP->EAPOL交互标志portEnabled被清零(通常意味着一次认证失败)，或者
+			SM_ENTER(CTRL_DIR, FORCE_BOTH);             //  2.1 如果operEdge标志被清0
 		break;
 	}
 }
 
 
 
-// 创建eapol层状态机统一管理块
+// 创建认证系统eapol层 + eap层 状态机统一管理块
 struct eapol_state_machine *
 eapol_auth_alloc(struct eapol_authenticator *eapol, const u8 *addr,
 		 int flags, const struct wpabuf *assoc_wps_ie, void *sta_ctx)
@@ -936,7 +978,7 @@ eapol_auth_alloc(struct eapol_authenticator *eapol, const u8 *addr,
     // 设置eap<-->eapol交互接口
 	sm->eap_if = eap_get_interface(sm->eap);
 
-    // 执行认证者EAPOL层状态机组初始化
+    // 创建一个认证系统EAPOL层状态机组，并运行EAPOL层 + EAP层所有状态机
 	eapol_auth_initialize(sm);
 
 	return sm;
@@ -962,7 +1004,7 @@ static int eapol_sm_sta_entry_alive(struct eapol_authenticator *eapol,
 	return eapol->cb.sta_entry_alive(eapol->conf.ctx, addr);
 }
 
-// eapol层状态机组运行总接口函数
+// eapol层状态机组 + eap层状态机 自平衡流程
 static void eapol_sm_step_run(struct eapol_state_machine *sm)
 {
 	struct eapol_authenticator *eapol = sm->eapol;
@@ -1005,6 +1047,7 @@ restart:
 	if (sm->initializing || eapol_sm_sta_entry_alive(eapol, addr))
 		SM_STEP_RUN(CTRL_DIR);
 
+    // 只要6个状态机中有任何一个状态进行了切换，就会再次迭代，迭代次数上限为max_steps次
 	if (prev_auth_pae != sm->auth_pae_state ||
 	    prev_be_auth != sm->be_auth_state ||
 	    prev_reauth_timer != sm->reauth_timer_state ||
@@ -1014,20 +1057,29 @@ restart:
 		if (--max_steps > 0)
 			goto restart;
 		/* Re-run from eloop timeout */
+        // 当迭代次数超限后，这里选择的处理方式是退出到最外层的总循环，然后再进来执行一遍
 		eapol_auth_step(sm);
 		return;
 	}
 
+    // 到这里意味着eapol层状态机组在最近一次迭代中已经稳定下来
+    // 开始进行eap层状态机自平衡
 	if (eapol_sm_sta_entry_alive(eapol, addr) && sm->eap) {
 		if (eap_server_sm_step(sm->eap)) {
+            // 只要eap层状态机中进行了切换，就会再次从头迭代，迭代次数上限为max_steps次
 			if (--max_steps > 0)
 				goto restart;
 			/* Re-run from eloop timeout */
+            // 当迭代次数超限后，这里选择的处理方式是退出到最外层的总循环，然后再进来执行一遍
 			eapol_auth_step(sm);
 			return;
 		}
 
-		/* TODO: find a better location for this */
+        // 到这里意味着eapol层 + eap层 状态机在最近一次迭代中全部已经稳定下来
+		/* TODO: find a better location for this 
+         *       0.7.3版本，以下这部分代码的位置是打算被优化的
+         * */
+        // 如果EAP->EAPOL交互标志aaaEapResp被置位，意味着有aaa数据需要被发送
 		if (sm->eap_if->aaaEapResp) {
 			sm->eap_if->aaaEapResp = FALSE;
 			if (sm->eap_if->aaaEapRespData == NULL) {
@@ -1035,6 +1087,7 @@ restart:
 					   "but no aaaEapRespData available");
 				return;
 			}
+            // 执行基于802.1X协议的eapol层的aaa数据发送回调函数
 			sm->eapol->cb.aaa_send(
 				sm->eapol->conf.ctx, sm->sta,
 				wpabuf_head(sm->eap_if->aaaEapRespData),
@@ -1042,12 +1095,13 @@ restart:
 		}
 	}
 
+    // 如果当前站表元素处于有效状态，则执行基于802.1X协议的eapol层状态机事件处理回调函数(实际应该没做任何处理)
 	if (eapol_sm_sta_entry_alive(eapol, addr))
 		sm->eapol->cb.eapol_event(sm->eapol->conf.ctx, sm->sta,
 					  EAPOL_AUTH_SM_CHANGE);
 }
 
-
+// 一个即时触发定时器的回调函数,目的是运行状态机组自平衡流程
 static void eapol_sm_step_cb(void *eloop_ctx, void *timeout_ctx)
 {
 	struct eapol_state_machine *sm = eloop_ctx;
@@ -1058,9 +1112,11 @@ static void eapol_sm_step_cb(void *eloop_ctx, void *timeout_ctx)
 /**
  * eapol_auth_step - Advance EAPOL state machines
  * @sm: EAPOL state machine
+ * 注册一个即时触发的定时器
  *
  * This function is called to advance EAPOL state machines after any change
  * that could affect their state.
+ * 这个函数的目的是当所有可能影响的因素都已经执行完毕后，再运行一遍状态机自平衡流程
  */
 void eapol_auth_step(struct eapol_state_machine *sm)
 {
@@ -1073,7 +1129,7 @@ void eapol_auth_step(struct eapol_state_machine *sm)
 	eloop_register_timeout(0, 0, eapol_sm_step_cb, sm, NULL);
 }
 
-// 执行认证者EAPOL层状态机组初始化
+// 执行认证者EAPOL层 + EAP层状态机组初始化
 static void eapol_auth_initialize(struct eapol_state_machine *sm)
 {
 	sm->initializing = TRUE;
@@ -1086,11 +1142,12 @@ static void eapol_auth_initialize(struct eapol_state_machine *sm)
 	sm->initializing = FALSE;
 
 	/* Start one second tick for port timers state machine */
+    // 注册一个1s定时器，用于实现PORT_TIMER SM
 	eloop_cancel_timeout(eapol_port_timers_tick, NULL, sm);
 	eloop_register_timeout(1, 0, eapol_port_timers_tick, NULL, sm);
 }
 
-
+// eapol层提供给eap层的用户信息获取接口
 static int eapol_sm_get_eap_user(void *ctx, const u8 *identity,
 				 size_t identity_len, int phase2,
 				 struct eap_user *user)
@@ -1100,7 +1157,7 @@ static int eapol_sm_get_eap_user(void *ctx, const u8 *identity,
 					  identity_len, phase2, user);
 }
 
-
+// eapol层提供给eap层的id字段获取接口
 static const char * eapol_sm_get_eap_req_id_text(void *ctx, size_t *len)
 {
 	struct eapol_state_machine *sm = ctx;
@@ -1108,7 +1165,7 @@ static const char * eapol_sm_get_eap_req_id_text(void *ctx, size_t *len)
 	return sm->eapol->conf.eap_req_id_text;
 }
 
-
+// 定义了eap层需要用到的eapol层回调函数
 static struct eapol_callbacks eapol_cb =
 {
 	eapol_sm_get_eap_user,

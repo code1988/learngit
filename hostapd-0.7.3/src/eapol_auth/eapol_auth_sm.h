@@ -54,11 +54,13 @@ typedef enum {
 	EAPOL_LOGGER_DEBUG, EAPOL_LOGGER_INFO, EAPOL_LOGGER_WARNING
 } eapol_logger_level;
 
+// eapol层状态机主动产生的事件列表
 enum eapol_event {
 	EAPOL_AUTH_SM_CHANGE,
 	EAPOL_AUTH_REAUTHENTICATE
 };
 
+// 认证者EAPOL层状态机需要调用的对外接口(标注的这组接口是基于802.1X协议的)
 struct eapol_auth_cb {
 	void (*eapol_send)(void *ctx, void *sta_ctx, u8 type, const u8 *data,
 			   size_t datalen);     // ieee802_1x_eapol_send

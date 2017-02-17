@@ -335,7 +335,7 @@ int eloop_register_timeout(unsigned int secs, unsigned int usecs,
 	return 0;
 }
 
-
+// 从链表上删除定时器并释放空间
 static void eloop_remove_timeout(struct eloop_timeout *timeout)
 {
 	dl_list_del(&timeout->list);
@@ -344,7 +344,7 @@ static void eloop_remove_timeout(struct eloop_timeout *timeout)
 	os_free(timeout);
 }
 
-
+// 关闭一个定时器
 int eloop_cancel_timeout(eloop_timeout_handler handler,
 			 void *eloop_data, void *user_data)
 {

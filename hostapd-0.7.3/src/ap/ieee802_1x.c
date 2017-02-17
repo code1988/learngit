@@ -10,7 +10,7 @@
  * license.
  *
  * 备注： 本文件只适用于认证者，而不包含请求者相关内容
- *        本文件描述的是802.1X在eapol层范围内的处理动作，至于eapol层的状态机运转模块在另一个文件中,当然本文件也涉及了一些状态机变量的设置
+ *        本文件描述的是eapol层状态机组的802.1X接口，至于eapol层的状态机组运转模块在另一个文件中,当然本文件也涉及了一些状态机变量的设置
  * See README and COPYING for more details.
  */
 
@@ -647,7 +647,7 @@ static void handle_eap(struct hostapd_data *hapd, struct sta_info *sta,
 }
 
 
-// 为当前这个站表元素创建一个eapol层状态机统一控制块
+// 为当前这个站表元素创建一个状态机统一控制块
 static struct eapol_state_machine *
 ieee802_1x_alloc_eapol_sm(struct hostapd_data *hapd, struct sta_info *sta)
 {
@@ -853,7 +853,7 @@ void ieee802_1x_new_station(struct hostapd_data *hapd, struct sta_info *sta)
 	    wpa_key_mgmt_wpa_psk(wpa_auth_sta_key_mgmt(sta->wpa_sm)))
 		return;
 
-    // 为当前这个站表元素创建一个eapol层状态机统一控制块
+    // 为当前这个站表元素创建一个状态机统一控制块(包含了eapol层和eap层所有状态机的创建以及初始化)
 	if (sta->eapol_sm == NULL) {
 		hostapd_logger(hapd, sta->addr, HOSTAPD_MODULE_IEEE8021X,
 			       HOSTAPD_LEVEL_DEBUG, "start authentication");
@@ -1463,7 +1463,7 @@ static void ieee802_1x_rekey(void *eloop_ctx, void *timeout_ctx)
 	}
 }
 
-// 发送可能承载了一个上层数据的EAPOL报文
+// 基于802.1X协议的EAPOL报文发送
 static void ieee802_1x_eapol_send(void *ctx, void *sta_ctx, u8 type,
 				  const u8 *data, size_t datalen)
 {
@@ -1494,7 +1494,7 @@ static void ieee802_1x_eapol_send(void *ctx, void *sta_ctx, u8 type,
 	ieee802_1x_send(ctx, sta_ctx, type, data, datalen);
 }
 
-
+// 基于802.1X协议的aaa数据发送
 static void ieee802_1x_aaa_send(void *ctx, void *sta_ctx,
 				const u8 *data, size_t datalen)
 {
@@ -1506,7 +1506,7 @@ static void ieee802_1x_aaa_send(void *ctx, void *sta_ctx,
 #endif /* CONFIG_NO_RADIUS */
 }
 
-// 802.1x认证结束时的动作
+// 基于802.1x协议的认证结束处理
 static void _ieee802_1x_finished(void *ctx, void *sta_ctx, int success,
 				 int preauth)
 {
@@ -1520,7 +1520,7 @@ static void _ieee802_1x_finished(void *ctx, void *sta_ctx, int success,
 		ieee802_1x_finished(hapd, sta, success);
 }
 
-
+// 基于802.1x协议的eap层用户信息获取
 static int ieee802_1x_get_eap_user(void *ctx, const u8 *identity,
 				   size_t identity_len, int phase2,
 				   struct eap_user *user)
@@ -1558,7 +1558,7 @@ static int ieee802_1x_get_eap_user(void *ctx, const u8 *identity,
 	return 0;
 }
 
-// 检查当前的802.1X站表元素还是否有效
+// 基于802.1X协议的站表元素有效性检测
 static int ieee802_1x_sta_entry_alive(void *ctx, const u8 *addr)
 {
 	struct hostapd_data *hapd = ctx;
@@ -1595,7 +1595,7 @@ static void ieee802_1x_logger(void *ctx, const u8 *addr,
 #endif /* CONFIG_NO_HOSTAPD_LOGGER */
 }
 
-/* 调用驱动层设置端口是否授权
+ /* 基于802.1X协议的端口授权设置
  * @authorized  : 1-授权; 2-不授权
  */
 static void ieee802_1x_set_port_authorized(void *ctx, void *sta_ctx,
@@ -1606,7 +1606,7 @@ static void ieee802_1x_set_port_authorized(void *ctx, void *sta_ctx,
 	ieee802_1x_set_sta_authorized(hapd, sta, authorized);
 }
 
-/* 取消802.1x认证
+/* 基于802.1X协议的取消认证
  */
 static void _ieee802_1x_abort_auth(void *ctx, void *sta_ctx)
 {
@@ -1623,7 +1623,7 @@ static void _ieee802_1x_tx_key(void *ctx, void *sta_ctx)
 	ieee802_1x_tx_key(hapd, sta);
 }
 
-
+// 基于802.1X协议的eapol层状态机事件处理
 static void ieee802_1x_eapol_event(void *ctx, void *sta_ctx,
 				   enum eapol_event type)
 {
@@ -1633,7 +1633,7 @@ static void ieee802_1x_eapol_event(void *ctx, void *sta_ctx,
 	case EAPOL_AUTH_SM_CHANGE:
 		wpa_auth_sm_notify(sta->wpa_sm);
 		break;
-	case EAPOL_AUTH_REAUTHENTICATE:
+	case EAPOL_AUTH_REAUTHENTICATE:     // 对eapol发起的重认证事件，由于本人没有使用wpa功能，这里不做任何事
 		wpa_auth_sm_event(sta->wpa_sm, WPA_REAUTH_EAPOL);
 		break;
 	}

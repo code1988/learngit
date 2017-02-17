@@ -48,10 +48,10 @@ struct eap_user {
 struct eap_eapol_interface {
 	/* Lower layer to full authenticator variables */
     // 以下变量用于EAPOL层->EAP层交互
-	Boolean eapResp; /* shared with EAPOL Backend Authentication */
-	struct wpabuf *eapRespData;
+	Boolean eapResp;        // EAPOL层 BE_AUTH SM 进入RESPONSE状态时设置TRUE，EAP层AUTH SM进入SEND_REQUEST/DISCARD状态时设置FALSE
+	struct wpabuf *eapRespData; // 此buffer由EAPOL层填充，同时设置eapResp，然后递交EAP层处理
 	Boolean portEnabled;    // 此标志由EAPOL层管理，在开始进行802.1X认证时被设置TRUE，在认证失败时设置FALSE
-	int retransWhile;
+	int retransWhile;       // 重传定时器，由EAPOL层PORT_TIMER SM触发超时，由EAP层开启
 	Boolean eapRestart;     // EAPOL层 AUTH_PAE SM进入RESTART状态时设置TRUE，EAP层AUTH SM进入INITIALIZE状态时设置FALSE
 	int eapSRTT;
 	int eapRTTVAR;
@@ -63,7 +63,7 @@ struct eap_eapol_interface {
 	Boolean eapSuccess;     // 此标志由EAP层管理，EAP层AUTH SM进入SUCCESS状态时设置TRUE并填充eapReqData，进入INITIALIZE状态时设置FALSE
 	Boolean eapFail;        // 此标志由EAP层管理，EAP层AUTH SM进入FAIL状态时设置TRUE并填充eapReqData，进入INITIALIZE状态时设置FALSE
 	Boolean eapTimeout;     // 此标志由EAP层管理，EAP层AUTH SM进入TIMEOUT状态时设置TRUE，进入INITIALIZE状态时设置FALSE
-	struct wpabuf *eapReqData;  // 此buffer由EAP层填充，然后递交给EAPOL层处理
+	struct wpabuf *eapReqData;  // 此buffer由EAP层填充，同时设置eapReq/eapSuccess/eapFail，然后递交给EAPOL层处理
 	u8 *eapKeyData;
 	size_t eapKeyDataLen;
 	Boolean eapKeyAvailable; /* called keyAvailable in IEEE 802.1X-2004 */
@@ -86,6 +86,7 @@ struct eap_eapol_interface {
 	Boolean aaaTimeout;
 };
 
+// eap层需要用到的eapol层回调函数
 struct eapol_callbacks {
 	int (*get_eap_user)(void *ctx, const u8 *identity, size_t identity_len,
 			    int phase2, struct eap_user *user);
