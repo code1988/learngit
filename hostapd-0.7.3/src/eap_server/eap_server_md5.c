@@ -21,9 +21,10 @@
 
 #define CHALLENGE_LEN 16
 
+// 定义了一个MD5数据块
 struct eap_md5_data {
-	u8 challenge[CHALLENGE_LEN];
-	enum { CONTINUE, SUCCESS, FAILURE } state;
+	u8 challenge[CHALLENGE_LEN];    // 16字节的挑战字
+	enum { CONTINUE, SUCCESS, FAILURE } state;  // MD5状态
 };
 
 
@@ -39,7 +40,7 @@ static void * eap_md5_init(struct eap_sm *sm)
 	return data;
 }
 
-
+// 复位md5操作,实际就是释放MD5数据块空间
 static void eap_md5_reset(struct eap_sm *sm, void *priv)
 {
 	struct eap_md5_data *data = priv;
@@ -136,21 +137,21 @@ static void eap_md5_process(struct eap_sm *sm, void *priv,
 	}
 }
 
-
+// 判断md5类型的eap方法当前是否不处于continue状态
 static Boolean eap_md5_isDone(struct eap_sm *sm, void *priv)
 {
 	struct eap_md5_data *data = priv;
 	return data->state != CONTINUE;
 }
 
-
+// 判断md5类型的eap方法当前是否处于success状态
 static Boolean eap_md5_isSuccess(struct eap_sm *sm, void *priv)
 {
 	struct eap_md5_data *data = priv;
 	return data->state == SUCCESS;
 }
 
-
+// 注册md5类型的eap方法
 int eap_server_md5_register(void)
 {
 	struct eap_method *eap;
@@ -169,6 +170,7 @@ int eap_server_md5_register(void)
 	eap->isDone = eap_md5_isDone;
 	eap->isSuccess = eap_md5_isSuccess;
 
+    // 注册md5类型的eap方法
 	ret = eap_server_method_register(eap);
 	if (ret)
 		eap_server_method_free(eap);

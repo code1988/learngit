@@ -19,7 +19,7 @@
 #include "eap_methods.h"
 
 
-static struct eap_method *eap_methods;
+static struct eap_method *eap_methods;      // EAP方法的链表头
 
 
 /**
@@ -70,6 +70,7 @@ EapType eap_server_get_type(const char *name, int *vendor)
  * @method: EAP type number (EAP_TYPE_*)
  * @name: Name of the method (e.g., "TLS")
  * Returns: Allocated EAP method structure or %NULL on failure
+ * 申请一个EAP 服务器方法的管理块
  *
  * The returned structure should be freed with eap_server_method_free() when it
  * is not needed anymore.
@@ -92,6 +93,7 @@ struct eap_method * eap_server_method_alloc(int version, int vendor,
 /**
  * eap_server_method_free - Free EAP server method structure
  * @method: Method structure allocated with eap_server_method_alloc()
+ * 释放一个EAP 服务器方法的管理块
  */
 void eap_server_method_free(struct eap_method *method)
 {
@@ -104,6 +106,7 @@ void eap_server_method_free(struct eap_method *method)
  * @method: EAP method to register
  * Returns: 0 on success, -1 on invalid method, or -2 if a matching EAP method
  * has already been registered
+ * 注册一种eap服务器使用的方法(插入eap_methods链表尾部)
  *
  * Each EAP server method needs to call this function to register itself as a
  * supported EAP method.

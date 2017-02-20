@@ -164,7 +164,7 @@ struct hostapd_bss_config {
 	int ieee802_1x; /* use IEEE 802.1X */
 	int eapol_version;
 	int eap_server; /* Use internal EAP server instead of external
-			 * RADIUS server 使用内部eap服务器还是外部radius服务器标志位*/
+			 * RADIUS server 是否使用内部eap认证服务器标志位*/
 	struct hostapd_eap_user *eap_user;
 	char *eap_sim_db;
 	struct hostapd_ip_addr own_ip_addr;

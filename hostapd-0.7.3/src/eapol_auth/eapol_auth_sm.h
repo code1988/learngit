@@ -27,7 +27,7 @@ struct eapol_auth_config {
 	int eap_reauth_period;  // 重认证周期，目前固定3600s
 	int wpa;                // wpa功能的位码
 	int individual_wep_key_len;
-	int eap_server;         // 标志位，代表是否使用外部radius服务器，1 = 使用外部
+	int eap_server;         // 标志位，代表是否使用内部EAP服务器，0 = 使用外部
 	void *ssl_ctx;
 	void *msg_ctx;
 	void *eap_sim_db_priv;

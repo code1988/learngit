@@ -32,21 +32,21 @@ struct eap_method {
 	EapType method;
 	const char *name;
 
-	void * (*init)(struct eap_sm *sm);
+	void * (*init)(struct eap_sm *sm);              // eap_md5_init
 	void * (*initPickUp)(struct eap_sm *sm);
-	void (*reset)(struct eap_sm *sm, void *priv);
+	void (*reset)(struct eap_sm *sm, void *priv);   // eap_md5_reset 
 
-	struct wpabuf * (*buildReq)(struct eap_sm *sm, void *priv, u8 id);
+	struct wpabuf * (*buildReq)(struct eap_sm *sm, void *priv, u8 id);  // eap_md5_buildReq
 	int (*getTimeout)(struct eap_sm *sm, void *priv);
-	Boolean (*check)(struct eap_sm *sm, void *priv,
+	Boolean (*check)(struct eap_sm *sm, void *priv, // eap_md5_check
 			 struct wpabuf *respData);
 	void (*process)(struct eap_sm *sm, void *priv,
-			struct wpabuf *respData);
-	Boolean (*isDone)(struct eap_sm *sm, void *priv);
+			struct wpabuf *respData);               // eap_md5_process
+	Boolean (*isDone)(struct eap_sm *sm, void *priv);                   // eap_md5_isDone
 	u8 * (*getKey)(struct eap_sm *sm, void *priv, size_t *len);
 	/* isSuccess is not specified in draft-ietf-eap-statemachine-05.txt,
 	 * but it is useful in implementing Policy.getDecision() */
-	Boolean (*isSuccess)(struct eap_sm *sm, void *priv);
+	Boolean (*isSuccess)(struct eap_sm *sm, void *priv);                // eap_md5_isSuccess
 
 	/**
 	 * free - Free EAP method data
@@ -76,7 +76,7 @@ struct eap_method {
 
 	/**
 	 * next - Pointer to the next EAP method
-	 *
+	 *  指向下一种EAP方法
 	 * This variable is used internally in the EAP method registration code
 	 * to create a linked list of registered EAP methods.
 	 */
@@ -122,7 +122,7 @@ struct eap_sm {
 
 	/* Long-term (maintained betwen packets) */
 	EapType currentMethod;      // 当前的EAP-TYPE，也可理解为当前使用的EAP方法
-	int currentId;              // 当前的EAP-ID (0~255)
+	int currentId;              // 当前处理的EAP-ID (0~255)
 	enum {
 		METHOD_PROPOSED, METHOD_CONTINUE, METHOD_END
 	} methodState;
@@ -131,37 +131,37 @@ struct eap_sm {
 	int methodTimeout;
 
 	/* Short-term (not maintained between packets) */
-	Boolean rxResp;         // 接收到eap-resp包设置TRUE
+	Boolean rxResp;         // 如果接收到eap-resp包设置TRUE
 	int respId;             // 当前接收到的eap-resp包中的ID
 	EapType respMethod;     // 当前接收到的eap-resp包中的TYPE
-	int respVendor;         // 当前接收到的eap-resp包中的Vendor
-	u32 respVendorMethod;   // 当前接收到的eap-resp包中的VendorMethod
+	int respVendor;         // 当前接收到的eap-resp包中的Vendor (TYPE = 254的EAP报文中使用)
+	u32 respVendorMethod;   // 当前接收到的eap-resp包中的VendorMethod(TYPE = 254的EAP报文中使用)
 	Boolean ignore;         // 此标志位用于决定是否丢弃当前收到的报文
 	enum {
 		DECISION_SUCCESS, DECISION_FAILURE, DECISION_CONTINUE,
 		DECISION_PASSTHROUGH
-	} decision;             // SELECT_ACTION状态中使用，临时存储策略用
+	} decision;             // SELECT_ACTION状态中使用，存储作出的决定
 
 	/* Miscellaneous variables */
-	const struct eap_method *m; /* selected EAP method */
+	const struct eap_method *m;         // 指向被采用的 EAP 方法控制块
 	/* not defined in RFC 4137 */
 	Boolean changed;
 	void *eapol_ctx, *msg_ctx;          // 分别指向状态机统一管理块
 	struct eapol_callbacks *eapol_cb;   // 指向依赖的eapol层接口函数集合
-	void *eap_method_priv;
-	u8 *identity;
-	size_t identity_len;
+	void *eap_method_priv;              // 指向所采用的EAP方法携带的私有数据，比如MD5校验数据
+	u8 *identity;                       // 存储了获得的用户名信息
+	size_t identity_len;                // 存储了获得的用户名长度
 	/* Whether Phase 2 method should validate identity match */
 	int require_identity_match;
 	int lastId; /* Identifier used in the last EAP-Packet */
-	struct eap_user *user;
+	struct eap_user *user;              // 指向eap层记录的用户信息管理块
 	int user_eap_method_index;
 	int init_phase2;
 	void *ssl_ctx;
 	void *eap_sim_db_priv;
-	Boolean backend_auth;
-	Boolean update_user;
-	int eap_server;
+	Boolean backend_auth;       // RADIUS后台认证服务器使能标志，默认不使能
+	Boolean update_user;        // 是否更新eap_user信息标志
+	int eap_server;             // 是否使用内部集成的EAP认证服务器，默认使用外部RADIUS服务器
 
 	int num_rounds;
 	enum {

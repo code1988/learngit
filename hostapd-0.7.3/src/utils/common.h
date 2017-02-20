@@ -169,12 +169,12 @@ typedef int8_t s8;
 /* Define platform specific byte swapping macros */
 
 #if defined(__CYGWIN__) || defined(CONFIG_NATIVE_WINDOWS)
-
+// 16位变量大小端转换
 static inline unsigned short wpa_swap_16(unsigned short v)
 {
 	return ((v & 0xff) << 8) | (v >> 8);
 }
-
+// 32位变量大小端转换
 static inline unsigned int wpa_swap_32(unsigned int v)
 {
 	return ((v & 0xff) << 24) | ((v & 0xff00) << 8) |
@@ -260,6 +260,7 @@ static inline unsigned int wpa_swap_32(unsigned int v)
 		(a)[0] = ((u16) (val)) & 0xff;	\
 	} while (0)
 
+// 24位数据大小端转换
 #define WPA_GET_BE24(a) ((((u32) (a)[0]) << 16) | (((u32) (a)[1]) << 8) | \
 			 ((u32) (a)[2]))
 #define WPA_PUT_BE24(a, val)					\
@@ -269,6 +270,7 @@ static inline unsigned int wpa_swap_32(unsigned int v)
 		(a)[2] = (u8) (((u32) (val)) & 0xff);		\
 	} while (0)
 
+// 32位数据大小端转换
 #define WPA_GET_BE32(a) ((((u32) (a)[0]) << 24) | (((u32) (a)[1]) << 16) | \
 			 (((u32) (a)[2]) << 8) | ((u32) (a)[3]))
 #define WPA_PUT_BE32(a, val)					\

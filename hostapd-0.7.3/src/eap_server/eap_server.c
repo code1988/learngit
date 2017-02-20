@@ -95,11 +95,13 @@ static int eap_copy_data(u8 **dst, size_t *dst_len,
  * @identity_len: Length of identity in bytes
  * @phase2: 0 = EAP phase1 user, 1 = EAP phase2 (tunneled) user
  * Returns: 0 on success, or -1 on failure
+ * 从数据库中取出用户信息填充eap_user
  *
  * This function is used to fetch user information for EAP. The user will be
  * selected based on the specified identity. sm->user and
  * sm->user_eap_method_index are updated for the new user when a matching user
  * is found. sm->user can be used to get user information (e.g., password).
+ * 原来申请的eap_user信息空间首先会被释放
  */
 int eap_user_get(struct eap_sm *sm, const u8 *identity, size_t identity_len,
 		 int phase2)
@@ -129,14 +131,22 @@ int eap_user_get(struct eap_sm *sm, const u8 *identity, size_t identity_len,
 	return 0;
 }
 
-
+/* EAP SM进入DISABLED状态的EA:
+ *      把num_rounds标志清0
+ */
 SM_STATE(EAP, DISABLED)
 {
 	SM_ENTRY(EAP, DISABLED);
 	sm->num_rounds = 0;
 }
 
-
+/* EAP SM进入INITIALIZE状态的EA:
+ *      1. 清除currentId
+ *      2. 清除EAP->EAPOL交互标志eapSuccess、eapFail、eapTimeout
+ *      3. 清除EAP->EAPOL交互缓存eapKeyData以及对应的长度值eapKeyDataLen(802.1X不用)
+ *      4. 清除EAP->EAPOL交互标志eapKeyAvailable(802.1X不用)
+ *      5. 清除EAPOL->EAP交互标志eapRestart
+ */
 SM_STATE(EAP, INITIALIZE)
 {
 	SM_ENTRY(EAP, INITIALIZE);
@@ -155,17 +165,20 @@ SM_STATE(EAP, INITIALIZE)
 	 * This is not defined in RFC 4137, but method state needs to be
 	 * reseted here so that it does not remain in success state when
 	 * re-authentication starts.
+     * 这部分内容没有定义在RFC 4137：
+     * 为了避免当重认证开始时指定EAP方法的状态依然保持在success，这里对此EAP方法做了复位操作，相关数据都被清空
 	 */
 	if (sm->m && sm->eap_method_priv) {
 		sm->m->reset(sm, sm->eap_method_priv);
 		sm->eap_method_priv = NULL;
 	}
-	sm->m = NULL;
-	sm->user_eap_method_index = 0;
+	sm->m = NULL;                   // 清除了之前采用过的EAP方法
+	sm->user_eap_method_index = 0;  // EAP方法序号复位到0
 
+    // 如果使能了RADIUS_SERVER，那在这里需要对EAPOL层传上来的eap-resp数据进行解析
 	if (sm->backend_auth) {
 		sm->currentMethod = EAP_TYPE_NONE;
-		/* parse rxResp, respId, respMethod */
+        // EAP层解析从EAPOL层传上来的eap-resp数据
 		eap_sm_parseEapResp(sm, sm->eap_if.eapRespData);
 		if (sm->rxResp) {
 			sm->currentId = sm->respId;
@@ -399,7 +412,9 @@ SM_STATE(EAP, NAK)
 	eap_sm_Policy_update(sm, nak_list, len);
 }
 
-
+/* EAP SM进入SELECT_ACTION状态的EA:
+ *      对下一步采取的策略做一个决定
+ */
 SM_STATE(EAP, SELECT_ACTION)
 {
 	SM_ENTRY(EAP, SELECT_ACTION);
@@ -606,10 +621,10 @@ SM_STATE(EAP, SUCCESS2)
 // 检查EAP SM 的条件变量，然后根据情况进行状态切换
 SM_STEP(EAP)
 {
-    // 进入INITIALIZE的条件：
-    // EAPOL->EAP交互标志eapRestart和portEnabled被置位
+    // 如果EAPOL->EAP交互标志eapRestart和portEnabled被置位，则进入INITIALIZE
 	if (sm->eap_if.eapRestart && sm->eap_if.portEnabled)
 		SM_ENTER_GLOBAL(EAP, INITIALIZE);
+    // 如果EAPOL->EAP交互标志portEnabled没有被置位，则进入DISABLED
 	else if (!sm->eap_if.portEnabled)
 		SM_ENTER_GLOBAL(EAP, DISABLED);
 	else if (sm->num_rounds > EAP_MAX_AUTH_ROUNDS) {
@@ -621,20 +636,20 @@ SM_STEP(EAP)
 			SM_ENTER_GLOBAL(EAP, FAILURE);
 		}
 	} else switch (sm->EAP_state) {
-	case EAP_INITIALIZE:
-		if (sm->backend_auth) {
-			if (!sm->rxResp)
+	case EAP_INITIALIZE:                        // 当前处于INITIALIZE状态的话，需要分为2种情况进行处理：
+		if (sm->backend_auth) {                 //  1. 如果使能了RADIUS_SERVER，则需要继续细分为3种情况进行处理：
+			if (!sm->rxResp)                                // 1.1 如果rxResp标志没有被置位，则进入SELECT_ACTION状态
 				SM_ENTER(EAP, SELECT_ACTION);
 			else if (sm->rxResp &&
 				 (sm->respMethod == EAP_TYPE_NAK ||
 				  (sm->respMethod == EAP_TYPE_EXPANDED &&
 				   sm->respVendor == EAP_VENDOR_IETF &&
-				   sm->respVendorMethod == EAP_TYPE_NAK)))
-				SM_ENTER(EAP, NAK);
+				   sm->respVendorMethod == EAP_TYPE_NAK)))  // 1.2 如果rxResp标志被置位，并且respMethod为EAP_TYPE_NAK或者EAP_TYPE_EXPANDED
+				SM_ENTER(EAP, NAK);                         //      则进入NAK状态
 			else
-				SM_ENTER(EAP, PICK_UP_METHOD);
+				SM_ENTER(EAP, PICK_UP_METHOD);              // 1.3 如果以上2种情况都不满足，则进入PICK_UP_METHOD状态
 		} else {
-			SM_ENTER(EAP, SELECT_ACTION);
+			SM_ENTER(EAP, SELECT_ACTION);       // 2. 如果没有使能RADIUS_SERVER，则无条件进入SELECT_ACTION状态
 		}
 		break;
 	case EAP_PICK_UP_METHOD:
@@ -745,15 +760,15 @@ SM_STEP(EAP)
 	case EAP_NAK:
 		SM_ENTER(EAP, SELECT_ACTION);
 		break;
-	case EAP_SELECT_ACTION:
-		if (sm->decision == DECISION_FAILURE)
+    case EAP_SELECT_ACTION:                             // 当前处于SELECT_ACTION状态的话，根据decision值进入不同状态:
+		if (sm->decision == DECISION_FAILURE)           //  1. 如果decision为failure，则进入FAILURE状态
 			SM_ENTER(EAP, FAILURE);
-		else if (sm->decision == DECISION_SUCCESS)
+		else if (sm->decision == DECISION_SUCCESS)      //  2. 如果decision为success，则进入SUCCESS状态
 			SM_ENTER(EAP, SUCCESS);
-		else if (sm->decision == DECISION_PASSTHROUGH)
+		else if (sm->decision == DECISION_PASSTHROUGH)  //  3. 如果decision为passthrough，则进入INITIALIZE_PASSTHROUGH状态
 			SM_ENTER(EAP, INITIALIZE_PASSTHROUGH);
 		else
-			SM_ENTER(EAP, PROPOSE_METHOD);
+			SM_ENTER(EAP, PROPOSE_METHOD);              //  4. 如果decision的值不等于上面3种，那么进入PROPOSE_METHOD状态
 		break;
 	case EAP_TIMEOUT_FAILURE:
 		break;
@@ -869,7 +884,7 @@ static int eap_sm_calculateTimeout(struct eap_sm *sm, int retransCount,
 	return rto;
 }
 
-
+// EAP层解析从EAPOL层传上来的eap-resp数据
 static void eap_sm_parseEapResp(struct eap_sm *sm, const struct wpabuf *resp)
 {
 	const struct eap_hdr *hdr;
@@ -904,9 +919,18 @@ static void eap_sm_parseEapResp(struct eap_sm *sm, const struct wpabuf *resp)
 	if (hdr->code == EAP_CODE_RESPONSE)
 		sm->rxResp = TRUE;
 
+    // 处理携带了Data字段的eap-resp数据
 	if (plen > sizeof(*hdr)) {
 		u8 *pos = (u8 *) (hdr + 1);
-		sm->respMethod = *pos++;
+		sm->respMethod = *pos++;    // 获取Type字段
+
+        /* 处理Type = 254的数据
+         *  struct eap_data_expanded {
+         *      unsigned char type;
+         *      unsigned char vendor[3];
+         *      unsigned char vendor_method[4];
+         *  }
+         */
 		if (sm->respMethod == EAP_TYPE_EXPANDED) {
 			if (plen < sizeof(*hdr) + 8) {
 				wpa_printf(MSG_DEBUG, "EAP: Ignored truncated "
@@ -1097,14 +1121,24 @@ static EapType eap_sm_Policy_getNextMethod(struct eap_sm *sm, int *vendor)
 	return next;
 }
 
-
+// 对下一步采取的策略做一个决定
 static int eap_sm_Policy_getDecision(struct eap_sm *sm)
 {
+    /* 作出passthrough决定的条件：
+     *      使用外部radius服务器;
+     *      获得的用户名有效;
+     *      没有发起重认证
+     */
 	if (!sm->eap_server && sm->identity && !sm->start_reauth) {
 		wpa_printf(MSG_DEBUG, "EAP: getDecision: -> PASSTHROUGH");
 		return DECISION_PASSTHROUGH;
 	}
 
+    /* 作出success决定的条件：
+     *      采用了有效的EAP方法;
+     *      当前使用的EAP方法不是EAP_TYPE_IDENTITY;
+     *      当前使用的EAP方法处于success状态
+     */
 	if (sm->m && sm->currentMethod != EAP_TYPE_IDENTITY &&
 	    sm->m->isSuccess(sm, sm->eap_method_priv)) {
 		wpa_printf(MSG_DEBUG, "EAP: getDecision: method succeeded -> "
@@ -1113,6 +1147,10 @@ static int eap_sm_Policy_getDecision(struct eap_sm *sm)
 		return DECISION_SUCCESS;
 	}
 
+    /* 作出failure决定的条件：
+     *      采用了有效的EAP方法;
+     *      当前使用的EAP方法不处于continue和success状态（那么就只剩下failure状态了）
+     */
 	if (sm->m && sm->m->isDone(sm, sm->eap_method_priv) &&
 	    !sm->m->isSuccess(sm, sm->eap_method_priv)) {
 		wpa_printf(MSG_DEBUG, "EAP: getDecision: method failed -> "
@@ -1121,6 +1159,11 @@ static int eap_sm_Policy_getDecision(struct eap_sm *sm)
 		return DECISION_FAILURE;
 	}
 
+    /* 更新用户信息管理块的条件：
+     *      用户信息管理块尚未创建或者update_user被置位;
+     *      获得的用户名有效;
+     *      没有发起重认证
+     */
 	if ((sm->user == NULL || sm->update_user) && sm->identity &&
 	    !sm->start_reauth) {
 		/*
@@ -1151,6 +1194,9 @@ static int eap_sm_Policy_getDecision(struct eap_sm *sm)
 	}
 	sm->start_reauth = FALSE;
 
+    /* 第一种作出continue决定的条件：
+     *      用户信息管理块已经创建，并且user_eap_method_index有效，并且相应的vendor和method有效
+     */
 	if (sm->user && sm->user_eap_method_index < EAP_MAX_METHODS &&
 	    (sm->user->methods[sm->user_eap_method_index].vendor !=
 	     EAP_VENDOR_IETF ||
@@ -1161,6 +1207,9 @@ static int eap_sm_Policy_getDecision(struct eap_sm *sm)
 		return DECISION_CONTINUE;
 	}
 
+    /* 第二种作出continue决定的条件(初始化时进入这里)：
+     *      用户名信息无效或者当前处理的eap-id号无效
+     */
 	if (sm->identity == NULL || sm->currentId == -1) {
 		wpa_printf(MSG_DEBUG, "EAP: getDecision: no identity known "
 			   "yet -> CONTINUE");

@@ -29,6 +29,7 @@ struct eap_sm;
 #define EAP_TTLS_AUTH_MSCHAP 4
 #define EAP_TTLS_AUTH_MSCHAPV2 8
 
+// eap层记录的用户信息管理块
 struct eap_user {
 	struct {
 		int vendor;
@@ -64,8 +65,8 @@ struct eap_eapol_interface {
 	Boolean eapFail;        // 此标志由EAP层管理，EAP层AUTH SM进入FAIL状态时设置TRUE并填充eapReqData，进入INITIALIZE状态时设置FALSE
 	Boolean eapTimeout;     // 此标志由EAP层管理，EAP层AUTH SM进入TIMEOUT状态时设置TRUE，进入INITIALIZE状态时设置FALSE
 	struct wpabuf *eapReqData;  // 此buffer由EAP层填充，同时设置eapReq/eapSuccess/eapFail，然后递交给EAPOL层处理
-	u8 *eapKeyData;
-	size_t eapKeyDataLen;
+	u8 *eapKeyData;         // 此标志由EAP层管理，存储了KEY数据（802.1X不用）
+	size_t eapKeyDataLen;   // 此标志由EAP层管理，存储了KEY数据长度（802.1X不用）
 	Boolean eapKeyAvailable; /* called keyAvailable in IEEE 802.1X-2004 */
 
 	/* AAA interface to full authenticator variables */

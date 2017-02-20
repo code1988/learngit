@@ -38,7 +38,7 @@ int eap_server_register_methods(void)
 
 #ifdef EAP_SERVER_MD5
 	if (ret == 0)
-		ret = eap_server_md5_register();
+		ret = eap_server_md5_register();    // 注册md5类型的eap方法
 #endif /* EAP_SERVER_MD5 */
 
 #ifdef EAP_SERVER_TLS
