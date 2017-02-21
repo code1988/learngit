@@ -114,6 +114,7 @@ int wpabuf_resize(struct wpabuf **_buf, size_t add_len)
  * wpabuf_alloc - Allocate a wpabuf of the given size
  * @len: Length for the allocated buffer
  * Returns: Buffer to the allocated wpabuf or %NULL on failure
+ * 申请一个len长度的wpabuf数据块
  */
 struct wpabuf * wpabuf_alloc(size_t len)
 {
@@ -205,7 +206,7 @@ void wpabuf_free(struct wpabuf *buf)
 #endif /* WPA_TRACE */
 }
 
-
+// wpabuf结构的总空间中申请一块len长度的空间
 void * wpabuf_put(struct wpabuf *buf, size_t len)
 {
 	void *tmp = wpabuf_mhead_u8(buf) + wpabuf_len(buf);

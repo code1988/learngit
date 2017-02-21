@@ -96,6 +96,7 @@ static inline const u8 * wpabuf_head_u8(const struct wpabuf *buf)
  * wpabuf_mhead - Get modifiable pointer to the head of the buffer data
  * @buf: wpabuf buffer
  * Returns: Pointer to the head of the buffer data
+ * 获取数据空间可修改的首地址
  */
 static inline void * wpabuf_mhead(struct wpabuf *buf)
 {
@@ -109,36 +110,42 @@ static inline u8 * wpabuf_mhead_u8(struct wpabuf *buf)
 	return wpabuf_mhead(buf);
 }
 
+// 写入1字节数据
 static inline void wpabuf_put_u8(struct wpabuf *buf, u8 data)
 {
 	u8 *pos = wpabuf_put(buf, 1);
 	*pos = data;
 }
 
+// 写入2字节数据(小端转小端)
 static inline void wpabuf_put_le16(struct wpabuf *buf, u16 data)
 {
 	u8 *pos = wpabuf_put(buf, 2);
 	WPA_PUT_LE16(pos, data);
 }
 
+// 写入2字节数据(小端转大端)
 static inline void wpabuf_put_be16(struct wpabuf *buf, u16 data)
 {
 	u8 *pos = wpabuf_put(buf, 2);
 	WPA_PUT_BE16(pos, data);
 }
 
+// 写入3字节数据(小端转大端)
 static inline void wpabuf_put_be24(struct wpabuf *buf, u32 data)
 {
 	u8 *pos = wpabuf_put(buf, 3);
 	WPA_PUT_BE24(pos, data);
 }
 
+// 写入4字节数据(小端转大端)
 static inline void wpabuf_put_be32(struct wpabuf *buf, u32 data)
 {
 	u8 *pos = wpabuf_put(buf, 4);
 	WPA_PUT_BE32(pos, data);
 }
 
+// 写入len长度数据
 static inline void wpabuf_put_data(struct wpabuf *buf, const void *data,
 				   size_t len)
 {

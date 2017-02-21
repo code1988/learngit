@@ -575,7 +575,7 @@ SM_STATE(BE_AUTH, REQUEST)
  *      5. EAPOL->EAP交互标志eapResp设置TRUE，用于通知EAP层接收一个eap-reap报文
  *      6. 累加计数器
  *
- * 备注：标准要求的sendRespToServer函数并未做实现
+ * 备注：标准要求的sendRespToServer函数并未做实现，因为数据已经承载在EAPOL->EAP交互缓存eapRespData
  */
 SM_STATE(BE_AUTH, RESPONSE)
 {
@@ -667,7 +667,7 @@ SM_STEP(BE_AUTH)
 		else if (sm->eap_if->eapReq)        //  2. 如果EAP层设置了eapReq标志，则进入REQUEST状态(这种自循环应该是EAP层重传机制导致的)
 			SM_ENTER(BE_AUTH, REQUEST);
 		else if (sm->eap_if->eapTimeout)    //  3. 如果EAP层设置了eapTimeout标志，则进入TIMEOUT状态(这种情况应该是EAP层重传超时导致的)
-			SM_ENTER(BE_AUTH, TIMEOUT); // (这里是否应该调用SM_ENTER_GLOBAL)
+			SM_ENTER(BE_AUTH, TIMEOUT); 
 		break;
 	case BE_AUTH_RESPONSE:                  // 当前处于RESPONSE状态的话，需要分为5种情况进行处理：
 		if (sm->eap_if->eapNoReq)           //  1. 如果EAP层设置了eapNoReq标志，则进入IGNORE状态
@@ -676,13 +676,13 @@ SM_STEP(BE_AUTH)
 			sm->backendAccessChallenges++;
 			SM_ENTER(BE_AUTH, REQUEST);
 		} else if (sm->aWhile == 0)         //  3. 如果aWhile定时器超时，则进入TIMEOUT状态
-			SM_ENTER(BE_AUTH, TIMEOUT); // (这里是否应该调用SM_ENTER_GLOBAL)
+			SM_ENTER(BE_AUTH, TIMEOUT); 
 		else if (sm->eap_if->eapFail) {     //  4. 如果EAP层设置了eapFail标志，则进入FAIL状态，并累加相应计数器
 			sm->backendAuthFails++;
 			SM_ENTER(BE_AUTH, FAIL);
 		} else if (sm->eap_if->eapSuccess) {//  5. 如果EAP层设置了eapSuccess标志，则进入SUCCESS状态，并累加相应计数器
 			sm->backendAuthSuccesses++;
-			SM_ENTER(BE_AUTH, SUCCESS); // (这里是否应该调用SM_ENTER_GLOBAL)
+			SM_ENTER(BE_AUTH, SUCCESS); 
 		}
 		break;
 	case BE_AUTH_SUCCESS:                   // 当前处于SUCCESS状态的话，无条件进入IDLE状态
@@ -1079,7 +1079,7 @@ restart:
 		/* TODO: find a better location for this 
          *       0.7.3版本，以下这部分代码的位置是打算被优化的
          * */
-        // 如果EAP->EAPOL交互标志aaaEapResp被置位，意味着有aaa数据需要被发送
+        // 如果EAP->EAPOL_AAA交互标志aaaEapResp被置位，意味着有aaa数据需要被发送
 		if (sm->eap_if->aaaEapResp) {
 			sm->eap_if->aaaEapResp = FALSE;
 			if (sm->eap_if->aaaEapRespData == NULL) {
@@ -1157,7 +1157,7 @@ static int eapol_sm_get_eap_user(void *ctx, const u8 *identity,
 					  identity_len, phase2, user);
 }
 
-// eapol层提供给eap层的id字段获取接口
+// eapol层提供给eap层的接口，返回一段字符串消息，用于eap层组建eap-req-id包时附带信息，这是非必须的
 static const char * eapol_sm_get_eap_req_id_text(void *ctx, size_t *len)
 {
 	struct eapol_state_machine *sm = ctx;

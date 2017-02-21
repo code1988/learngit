@@ -39,6 +39,7 @@ static void ap_handle_session_timer(void *eloop_ctx, void *timeout_ctx);
 static void ap_sa_query_timer(void *eloop_ctx, void *timeout_ctx);
 #endif /* CONFIG_IEEE80211W */
 
+// 遍历sta链表，调用传入的cb
 int ap_for_each_sta(struct hostapd_data *hapd,
 		    int (*cb)(struct hostapd_data *hapd, struct sta_info *sta,
 			      void *ctx),

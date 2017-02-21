@@ -21,25 +21,28 @@
 #pragma pack(push, 1)
 #endif /* _MSC_VER */
 
+// radius头定义
 struct radius_hdr {
-	u8 code;
-	u8 identifier;
-	u16 length; /* including this header */
-	u8 authenticator[16];
+	u8 code;                // radius包类型
+	u8 identifier;          // 包标识，用于匹配请求包和响应包
+	u16 length; /* including this header */ // 包长度，最小20字节，最大4096字节
+	u8 authenticator[16];   // 验证字域，一个16字节的明文随机数。请求报文中表示16字节随机码，响应报文中用于鉴别响应报文的合法性
 	/* followed by length-20 octets of attributes */
 } STRUCT_PACKED;
 
-enum { RADIUS_CODE_ACCESS_REQUEST = 1,
-       RADIUS_CODE_ACCESS_ACCEPT = 2,
-       RADIUS_CODE_ACCESS_REJECT = 3,
-       RADIUS_CODE_ACCOUNTING_REQUEST = 4,
-       RADIUS_CODE_ACCOUNTING_RESPONSE = 5,
-       RADIUS_CODE_ACCESS_CHALLENGE = 11,
-       RADIUS_CODE_STATUS_SERVER = 12,
-       RADIUS_CODE_STATUS_CLIENT = 13,
-       RADIUS_CODE_RESERVED = 255
+// radius帧头中Code字段定义
+enum { RADIUS_CODE_ACCESS_REQUEST = 1,          // 认证请求包
+       RADIUS_CODE_ACCESS_ACCEPT = 2,           // 认证接受包
+       RADIUS_CODE_ACCESS_REJECT = 3,           // 认证拒绝包
+       RADIUS_CODE_ACCOUNTING_REQUEST = 4,      // 计费请求包
+       RADIUS_CODE_ACCOUNTING_RESPONSE = 5,     // 计费响应包
+       RADIUS_CODE_ACCESS_CHALLENGE = 11,       // 挑战字包
+       RADIUS_CODE_STATUS_SERVER = 12,          // 服务器状态包
+       RADIUS_CODE_STATUS_CLIENT = 13,          // 客户端状态包
+       RADIUS_CODE_RESERVED = 255               // 保留包类型
 };
 
+// radius属性头定义
 struct radius_attr_hdr {
 	u8 type;
 	u8 length; /* including this header */
@@ -48,6 +51,7 @@ struct radius_attr_hdr {
 
 #define RADIUS_MAX_ATTR_LEN (255 - sizeof(struct radius_attr_hdr))
 
+// radius属性中Type字段定义
 enum { RADIUS_ATTR_USER_NAME = 1,
        RADIUS_ATTR_USER_PASSWORD = 2,
        RADIUS_ATTR_NAS_IP_ADDRESS = 4,

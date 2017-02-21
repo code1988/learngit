@@ -175,8 +175,8 @@ struct hostapd_bss_config {
 	struct hostapd_ssid ssid;
 
 	char *eap_req_id_text; /* optional displayable message sent with
-				* EAP Request-Identity */
-	size_t eap_req_id_text_len;
+				* EAP Request-Identity 认证者发送eap-req-id时，附带一个可显示的信息，这是非必须的*/
+	size_t eap_req_id_text_len;     // 上面这段可显示信息的长度
 	int eapol_key_index_workaround;
 
 	size_t default_wep_key_len;

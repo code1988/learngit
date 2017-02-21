@@ -70,6 +70,7 @@ struct eap_eapol_interface {
 	Boolean eapKeyAvailable; /* called keyAvailable in IEEE 802.1X-2004 */
 
 	/* AAA interface to full authenticator variables */
+    // 以下变量用于AAA->FULL_AUTH交互
 	Boolean aaaEapReq;
 	Boolean aaaEapNoReq;
 	Boolean aaaSuccess;
@@ -81,8 +82,9 @@ struct eap_eapol_interface {
 	int aaaMethodTimeout;
 
 	/* Full authenticator to AAA interface variables */
-	Boolean aaaEapResp;
-	struct wpabuf *aaaEapRespData;
+    // 以下变量用于EAP层->AAA层交互
+	Boolean aaaEapResp;             // EAP层AUTH SM进入AAA_IDLE时设置TRUE并填充aaaEapRespData，AAA层发送数据并设置FALSE
+	struct wpabuf *aaaEapRespData;  // 此标志有EAP层填充(数据来源通常就是eapReapData转储)，同时设置aaaEapResp，然后递交给AAA层处理
 	/* aaaIdentity -> eap_get_identity() */
 	Boolean aaaTimeout;
 };
@@ -90,8 +92,8 @@ struct eap_eapol_interface {
 // eap层需要用到的eapol层回调函数
 struct eapol_callbacks {
 	int (*get_eap_user)(void *ctx, const u8 *identity, size_t identity_len,
-			    int phase2, struct eap_user *user);
-	const char * (*get_eap_req_id_text)(void *ctx, size_t *len);
+			    int phase2, struct eap_user *user);                     // eapol_sm_get_eap_user 
+	const char * (*get_eap_req_id_text)(void *ctx, size_t *len);        // eapol_sm_get_eap_req_id_text
 };
 
 struct eap_config {

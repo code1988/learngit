@@ -23,7 +23,7 @@ struct eap_identity_data {
 	int pick_up;
 };
 
-
+// 初始化identify类型的eap方法控制块，实际就是初始化私有数据块
 static void * eap_identity_init(struct eap_sm *sm)
 {
 	struct eap_identity_data *data;
@@ -54,7 +54,7 @@ static void eap_identity_reset(struct eap_sm *sm, void *priv)
 	os_free(data);
 }
 
-
+// 组建一个identify类型的eap-req数据包
 static struct wpabuf * eap_identity_buildReq(struct eap_sm *sm, void *priv,
 					     u8 id)
 {
@@ -63,6 +63,7 @@ static struct wpabuf * eap_identity_buildReq(struct eap_sm *sm, void *priv,
 	const char *req_data;
 	size_t req_data_len;
 
+    // 如果有设置了eap-req-id的附加信息，则提取该信息
 	if (sm->eapol_cb->get_eap_req_id_text) {
 		req_data = sm->eapol_cb->get_eap_req_id_text(sm->eapol_ctx,
 							     &req_data_len);
@@ -70,6 +71,8 @@ static struct wpabuf * eap_identity_buildReq(struct eap_sm *sm, void *priv,
 		req_data = NULL;
 		req_data_len = 0;
 	}
+
+    // 申请一个EAP数据块并填充基本信息
 	req = eap_msg_alloc(EAP_VENDOR_IETF, EAP_TYPE_IDENTITY, req_data_len,
 			    EAP_CODE_REQUEST, id);
 	if (req == NULL) {
@@ -79,18 +82,20 @@ static struct wpabuf * eap_identity_buildReq(struct eap_sm *sm, void *priv,
 		return NULL;
 	}
 
+    // 填充type字段之后的payload
 	wpabuf_put_data(req, req_data, req_data_len);
 
 	return req;
 }
 
-
+// 检查identify类型的eap-resp数据包是否无效(返回值： TRUE - 无效； FALSE - 有效)
 static Boolean eap_identity_check(struct eap_sm *sm, void *priv,
 				  struct wpabuf *respData)
 {
 	const u8 *pos;
 	size_t len;
 
+    // eap头部有效性检测
 	pos = eap_hdr_validate(EAP_VENDOR_IETF, EAP_TYPE_IDENTITY,
 			       respData, &len);
 	if (pos == NULL) {
@@ -101,7 +106,7 @@ static Boolean eap_identity_check(struct eap_sm *sm, void *priv,
 	return FALSE;
 }
 
-
+// 处理identify类型的eap-resp数据包，主要就是记录下用户名信息
 static void eap_identity_process(struct eap_sm *sm, void *priv,
 				 struct wpabuf *respData)
 {
@@ -124,6 +129,7 @@ static void eap_identity_process(struct eap_sm *sm, void *priv,
 	if (pos == NULL)
 		return; /* Should not happen - frame already validated */
 
+    // 记录eap-resp-id数据包中的用户名信息，并更新私有数据块中的状态
 	wpa_hexdump_ascii(MSG_DEBUG, "EAP-Identity: Peer identity", pos, len);
 	if (sm->identity)
 		sm->update_user = TRUE;
@@ -138,7 +144,7 @@ static void eap_identity_process(struct eap_sm *sm, void *priv,
 	}
 }
 
-
+// 检查identify类型的eap方法是否处于结束状态
 static Boolean eap_identity_isDone(struct eap_sm *sm, void *priv)
 {
 	struct eap_identity_data *data = priv;
@@ -152,7 +158,7 @@ static Boolean eap_identity_isSuccess(struct eap_sm *sm, void *priv)
 	return data->state == SUCCESS;
 }
 
-
+// 注册identify类型的eap方法
 int eap_server_identity_register(void)
 {
 	struct eap_method *eap;

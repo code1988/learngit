@@ -31,9 +31,9 @@ int eap_server_register_methods(void)
 {
 	int ret = 0;
 
-#ifdef EAP_SERVER_IDENTITY
+#ifdef EAP_SERVER_IDENTITY                  // makefile中定义了此宏
 	if (ret == 0)
-		ret = eap_server_identity_register();
+		ret = eap_server_identity_register();   // identify类型的eap方法必然被注册
 #endif /* EAP_SERVER_IDENTITY */
 
 #ifdef EAP_SERVER_MD5

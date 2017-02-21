@@ -25,6 +25,7 @@
  * @msg: EAP frame (starting with EAP header)
  * @plen: Pointer to variable to contain the returned payload length
  * Returns: Pointer to EAP payload (after type field), or %NULL on failure
+ * eap头部有效性检测
  *
  * This is a helper function for EAP method implementations. This is usually
  * called in the beginning of struct eap_method::process() function to verify
@@ -96,6 +97,7 @@ const u8 * eap_hdr_validate(int vendor, EapType eap_type,
  * @code: Message Code (EAP_CODE_*)
  * @identifier: Identifier
  * Returns: Pointer to the allocated message buffer or %NULL on error
+ * 申请一个完整的EAP消息空间，并填充基本信息
  *
  * This function can be used to allocate a buffer for an EAP message and fill
  * in the EAP header. This function is automatically using expanded EAP header

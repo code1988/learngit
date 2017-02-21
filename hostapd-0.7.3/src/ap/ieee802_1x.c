@@ -1154,7 +1154,7 @@ struct sta_id_search {
 	struct eapol_state_machine *sm;
 };
 
-
+// 比较指定的sta中记录的radius_id和收到的radius报文中的id号，如果匹配则记录对应的状态机统一管理块，同时返回1,不匹配则返回0
 static int ieee802_1x_select_radius_identifier(struct hostapd_data *hapd,
 					       struct sta_info *sta,
 					       void *ctx)
@@ -1170,7 +1170,7 @@ static int ieee802_1x_select_radius_identifier(struct hostapd_data *hapd,
 	return 0;
 }
 
-
+// 根据收到的radius报文中的id号，索引对应的状态机统一管理块
 static struct eapol_state_machine *
 ieee802_1x_search_radius_identifier(struct hostapd_data *hapd, u8 identifier)
 {
@@ -1190,6 +1190,7 @@ ieee802_1x_search_radius_identifier(struct hostapd_data *hapd, u8 identifier)
  * @shared_secret_len: Length of shared_secret in octets
  * @data: Context data (struct hostapd_data *)
  * Returns: Processing status
+ * 处理从RADIUS认证服务器发来的radius帧
  */
 static RadiusRxResult
 ieee802_1x_receive_auth(struct radius_msg *msg, struct radius_msg *req,
@@ -1202,18 +1203,26 @@ ieee802_1x_receive_auth(struct radius_msg *msg, struct radius_msg *req,
 	int session_timeout_set, old_vlanid = 0;
 	struct eapol_state_machine *sm;
 	int override_eapReq = 0;
+
+    // 获取radius帧头
 	struct radius_hdr *hdr = radius_msg_get_hdr(msg);
 
+    // 根据收到的radius报文中的id号，索引对应的状态机统一管理块
 	sm = ieee802_1x_search_radius_identifier(hapd, hdr->identifier);
 	if (sm == NULL) {
 		wpa_printf(MSG_DEBUG, "IEEE 802.1X: Could not find matching "
 			   "station for this RADIUS message");
 		return RADIUS_RX_UNKNOWN;
 	}
+
+    // 进而得到对应的sta
 	sta = sm->sta;
 
 	/* RFC 2869, Ch. 5.13: valid Message-Authenticator attribute MUST be
 	 * present when packet contains an EAP-Message attribute */
+    /* 如果是一个拒绝包，
+     * 
+     */
 	if (hdr->code == RADIUS_CODE_ACCESS_REJECT &&
 	    radius_msg_get_attr(msg, RADIUS_ATTR_MESSAGE_AUTHENTICATOR, NULL,
 				0) < 0 &&
@@ -1693,7 +1702,7 @@ int ieee802_1x_init(struct hostapd_data *hapd)
 		return -1;
 
 #ifndef CONFIG_NO_RADIUS
-    // 为radius认证消息注册一个RX回调函数ieee802_1x_receive_auth(末参传入hapd)
+    // radius客户端注册认证报文接收回调函数ieee802_1x_receive_auth(末参传入hapd)
 	if (radius_client_register(hapd->radius, RADIUS_AUTH,
 				   ieee802_1x_receive_auth, hapd))
 		return -1;

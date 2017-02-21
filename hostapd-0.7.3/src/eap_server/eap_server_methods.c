@@ -27,6 +27,7 @@ static struct eap_method *eap_methods;      // EAP方法的链表头
  * @vendor: EAP Vendor-Id (0 = IETF)
  * @method: EAP type number
  * Returns: Pointer to EAP method or %NULL if not found
+ * 获取当前EAP方法对应的控制块
  */
 const struct eap_method * eap_server_get_eap_method(int vendor, EapType method)
 {

@@ -55,6 +55,7 @@ static int eap_sm_Policy_getDecision(struct eap_sm *sm);
 static Boolean eap_sm_Policy_doPickUp(struct eap_sm *sm, EapType method);
 
 
+// 转储数据
 static int eap_copy_buf(struct wpabuf **dst, const struct wpabuf *src)
 {
 	if (src == NULL)
@@ -224,6 +225,9 @@ SM_STATE(EAP, PICK_UP_METHOD)
 }
 
 
+/* EAP SM进入IDLE状态的EA:
+ *      计算重传超时值，然后开启EAP层重传定时器
+ */
 SM_STATE(EAP, IDLE)
 {
 	SM_ENTRY(EAP, IDLE);
@@ -246,6 +250,10 @@ SM_STATE(EAP, RETRANSMIT)
 }
 
 
+/* EAP SM进入RECEIVED状态的EA:
+ *      EAP层解析从EAPOL层传上来的eap-resp数据
+ *      累加num_rounds
+ */
 SM_STATE(EAP, RECEIVED)
 {
 	SM_ENTRY(EAP, RECEIVED);
@@ -264,6 +272,12 @@ SM_STATE(EAP, DISCARD)
 }
 
 
+/* EAP SM进入SEND_REQUEST状态的EA:
+ *      retransCount标志清0
+ *      转储一份最近生成的eapReqData
+ *      清除EAPOL->EAP交互标志eapResp
+ *      EAP->EAPOL交互标志eapReq设置为TRUE，用于通知EAPOL层BE_AUTH SM
+ */
 SM_STATE(EAP, SEND_REQUEST)
 {
 	SM_ENTRY(EAP, SEND_REQUEST);
@@ -286,7 +300,9 @@ SM_STATE(EAP, SEND_REQUEST)
 	}
 }
 
-
+/* EAP SM进入INTEGRITY_CHECK状态的EA:
+ *  检查eap数据包是否无效
+ */
 SM_STATE(EAP, INTEGRITY_CHECK)
 {
 	SM_ENTRY(EAP, INTEGRITY_CHECK);
@@ -298,6 +314,11 @@ SM_STATE(EAP, INTEGRITY_CHECK)
 }
 
 
+/* EAP SM进入METHOD_REQUEST状态的EA:
+ *      根据旧ID号得到新的ID号
+ *      根据当前的EAP方法组建一个eap-req数据包，填入EAP->EAPOL交互缓冲eapReqData
+ *      设置当前EAP方法的超时值，通常不使用，设置为0
+ */
 SM_STATE(EAP, METHOD_REQUEST)
 {
 	SM_ENTRY(EAP, METHOD_REQUEST);
@@ -307,27 +328,38 @@ SM_STATE(EAP, METHOD_REQUEST)
 		return;
 	}
 
+    // 根据旧ID号得到新的ID号
 	sm->currentId = eap_sm_nextId(sm, sm->currentId);
 	wpa_printf(MSG_DEBUG, "EAP: building EAP-Request: Identifier %d",
 		   sm->currentId);
 	sm->lastId = sm->currentId;
 	wpabuf_free(sm->eap_if.eapReqData);
+
+    // 根据当前的EAP方法组建一个eap-req数据包，填入EAP->EAPOL交互缓冲eapReqData
 	sm->eap_if.eapReqData = sm->m->buildReq(sm, sm->eap_method_priv,
 						sm->currentId);
+
+    // 设置当前EAP方法的超时值，通常不使用，设置为0
 	if (sm->m->getTimeout)
 		sm->methodTimeout = sm->m->getTimeout(sm, sm->eap_method_priv);
 	else
 		sm->methodTimeout = 0;
 }
 
-
+/* EAP SM进入METHOD_RESPONSE状态的EA:
+ *      调用当前EAP方法的process回调函数处理eap-resp数据包
+ *      检测当前EAP方法私有数据块中的状态是否处于结束状态
+ */
 SM_STATE(EAP, METHOD_RESPONSE)
 {
 	SM_ENTRY(EAP, METHOD_RESPONSE);
 
+    // 调用当前EAP方法的process回调函数处理eap-resp数据包，正常会在这里标记私有状态为success
 	sm->m->process(sm, sm->eap_method_priv, sm->eap_if.eapRespData);
+
+    // 检测当前EAP方法私有数据块中的状态是否处于结束状态
 	if (sm->m->isDone(sm, sm->eap_method_priv)) {
-		eap_sm_Policy_update(sm, NULL, 0);
+		eap_sm_Policy_update(sm, NULL, 0);      // 如果私有状态标记为结束，则更新策略(实际这里不做任何事)
 		os_free(sm->eap_if.eapKeyData);
 		if (sm->m->getKey) {
 			sm->eap_if.eapKeyData = sm->m->getKey(
@@ -337,13 +369,17 @@ SM_STATE(EAP, METHOD_RESPONSE)
 			sm->eap_if.eapKeyData = NULL;
 			sm->eap_if.eapKeyDataLen = 0;
 		}
-		sm->methodState = METHOD_END;
+		sm->methodState = METHOD_END;           // 同步全局的EAP方法状态标志methodState为END
 	} else {
-		sm->methodState = METHOD_CONTINUE;
+		sm->methodState = METHOD_CONTINUE;      // 如果私有状态为continue则同步全局的EAP方法状态标志methodState为CONTINUE
 	}
 }
 
-
+/* EAP SM进入PROPOSE_METHOD状态的EA:
+ *      1. 获取紧接着要使用的EAP方法
+ *      2. 获取当前EAP方法对应的控制块，并初始化其私有数据块
+ *      3. 根据currentMethod设置methodState
+ */
 SM_STATE(EAP, PROPOSE_METHOD)
 {
 	int vendor;
@@ -351,6 +387,7 @@ SM_STATE(EAP, PROPOSE_METHOD)
 
 	SM_ENTRY(EAP, PROPOSE_METHOD);
 
+    // 获取紧接着要使用的EAP方法(每次新的开始type=1,vendor=0)
 	type = eap_sm_Policy_getNextMethod(sm, &vendor);
 	if (vendor == EAP_VENDOR_IETF)
 		sm->currentMethod = type;
@@ -360,7 +397,10 @@ SM_STATE(EAP, PROPOSE_METHOD)
 		sm->m->reset(sm, sm->eap_method_priv);
 		sm->eap_method_priv = NULL;
 	}
+
+    // 获取当前EAP方法对应的控制块
 	sm->m = eap_server_get_eap_method(vendor, type);
+    // 初始化当前EAP方法携带的私有数据块
 	if (sm->m) {
 		sm->eap_method_priv = sm->m->init(sm);
 		if (sm->eap_method_priv == NULL) {
@@ -370,6 +410,8 @@ SM_STATE(EAP, PROPOSE_METHOD)
 			sm->currentMethod = EAP_TYPE_NONE;
 		}
 	}
+
+    // 根据currentMethod设置methodState
 	if (sm->currentMethod == EAP_TYPE_IDENTITY ||
 	    sm->currentMethod == EAP_TYPE_NOTIFICATION)
 		sm->methodState = METHOD_CONTINUE;
@@ -462,7 +504,9 @@ SM_STATE(EAP, SUCCESS)
 		MACSTR, MAC2STR(sm->peer_addr));
 }
 
-
+/* EAP SM进入INITIALIZE_PASSTHROUGH状态的EA:
+ *  清空FULL_AUTH->AAA交互缓存
+ */
 SM_STATE(EAP, INITIALIZE_PASSTHROUGH)
 {
 	SM_ENTRY(EAP, INITIALIZE_PASSTHROUGH);
@@ -534,6 +578,9 @@ SM_STATE(EAP, SEND_REQUEST2)
 }
 
 
+/* EAP SM进入AAA_REQUEST状态的EA:
+ *      转储收到的eap-resp
+ */
 SM_STATE(EAP, AAA_REQUEST)
 {
 	SM_ENTRY(EAP, AAA_REQUEST);
@@ -549,7 +596,7 @@ SM_STATE(EAP, AAA_REQUEST)
 	 * This is already taken care of by the EAP-Identity method which
 	 * stores the identity into sm->identity.
 	 */
-
+    // 转储收到的eap-resp
 	eap_copy_buf(&sm->eap_if.aaaEapRespData, sm->eap_if.eapRespData);
 }
 
@@ -563,7 +610,13 @@ SM_STATE(EAP, AAA_RESPONSE)
 	sm->methodTimeout = sm->eap_if.aaaMethodTimeout;
 }
 
-
+/* EAP SM进入AAA_IDL状态的EA:
+ *      清除AAA->EAP交互标志aaaFail
+ *      清除AAA->EAP交互标志aaaSuccess
+ *      清除AAA->EAP交互标志aaaEapReq
+ *      清除AAA->EAP交互标志aaaEapNoReq
+ *      EAP->AAA交互标志aaaEapResp设置为TRUE，用于通知aaa层
+ */
 SM_STATE(EAP, AAA_IDLE)
 {
 	SM_ENTRY(EAP, AAA_IDLE);
@@ -663,10 +716,10 @@ SM_STEP(EAP)
 		if (sm->eap_if.portEnabled)
 			SM_ENTER(EAP, INITIALIZE);
 		break;
-	case EAP_IDLE:
-		if (sm->eap_if.retransWhile == 0)
+	case EAP_IDLE:                              // 当前处于IDLE状态的话，需要分为2种情况进行处理：
+		if (sm->eap_if.retransWhile == 0)       //  1. 如果重传定时器超时，则进入RETRANSMIT状态
 			SM_ENTER(EAP, RETRANSMIT);
-		else if (sm->eap_if.eapResp)
+		else if (sm->eap_if.eapResp)            //  2. 如果EAPOL->EAP交互标志eapResp被置位，则进入RECEIVED状态
 			SM_ENTER(EAP, RECEIVED);
 		break;
 	case EAP_RETRANSMIT:
@@ -675,21 +728,21 @@ SM_STEP(EAP)
 		else
 			SM_ENTER(EAP, IDLE);
 		break;
-	case EAP_RECEIVED:
-		if (sm->rxResp && (sm->respId == sm->currentId) &&
-		    (sm->respMethod == EAP_TYPE_NAK ||
-		     (sm->respMethod == EAP_TYPE_EXPANDED &&
-		      sm->respVendor == EAP_VENDOR_IETF &&
-		      sm->respVendorMethod == EAP_TYPE_NAK))
-		    && (sm->methodState == METHOD_PROPOSED))
+	case EAP_RECEIVED:                                          // 当前处于RECEIVED状态的话，需要分为3种情况进行处理：
+		if (sm->rxResp && (sm->respId == sm->currentId) &&      //  1. 如果接收到的是eap-resp包，并同时满足以下3个条件:
+		    (sm->respMethod == EAP_TYPE_NAK ||                      //  resp包中的ID号和当前使用的ID号匹配
+		     (sm->respMethod == EAP_TYPE_EXPANDED &&                //  resp包中的Type字段的值为NAK，或者为EXPANDED并且Vendor=IETF以及VendorMethod=NAK
+		      sm->respVendor == EAP_VENDOR_IETF &&                  //  当前EAP方法所处的状态为PROPOSED
+		      sm->respVendorMethod == EAP_TYPE_NAK))            //  则进入NAK状态
+		    && (sm->methodState == METHOD_PROPOSED))            
 			SM_ENTER(EAP, NAK);
-		else if (sm->rxResp && (sm->respId == sm->currentId) &&
-			 ((sm->respMethod == sm->currentMethod) ||
-			  (sm->respMethod == EAP_TYPE_EXPANDED &&
-			   sm->respVendor == EAP_VENDOR_IETF &&
-			   sm->respVendorMethod == sm->currentMethod)))
+		else if (sm->rxResp && (sm->respId == sm->currentId) && //  2. 如果接收到的是eap-resp包，并同时满足以下2个条件:
+			 ((sm->respMethod == sm->currentMethod) ||              //  resp包中的ID号和当前使用的ID号匹配
+			  (sm->respMethod == EAP_TYPE_EXPANDED &&               //  resp包中的Type字段的值和当前使用的Type匹配，或者
+			   sm->respVendor == EAP_VENDOR_IETF &&                 //      为EXPANDED并且Vendor=IETF以及VendorMethod和当前使用的Type匹配
+			   sm->respVendorMethod == sm->currentMethod)))     //  则进入INTEGRITY_CHECK状态
 			SM_ENTER(EAP, INTEGRITY_CHECK);
-		else {
+		else {                                                  //  如果以上2种情况都不满足，则进入DISCARD状态
 			wpa_printf(MSG_DEBUG, "EAP: RECEIVED->DISCARD: "
 				   "rxResp=%d respId=%d currentId=%d "
 				   "respMethod=%d currentMethod=%d",
@@ -701,60 +754,60 @@ SM_STEP(EAP)
 	case EAP_DISCARD:
 		SM_ENTER(EAP, IDLE);
 		break;
-	case EAP_SEND_REQUEST:
+	case EAP_SEND_REQUEST:                  // 当前处于SEND_REQUEST状态的话，则无条件进入IDLE状态
 		SM_ENTER(EAP, IDLE);
 		break;
-	case EAP_INTEGRITY_CHECK:
-		if (sm->ignore)
+	case EAP_INTEGRITY_CHECK:               // 当前处于INTEGRITY_CHECK状态的话，则需要根据ignore标志判断：
+		if (sm->ignore)                     //  1. 如果ignore被置位，则进入DISCARD状态
 			SM_ENTER(EAP, DISCARD);
 		else
-			SM_ENTER(EAP, METHOD_RESPONSE);
+			SM_ENTER(EAP, METHOD_RESPONSE); //  2. 如果ignore没有被置位，则进入METHOD_RESPONSE状态
 		break;
-	case EAP_METHOD_REQUEST:
+	case EAP_METHOD_REQUEST:                // 当前处于METHOD_REQUEST状态的话，则无条件进入SEND_REQUEST状态
 		SM_ENTER(EAP, SEND_REQUEST);
 		break;
-	case EAP_METHOD_RESPONSE:
+	case EAP_METHOD_RESPONSE:                                   // 当前如果处于METHOD_RESPONSE状态的话，则需要分为4种情况进行处理：
 		/*
 		 * Note: Mechanism to allow EAP methods to wait while going
 		 * through pending processing is an extension to RFC 4137
 		 * which only defines the transits to SELECT_ACTION and
 		 * METHOD_REQUEST from this METHOD_RESPONSE state.
 		 */
-		if (sm->methodState == METHOD_END)
+		if (sm->methodState == METHOD_END)                      //  1. 如果methodState的值为END，则进入SELECT_ACTION状态
 			SM_ENTER(EAP, SELECT_ACTION);
-		else if (sm->method_pending == METHOD_PENDING_WAIT) {
+		else if (sm->method_pending == METHOD_PENDING_WAIT) {   //  2. 如果method_pending的值为WAIT，则不做任何事
 			wpa_printf(MSG_DEBUG, "EAP: Method has pending "
 				   "processing - wait before proceeding to "
 				   "METHOD_REQUEST state");
-		} else if (sm->method_pending == METHOD_PENDING_CONT) {
+		} else if (sm->method_pending == METHOD_PENDING_CONT) { //  3. 如果method_pending的值为CONT，则切换到PENDING_NONE，并且进入METHOD_RESPONSE状态
 			wpa_printf(MSG_DEBUG, "EAP: Method has completed "
 				   "pending processing - reprocess pending "
 				   "EAP message");
 			sm->method_pending = METHOD_PENDING_NONE;
 			SM_ENTER(EAP, METHOD_RESPONSE);
 		} else
-			SM_ENTER(EAP, METHOD_REQUEST);
+			SM_ENTER(EAP, METHOD_REQUEST);                      //  4. 如果以上3种情况都不满足，则进入METHOD_REQUEST状态
 		break;
-	case EAP_PROPOSE_METHOD:
+	case EAP_PROPOSE_METHOD:            // 当前处于PROPOSE_METHOD状态的话，根据method_pending值进入不同状态:
 		/*
 		 * Note: Mechanism to allow EAP methods to wait while going
 		 * through pending processing is an extension to RFC 4137
 		 * which only defines the transit to METHOD_REQUEST from this
 		 * PROPOSE_METHOD state.
 		 */
-		if (sm->method_pending == METHOD_PENDING_WAIT) {
+		if (sm->method_pending == METHOD_PENDING_WAIT) {        // 1. 如果为PENDING_WAIT，则只是将user_eap_method_index递减
 			wpa_printf(MSG_DEBUG, "EAP: Method has pending "
 				   "processing - wait before proceeding to "
 				   "METHOD_REQUEST state");
 			if (sm->user_eap_method_index > 0)
 				sm->user_eap_method_index--;
-		} else if (sm->method_pending == METHOD_PENDING_CONT) {
+		} else if (sm->method_pending == METHOD_PENDING_CONT) { // 2. 如果为PENDING_CONT，则切换到PENDING_NONE，并再次进入PROPOSE_METHOD状态
 			wpa_printf(MSG_DEBUG, "EAP: Method has completed "
 				   "pending processing - reprocess pending "
 				   "EAP message");
 			sm->method_pending = METHOD_PENDING_NONE;
 			SM_ENTER(EAP, PROPOSE_METHOD);
-		} else
+		} else                                                  // 3. 如果为PENDING_NONE(通常都是这里)，则进入METHOD_REQUEST状态
 			SM_ENTER(EAP, METHOD_REQUEST);
 		break;
 	case EAP_NAK:
@@ -777,11 +830,11 @@ SM_STEP(EAP)
 	case EAP_SUCCESS:
 		break;
 
-	case EAP_INITIALIZE_PASSTHROUGH:
-		if (sm->currentId == -1)
+	case EAP_INITIALIZE_PASSTHROUGH:        // 当前处于INITIALIZE_PASSTHROUGH状态的话，根据currentId是否有效进入不同状态：
+		if (sm->currentId == -1)            //  1. 如果当前使用的ID号无效，则进入AAA_IDLE状态
 			SM_ENTER(EAP, AAA_IDLE);
 		else
-			SM_ENTER(EAP, AAA_REQUEST);
+			SM_ENTER(EAP, AAA_REQUEST);     //  2. 如果当前使用的ID号有效，则进入AAA_REQUEST状态
 		break;
 	case EAP_IDLE2:
 		if (sm->eap_if.eapResp)
@@ -807,20 +860,20 @@ SM_STEP(EAP)
 	case EAP_SEND_REQUEST2:
 		SM_ENTER(EAP, IDLE2);
 		break;
-	case EAP_AAA_REQUEST:
+	case EAP_AAA_REQUEST:               // 当前处于AAA_REQUEST状态的话，则无条件进入AAA_IDLE状态
 		SM_ENTER(EAP, AAA_IDLE);
 		break;
 	case EAP_AAA_RESPONSE:
 		SM_ENTER(EAP, SEND_REQUEST2);
 		break;
-	case EAP_AAA_IDLE:
-		if (sm->eap_if.aaaFail)
+	case EAP_AAA_IDLE:                          // 当前如果处于AAA_IDLE状态的话，则需要分为4种情况进行处理：(标准还有进入DISCARD2的情况)
+		if (sm->eap_if.aaaFail)                 //  1. 如果AAA->EAP交互标志aaaFail被置位，则进入FAILURE2状态
 			SM_ENTER(EAP, FAILURE2);
-		else if (sm->eap_if.aaaSuccess)
+		else if (sm->eap_if.aaaSuccess)         //  2. 如果AAA->EAP交互标志aaaSuccess被置位，则进入SUCCESS2状态
 			SM_ENTER(EAP, SUCCESS2);
-		else if (sm->eap_if.aaaEapReq)
+		else if (sm->eap_if.aaaEapReq)          //  3. 如果AAA->EAP交互标志aaaEapReq被置位，则进入AAA_RESPONSE状态
 			SM_ENTER(EAP, AAA_RESPONSE);
-		else if (sm->eap_if.aaaTimeout)
+		else if (sm->eap_if.aaaTimeout)         //  4. 如果AAA->EAP交互标志aaaTimeout被置位，则进入TIMEOUT_FAILURE2状态
 			SM_ENTER(EAP, TIMEOUT_FAILURE2);
 		break;
 	case EAP_TIMEOUT_FAILURE2:
@@ -832,13 +885,14 @@ SM_STEP(EAP)
 	}
 }
 
-
+// 计算超时
 static int eap_sm_calculateTimeout(struct eap_sm *sm, int retransCount,
 				   int eapSRTT, int eapRTTVAR,
 				   int methodTimeout)
 {
 	int rto, i;
 
+    // 首先根据methodTimeout值判断，当前采用的EAP方法是否隐含了一个指定的超时值
 	if (methodTimeout) {
 		/*
 		 * EAP method (either internal or through AAA server, provided
@@ -868,6 +922,9 @@ static int eap_sm_calculateTimeout(struct eap_sm *sm, int retransCount,
 	 * per 5.5. Limit the maximum RTO to 20 seconds per RFC 3748, 4.3
 	 * modified RTOmax.
 	 */
+
+    // 运行到这里意味着当前的EAP方法没有隐含超时值，需要手动设置一个
+    // 首先从3s开始，根据重传次数进行翻倍，最大不超过20s
 	rto = 3;
 	for (i = 0; i < retransCount; i++) {
 		rto *= 2;
@@ -999,9 +1056,10 @@ static struct wpabuf * eap_sm_buildFailure(struct eap_sm *sm, u8 id)
 	return msg;
 }
 
-
+// 根据上一个ID号得到下一个使用的ID号
 static int eap_sm_nextId(struct eap_sm *sm, int id)
 {
+    // 如果上一个ID号无效，则随机产生一个
 	if (id < 0) {
 		/* RFC 3748 Ch 4.1: recommended to initialize Identifier with a
 		 * random number */
@@ -1089,7 +1147,7 @@ static void eap_sm_Policy_update(struct eap_sm *sm, const u8 *nak_list,
 	eap_sm_process_nak(sm, nak_list, len);
 }
 
-
+// 获取紧接着要使用的EAP方法
 static EapType eap_sm_Policy_getNextMethod(struct eap_sm *sm, int *vendor)
 {
 	EapType next;
@@ -1102,6 +1160,7 @@ static EapType eap_sm_Policy_getNextMethod(struct eap_sm *sm, int *vendor)
 	 * EAP-Request/Identity.
 	 * Re-auth sets currentId == -1, so that can be used here to select
 	 * whether Identity needs to be requested again. */
+    // 每一次新的开始都使用identify方法，目的是获取请求者的identify信息
 	if (sm->identity == NULL || sm->currentId == -1) {
 		*vendor = EAP_VENDOR_IETF;
 		next = EAP_TYPE_IDENTITY;
@@ -1127,7 +1186,7 @@ static int eap_sm_Policy_getDecision(struct eap_sm *sm)
     /* 作出passthrough决定的条件：
      *      使用外部radius服务器;
      *      获得的用户名有效;
-     *      没有发起重认证
+     *      没有正在发起重认证
      */
 	if (!sm->eap_server && sm->identity && !sm->start_reauth) {
 		wpa_printf(MSG_DEBUG, "EAP: getDecision: -> PASSTHROUGH");

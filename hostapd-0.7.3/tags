@@ -261,7 +261,7 @@ BE_AUTH_RESPONSE	src/eapol_auth/eapol_auth_sm_i.h	/^	enum { BE_AUTH_REQUEST, BE_
 BE_AUTH_SUCCESS	src/eapol_auth/eapol_auth_sm_i.h	/^	enum { BE_AUTH_REQUEST, BE_AUTH_RESPONSE, BE_AUTH_SUCCESS,$/;"	e	enum:eapol_state_machine::__anon63
 BE_AUTH_TIMEOUT	src/eapol_auth/eapol_auth_sm_i.h	/^	       BE_AUTH_FAIL, BE_AUTH_TIMEOUT, BE_AUTH_IDLE, BE_AUTH_INITIALIZE,$/;"	e	enum:eapol_state_machine::__anon63
 BIGNUM_H	src/tls/bignum.h	16;"	d
-BIT	src/utils/common.h	410;"	d
+BIT	src/utils/common.h	419;"	d
 BN_FAST_MP_MONTGOMERY_REDUCE_C	src/tls/libtommath.c	38;"	d	file:
 BN_FAST_S_MP_SQR_C	src/tls/libtommath.c	43;"	d	file:
 BN_MP_ABS_C	src/tls/libtommath.c	50;"	d	file:
@@ -627,7 +627,7 @@ EAP_CODE_SUCCESS	src/eap_common/eap_defs.h	/^enum { EAP_CODE_REQUEST = 1, EAP_CO
 EAP_COMMON_H	src/eap_common/eap_common.h	16;"	d
 EAP_CONFIG_FLAGS_PASSWORD_NTHASH	src/eap_peer/eap_config.h	627;"	d
 EAP_CONFIG_H	src/eap_peer/eap_config.h	16;"	d
-EAP_COPY	src/eap_server/eap_server.c	87;"	d	file:
+EAP_COPY	src/eap_server/eap_server.c	88;"	d	file:
 EAP_DEFS_H	src/eap_common/eap_defs.h	16;"	d
 EAP_DISABLED	src/eap_peer/eap_i.h	/^		EAP_INITIALIZE, EAP_DISABLED, EAP_IDLE, EAP_RECEIVED,$/;"	e	enum:eap_sm::__anon186
 EAP_DISABLED	src/eap_server/eap_i.h	/^		EAP_DISABLED, EAP_INITIALIZE, EAP_IDLE, EAP_RECEIVED,$/;"	e	enum:eap_sm::__anon157
@@ -1021,15 +1021,15 @@ ERROR_RESTRICTED_LOGON_HOURS	src/eap_peer/eap_mschapv2.c	72;"	d	file:
 ERROR_RESTRICTED_LOGON_HOURS	src/eap_server/eap_server_mschapv2.c	38;"	d	file:
 ESTABLISHED	src/tls/tlsv1_client_i.h	/^		ESTABLISHED, FAILED$/;"	e	enum:tlsv1_client::__anon111
 ESTABLISHED	src/tls/tlsv1_server_i.h	/^		ESTABLISHED, FAILED$/;"	e	enum:tlsv1_server::__anon108
-ETH_ALEN	src/utils/common.h	317;"	d
+ETH_ALEN	src/utils/common.h	326;"	d
 ETH_P_80211_RAW	src/drivers/driver_atheros.c	44;"	d	file:
 ETH_P_80211_RAW	src/drivers/driver_madwifi.c	52;"	d	file:
-ETH_P_ALL	src/utils/common.h	323;"	d
-ETH_P_EAPOL	src/utils/common.h	329;"	d
-ETH_P_PAE	src/utils/common.h	326;"	d
+ETH_P_ALL	src/utils/common.h	332;"	d
+ETH_P_EAPOL	src/utils/common.h	338;"	d
+ETH_P_PAE	src/utils/common.h	335;"	d
 ETH_P_PREAUTH	src/ap/preauth_auth.c	33;"	d	file:
-ETH_P_RRB	src/utils/common.h	335;"	d
-ETH_P_RSN_PREAUTH	src/utils/common.h	332;"	d
+ETH_P_RRB	src/utils/common.h	344;"	d
+ETH_P_RSN_PREAUTH	src/utils/common.h	341;"	d
 EVENT_ADAPTER_ARRIVAL	src/drivers/driver_ndis_.c	/^		   EVENT_MEDIA_SPECIFIC, EVENT_ADAPTER_ARRIVAL,$/;"	e	enum:event_types	file:
 EVENT_ADAPTER_ARRIVAL	src/drivers/ndis_events.c	/^		   EVENT_ADAPTER_ARRIVAL, EVENT_ADAPTER_REMOVAL };$/;"	e	enum:event_types	file:
 EVENT_ADAPTER_REMOVAL	src/drivers/driver_ndis_.c	/^		   EVENT_ADAPTER_REMOVAL };$/;"	e	enum:event_types	file:
@@ -1462,7 +1462,7 @@ IFLA_IFNAME	src/drivers/priv_netlink.h	31;"	d
 IFLA_LINKMODE	src/drivers/priv_netlink.h	40;"	d
 IFLA_OPERSTATE	src/drivers/priv_netlink.h	37;"	d
 IFLA_WIRELESS	src/drivers/priv_netlink.h	34;"	d
-IFNAMSIZ	src/utils/common.h	320;"	d
+IFNAMSIZ	src/utils/common.h	329;"	d
 IF_OPER_DORMANT	src/drivers/driver_nl80211.c	54;"	d	file:
 IF_OPER_DORMANT	src/drivers/priv_netlink.h	41;"	d
 IF_OPER_UP	src/drivers/driver_nl80211.c	57;"	d	file:
@@ -1841,8 +1841,8 @@ ListenInterval	src/drivers/driver_ndis.c	/^	USHORT ListenInterval;$/;"	m	struct:
 ListenInterval	src/drivers/driver_ralink.h	/^    USHORT ListenInterval;$/;"	m	struct:_NDIS_802_11_AI_REQFI	access:public
 LowPart	src/drivers/driver_ralink.h	/^        ULONG LowPart;$/;"	m	struct:_LARGE_INTEGER::__anon84	access:public
 LowPart	src/drivers/driver_ralink.h	/^        ULONG LowPart;$/;"	m	struct:_LARGE_INTEGER::__anon85	access:public
-MAC2STR	src/utils/common.h	405;"	d
-MACSTR	src/utils/common.h	406;"	d
+MAC2STR	src/utils/common.h	414;"	d
+MACSTR	src/utils/common.h	415;"	d
 MAC_ADDR_LEN	src/drivers/driver_ralink.h	122;"	d
 MADWIFI_BSD	src/drivers/driver_madwifi.c	41;"	d	file:
 MADWIFI_NG	src/drivers/driver_madwifi.c	69;"	d	file:
@@ -1977,7 +1977,7 @@ MSEARCH_REPLY	src/wps/wps_upnp_i.h	/^	MSEARCH_REPLY = 2$/;"	e	enum:advertisement
 MSG	src/eap_server/eap_server_ikev2.c	/^	enum { MSG, FRAG_ACK, WAIT_FRAG_ACK, DONE, FAIL } state;$/;"	e	enum:eap_ikev2_data::__anon139	file:
 MSG	src/eap_server/eap_tls_common.h	/^	enum { MSG, FRAG_ACK, WAIT_FRAG_ACK } state;$/;"	e	enum:eap_ssl_data::__anon140
 MSG_DEBUG	src/utils/wpa_debug.h	/^enum { MSG_MSGDUMP, MSG_DEBUG, MSG_INFO, MSG_WARNING, MSG_ERROR };$/;"	e	enum:__anon27
-MSG_DONTWAIT	src/utils/common.h	395;"	d
+MSG_DONTWAIT	src/utils/common.h	404;"	d
 MSG_DONTWAIT	src/utils/common.h	84;"	d
 MSG_ERROR	src/utils/wpa_debug.h	/^enum { MSG_MSGDUMP, MSG_DEBUG, MSG_INFO, MSG_WARNING, MSG_ERROR };$/;"	e	enum:__anon27
 MSG_INFO	src/utils/wpa_debug.h	/^enum { MSG_MSGDUMP, MSG_DEBUG, MSG_INFO, MSG_WARNING, MSG_ERROR };$/;"	e	enum:__anon27
@@ -2897,8 +2897,8 @@ PRF_AES128_XCBC	src/eap_common/ikev2_common.h	/^	PRF_AES128_XCBC = 4$/;"	e	enum:
 PRF_HMAC_MD5	src/eap_common/ikev2_common.h	/^	PRF_HMAC_MD5 = 1,$/;"	e	enum:__anon121
 PRF_HMAC_SHA1	src/eap_common/ikev2_common.h	/^	PRF_HMAC_SHA1 = 2,$/;"	e	enum:__anon121
 PRF_HMAC_TIGER	src/eap_common/ikev2_common.h	/^	PRF_HMAC_TIGER = 3,$/;"	e	enum:__anon121
-PRINTF_FORMAT	src/utils/common.h	340;"	d
-PRINTF_FORMAT	src/utils/common.h	343;"	d
+PRINTF_FORMAT	src/utils/common.h	349;"	d
+PRINTF_FORMAT	src/utils/common.h	352;"	d
 PRISM2_DOWNLOAD_NON_VOLATILE	src/drivers/driver_hostap.h	/^	PRISM2_DOWNLOAD_NON_VOLATILE = 3 \/* FLASH *\/,$/;"	e	enum:__anon72
 PRISM2_DOWNLOAD_VOLATILE	src/drivers/driver_hostap.h	/^	PRISM2_DOWNLOAD_VOLATILE = 1 \/* RAM *\/,$/;"	e	enum:__anon72
 PRISM2_DOWNLOAD_VOLATILE_GENESIS	src/drivers/driver_hostap.h	/^	PRISM2_DOWNLOAD_VOLATILE_GENESIS = 4 \/* RAM in Genesis mode *\/,$/;"	e	enum:__anon72
@@ -3049,38 +3049,38 @@ R1	src/crypto/sha1-internal.c	148;"	d	file:
 R2	src/crypto/sha1-internal.c	151;"	d	file:
 R3	src/crypto/sha1-internal.c	153;"	d	file:
 R4	src/crypto/sha1-internal.c	156;"	d	file:
-RADIUS_802_1X_ADDR_FORMAT	src/radius/radius.h	187;"	d
+RADIUS_802_1X_ADDR_FORMAT	src/radius/radius.h	191;"	d
 RADIUS_ACCT	src/radius/radius_client.h	/^	RADIUS_ACCT,$/;"	e	enum:__anon207
-RADIUS_ACCT_AUTHENTIC_LOCAL	src/radius/radius.h	111;"	d
-RADIUS_ACCT_AUTHENTIC_RADIUS	src/radius/radius.h	110;"	d
-RADIUS_ACCT_AUTHENTIC_REMOTE	src/radius/radius.h	112;"	d
+RADIUS_ACCT_AUTHENTIC_LOCAL	src/radius/radius.h	115;"	d
+RADIUS_ACCT_AUTHENTIC_RADIUS	src/radius/radius.h	114;"	d
+RADIUS_ACCT_AUTHENTIC_REMOTE	src/radius/radius.h	116;"	d
 RADIUS_ACCT_INTERIM	src/radius/radius_client.h	/^	RADIUS_ACCT_INTERIM$/;"	e	enum:__anon207
-RADIUS_ACCT_STATUS_TYPE_ACCOUNTING_OFF	src/radius/radius.h	107;"	d
-RADIUS_ACCT_STATUS_TYPE_ACCOUNTING_ON	src/radius/radius.h	106;"	d
-RADIUS_ACCT_STATUS_TYPE_INTERIM_UPDATE	src/radius/radius.h	105;"	d
-RADIUS_ACCT_STATUS_TYPE_START	src/radius/radius.h	103;"	d
-RADIUS_ACCT_STATUS_TYPE_STOP	src/radius/radius.h	104;"	d
-RADIUS_ACCT_TERMINATE_CAUSE_ADMIN_REBOOT	src/radius/radius.h	121;"	d
-RADIUS_ACCT_TERMINATE_CAUSE_ADMIN_RESET	src/radius/radius.h	120;"	d
-RADIUS_ACCT_TERMINATE_CAUSE_CALLBACK	src/radius/radius.h	130;"	d
-RADIUS_ACCT_TERMINATE_CAUSE_HOST_REQUEST	src/radius/radius.h	132;"	d
-RADIUS_ACCT_TERMINATE_CAUSE_IDLE_TIMEOUT	src/radius/radius.h	118;"	d
-RADIUS_ACCT_TERMINATE_CAUSE_LOST_CARRIER	src/radius/radius.h	116;"	d
-RADIUS_ACCT_TERMINATE_CAUSE_LOST_SERVICE	src/radius/radius.h	117;"	d
-RADIUS_ACCT_TERMINATE_CAUSE_NAS_ERROR	src/radius/radius.h	123;"	d
-RADIUS_ACCT_TERMINATE_CAUSE_NAS_REBOOT	src/radius/radius.h	125;"	d
-RADIUS_ACCT_TERMINATE_CAUSE_NAS_REQUEST	src/radius/radius.h	124;"	d
-RADIUS_ACCT_TERMINATE_CAUSE_PORT_ERROR	src/radius/radius.h	122;"	d
-RADIUS_ACCT_TERMINATE_CAUSE_PORT_PREEMPTED	src/radius/radius.h	127;"	d
-RADIUS_ACCT_TERMINATE_CAUSE_PORT_SUSPENDED	src/radius/radius.h	128;"	d
-RADIUS_ACCT_TERMINATE_CAUSE_PORT_UNNEEDED	src/radius/radius.h	126;"	d
-RADIUS_ACCT_TERMINATE_CAUSE_SERVICE_UNAVAILABLE	src/radius/radius.h	129;"	d
-RADIUS_ACCT_TERMINATE_CAUSE_SESSION_TIMEOUT	src/radius/radius.h	119;"	d
-RADIUS_ACCT_TERMINATE_CAUSE_USER_ERROR	src/radius/radius.h	131;"	d
-RADIUS_ACCT_TERMINATE_CAUSE_USER_REQUEST	src/radius/radius.h	115;"	d
+RADIUS_ACCT_STATUS_TYPE_ACCOUNTING_OFF	src/radius/radius.h	111;"	d
+RADIUS_ACCT_STATUS_TYPE_ACCOUNTING_ON	src/radius/radius.h	110;"	d
+RADIUS_ACCT_STATUS_TYPE_INTERIM_UPDATE	src/radius/radius.h	109;"	d
+RADIUS_ACCT_STATUS_TYPE_START	src/radius/radius.h	107;"	d
+RADIUS_ACCT_STATUS_TYPE_STOP	src/radius/radius.h	108;"	d
+RADIUS_ACCT_TERMINATE_CAUSE_ADMIN_REBOOT	src/radius/radius.h	125;"	d
+RADIUS_ACCT_TERMINATE_CAUSE_ADMIN_RESET	src/radius/radius.h	124;"	d
+RADIUS_ACCT_TERMINATE_CAUSE_CALLBACK	src/radius/radius.h	134;"	d
+RADIUS_ACCT_TERMINATE_CAUSE_HOST_REQUEST	src/radius/radius.h	136;"	d
+RADIUS_ACCT_TERMINATE_CAUSE_IDLE_TIMEOUT	src/radius/radius.h	122;"	d
+RADIUS_ACCT_TERMINATE_CAUSE_LOST_CARRIER	src/radius/radius.h	120;"	d
+RADIUS_ACCT_TERMINATE_CAUSE_LOST_SERVICE	src/radius/radius.h	121;"	d
+RADIUS_ACCT_TERMINATE_CAUSE_NAS_ERROR	src/radius/radius.h	127;"	d
+RADIUS_ACCT_TERMINATE_CAUSE_NAS_REBOOT	src/radius/radius.h	129;"	d
+RADIUS_ACCT_TERMINATE_CAUSE_NAS_REQUEST	src/radius/radius.h	128;"	d
+RADIUS_ACCT_TERMINATE_CAUSE_PORT_ERROR	src/radius/radius.h	126;"	d
+RADIUS_ACCT_TERMINATE_CAUSE_PORT_PREEMPTED	src/radius/radius.h	131;"	d
+RADIUS_ACCT_TERMINATE_CAUSE_PORT_SUSPENDED	src/radius/radius.h	132;"	d
+RADIUS_ACCT_TERMINATE_CAUSE_PORT_UNNEEDED	src/radius/radius.h	130;"	d
+RADIUS_ACCT_TERMINATE_CAUSE_SERVICE_UNAVAILABLE	src/radius/radius.h	133;"	d
+RADIUS_ACCT_TERMINATE_CAUSE_SESSION_TIMEOUT	src/radius/radius.h	123;"	d
+RADIUS_ACCT_TERMINATE_CAUSE_USER_ERROR	src/radius/radius.h	135;"	d
+RADIUS_ACCT_TERMINATE_CAUSE_USER_REQUEST	src/radius/radius.h	119;"	d
 RADIUS_ACL_TIMEOUT	src/ap/ieee802_11_auth.c	31;"	d	file:
-RADIUS_ADDR_FORMAT	src/radius/radius.h	189;"	d
-RADIUS_ATTRS	src/radius/radius.c	233;"	d	file:
+RADIUS_ADDR_FORMAT	src/radius/radius.h	193;"	d
+RADIUS_ATTRS	src/radius/radius.c	234;"	d	file:
 RADIUS_ATTR_ACCT_AUTHENTIC	src/radius/radius.h	/^       RADIUS_ATTR_ACCT_AUTHENTIC = 45,$/;"	e	enum:__anon204
 RADIUS_ATTR_ACCT_DELAY_TIME	src/radius/radius.h	/^       RADIUS_ATTR_ACCT_DELAY_TIME = 41,$/;"	e	enum:__anon204
 RADIUS_ATTR_ACCT_INPUT_GIGAWORDS	src/radius/radius.h	/^       RADIUS_ATTR_ACCT_INPUT_GIGAWORDS = 52,$/;"	e	enum:__anon204
@@ -3142,55 +3142,55 @@ RADIUS_ATTR_USER_PASSWORD	src/eap_common/eap_ttls.h	48;"	d
 RADIUS_ATTR_USER_PASSWORD	src/radius/radius.h	/^       RADIUS_ATTR_USER_PASSWORD = 2,$/;"	e	enum:__anon204
 RADIUS_ATTR_VENDOR_SPECIFIC	src/radius/radius.h	/^       RADIUS_ATTR_VENDOR_SPECIFIC = 26,$/;"	e	enum:__anon204
 RADIUS_AUTH	src/radius/radius_client.h	/^	RADIUS_AUTH,$/;"	e	enum:__anon207
-RADIUS_CISCO_AV_PAIR	src/radius/radius.h	155;"	d
+RADIUS_CISCO_AV_PAIR	src/radius/radius.h	159;"	d
 RADIUS_CLIENT_FIRST_WAIT	src/radius/radius_client.c	27;"	d	file:
 RADIUS_CLIENT_H	src/radius/radius_client.h	16;"	d
 RADIUS_CLIENT_MAX_ENTRIES	src/radius/radius_client.c	48;"	d	file:
 RADIUS_CLIENT_MAX_RETRIES	src/radius/radius_client.c	40;"	d	file:
 RADIUS_CLIENT_MAX_WAIT	src/radius/radius_client.c	32;"	d	file:
 RADIUS_CLIENT_NUM_FAILOVER	src/radius/radius_client.c	56;"	d	file:
-RADIUS_CODE_ACCESS_ACCEPT	src/radius/radius.h	/^       RADIUS_CODE_ACCESS_ACCEPT = 2,$/;"	e	enum:__anon203
-RADIUS_CODE_ACCESS_CHALLENGE	src/radius/radius.h	/^       RADIUS_CODE_ACCESS_CHALLENGE = 11,$/;"	e	enum:__anon203
-RADIUS_CODE_ACCESS_REJECT	src/radius/radius.h	/^       RADIUS_CODE_ACCESS_REJECT = 3,$/;"	e	enum:__anon203
-RADIUS_CODE_ACCESS_REQUEST	src/radius/radius.h	/^enum { RADIUS_CODE_ACCESS_REQUEST = 1,$/;"	e	enum:__anon203
-RADIUS_CODE_ACCOUNTING_REQUEST	src/radius/radius.h	/^       RADIUS_CODE_ACCOUNTING_REQUEST = 4,$/;"	e	enum:__anon203
-RADIUS_CODE_ACCOUNTING_RESPONSE	src/radius/radius.h	/^       RADIUS_CODE_ACCOUNTING_RESPONSE = 5,$/;"	e	enum:__anon203
-RADIUS_CODE_RESERVED	src/radius/radius.h	/^       RADIUS_CODE_RESERVED = 255$/;"	e	enum:__anon203
-RADIUS_CODE_STATUS_CLIENT	src/radius/radius.h	/^       RADIUS_CODE_STATUS_CLIENT = 13,$/;"	e	enum:__anon203
-RADIUS_CODE_STATUS_SERVER	src/radius/radius.h	/^       RADIUS_CODE_STATUS_SERVER = 12,$/;"	e	enum:__anon203
+RADIUS_CODE_ACCESS_ACCEPT	src/radius/radius.h	/^       RADIUS_CODE_ACCESS_ACCEPT = 2,           \/\/ 认证接受包$/;"	e	enum:__anon203
+RADIUS_CODE_ACCESS_CHALLENGE	src/radius/radius.h	/^       RADIUS_CODE_ACCESS_CHALLENGE = 11,       \/\/ 挑战字包$/;"	e	enum:__anon203
+RADIUS_CODE_ACCESS_REJECT	src/radius/radius.h	/^       RADIUS_CODE_ACCESS_REJECT = 3,           \/\/ 认证拒绝包$/;"	e	enum:__anon203
+RADIUS_CODE_ACCESS_REQUEST	src/radius/radius.h	/^enum { RADIUS_CODE_ACCESS_REQUEST = 1,          \/\/ 认证请求包$/;"	e	enum:__anon203
+RADIUS_CODE_ACCOUNTING_REQUEST	src/radius/radius.h	/^       RADIUS_CODE_ACCOUNTING_REQUEST = 4,      \/\/ 计费请求包$/;"	e	enum:__anon203
+RADIUS_CODE_ACCOUNTING_RESPONSE	src/radius/radius.h	/^       RADIUS_CODE_ACCOUNTING_RESPONSE = 5,     \/\/ 计费响应包$/;"	e	enum:__anon203
+RADIUS_CODE_RESERVED	src/radius/radius.h	/^       RADIUS_CODE_RESERVED = 255               \/\/ 保留包类型$/;"	e	enum:__anon203
+RADIUS_CODE_STATUS_CLIENT	src/radius/radius.h	/^       RADIUS_CODE_STATUS_CLIENT = 13,          \/\/ 客户端状态包$/;"	e	enum:__anon203
+RADIUS_CODE_STATUS_SERVER	src/radius/radius.h	/^       RADIUS_CODE_STATUS_SERVER = 12,          \/\/ 服务器状态包$/;"	e	enum:__anon203
 RADIUS_DEBUG	src/radius/radius_server.c	293;"	d	file:
-RADIUS_DEFAULT_ATTR_COUNT	src/radius/radius.h	182;"	d
-RADIUS_DEFAULT_MSG_SIZE	src/radius/radius.h	179;"	d
+RADIUS_DEFAULT_ATTR_COUNT	src/radius/radius.h	186;"	d
+RADIUS_DEFAULT_MSG_SIZE	src/radius/radius.h	183;"	d
 RADIUS_DUMP	src/radius/radius_server.c	297;"	d	file:
 RADIUS_DUMP_ASCII	src/radius/radius_server.c	299;"	d	file:
 RADIUS_ERROR	src/radius/radius_server.c	295;"	d	file:
 RADIUS_H	src/radius/radius.h	16;"	d
-RADIUS_MAX_ATTR_LEN	src/radius/radius.h	49;"	d
+RADIUS_MAX_ATTR_LEN	src/radius/radius.h	52;"	d
 RADIUS_MAX_MSG_LEN	src/radius/radius_server.c	37;"	d	file:
 RADIUS_MAX_SESSION	src/radius/radius_server.c	32;"	d	file:
-RADIUS_NAS_PORT_TYPE_IEEE_802_11	src/radius/radius.h	100;"	d
+RADIUS_NAS_PORT_TYPE_IEEE_802_11	src/radius/radius.h	104;"	d
 RADIUS_RX_INVALID_AUTHENTICATOR	src/radius/radius_client.h	/^	RADIUS_RX_INVALID_AUTHENTICATOR$/;"	e	enum:__anon208
 RADIUS_RX_PROCESSED	src/radius/radius_client.h	/^	RADIUS_RX_PROCESSED,$/;"	e	enum:__anon208
 RADIUS_RX_QUEUED	src/radius/radius_client.h	/^	RADIUS_RX_QUEUED,$/;"	e	enum:__anon208
 RADIUS_RX_UNKNOWN	src/radius/radius_client.h	/^	RADIUS_RX_UNKNOWN,$/;"	e	enum:__anon208
 RADIUS_SERVER_H	src/radius/radius_server.h	16;"	d
 RADIUS_SESSION_TIMEOUT	src/radius/radius_server.c	27;"	d	file:
-RADIUS_TERMINATION_ACTION_DEFAULT	src/radius/radius.h	96;"	d
-RADIUS_TERMINATION_ACTION_RADIUS_REQUEST	src/radius/radius.h	97;"	d
-RADIUS_TUNNEL_MEDIUM_TYPE_802	src/radius/radius.h	146;"	d
-RADIUS_TUNNEL_MEDIUM_TYPE_IPV4	src/radius/radius.h	144;"	d
-RADIUS_TUNNEL_MEDIUM_TYPE_IPV6	src/radius/radius.h	145;"	d
-RADIUS_TUNNEL_TAGS	src/radius/radius.h	134;"	d
-RADIUS_TUNNEL_TYPE_GRE	src/radius/radius.h	140;"	d
-RADIUS_TUNNEL_TYPE_IPIP	src/radius/radius.h	139;"	d
-RADIUS_TUNNEL_TYPE_L2TP	src/radius/radius.h	138;"	d
-RADIUS_TUNNEL_TYPE_PPTP	src/radius/radius.h	137;"	d
-RADIUS_TUNNEL_TYPE_VLAN	src/radius/radius.h	141;"	d
+RADIUS_TERMINATION_ACTION_DEFAULT	src/radius/radius.h	100;"	d
+RADIUS_TERMINATION_ACTION_RADIUS_REQUEST	src/radius/radius.h	101;"	d
+RADIUS_TUNNEL_MEDIUM_TYPE_802	src/radius/radius.h	150;"	d
+RADIUS_TUNNEL_MEDIUM_TYPE_IPV4	src/radius/radius.h	148;"	d
+RADIUS_TUNNEL_MEDIUM_TYPE_IPV6	src/radius/radius.h	149;"	d
+RADIUS_TUNNEL_TAGS	src/radius/radius.h	138;"	d
+RADIUS_TUNNEL_TYPE_GRE	src/radius/radius.h	144;"	d
+RADIUS_TUNNEL_TYPE_IPIP	src/radius/radius.h	143;"	d
+RADIUS_TUNNEL_TYPE_L2TP	src/radius/radius.h	142;"	d
+RADIUS_TUNNEL_TYPE_PPTP	src/radius/radius.h	141;"	d
+RADIUS_TUNNEL_TYPE_VLAN	src/radius/radius.h	145;"	d
 RADIUS_VENDOR_ATTR_MS_MPPE_RECV_KEY	src/radius/radius.h	/^       RADIUS_VENDOR_ATTR_MS_MPPE_RECV_KEY = 17$/;"	e	enum:__anon205
 RADIUS_VENDOR_ATTR_MS_MPPE_SEND_KEY	src/radius/radius.h	/^enum { RADIUS_VENDOR_ATTR_MS_MPPE_SEND_KEY = 16,$/;"	e	enum:__anon205
-RADIUS_VENDOR_ID_CISCO	src/radius/radius.h	154;"	d
+RADIUS_VENDOR_ID_CISCO	src/radius/radius.h	158;"	d
 RADIUS_VENDOR_ID_MICROSOFT	src/eap_common/eap_ttls.h	55;"	d
-RADIUS_VENDOR_ID_MICROSOFT	src/radius/radius.h	158;"	d
+RADIUS_VENDOR_ID_MICROSOFT	src/radius/radius.h	162;"	d
 RAW_DATA	src/drivers/driver_ndis.c	/^} RAW_DATA, *PRAW_DATA;$/;"	t	typeref:struct:__anon99	file:
 RCON	src/crypto/aes_i.h	39;"	d
 RCON	src/crypto/aes_i.h	70;"	d
@@ -3738,8 +3738,8 @@ STRUCT_PACKED	src/l2_packet/l2_packet.h	/^} STRUCT_PACKED;$/;"	v	typeref:struct:
 STRUCT_PACKED	src/radius/radius.h	/^} STRUCT_PACKED;$/;"	v	typeref:struct:radius_attr_hdr
 STRUCT_PACKED	src/radius/radius.h	/^} STRUCT_PACKED;$/;"	v	typeref:struct:radius_attr_vendor
 STRUCT_PACKED	src/radius/radius.h	/^} STRUCT_PACKED;$/;"	v	typeref:struct:radius_hdr
-STRUCT_PACKED	src/utils/common.h	341;"	d
-STRUCT_PACKED	src/utils/common.h	344;"	d
+STRUCT_PACKED	src/utils/common.h	350;"	d
+STRUCT_PACKED	src/utils/common.h	353;"	d
 SUBDIRS	src/Makefile	/^SUBDIRS=ap common crypto drivers eapol_auth eapol_supp eap_common eap_peer eap_server l2_packet radius rsn_supp tls utils wps$/;"	m
 SUCCESS	src/eap_peer/eap_aka.c	/^		CONTINUE, RESULT_SUCCESS, RESULT_FAILURE, SUCCESS, FAILURE$/;"	e	enum:eap_aka_data::__anon168	file:
 SUCCESS	src/eap_peer/eap_gpsk.c	/^	enum { GPSK_1, GPSK_3, SUCCESS, FAILURE } state;$/;"	e	enum:eap_gpsk_data::__anon181	file:
@@ -4623,14 +4623,14 @@ WPA_EVENT_EAP_TLS_CERT_ERROR	src/common/wpa_ctrl.h	50;"	d
 WPA_EVENT_PASSWORD_CHANGED	src/common/wpa_ctrl.h	38;"	d
 WPA_EVENT_SCAN_RESULTS	src/common/wpa_ctrl.h	56;"	d
 WPA_EVENT_TERMINATING	src/common/wpa_ctrl.h	36;"	d
-WPA_GET_BE16	src/utils/common.h	249;"	d
-WPA_GET_BE24	src/utils/common.h	264;"	d
-WPA_GET_BE32	src/utils/common.h	274;"	d
-WPA_GET_BE64	src/utils/common.h	294;"	d
+WPA_GET_BE16	src/utils/common.h	251;"	d
+WPA_GET_BE24	src/utils/common.h	269;"	d
+WPA_GET_BE32	src/utils/common.h	280;"	d
+WPA_GET_BE64	src/utils/common.h	303;"	d
 WPA_GET_CAPA	src/drivers/driver_ndiswrapper.c	72;"	d	file:
-WPA_GET_LE16	src/utils/common.h	256;"	d
-WPA_GET_LE32	src/utils/common.h	284;"	d
-WPA_GET_LE64	src/utils/common.h	310;"	d
+WPA_GET_LE16	src/utils/common.h	260;"	d
+WPA_GET_LE32	src/utils/common.h	292;"	d
+WPA_GET_LE64	src/utils/common.h	319;"	d
 WPA_GLOBAL_CTRL_IFACE_PORT	src/common/wpa_ctrl.h	228;"	d
 WPA_GMK_LEN	src/common/wpa_common.h	26;"	d
 WPA_GROUP_GTK_INIT	src/ap/wpa_auth_i.h	/^		WPA_GROUP_GTK_INIT = 0,$/;"	e	enum:wpa_group::__anon18
@@ -4718,12 +4718,12 @@ WPA_PTK_PTKCALCNEGOTIATING2	src/ap/wpa_auth_i.h	/^		WPA_PTK_PTKCALCNEGOTIATING, 
 WPA_PTK_PTKINITDONE	src/ap/wpa_auth_i.h	/^		WPA_PTK_PTKINITNEGOTIATING, WPA_PTK_PTKINITDONE$/;"	e	enum:wpa_state_machine::__anon14
 WPA_PTK_PTKINITNEGOTIATING	src/ap/wpa_auth_i.h	/^		WPA_PTK_PTKINITNEGOTIATING, WPA_PTK_PTKINITDONE$/;"	e	enum:wpa_state_machine::__anon14
 WPA_PTK_PTKSTART	src/ap/wpa_auth_i.h	/^		WPA_PTK_INITPMK, WPA_PTK_INITPSK, WPA_PTK_PTKSTART,$/;"	e	enum:wpa_state_machine::__anon14
-WPA_PUT_BE16	src/utils/common.h	250;"	d
-WPA_PUT_BE24	src/utils/common.h	266;"	d
-WPA_PUT_BE32	src/utils/common.h	276;"	d
-WPA_PUT_BE64	src/utils/common.h	298;"	d
-WPA_PUT_LE16	src/utils/common.h	257;"	d
-WPA_PUT_LE32	src/utils/common.h	286;"	d
+WPA_PUT_BE16	src/utils/common.h	253;"	d
+WPA_PUT_BE24	src/utils/common.h	272;"	d
+WPA_PUT_BE32	src/utils/common.h	283;"	d
+WPA_PUT_BE64	src/utils/common.h	307;"	d
+WPA_PUT_LE16	src/utils/common.h	262;"	d
+WPA_PUT_LE32	src/utils/common.h	295;"	d
 WPA_REAUTH	src/ap/wpa_auth.h	/^	WPA_AUTH, WPA_ASSOC, WPA_DISASSOC, WPA_DEAUTH, WPA_REAUTH,$/;"	e	enum:__anon9
 WPA_REAUTH_EAPOL	src/ap/wpa_auth.h	/^	WPA_REAUTH_EAPOL, WPA_ASSOC_FT$/;"	e	enum:__anon9
 WPA_REPLAY_COUNTER_LEN	src/common/wpa_common.h	23;"	d
@@ -5321,17 +5321,17 @@ __anon98::dwNumIntfs	src/drivers/driver_ndis.c	/^	DWORD dwNumIntfs;$/;"	m	struct
 __anon98::pIntfs	src/drivers/driver_ndis.c	/^	PINTF_KEY_ENTRY pIntfs;$/;"	m	struct:__anon98	file:	access:public
 __anon99::dwDataLen	src/drivers/driver_ndis.c	/^	DWORD dwDataLen;$/;"	m	struct:__anon99	file:	access:public
 __anon99::pData	src/drivers/driver_ndis.c	/^	LPBYTE pData;$/;"	m	struct:__anon99	file:	access:public
-__bitwise	src/utils/common.h	419;"	d
-__bitwise	src/utils/common.h	422;"	d
-__force	src/utils/common.h	418;"	d
-__force	src/utils/common.h	421;"	d
-__func__	src/utils/common.h	380;"	d
+__bitwise	src/utils/common.h	428;"	d
+__bitwise	src/utils/common.h	431;"	d
+__force	src/utils/common.h	427;"	d
+__force	src/utils/common.h	430;"	d
+__func__	src/utils/common.h	389;"	d
 __hide_aliasing_typecast	src/utils/common.c	/^void * __hide_aliasing_typecast(void *foo)$/;"	f	signature:(void *foo)
 __hide_aliasing_typecast	src/utils/common.h	/^void * __hide_aliasing_typecast(void *foo);$/;"	p	signature:(void *foo)
 __ifi_pad	src/drivers/priv_netlink.h	/^	unsigned char __ifi_pad;$/;"	m	struct:ifinfomsg	access:public
 __le32	src/utils/radiotap.c	27;"	d	file:
-__must_check	src/utils/common.h	434;"	d
-__must_check	src/utils/common.h	436;"	d
+__must_check	src/utils/common.h	443;"	d
+__must_check	src/utils/common.h	445;"	d
 __s16	src/drivers/wireless_copy.h	/^typedef __int16_t __s16;$/;"	t
 __s32	src/drivers/wireless_copy.h	/^typedef __int32_t __s32;$/;"	t
 __u16	src/drivers/wireless_copy.h	/^typedef __uint16_t __u16;$/;"	t
@@ -5368,8 +5368,8 @@ aaaEapKeyDataLen	src/eap_server/eap.h	/^	size_t aaaEapKeyDataLen;$/;"	m	struct:e
 aaaEapNoReq	src/eap_server/eap.h	/^	Boolean aaaEapNoReq;$/;"	m	struct:eap_eapol_interface	access:public
 aaaEapReq	src/eap_server/eap.h	/^	Boolean aaaEapReq;$/;"	m	struct:eap_eapol_interface	access:public
 aaaEapReqData	src/eap_server/eap.h	/^	struct wpabuf *aaaEapReqData;$/;"	m	struct:eap_eapol_interface	typeref:struct:eap_eapol_interface::wpabuf	access:public
-aaaEapResp	src/eap_server/eap.h	/^	Boolean aaaEapResp;$/;"	m	struct:eap_eapol_interface	access:public
-aaaEapRespData	src/eap_server/eap.h	/^	struct wpabuf *aaaEapRespData;$/;"	m	struct:eap_eapol_interface	typeref:struct:eap_eapol_interface::wpabuf	access:public
+aaaEapResp	src/eap_server/eap.h	/^	Boolean aaaEapResp;             \/\/ EAP层AUTH SM进入AAA_IDLE时设置TRUE并填充aaaEapRespData，AAA层发送数据并设置FALSE$/;"	m	struct:eap_eapol_interface	access:public
+aaaEapRespData	src/eap_server/eap.h	/^	struct wpabuf *aaaEapRespData;  \/\/ 此标志有EAP层填充(数据来源通常就是eapReapData转储)，同时设置aaaEapResp，然后递交给AAA层处理$/;"	m	struct:eap_eapol_interface	typeref:struct:eap_eapol_interface::wpabuf	access:public
 aaaFail	src/eap_server/eap.h	/^	Boolean aaaFail;$/;"	m	struct:eap_eapol_interface	access:public
 aaaMethodTimeout	src/eap_server/eap.h	/^	int aaaMethodTimeout;$/;"	m	struct:eap_eapol_interface	access:public
 aaaSuccess	src/eap_server/eap.h	/^	Boolean aaaSuccess;$/;"	m	struct:eap_eapol_interface	access:public
@@ -5640,7 +5640,7 @@ alg	src/drivers/wireless_copy.h	/^	__u16		alg; \/* IW_ENCODE_ALG_* *\/$/;"	m	str
 alg	src/rsn_supp/wpa.c	/^	enum wpa_alg alg;$/;"	m	struct:wpa_gtk_data	typeref:enum:wpa_gtk_data::wpa_alg	file:	access:public
 alg	src/tls/pkcs5.c	/^	} alg;$/;"	m	struct:pkcs5_params	typeref:enum:pkcs5_params::pkcs5_alg	file:	access:public
 alg	src/tls/tlsv1_common.h	/^	enum crypto_cipher_alg alg;$/;"	m	struct:tls_cipher_data	typeref:enum:tls_cipher_data::crypto_cipher_alg	access:public
-aliasing_hide_typecast	src/utils/common.h	477;"	d
+aliasing_hide_typecast	src/utils/common.h	486;"	d
 alloc	src/tls/libtommath.c	/^    int used, alloc, sign;$/;"	m	struct:__anon112	file:	access:public
 alloc_eapol	src/rsn_supp/wpa.h	/^	u8 * (*alloc_eapol)(void *ctx, u8 type, const void *data, u16 data_len,$/;"	m	struct:wpa_sm_ctx	access:public
 alloc_iface_idx	src/drivers/driver_test.c	/^	int alloc_iface_idx;$/;"	m	struct:wpa_driver_test_data	file:	access:public
@@ -5938,7 +5938,7 @@ auth_type	src/wps/wps_i.h	/^	u16 auth_type;$/;"	m	struct:wps_data	access:public
 auth_type_flags	src/wps/wps_i.h	/^	const u8 *auth_type_flags; \/* 2 octets *\/$/;"	m	struct:wps_parse_attr	access:public
 auth_types	src/wps/wps.h	/^	u16 auth_types;$/;"	m	struct:wps_context	access:public
 authenticate	src/drivers/driver.h	/^	int (*authenticate)(void *priv,$/;"	m	struct:wpa_driver_ops	access:public
-authenticator	src/radius/radius.h	/^	u8 authenticator[16];$/;"	m	struct:radius_hdr	access:public
+authenticator	src/radius/radius.h	/^	u8 authenticator[16];   \/\/ 验证字域，一个16字节的明文随机数。请求报文中表示16字节随机码，响应报文中用于鉴别响应报文的合法性$/;"	m	struct:radius_hdr	access:public
 authenticator	src/wps/wps_i.h	/^	const u8 *authenticator; \/* WPS_AUTHENTICATOR_LEN (8) octets *\/$/;"	m	struct:wps_parse_attr	access:public
 authkey	src/wps/wps_i.h	/^	u8 authkey[WPS_AUTHKEY_LEN];$/;"	m	struct:wps_data	access:public
 authsrv_deinit	src/ap/authsrv.c	/^void authsrv_deinit(struct hostapd_data *hapd)$/;"	f	signature:(struct hostapd_data *hapd)
@@ -6143,11 +6143,11 @@ bssid	src/rsn_supp/wpa_i.h	/^	u8 bssid[ETH_ALEN];$/;"	m	struct:wpa_sm	access:pub
 bswap_16	src/utils/common.h	/^static inline unsigned short bswap_16(unsigned short v)$/;"	f	signature:(unsigned short v)
 bswap_16	src/utils/common.h	33;"	d
 bswap_16	src/utils/common.h	37;"	d
-bswap_16	src/utils/common.h	384;"	d
+bswap_16	src/utils/common.h	393;"	d
 bswap_32	src/utils/common.h	/^static inline unsigned int bswap_32(unsigned int v)$/;"	f	signature:(unsigned int v)
 bswap_32	src/utils/common.h	34;"	d
-bswap_32	src/utils/common.h	388;"	d
 bswap_32	src/utils/common.h	38;"	d
+bswap_32	src/utils/common.h	397;"	d
 bswap_64	src/utils/common.h	35;"	d
 bswap_64	src/utils/common.h	39;"	d
 buf	src/crypto/md5_i.h	/^	u32 buf[4];$/;"	m	struct:MD5Context	access:public
@@ -6159,7 +6159,7 @@ buf	src/radius/radius.c	/^	struct wpabuf *buf;$/;"	m	struct:radius_msg	typeref:s
 buf_len	src/eap_peer/eap_fast_pac.c	/^	size_t buf_len;$/;"	m	struct:eap_fast_read_ctx	file:	access:public
 buffer	src/crypto/md4-internal.c	/^	u8 buffer[MD4_BLOCK_LENGTH];	\/* input buffer *\/$/;"	m	struct:MD4Context	file:	access:public
 buffer	src/crypto/sha1_i.h	/^	unsigned char buffer[64];$/;"	m	struct:SHA1Context	access:public
-buildReq	src/eap_server/eap_i.h	/^	struct wpabuf * (*buildReq)(struct eap_sm *sm, void *priv, u8 id);  \/\/ eap_md5_buildReq$/;"	m	struct:eap_method	typeref:struct:eap_method::buildReq	access:public
+buildReq	src/eap_server/eap_i.h	/^	struct wpabuf * (*buildReq)(struct eap_sm *sm, void *priv, u8 id);  \/\/ eap_identity_buildReq    \/ eap_md5_buildReq$/;"	m	struct:eap_method	typeref:struct:eap_method::buildReq	access:public
 build_fake_wsc_ack	src/wps/wps_upnp.c	/^static struct wpabuf * build_fake_wsc_ack(void)$/;"	f	file:	signature:(void)
 burst	src/ap/ap_config.h	/^	int burst; \/* maximum burst time in 0.1 ms, i.e., 10 = 1 ms *\/$/;"	m	struct:hostapd_tx_queue_params	access:public
 byteReverse	src/crypto/md5-internal.c	/^static void byteReverse(unsigned char *buf, unsigned longs)$/;"	f	file:	signature:(unsigned char *buf, unsigned longs)
@@ -6278,7 +6278,7 @@ chap_md5	src/eap_common/chap.c	/^int chap_md5(u8 id, const u8 *secret, size_t se
 chap_md5	src/eap_common/chap.h	/^int chap_md5(u8 id, const u8 *secret, size_t secret_len, const u8 *challenge,$/;"	p	signature:(u8 id, const u8 *secret, size_t secret_len, const u8 *challenge, size_t challenge_len, u8 *response)
 chap_password	src/eap_server/eap_server_ttls.c	/^	u8 *chap_password;$/;"	m	struct:eap_ttls_avp	file:	access:public
 chap_password_len	src/eap_server/eap_server_ttls.c	/^	size_t chap_password_len;$/;"	m	struct:eap_ttls_avp	file:	access:public
-check	src/eap_server/eap_i.h	/^	Boolean (*check)(struct eap_sm *sm, void *priv, \/\/ eap_md5_check$/;"	m	struct:eap_method	access:public
+check	src/eap_server/eap_i.h	/^	Boolean (*check)(struct eap_sm *sm, void *priv,                     $/;"	m	struct:eap_method	access:public
 check_assoc_ies	src/ap/ieee802_11.c	/^static u16 check_assoc_ies(struct hostapd_data *hapd, struct sta_info *sta,$/;"	f	file:	signature:(struct hostapd_data *hapd, struct sta_info *sta, const u8 *ies, size_t ies_len, int reassoc)
 check_crl	src/ap/ap_config.h	/^	int check_crl;$/;"	m	struct:hostapd_bss_config	access:public
 check_crl	src/crypto/tls_internal.c	/^	int check_crl;$/;"	m	struct:tls_global	file:	access:public
@@ -6357,7 +6357,7 @@ cmk	src/eap_server/eap_server_fast.c	/^	u8 cmk[EAP_FAST_CMK_LEN];$/;"	m	struct:e
 cmk	src/eap_server/eap_server_peap.c	/^	u8 cmk[20];$/;"	m	struct:eap_peap_data	file:	access:public
 code	src/drivers/wireless_copy.h	/^	__u32		code;		\/* Rx : Unable to code\/decode (WEP) *\/$/;"	m	struct:iw_discarded	access:public
 code	src/eap_common/eap_defs.h	/^	u8 code;$/;"	m	struct:eap_hdr	access:public
-code	src/radius/radius.h	/^	u8 code;$/;"	m	struct:radius_hdr	access:public
+code	src/radius/radius.h	/^	u8 code;                \/\/ radius包类型$/;"	m	struct:radius_hdr	access:public
 command	src/ap/iapp.c	/^	u8 command;$/;"	m	struct:iapp_hdr	file:	access:public
 command	src/drivers/driver_ipw.c	/^			u32 command;$/;"	m	struct:ipw_param::__anon91::__anon94	file:	access:public
 commands_help	hostapd/hostapd_cli.c	/^static const char *commands_help =$/;"	v	file:
@@ -6694,7 +6694,7 @@ ctx_dec	src/crypto/crypto_internal-cipher.c	/^			void *ctx_dec;$/;"	m	struct:cry
 ctx_enc	src/crypto/crypto_internal-cipher.c	/^			void *ctx_enc;$/;"	m	struct:crypto_cipher::__anon188::__anon190	file:	access:public
 cur_pmksa	src/rsn_supp/wpa_i.h	/^	struct rsn_pmksa_cache_entry *cur_pmksa; \/* current PMKSA entry *\/$/;"	m	struct:wpa_sm	typeref:struct:wpa_sm::rsn_pmksa_cache_entry	access:public
 curlen	src/crypto/sha256-internal.c	/^	u32 state[8], curlen;$/;"	m	struct:sha256_state	file:	access:public
-currentId	src/eap_server/eap_i.h	/^	int currentId;              \/\/ 当前处理的EAP-ID (0~255)$/;"	m	struct:eap_sm	access:public
+currentId	src/eap_server/eap_i.h	/^	int currentId;              \/\/ 当前使用的EAP-ID (0~255)$/;"	m	struct:eap_sm	access:public
 currentMethod	src/eap_server/eap_i.h	/^	EapType currentMethod;      \/\/ 当前的EAP-TYPE，也可理解为当前使用的EAP方法$/;"	m	struct:eap_sm	access:public
 current_ap	src/ap/iapp.c	/^	u8 current_ap[ETH_ALEN];$/;"	m	struct:iapp_cache_notify	file:	access:public
 current_ap	src/common/ieee802_11_defs.h	/^			u8 current_ap[6];$/;"	m	struct:ieee80211_mgmt::__anon37::__anon42	access:public
@@ -7302,8 +7302,8 @@ eap_eapol_interface::aaaEapKeyDataLen	src/eap_server/eap.h	/^	size_t aaaEapKeyDa
 eap_eapol_interface::aaaEapNoReq	src/eap_server/eap.h	/^	Boolean aaaEapNoReq;$/;"	m	struct:eap_eapol_interface	access:public
 eap_eapol_interface::aaaEapReq	src/eap_server/eap.h	/^	Boolean aaaEapReq;$/;"	m	struct:eap_eapol_interface	access:public
 eap_eapol_interface::aaaEapReqData	src/eap_server/eap.h	/^	struct wpabuf *aaaEapReqData;$/;"	m	struct:eap_eapol_interface	typeref:struct:eap_eapol_interface::wpabuf	access:public
-eap_eapol_interface::aaaEapResp	src/eap_server/eap.h	/^	Boolean aaaEapResp;$/;"	m	struct:eap_eapol_interface	access:public
-eap_eapol_interface::aaaEapRespData	src/eap_server/eap.h	/^	struct wpabuf *aaaEapRespData;$/;"	m	struct:eap_eapol_interface	typeref:struct:eap_eapol_interface::wpabuf	access:public
+eap_eapol_interface::aaaEapResp	src/eap_server/eap.h	/^	Boolean aaaEapResp;             \/\/ EAP层AUTH SM进入AAA_IDLE时设置TRUE并填充aaaEapRespData，AAA层发送数据并设置FALSE$/;"	m	struct:eap_eapol_interface	access:public
+eap_eapol_interface::aaaEapRespData	src/eap_server/eap.h	/^	struct wpabuf *aaaEapRespData;  \/\/ 此标志有EAP层填充(数据来源通常就是eapReapData转储)，同时设置aaaEapResp，然后递交给AAA层处理$/;"	m	struct:eap_eapol_interface	typeref:struct:eap_eapol_interface::wpabuf	access:public
 eap_eapol_interface::aaaFail	src/eap_server/eap.h	/^	Boolean aaaFail;$/;"	m	struct:eap_eapol_interface	access:public
 eap_eapol_interface::aaaMethodTimeout	src/eap_server/eap.h	/^	int aaaMethodTimeout;$/;"	m	struct:eap_eapol_interface	access:public
 eap_eapol_interface::aaaSuccess	src/eap_server/eap.h	/^	Boolean aaaSuccess;$/;"	m	struct:eap_eapol_interface	access:public
@@ -7881,8 +7881,8 @@ eap_method	src/eap_peer/eap_aka.c	/^	u8 eap_method;$/;"	m	struct:eap_aka_data	fi
 eap_method	src/eap_peer/eap_i.h	/^struct eap_method {$/;"	s
 eap_method	src/eap_server/eap_i.h	/^struct eap_method {$/;"	s
 eap_method	src/eap_server/eap_server_aka.c	/^	u8 eap_method;$/;"	m	struct:eap_aka_data	file:	access:public
-eap_method::buildReq	src/eap_server/eap_i.h	/^	struct wpabuf * (*buildReq)(struct eap_sm *sm, void *priv, u8 id);  \/\/ eap_md5_buildReq$/;"	m	struct:eap_method	typeref:struct:eap_method::buildReq	access:public
-eap_method::check	src/eap_server/eap_i.h	/^	Boolean (*check)(struct eap_sm *sm, void *priv, \/\/ eap_md5_check$/;"	m	struct:eap_method	access:public
+eap_method::buildReq	src/eap_server/eap_i.h	/^	struct wpabuf * (*buildReq)(struct eap_sm *sm, void *priv, u8 id);  \/\/ eap_identity_buildReq    \/ eap_md5_buildReq$/;"	m	struct:eap_method	typeref:struct:eap_method::buildReq	access:public
+eap_method::check	src/eap_server/eap_i.h	/^	Boolean (*check)(struct eap_sm *sm, void *priv,                     $/;"	m	struct:eap_method	access:public
 eap_method::deinit	src/eap_peer/eap_i.h	/^	void (*deinit)(struct eap_sm *sm, void *priv);$/;"	m	struct:eap_method	access:public
 eap_method::deinit_for_reauth	src/eap_peer/eap_i.h	/^	void (*deinit_for_reauth)(struct eap_sm *sm, void *priv);$/;"	m	struct:eap_method	access:public
 eap_method::dl_handle	src/eap_peer/eap_i.h	/^	void *dl_handle;$/;"	m	struct:eap_method	access:public
@@ -7897,12 +7897,12 @@ eap_method::get_identity	src/eap_peer/eap_i.h	/^	const u8 * (*get_identity)(stru
 eap_method::get_status	src/eap_peer/eap_i.h	/^	int (*get_status)(struct eap_sm *sm, void *priv, char *buf,$/;"	m	struct:eap_method	access:public
 eap_method::has_reauth_data	src/eap_peer/eap_i.h	/^	Boolean (*has_reauth_data)(struct eap_sm *sm, void *priv);$/;"	m	struct:eap_method	access:public
 eap_method::init	src/eap_peer/eap_i.h	/^	void * (*init)(struct eap_sm *sm);$/;"	m	struct:eap_method	access:public
-eap_method::init	src/eap_server/eap_i.h	/^	void * (*init)(struct eap_sm *sm);              \/\/ eap_md5_init$/;"	m	struct:eap_method	access:public
-eap_method::initPickUp	src/eap_server/eap_i.h	/^	void * (*initPickUp)(struct eap_sm *sm);$/;"	m	struct:eap_method	access:public
+eap_method::init	src/eap_server/eap_i.h	/^	void * (*init)(struct eap_sm *sm);                                  \/\/ eap_identity_init        \/ eap_md5_init$/;"	m	struct:eap_method	access:public
+eap_method::initPickUp	src/eap_server/eap_i.h	/^	void * (*initPickUp)(struct eap_sm *sm);                            \/\/ eap_identity_initPickUp$/;"	m	struct:eap_method	access:public
 eap_method::init_for_reauth	src/eap_peer/eap_i.h	/^	void * (*init_for_reauth)(struct eap_sm *sm, void *priv);$/;"	m	struct:eap_method	access:public
-eap_method::isDone	src/eap_server/eap_i.h	/^	Boolean (*isDone)(struct eap_sm *sm, void *priv);                   \/\/ eap_md5_isDone$/;"	m	struct:eap_method	access:public
+eap_method::isDone	src/eap_server/eap_i.h	/^	Boolean (*isDone)(struct eap_sm *sm, void *priv);                   \/\/ eap_identity_isDone      \/ eap_md5_isDone           $/;"	m	struct:eap_method	access:public
 eap_method::isKeyAvailable	src/eap_peer/eap_i.h	/^	Boolean (*isKeyAvailable)(struct eap_sm *sm, void *priv);$/;"	m	struct:eap_method	access:public
-eap_method::isSuccess	src/eap_server/eap_i.h	/^	Boolean (*isSuccess)(struct eap_sm *sm, void *priv);                \/\/ eap_md5_isSuccess$/;"	m	struct:eap_method	access:public
+eap_method::isSuccess	src/eap_server/eap_i.h	/^	Boolean (*isSuccess)(struct eap_sm *sm, void *priv);                \/\/ eap_identity_isSuccess   \/ eap_md5_isSuccess$/;"	m	struct:eap_method	access:public
 eap_method::method	src/eap_peer/eap_i.h	/^	EapType method;$/;"	m	struct:eap_method	access:public
 eap_method::method	src/eap_server/eap_i.h	/^	EapType method;$/;"	m	struct:eap_method	access:public
 eap_method::name	src/eap_peer/eap_i.h	/^	const char *name;$/;"	m	struct:eap_method	access:public
@@ -7911,7 +7911,7 @@ eap_method::next	src/eap_peer/eap_i.h	/^	struct eap_method *next;$/;"	m	struct:e
 eap_method::next	src/eap_server/eap_i.h	/^	struct eap_method *next;$/;"	m	struct:eap_method	typeref:struct:eap_method::eap_method	access:public
 eap_method::process	src/eap_peer/eap_i.h	/^	struct wpabuf * (*process)(struct eap_sm *sm, void *priv,$/;"	m	struct:eap_method	typeref:struct:eap_method::process	access:public
 eap_method::process	src/eap_server/eap_i.h	/^	void (*process)(struct eap_sm *sm, void *priv,$/;"	m	struct:eap_method	access:public
-eap_method::reset	src/eap_server/eap_i.h	/^	void (*reset)(struct eap_sm *sm, void *priv);   \/\/ eap_md5_reset $/;"	m	struct:eap_method	access:public
+eap_method::reset	src/eap_server/eap_i.h	/^	void (*reset)(struct eap_sm *sm, void *priv);                       \/\/ eap_identity_reset       \/ eap_md5_reset $/;"	m	struct:eap_method	access:public
 eap_method::vendor	src/eap_peer/eap_i.h	/^	int vendor;$/;"	m	struct:eap_method	access:public
 eap_method::vendor	src/eap_server/eap_i.h	/^	int vendor;$/;"	m	struct:eap_method	access:public
 eap_method::version	src/eap_peer/eap_i.h	/^	int version;$/;"	m	struct:eap_method	access:public
@@ -8430,7 +8430,7 @@ eap_req_id_text	src/ap/ap_config.h	/^	char *eap_req_id_text; \/* optional displa
 eap_req_id_text	src/eapol_auth/eapol_auth_sm.h	/^	char *eap_req_id_text; \/* a copy of this will be allocated *\/$/;"	m	struct:eapol_auth_config	access:public
 eap_req_id_text	src/radius/radius_server.c	/^	char *eap_req_id_text;$/;"	m	struct:radius_server_data	file:	access:public
 eap_req_id_text	src/radius/radius_server.h	/^	const char *eap_req_id_text;$/;"	m	struct:radius_server_conf	access:public
-eap_req_id_text_len	src/ap/ap_config.h	/^	size_t eap_req_id_text_len;$/;"	m	struct:hostapd_bss_config	access:public
+eap_req_id_text_len	src/ap/ap_config.h	/^	size_t eap_req_id_text_len;     \/\/ 上面这段可显示信息的长度$/;"	m	struct:hostapd_bss_config	access:public
 eap_req_id_text_len	src/eapol_auth/eapol_auth_sm.h	/^	size_t eap_req_id_text_len;$/;"	m	struct:eapol_auth_config	access:public
 eap_req_id_text_len	src/radius/radius_server.c	/^	size_t eap_req_id_text_len;$/;"	m	struct:radius_server_data	file:	access:public
 eap_req_id_text_len	src/radius/radius_server.h	/^	size_t eap_req_id_text_len;$/;"	m	struct:radius_server_conf	access:public
@@ -9004,7 +9004,7 @@ eap_sm::auth_challenge	src/eap_server/eap_i.h	/^	u8 *auth_challenge;$/;"	m	struc
 eap_sm::backend_auth	src/eap_server/eap_i.h	/^	Boolean backend_auth;       \/\/ RADIUS后台认证服务器使能标志，默认不使能$/;"	m	struct:eap_sm	access:public
 eap_sm::changed	src/eap_peer/eap_i.h	/^	Boolean changed;$/;"	m	struct:eap_sm	access:public
 eap_sm::changed	src/eap_server/eap_i.h	/^	Boolean changed;$/;"	m	struct:eap_sm	access:public
-eap_sm::currentId	src/eap_server/eap_i.h	/^	int currentId;              \/\/ 当前处理的EAP-ID (0~255)$/;"	m	struct:eap_sm	access:public
+eap_sm::currentId	src/eap_server/eap_i.h	/^	int currentId;              \/\/ 当前使用的EAP-ID (0~255)$/;"	m	struct:eap_sm	access:public
 eap_sm::currentMethod	src/eap_server/eap_i.h	/^	EapType currentMethod;      \/\/ 当前的EAP-TYPE，也可理解为当前使用的EAP方法$/;"	m	struct:eap_sm	access:public
 eap_sm::decision	src/eap_peer/eap_i.h	/^	EapDecision decision;$/;"	m	struct:eap_sm	access:public
 eap_sm::decision	src/eap_server/eap_i.h	/^	} decision;             \/\/ SELECT_ACTION状态中使用，存储作出的决定$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon159	access:public
@@ -9035,7 +9035,7 @@ eap_sm::ignore	src/eap_server/eap_i.h	/^	Boolean ignore;         \/\/ 此标志�
 eap_sm::init_phase2	src/eap_peer/eap_i.h	/^	int init_phase2;$/;"	m	struct:eap_sm	access:public
 eap_sm::init_phase2	src/eap_server/eap_i.h	/^	int init_phase2;$/;"	m	struct:eap_sm	access:public
 eap_sm::lastId	src/eap_peer/eap_i.h	/^	int lastId;$/;"	m	struct:eap_sm	access:public
-eap_sm::lastId	src/eap_server/eap_i.h	/^	int lastId; \/* Identifier used in the last EAP-Packet *\/$/;"	m	struct:eap_sm	access:public
+eap_sm::lastId	src/eap_server/eap_i.h	/^	int lastId; \/* Identifier used in the last EAP-Packet 最近的EAP包中的ID号，通常来自currentId*\/$/;"	m	struct:eap_sm	access:public
 eap_sm::lastReqData	src/eap_server/eap_i.h	/^	struct wpabuf *lastReqData; \/\/ 保存了最近一次发送给eapol层的eap-req数据$/;"	m	struct:eap_sm	typeref:struct:eap_sm::wpabuf	access:public
 eap_sm::lastRespData	src/eap_peer/eap_i.h	/^	struct wpabuf *lastRespData;$/;"	m	struct:eap_sm	typeref:struct:eap_sm::wpabuf	access:public
 eap_sm::last_md5	src/eap_peer/eap_i.h	/^	u8 last_md5[16]; \/* MD5() of the previously received EAP packet; used$/;"	m	struct:eap_sm	access:public
@@ -9043,13 +9043,13 @@ eap_sm::leap_done	src/eap_peer/eap_i.h	/^	Boolean leap_done;$/;"	m	struct:eap_sm
 eap_sm::m	src/eap_peer/eap_i.h	/^	const struct eap_method *m; \/* selected EAP method *\/$/;"	m	struct:eap_sm	typeref:struct:eap_sm::eap_method	access:public
 eap_sm::m	src/eap_server/eap_i.h	/^	const struct eap_method *m;         \/\/ 指向被采用的 EAP 方法控制块$/;"	m	struct:eap_sm	typeref:struct:eap_sm::eap_method	access:public
 eap_sm::methodState	src/eap_peer/eap_i.h	/^	EapMethodState methodState;$/;"	m	struct:eap_sm	access:public
-eap_sm::methodState	src/eap_server/eap_i.h	/^	} methodState;$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon158	access:public
-eap_sm::methodTimeout	src/eap_server/eap_i.h	/^	int methodTimeout;$/;"	m	struct:eap_sm	access:public
+eap_sm::methodState	src/eap_server/eap_i.h	/^	} methodState;              \/\/ 当前EAP方法所处的状态$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon158	access:public
+eap_sm::methodTimeout	src/eap_server/eap_i.h	/^	int methodTimeout;          \/\/ 当前EAP方法的超时值，通常为0表示不使用$/;"	m	struct:eap_sm	access:public
 eap_sm::method_pending	src/eap_server/eap_i.h	/^	} method_pending;$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon160	access:public
 eap_sm::msg_ctx	src/eap_peer/eap_i.h	/^	void *msg_ctx;$/;"	m	struct:eap_sm	access:public
 eap_sm::msg_ctx	src/eap_server/eap_i.h	/^	void *eapol_ctx, *msg_ctx;          \/\/ 分别指向状态机统一管理块$/;"	m	struct:eap_sm	access:public
 eap_sm::num_rounds	src/eap_peer/eap_i.h	/^	int num_rounds;$/;"	m	struct:eap_sm	access:public
-eap_sm::num_rounds	src/eap_server/eap_i.h	/^	int num_rounds;$/;"	m	struct:eap_sm	access:public
+eap_sm::num_rounds	src/eap_server/eap_i.h	/^	int num_rounds;             \/\/ eap层记录的往返次数：发出eap-req 到收到 eap-resp 报文算一次往返$/;"	m	struct:eap_sm	access:public
 eap_sm::pac_key_lifetime	src/eap_server/eap_i.h	/^	int pac_key_lifetime;$/;"	m	struct:eap_sm	access:public
 eap_sm::pac_key_refresh_time	src/eap_server/eap_i.h	/^	int pac_key_refresh_time;$/;"	m	struct:eap_sm	access:public
 eap_sm::pac_opaque_encr_key	src/eap_server/eap_i.h	/^	u8 *pac_opaque_encr_key;$/;"	m	struct:eap_sm	access:public
@@ -9667,7 +9667,7 @@ eapol_callbacks::get_bool	src/eap_peer/eap.h	/^	Boolean (*get_bool)(void *ctx, e
 eapol_callbacks::get_config	src/eap_peer/eap.h	/^	struct eap_peer_config * (*get_config)(void *ctx);$/;"	m	struct:eapol_callbacks	typeref:struct:eapol_callbacks::get_config	access:public
 eapol_callbacks::get_config_blob	src/eap_peer/eap.h	/^	const struct wpa_config_blob * (*get_config_blob)(void *ctx,$/;"	m	struct:eapol_callbacks	typeref:struct:eapol_callbacks::get_config_blob	access:public
 eapol_callbacks::get_eapReqData	src/eap_peer/eap.h	/^	struct wpabuf * (*get_eapReqData)(void *ctx);$/;"	m	struct:eapol_callbacks	typeref:struct:eapol_callbacks::get_eapReqData	access:public
-eapol_callbacks::get_eap_req_id_text	src/eap_server/eap.h	/^	const char * (*get_eap_req_id_text)(void *ctx, size_t *len);$/;"	m	struct:eapol_callbacks	access:public
+eapol_callbacks::get_eap_req_id_text	src/eap_server/eap.h	/^	const char * (*get_eap_req_id_text)(void *ctx, size_t *len);        \/\/ eapol_sm_get_eap_req_id_text$/;"	m	struct:eapol_callbacks	access:public
 eapol_callbacks::get_eap_user	src/eap_server/eap.h	/^	int (*get_eap_user)(void *ctx, const u8 *identity, size_t identity_len,$/;"	m	struct:eapol_callbacks	access:public
 eapol_callbacks::get_int	src/eap_peer/eap.h	/^	unsigned int (*get_int)(void *ctx, enum eapol_int_var variable);$/;"	m	struct:eapol_callbacks	access:public
 eapol_callbacks::notify_pending	src/eap_peer/eap.h	/^	void (*notify_pending)(void *ctx);$/;"	m	struct:eapol_callbacks	access:public
@@ -10676,7 +10676,7 @@ get_config_blob	src/eap_peer/eap.h	/^	const struct wpa_config_blob * (*get_confi
 get_config_blob	src/eapol_supp/eapol_supp_sm.h	/^	const struct wpa_config_blob * (*get_config_blob)(void *ctx,$/;"	m	struct:eapol_ctx	typeref:struct:eapol_ctx::get_config_blob	access:public
 get_config_blob	src/rsn_supp/wpa.h	/^	const struct wpa_config_blob * (*get_config_blob)(void *ctx,$/;"	m	struct:wpa_sm_ctx	typeref:struct:wpa_sm_ctx::get_config_blob	access:public
 get_eapReqData	src/eap_peer/eap.h	/^	struct wpabuf * (*get_eapReqData)(void *ctx);$/;"	m	struct:eapol_callbacks	typeref:struct:eapol_callbacks::get_eapReqData	access:public
-get_eap_req_id_text	src/eap_server/eap.h	/^	const char * (*get_eap_req_id_text)(void *ctx, size_t *len);$/;"	m	struct:eapol_callbacks	access:public
+get_eap_req_id_text	src/eap_server/eap.h	/^	const char * (*get_eap_req_id_text)(void *ctx, size_t *len);        \/\/ eapol_sm_get_eap_req_id_text$/;"	m	struct:eapol_callbacks	access:public
 get_eap_user	src/eap_server/eap.h	/^	int (*get_eap_user)(void *ctx, const u8 *identity, size_t identity_len,$/;"	m	struct:eapol_callbacks	access:public
 get_eap_user	src/eapol_auth/eapol_auth_sm.h	/^	int (*get_eap_user)(void *ctx, const u8 *identity, size_t identity_len,  $/;"	m	struct:eapol_auth_cb	access:public
 get_eap_user	src/radius/radius_server.c	/^	int (*get_eap_user)(void *ctx, const u8 *identity, size_t identity_len,$/;"	m	struct:radius_server_data	file:	access:public
@@ -11017,7 +11017,7 @@ hostapd_bss_config::eap_fast_a_id_len	src/ap/ap_config.h	/^	size_t eap_fast_a_id
 hostapd_bss_config::eap_fast_prov	src/ap/ap_config.h	/^	int eap_fast_prov;$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::eap_reauth_period	src/ap/ap_config.h	/^	int eap_reauth_period;      \/\/ 重认证周期，大于0意味着该功能使能(只用于认证系统)$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::eap_req_id_text	src/ap/ap_config.h	/^	char *eap_req_id_text; \/* optional displayable message sent with$/;"	m	struct:hostapd_bss_config	access:public
-hostapd_bss_config::eap_req_id_text_len	src/ap/ap_config.h	/^	size_t eap_req_id_text_len;$/;"	m	struct:hostapd_bss_config	access:public
+hostapd_bss_config::eap_req_id_text_len	src/ap/ap_config.h	/^	size_t eap_req_id_text_len;     \/\/ 上面这段可显示信息的长度$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::eap_server	src/ap/ap_config.h	/^	int eap_server; \/* Use internal EAP server instead of external$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::eap_sim_aka_result_ind	src/ap/ap_config.h	/^	int eap_sim_aka_result_ind;$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::eap_sim_db	src/ap/ap_config.h	/^	char *eap_sim_db;$/;"	m	struct:hostapd_bss_config	access:public
@@ -12091,7 +12091,7 @@ identifier	src/ap/iapp.c	/^	be16 identifier;$/;"	m	struct:iapp_hdr	file:	access:
 identifier	src/ap/iapp.c	/^	u16 identifier; \/* next IAPP identifier *\/$/;"	m	struct:iapp_data	file:	access:public
 identifier	src/ap/ieee802_1x.c	/^	u8 identifier;$/;"	m	struct:sta_id_search	file:	access:public
 identifier	src/eap_common/eap_defs.h	/^	u8 identifier;$/;"	m	struct:eap_hdr	access:public
-identifier	src/radius/radius.h	/^	u8 identifier;$/;"	m	struct:radius_hdr	access:public
+identifier	src/radius/radius.h	/^	u8 identifier;          \/\/ 包标识，用于匹配请求包和响应包$/;"	m	struct:radius_hdr	access:public
 identifier	src/tls/asn1.h	/^	u8 identifier, class, constructed;$/;"	m	struct:asn1_hdr	access:public
 identity	src/ap/ap_config.h	/^	u8 *identity;$/;"	m	struct:hostapd_eap_user	access:public
 identity	src/ap/pmksa_cache_auth.h	/^	u8 *identity;$/;"	m	struct:rsn_pmksa_cache_entry	access:public
@@ -12808,9 +12808,9 @@ individual_wep_key_len	src/eapol_auth/eapol_auth_sm.h	/^	int individual_wep_key_
 info1	src/drivers/Apple80211.h	/^	WirelessInfo info1;$/;"	m	struct:WirelessInfo2	access:public
 init	src/drivers/driver.h	/^	void * (*init)(void *ctx, const char *ifname);$/;"	m	struct:wpa_driver_ops	access:public
 init	src/eap_peer/eap_i.h	/^	void * (*init)(struct eap_sm *sm);$/;"	m	struct:eap_method	access:public
-init	src/eap_server/eap_i.h	/^	void * (*init)(struct eap_sm *sm);              \/\/ eap_md5_init$/;"	m	struct:eap_method	access:public
+init	src/eap_server/eap_i.h	/^	void * (*init)(struct eap_sm *sm);                                  \/\/ eap_identity_init        \/ eap_md5_init$/;"	m	struct:eap_method	access:public
 init2	src/drivers/driver.h	/^	void * (*init2)(void *ctx, const char *ifname, void *global_priv);$/;"	m	struct:wpa_driver_ops	access:public
-initPickUp	src/eap_server/eap_i.h	/^	void * (*initPickUp)(struct eap_sm *sm);$/;"	m	struct:eap_method	access:public
+initPickUp	src/eap_server/eap_i.h	/^	void * (*initPickUp)(struct eap_sm *sm);                            \/\/ eap_identity_initPickUp$/;"	m	struct:eap_method	access:public
 init_for_reauth	src/eap_peer/eap_i.h	/^	void * (*init_for_reauth)(struct eap_sm *sm, void *priv);$/;"	m	struct:eap_method	access:public
 init_func	src/wps/wps.h	/^	int (*init_func)(char *);$/;"	m	struct:oob_nfc_device_data	access:public
 init_func	src/wps/wps.h	/^	void * (*init_func)(struct wps_context *, struct oob_device_data *,$/;"	m	struct:oob_device_data	access:public
@@ -12825,8 +12825,8 @@ initialize	src/eapol_supp/eapol_supp_sm.c	/^	Boolean initialize;$/;"	m	struct:ea
 initializing	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean initializing; \/* in process of initializing state machines 标志位，表示正在进行状态机初始化*\/$/;"	m	struct:eapol_state_machine	access:public
 initiator	src/ap/wpa_auth_i.h	/^	u8 initiator[ETH_ALEN];$/;"	m	struct:wpa_stsl_negotiation	access:public
 initiator	src/rsn_supp/peerkey.h	/^	int initiator; \/* whether this end was initator for SMK handshake *\/$/;"	m	struct:wpa_peerkey	access:public
-inline	src/utils/common.h	374;"	d
-inline	src/utils/common.h	376;"	d
+inline	src/utils/common.h	383;"	d
+inline	src/utils/common.h	385;"	d
 inline	src/utils/common.h	90;"	d
 inner_secret	src/crypto/tls.h	/^	const u8 *inner_secret; \/* TLS\/IA inner secret *\/$/;"	m	struct:tls_keys	access:public
 inner_secret	src/crypto/tls_gnutls.c	/^	u8 inner_secret[TLS_MASTER_SIZE];$/;"	m	struct:tls_connection	file:	access:public
@@ -12886,9 +12886,9 @@ ipw_set_wpa_param	src/drivers/driver_ipw.c	/^static int ipw_set_wpa_param(struct
 ipw_show_set_key_error	src/drivers/driver_ipw.c	/^static void ipw_show_set_key_error(struct ipw_param *param)$/;"	f	file:	signature:(struct ipw_param *param)
 iqmp	src/tls/rsa.c	/^	struct bignum *iqmp; \/* 1 \/ q mod p; CRT coefficient *\/$/;"	m	struct:crypto_rsa_key	typeref:struct:crypto_rsa_key::bignum	file:	access:public
 iresult	src/eap_common/eap_fast_common.h	/^	int iresult;$/;"	m	struct:eap_fast_tlv_parse	access:public
-isDone	src/eap_server/eap_i.h	/^	Boolean (*isDone)(struct eap_sm *sm, void *priv);                   \/\/ eap_md5_isDone$/;"	m	struct:eap_method	access:public
+isDone	src/eap_server/eap_i.h	/^	Boolean (*isDone)(struct eap_sm *sm, void *priv);                   \/\/ eap_identity_isDone      \/ eap_md5_isDone           $/;"	m	struct:eap_method	access:public
 isKeyAvailable	src/eap_peer/eap_i.h	/^	Boolean (*isKeyAvailable)(struct eap_sm *sm, void *priv);$/;"	m	struct:eap_method	access:public
-isSuccess	src/eap_server/eap_i.h	/^	Boolean (*isSuccess)(struct eap_sm *sm, void *priv);                \/\/ eap_md5_isSuccess$/;"	m	struct:eap_method	access:public
+isSuccess	src/eap_server/eap_i.h	/^	Boolean (*isSuccess)(struct eap_sm *sm, void *priv);                \/\/ eap_identity_isSuccess   \/ eap_md5_isSuccess$/;"	m	struct:eap_method	access:public
 is_5350	src/drivers/driver_roboswitch.c	/^	int fd, is_5350;$/;"	m	struct:wpa_driver_roboswitch_data	file:	access:public
 is_ap	src/drivers/driver_bsd.c	/^	int	is_ap;			\/* Access point mode *\/$/;"	m	struct:bsd_driver_data	file:	access:public
 is_nil_uuid	src/utils/uuid.c	/^int is_nil_uuid(const u8 *uuid)$/;"	f	signature:(const u8 *uuid)
@@ -13354,7 +13354,7 @@ l2_packet_send	src/l2_packet/l2_packet_winpcap.c	/^int l2_packet_send(struct l2_
 l2_preauth	src/rsn_supp/wpa_i.h	/^	struct l2_packet_data *l2_preauth;$/;"	m	struct:wpa_sm	typeref:struct:wpa_sm::l2_packet_data	access:public
 l2_preauth_br	src/rsn_supp/wpa_i.h	/^	struct l2_packet_data *l2_preauth_br;$/;"	m	struct:wpa_sm	typeref:struct:wpa_sm::l2_packet_data	access:public
 lastId	src/eap_peer/eap_i.h	/^	int lastId;$/;"	m	struct:eap_sm	access:public
-lastId	src/eap_server/eap_i.h	/^	int lastId; \/* Identifier used in the last EAP-Packet *\/$/;"	m	struct:eap_sm	access:public
+lastId	src/eap_server/eap_i.h	/^	int lastId; \/* Identifier used in the last EAP-Packet 最近的EAP包中的ID号，通常来自currentId*\/$/;"	m	struct:eap_sm	access:public
 lastReqData	src/eap_server/eap_i.h	/^	struct wpabuf *lastReqData; \/\/ 保存了最近一次发送给eapol层的eap-req数据$/;"	m	struct:eap_sm	typeref:struct:eap_sm::wpabuf	access:public
 lastRespData	src/eap_peer/eap_i.h	/^	struct wpabuf *lastRespData;$/;"	m	struct:eap_sm	typeref:struct:eap_sm::wpabuf	access:public
 last_ack_rssi	src/drivers/driver.h	/^	int last_ack_rssi;$/;"	m	struct:hostap_sta_driver_data	access:public
@@ -13440,7 +13440,7 @@ length	src/eap_common/eap_tlv_common.h	/^	be16 length;$/;"	m	struct:eap_tlv_pac_
 length	src/eap_common/eap_tlv_common.h	/^	be16 length;$/;"	m	struct:eap_tlv_request_action_tlv	access:public
 length	src/eap_common/eap_tlv_common.h	/^	be16 length;$/;"	m	struct:eap_tlv_result_tlv	access:public
 length	src/eap_common/ikev2_common.h	/^	u8 length[4]; \/* total length of HDR + payloads *\/$/;"	m	struct:ikev2_hdr	access:public
-length	src/radius/radius.h	/^	u16 length; \/* including this header *\/$/;"	m	struct:radius_hdr	access:public
+length	src/radius/radius.h	/^	u16 length; \/* including this header *\/ \/\/ 包长度，最小20字节，最大4096字节$/;"	m	struct:radius_hdr	access:public
 length	src/radius/radius.h	/^	u8 length; \/* including this header *\/$/;"	m	struct:radius_attr_hdr	access:public
 length	src/tls/asn1.h	/^	unsigned int tag, length;$/;"	m	struct:asn1_hdr	access:public
 level	src/drivers/driver.h	/^	int level;$/;"	m	struct:wpa_scan_res	access:public
@@ -13747,8 +13747,8 @@ method	src/eap_server/eap.h	/^		u32 method;$/;"	m	struct:eap_user::__anon136	acc
 method	src/eap_server/eap_i.h	/^	EapType method;$/;"	m	struct:eap_method	access:public
 methodState	src/eap_peer/eap_i.h	/^	EapMethodState methodState;$/;"	m	struct:eap_method_ret	access:public
 methodState	src/eap_peer/eap_i.h	/^	EapMethodState methodState;$/;"	m	struct:eap_sm	access:public
-methodState	src/eap_server/eap_i.h	/^	} methodState;$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon158	access:public
-methodTimeout	src/eap_server/eap_i.h	/^	int methodTimeout;$/;"	m	struct:eap_sm	access:public
+methodState	src/eap_server/eap_i.h	/^	} methodState;              \/\/ 当前EAP方法所处的状态$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon158	access:public
+methodTimeout	src/eap_server/eap_i.h	/^	int methodTimeout;          \/\/ 当前EAP方法的超时值，通常为0表示不使用$/;"	m	struct:eap_sm	access:public
 method_pending	src/eap_server/eap_i.h	/^	} method_pending;$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon160	access:public
 methods	src/ap/ap_config.h	/^	} methods[EAP_USER_MAX_METHODS];$/;"	m	struct:hostapd_eap_user	typeref:struct:hostapd_eap_user::__anon2	access:public
 methods	src/eap_server/eap.h	/^	} methods[EAP_MAX_METHODS];$/;"	m	struct:eap_user	typeref:struct:eap_user::__anon136	access:public
@@ -14472,7 +14472,7 @@ num_ps_buf_frames	src/drivers/driver.h	/^	unsigned long num_ps_buf_frames;$/;"	m
 num_rates	src/ap/hostapd.h	/^	int num_rates;$/;"	m	struct:hostapd_iface	access:public
 num_rates	src/drivers/driver.h	/^	int num_rates;$/;"	m	struct:hostapd_hw_modes	access:public
 num_rounds	src/eap_peer/eap_i.h	/^	int num_rounds;$/;"	m	struct:eap_sm	access:public
-num_rounds	src/eap_server/eap_i.h	/^	int num_rounds;$/;"	m	struct:eap_sm	access:public
+num_rounds	src/eap_server/eap_i.h	/^	int num_rounds;             \/\/ eap层记录的往返次数：发出eap-req 到收到 eap-resp 报文算一次往返$/;"	m	struct:eap_sm	access:public
 num_scanres	src/drivers/driver_test.c	/^	size_t num_scanres;$/;"	m	struct:wpa_driver_test_data	file:	access:public
 num_sess	src/radius/radius_server.c	/^	int num_sess;$/;"	m	struct:radius_server_data	file:	access:public
 num_ssids	src/drivers/driver.h	/^		size_t num_ssids;$/;"	m	struct:wpa_event_data::scan_info	access:public
@@ -15554,10 +15554,10 @@ radius_free_class	src/radius/radius.h	/^void radius_free_class(struct radius_cla
 radius_get_attr_hdr	src/radius/radius.c	/^radius_get_attr_hdr(struct radius_msg *msg, int idx)$/;"	f	file:	signature:(struct radius_msg *msg, int idx)
 radius_get_attr_type	src/radius/radius.c	/^static struct radius_attr_type *radius_get_attr_type(u8 type)$/;"	f	file:	signature:(u8 type)
 radius_hdr	src/radius/radius.h	/^struct radius_hdr {$/;"	s
-radius_hdr::authenticator	src/radius/radius.h	/^	u8 authenticator[16];$/;"	m	struct:radius_hdr	access:public
-radius_hdr::code	src/radius/radius.h	/^	u8 code;$/;"	m	struct:radius_hdr	access:public
-radius_hdr::identifier	src/radius/radius.h	/^	u8 identifier;$/;"	m	struct:radius_hdr	access:public
-radius_hdr::length	src/radius/radius.h	/^	u16 length; \/* including this header *\/$/;"	m	struct:radius_hdr	access:public
+radius_hdr::authenticator	src/radius/radius.h	/^	u8 authenticator[16];   \/\/ 验证字域，一个16字节的明文随机数。请求报文中表示16字节随机码，响应报文中用于鉴别响应报文的合法性$/;"	m	struct:radius_hdr	access:public
+radius_hdr::code	src/radius/radius.h	/^	u8 code;                \/\/ radius包类型$/;"	m	struct:radius_hdr	access:public
+radius_hdr::identifier	src/radius/radius.h	/^	u8 identifier;          \/\/ 包标识，用于匹配请求包和响应包$/;"	m	struct:radius_hdr	access:public
+radius_hdr::length	src/radius/radius.h	/^	u16 length; \/* including this header *\/ \/\/ 包长度，最小20字节，最大4096字节$/;"	m	struct:radius_hdr	access:public
 radius_id	src/ap/ieee802_11_auth.c	/^	u8 radius_id;$/;"	m	struct:hostapd_acl_query_data	file:	access:public
 radius_identifier	src/eapol_auth/eapol_auth_sm_i.h	/^	int radius_identifier;$/;"	m	struct:eapol_state_machine	access:public
 radius_mode_txt	src/ap/ieee802_1x.c	/^const char *radius_mode_txt(struct hostapd_data *hapd)$/;"	f	signature:(struct hostapd_data *hapd)
@@ -15962,7 +15962,7 @@ reserved	src/eap_common/ikev2_common.h	/^	u8 reserved;$/;"	m	struct:ikev2_transf
 reserved	src/eap_peer/eap_mschapv2.c	/^	u8 reserved[8];$/;"	m	struct:ms_change_password	file:	access:public
 reserved	src/eap_peer/eap_mschapv2.c	/^	u8 reserved[8];$/;"	m	struct:ms_response	file:	access:public
 reserved2	src/eap_common/ikev2_common.h	/^	u8 reserved2;$/;"	m	struct:ikev2_transform	access:public
-reset	src/eap_server/eap_i.h	/^	void (*reset)(struct eap_sm *sm, void *priv);   \/\/ eap_md5_reset $/;"	m	struct:eap_method	access:public
+reset	src/eap_server/eap_i.h	/^	void (*reset)(struct eap_sm *sm, void *priv);                       \/\/ eap_identity_reset       \/ eap_md5_reset $/;"	m	struct:eap_method	access:public
 respId	src/eap_server/eap_i.h	/^	int respId;             \/\/ 当前接收到的eap-resp包中的ID$/;"	m	struct:eap_sm	access:public
 respMethod	src/eap_server/eap_i.h	/^	EapType respMethod;     \/\/ 当前接收到的eap-resp包中的TYPE$/;"	m	struct:eap_sm	access:public
 respVendor	src/eap_server/eap_i.h	/^	int respVendor;         \/\/ 当前接收到的eap-resp包中的Vendor (TYPE = 254的EAP报文中使用)$/;"	m	struct:eap_sm	access:public
@@ -20498,7 +20498,7 @@ wpa_state_machine::xxkey_len	src/ap/wpa_auth_i.h	/^	size_t xxkey_len;$/;"	m	stru
 wpa_states	src/common/defs.h	/^enum wpa_states {$/;"	g
 wpa_strdup_tchar	src/utils/common.c	/^TCHAR * wpa_strdup_tchar(const char *str)$/;"	f	signature:(const char *str)
 wpa_strdup_tchar	src/utils/common.h	/^TCHAR * wpa_strdup_tchar(const char *str);$/;"	p	signature:(const char *str)
-wpa_strdup_tchar	src/utils/common.h	454;"	d
+wpa_strdup_tchar	src/utils/common.h	463;"	d
 wpa_strict_rekey	src/ap/ap_config.h	/^	int wpa_strict_rekey;$/;"	m	struct:hostapd_bss_config	access:public
 wpa_strict_rekey	src/ap/wpa_auth.h	/^	int wpa_strict_rekey;$/;"	m	struct:wpa_auth_config	access:public
 wpa_stsl_negotiation	src/ap/wpa_auth_i.h	/^struct wpa_stsl_negotiation {$/;"	s
@@ -20587,7 +20587,7 @@ wpa_trace_show	src/utils/trace.h	/^void wpa_trace_show(const char *title);$/;"	p
 wpa_trace_show	src/utils/trace.h	56;"	d
 wpa_unicode2ascii_inplace	src/utils/common.c	/^void wpa_unicode2ascii_inplace(TCHAR *str)$/;"	f	signature:(TCHAR *str)
 wpa_unicode2ascii_inplace	src/utils/common.h	/^void wpa_unicode2ascii_inplace(TCHAR *str);$/;"	p	signature:(TCHAR *str)
-wpa_unicode2ascii_inplace	src/utils/common.h	453;"	d
+wpa_unicode2ascii_inplace	src/utils/common.h	462;"	d
 wpa_use_aes_cmac	src/ap/wpa_auth.c	/^static int wpa_use_aes_cmac(struct wpa_state_machine *sm)$/;"	f	file:	signature:(struct wpa_state_machine *sm)
 wpa_validate_wpa_ie	src/ap/wpa_auth.h	/^int wpa_validate_wpa_ie(struct wpa_authenticator *wpa_auth,$/;"	p	signature:(struct wpa_authenticator *wpa_auth, struct wpa_state_machine *sm, const u8 *wpa_ie, size_t wpa_ie_len, const u8 *mdie, size_t mdie_len)
 wpa_validate_wpa_ie	src/ap/wpa_auth_ie.c	/^int wpa_validate_wpa_ie(struct wpa_authenticator *wpa_auth,$/;"	f	signature:(struct wpa_authenticator *wpa_auth, struct wpa_state_machine *sm, const u8 *wpa_ie, size_t wpa_ie_len, const u8 *mdie, size_t mdie_len)

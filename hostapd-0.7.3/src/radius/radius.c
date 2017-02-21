@@ -23,6 +23,7 @@
 
 /**
  * struct radius_msg - RADIUS message structure for new and parsed messages
+ * radius消息管理块
  */
 struct radius_msg {
 	/**
@@ -41,7 +42,7 @@ struct radius_msg {
 	 * The values are number of bytes from buf to the beginning of
 	 * struct radius_attr_hdr.
 	 */
-	size_t *attr_pos;
+	size_t *attr_pos;   // 记录每条属性距离属性头偏移量的数组
 
 	/**
 	 * attr_size - Total size of the attribute pointer array
@@ -51,10 +52,10 @@ struct radius_msg {
 	/**
 	 * attr_used - Total number of attributes in the array
 	 */
-	size_t attr_used;
+	size_t attr_used;   // 此radius消息中属性项的数量
 };
 
-
+// 获取radius帧头
 struct radius_hdr * radius_msg_get_hdr(struct radius_msg *msg)
 {
 	return msg->hdr;
@@ -66,7 +67,7 @@ struct wpabuf * radius_msg_get_buf(struct radius_msg *msg)
 	return msg->buf;
 }
 
-
+// 获取指定序号的属性头
 static struct radius_attr_hdr *
 radius_get_attr_hdr(struct radius_msg *msg, int idx)
 {
@@ -1136,7 +1137,7 @@ radius_msg_add_attr_user_password(struct radius_msg *msg,
 				   buf, buf_len);
 }
 
-
+// 查找指定type的属性项
 int radius_msg_get_attr(struct radius_msg *msg, u8 type, u8 *buf, size_t len)
 {
 	struct radius_attr_hdr *attr = NULL, *tmp;

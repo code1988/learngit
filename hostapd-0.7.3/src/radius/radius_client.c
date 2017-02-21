@@ -263,16 +263,17 @@ static void radius_client_msg_free(struct radius_msg_list *req)
  * @handler: Handler for received RADIUS messages
  * @data: Context pointer for handler callbacks
  * Returns: 0 on success, -1 on failure
+ * 为radius客户端注册一个RX回调函数
+ * RX回调函数似乎可以有多个，构成回调数组
  *
  * This function is used to register a handler for processing received RADIUS
  * authentication and accounting messages. The handler() callback function will
  * be called whenever a RADIUS message is received from the active server.
+ * 此函数注册的回调函数用来处理接收到的RADIUS 认证和计费消息
  *
  * There can be multiple registered RADIUS message handlers. The handlers will
  * be called in order until one of them indicates that it has processed or
  * queued the message.
- * 为radius客户端注册一个RX回调函数
- * RX回调函数似乎可以有多个，构成回调数组
  */
 int radius_client_register(struct radius_client_data *radius,
 			   RadiusType msg_type,
