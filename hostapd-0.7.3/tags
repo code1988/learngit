@@ -3080,13 +3080,13 @@ RADIUS_ACCT_TERMINATE_CAUSE_USER_ERROR	src/radius/radius.h	135;"	d
 RADIUS_ACCT_TERMINATE_CAUSE_USER_REQUEST	src/radius/radius.h	119;"	d
 RADIUS_ACL_TIMEOUT	src/ap/ieee802_11_auth.c	31;"	d	file:
 RADIUS_ADDR_FORMAT	src/radius/radius.h	193;"	d
-RADIUS_ATTRS	src/radius/radius.c	234;"	d	file:
+RADIUS_ATTRS	src/radius/radius.c	235;"	d	file:
 RADIUS_ATTR_ACCT_AUTHENTIC	src/radius/radius.h	/^       RADIUS_ATTR_ACCT_AUTHENTIC = 45,$/;"	e	enum:__anon204
 RADIUS_ATTR_ACCT_DELAY_TIME	src/radius/radius.h	/^       RADIUS_ATTR_ACCT_DELAY_TIME = 41,$/;"	e	enum:__anon204
 RADIUS_ATTR_ACCT_INPUT_GIGAWORDS	src/radius/radius.h	/^       RADIUS_ATTR_ACCT_INPUT_GIGAWORDS = 52,$/;"	e	enum:__anon204
 RADIUS_ATTR_ACCT_INPUT_OCTETS	src/radius/radius.h	/^       RADIUS_ATTR_ACCT_INPUT_OCTETS = 42,$/;"	e	enum:__anon204
 RADIUS_ATTR_ACCT_INPUT_PACKETS	src/radius/radius.h	/^       RADIUS_ATTR_ACCT_INPUT_PACKETS = 47,$/;"	e	enum:__anon204
-RADIUS_ATTR_ACCT_INTERIM_INTERVAL	src/radius/radius.h	/^       RADIUS_ATTR_ACCT_INTERIM_INTERVAL = 85,$/;"	e	enum:__anon204
+RADIUS_ATTR_ACCT_INTERIM_INTERVAL	src/radius/radius.h	/^       RADIUS_ATTR_ACCT_INTERIM_INTERVAL = 85,      \/\/ 对于某个确定的会话，中间更新流量信息的时间间隔（s）,本属性只能出现在Access-Accept报文中$/;"	e	enum:__anon204
 RADIUS_ATTR_ACCT_LINK_COUNT	src/radius/radius.h	/^       RADIUS_ATTR_ACCT_LINK_COUNT = 51,$/;"	e	enum:__anon204
 RADIUS_ATTR_ACCT_MULTI_SESSION_ID	src/radius/radius.h	/^       RADIUS_ATTR_ACCT_MULTI_SESSION_ID = 50,$/;"	e	enum:__anon204
 RADIUS_ATTR_ACCT_OUTPUT_GIGAWORDS	src/radius/radius.h	/^       RADIUS_ATTR_ACCT_OUTPUT_GIGAWORDS = 53,$/;"	e	enum:__anon204
@@ -3128,7 +3128,7 @@ RADIUS_ATTR_NAS_PORT_TYPE	src/radius/radius.h	/^       RADIUS_ATTR_NAS_PORT_TYPE
 RADIUS_ATTR_PROXY_STATE	src/radius/radius.h	/^       RADIUS_ATTR_PROXY_STATE = 33,$/;"	e	enum:__anon204
 RADIUS_ATTR_REPLY_MESSAGE	src/eap_common/eap_ttls.h	50;"	d
 RADIUS_ATTR_REPLY_MESSAGE	src/radius/radius.h	/^       RADIUS_ATTR_REPLY_MESSAGE = 18,$/;"	e	enum:__anon204
-RADIUS_ATTR_SESSION_TIMEOUT	src/radius/radius.h	/^       RADIUS_ATTR_SESSION_TIMEOUT = 27,$/;"	e	enum:__anon204
+RADIUS_ATTR_SESSION_TIMEOUT	src/radius/radius.h	/^       RADIUS_ATTR_SESSION_TIMEOUT = 27,    \/\/ 在Access-Request中，表示为用户提供服务的剩余时间；在Access-Challenge中，表示NAS->SUPP之间EAP报文重传时间$/;"	e	enum:__anon204
 RADIUS_ATTR_STATE	src/radius/radius.h	/^       RADIUS_ATTR_STATE = 24,$/;"	e	enum:__anon204
 RADIUS_ATTR_TERMINATION_ACTION	src/radius/radius.h	/^       RADIUS_ATTR_TERMINATION_ACTION = 29,$/;"	e	enum:__anon204
 RADIUS_ATTR_TEXT	src/radius/radius.c	/^		RADIUS_ATTR_UNDIST, RADIUS_ATTR_TEXT, RADIUS_ATTR_IP,$/;"	e	enum:radius_attr_type::__anon206	file:
@@ -5365,14 +5365,14 @@ aa	src/rsn_supp/pmksa_cache.h	/^	u8 aa[ETH_ALEN];$/;"	m	struct:rsn_pmksa_cache_e
 aaaEapKeyAvailable	src/eap_server/eap.h	/^	Boolean aaaEapKeyAvailable;$/;"	m	struct:eap_eapol_interface	access:public
 aaaEapKeyData	src/eap_server/eap.h	/^	u8 *aaaEapKeyData;$/;"	m	struct:eap_eapol_interface	access:public
 aaaEapKeyDataLen	src/eap_server/eap.h	/^	size_t aaaEapKeyDataLen;$/;"	m	struct:eap_eapol_interface	access:public
-aaaEapNoReq	src/eap_server/eap.h	/^	Boolean aaaEapNoReq;$/;"	m	struct:eap_eapol_interface	access:public
-aaaEapReq	src/eap_server/eap.h	/^	Boolean aaaEapReq;$/;"	m	struct:eap_eapol_interface	access:public
-aaaEapReqData	src/eap_server/eap.h	/^	struct wpabuf *aaaEapReqData;$/;"	m	struct:eap_eapol_interface	typeref:struct:eap_eapol_interface::wpabuf	access:public
+aaaEapNoReq	src/eap_server/eap.h	/^	Boolean aaaEapNoReq;    \/\/ AAA层从收到的radius报文中提取EAP数据失败时设置TRUE，EAP层根据此标志判断是否进入DISCARD2状态$/;"	m	struct:eap_eapol_interface	access:public
+aaaEapReq	src/eap_server/eap.h	/^	Boolean aaaEapReq;      \/\/ AAA层收到一个类型为Access-Challenge的radius报文时设置TRUE，EAP层根据此标志判断是否进入AAA_RESPONSE状态$/;"	m	struct:eap_eapol_interface	access:public
+aaaEapReqData	src/eap_server/eap.h	/^	struct wpabuf *aaaEapReqData;   \/\/ 此buffer由AAA层填充，同时设置aaaEapReq\/aaaSuccess\/aaaFail，然后递交给EAP层处理 $/;"	m	struct:eap_eapol_interface	typeref:struct:eap_eapol_interface::wpabuf	access:public
 aaaEapResp	src/eap_server/eap.h	/^	Boolean aaaEapResp;             \/\/ EAP层AUTH SM进入AAA_IDLE时设置TRUE并填充aaaEapRespData，AAA层发送数据并设置FALSE$/;"	m	struct:eap_eapol_interface	access:public
 aaaEapRespData	src/eap_server/eap.h	/^	struct wpabuf *aaaEapRespData;  \/\/ 此标志有EAP层填充(数据来源通常就是eapReapData转储)，同时设置aaaEapResp，然后递交给AAA层处理$/;"	m	struct:eap_eapol_interface	typeref:struct:eap_eapol_interface::wpabuf	access:public
-aaaFail	src/eap_server/eap.h	/^	Boolean aaaFail;$/;"	m	struct:eap_eapol_interface	access:public
-aaaMethodTimeout	src/eap_server/eap.h	/^	int aaaMethodTimeout;$/;"	m	struct:eap_eapol_interface	access:public
-aaaSuccess	src/eap_server/eap.h	/^	Boolean aaaSuccess;$/;"	m	struct:eap_eapol_interface	access:public
+aaaFail	src/eap_server/eap.h	/^	Boolean aaaFail;        \/\/ AAA层收到一个类型为Access-Reject的radius报文时设置TRUE，EAP层根据此标志判断是否进入FAILURE2状态$/;"	m	struct:eap_eapol_interface	access:public
+aaaMethodTimeout	src/eap_server/eap.h	/^	int aaaMethodTimeout;   \/\/ EAP报文的重传超时值，这个值由radius服务器提供，却用于NAS->suppliant之间$/;"	m	struct:eap_eapol_interface	access:public
+aaaSuccess	src/eap_server/eap.h	/^	Boolean aaaSuccess;     \/\/ AAA层收到一个类型为Access-Accept的radius报文时设置TRUE，EAP层根据此标志判断是否进入SUCCESS2状态$/;"	m	struct:eap_eapol_interface	access:public
 aaaTimeout	src/eap_server/eap.h	/^	Boolean aaaTimeout;$/;"	m	struct:eap_eapol_interface	access:public
 aaa_send	src/eapol_auth/eapol_auth_sm.h	/^	void (*aaa_send)(void *ctx, void *sta_ctx, const u8 *data,$/;"	m	struct:eapol_auth_cb	access:public
 abortAuth	src/eapol_auth/eapol_auth_sm.c	58;"	d	file:
@@ -5417,16 +5417,16 @@ acct_data	src/drivers/driver_atheros.c	/^	struct hostap_sta_driver_data acct_dat
 acct_data	src/drivers/driver_madwifi.c	/^	struct hostap_sta_driver_data acct_data;$/;"	m	struct:madwifi_driver_data	typeref:struct:madwifi_driver_data::hostap_sta_driver_data	file:	access:public
 acct_handlers	src/radius/radius_client.c	/^	struct radius_rx_handler *acct_handlers;$/;"	m	struct:radius_client_data	typeref:struct:radius_client_data::radius_rx_handler	file:	access:public
 acct_input_gigawords	src/ap/sta_info.h	/^	u32 acct_input_gigawords; \/* Acct-Input-Gigawords *\/$/;"	m	struct:sta_info	access:public
-acct_interim_interval	src/ap/ap_config.h	/^	int acct_interim_interval;$/;"	m	struct:hostapd_bss_config	access:public
+acct_interim_interval	src/ap/ap_config.h	/^	int acct_interim_interval;      \/\/ 本地配置的 对于某个确定的会话，中间更新流量信息的时间间隔$/;"	m	struct:hostapd_bss_config	access:public
 acct_interim_interval	src/ap/ieee802_11_auth.c	/^	u32 acct_interim_interval;$/;"	m	struct:hostapd_cached_radius_acl	file:	access:public
-acct_interim_interval	src/ap/sta_info.h	/^	int acct_interim_interval; \/* Acct-Interim-Interval *\/$/;"	m	struct:sta_info	access:public
+acct_interim_interval	src/ap/sta_info.h	/^	int acct_interim_interval;  \/\/ 描述了对于某个确定的会话，中间更新流量信息的时间间隔$/;"	m	struct:sta_info	access:public
 acct_mac	src/drivers/driver_atheros.c	/^	u8	acct_mac[ETH_ALEN];$/;"	m	struct:madwifi_driver_data	file:	access:public
 acct_mac	src/drivers/driver_madwifi.c	/^	u8	acct_mac[ETH_ALEN];$/;"	m	struct:madwifi_driver_data	file:	access:public
 acct_output_gigawords	src/ap/sta_info.h	/^	u32 acct_output_gigawords; \/* Acct-Output-Gigawords *\/$/;"	m	struct:sta_info	access:public
 acct_serv_sock	src/radius/radius_client.c	/^	int acct_serv_sock;     \/\/ radius计费服务用的socket$/;"	m	struct:radius_client_data	file:	access:public
 acct_serv_sock6	src/radius/radius_client.c	/^	int acct_serv_sock6;$/;"	m	struct:radius_client_data	file:	access:public
 acct_server	src/radius/radius_client.h	/^	struct hostapd_radius_server *acct_server;$/;"	m	struct:hostapd_radius_servers	typeref:struct:hostapd_radius_servers::hostapd_radius_server	access:public
-acct_servers	src/radius/radius_client.h	/^	struct hostapd_radius_server *acct_servers;$/;"	m	struct:hostapd_radius_servers	typeref:struct:hostapd_radius_servers::hostapd_radius_server	access:public
+acct_servers	src/radius/radius_client.h	/^	struct hostapd_radius_server *acct_servers;         \/\/ radius计费服务器信息管理块$/;"	m	struct:hostapd_radius_servers	typeref:struct:hostapd_radius_servers::hostapd_radius_server	access:public
 acct_session_id_hi	src/ap/hostapd.h	/^	u32 acct_session_id_hi, acct_session_id_lo;$/;"	m	struct:hostapd_data	access:public
 acct_session_id_hi	src/ap/sta_info.h	/^	u32 acct_session_id_hi;$/;"	m	struct:sta_info	access:public
 acct_session_id_lo	src/ap/hostapd.h	/^	u32 acct_session_id_hi, acct_session_id_lo;$/;"	m	struct:hostapd_data	access:public
@@ -5864,9 +5864,9 @@ atmel_param::sta_addr	src/drivers/driver_atmel.c	/^    unsigned char sta_addr[6]
 attempts	src/radius/radius_client.c	/^	int attempts;$/;"	m	struct:radius_msg_list	file:	access:public
 attr	src/radius/radius.h	/^	struct radius_attr_data *attr;$/;"	m	struct:radius_class_data	typeref:struct:radius_class_data::radius_attr_data	access:public
 attr	src/tls/x509v3.h	/^	struct x509_name_attr attr[X509_MAX_NAME_ATTRIBUTES];$/;"	m	struct:x509_name	typeref:struct:x509_name::x509_name_attr	access:public
-attr_pos	src/radius/radius.c	/^	size_t *attr_pos;$/;"	m	struct:radius_msg	file:	access:public
+attr_pos	src/radius/radius.c	/^	size_t *attr_pos;   \/\/ 记录每条属性距离属性头偏移量的数组$/;"	m	struct:radius_msg	file:	access:public
 attr_size	src/radius/radius.c	/^	size_t attr_size;$/;"	m	struct:radius_msg	file:	access:public
-attr_used	src/radius/radius.c	/^	size_t attr_used;$/;"	m	struct:radius_msg	file:	access:public
+attr_used	src/radius/radius.c	/^	size_t attr_used;   \/\/ 此radius消息中属性项的数量$/;"	m	struct:radius_msg	file:	access:public
 auth	src/common/ieee802_11_defs.h	/^		} STRUCT_PACKED auth;$/;"	m	union:ieee80211_mgmt::__anon37	typeref:struct:ieee80211_mgmt::__anon37::__anon38	access:public
 auth	src/common/wpa_common.h	/^		} auth;$/;"	m	union:wpa_ptk::__anon32	typeref:struct:wpa_ptk::__anon32::__anon33	access:public
 auth	src/drivers/driver.h	/^	unsigned int auth;$/;"	m	struct:wpa_driver_capa	access:public
@@ -5925,7 +5925,7 @@ auth_response_valid	src/eap_peer/eap_ttls.c	/^	int auth_response_valid;$/;"	m	st
 auth_serv_sock	src/radius/radius_client.c	/^	int auth_serv_sock;     \/\/ radius认证服务用的socket$/;"	m	struct:radius_client_data	file:	access:public
 auth_serv_sock6	src/radius/radius_client.c	/^	int auth_serv_sock6;$/;"	m	struct:radius_client_data	file:	access:public
 auth_server	src/radius/radius_client.h	/^	struct hostapd_radius_server *auth_server;$/;"	m	struct:hostapd_radius_servers	typeref:struct:hostapd_radius_servers::hostapd_radius_server	access:public
-auth_servers	src/radius/radius_client.h	/^	struct hostapd_radius_server *auth_servers;$/;"	m	struct:hostapd_radius_servers	typeref:struct:hostapd_radius_servers::hostapd_radius_server	access:public
+auth_servers	src/radius/radius_client.h	/^	struct hostapd_radius_server *auth_servers;         \/\/ radius认证服务器信息管理块$/;"	m	struct:hostapd_radius_servers	typeref:struct:hostapd_radius_servers::hostapd_radius_server	access:public
 auth_shared_key	src/ap/ieee802_11.c	/^static u16 auth_shared_key(struct hostapd_data *hapd, struct sta_info *sta,$/;"	f	file:	signature:(struct hostapd_data *hapd, struct sta_info *sta, u16 auth_transaction, const u8 *challenge, int iswep)
 auth_sock	src/radius/radius_client.c	/^	int auth_sock;$/;"	m	struct:radius_client_data	file:	access:public
 auth_sock	src/radius/radius_server.c	/^	int auth_sock;$/;"	m	struct:radius_server_data	file:	access:public
@@ -5938,7 +5938,7 @@ auth_type	src/wps/wps_i.h	/^	u16 auth_type;$/;"	m	struct:wps_data	access:public
 auth_type_flags	src/wps/wps_i.h	/^	const u8 *auth_type_flags; \/* 2 octets *\/$/;"	m	struct:wps_parse_attr	access:public
 auth_types	src/wps/wps.h	/^	u16 auth_types;$/;"	m	struct:wps_context	access:public
 authenticate	src/drivers/driver.h	/^	int (*authenticate)(void *priv,$/;"	m	struct:wpa_driver_ops	access:public
-authenticator	src/radius/radius.h	/^	u8 authenticator[16];   \/\/ 验证字域，一个16字节的明文随机数。请求报文中表示16字节随机码，响应报文中用于鉴别响应报文的合法性$/;"	m	struct:radius_hdr	access:public
+authenticator	src/radius/radius.h	/^	u8 authenticator[16];   \/\/ 16字节验证字域。在请求报文中表示随机码;在响应报文中表示经过MD5加密后的验证码,用于鉴别响应报文的合法性$/;"	m	struct:radius_hdr	access:public
 authenticator	src/wps/wps_i.h	/^	const u8 *authenticator; \/* WPS_AUTHENTICATOR_LEN (8) octets *\/$/;"	m	struct:wps_parse_attr	access:public
 authkey	src/wps/wps_i.h	/^	u8 authkey[WPS_AUTHKEY_LEN];$/;"	m	struct:wps_data	access:public
 authsrv_deinit	src/ap/authsrv.c	/^void authsrv_deinit(struct hostapd_data *hapd)$/;"	f	signature:(struct hostapd_data *hapd)
@@ -6155,7 +6155,7 @@ buf	src/crypto/sha256-internal.c	/^	u8 buf[64];$/;"	m	struct:sha256_state	file:	
 buf	src/drivers/driver.h	/^		const u8 *buf;$/;"	m	struct:wpa_event_data::mlme_rx	access:public
 buf	src/eap_common/eap_sim_common.c	/^	struct wpabuf *buf;$/;"	m	struct:eap_sim_msg	typeref:struct:eap_sim_msg::wpabuf	file:	access:public
 buf	src/eap_peer/eap_fast_pac.c	/^	char *buf;$/;"	m	struct:eap_fast_read_ctx	file:	access:public
-buf	src/radius/radius.c	/^	struct wpabuf *buf;$/;"	m	struct:radius_msg	typeref:struct:radius_msg::wpabuf	file:	access:public
+buf	src/radius/radius.c	/^	struct wpabuf *buf;     \/\/ 指向radius消息数据管理块$/;"	m	struct:radius_msg	typeref:struct:radius_msg::wpabuf	file:	access:public
 buf_len	src/eap_peer/eap_fast_pac.c	/^	size_t buf_len;$/;"	m	struct:eap_fast_read_ctx	file:	access:public
 buffer	src/crypto/md4-internal.c	/^	u8 buffer[MD4_BLOCK_LENGTH];	\/* input buffer *\/$/;"	m	struct:MD4Context	file:	access:public
 buffer	src/crypto/sha1_i.h	/^	unsigned char buffer[64];$/;"	m	struct:SHA1Context	access:public
@@ -6694,7 +6694,7 @@ ctx_dec	src/crypto/crypto_internal-cipher.c	/^			void *ctx_dec;$/;"	m	struct:cry
 ctx_enc	src/crypto/crypto_internal-cipher.c	/^			void *ctx_enc;$/;"	m	struct:crypto_cipher::__anon188::__anon190	file:	access:public
 cur_pmksa	src/rsn_supp/wpa_i.h	/^	struct rsn_pmksa_cache_entry *cur_pmksa; \/* current PMKSA entry *\/$/;"	m	struct:wpa_sm	typeref:struct:wpa_sm::rsn_pmksa_cache_entry	access:public
 curlen	src/crypto/sha256-internal.c	/^	u32 state[8], curlen;$/;"	m	struct:sha256_state	file:	access:public
-currentId	src/eap_server/eap_i.h	/^	int currentId;              \/\/ 当前使用的EAP-ID (0~255)$/;"	m	struct:eap_sm	access:public
+currentId	src/eap_server/eap_i.h	/^	int currentId;              \/\/ 当前使用的EAP-ID (0~255)，来源有2处：从旧的currentId中计算得到；从AAA层收到的EAP报文中得到$/;"	m	struct:eap_sm	access:public
 currentMethod	src/eap_server/eap_i.h	/^	EapType currentMethod;      \/\/ 当前的EAP-TYPE，也可理解为当前使用的EAP方法$/;"	m	struct:eap_sm	access:public
 current_ap	src/ap/iapp.c	/^	u8 current_ap[ETH_ALEN];$/;"	m	struct:iapp_cache_notify	file:	access:public
 current_ap	src/common/ieee802_11_defs.h	/^			u8 current_ap[6];$/;"	m	struct:ieee80211_mgmt::__anon37::__anon42	access:public
@@ -7299,14 +7299,14 @@ eap_eapol_interface	src/eap_server/eap.h	/^struct eap_eapol_interface {$/;"	s
 eap_eapol_interface::aaaEapKeyAvailable	src/eap_server/eap.h	/^	Boolean aaaEapKeyAvailable;$/;"	m	struct:eap_eapol_interface	access:public
 eap_eapol_interface::aaaEapKeyData	src/eap_server/eap.h	/^	u8 *aaaEapKeyData;$/;"	m	struct:eap_eapol_interface	access:public
 eap_eapol_interface::aaaEapKeyDataLen	src/eap_server/eap.h	/^	size_t aaaEapKeyDataLen;$/;"	m	struct:eap_eapol_interface	access:public
-eap_eapol_interface::aaaEapNoReq	src/eap_server/eap.h	/^	Boolean aaaEapNoReq;$/;"	m	struct:eap_eapol_interface	access:public
-eap_eapol_interface::aaaEapReq	src/eap_server/eap.h	/^	Boolean aaaEapReq;$/;"	m	struct:eap_eapol_interface	access:public
-eap_eapol_interface::aaaEapReqData	src/eap_server/eap.h	/^	struct wpabuf *aaaEapReqData;$/;"	m	struct:eap_eapol_interface	typeref:struct:eap_eapol_interface::wpabuf	access:public
+eap_eapol_interface::aaaEapNoReq	src/eap_server/eap.h	/^	Boolean aaaEapNoReq;    \/\/ AAA层从收到的radius报文中提取EAP数据失败时设置TRUE，EAP层根据此标志判断是否进入DISCARD2状态$/;"	m	struct:eap_eapol_interface	access:public
+eap_eapol_interface::aaaEapReq	src/eap_server/eap.h	/^	Boolean aaaEapReq;      \/\/ AAA层收到一个类型为Access-Challenge的radius报文时设置TRUE，EAP层根据此标志判断是否进入AAA_RESPONSE状态$/;"	m	struct:eap_eapol_interface	access:public
+eap_eapol_interface::aaaEapReqData	src/eap_server/eap.h	/^	struct wpabuf *aaaEapReqData;   \/\/ 此buffer由AAA层填充，同时设置aaaEapReq\/aaaSuccess\/aaaFail，然后递交给EAP层处理 $/;"	m	struct:eap_eapol_interface	typeref:struct:eap_eapol_interface::wpabuf	access:public
 eap_eapol_interface::aaaEapResp	src/eap_server/eap.h	/^	Boolean aaaEapResp;             \/\/ EAP层AUTH SM进入AAA_IDLE时设置TRUE并填充aaaEapRespData，AAA层发送数据并设置FALSE$/;"	m	struct:eap_eapol_interface	access:public
 eap_eapol_interface::aaaEapRespData	src/eap_server/eap.h	/^	struct wpabuf *aaaEapRespData;  \/\/ 此标志有EAP层填充(数据来源通常就是eapReapData转储)，同时设置aaaEapResp，然后递交给AAA层处理$/;"	m	struct:eap_eapol_interface	typeref:struct:eap_eapol_interface::wpabuf	access:public
-eap_eapol_interface::aaaFail	src/eap_server/eap.h	/^	Boolean aaaFail;$/;"	m	struct:eap_eapol_interface	access:public
-eap_eapol_interface::aaaMethodTimeout	src/eap_server/eap.h	/^	int aaaMethodTimeout;$/;"	m	struct:eap_eapol_interface	access:public
-eap_eapol_interface::aaaSuccess	src/eap_server/eap.h	/^	Boolean aaaSuccess;$/;"	m	struct:eap_eapol_interface	access:public
+eap_eapol_interface::aaaFail	src/eap_server/eap.h	/^	Boolean aaaFail;        \/\/ AAA层收到一个类型为Access-Reject的radius报文时设置TRUE，EAP层根据此标志判断是否进入FAILURE2状态$/;"	m	struct:eap_eapol_interface	access:public
+eap_eapol_interface::aaaMethodTimeout	src/eap_server/eap.h	/^	int aaaMethodTimeout;   \/\/ EAP报文的重传超时值，这个值由radius服务器提供，却用于NAS->suppliant之间$/;"	m	struct:eap_eapol_interface	access:public
+eap_eapol_interface::aaaSuccess	src/eap_server/eap.h	/^	Boolean aaaSuccess;     \/\/ AAA层收到一个类型为Access-Accept的radius报文时设置TRUE，EAP层根据此标志判断是否进入SUCCESS2状态$/;"	m	struct:eap_eapol_interface	access:public
 eap_eapol_interface::aaaTimeout	src/eap_server/eap.h	/^	Boolean aaaTimeout;$/;"	m	struct:eap_eapol_interface	access:public
 eap_eapol_interface::eapFail	src/eap_server/eap.h	/^	Boolean eapFail;        \/\/ 此标志由EAP层管理，EAP层AUTH SM进入FAIL状态时设置TRUE并填充eapReqData，进入INITIALIZE状态时设置FALSE$/;"	m	struct:eap_eapol_interface	access:public
 eap_eapol_interface::eapKeyAvailable	src/eap_server/eap.h	/^	Boolean eapKeyAvailable; \/* called keyAvailable in IEEE 802.1X-2004 *\/$/;"	m	struct:eap_eapol_interface	access:public
@@ -9004,7 +9004,7 @@ eap_sm::auth_challenge	src/eap_server/eap_i.h	/^	u8 *auth_challenge;$/;"	m	struc
 eap_sm::backend_auth	src/eap_server/eap_i.h	/^	Boolean backend_auth;       \/\/ RADIUS后台认证服务器使能标志，默认不使能$/;"	m	struct:eap_sm	access:public
 eap_sm::changed	src/eap_peer/eap_i.h	/^	Boolean changed;$/;"	m	struct:eap_sm	access:public
 eap_sm::changed	src/eap_server/eap_i.h	/^	Boolean changed;$/;"	m	struct:eap_sm	access:public
-eap_sm::currentId	src/eap_server/eap_i.h	/^	int currentId;              \/\/ 当前使用的EAP-ID (0~255)$/;"	m	struct:eap_sm	access:public
+eap_sm::currentId	src/eap_server/eap_i.h	/^	int currentId;              \/\/ 当前使用的EAP-ID (0~255)，来源有2处：从旧的currentId中计算得到；从AAA层收到的EAP报文中得到$/;"	m	struct:eap_sm	access:public
 eap_sm::currentMethod	src/eap_server/eap_i.h	/^	EapType currentMethod;      \/\/ 当前的EAP-TYPE，也可理解为当前使用的EAP方法$/;"	m	struct:eap_sm	access:public
 eap_sm::decision	src/eap_peer/eap_i.h	/^	EapDecision decision;$/;"	m	struct:eap_sm	access:public
 eap_sm::decision	src/eap_server/eap_i.h	/^	} decision;             \/\/ SELECT_ACTION状态中使用，存储作出的决定$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon159	access:public
@@ -9044,7 +9044,7 @@ eap_sm::m	src/eap_peer/eap_i.h	/^	const struct eap_method *m; \/* selected EAP m
 eap_sm::m	src/eap_server/eap_i.h	/^	const struct eap_method *m;         \/\/ 指向被采用的 EAP 方法控制块$/;"	m	struct:eap_sm	typeref:struct:eap_sm::eap_method	access:public
 eap_sm::methodState	src/eap_peer/eap_i.h	/^	EapMethodState methodState;$/;"	m	struct:eap_sm	access:public
 eap_sm::methodState	src/eap_server/eap_i.h	/^	} methodState;              \/\/ 当前EAP方法所处的状态$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon158	access:public
-eap_sm::methodTimeout	src/eap_server/eap_i.h	/^	int methodTimeout;          \/\/ 当前EAP方法的超时值，通常为0表示不使用$/;"	m	struct:eap_sm	access:public
+eap_sm::methodTimeout	src/eap_server/eap_i.h	/^	int methodTimeout;          \/\/ 当前EAP方法的超时值，来源有2种：通过EAP方法自带的getTimeout函数计算得到；通过aaaMethodTimeout赋值，通常为0表示不使用$/;"	m	struct:eap_sm	access:public
 eap_sm::method_pending	src/eap_server/eap_i.h	/^	} method_pending;$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon160	access:public
 eap_sm::msg_ctx	src/eap_peer/eap_i.h	/^	void *msg_ctx;$/;"	m	struct:eap_sm	access:public
 eap_sm::msg_ctx	src/eap_server/eap_i.h	/^	void *eapol_ctx, *msg_ctx;          \/\/ 分别指向状态机统一管理块$/;"	m	struct:eap_sm	access:public
@@ -10017,8 +10017,8 @@ eapol_state_machine::eapol_key_crypt_len	src/eapol_auth/eapol_auth_sm_i.h	/^	siz
 eapol_state_machine::eapol_key_sign	src/eapol_auth/eapol_auth_sm_i.h	/^	u8 *eapol_key_sign;$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::eapol_key_sign_len	src/eapol_auth/eapol_auth_sm_i.h	/^	size_t eapol_key_sign_len;$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::flags	src/eapol_auth/eapol_auth_sm_i.h	/^	int flags; \/* EAPOL_SM_* eapol层附加功能位的集合*\/$/;"	m	struct:eapol_state_machine	access:public
-eapol_state_machine::identity	src/eapol_auth/eapol_auth_sm_i.h	/^	u8 *identity;$/;"	m	struct:eapol_state_machine	access:public
-eapol_state_machine::identity_len	src/eapol_auth/eapol_auth_sm_i.h	/^	size_t identity_len;$/;"	m	struct:eapol_state_machine	access:public
+eapol_state_machine::identity	src/eapol_auth/eapol_auth_sm_i.h	/^	u8 *identity;           \/\/ 认证成功后记录的用户名$/;"	m	struct:eapol_state_machine	access:public
+eapol_state_machine::identity_len	src/eapol_auth/eapol_auth_sm_i.h	/^	size_t identity_len;    \/\/ 认证成功后记录的用户名长度$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::initialize	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean initialize; \/\/ 当该标志强制初始化eapol层所有状态机$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::initializing	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean initializing; \/* in process of initializing state machines 标志位，表示正在进行状态机初始化*\/$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::keyDone	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean keyDone;$/;"	m	struct:eapol_state_machine	access:public
@@ -10026,7 +10026,7 @@ eapol_state_machine::keyRun	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean keyRun; 
 eapol_state_machine::keyTxEnabled	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean keyTxEnabled;$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::key_rx_state	src/eapol_auth/eapol_auth_sm_i.h	/^	enum { KEY_RX_NO_KEY_RECEIVE, KEY_RX_KEY_RECEIVE } key_rx_state;    \/\/ key接收状态机$/;"	m	struct:eapol_state_machine	typeref:enum:eapol_state_machine::__anon66	access:public
 eapol_state_machine::last_eap_id	src/eapol_auth/eapol_auth_sm_i.h	/^	u8 last_eap_id; \/* last used EAP Identifier 记录了最后一个使用的EAP报文的Identify字段*\/$/;"	m	struct:eapol_state_machine	access:public
-eapol_state_machine::last_recv_radius	src/eapol_auth/eapol_auth_sm_i.h	/^	struct radius_msg *last_recv_radius;$/;"	m	struct:eapol_state_machine	typeref:struct:eapol_state_machine::radius_msg	access:public
+eapol_state_machine::last_recv_radius	src/eapol_auth/eapol_auth_sm_i.h	/^	struct radius_msg *last_recv_radius;    \/\/ 指向最近一个收到的radius报文$/;"	m	struct:eapol_state_machine	typeref:struct:eapol_state_machine::radius_msg	access:public
 eapol_state_machine::operControlledDirections	src/eapol_auth/eapol_auth_sm_i.h	/^	ControlledDirection operControlledDirections;       \/\/ 受控方向，本值会被CTRL_DIR SM写入adminControlledDirections$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::operEdge	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean operEdge;                                   \/\/ 端口没有开启VLAN时，此标志位设置为TRUE$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::portControl	src/eapol_auth/eapol_auth_sm_i.h	/^	PortTypes portControl;  \/\/ 受控端口的全局控制模式,作为认证者，在eapol_auth_alloc时设置了固定值AUTO$/;"	m	struct:eapol_state_machine	access:public
@@ -10039,7 +10039,7 @@ eapol_state_machine::radius_identifier	src/eapol_auth/eapol_auth_sm_i.h	/^	int r
 eapol_state_machine::reAuthCount	src/eapol_auth/eapol_auth_sm_i.h	/^	unsigned int reAuthCount;   \/\/ 状态机进入CONNECTING状态时累加，一旦超过reAuthMax则进入DISCONNECTED状态，进入DISCONNECTED\/AUTHENTICATED时清0$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::reAuthEnabled	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean reAuthEnabled;  \/\/ 重认证功能使能位(只用于认证系统)$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::reAuthMax	src/eapol_auth/eapol_auth_sm_i.h	/^	unsigned int reAuthMax; \/* default 2 重认证次数*\/$/;"	m	struct:eapol_state_machine	access:public
-eapol_state_machine::reAuthPeriod	src/eapol_auth/eapol_auth_sm_i.h	/^	unsigned int reAuthPeriod; \/* default 3600 s 重认证周期,用于设置重认证定时器reAuthWhen *\/$/;"	m	struct:eapol_state_machine	access:public
+eapol_state_machine::reAuthPeriod	src/eapol_auth/eapol_auth_sm_i.h	/^	unsigned int reAuthPeriod; \/* default 3600 s 重认证周期(可以由本地配置文件设置，也可以被radius服务器设置),用于设置重认证定时器reAuthWhen *\/$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::reAuthWhen	src/eapol_auth/eapol_auth_sm_i.h	/^	int reAuthWhen; \/\/ 用于REAUTH_TIMER SM ，定义了允许请求者重认证的间隔,超时值为reAuthPeriod$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::reAuthenticate	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean reAuthenticate; \/\/ Reauthentication Timer状态机进入REAUTHENTICATE状态时设置TRUE；Authenticator PAE状态机进入CONNECTING状态时设置FALSE$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::reauth_timer_state	src/eapol_auth/eapol_auth_sm_i.h	/^	} reauth_timer_state;   \/\/ 重认证定时器状态机$/;"	m	struct:eapol_state_machine	typeref:enum:eapol_state_machine::__anon64	access:public
@@ -10848,7 +10848,7 @@ hash_nt_password_hash	src/crypto/ms_funcs.h	/^int hash_nt_password_hash(const u8
 hash_size	src/tls/tlsv1_record.h	/^	size_t hash_size;$/;"	m	struct:tlsv1_record_layer	access:public
 have_ifidx	src/drivers/driver_nl80211.c	/^static int have_ifidx(struct wpa_driver_nl80211_data *drv, int ifidx)$/;"	f	file:	signature:(struct wpa_driver_nl80211_data *drv, int ifidx)
 have_ifidx	src/drivers/driver_nl80211.c	/^static int have_ifidx(struct wpa_driver_nl80211_data *drv, int ifidx);$/;"	p	file:	signature:(struct wpa_driver_nl80211_data *drv, int ifidx)
-hdr	src/radius/radius.c	/^	struct radius_hdr *hdr;$/;"	m	struct:radius_msg	typeref:struct:radius_msg::radius_hdr	file:	access:public
+hdr	src/radius/radius.c	/^	struct radius_hdr *hdr; \/\/ 指向radius帧头$/;"	m	struct:radius_msg	typeref:struct:radius_msg::radius_hdr	file:	access:public
 hdr	src/wps/httpread.c	/^	char hdr[HTTPREAD_HEADER_MAX_SIZE+1];   \/* headers stored here *\/$/;"	m	struct:httpread	file:	access:public
 hdr_nbytes	src/wps/httpread.c	/^	int hdr_nbytes;$/;"	m	struct:httpread	file:	access:public
 hdr_type	src/wps/httpread.c	/^	enum httpread_hdr_type hdr_type;$/;"	m	struct:httpread	typeref:enum:httpread::httpread_hdr_type	file:	access:public
@@ -10985,7 +10985,7 @@ hostapd_bss_config::ACCEPT_UNLESS_DENIED	src/ap/ap_config.h	/^		ACCEPT_UNLESS_DE
 hostapd_bss_config::DENY_UNLESS_ACCEPTED	src/ap/ap_config.h	/^		DENY_UNLESS_ACCEPTED = 1,$/;"	e	enum:hostapd_bss_config::__anon3
 hostapd_bss_config::USE_EXTERNAL_RADIUS_AUTH	src/ap/ap_config.h	/^		USE_EXTERNAL_RADIUS_AUTH = 2$/;"	e	enum:hostapd_bss_config::__anon3
 hostapd_bss_config::accept_mac	src/ap/ap_config.h	/^	struct mac_acl_entry *accept_mac;$/;"	m	struct:hostapd_bss_config	typeref:struct:hostapd_bss_config::mac_acl_entry	access:public
-hostapd_bss_config::acct_interim_interval	src/ap/ap_config.h	/^	int acct_interim_interval;$/;"	m	struct:hostapd_bss_config	access:public
+hostapd_bss_config::acct_interim_interval	src/ap/ap_config.h	/^	int acct_interim_interval;      \/\/ 本地配置的 对于某个确定的会话，中间更新流量信息的时间间隔$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::ap_max_inactivity	src/ap/ap_config.h	/^	int ap_max_inactivity;  \/\/ 定义了每个站表元素的老化时间$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::ap_pin	src/ap/ap_config.h	/^	char *ap_pin;$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::ap_settings	src/ap/ap_config.h	/^	u8 *ap_settings;$/;"	m	struct:hostapd_bss_config	access:public
@@ -11065,7 +11065,7 @@ hostapd_bss_config::r0_key_lifetime	src/ap/ap_config.h	/^	u32 r0_key_lifetime;$/
 hostapd_bss_config::r0kh_list	src/ap/ap_config.h	/^	struct ft_remote_r0kh *r0kh_list;$/;"	m	struct:hostapd_bss_config	typeref:struct:hostapd_bss_config::ft_remote_r0kh	access:public
 hostapd_bss_config::r1_key_holder	src/ap/ap_config.h	/^	u8 r1_key_holder[FT_R1KH_ID_LEN];$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::r1kh_list	src/ap/ap_config.h	/^	struct ft_remote_r1kh *r1kh_list;$/;"	m	struct:hostapd_bss_config	typeref:struct:hostapd_bss_config::ft_remote_r1kh	access:public
-hostapd_bss_config::radius	src/ap/ap_config.h	/^	struct hostapd_radius_servers *radius;$/;"	m	struct:hostapd_bss_config	typeref:struct:hostapd_bss_config::hostapd_radius_servers	access:public
+hostapd_bss_config::radius	src/ap/ap_config.h	/^	struct hostapd_radius_servers *radius;      \/\/ radius客户端配置的radius服务器信息$/;"	m	struct:hostapd_bss_config	typeref:struct:hostapd_bss_config::hostapd_radius_servers	access:public
 hostapd_bss_config::radius_server_auth_port	src/ap/ap_config.h	/^	int radius_server_auth_port;$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::radius_server_clients	src/ap/ap_config.h	/^	char *radius_server_clients;$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::radius_server_ipv6	src/ap/ap_config.h	/^	int radius_server_ipv6;$/;"	m	struct:hostapd_bss_config	access:public
@@ -11548,9 +11548,9 @@ hostapd_radius_server::timeouts	src/radius/radius_client.h	/^	u32 timeouts;$/;"	
 hostapd_radius_server::unknown_types	src/radius/radius_client.h	/^	u32 unknown_types;$/;"	m	struct:hostapd_radius_server	access:public
 hostapd_radius_servers	src/radius/radius_client.h	/^struct hostapd_radius_servers {$/;"	s
 hostapd_radius_servers::acct_server	src/radius/radius_client.h	/^	struct hostapd_radius_server *acct_server;$/;"	m	struct:hostapd_radius_servers	typeref:struct:hostapd_radius_servers::hostapd_radius_server	access:public
-hostapd_radius_servers::acct_servers	src/radius/radius_client.h	/^	struct hostapd_radius_server *acct_servers;$/;"	m	struct:hostapd_radius_servers	typeref:struct:hostapd_radius_servers::hostapd_radius_server	access:public
+hostapd_radius_servers::acct_servers	src/radius/radius_client.h	/^	struct hostapd_radius_server *acct_servers;         \/\/ radius计费服务器信息管理块$/;"	m	struct:hostapd_radius_servers	typeref:struct:hostapd_radius_servers::hostapd_radius_server	access:public
 hostapd_radius_servers::auth_server	src/radius/radius_client.h	/^	struct hostapd_radius_server *auth_server;$/;"	m	struct:hostapd_radius_servers	typeref:struct:hostapd_radius_servers::hostapd_radius_server	access:public
-hostapd_radius_servers::auth_servers	src/radius/radius_client.h	/^	struct hostapd_radius_server *auth_servers;$/;"	m	struct:hostapd_radius_servers	typeref:struct:hostapd_radius_servers::hostapd_radius_server	access:public
+hostapd_radius_servers::auth_servers	src/radius/radius_client.h	/^	struct hostapd_radius_server *auth_servers;         \/\/ radius认证服务器信息管理块$/;"	m	struct:hostapd_radius_servers	typeref:struct:hostapd_radius_servers::hostapd_radius_server	access:public
 hostapd_radius_servers::client_addr	src/radius/radius_client.h	/^	struct hostapd_ip_addr client_addr;$/;"	m	struct:hostapd_radius_servers	typeref:struct:hostapd_radius_servers::hostapd_ip_addr	access:public
 hostapd_radius_servers::force_client_addr	src/radius/radius_client.h	/^	int force_client_addr;$/;"	m	struct:hostapd_radius_servers	access:public
 hostapd_radius_servers::msg_dumps	src/radius/radius_client.h	/^	int msg_dumps;$/;"	m	struct:hostapd_radius_servers	access:public
@@ -12101,7 +12101,7 @@ identity	src/eap_server/eap_i.h	/^	u8 *identity;                       \/\/ 存�
 identity	src/eap_server/eap_server_fast.c	/^	u8 *identity; \/* from PAC-Opaque *\/$/;"	m	struct:eap_fast_data	file:	access:public
 identity	src/eap_server/eap_sim_db.c	/^	u8 *identity;$/;"	m	struct:eap_sim_pseudonym	file:	access:public
 identity	src/eap_server/eap_sim_db.h	/^	u8 *identity;$/;"	m	struct:eap_sim_reauth	access:public
-identity	src/eapol_auth/eapol_auth_sm_i.h	/^	u8 *identity;$/;"	m	struct:eapol_state_machine	access:public
+identity	src/eapol_auth/eapol_auth_sm_i.h	/^	u8 *identity;           \/\/ 认证成功后记录的用户名$/;"	m	struct:eapol_state_machine	access:public
 identity_len	src/ap/ap_config.h	/^	size_t identity_len;$/;"	m	struct:hostapd_eap_user	access:public
 identity_len	src/ap/pmksa_cache_auth.h	/^	size_t identity_len;$/;"	m	struct:rsn_pmksa_cache_entry	access:public
 identity_len	src/eap_common/eap_sim_common.h	/^	size_t next_pseudonym_len, next_reauth_id_len, identity_len, res_len;$/;"	m	struct:eap_sim_attrs	access:public
@@ -12110,7 +12110,7 @@ identity_len	src/eap_server/eap_i.h	/^	size_t identity_len;                \/\/ 
 identity_len	src/eap_server/eap_server_fast.c	/^	size_t identity_len;$/;"	m	struct:eap_fast_data	file:	access:public
 identity_len	src/eap_server/eap_sim_db.c	/^	size_t identity_len;$/;"	m	struct:eap_sim_pseudonym	file:	access:public
 identity_len	src/eap_server/eap_sim_db.h	/^	size_t identity_len;$/;"	m	struct:eap_sim_reauth	access:public
-identity_len	src/eapol_auth/eapol_auth_sm_i.h	/^	size_t identity_len;$/;"	m	struct:eapol_state_machine	access:public
+identity_len	src/eapol_auth/eapol_auth_sm_i.h	/^	size_t identity_len;    \/\/ 认证成功后记录的用户名长度$/;"	m	struct:eapol_state_machine	access:public
 idi	src/eap_common/ikev2_common.h	/^	const u8 *idi;$/;"	m	struct:ikev2_payloads	access:public
 idi_len	src/eap_common/ikev2_common.h	/^	size_t idi_len;$/;"	m	struct:ikev2_payloads	access:public
 idleWhile	src/eapol_supp/eapol_supp_sm.c	/^	unsigned int idleWhile; \/* for EAP state machine *\/$/;"	m	struct:eapol_sm	file:	access:public
@@ -13381,7 +13381,7 @@ last_md5	src/eap_peer/eap_i.h	/^	u8 last_md5[16]; \/* MD5() of the previously re
 last_msg	src/eap_peer/ikev2.h	/^	enum { LAST_MSG_SA_INIT, LAST_MSG_SA_AUTH } last_msg;$/;"	m	struct:ikev2_responder_data	typeref:enum:ikev2_responder_data::__anon177	access:public
 last_msg	src/radius/radius_server.c	/^	struct radius_msg *last_msg;$/;"	m	struct:radius_session	typeref:struct:radius_session::radius_msg	file:	access:public
 last_msg	src/wps/wps_i.h	/^	struct wpabuf *last_msg;$/;"	m	struct:wps_data	typeref:struct:wps_data::wpabuf	access:public
-last_recv_radius	src/eapol_auth/eapol_auth_sm_i.h	/^	struct radius_msg *last_recv_radius;$/;"	m	struct:eapol_state_machine	typeref:struct:eapol_state_machine::radius_msg	access:public
+last_recv_radius	src/eapol_auth/eapol_auth_sm_i.h	/^	struct radius_msg *last_recv_radius;    \/\/ 指向最近一个收到的radius报文$/;"	m	struct:eapol_state_machine	typeref:struct:eapol_state_machine::radius_msg	access:public
 last_replay_counter	src/eapol_supp/eapol_supp_sm.c	/^	u8 last_replay_counter[16];$/;"	m	struct:eapol_sm	file:	access:public
 last_reply	src/radius/radius_server.c	/^	struct radius_msg *last_reply;$/;"	m	struct:radius_session	typeref:struct:radius_session::radius_msg	file:	access:public
 last_rssi	src/drivers/driver.h	/^	int last_rssi;$/;"	m	struct:hostap_sta_driver_data	access:public
@@ -13748,7 +13748,7 @@ method	src/eap_server/eap_i.h	/^	EapType method;$/;"	m	struct:eap_method	access:
 methodState	src/eap_peer/eap_i.h	/^	EapMethodState methodState;$/;"	m	struct:eap_method_ret	access:public
 methodState	src/eap_peer/eap_i.h	/^	EapMethodState methodState;$/;"	m	struct:eap_sm	access:public
 methodState	src/eap_server/eap_i.h	/^	} methodState;              \/\/ 当前EAP方法所处的状态$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon158	access:public
-methodTimeout	src/eap_server/eap_i.h	/^	int methodTimeout;          \/\/ 当前EAP方法的超时值，通常为0表示不使用$/;"	m	struct:eap_sm	access:public
+methodTimeout	src/eap_server/eap_i.h	/^	int methodTimeout;          \/\/ 当前EAP方法的超时值，来源有2种：通过EAP方法自带的getTimeout函数计算得到；通过aaaMethodTimeout赋值，通常为0表示不使用$/;"	m	struct:eap_sm	access:public
 method_pending	src/eap_server/eap_i.h	/^	} method_pending;$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon160	access:public
 methods	src/ap/ap_config.h	/^	} methods[EAP_USER_MAX_METHODS];$/;"	m	struct:hostapd_eap_user	typeref:struct:hostapd_eap_user::__anon2	access:public
 methods	src/eap_server/eap.h	/^	} methods[EAP_MAX_METHODS];$/;"	m	struct:eap_user	typeref:struct:eap_user::__anon136	access:public
@@ -15459,7 +15459,7 @@ r_spi	src/eap_peer/ikev2.h	/^	u8 r_spi[IKEV2_SPI_LEN];$/;"	m	struct:ikev2_respon
 r_spi	src/eap_server/ikev2.h	/^	u8 r_spi[IKEV2_SPI_LEN];$/;"	m	struct:ikev2_initiator_data	access:public
 r_time_flags	src/drivers/wireless_copy.h	/^	__u16		r_time_flags;	\/* How to decode max\/min retry life *\/$/;"	m	struct:iw_range	access:public
 radio_enabled	src/drivers/driver_ndis.h	/^	int radio_enabled;$/;"	m	struct:wpa_driver_ndis_data	access:public
-radius	src/ap/ap_config.h	/^	struct hostapd_radius_servers *radius;$/;"	m	struct:hostapd_bss_config	typeref:struct:hostapd_bss_config::hostapd_radius_servers	access:public
+radius	src/ap/ap_config.h	/^	struct hostapd_radius_servers *radius;      \/\/ radius客户端配置的radius服务器信息$/;"	m	struct:hostapd_bss_config	typeref:struct:hostapd_bss_config::hostapd_radius_servers	access:public
 radius	src/ap/hostapd.h	/^	struct radius_client_data *radius;      \/\/ radius客户端控制块$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::radius_client_data	access:public
 radius_attr_data	src/radius/radius.h	/^struct radius_attr_data {$/;"	s
 radius_attr_data::data	src/radius/radius.h	/^	u8 *data;$/;"	m	struct:radius_attr_data	access:public
@@ -15554,7 +15554,7 @@ radius_free_class	src/radius/radius.h	/^void radius_free_class(struct radius_cla
 radius_get_attr_hdr	src/radius/radius.c	/^radius_get_attr_hdr(struct radius_msg *msg, int idx)$/;"	f	file:	signature:(struct radius_msg *msg, int idx)
 radius_get_attr_type	src/radius/radius.c	/^static struct radius_attr_type *radius_get_attr_type(u8 type)$/;"	f	file:	signature:(u8 type)
 radius_hdr	src/radius/radius.h	/^struct radius_hdr {$/;"	s
-radius_hdr::authenticator	src/radius/radius.h	/^	u8 authenticator[16];   \/\/ 验证字域，一个16字节的明文随机数。请求报文中表示16字节随机码，响应报文中用于鉴别响应报文的合法性$/;"	m	struct:radius_hdr	access:public
+radius_hdr::authenticator	src/radius/radius.h	/^	u8 authenticator[16];   \/\/ 16字节验证字域。在请求报文中表示随机码;在响应报文中表示经过MD5加密后的验证码,用于鉴别响应报文的合法性$/;"	m	struct:radius_hdr	access:public
 radius_hdr::code	src/radius/radius.h	/^	u8 code;                \/\/ radius包类型$/;"	m	struct:radius_hdr	access:public
 radius_hdr::identifier	src/radius/radius.h	/^	u8 identifier;          \/\/ 包标识，用于匹配请求包和响应包$/;"	m	struct:radius_hdr	access:public
 radius_hdr::length	src/radius/radius.h	/^	u16 length; \/* including this header *\/ \/\/ 包长度，最小20字节，最大4096字节$/;"	m	struct:radius_hdr	access:public
@@ -15568,11 +15568,11 @@ radius_ms_mppe_keys::recv_len	src/radius/radius.h	/^	size_t recv_len;$/;"	m	stru
 radius_ms_mppe_keys::send	src/radius/radius.h	/^	u8 *send;$/;"	m	struct:radius_ms_mppe_keys	access:public
 radius_ms_mppe_keys::send_len	src/radius/radius.h	/^	size_t send_len;$/;"	m	struct:radius_ms_mppe_keys	access:public
 radius_msg	src/radius/radius.c	/^struct radius_msg {$/;"	s	file:
-radius_msg::attr_pos	src/radius/radius.c	/^	size_t *attr_pos;$/;"	m	struct:radius_msg	file:	access:public
+radius_msg::attr_pos	src/radius/radius.c	/^	size_t *attr_pos;   \/\/ 记录每条属性距离属性头偏移量的数组$/;"	m	struct:radius_msg	file:	access:public
 radius_msg::attr_size	src/radius/radius.c	/^	size_t attr_size;$/;"	m	struct:radius_msg	file:	access:public
-radius_msg::attr_used	src/radius/radius.c	/^	size_t attr_used;$/;"	m	struct:radius_msg	file:	access:public
-radius_msg::buf	src/radius/radius.c	/^	struct wpabuf *buf;$/;"	m	struct:radius_msg	typeref:struct:radius_msg::wpabuf	file:	access:public
-radius_msg::hdr	src/radius/radius.c	/^	struct radius_hdr *hdr;$/;"	m	struct:radius_msg	typeref:struct:radius_msg::radius_hdr	file:	access:public
+radius_msg::attr_used	src/radius/radius.c	/^	size_t attr_used;   \/\/ 此radius消息中属性项的数量$/;"	m	struct:radius_msg	file:	access:public
+radius_msg::buf	src/radius/radius.c	/^	struct wpabuf *buf;     \/\/ 指向radius消息数据管理块$/;"	m	struct:radius_msg	typeref:struct:radius_msg::wpabuf	file:	access:public
+radius_msg::hdr	src/radius/radius.c	/^	struct radius_hdr *hdr; \/\/ 指向radius帧头$/;"	m	struct:radius_msg	typeref:struct:radius_msg::radius_hdr	file:	access:public
 radius_msg_add_attr	src/radius/radius.c	/^struct radius_attr_hdr *radius_msg_add_attr(struct radius_msg *msg, u8 type,$/;"	f	signature:(struct radius_msg *msg, u8 type, const u8 *data, size_t data_len)
 radius_msg_add_attr	src/radius/radius.h	/^struct radius_attr_hdr * radius_msg_add_attr(struct radius_msg *msg, u8 type,$/;"	p	signature:(struct radius_msg *msg, u8 type, const u8 *data, size_t data_len)
 radius_msg_add_attr_int32	src/radius/radius.h	/^static inline int radius_msg_add_attr_int32(struct radius_msg *msg, u8 type,$/;"	f	signature:(struct radius_msg *msg, u8 type, u32 value)
@@ -15811,7 +15811,7 @@ rdStSSIDList	src/drivers/driver_ndis.c	/^	RAW_DATA rdStSSIDList;$/;"	m	struct:__
 reAuthCount	src/eapol_auth/eapol_auth_sm_i.h	/^	unsigned int reAuthCount;   \/\/ 状态机进入CONNECTING状态时累加，一旦超过reAuthMax则进入DISCONNECTED状态，进入DISCONNECTED\/AUTHENTICATED时清0$/;"	m	struct:eapol_state_machine	access:public
 reAuthEnabled	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean reAuthEnabled;  \/\/ 重认证功能使能位(只用于认证系统)$/;"	m	struct:eapol_state_machine	access:public
 reAuthMax	src/eapol_auth/eapol_auth_sm_i.h	/^	unsigned int reAuthMax; \/* default 2 重认证次数*\/$/;"	m	struct:eapol_state_machine	access:public
-reAuthPeriod	src/eapol_auth/eapol_auth_sm_i.h	/^	unsigned int reAuthPeriod; \/* default 3600 s 重认证周期,用于设置重认证定时器reAuthWhen *\/$/;"	m	struct:eapol_state_machine	access:public
+reAuthPeriod	src/eapol_auth/eapol_auth_sm_i.h	/^	unsigned int reAuthPeriod; \/* default 3600 s 重认证周期(可以由本地配置文件设置，也可以被radius服务器设置),用于设置重认证定时器reAuthWhen *\/$/;"	m	struct:eapol_state_machine	access:public
 reAuthWhen	src/eapol_auth/eapol_auth_sm_i.h	/^	int reAuthWhen; \/\/ 用于REAUTH_TIMER SM ，定义了允许请求者重认证的间隔,超时值为reAuthPeriod$/;"	m	struct:eapol_state_machine	access:public
 reAuthenticate	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean reAuthenticate; \/\/ Reauthentication Timer状态机进入REAUTHENTICATE状态时设置TRUE；Authenticator PAE状态机进入CONNECTING状态时设置FALSE$/;"	m	struct:eapol_state_machine	access:public
 read_alerts	src/crypto/tls_gnutls.c	/^	int read_alerts, write_alerts, failed;$/;"	m	struct:tls_connection	file:	access:public
@@ -16826,7 +16826,7 @@ sta_info::STA_DISASSOC	src/ap/sta_info.h	/^		STA_NULLFUNC = 0, STA_DISASSOC, STA
 sta_info::STA_NULLFUNC	src/ap/sta_info.h	/^		STA_NULLFUNC = 0, STA_DISASSOC, STA_DEAUTH, STA_REMOVE$/;"	e	enum:sta_info::__anon13
 sta_info::STA_REMOVE	src/ap/sta_info.h	/^		STA_NULLFUNC = 0, STA_DISASSOC, STA_DEAUTH, STA_REMOVE$/;"	e	enum:sta_info::__anon13
 sta_info::acct_input_gigawords	src/ap/sta_info.h	/^	u32 acct_input_gigawords; \/* Acct-Input-Gigawords *\/$/;"	m	struct:sta_info	access:public
-sta_info::acct_interim_interval	src/ap/sta_info.h	/^	int acct_interim_interval; \/* Acct-Interim-Interval *\/$/;"	m	struct:sta_info	access:public
+sta_info::acct_interim_interval	src/ap/sta_info.h	/^	int acct_interim_interval;  \/\/ 描述了对于某个确定的会话，中间更新流量信息的时间间隔$/;"	m	struct:sta_info	access:public
 sta_info::acct_output_gigawords	src/ap/sta_info.h	/^	u32 acct_output_gigawords; \/* Acct-Output-Gigawords *\/$/;"	m	struct:sta_info	access:public
 sta_info::acct_session_id_hi	src/ap/sta_info.h	/^	u32 acct_session_id_hi;$/;"	m	struct:sta_info	access:public
 sta_info::acct_session_id_lo	src/ap/sta_info.h	/^	u32 acct_session_id_lo;$/;"	m	struct:sta_info	access:public

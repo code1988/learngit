@@ -379,7 +379,7 @@ void ap_handle_timer(void *eloop_ctx, void *timeout_ctx)
 	}
 }
 
-
+// 服务超时处理函数
 static void ap_handle_session_timer(void *eloop_ctx, void *timeout_ctx)
 {
 	struct hostapd_data *hapd = eloop_ctx;
@@ -401,13 +401,14 @@ static void ap_handle_session_timer(void *eloop_ctx, void *timeout_ctx)
 	hapd->drv.sta_deauth(hapd, addr, WLAN_REASON_PREV_AUTH_NOT_VALID);
 }
 
-
+// 更新为指定sta提供服务的剩余时间
 void ap_sta_session_timeout(struct hostapd_data *hapd, struct sta_info *sta,
 			    u32 session_timeout)
 {
 	hostapd_logger(hapd, sta->addr, HOSTAPD_MODULE_IEEE80211,
 		       HOSTAPD_LEVEL_DEBUG, "setting session timeout to %d "
 		       "seconds", session_timeout);
+    // 实际在这里就是更新提供服务超时定时器时间
 	eloop_cancel_timeout(ap_handle_session_timer, hapd, sta);
 	eloop_register_timeout(session_timeout, 0, ap_handle_session_timer,
 			       hapd, sta);

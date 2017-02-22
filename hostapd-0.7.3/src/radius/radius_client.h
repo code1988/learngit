@@ -122,12 +122,13 @@ struct hostapd_radius_server {
 
 /**
  * struct hostapd_radius_servers - RADIUS servers for RADIUS client
+ * radius客户端配置的radius服务器信息
  */
 struct hostapd_radius_servers {
 	/**
 	 * auth_servers - RADIUS Authentication servers in priority order
 	 */
-	struct hostapd_radius_server *auth_servers;
+	struct hostapd_radius_server *auth_servers;         // radius认证服务器信息管理块
 
 	/**
 	 * num_auth_servers - Number of auth_servers entries
@@ -142,7 +143,7 @@ struct hostapd_radius_servers {
 	/**
 	 * acct_servers - RADIUS Accounting servers in priority order
 	 */
-	struct hostapd_radius_server *acct_servers;
+	struct hostapd_radius_server *acct_servers;         // radius计费服务器信息管理块
 
 	/**
 	 * num_acct_servers - Number of acct_servers entries

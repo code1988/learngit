@@ -515,7 +515,9 @@ SM_STATE(EAP, INITIALIZE_PASSTHROUGH)
 	sm->eap_if.aaaEapRespData = NULL;
 }
 
-
+/* EAP SM进入IDLE2状态的EA:(和IDLE的EA相同)
+ *      计算重传超时值，然后开启EAP层重传定时器
+ */
 SM_STATE(EAP, IDLE2)
 {
 	SM_ENTRY(EAP, IDLE2);
@@ -537,7 +539,9 @@ SM_STATE(EAP, RETRANSMIT2)
 	}
 }
 
-
+/* EAP SM进入RECEIVED2状态的EA:(和RECEIVED的EA略不同)
+ *      EAP层解析从EAPOL层传上来的eap-resp数据
+ */
 SM_STATE(EAP, RECEIVED2)
 {
 	SM_ENTRY(EAP, RECEIVED2);
@@ -555,6 +559,12 @@ SM_STATE(EAP, DISCARD2)
 }
 
 
+/* EAP SM进入SEND_REQUEST2状态的EA:(和SEND_REQUEST的EA相同)
+ *      retransCount标志清0
+ *      转储一份最近生成的eapReqData
+ *      清除EAPOL->EAP交互标志eapResp
+ *      EAP->EAPOL交互标志eapReq设置为TRUE，用于通知EAPOL层BE_AUTH SM
+ */
 SM_STATE(EAP, SEND_REQUEST2)
 {
 	SM_ENTRY(EAP, SEND_REQUEST2);
@@ -600,11 +610,16 @@ SM_STATE(EAP, AAA_REQUEST)
 	eap_copy_buf(&sm->eap_if.aaaEapRespData, sm->eap_if.eapRespData);
 }
 
-
+/* EAP SM进入AAA_RESPONSE状态的EA:
+ *      转储AAA层->EAP层交互缓存aaaEapReqData中的数据到EAP层->EAPOL层交互缓存aaaEapReqData
+ *      从收到的EAP数据包中获取ID号，然后更新currentId
+ *      更新当前EAP方法的超时值
+ */
 SM_STATE(EAP, AAA_RESPONSE)
 {
 	SM_ENTRY(EAP, AAA_RESPONSE);
 
+    // 转储AAA层->EAP层交互缓存aaaEapReqData中的数据到EAP层->EAPOL层交互缓存aaaEapReqData
 	eap_copy_buf(&sm->eap_if.eapReqData, sm->eap_if.aaaEapReqData);
 	sm->currentId = eap_sm_getId(sm->eap_if.eapReqData);
 	sm->methodTimeout = sm->eap_if.aaaMethodTimeout;
@@ -637,6 +652,10 @@ SM_STATE(EAP, TIMEOUT_FAILURE2)
 }
 
 
+/* EAP SM进入FAILURE2状态的EA:
+ *      转储AAA层->EAP层交互缓存aaaEapReqData中的数据到EAP层->EAPOL层交互缓存aaaEapReqData
+ *      EAP层->EAPOL层交互标志eapFail设置为TRUE，用于通知EAPOL层
+ */
 SM_STATE(EAP, FAILURE2)
 {
 	SM_ENTRY(EAP, FAILURE2);
@@ -646,6 +665,11 @@ SM_STATE(EAP, FAILURE2)
 }
 
 
+/* EAP SM进入SUCCESS2状态的EA:
+ *      转储AAA层->EAP层交互缓存aaaEapReqData中的数据到EAP层->EAPOL层交互缓存aaaEapReqData
+ *      EAP层->EAPOL层交互标志eapFail设置为TRUE，用于通知EAPOL层
+ *      start_reauth设置为TRUE，用于SELECT_ACTION状态中对下一步采取的策略做一个决定时
+ */
 SM_STATE(EAP, SUCCESS2)
 {
 	SM_ENTRY(EAP, SUCCESS2);
@@ -823,7 +847,7 @@ SM_STEP(EAP)
 		else
 			SM_ENTER(EAP, PROPOSE_METHOD);              //  4. 如果decision的值不等于上面3种，那么进入PROPOSE_METHOD状态
 		break;
-	case EAP_TIMEOUT_FAILURE:
+	case EAP_TIMEOUT_FAILURE:               // 当前处于TIMEOUT_FAILURE、FAILURE、SUCCESS这些状态时，只有重新进入INITIALIZE状态的路径
 		break;
 	case EAP_FAILURE:
 		break;
@@ -836,10 +860,10 @@ SM_STEP(EAP)
 		else
 			SM_ENTER(EAP, AAA_REQUEST);     //  2. 如果当前使用的ID号有效，则进入AAA_REQUEST状态
 		break;
-	case EAP_IDLE2:
-		if (sm->eap_if.eapResp)
-			SM_ENTER(EAP, RECEIVED2);
-		else if (sm->eap_if.retransWhile == 0)
+	case EAP_IDLE2:                             // 当前处于IDLE2状态的话，则需要分为2种情况进行处理：
+		if (sm->eap_if.eapResp)                 //  1. 如果EAPOL->EAP交互标志eapResp被置位，则进入RECEIVED2状态
+			SM_ENTER(EAP, RECEIVED2);           
+		else if (sm->eap_if.retransWhile == 0)  //  2. 如果重传定时器超时，则进入RETRANSMIT2状态
 			SM_ENTER(EAP, RETRANSMIT2);
 		break;
 	case EAP_RETRANSMIT2:
@@ -848,23 +872,23 @@ SM_STEP(EAP)
 		else
 			SM_ENTER(EAP, IDLE2);
 		break;
-	case EAP_RECEIVED2:
-		if (sm->rxResp && (sm->respId == sm->currentId))
+	case EAP_RECEIVED2:                                     // 当前处于RECEIVED2状态，则需要分2中情况进行处理：
+		if (sm->rxResp && (sm->respId == sm->currentId))    //  1. 如果接收到的是eap-resp包，并且resp包中的ID号和当前使用的ID号匹配，则进入AAA_REQUEST状态
 			SM_ENTER(EAP, AAA_REQUEST);
-		else
+		else                                                //  2. 如果以上条件不满足，则进入DISCARD2状态
 			SM_ENTER(EAP, DISCARD2);
 		break;
 	case EAP_DISCARD2:
 		SM_ENTER(EAP, IDLE2);
 		break;
-	case EAP_SEND_REQUEST2:
+	case EAP_SEND_REQUEST2:             // 当前处于SEND_REQUEST2状态的话，则无条件进入IDLE2状态
 		SM_ENTER(EAP, IDLE2);
 		break;
 	case EAP_AAA_REQUEST:               // 当前处于AAA_REQUEST状态的话，则无条件进入AAA_IDLE状态
 		SM_ENTER(EAP, AAA_IDLE);
 		break;
-	case EAP_AAA_RESPONSE:
-		SM_ENTER(EAP, SEND_REQUEST2);
+	case EAP_AAA_RESPONSE:              // 当前处于AAA_RESPONSE状态的话，则无条件进入SEND_REQUEST2状态
+		SM_ENTER(EAP, SEND_REQUEST2);   
 		break;
 	case EAP_AAA_IDLE:                          // 当前如果处于AAA_IDLE状态的话，则需要分为4种情况进行处理：(标准还有进入DISCARD2的情况)
 		if (sm->eap_if.aaaFail)                 //  1. 如果AAA->EAP交互标志aaaFail被置位，则进入FAILURE2状态
@@ -876,11 +900,11 @@ SM_STEP(EAP)
 		else if (sm->eap_if.aaaTimeout)         //  4. 如果AAA->EAP交互标志aaaTimeout被置位，则进入TIMEOUT_FAILURE2状态
 			SM_ENTER(EAP, TIMEOUT_FAILURE2);
 		break;
-	case EAP_TIMEOUT_FAILURE2:
+	case EAP_TIMEOUT_FAILURE2:      // 当前处于TIMEOUT_FAILURE2、FAILURE2、SUCCESS2这些状态时，只有重新进入INITIALIZE状态的路径
 		break;
 	case EAP_FAILURE2:
 		break;
-	case EAP_SUCCESS2:
+	case EAP_SUCCESS2:                          
 		break;
 	}
 }
@@ -1007,7 +1031,7 @@ static void eap_sm_parseEapResp(struct eap_sm *sm, const struct wpabuf *resp)
 		   sm->respVendorMethod);
 }
 
-
+// 从eap数据包中获取ID号
 static int eap_sm_getId(const struct wpabuf *data)
 {
 	const struct eap_hdr *hdr;

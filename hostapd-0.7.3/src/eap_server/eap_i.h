@@ -122,13 +122,13 @@ struct eap_sm {
 
 	/* Long-term (maintained betwen packets) */
 	EapType currentMethod;      // 当前的EAP-TYPE，也可理解为当前使用的EAP方法
-	int currentId;              // 当前使用的EAP-ID (0~255)
+	int currentId;              // 当前使用的EAP-ID (0~255)，来源有2处：从旧的currentId中计算得到；从AAA层收到的EAP报文中得到
 	enum {
 		METHOD_PROPOSED, METHOD_CONTINUE, METHOD_END
 	} methodState;              // 当前EAP方法所处的状态
 	int retransCount;           // 当前的重传次数
 	struct wpabuf *lastReqData; // 保存了最近一次发送给eapol层的eap-req数据
-	int methodTimeout;          // 当前EAP方法的超时值，通常为0表示不使用
+	int methodTimeout;          // 当前EAP方法的超时值，来源有2种：通过EAP方法自带的getTimeout函数计算得到；通过aaaMethodTimeout赋值，通常为0表示不使用
 
 	/* Short-term (not maintained between packets) */
 	Boolean rxResp;         // 如果接收到eap-resp包设置TRUE

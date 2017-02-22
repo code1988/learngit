@@ -70,16 +70,16 @@ struct eap_eapol_interface {
 	Boolean eapKeyAvailable; /* called keyAvailable in IEEE 802.1X-2004 */
 
 	/* AAA interface to full authenticator variables */
-    // 以下变量用于AAA->FULL_AUTH交互
-	Boolean aaaEapReq;
-	Boolean aaaEapNoReq;
-	Boolean aaaSuccess;
-	Boolean aaaFail;
-	struct wpabuf *aaaEapReqData;
+    // 以下变量用于AAA层->EAP层交互
+	Boolean aaaEapReq;      // AAA层收到一个类型为Access-Challenge的radius报文时设置TRUE，EAP层根据此标志判断是否进入AAA_RESPONSE状态
+	Boolean aaaEapNoReq;    // AAA层从收到的radius报文中提取EAP数据失败时设置TRUE，EAP层根据此标志判断是否进入DISCARD2状态
+	Boolean aaaSuccess;     // AAA层收到一个类型为Access-Accept的radius报文时设置TRUE，EAP层根据此标志判断是否进入SUCCESS2状态
+	Boolean aaaFail;        // AAA层收到一个类型为Access-Reject的radius报文时设置TRUE，EAP层根据此标志判断是否进入FAILURE2状态
+	struct wpabuf *aaaEapReqData;   // 此buffer由AAA层填充，同时设置aaaEapReq/aaaSuccess/aaaFail，然后递交给EAP层处理 
 	u8 *aaaEapKeyData;
 	size_t aaaEapKeyDataLen;
-	Boolean aaaEapKeyAvailable;
-	int aaaMethodTimeout;
+	Boolean aaaEapKeyAvailable;     // AAA层
+	int aaaMethodTimeout;   // EAP报文的重传超时值，这个值由radius服务器提供，却用于NAS->suppliant之间
 
 	/* Full authenticator to AAA interface variables */
     // 以下变量用于EAP层->AAA层交互

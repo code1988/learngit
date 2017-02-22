@@ -136,7 +136,7 @@ struct wpabuf * wpabuf_alloc(size_t len)
 	return buf;
 }
 
-
+// 申请一个len长度的wpabuf数据块用于转储data中数据
 struct wpabuf * wpabuf_alloc_ext_data(u8 *data, size_t len)
 {
 #ifdef WPA_TRACE

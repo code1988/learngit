@@ -26,7 +26,7 @@ struct radius_hdr {
 	u8 code;                // radius包类型
 	u8 identifier;          // 包标识，用于匹配请求包和响应包
 	u16 length; /* including this header */ // 包长度，最小20字节，最大4096字节
-	u8 authenticator[16];   // 验证字域，一个16字节的明文随机数。请求报文中表示16字节随机码，响应报文中用于鉴别响应报文的合法性
+	u8 authenticator[16];   // 16字节验证字域。在请求报文中表示随机码;在响应报文中表示经过MD5加密后的验证码,用于鉴别响应报文的合法性
 	/* followed by length-20 octets of attributes */
 } STRUCT_PACKED;
 
@@ -61,7 +61,7 @@ enum { RADIUS_ATTR_USER_NAME = 1,
        RADIUS_ATTR_STATE = 24,
        RADIUS_ATTR_CLASS = 25,
        RADIUS_ATTR_VENDOR_SPECIFIC = 26,
-       RADIUS_ATTR_SESSION_TIMEOUT = 27,
+       RADIUS_ATTR_SESSION_TIMEOUT = 27,    // 在Access-Request中，表示为用户提供服务的剩余时间；在Access-Challenge中，表示NAS->SUPP之间EAP报文重传时间
        RADIUS_ATTR_IDLE_TIMEOUT = 28,
        RADIUS_ATTR_TERMINATION_ACTION = 29,
        RADIUS_ATTR_CALLED_STATION_ID = 30,
@@ -90,7 +90,7 @@ enum { RADIUS_ATTR_USER_NAME = 1,
        RADIUS_ATTR_EAP_MESSAGE = 79,
        RADIUS_ATTR_MESSAGE_AUTHENTICATOR = 80,
        RADIUS_ATTR_TUNNEL_PRIVATE_GROUP_ID = 81,
-       RADIUS_ATTR_ACCT_INTERIM_INTERVAL = 85,
+       RADIUS_ATTR_ACCT_INTERIM_INTERVAL = 85,      // 对于某个确定的会话，中间更新流量信息的时间间隔（s）,本属性只能出现在Access-Accept报文中
        RADIUS_ATTR_CHARGEABLE_USER_IDENTITY = 89,
        RADIUS_ATTR_NAS_IPV6_ADDRESS = 95
 };
@@ -243,6 +243,7 @@ static inline int radius_msg_add_attr_int32(struct radius_msg *msg, u8 type,
 	return radius_msg_add_attr(msg, type, (u8 *) &val, 4) != NULL;
 }
 
+// 获取32位的属性内容
 static inline int radius_msg_get_attr_int32(struct radius_msg *msg, u8 type,
 					    u32 *value)
 {

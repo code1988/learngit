@@ -117,7 +117,7 @@ struct eapol_state_machine {
 	enum { REAUTH_TIMER_INITIALIZE, REAUTH_TIMER_REAUTHENTICATE
 	} reauth_timer_state;   // 重认证定时器状态机
 	/* constants */
-	unsigned int reAuthPeriod; /* default 3600 s 重认证周期,用于设置重认证定时器reAuthWhen */
+	unsigned int reAuthPeriod; /* default 3600 s 重认证周期(可以由本地配置文件设置，也可以被radius服务器设置),用于设置重认证定时器reAuthWhen */
 	Boolean reAuthEnabled;  // 重认证功能使能位(只用于认证系统)
 
 	/***********************************    Authenticator Key Transmit state machine    ******************************************************/
@@ -158,12 +158,12 @@ struct eapol_state_machine {
 
 	int radius_identifier;
 	/* TODO: check when the last messages can be released */
-	struct radius_msg *last_recv_radius;
+	struct radius_msg *last_recv_radius;    // 指向最近一个收到的radius报文
 	u8 last_eap_id; /* last used EAP Identifier 记录了最后一个使用的EAP报文的Identify字段*/
-	u8 *identity;
-	size_t identity_len;
+	u8 *identity;           // 认证成功后记录的用户名
+	size_t identity_len;    // 认证成功后记录的用户名长度
 	u8 eap_type_authsrv; /* EAP type of the last EAP packet from
-			      * Authentication server 记录了从认证者服务器发来的最后一个EAP报文的type字段*/
+			      * Authentication server 记录了从radius认证服务器发来的最后一个EAP报文的type字段*/
 	u8 eap_type_supp; /* EAP type of the last EAP packet from Supplicant 记录了从请求者发来的最后一个EAP报文的type字段*/
 	struct radius_class_data radius_class;
 

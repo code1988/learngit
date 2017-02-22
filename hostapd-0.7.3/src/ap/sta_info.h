@@ -74,7 +74,7 @@ struct sta_info {
 	time_t acct_session_start;
 	int acct_session_started;
 	int acct_terminate_cause; /* Acct-Terminate-Cause */
-	int acct_interim_interval; /* Acct-Interim-Interval */
+	int acct_interim_interval;  // 描述了对于某个确定的会话，中间更新流量信息的时间间隔
 
 	unsigned long last_rx_bytes;
 	unsigned long last_tx_bytes;

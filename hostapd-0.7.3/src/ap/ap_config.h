@@ -169,8 +169,8 @@ struct hostapd_bss_config {
 	char *eap_sim_db;
 	struct hostapd_ip_addr own_ip_addr;
 	char *nas_identifier;
-	struct hostapd_radius_servers *radius;
-	int acct_interim_interval;
+	struct hostapd_radius_servers *radius;      // radius客户端配置的radius服务器信息
+	int acct_interim_interval;      // 本地配置的 对于某个确定的会话，中间更新流量信息的时间间隔
 
 	struct hostapd_ssid ssid;
 

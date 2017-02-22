@@ -29,12 +29,12 @@ struct radius_msg {
 	/**
 	 * buf - Allocated buffer for RADIUS message
 	 */
-	struct wpabuf *buf;
+	struct wpabuf *buf;     // 指向radius消息数据管理块
 
 	/**
 	 * hdr - Pointer to the RADIUS header in buf
 	 */
-	struct radius_hdr *hdr;
+	struct radius_hdr *hdr; // 指向radius帧头
 
 	/**
 	 * attr_pos - Array of indexes to attributes
@@ -130,6 +130,7 @@ struct radius_msg * radius_msg_new(u8 code, u8 identifier)
 /**
  * radius_msg_free - Free a RADIUS message
  * @msg: RADIUS message from radius_msg_new() or radius_msg_parse()
+ * 释放一个radius消息管理块
  */
 void radius_msg_free(struct radius_msg *msg)
 {
@@ -583,7 +584,7 @@ int radius_msg_add_eap(struct radius_msg *msg, const u8 *data, size_t data_len)
 	return 1;
 }
 
-
+// 从radius报文中提取eap数据
 u8 *radius_msg_get_eap(struct radius_msg *msg, size_t *eap_len)
 {
 	u8 *eap, *pos;
@@ -594,6 +595,7 @@ u8 *radius_msg_get_eap(struct radius_msg *msg, size_t *eap_len)
 		return NULL;
 
 	len = 0;
+    // 遍历此radius报文携带的属性列表，计算EAP数据的总长
 	for (i = 0; i < msg->attr_used; i++) {
 		attr = radius_get_attr_hdr(msg, i);
 		if (attr->type == RADIUS_ATTR_EAP_MESSAGE)
@@ -608,6 +610,7 @@ u8 *radius_msg_get_eap(struct radius_msg *msg, size_t *eap_len)
 		return NULL;
 
 	pos = eap;
+    // 再次遍历此radius报文携带的属性列表，提取EAP数据
 	for (i = 0; i < msg->attr_used; i++) {
 		attr = radius_get_attr_hdr(msg, i);
 		if (attr->type == RADIUS_ATTR_EAP_MESSAGE) {
@@ -623,15 +626,21 @@ u8 *radius_msg_get_eap(struct radius_msg *msg, size_t *eap_len)
 	return eap;
 }
 
-
+/* 根据16字节的验证字域校验收到的radius报文
+ * @req_auth    - 指向记录在客户端的16字节验证字域
+ **/
 int radius_msg_verify_msg_auth(struct radius_msg *msg, const u8 *secret,
 			       size_t secret_len, const u8 *req_auth)
 {
+    /* auth用来存储客户端使用自己的16字节验证字域通过HMAC-MD5计算出来的校验和（计算时确保Message-Authenticator属性项payload是16个0的字节）
+     * orig用来存储从服务器发来的radius报文的Message-Authenticator属性项payload中记录的16字节校验和
+     */
 	u8 auth[MD5_MAC_LEN], orig[MD5_MAC_LEN];
 	u8 orig_authenticator[16];
 	struct radius_attr_hdr *attr = NULL, *tmp;
 	size_t i;
 
+    // 检查此radius报文的属性列表中是否存在多个Message-Authenticator属性项
 	for (i = 0; i < msg->attr_used; i++) {
 		tmp = radius_get_attr_hdr(msg, i);
 		if (tmp->type == RADIUS_ATTR_MESSAGE_AUTHENTICATOR) {
@@ -644,27 +653,34 @@ int radius_msg_verify_msg_auth(struct radius_msg *msg, const u8 *secret,
 		}
 	}
 
+    // 当然必须至少存在一个Message-Authenticator属性项
 	if (attr == NULL) {
 		printf("No Message-Authenticator attribute found\n");
 		return 1;
 	}
 
 	os_memcpy(orig, attr + 1, MD5_MAC_LEN);
-	os_memset(attr + 1, 0, MD5_MAC_LEN);
+	os_memset(attr + 1, 0, MD5_MAC_LEN);        // 临时对Message-Authenticator属性项payload清0，这是进行HMAC-MD5计算的需要
+    // 用客户端自己的16字节验证字域临时替换报文中的验证字域
 	if (req_auth) {
 		os_memcpy(orig_authenticator, msg->hdr->authenticator,
 			  sizeof(orig_authenticator));
 		os_memcpy(msg->hdr->authenticator, req_auth,
 			  sizeof(msg->hdr->authenticator));
 	}
+
+    // 使用HMAC-MD5计算校验和
 	hmac_md5(secret, secret_len, wpabuf_head(msg->buf),
 		 wpabuf_len(msg->buf), auth);
-	os_memcpy(attr + 1, orig, MD5_MAC_LEN);
+
+	os_memcpy(attr + 1, orig, MD5_MAC_LEN);     // 恢复报文中原本的Message-Authenticator属性项payload
+    // 恢复报文中原本的16字节验证字域
 	if (req_auth) {
 		os_memcpy(msg->hdr->authenticator, orig_authenticator,
 			  sizeof(orig_authenticator));
 	}
 
+    // 比较报文中携带的校验和跟客户端自己计算的校验和是否相等
 	if (os_memcmp(orig, auth, MD5_MAC_LEN) != 0) {
 		printf("Invalid Message-Authenticator!\n");
 		return 1;
@@ -673,7 +689,7 @@ int radius_msg_verify_msg_auth(struct radius_msg *msg, const u8 *secret,
 	return 0;
 }
 
-
+// 对radius报文进行校验(隐含这是一个radius-resp-eap报文)
 int radius_msg_verify(struct radius_msg *msg, const u8 *secret,
 		      size_t secret_len, struct radius_msg *sent_msg, int auth)
 {
@@ -686,6 +702,7 @@ int radius_msg_verify(struct radius_msg *msg, const u8 *secret,
 		return 1;
 	}
 
+    // 使用共享密钥和客户端自己的16字节请求验证字校验收到的radius-eap报文(HMAC-MD5)
 	if (auth &&
 	    radius_msg_verify_msg_auth(msg, secret, secret_len,
 				       sent_msg->hdr->authenticator)) {
@@ -693,6 +710,7 @@ int radius_msg_verify(struct radius_msg *msg, const u8 *secret,
 	}
 
 	/* ResponseAuth = MD5(Code+ID+Length+RequestAuth+Attributes+Secret) */
+    // 使用共享密钥和客户端自己的16字节请求验证字校验收到的radius-resp报文中的响应验证字(MD5)
 	addr[0] = (u8 *) msg->hdr;
 	len[0] = 1 + 1 + 2;
 	addr[1] = sent_msg->hdr->authenticator;
@@ -1137,7 +1155,11 @@ radius_msg_add_attr_user_password(struct radius_msg *msg,
 				   buf, buf_len);
 }
 
-// 查找指定type的属性项
+/* 根据type索引对应的属性项payload首地址
+ * @buf     - 存放索引到的属性项payload首地址
+ * @len     - 属性项支持的最大长度
+ * 返回值： 如果存在对应的属性项则返回属性项中的payload长度；如果不存在对应的属性项则返回-1
+ */
 int radius_msg_get_attr(struct radius_msg *msg, u8 type, u8 *buf, size_t len)
 {
 	struct radius_attr_hdr *attr = NULL, *tmp;

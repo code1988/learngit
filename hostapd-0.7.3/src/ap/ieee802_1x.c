@@ -936,6 +936,7 @@ void ieee802_1x_free_station(struct sta_info *sta)
 
 
 #ifndef CONFIG_NO_RADIUS
+// 进一步解析携带了EAP数据的radius报文
 static void ieee802_1x_decapsulate_radius(struct hostapd_data *hapd,
 					  struct sta_info *sta)
 {
@@ -955,6 +956,7 @@ static void ieee802_1x_decapsulate_radius(struct hostapd_data *hapd,
 
 	msg = sm->last_recv_radius;
 
+    // 从radius报文中提取eap数据
 	eap = radius_msg_get_eap(msg, &len);
 	if (eap == NULL) {
 		/* RFC 3579, Chap. 2.6.3:
@@ -967,6 +969,7 @@ static void ieee802_1x_decapsulate_radius(struct hostapd_data *hapd,
 		return;
 	}
 
+    // eap合法性检测
 	if (len < sizeof(*hdr)) {
 		hostapd_logger(hapd, sta->addr, HOSTAPD_MODULE_IEEE8021X,
 			       HOSTAPD_LEVEL_WARNING, "too short EAP packet "
@@ -980,25 +983,27 @@ static void ieee802_1x_decapsulate_radius(struct hostapd_data *hapd,
 		eap_type = eap[sizeof(*hdr)];
 
 	hdr = (struct eap_hdr *) eap;
+
+    // 分析EAP包类型
 	switch (hdr->code) {
-	case EAP_CODE_REQUEST:
+	case EAP_CODE_REQUEST:      // 如果是request帧
 		if (eap_type >= 0)
-			sm->eap_type_authsrv = eap_type;
+			sm->eap_type_authsrv = eap_type;    // 更新最近从后台认证服务器收到的EAP包Type字段
 		os_snprintf(buf, sizeof(buf), "EAP-Request-%s (%d)",
 			    eap_type >= 0 ? eap_server_get_name(0, eap_type) :
 			    "??",
 			    eap_type);
 		break;
-	case EAP_CODE_RESPONSE:
+	case EAP_CODE_RESPONSE:     // 如果是response帧，这里不做任何事
 		os_snprintf(buf, sizeof(buf), "EAP Response-%s (%d)",
 			    eap_type >= 0 ? eap_server_get_name(0, eap_type) :
 			    "??",
 			    eap_type);
 		break;
-	case EAP_CODE_SUCCESS:
+	case EAP_CODE_SUCCESS:      // 如果是success帧，这里不做任何事
 		os_strlcpy(buf, "EAP Success", sizeof(buf));
 		break;
-	case EAP_CODE_FAILURE:
+	case EAP_CODE_FAILURE:      // 如果是failure帧，这里不做任何事
 		os_strlcpy(buf, "EAP Failure", sizeof(buf));
 		break;
 	default:
@@ -1011,10 +1016,11 @@ static void ieee802_1x_decapsulate_radius(struct hostapd_data *hapd,
 		       "id=%d len=%d) from RADIUS server: %s",
 		       hdr->code, hdr->identifier, be_to_host16(hdr->length),
 		       buf);
-	sm->eap_if->aaaEapReq = TRUE;
+	sm->eap_if->aaaEapReq = TRUE;   // AAA->EAP交互标志aaaEapReq设置为TRUE，用于通知EAP层
 
+    
 	wpabuf_free(sm->eap_if->aaaEapReqData);
-	sm->eap_if->aaaEapReqData = wpabuf_alloc_ext_data(eap, len);
+	sm->eap_if->aaaEapReqData = wpabuf_alloc_ext_data(eap, len);    // 将eap数据转储到aaaEapReqData
 }
 
 
@@ -1115,6 +1121,7 @@ static void ieee802_1x_store_radius_class(struct hostapd_data *hapd,
 
 
 /* Update sta->identity based on User-Name attribute in Access-Accept */
+// 更新指定sta认证成功后的用户名
 static void ieee802_1x_update_sta_identity(struct hostapd_data *hapd,
 					   struct sta_info *sta,
 					   struct radius_msg *msg)
@@ -1191,6 +1198,9 @@ ieee802_1x_search_radius_identifier(struct hostapd_data *hapd, u8 identifier)
  * @data: Context data (struct hostapd_data *)
  * Returns: Processing status
  * 处理从RADIUS认证服务器发来的radius帧
+ *
+ * 备注：进入本函数的只可能是3种包类型:ACCESS-ACCEPT, ACCESS-REJECT, ACCESS-CHALLENGE
+ *       此函数（包括其子函数）对于aaaEapReq标志的处理似乎不太合理
  */
 static RadiusRxResult
 ieee802_1x_receive_auth(struct radius_msg *msg, struct radius_msg *req,
@@ -1220,8 +1230,8 @@ ieee802_1x_receive_auth(struct radius_msg *msg, struct radius_msg *req,
 
 	/* RFC 2869, Ch. 5.13: valid Message-Authenticator attribute MUST be
 	 * present when packet contains an EAP-Message attribute */
-    /* 如果是一个拒绝包，
-     * 
+    /* 如果是一个Access-Reject包，并且其属性列表中不存在RADIUS_ATTR_MESSAGE_AUTHENTICATOR和RADIUS_ATTR_EAP_MESSAGE
+     * 则意味着该Access-Reject包是一个不承载EAP的radius包
      */
 	if (hdr->code == RADIUS_CODE_ACCESS_REJECT &&
 	    radius_msg_get_attr(msg, RADIUS_ATTR_MESSAGE_AUTHENTICATOR, NULL,
@@ -1230,13 +1240,15 @@ ieee802_1x_receive_auth(struct radius_msg *msg, struct radius_msg *req,
 		wpa_printf(MSG_DEBUG, "Allowing RADIUS Access-Reject without "
 			   "Message-Authenticator since it does not include "
 			   "EAP-Message");
-	} else if (radius_msg_verify(msg, shared_secret, shared_secret_len,
-				     req, 1)) {
+	} 
+    else if (radius_msg_verify(msg, shared_secret, shared_secret_len,
+				     req, 1)) {                     // 对radius报文进行校验(隐含这是一个radius-eap响应报文)
 		printf("Incoming RADIUS packet did not have correct "
 		       "Message-Authenticator - dropped\n");
 		return RADIUS_RX_INVALID_AUTHENTICATOR;
 	}
 
+    // 检查包类型是否合法
 	if (hdr->code != RADIUS_CODE_ACCESS_ACCEPT &&
 	    hdr->code != RADIUS_CODE_ACCESS_REJECT &&
 	    hdr->code != RADIUS_CODE_ACCESS_CHALLENGE) {
@@ -1248,16 +1260,23 @@ ieee802_1x_receive_auth(struct radius_msg *msg, struct radius_msg *req,
 	wpa_printf(MSG_DEBUG, "RADIUS packet matching with station " MACSTR,
 		   MAC2STR(sta->addr));
 
+    // 更新last_recv_radius指针
 	radius_msg_free(sm->last_recv_radius);
 	sm->last_recv_radius = msg;
 
+    // 检查此radius报文是否携带了Session-Timeout属性项
 	session_timeout_set =
 		!radius_msg_get_attr_int32(msg, RADIUS_ATTR_SESSION_TIMEOUT,
 					   &session_timeout);
+    
+    // 如果此radius报文没有携带Termination-Action属性项，则设置一个默认的业务终止方式
 	if (radius_msg_get_attr_int32(msg, RADIUS_ATTR_TERMINATION_ACTION,
 				      &termination_action))
 		termination_action = RADIUS_TERMINATION_ACTION_DEFAULT;
 
+    /* 如果客户端本地没有配置acct_interim_interval，并且收到的是一个ACCESS-ACCEPT包，并且此radius报文携带了Acct-Interim-Interval属性项
+     * 则更新当前sta中的acct_interim_interval值
+     */
 	if (hapd->conf->acct_interim_interval == 0 &&
 	    hdr->code == RADIUS_CODE_ACCESS_ACCEPT &&
 	    radius_msg_get_attr_int32(msg, RADIUS_ATTR_ACCT_INTERIM_INTERVAL,
@@ -1273,88 +1292,103 @@ ieee802_1x_receive_auth(struct radius_msg *msg, struct radius_msg *req,
 			sta->acct_interim_interval = acct_interim_interval;
 	}
 
-
-	switch (hdr->code) {
-	case RADIUS_CODE_ACCESS_ACCEPT:
-		if (sta->ssid->dynamic_vlan == DYNAMIC_VLAN_DISABLED)
-			sta->vlan_id = 0;
+    // 根据radius包类型做进一步处理
+	switch (hdr->code) 
+    {
+        case RADIUS_CODE_ACCESS_ACCEPT:             // 如果收到的是一个Access-Accept包
+            if (sta->ssid->dynamic_vlan == DYNAMIC_VLAN_DISABLED)
+                sta->vlan_id = 0;
 #ifndef CONFIG_NO_VLAN
-		else {
-			old_vlanid = sta->vlan_id;
-			sta->vlan_id = radius_msg_get_vlanid(msg);
-		}
-		if (sta->vlan_id > 0 &&
-		    hostapd_get_vlan_id_ifname(hapd->conf->vlan,
-					       sta->vlan_id)) {
-			hostapd_logger(hapd, sta->addr,
-				       HOSTAPD_MODULE_RADIUS,
-				       HOSTAPD_LEVEL_INFO,
-				       "VLAN ID %d", sta->vlan_id);
-		} else if (sta->ssid->dynamic_vlan == DYNAMIC_VLAN_REQUIRED) {
-			sta->eapol_sm->authFail = TRUE;
-			hostapd_logger(hapd, sta->addr,
-				       HOSTAPD_MODULE_IEEE8021X,
-				       HOSTAPD_LEVEL_INFO, "authentication "
-				       "server did not include required VLAN "
-				       "ID in Access-Accept");
-			break;
-		}
+            else {
+                old_vlanid = sta->vlan_id;
+                sta->vlan_id = radius_msg_get_vlanid(msg);
+            }
+            if (sta->vlan_id > 0 &&
+                hostapd_get_vlan_id_ifname(hapd->conf->vlan,
+                               sta->vlan_id)) {
+                hostapd_logger(hapd, sta->addr,
+                           HOSTAPD_MODULE_RADIUS,
+                           HOSTAPD_LEVEL_INFO,
+                           "VLAN ID %d", sta->vlan_id);
+            } else if (sta->ssid->dynamic_vlan == DYNAMIC_VLAN_REQUIRED) {
+                sta->eapol_sm->authFail = TRUE;
+                hostapd_logger(hapd, sta->addr,
+                           HOSTAPD_MODULE_IEEE8021X,
+                           HOSTAPD_LEVEL_INFO, "authentication "
+                           "server did not include required VLAN "
+                           "ID in Access-Accept");
+                break;
+            }
 #endif /* CONFIG_NO_VLAN */
 
-		if (ap_sta_bind_vlan(hapd, sta, old_vlanid) < 0)
-			break;
+            if (ap_sta_bind_vlan(hapd, sta, old_vlanid) < 0)
+                break;
 
-		/* RFC 3580, Ch. 3.17 */
-		if (session_timeout_set && termination_action ==
-		    RADIUS_TERMINATION_ACTION_RADIUS_REQUEST) {
-			sm->reAuthPeriod = session_timeout;
-		} else if (session_timeout_set)
-			ap_sta_session_timeout(hapd, sta, session_timeout);
+            /* RFC 3580, Ch. 3.17 */
+            // 如果此radius报文携带了Session-Timeout属性项，这里分为2种情况考虑：
+            if (session_timeout_set && termination_action ==
+                RADIUS_TERMINATION_ACTION_RADIUS_REQUEST) {
+                /* 一种情况是此radius报文还Termination-Action属性项，并且属性值为1，表示采用重认证
+                 * 则Session-Timeout属性项的值可以用来设置EAPOL层的重认证周期
+                 */
+                sm->reAuthPeriod = session_timeout;                 
+            } else if (session_timeout_set)
+                /* 另一种情况是光携带了Session-Timeout属性项
+                 * 则Session-Timeout属性项的值是被用来设置被用户提供服务的剩余时间
+                 */
+                ap_sta_session_timeout(hapd, sta, session_timeout);
 
-		sm->eap_if->aaaSuccess = TRUE;
-		override_eapReq = 1;
-		ieee802_1x_get_keys(hapd, sta, msg, req, shared_secret,
-				    shared_secret_len);
-		ieee802_1x_store_radius_class(hapd, sta, msg);
-		ieee802_1x_update_sta_identity(hapd, sta, msg);
-		if (sm->eap_if->eapKeyAvailable &&
-		    wpa_auth_pmksa_add(sta->wpa_sm, sm->eapol_key_crypt,
-				       session_timeout_set ?
-				       (int) session_timeout : -1, sm) == 0) {
-			hostapd_logger(hapd, sta->addr, HOSTAPD_MODULE_WPA,
-				       HOSTAPD_LEVEL_DEBUG,
-				       "Added PMKSA cache entry");
-		}
-		break;
-	case RADIUS_CODE_ACCESS_REJECT:
-		sm->eap_if->aaaFail = TRUE;
-		override_eapReq = 1;
-		break;
-	case RADIUS_CODE_ACCESS_CHALLENGE:
-		sm->eap_if->aaaEapReq = TRUE;
-		if (session_timeout_set) {
-			/* RFC 2869, Ch. 2.3.2; RFC 3580, Ch. 3.17 */
-			sm->eap_if->aaaMethodTimeout = session_timeout;
-			hostapd_logger(hapd, sm->addr,
-				       HOSTAPD_MODULE_IEEE8021X,
-				       HOSTAPD_LEVEL_DEBUG,
-				       "using EAP timeout of %d seconds (from "
-				       "RADIUS)",
-				       sm->eap_if->aaaMethodTimeout);
-		} else {
-			/*
-			 * Use dynamic retransmission behavior per EAP
-			 * specification.
-			 */
-			sm->eap_if->aaaMethodTimeout = 0;
-		}
-		break;
+            sm->eap_if->aaaSuccess = TRUE;      // AAA->EAP交互标志aaaSuccess设置为TRUE，用于通知EAP层
+            override_eapReq = 1;
+            ieee802_1x_get_keys(hapd, sta, msg, req, shared_secret,
+                        shared_secret_len);
+            ieee802_1x_store_radius_class(hapd, sta, msg);
+            // 更新当前sta认证成功后的用户名信息
+            ieee802_1x_update_sta_identity(hapd, sta, msg);
+            if (sm->eap_if->eapKeyAvailable &&
+                wpa_auth_pmksa_add(sta->wpa_sm, sm->eapol_key_crypt,
+                           session_timeout_set ?
+                           (int) session_timeout : -1, sm) == 0) {
+                hostapd_logger(hapd, sta->addr, HOSTAPD_MODULE_WPA,
+                           HOSTAPD_LEVEL_DEBUG,
+                           "Added PMKSA cache entry");
+            }
+            break;
+        case RADIUS_CODE_ACCESS_REJECT:         // 如果收到的是一个Access-Reject包
+            sm->eap_if->aaaFail = TRUE;         // AAA->EAP交互标志aaaFail设置为TRUE，用于通知EAP层
+            override_eapReq = 1;
+            break;
+        case RADIUS_CODE_ACCESS_CHALLENGE:      // 如果收到的是一个Access-Challenge包
+            sm->eap_if->aaaEapReq = TRUE;       // AAA->EAP交互标志aaaEapReq设置为TRUE，用于通知EAP层
+            if (session_timeout_set) {
+                /* RFC 2869, Ch. 2.3.2; RFC 3580, Ch. 3.17 */
+                // 如果此radius报文携带了Session-Timeout属性项，则采用其属性值设置aaaMethodTimeout
+                sm->eap_if->aaaMethodTimeout = session_timeout;
+                hostapd_logger(hapd, sm->addr,
+                           HOSTAPD_MODULE_IEEE8021X,
+                           HOSTAPD_LEVEL_DEBUG,
+                           "using EAP timeout of %d seconds (from "
+                           "RADIUS)",
+                           sm->eap_if->aaaMethodTimeout);
+            } else {
+                /*
+                 * Use dynamic retransmission behavior per EAP
+                 * specification.
+                 */
+                // 否则aaaMethodTimeout设为0
+                sm->eap_if->aaaMethodTimeout = 0;
+            }
+            break;
 	}
 
+    // 进一步解析携带了EAP数据的radius报文
 	ieee802_1x_decapsulate_radius(hapd, sta);
+
+    // 如果override_eapReq标志被置位，则清除aaaEapReq标志，也就是只有收到Access-Challenge包才会置位此标志
 	if (override_eapReq)
 		sm->eap_if->aaaEapReq = FALSE;
 
+    // 运行一遍状态机自平衡流程
 	eapol_auth_step(sm);
 
 	return RADIUS_RX_QUEUED;
