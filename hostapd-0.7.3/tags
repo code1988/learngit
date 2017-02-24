@@ -5353,7 +5353,7 @@ _wpa_ctrl_command	hostapd/hostapd_cli.c	/^static int _wpa_ctrl_command(struct wp
 _wpa_hexdump	src/utils/wpa_debug.c	/^static void _wpa_hexdump(int level, const char *title, const u8 *buf,$/;"	f	file:	signature:(int level, const char *title, const u8 *buf, size_t len, int show)
 _wpa_hexdump_ascii	src/utils/wpa_debug.c	/^static void _wpa_hexdump_ascii(int level, const char *title, const u8 *buf,$/;"	f	file:	signature:(int level, const char *title, const u8 *buf, size_t len, int show)
 _wpa_snprintf_hex	src/utils/common.c	/^static inline int _wpa_snprintf_hex(char *buf, size_t buf_size, const u8 *data,$/;"	f	file:	signature:(char *buf, size_t buf_size, const u8 *data, size_t len, int uppercase)
-aWhile	src/eapol_auth/eapol_auth_sm_i.h	/^	int aWhile;     \/\/ 用于BE_AUTH SM ，定义了eapol层递交eapoleap报文给eap层，然后等待回复的计时,超时值为serverTimeout(也就是BE_AUTH_DEFAULT_serverTimeout)$/;"	m	struct:eapol_state_machine	access:public
+aWhile	src/eapol_auth/eapol_auth_sm_i.h	/^	int aWhile;     \/\/ 用于BE_AUTH SM ，定义了eapol层递交eapolEap报文给eap层，然后等待回复的计时,超时值为serverTimeout(也就是BE_AUTH_DEFAULT_serverTimeout)$/;"	m	struct:eapol_state_machine	access:public
 a_id	src/eap_peer/eap_fast_pac.h	/^	u8 *a_id;$/;"	m	struct:eap_fast_pac	access:public
 a_id_info	src/eap_peer/eap_fast_pac.h	/^	u8 *a_id_info;$/;"	m	struct:eap_fast_pac	access:public
 a_id_info_len	src/eap_peer/eap_fast_pac.h	/^	size_t a_id_info_len;$/;"	m	struct:eap_fast_pac	access:public
@@ -5362,7 +5362,7 @@ a_mpdu_params	src/common/ieee802_11_defs.h	/^	u8 a_mpdu_params;$/;"	m	struct:iee
 a_mpdu_params	src/drivers/driver.h	/^	u8 a_mpdu_params;$/;"	m	struct:hostapd_hw_modes	access:public
 aa	src/ap/wpa_auth_ie.c	/^	const u8 *aa;$/;"	m	struct:wpa_auth_okc_iter_data	file:	access:public
 aa	src/rsn_supp/pmksa_cache.h	/^	u8 aa[ETH_ALEN];$/;"	m	struct:rsn_pmksa_cache_entry	access:public
-aaaEapKeyAvailable	src/eap_server/eap.h	/^	Boolean aaaEapKeyAvailable;$/;"	m	struct:eap_eapol_interface	access:public
+aaaEapKeyAvailable	src/eap_server/eap.h	/^	Boolean aaaEapKeyAvailable;     \/\/ AAA层$/;"	m	struct:eap_eapol_interface	access:public
 aaaEapKeyData	src/eap_server/eap.h	/^	u8 *aaaEapKeyData;$/;"	m	struct:eap_eapol_interface	access:public
 aaaEapKeyDataLen	src/eap_server/eap.h	/^	size_t aaaEapKeyDataLen;$/;"	m	struct:eap_eapol_interface	access:public
 aaaEapNoReq	src/eap_server/eap.h	/^	Boolean aaaEapNoReq;    \/\/ AAA层从收到的radius报文中提取EAP数据失败时设置TRUE，EAP层根据此标志判断是否进入DISCARD2状态$/;"	m	struct:eap_eapol_interface	access:public
@@ -7296,7 +7296,7 @@ eap_ctrl_req_type	src/eap_peer/eap.c	/^} eap_ctrl_req_type;$/;"	t	typeref:enum:_
 eap_deinit_prev_method	src/eap_peer/eap.c	/^static void eap_deinit_prev_method(struct eap_sm *sm, const char *txt)$/;"	f	file:	signature:(struct eap_sm *sm, const char *txt)
 eap_disabled	src/eapol_supp/eapol_supp_sm.h	/^	int eap_disabled;$/;"	m	struct:eapol_config	access:public
 eap_eapol_interface	src/eap_server/eap.h	/^struct eap_eapol_interface {$/;"	s
-eap_eapol_interface::aaaEapKeyAvailable	src/eap_server/eap.h	/^	Boolean aaaEapKeyAvailable;$/;"	m	struct:eap_eapol_interface	access:public
+eap_eapol_interface::aaaEapKeyAvailable	src/eap_server/eap.h	/^	Boolean aaaEapKeyAvailable;     \/\/ AAA层$/;"	m	struct:eap_eapol_interface	access:public
 eap_eapol_interface::aaaEapKeyData	src/eap_server/eap.h	/^	u8 *aaaEapKeyData;$/;"	m	struct:eap_eapol_interface	access:public
 eap_eapol_interface::aaaEapKeyDataLen	src/eap_server/eap.h	/^	size_t aaaEapKeyDataLen;$/;"	m	struct:eap_eapol_interface	access:public
 eap_eapol_interface::aaaEapNoReq	src/eap_server/eap.h	/^	Boolean aaaEapNoReq;    \/\/ AAA层从收到的radius报文中提取EAP数据失败时设置TRUE，EAP层根据此标志判断是否进入DISCARD2状态$/;"	m	struct:eap_eapol_interface	access:public
@@ -9963,7 +9963,7 @@ eapol_state_machine::KEY_RX_KEY_RECEIVE	src/eapol_auth/eapol_auth_sm_i.h	/^	enum
 eapol_state_machine::KEY_RX_NO_KEY_RECEIVE	src/eapol_auth/eapol_auth_sm_i.h	/^	enum { KEY_RX_NO_KEY_RECEIVE, KEY_RX_KEY_RECEIVE } key_rx_state;    \/\/ key接收状态机$/;"	e	enum:eapol_state_machine::__anon66
 eapol_state_machine::REAUTH_TIMER_INITIALIZE	src/eapol_auth/eapol_auth_sm_i.h	/^	enum { REAUTH_TIMER_INITIALIZE, REAUTH_TIMER_REAUTHENTICATE$/;"	e	enum:eapol_state_machine::__anon64
 eapol_state_machine::REAUTH_TIMER_REAUTHENTICATE	src/eapol_auth/eapol_auth_sm_i.h	/^	enum { REAUTH_TIMER_INITIALIZE, REAUTH_TIMER_REAUTHENTICATE$/;"	e	enum:eapol_state_machine::__anon64
-eapol_state_machine::aWhile	src/eapol_auth/eapol_auth_sm_i.h	/^	int aWhile;     \/\/ 用于BE_AUTH SM ，定义了eapol层递交eapoleap报文给eap层，然后等待回复的计时,超时值为serverTimeout(也就是BE_AUTH_DEFAULT_serverTimeout)$/;"	m	struct:eapol_state_machine	access:public
+eapol_state_machine::aWhile	src/eapol_auth/eapol_auth_sm_i.h	/^	int aWhile;     \/\/ 用于BE_AUTH SM ，定义了eapol层递交eapolEap报文给eap层，然后等待回复的计时,超时值为serverTimeout(也就是BE_AUTH_DEFAULT_serverTimeout)$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::addr	src/eapol_auth/eapol_auth_sm_i.h	/^	u8 addr[ETH_ALEN]; \/* Supplicant address 请求者mac地址*\/$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::adminControlledDirections	src/eapol_auth/eapol_auth_sm_i.h	/^	ControlledDirection adminControlledDirections;      \/\/ 受控方向，本值不会被CTRL_DIR SM修改$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::authAbort	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean authAbort;  \/\/ AUTH_PAE SM 进入ABORTING状态时设置TRUE；BE_AUTH SM 进入INITIALIZE状态时设置FALSE$/;"	m	struct:eapol_state_machine	access:public

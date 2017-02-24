@@ -47,9 +47,9 @@ struct eapol_authenticator {
  */
 struct eapol_state_machine {
 	/* timers */
-	int aWhile;     // 用于BE_AUTH SM ，定义了eapol层递交eapoleap报文给eap层，然后等待回复的计时,超时值为serverTimeout(也就是BE_AUTH_DEFAULT_serverTimeout)
+	int aWhile;     // 用于BE_AUTH SM ，定义了eapol层递交eapolEap报文给eap层，然后等待回复的计时,超时值为serverTimeout(也就是BE_AUTH_DEFAULT_serverTimeout)
 	int quietWhile; // 用于AUTH_PAE SM，此时间内认证者不会接受任何请求者，超时值为quietPeriod(也就是AUTH_PAE_DEFAULT_quietPeriod)
-	int reAuthWhen; // 用于REAUTH_TIMER SM ，定义了允许请求者重认证的间隔,超时值为reAuthPeriod
+	int reAuthWhen; // 用于REAUTH_TIMER SM ，定义了认证系统发起重认证的间隔,超时值为reAuthPeriod
 
 	/**********************************************  global variables   ***********************************************************************/
 	Boolean authAbort;  // AUTH_PAE SM 进入ABORTING状态时设置TRUE；BE_AUTH SM 进入INITIALIZE状态时设置FALSE
