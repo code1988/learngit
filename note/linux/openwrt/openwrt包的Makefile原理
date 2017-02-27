@@ -1,0 +1,51 @@
+*****************************************************************************************************
+*       一个标准的Makefile包大概可以简化为如下结构：                                                *
+*                           include $(TOPDIR)/rules.mk                                              *
+*                           # 这里定义一系列的 PKG_XX                                               *
+*                           include $(INCLUDE_DIR)/package.mk                                       *
+*                           # 这里定义各种Package、Build宏                                          *
+*                           $(eval $(call BuildPackage,包名))                                       *
+*****************************************************************************************************
+
+1. include $(TOPDIR)/rules.mk   就是将openwrt顶层目录下的rules.mk文件中的内容导入进来
+    其中 TOPDIR := $(CURDIR)    # 该赋值式定义在openwrt顶层目录下的Makefile中，而CURDIR是Makefile的预定义变量，表示当前路径.
+    rules.mk文件中定义了许多重要变量，常用的有以下这些：
+
+    INCLUDE_DIR := $(TOPDIR)/include
+
+    BUILD_DIR   := $(TOPDIR)/build_dir/target-arm_cortex-a7+neon_musl-1.1.11_eabi
+    STAGING_DIR := $(TOPDIR)/staging_dir/target-arm_cortex-a7+neon_musl-1.1.11_eabi
+
+    INSTALL_BIN     := install -m0755
+    INSTALL_DIR     := install -d -m0755
+    INSTALL_DATA    := install -m0644
+
+    TARGET_CC:=$(TARGET_CROSS)gcc
+
+
+2. PKG_XXX系列变量
+    PKG_NAME        -软件包的名字, 在 menuconfig 和 ipkg 显示
+    PKG_VERSION     -软件包的版本
+    PKG_RELEASE     -这个 makefile 的版本
+
+    # 对于从git上下载的软件包，以下这些变量定义是必须的
+    PKG_REV         -要下载的软件包在svn/git上的版本号
+    PKG_SOURCE      -要下载的软件包的名字,一般是由 PKG_NAME 和 PKG_VERSION 组成
+    PKG_SOURCE_URL  -下载这个软件包的链接
+    PKG_SOURCE_SUBDIR   -源代码目录名
+    PKG_SOURCE_VERSION  -源代码版本号，用于对从git下载的源代码进行MD5检查
+    PKG_SOURCE_PROTO    -源代码的下载方式，即svn/git
+
+    PKG_CONFIG_DEPENDS  -定义了选择这个软件包时指定的配置选项
+    PKG_BUILD_DIR       -真正编译当前软件包的目录
+
+
+3. include $(INCLUDE_DIR)/package.mk    就是将$(TOPDIR)/include目录下的package.mk文件中的内容导入进来
+    package.mk文件的功能主要是以下几个方面：
+        a). 配置变量的默认值
+            对于那些没有在上一部分中定义的变量，那么在这个文件里将被赋予默认值
+        b). 推导其他变量
+            根据上一部分中用户自定义的PKG_XXX变量，这里会推导出更多后面会用到的相关变量
+        c). 包含其他mk文件
+        d). 定义默认的宏
+            其中最重要的一个宏BuildPackage就是在package.mk中实现的

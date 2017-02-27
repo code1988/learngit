@@ -768,7 +768,7 @@ SM_STEP(REAUTH_TIMER)
 
 
 /* Authenticator Key Transmit state machine */
-/* REAUTH_TIMER SM进入NO_KEY_TRANSMIT状态的EA:
+/* NO_KEY_TRANSMIT SM进入NO_KEY_TRANSMIT状态的EA:
  *      只进行了状态切换，没做任何事
  */
 SM_STATE(AUTH_KEY_TX, NO_KEY_TRANSMIT)
@@ -854,7 +854,7 @@ SM_STEP(KEY_RX)
 
 
 /* Controlled Directions state machine */
-/* REAUTH_TIMER SM进入FORCE_BOTH状态的EA:
+/* CTRL_DIR SM进入FORCE_BOTH状态的EA:
  *
  */
 SM_STATE(CTRL_DIR, FORCE_BOTH)
@@ -863,7 +863,7 @@ SM_STATE(CTRL_DIR, FORCE_BOTH)
 	sm->operControlledDirections = Both;
 }
 
-/* REAUTH_TIMER SM进入IN_OR_BOTH状态的EA:
+/* CTRL_DIR SM进入IN_OR_BOTH状态的EA:
  *      设置受控方向为配置值
  */
 SM_STATE(CTRL_DIR, IN_OR_BOTH)
