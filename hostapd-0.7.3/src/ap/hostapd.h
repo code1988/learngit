@@ -101,9 +101,9 @@ struct hostapd_driver_ops {
  * 描述了每个bss
  */
 struct hostapd_data {
-	struct hostapd_iface *iface;
-	struct hostapd_config *iconf;
-	struct hostapd_bss_config *conf;    // 保存此bss的配置信息
+	struct hostapd_iface *iface;        // 指向上层hostapd_iface
+	struct hostapd_config *iconf;       // 指向上层hostapd_iface->conf
+	struct hostapd_bss_config *conf;    // 指向上层hostapd_iface->conf->bss[i]，保存此bss的配置信息
 	int interface_added; /* virtual interface added for this BSS */
 
 	u8 own_addr[ETH_ALEN];              // 保存此bss的BSSID（估计就是mac）
@@ -147,7 +147,7 @@ struct hostapd_data {
 	int michael_mic_failures;
 	int tkip_countermeasures;
 
-	int ctrl_sock;
+	int ctrl_sock;      // 本地socket fd
 	struct wpa_ctrl_dst *ctrl_dst;
 
 	void *ssl_ctx;
@@ -242,7 +242,7 @@ struct hostapd_iface {
 	u16 ht_op_mode;
 	void (*scan_cb)(struct hostapd_iface *iface);
 
-	int (*ctrl_iface_init)(struct hostapd_data *hapd);
+	int (*ctrl_iface_init)(struct hostapd_data *hapd);  // 在hostapd_init中注册，在hostapd_setup_bss调用，用于初始化CLI的socket接口
 	void (*ctrl_iface_deinit)(struct hostapd_data *hapd);
 
 	int (*for_each_interface)(struct hapd_interfaces *interfaces,

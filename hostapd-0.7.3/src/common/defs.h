@@ -74,8 +74,9 @@ static inline int wpa_key_mgmt_sha256(int akm)
 #define WPA_PROTO_WPA BIT(0)
 #define WPA_PROTO_RSN BIT(1)
 
-#define WPA_AUTH_ALG_OPEN BIT(0)
-#define WPA_AUTH_ALG_SHARED BIT(1)
+// 认证模式，可以"|"
+#define WPA_AUTH_ALG_OPEN BIT(0)		// 开放式，其实相当于没有没有进行验证
+#define WPA_AUTH_ALG_SHARED BIT(1)		// 共享密钥式
 #define WPA_AUTH_ALG_LEAP BIT(2)
 #define WPA_AUTH_ALG_FT BIT(3)
 

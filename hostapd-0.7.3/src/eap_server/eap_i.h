@@ -114,7 +114,7 @@ struct eap_sm {
 	} EAP_state;
 
 	/* Constants */
-	int MaxRetrans;     // 最大的重传次数
+	int MaxRetrans;     // EAP报文最大的重传次数，默认设置5
 
 	struct eap_eapol_interface eap_if;      // 认证者eap<-->eapol层交互接口
 
@@ -127,7 +127,7 @@ struct eap_sm {
 		METHOD_PROPOSED, METHOD_CONTINUE, METHOD_END
 	} methodState;              // 当前EAP方法所处的状态
 	int retransCount;           // 当前的重传次数
-	struct wpabuf *lastReqData; // 保存了最近一次发送给eapol层的eap-req数据
+	struct wpabuf *lastReqData; // 保存了最近一次发送给eapol层的eap-req数据，触发重传的时候需要被用到
 	int methodTimeout;          // 当前EAP方法的超时值，来源有2种：通过EAP方法自带的getTimeout函数计算得到；通过aaaMethodTimeout赋值，通常为0表示不使用
 
 	/* Short-term (not maintained between packets) */

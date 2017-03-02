@@ -86,7 +86,7 @@ void hostapd_config_defaults_bss(struct hostapd_bss_config *bss)
 #endif /* EAP_SERVER_FAST */
 }
 
-// 为指定的配置文件申请一个hostapd_config结构体空间, 并完成常量性质成员初始化
+// 为指定的配置文件申请一个hostapd_config结构体空间, 并完成常量性质成员(不依赖配置文件)初始化
 struct hostapd_config * hostapd_config_defaults(void)
 {
 	struct hostapd_config *conf;

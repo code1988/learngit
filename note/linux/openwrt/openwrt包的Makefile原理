@@ -48,4 +48,39 @@
             根据上一部分中用户自定义的PKG_XXX变量，这里会推导出更多后面会用到的相关变量
         c). 包含其他mk文件
         d). 定义默认的宏
-            其中最重要的一个宏BuildPackage就是在package.mk中实现的
+            其中最重要的一个宏BuildPackage就是在package.mk中实现的，BuildPackage宏只要求一个参数，即要编译的软件包名，
+            其他所有信息都通过宏来获得，和BuildPackage相关的自定义宏有以下这些：
+                    Package/包名    - 这个是必须定义的宏，注意包名和PKG_NAME定义的不一定相同
+                                    - 描述软件包在menuconfig和ipkg中的信息，可以定义如下变量
+                                            SECTION     - 软件包类型
+                                            CATEGORY    - menuconfig中软件包所属的一级目录
+                                            SUBMENU     - menuconfig中软件包所属的二级目录
+                                            TITLE       - 软件包标题
+                                            DESCRIPTION - 软件包的详细说明(这种格式已经放弃使用，改用"Package/包名/description"宏单独定义)
+                                            URL         - 软件的原始位置，一般是软件作者主页
+                                            MAINTAINER  - 维护者
+                                            DEPENDS     - 运行本软件依赖的其他包
+                    Package/包名/description    - 软件包的详细说明，取代了前面提到的DESCRIPTION
+                    Build/Prepare   - 编译之前的准备动作，对于网上下载的软件包不需要定义该宏，但对于非网上下载或自行开发的软件包必须定义该宏
+                                      一般的准备动作就是：
+                                                    #define Build/Prepare
+                                                        mkdir -p $(PKG_BUILD_DIR)
+                                                        $(CP) ./src/* $(PKG_BUILD_DIR)/
+                                                    #endef
+                    Build/Configure - 如果源代码编译前需要configure或调用配置脚本，就定义这个宏，否则不需要
+                    Build/Compile   - 源代码编译规则，默认已经设置好，一般不需要自定义，只有当需要指定一些特殊的规则时采用到
+                    Package/包名/install    - 软件包的安装方法，主要就是将一系列编译好的文件、启动脚本、UCI配置文件等拷贝到指定位置，
+                                              一般的类似写法就是：
+                                                        #define Package/包名/install
+                                                            $(INSTALL_DIR) $(1)/usr/sbin
+                                                            $(INSTALL_BIN) $(PKG_BUILD_DIR)/包名 $(1)/usr/sbin/
+                                                            $(INSTALL_DATA) ./files/配置文件 $(1)/etc/config/配置文件
+                                                            $(INSTALL_BIN) ./files/启动脚本 $(1)/etc/init.d/启动脚本
+                                                        #endef
+                                              其中$(1)表示嵌入式系统的镜像目录
+
+            备注：  之所以有些宏是以"Package/"开头，有的又以"Build/"，是因为openwrt支持从单个源码构建出多个软件包。
+                    OpenWrt默认认为一个Makefile里定义一个软件包，但我们也可以根据需要将其拆分成多个。
+                    因为编译只要一次，那么只要有一系列全局的"Build/"的宏定义就可以了。
+                    然后通过添加多个"Package/"宏定义为各个软件包分别定义安装方法，并调用 BuildPackage，来创建多个包。
+

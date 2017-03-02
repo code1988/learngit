@@ -604,7 +604,7 @@ struct wpa_bss_params {
 
 /**
  * struct wpa_driver_ops - Driver interface API definition
- * wire层API接口集合
+ * 驱动层API接口集合
  * This structure defines the API that each driver interface needs to implement
  * for core wpa_supplicant code. All driver specific functionality is captured
  * in this wrapper.

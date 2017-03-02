@@ -199,7 +199,7 @@ static struct hostapd_iface * hostapd_init(const char *config_file)
 		goto fail;
 	hapd_iface->conf = conf;
 
-	hapd_iface->num_bss = conf->num_bss;            // 从配置信息中获取bss的个数，0.7.3版本中也就是1个
+	hapd_iface->num_bss = conf->num_bss;            // 从配置信息中获取bss的个数
 	hapd_iface->bss = os_zalloc(conf->num_bss *
 				    sizeof(struct hostapd_data *)); // 分配bss列表空间
 	if (hapd_iface->bss == NULL)
@@ -375,7 +375,7 @@ static int hostapd_global_init(struct hapd_interfaces *interfaces)
     // log处理方式初始化
 	hostapd_logger_register_cb(hostapd_logger_cb);
 
-    // EAP服务器注册方法
+    // 注册所有支持的EAP方法
 	if (eap_server_register_methods()) {
 		wpa_printf(MSG_ERROR, "Failed to register EAP methods");
 		return -1;

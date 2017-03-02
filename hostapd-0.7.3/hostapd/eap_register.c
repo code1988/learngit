@@ -25,7 +25,9 @@
  *
  * This function is called at program initialization to register all EAP
  * methods that were linked in statically.
- * EAP服务器注册方法
+ * 注册所有支持的EAP_SERVER的加密方法
+ * 备注：identify类型是特殊的，不属于加密方法，必然被注册
+ *       当工作在pass-through模式时，通常任何加密方法都不需要
  */
 int eap_server_register_methods(void)
 {

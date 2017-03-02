@@ -68,7 +68,6 @@ static int hostapd_send_mgmt_frame(struct hostapd_data *hapd, const void *msg,
 static int hostapd_send_eapol(struct hostapd_data *hapd, const u8 *addr,
 			      const u8 *data, size_t data_len, int encrypt)
 {
-    // 对于非ap模式这里不做任何操作，直接返回,wired 802.1X这里有执行下去
 	if (hapd->driver == NULL || hapd->driver->hapd_send_eapol == NULL)
 		return 0;
 	return hapd->driver->hapd_send_eapol(hapd->drv_priv, addr, data,

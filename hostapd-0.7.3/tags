@@ -1992,7 +1992,7 @@ MacAddress	src/drivers/driver_ndis.c	/^	NDIS_802_11_MAC_ADDRESS MacAddress; \/* 
 MacAddress	src/drivers/driver_ralink.h	/^    NDIS_802_11_MAC_ADDRESS             MacAddress;         \/\/ BSSID$/;"	m	struct:_NDIS_WLAN_BSSID_EX	access:public
 MacAddress	src/drivers/driver_ralink.h	/^   NDIS_802_11_MAC_ADDRESS             MacAddress; \/\/ BSSID$/;"	m	struct:_NDIS_WLAN_BSSID	access:public
 Maj	src/crypto/sha256-internal.c	85;"	d	file:
-MaxRetrans	src/eap_server/eap_i.h	/^	int MaxRetrans;     \/\/ 最大的重传次数$/;"	m	struct:eap_sm	access:public
+MaxRetrans	src/eap_server/eap_i.h	/^	int MaxRetrans;     \/\/ EAP报文最大的重传次数，默认设置5$/;"	m	struct:eap_sm	access:public
 NAMED_PIPE_PREFIX	src/common/wpa_ctrl.c	340;"	d	file:
 NDISUIO_DEVICE_NAME	src/drivers/driver_ndis.c	2687;"	d	file:
 NDISUIO_MSG_SIZE	src/drivers/driver_ndis.c	1849;"	d	file:
@@ -6364,7 +6364,7 @@ commands_help	hostapd/hostapd_cli.c	/^static const char *commands_help =$/;"	v	f
 commit	src/drivers/driver.h	/^	int (*commit)(void *priv);$/;"	m	struct:wpa_driver_ops	access:public
 comms_qual	src/drivers/Apple80211.h	/^	UInt16 comms_qual;$/;"	m	struct:WirelessInfo	access:public
 compound_mac	src/eap_common/eap_tlv_common.h	/^	u8 compound_mac[20];$/;"	m	struct:eap_tlv_crypto_binding_tlv	access:public
-conf	src/ap/hostapd.h	/^	struct hostapd_bss_config *conf;    \/\/ 保存此bss的配置信息$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::hostapd_bss_config	access:public
+conf	src/ap/hostapd.h	/^	struct hostapd_bss_config *conf;    \/\/ 指向上层hostapd_iface->conf->bss[i]，保存此bss的配置信息$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::hostapd_bss_config	access:public
 conf	src/ap/hostapd.h	/^	struct hostapd_config *conf;        \/\/ 根据配置文件生成的配置控制块$/;"	m	struct:hostapd_iface	typeref:struct:hostapd_iface::hostapd_config	access:public
 conf	src/ap/wpa_auth_i.h	/^	struct wpa_auth_config conf;$/;"	m	struct:wpa_authenticator	typeref:struct:wpa_authenticator::wpa_auth_config	access:public
 conf	src/eapol_auth/eapol_auth_sm_i.h	/^	struct eapol_auth_config conf;  \/\/ 配置信息$/;"	m	struct:eapol_authenticator	typeref:struct:eapol_authenticator::eapol_auth_config	access:public
@@ -6650,12 +6650,12 @@ ctrl_dir_txt	src/eapol_auth/eapol_auth_dump.c	/^static inline const char * ctrl_
 ctrl_dst	src/ap/hostapd.h	/^	struct wpa_ctrl_dst *ctrl_dst;$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::wpa_ctrl_dst	access:public
 ctrl_iface_deinit	src/ap/hostapd.h	/^	void (*ctrl_iface_deinit)(struct hostapd_data *hapd);$/;"	m	struct:hostapd_iface	access:public
 ctrl_iface_dir	hostapd/hostapd_cli.c	/^static const char *ctrl_iface_dir = "\/var\/run\/hostapd";$/;"	v	file:
-ctrl_iface_init	src/ap/hostapd.h	/^	int (*ctrl_iface_init)(struct hostapd_data *hapd);$/;"	m	struct:hostapd_iface	access:public
+ctrl_iface_init	src/ap/hostapd.h	/^	int (*ctrl_iface_init)(struct hostapd_data *hapd);  \/\/ 在hostapd_init中注册，在hostapd_setup_bss调用，用于初始化CLI的socket接口$/;"	m	struct:hostapd_iface	access:public
 ctrl_ifname	hostapd/hostapd_cli.c	/^static char *ctrl_ifname = NULL;$/;"	v	file:
 ctrl_interface	src/ap/ap_config.h	/^	char *ctrl_interface; \/* directory for UNIX domain sockets *\/$/;"	m	struct:hostapd_bss_config	access:public
 ctrl_interface_gid	src/ap/ap_config.h	/^	gid_t ctrl_interface_gid;$/;"	m	struct:hostapd_bss_config	access:public
 ctrl_interface_gid_set	src/ap/ap_config.h	/^	int ctrl_interface_gid_set;$/;"	m	struct:hostapd_bss_config	access:public
-ctrl_sock	src/ap/hostapd.h	/^	int ctrl_sock;$/;"	m	struct:hostapd_data	access:public
+ctrl_sock	src/ap/hostapd.h	/^	int ctrl_sock;      \/\/ 本地socket fd$/;"	m	struct:hostapd_data	access:public
 cts_protection_type	src/ap/ap_config.h	/^	} cts_protection_type;$/;"	m	struct:hostapd_config	typeref:enum:hostapd_config::__anon5	access:public
 ctx	src/ap/hostapd.h	/^	void *ctx;$/;"	m	struct:hostapd_probereq_cb	access:public
 ctx	src/ap/pmksa_cache_auth.c	/^	void *ctx;$/;"	m	struct:rsn_pmksa_cache	file:	access:public
@@ -8995,7 +8995,7 @@ eap_sm::METHOD_PENDING_CONT	src/eap_server/eap_i.h	/^		METHOD_PENDING_NONE, METH
 eap_sm::METHOD_PENDING_NONE	src/eap_server/eap_i.h	/^		METHOD_PENDING_NONE, METHOD_PENDING_WAIT, METHOD_PENDING_CONT$/;"	e	enum:eap_sm::__anon160
 eap_sm::METHOD_PENDING_WAIT	src/eap_server/eap_i.h	/^		METHOD_PENDING_NONE, METHOD_PENDING_WAIT, METHOD_PENDING_CONT$/;"	e	enum:eap_sm::__anon160
 eap_sm::METHOD_PROPOSED	src/eap_server/eap_i.h	/^		METHOD_PROPOSED, METHOD_CONTINUE, METHOD_END$/;"	e	enum:eap_sm::__anon158
-eap_sm::MaxRetrans	src/eap_server/eap_i.h	/^	int MaxRetrans;     \/\/ 最大的重传次数$/;"	m	struct:eap_sm	access:public
+eap_sm::MaxRetrans	src/eap_server/eap_i.h	/^	int MaxRetrans;     \/\/ EAP报文最大的重传次数，默认设置5$/;"	m	struct:eap_sm	access:public
 eap_sm::NO_PROV	src/eap_server/eap_i.h	/^		NO_PROV, ANON_PROV, AUTH_PROV, BOTH_PROV$/;"	e	enum:eap_sm::__anon161
 eap_sm::allowNotifications	src/eap_peer/eap_i.h	/^	Boolean allowNotifications; \/* peer state machine <-> methods *\/$/;"	m	struct:eap_sm	access:public
 eap_sm::assoc_wps_ie	src/eap_server/eap_i.h	/^	struct wpabuf *assoc_wps_ie;$/;"	m	struct:eap_sm	typeref:struct:eap_sm::wpabuf	access:public
@@ -9036,7 +9036,7 @@ eap_sm::init_phase2	src/eap_peer/eap_i.h	/^	int init_phase2;$/;"	m	struct:eap_sm
 eap_sm::init_phase2	src/eap_server/eap_i.h	/^	int init_phase2;$/;"	m	struct:eap_sm	access:public
 eap_sm::lastId	src/eap_peer/eap_i.h	/^	int lastId;$/;"	m	struct:eap_sm	access:public
 eap_sm::lastId	src/eap_server/eap_i.h	/^	int lastId; \/* Identifier used in the last EAP-Packet 最近的EAP包中的ID号，通常来自currentId*\/$/;"	m	struct:eap_sm	access:public
-eap_sm::lastReqData	src/eap_server/eap_i.h	/^	struct wpabuf *lastReqData; \/\/ 保存了最近一次发送给eapol层的eap-req数据$/;"	m	struct:eap_sm	typeref:struct:eap_sm::wpabuf	access:public
+eap_sm::lastReqData	src/eap_server/eap_i.h	/^	struct wpabuf *lastReqData; \/\/ 保存了最近一次发送给eapol层的eap-req数据，触发重传的时候需要被用到$/;"	m	struct:eap_sm	typeref:struct:eap_sm::wpabuf	access:public
 eap_sm::lastRespData	src/eap_peer/eap_i.h	/^	struct wpabuf *lastRespData;$/;"	m	struct:eap_sm	typeref:struct:eap_sm::wpabuf	access:public
 eap_sm::last_md5	src/eap_peer/eap_i.h	/^	u8 last_md5[16]; \/* MD5() of the previously received EAP packet; used$/;"	m	struct:eap_sm	access:public
 eap_sm::leap_done	src/eap_peer/eap_i.h	/^	Boolean leap_done;$/;"	m	struct:eap_sm	access:public
@@ -10040,7 +10040,7 @@ eapol_state_machine::reAuthCount	src/eapol_auth/eapol_auth_sm_i.h	/^	unsigned in
 eapol_state_machine::reAuthEnabled	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean reAuthEnabled;  \/\/ 重认证功能使能位(只用于认证系统)$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::reAuthMax	src/eapol_auth/eapol_auth_sm_i.h	/^	unsigned int reAuthMax; \/* default 2 重认证次数*\/$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::reAuthPeriod	src/eapol_auth/eapol_auth_sm_i.h	/^	unsigned int reAuthPeriod; \/* default 3600 s 重认证周期(可以由本地配置文件设置，也可以被radius服务器设置),用于设置重认证定时器reAuthWhen *\/$/;"	m	struct:eapol_state_machine	access:public
-eapol_state_machine::reAuthWhen	src/eapol_auth/eapol_auth_sm_i.h	/^	int reAuthWhen; \/\/ 用于REAUTH_TIMER SM ，定义了允许请求者重认证的间隔,超时值为reAuthPeriod$/;"	m	struct:eapol_state_machine	access:public
+eapol_state_machine::reAuthWhen	src/eapol_auth/eapol_auth_sm_i.h	/^	int reAuthWhen; \/\/ 用于REAUTH_TIMER SM ，定义了认证系统发起重认证的间隔,超时值为reAuthPeriod$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::reAuthenticate	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean reAuthenticate; \/\/ Reauthentication Timer状态机进入REAUTHENTICATE状态时设置TRUE；Authenticator PAE状态机进入CONNECTING状态时设置FALSE$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::reauth_timer_state	src/eapol_auth/eapol_auth_sm_i.h	/^	} reauth_timer_state;   \/\/ 重认证定时器状态机$/;"	m	struct:eapol_state_machine	typeref:enum:eapol_state_machine::__anon64	access:public
 eapol_state_machine::rxKey	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean rxKey;$/;"	m	struct:eapol_state_machine	access:public
@@ -11251,9 +11251,9 @@ hostapd_data::acl_cache	src/ap/hostapd.h	/^	struct hostapd_cached_radius_acl *ac
 hostapd_data::acl_queries	src/ap/hostapd.h	/^	struct hostapd_acl_query_data *acl_queries;$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::hostapd_acl_query_data	access:public
 hostapd_data::ap_pin_failures	src/ap/hostapd.h	/^	unsigned int ap_pin_failures;$/;"	m	struct:hostapd_data	access:public
 hostapd_data::ap_pin_lockout_time	src/ap/hostapd.h	/^	unsigned int ap_pin_lockout_time;$/;"	m	struct:hostapd_data	access:public
-hostapd_data::conf	src/ap/hostapd.h	/^	struct hostapd_bss_config *conf;    \/\/ 保存此bss的配置信息$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::hostapd_bss_config	access:public
+hostapd_data::conf	src/ap/hostapd.h	/^	struct hostapd_bss_config *conf;    \/\/ 指向上层hostapd_iface->conf->bss[i]，保存此bss的配置信息$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::hostapd_bss_config	access:public
 hostapd_data::ctrl_dst	src/ap/hostapd.h	/^	struct wpa_ctrl_dst *ctrl_dst;$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::wpa_ctrl_dst	access:public
-hostapd_data::ctrl_sock	src/ap/hostapd.h	/^	int ctrl_sock;$/;"	m	struct:hostapd_data	access:public
+hostapd_data::ctrl_sock	src/ap/hostapd.h	/^	int ctrl_sock;      \/\/ 本地socket fd$/;"	m	struct:hostapd_data	access:public
 hostapd_data::driver	src/ap/hostapd.h	/^	const struct wpa_driver_ops *driver;    \/\/ 指向此bss所使用的具体类型驱动API集合$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::wpa_driver_ops	access:public
 hostapd_data::drv	src/ap/hostapd.h	/^	struct hostapd_driver_ops drv;          \/\/ AP模式下驱动接口(在具体类型驱动上又做的一层封装)$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::hostapd_driver_ops	access:public
 hostapd_data::drv_priv	src/ap/hostapd.h	/^	void *drv_priv;                         \/\/ 指向此bss所使用的具体类型驱动控制块$/;"	m	struct:hostapd_data	access:public
@@ -11261,8 +11261,8 @@ hostapd_data::eap_sim_db_priv	src/ap/hostapd.h	/^	void *eap_sim_db_priv;$/;"	m	s
 hostapd_data::eapol_auth	src/ap/hostapd.h	/^	struct eapol_authenticator *eapol_auth;$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::eapol_authenticator	access:public
 hostapd_data::full_dynamic_vlan	src/ap/hostapd.h	/^	struct full_dynamic_vlan *full_dynamic_vlan;$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::full_dynamic_vlan	access:public
 hostapd_data::iapp	src/ap/hostapd.h	/^	struct iapp_data *iapp;$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::iapp_data	access:public
-hostapd_data::iconf	src/ap/hostapd.h	/^	struct hostapd_config *iconf;$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::hostapd_config	access:public
-hostapd_data::iface	src/ap/hostapd.h	/^	struct hostapd_iface *iface;$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::hostapd_iface	access:public
+hostapd_data::iconf	src/ap/hostapd.h	/^	struct hostapd_config *iconf;       \/\/ 指向上层hostapd_iface->conf$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::hostapd_config	access:public
+hostapd_data::iface	src/ap/hostapd.h	/^	struct hostapd_iface *iface;        \/\/ 指向上层hostapd_iface$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::hostapd_iface	access:public
 hostapd_data::interface_added	src/ap/hostapd.h	/^	int interface_added; \/* virtual interface added for this BSS *\/$/;"	m	struct:hostapd_data	access:public
 hostapd_data::l2	src/ap/hostapd.h	/^	struct l2_packet_data *l2;$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::l2_packet_data	access:public
 hostapd_data::michael_mic_failure	src/ap/hostapd.h	/^	time_t michael_mic_failure;$/;"	m	struct:hostapd_data	access:public
@@ -11442,7 +11442,7 @@ hostapd_iface::conf	src/ap/hostapd.h	/^	struct hostapd_config *conf;        \/\/
 hostapd_iface::config_fname	src/ap/hostapd.h	/^	char *config_fname;                 \/\/ 保存了命令行输入的配置文件名$/;"	m	struct:hostapd_iface	access:public
 hostapd_iface::config_read_cb	src/ap/hostapd.h	/^	struct hostapd_config * (*config_read_cb)(const char *config_fname);$/;"	m	struct:hostapd_iface	typeref:struct:hostapd_iface::config_read_cb	access:public
 hostapd_iface::ctrl_iface_deinit	src/ap/hostapd.h	/^	void (*ctrl_iface_deinit)(struct hostapd_data *hapd);$/;"	m	struct:hostapd_iface	access:public
-hostapd_iface::ctrl_iface_init	src/ap/hostapd.h	/^	int (*ctrl_iface_init)(struct hostapd_data *hapd);$/;"	m	struct:hostapd_iface	access:public
+hostapd_iface::ctrl_iface_init	src/ap/hostapd.h	/^	int (*ctrl_iface_init)(struct hostapd_data *hapd);  \/\/ 在hostapd_init中注册，在hostapd_setup_bss调用，用于初始化CLI的socket接口$/;"	m	struct:hostapd_iface	access:public
 hostapd_iface::current_mode	src/ap/hostapd.h	/^	struct hostapd_hw_modes *current_mode;$/;"	m	struct:hostapd_iface	typeref:struct:hostapd_iface::hostapd_hw_modes	access:public
 hostapd_iface::current_rates	src/ap/hostapd.h	/^	struct hostapd_rate_data *current_rates;$/;"	m	struct:hostapd_iface	typeref:struct:hostapd_iface::hostapd_rate_data	access:public
 hostapd_iface::for_each_interface	src/ap/hostapd.h	/^	int (*for_each_interface)(struct hapd_interfaces *interfaces,$/;"	m	struct:hostapd_iface	access:public
@@ -12054,7 +12054,7 @@ ibss_rsn_start	src/drivers/driver.h	/^	struct ibss_rsn_start {$/;"	s	union:wpa_e
 ibss_rsn_start	src/drivers/driver.h	/^	} ibss_rsn_start;$/;"	m	union:wpa_event_data	typeref:struct:wpa_event_data::ibss_rsn_start	access:public
 ick	src/eap_peer/eap_pax.c	/^	u8 ick[EAP_PAX_ICK_LEN];$/;"	m	struct:eap_pax_data	file:	access:public
 ick	src/eap_server/eap_server_pax.c	/^	u8 ick[EAP_PAX_ICK_LEN];$/;"	m	struct:eap_pax_data	file:	access:public
-iconf	src/ap/hostapd.h	/^	struct hostapd_config *iconf;$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::hostapd_config	access:public
+iconf	src/ap/hostapd.h	/^	struct hostapd_config *iconf;       \/\/ 指向上层hostapd_iface->conf$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::hostapd_config	access:public
 id	src/ap/wpa_auth.h	/^	u8 id[FT_R0KH_ID_MAX_LEN];$/;"	m	struct:ft_remote_r0kh	access:public
 id	src/ap/wpa_auth.h	/^	u8 id[FT_R1KH_ID_LEN];$/;"	m	struct:ft_remote_r1kh	access:public
 id	src/common/wpa_common.h	/^	u8 id;$/;"	m	struct:rsn_rdie	access:public
@@ -12437,7 +12437,7 @@ if_removed	src/drivers/driver_nl80211.c	/^	int if_removed;$/;"	m	struct:wpa_driv
 if_removed	src/drivers/driver_wext.h	/^	int if_removed;$/;"	m	struct:wpa_driver_wext_data	access:public
 iface	hostapd/main.c	/^	struct hostapd_iface **iface;   \/\/ 接口数组$/;"	m	struct:hapd_interfaces	typeref:struct:hapd_interfaces::hostapd_iface	file:	access:public
 iface	src/ap/ap_config.h	/^	char iface[IFNAMSIZ + 1];$/;"	m	struct:hostapd_bss_config	access:public
-iface	src/ap/hostapd.h	/^	struct hostapd_iface *iface;$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::hostapd_iface	access:public
+iface	src/ap/hostapd.h	/^	struct hostapd_iface *iface;        \/\/ 指向上层hostapd_iface$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::hostapd_iface	access:public
 iface	src/drivers/driver_atheros.c	/^	char	iface[IFNAMSIZ + 1];$/;"	m	struct:madwifi_driver_data	file:	access:public
 iface	src/drivers/driver_hostap.c	/^	char iface[IFNAMSIZ + 1];$/;"	m	struct:hostap_driver_data	file:	access:public
 iface	src/drivers/driver_madwifi.c	/^	char	iface[IFNAMSIZ + 1];$/;"	m	struct:madwifi_driver_data	file:	access:public
@@ -13355,7 +13355,7 @@ l2_preauth	src/rsn_supp/wpa_i.h	/^	struct l2_packet_data *l2_preauth;$/;"	m	stru
 l2_preauth_br	src/rsn_supp/wpa_i.h	/^	struct l2_packet_data *l2_preauth_br;$/;"	m	struct:wpa_sm	typeref:struct:wpa_sm::l2_packet_data	access:public
 lastId	src/eap_peer/eap_i.h	/^	int lastId;$/;"	m	struct:eap_sm	access:public
 lastId	src/eap_server/eap_i.h	/^	int lastId; \/* Identifier used in the last EAP-Packet 最近的EAP包中的ID号，通常来自currentId*\/$/;"	m	struct:eap_sm	access:public
-lastReqData	src/eap_server/eap_i.h	/^	struct wpabuf *lastReqData; \/\/ 保存了最近一次发送给eapol层的eap-req数据$/;"	m	struct:eap_sm	typeref:struct:eap_sm::wpabuf	access:public
+lastReqData	src/eap_server/eap_i.h	/^	struct wpabuf *lastReqData; \/\/ 保存了最近一次发送给eapol层的eap-req数据，触发重传的时候需要被用到$/;"	m	struct:eap_sm	typeref:struct:eap_sm::wpabuf	access:public
 lastRespData	src/eap_peer/eap_i.h	/^	struct wpabuf *lastRespData;$/;"	m	struct:eap_sm	typeref:struct:eap_sm::wpabuf	access:public
 last_ack_rssi	src/drivers/driver.h	/^	int last_ack_rssi;$/;"	m	struct:hostap_sta_driver_data	access:public
 last_assoc_req	src/ap/sta_info.h	/^	struct ieee80211_mgmt *last_assoc_req;$/;"	m	struct:sta_info	typeref:struct:sta_info::ieee80211_mgmt	access:public
@@ -15812,7 +15812,7 @@ reAuthCount	src/eapol_auth/eapol_auth_sm_i.h	/^	unsigned int reAuthCount;   \/\/
 reAuthEnabled	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean reAuthEnabled;  \/\/ 重认证功能使能位(只用于认证系统)$/;"	m	struct:eapol_state_machine	access:public
 reAuthMax	src/eapol_auth/eapol_auth_sm_i.h	/^	unsigned int reAuthMax; \/* default 2 重认证次数*\/$/;"	m	struct:eapol_state_machine	access:public
 reAuthPeriod	src/eapol_auth/eapol_auth_sm_i.h	/^	unsigned int reAuthPeriod; \/* default 3600 s 重认证周期(可以由本地配置文件设置，也可以被radius服务器设置),用于设置重认证定时器reAuthWhen *\/$/;"	m	struct:eapol_state_machine	access:public
-reAuthWhen	src/eapol_auth/eapol_auth_sm_i.h	/^	int reAuthWhen; \/\/ 用于REAUTH_TIMER SM ，定义了允许请求者重认证的间隔,超时值为reAuthPeriod$/;"	m	struct:eapol_state_machine	access:public
+reAuthWhen	src/eapol_auth/eapol_auth_sm_i.h	/^	int reAuthWhen; \/\/ 用于REAUTH_TIMER SM ，定义了认证系统发起重认证的间隔,超时值为reAuthPeriod$/;"	m	struct:eapol_state_machine	access:public
 reAuthenticate	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean reAuthenticate; \/\/ Reauthentication Timer状态机进入REAUTHENTICATE状态时设置TRUE；Authenticator PAE状态机进入CONNECTING状态时设置FALSE$/;"	m	struct:eapol_state_machine	access:public
 read_alerts	src/crypto/tls_gnutls.c	/^	int read_alerts, write_alerts, failed;$/;"	m	struct:tls_connection	file:	access:public
 read_alerts	src/crypto/tls_openssl.c	/^	int read_alerts, write_alerts, failed;$/;"	m	struct:tls_connection	file:	access:public
