@@ -147,8 +147,8 @@ struct hostapd_wmm_ac_params {
  * 每个bss的配置控制块
  */
 struct hostapd_bss_config {
-	char iface[IFNAMSIZ + 1];
-	char bridge[IFNAMSIZ + 1];
+	char iface[IFNAMSIZ + 1];	// 此bss名
+	char bridge[IFNAMSIZ + 1];	// 此bss所属的网桥名
 
 	enum hostapd_logger_level logger_syslog_level, logger_stdout_level;
 

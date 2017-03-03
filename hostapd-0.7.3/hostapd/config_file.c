@@ -1192,10 +1192,10 @@ struct hostapd_config * hostapd_config_read(const char *fname)
 		*pos = '\0';
 		pos++;
 
-		if (os_strcmp(buf, "interface") == 0) {
+		if (os_strcmp(buf, "interface") == 0) {			// 参数名"interface"用于指定bss名
 			os_strlcpy(conf->bss[0].iface, pos,
 				   sizeof(conf->bss[0].iface));
-		} else if (os_strcmp(buf, "bridge") == 0) {
+		} else if (os_strcmp(buf, "bridge") == 0) {		// 参数名"bridge"用于指定bss所属的网桥名
 			os_strlcpy(bss->bridge, pos, sizeof(bss->bridge));
 		} else if (os_strcmp(buf, "driver") == 0) { // 参数名"driver"用于选择驱动器类型，包括wired/hostapd/nl80211/bsd/none等等
 			int j;

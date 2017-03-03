@@ -452,6 +452,7 @@ static void hostapd_config_free_bss(struct hostapd_bss_config *conf)
 /**
  * hostapd_config_free - Free hostapd configuration
  * @conf: Configuration data from hostapd_config_read().
+ * 释放一个接口的配置块（包含释放下辖的bss配置块）
  */
 void hostapd_config_free(struct hostapd_config *conf)
 {

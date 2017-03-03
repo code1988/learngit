@@ -37,7 +37,7 @@
  * Supported Rates IEs). */
 #define WLAN_SUPP_RATES_MAX 32
 
-// 站表中的元素，描述了一个独立的入口，之口之间有不同的mac
+// 站表中的元素，描述了一个独立的入口，入口之间有不同的mac
 struct sta_info {
 	struct sta_info *next; /* next entry in sta list */
 	struct sta_info *hnext; /* next entry in hash table list */

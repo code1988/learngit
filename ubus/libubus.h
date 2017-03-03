@@ -197,7 +197,7 @@ struct ubus_request {
 	ubus_complete_handler_t complete_cb;
 
 	struct ubus_context *ctx;
-	void *priv;
+	void *priv;                 // 对应ubus_invoke函数的入参priv，用于指向用户自定义数据块
 };
 
 struct ubus_notify_request {
