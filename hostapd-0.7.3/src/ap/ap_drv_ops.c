@@ -598,7 +598,7 @@ int hostapd_set_ht_params(struct hostapd_data *hapd,
 					   ht_oper, ht_oper_len);
 }
 
-
+// 判断是否采用了驱动
 int hostapd_drv_none(struct hostapd_data *hapd)
 {
 	return hapd->driver && os_strcmp(hapd->driver->name, "none") == 0;

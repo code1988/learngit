@@ -246,7 +246,7 @@ static int hostapd_driver_init(struct hostapd_iface *iface)
 	if (!(b[0] | b[1] | b[2] | b[3] | b[4] | b[5]))
 		b = NULL;
 
-    // 设置wpa_init_params参数,用于传给wire层驱动程序API中的
+    // 设置wpa_init_params参数,作为driver层初始化入参
 	os_memset(&params, 0, sizeof(params));
 	params.bssid = b;
 	params.ifname = hapd->conf->iface;

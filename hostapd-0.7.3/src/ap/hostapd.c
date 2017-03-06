@@ -336,6 +336,7 @@ static int hostapd_flush_old_stations(struct hostapd_data *hapd)
  * hostapd_validate_bssid_configuration - Validate BSSID configuration
  * @iface: Pointer to interface data
  * Returns: 0 on success, -1 on failure
+ * 验证BSSID的配置是否有效
  *
  * This function is used to validate that the configured BSSIDs are valid.
  */
@@ -347,6 +348,7 @@ static int hostapd_validate_bssid_configuration(struct hostapd_iface *iface)
 	int res;
 	int auto_addr = 0;
 
+    // 判断是否采用了驱动，（配置文件中可以设置）
 	if (hostapd_drv_none(hapd))
 		return 0;
 
@@ -359,6 +361,7 @@ static int hostapd_validate_bssid_configuration(struct hostapd_iface *iface)
 	/* Determine the bits necessary to any configured BSSIDs,
 	   if they are higher than the number of BSSIDs. */
 	for (j = 0; j < iface->conf->num_bss; j++) {
+        // 判断每个bss的bssid是否有配置，对于没有在配置文件中指明的bss，其bssid由程序自动设置
 		if (hostapd_mac_comp_empty(iface->conf->bss[j].bssid) == 0) {
 			if (j)
 				auto_addr++;
@@ -656,6 +659,7 @@ static int setup_interface(struct hostapd_iface *iface)
 		iface->bss[i]->drv_priv = hapd->drv_priv;
 	}
 
+    //  验证BSSID的配置是否有效
 	if (hostapd_validate_bssid_configuration(iface))
 		return -1;
 

@@ -572,12 +572,12 @@ enum wpa_driver_if_type {
 struct wpa_init_params {
 	const u8 *bssid;
 	const char *ifname;
-	const u8 *ssid;
-	size_t ssid_len;
+	const u8 *ssid;     // 服务集标识(用于标识无线网名称)
+	size_t ssid_len;    // 服务集标识长度(一般小于32字节)
 	const char *test_socket;
 	int use_pae_group_addr;
-	char **bridge;
-	size_t num_bridge;
+	char **bridge;      // 记录网桥名字的数组（网桥这个参数似乎没有用在wire类型的驱动器中）
+	size_t num_bridge;  // 网桥数量，等于当前接口下bss的数量
 
 	u8 *own_addr; /* buffer for writing own MAC address */
 };

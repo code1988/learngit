@@ -1924,12 +1924,12 @@ MIN	src/crypto/sha256-internal.c	93;"	d	file:
 MIN	src/tls/libtommath.c	60;"	d	file:
 MLME_DEAUTH_REQ_STRUCT	src/drivers/driver_ralink.h	/^} MLME_DEAUTH_REQ_STRUCT, *PMLME_DEAUTH_REQ_STRUCT;$/;"	t	typeref:struct:_MLME_DEAUTH_REQ_STRUCT
 MLME_H	src/ap/ap_mlme.h	18;"	d
-MLME_SETPROTECTION_KEY_TYPE_GROUP	src/common/defs.h	232;"	d
-MLME_SETPROTECTION_KEY_TYPE_PAIRWISE	src/common/defs.h	233;"	d
-MLME_SETPROTECTION_PROTECT_TYPE_NONE	src/common/defs.h	227;"	d
-MLME_SETPROTECTION_PROTECT_TYPE_RX	src/common/defs.h	228;"	d
-MLME_SETPROTECTION_PROTECT_TYPE_RX_TX	src/common/defs.h	230;"	d
-MLME_SETPROTECTION_PROTECT_TYPE_TX	src/common/defs.h	229;"	d
+MLME_SETPROTECTION_KEY_TYPE_GROUP	src/common/defs.h	233;"	d
+MLME_SETPROTECTION_KEY_TYPE_PAIRWISE	src/common/defs.h	234;"	d
+MLME_SETPROTECTION_PROTECT_TYPE_NONE	src/common/defs.h	228;"	d
+MLME_SETPROTECTION_PROTECT_TYPE_RX	src/common/defs.h	229;"	d
+MLME_SETPROTECTION_PROTECT_TYPE_RX_TX	src/common/defs.h	231;"	d
+MLME_SETPROTECTION_PROTECT_TYPE_TX	src/common/defs.h	230;"	d
 MLME_STA_DEAUTH	src/drivers/driver_atmel.c	/^    MLME_STA_DEAUTH     = 3,$/;"	e	enum:__anon88	file:
 MLME_STA_DEAUTH	src/drivers/driver_hostap.h	194;"	d
 MLME_STA_DISASSOC	src/drivers/driver_atmel.c	/^    MLME_STA_DISASSOC   = 4$/;"	e	enum:__anon88	file:
@@ -4534,10 +4534,10 @@ WPA_ASSOCIATING	src/common/defs.h	/^	WPA_ASSOCIATING,$/;"	e	enum:wpa_states
 WPA_ASSOC_FT	src/ap/wpa_auth.h	/^	WPA_REAUTH_EAPOL, WPA_ASSOC_FT$/;"	e	enum:__anon9
 WPA_AUTH	src/ap/wpa_auth.h	/^	WPA_AUTH, WPA_ASSOC, WPA_DISASSOC, WPA_DEAUTH, WPA_REAUTH,$/;"	e	enum:__anon9
 WPA_AUTHENTICATING	src/common/defs.h	/^	WPA_AUTHENTICATING,$/;"	e	enum:wpa_states
-WPA_AUTH_ALG_FT	src/common/defs.h	80;"	d
-WPA_AUTH_ALG_LEAP	src/common/defs.h	79;"	d
-WPA_AUTH_ALG_OPEN	src/common/defs.h	77;"	d
-WPA_AUTH_ALG_SHARED	src/common/defs.h	78;"	d
+WPA_AUTH_ALG_FT	src/common/defs.h	81;"	d
+WPA_AUTH_ALG_LEAP	src/common/defs.h	80;"	d
+WPA_AUTH_ALG_OPEN	src/common/defs.h	78;"	d
+WPA_AUTH_ALG_SHARED	src/common/defs.h	79;"	d
 WPA_AUTH_GLUE_H	src/ap/wpa_auth_glue.h	16;"	d
 WPA_AUTH_H	src/ap/wpa_auth.h	16;"	d
 WPA_AUTH_IE_H	src/ap/wpa_auth_ie.h	16;"	d
@@ -6058,8 +6058,8 @@ br_addif	src/ap/vlan_init.c	/^static int br_addif(const char *br_name, const cha
 br_delbr	src/ap/vlan_init.c	/^static int br_delbr(const char *br_name)$/;"	f	file:	signature:(const char *br_name)
 br_delif	src/ap/vlan_init.c	/^static int br_delif(const char *br_name, const char *if_name)$/;"	f	file:	signature:(const char *br_name, const char *if_name)
 br_getnumports	src/ap/vlan_init.c	/^static int br_getnumports(const char *br_name)$/;"	f	file:	signature:(const char *br_name)
-bridge	src/ap/ap_config.h	/^	char bridge[IFNAMSIZ + 1];$/;"	m	struct:hostapd_bss_config	access:public
-bridge	src/drivers/driver.h	/^	char **bridge;$/;"	m	struct:wpa_init_params	access:public
+bridge	src/ap/ap_config.h	/^	char bridge[IFNAMSIZ + 1];	\/\/ 此bss所属的网桥名，网桥这个参数这里似乎没有用在wire类型的驱动器中$/;"	m	struct:hostapd_bss_config	access:public
+bridge	src/drivers/driver.h	/^	char **bridge;      \/\/ 记录网桥名字的数组$/;"	m	struct:wpa_init_params	access:public
 bridge_ifname	src/rsn_supp/wpa_i.h	/^	const char *bridge_ifname;$/;"	m	struct:wpa_sm	access:public
 brname	src/drivers/driver_nl80211.c	/^	char brname[IFNAMSIZ];$/;"	m	struct:wpa_driver_nl80211_data	file:	access:public
 broadcast_key_idx_max	src/ap/ap_config.h	/^	int broadcast_key_idx_min, broadcast_key_idx_max;$/;"	m	struct:hostapd_bss_config	access:public
@@ -10994,7 +10994,7 @@ hostapd_bss_config::ap_setup_locked	src/ap/ap_config.h	/^	int ap_setup_locked;$/
 hostapd_bss_config::assoc_sa_query_max_timeout	src/ap/ap_config.h	/^	unsigned int assoc_sa_query_max_timeout;$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::assoc_sa_query_retry_timeout	src/ap/ap_config.h	/^	int assoc_sa_query_retry_timeout;$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::auth_algs	src/ap/ap_config.h	/^	int auth_algs; \/* bitfield of allowed IEEE 802.11 authentication$/;"	m	struct:hostapd_bss_config	access:public
-hostapd_bss_config::bridge	src/ap/ap_config.h	/^	char bridge[IFNAMSIZ + 1];$/;"	m	struct:hostapd_bss_config	access:public
+hostapd_bss_config::bridge	src/ap/ap_config.h	/^	char bridge[IFNAMSIZ + 1];	\/\/ 此bss所属的网桥名，网桥这个参数这里似乎没有用在wire类型的驱动器中$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::broadcast_key_idx_max	src/ap/ap_config.h	/^	int broadcast_key_idx_min, broadcast_key_idx_max;$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::broadcast_key_idx_min	src/ap/ap_config.h	/^	int broadcast_key_idx_min, broadcast_key_idx_max;$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::bssid	src/ap/ap_config.h	/^	macaddr bssid;$/;"	m	struct:hostapd_bss_config	access:public
@@ -11031,7 +11031,7 @@ hostapd_bss_config::iapp_iface	src/ap/ap_config.h	/^	char iapp_iface[IFNAMSIZ + 
 hostapd_bss_config::ieee80211w	src/ap/ap_config.h	/^	enum mfp_options ieee80211w;$/;"	m	struct:hostapd_bss_config	typeref:enum:hostapd_bss_config::mfp_options	access:public
 hostapd_bss_config::ieee802_11f	src/ap/ap_config.h	/^	int ieee802_11f; \/* use IEEE 802.11f (IAPP) *\/$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::ieee802_1x	src/ap/ap_config.h	/^	int ieee802_1x; \/* use IEEE 802.1X *\/$/;"	m	struct:hostapd_bss_config	access:public
-hostapd_bss_config::iface	src/ap/ap_config.h	/^	char iface[IFNAMSIZ + 1];$/;"	m	struct:hostapd_bss_config	access:public
+hostapd_bss_config::iface	src/ap/ap_config.h	/^	char iface[IFNAMSIZ + 1];	\/\/ 此bss名$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::ignore_broadcast_ssid	src/ap/ap_config.h	/^	int ignore_broadcast_ssid;$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::individual_wep_key_len	src/ap/ap_config.h	/^	int individual_wep_key_len;$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::logger_stdout	src/ap/ap_config.h	/^	unsigned int logger_stdout; \/* module bitfield *\/$/;"	m	struct:hostapd_bss_config	access:public
@@ -11180,7 +11180,7 @@ hostapd_config::hw_mode	src/ap/ap_config.h	/^	enum hostapd_hw_mode hw_mode; \/* 
 hostapd_config::ieee80211d	src/ap/ap_config.h	/^	int ieee80211d;$/;"	m	struct:hostapd_config	access:public
 hostapd_config::ieee80211n	src/ap/ap_config.h	/^	int ieee80211n;$/;"	m	struct:hostapd_config	access:public
 hostapd_config::last_bss	src/ap/ap_config.h	/^	struct hostapd_bss_config *bss, *last_bss;$/;"	m	struct:hostapd_config	typeref:struct:hostapd_config::	access:public
-hostapd_config::num_bss	src/ap/ap_config.h	/^	size_t num_bss;$/;"	m	struct:hostapd_config	access:public
+hostapd_config::num_bss	src/ap/ap_config.h	/^	size_t num_bss;     \/\/ 当前接口下bss的数量，同时也代表了有多少个网桥$/;"	m	struct:hostapd_config	access:public
 hostapd_config::preamble	src/ap/ap_config.h	/^	} preamble;$/;"	m	struct:hostapd_config	typeref:enum:hostapd_config::__anon4	access:public
 hostapd_config::rts_threshold	src/ap/ap_config.h	/^	int rts_threshold;$/;"	m	struct:hostapd_config	access:public
 hostapd_config::secondary_channel	src/ap/ap_config.h	/^	int secondary_channel;$/;"	m	struct:hostapd_config	access:public
@@ -11271,7 +11271,7 @@ hostapd_data::msg_ctx	src/ap/hostapd.h	/^	void *msg_ctx; \/* ctx for wpa_msg() c
 hostapd_data::new_assoc_sta_cb	src/ap/hostapd.h	/^	void (*new_assoc_sta_cb)(struct hostapd_data *hapd,$/;"	m	struct:hostapd_data	access:public
 hostapd_data::num_probereq_cb	src/ap/hostapd.h	/^	size_t num_probereq_cb;$/;"	m	struct:hostapd_data	access:public
 hostapd_data::num_sta	src/ap/hostapd.h	/^	int num_sta; \/* number of entries in sta_list 链表形式站表中入口数量*\/$/;"	m	struct:hostapd_data	access:public
-hostapd_data::own_addr	src/ap/hostapd.h	/^	u8 own_addr[ETH_ALEN];              \/\/ 保存此bss的BSSID（估计就是mac）$/;"	m	struct:hostapd_data	access:public
+hostapd_data::own_addr	src/ap/hostapd.h	/^	u8 own_addr[ETH_ALEN];              \/\/ 保存此bss的BSSID（估计就是mac，调用driver层初始化时被配置）$/;"	m	struct:hostapd_data	access:public
 hostapd_data::parameter_set_count	src/ap/hostapd.h	/^	int parameter_set_count;$/;"	m	struct:hostapd_data	access:public
 hostapd_data::preauth_iface	src/ap/hostapd.h	/^	struct rsn_preauth_interface *preauth_iface;$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::rsn_preauth_interface	access:public
 hostapd_data::probereq_cb	src/ap/hostapd.h	/^	struct hostapd_probereq_cb *probereq_cb;$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::hostapd_probereq_cb	access:public
@@ -12436,7 +12436,7 @@ if_remove	src/drivers/driver.h	/^	int (*if_remove)(void *priv, enum wpa_driver_i
 if_removed	src/drivers/driver_nl80211.c	/^	int if_removed;$/;"	m	struct:wpa_driver_nl80211_data	file:	access:public
 if_removed	src/drivers/driver_wext.h	/^	int if_removed;$/;"	m	struct:wpa_driver_wext_data	access:public
 iface	hostapd/main.c	/^	struct hostapd_iface **iface;   \/\/ 接口数组$/;"	m	struct:hapd_interfaces	typeref:struct:hapd_interfaces::hostapd_iface	file:	access:public
-iface	src/ap/ap_config.h	/^	char iface[IFNAMSIZ + 1];$/;"	m	struct:hostapd_bss_config	access:public
+iface	src/ap/ap_config.h	/^	char iface[IFNAMSIZ + 1];	\/\/ 此bss名$/;"	m	struct:hostapd_bss_config	access:public
 iface	src/ap/hostapd.h	/^	struct hostapd_iface *iface;        \/\/ 指向上层hostapd_iface$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::hostapd_iface	access:public
 iface	src/drivers/driver_atheros.c	/^	char	iface[IFNAMSIZ + 1];$/;"	m	struct:madwifi_driver_data	file:	access:public
 iface	src/drivers/driver_hostap.c	/^	char iface[IFNAMSIZ + 1];$/;"	m	struct:hostap_driver_data	file:	access:public
@@ -14433,8 +14433,8 @@ num_auth_handlers	src/radius/radius_client.c	/^	size_t num_auth_handlers;$/;"	m	
 num_auth_servers	src/radius/radius_client.h	/^	int num_auth_servers;$/;"	m	struct:hostapd_radius_servers	access:public
 num_beacons	src/ap/ap_list.h	/^	unsigned int num_beacons; \/* number of beacon frames received *\/$/;"	m	struct:ap_info	access:public
 num_bitrates	src/drivers/wireless_copy.h	/^	__u8		num_bitrates;	\/* Number of entries in the list *\/$/;"	m	struct:iw_range	access:public
-num_bridge	src/drivers/driver.h	/^	size_t num_bridge;$/;"	m	struct:wpa_init_params	access:public
-num_bss	src/ap/ap_config.h	/^	size_t num_bss;$/;"	m	struct:hostapd_config	access:public
+num_bridge	src/drivers/driver.h	/^	size_t num_bridge;  \/\/ 网桥数量，等于当前接口下bss的数量$/;"	m	struct:wpa_init_params	access:public
+num_bss	src/ap/ap_config.h	/^	size_t num_bss;     \/\/ 当前接口下bss的数量，同时也代表了有多少个网桥$/;"	m	struct:hostapd_config	access:public
 num_bss	src/ap/hostapd.h	/^	size_t num_bss;                     \/\/ 接口中bss数量，0.7.3版本这个值固定为1$/;"	m	struct:hostapd_iface	access:public
 num_chal	src/eap_common/eap_sim_common.h	/^	size_t num_chal, version_list_len, encr_data_len;$/;"	m	struct:eap_sim_attrs	access:public
 num_chal	src/eap_peer/eap_sim.c	/^	size_t min_num_chal, num_chal;$/;"	m	struct:eap_sim_data	file:	access:public
@@ -14763,7 +14763,7 @@ out_used	src/eap_server/eap_server_tnc.c	/^	size_t out_used;$/;"	m	struct:eap_tn
 out_used	src/eap_server/eap_server_wsc.c	/^	size_t out_used;$/;"	m	struct:eap_wsc_data	file:	access:public
 over_the_ds_in_progress	src/rsn_supp/wpa_i.h	/^	int over_the_ds_in_progress;$/;"	m	struct:wpa_sm	access:public
 own	src/ap/iapp.c	/^	struct in_addr own, multicast;$/;"	m	struct:iapp_data	typeref:struct:iapp_data::in_addr	file:	access:public
-own_addr	src/ap/hostapd.h	/^	u8 own_addr[ETH_ALEN];              \/\/ 保存此bss的BSSID（估计就是mac）$/;"	m	struct:hostapd_data	access:public
+own_addr	src/ap/hostapd.h	/^	u8 own_addr[ETH_ALEN];              \/\/ 保存此bss的BSSID（估计就是mac，调用driver层初始化时被配置）$/;"	m	struct:hostapd_data	access:public
 own_addr	src/drivers/driver.h	/^	u8 *own_addr; \/* buffer for writing own MAC address *\/$/;"	m	struct:wpa_init_params	access:public
 own_addr	src/drivers/driver_ndis.h	/^	u8 own_addr[ETH_ALEN];$/;"	m	struct:wpa_driver_ndis_data	access:public
 own_addr	src/drivers/driver_privsep.c	/^	u8 own_addr[ETH_ALEN];$/;"	m	struct:wpa_driver_privsep_data	file:	access:public
@@ -16739,9 +16739,9 @@ ssid	src/drivers/Apple80211.h	/^	UInt8 ssid[32];$/;"	m	struct:WirelessNetworkInf
 ssid	src/drivers/Apple80211.h	/^	UInt8 ssid[34];$/;"	m	struct:WirelessInfo	access:public
 ssid	src/drivers/driver.h	/^		const u8 *ssid;$/;"	m	struct:wpa_driver_scan_params::wpa_driver_scan_ssid	access:public
 ssid	src/drivers/driver.h	/^		u8 ssid[32];$/;"	m	struct:wpa_driver_scan_params::wpa_driver_scan_filter	access:public
+ssid	src/drivers/driver.h	/^	const u8 *ssid;     \/\/ 服务集标识(用于标识无线网名称)$/;"	m	struct:wpa_init_params	access:public
 ssid	src/drivers/driver.h	/^	const u8 *ssid;$/;"	m	struct:wpa_driver_associate_params	access:public
 ssid	src/drivers/driver.h	/^	const u8 *ssid;$/;"	m	struct:wpa_driver_auth_params	access:public
-ssid	src/drivers/driver.h	/^	const u8 *ssid;$/;"	m	struct:wpa_init_params	access:public
 ssid	src/drivers/driver_hostap.h	/^			u8 ssid[32];$/;"	m	struct:prism2_hostapd_param::__anon74::__anon82	access:public
 ssid	src/drivers/driver_ndiswrapper.c	/^	const u8 *ssid;$/;"	m	struct:wpa_assoc_info	file:	access:public
 ssid	src/drivers/driver_nl80211.c	/^	u8 ssid[32];$/;"	m	struct:wpa_driver_nl80211_data	file:	access:public
@@ -16760,9 +16760,9 @@ ssid_len	src/common/privsep_commands.h	/^	size_t ssid_len;$/;"	m	struct:privsep_
 ssid_len	src/drivers/Apple80211.h	/^	UInt16 ssid_len;$/;"	m	struct:WirelessNetworkInfo	access:public
 ssid_len	src/drivers/driver.h	/^		size_t ssid_len;$/;"	m	struct:wpa_driver_scan_params::wpa_driver_scan_filter	access:public
 ssid_len	src/drivers/driver.h	/^		size_t ssid_len;$/;"	m	struct:wpa_driver_scan_params::wpa_driver_scan_ssid	access:public
+ssid_len	src/drivers/driver.h	/^	size_t ssid_len;    \/\/ 服务集标识长度(一般小于32字节)$/;"	m	struct:wpa_init_params	access:public
 ssid_len	src/drivers/driver.h	/^	size_t ssid_len;$/;"	m	struct:wpa_driver_associate_params	access:public
 ssid_len	src/drivers/driver.h	/^	size_t ssid_len;$/;"	m	struct:wpa_driver_auth_params	access:public
-ssid_len	src/drivers/driver.h	/^	size_t ssid_len;$/;"	m	struct:wpa_init_params	access:public
 ssid_len	src/drivers/driver_hostap.h	/^			u8 ssid_len;$/;"	m	struct:prism2_hostapd_param::__anon74::__anon82	access:public
 ssid_len	src/drivers/driver_ndiswrapper.c	/^	size_t ssid_len;$/;"	m	struct:wpa_assoc_info	file:	access:public
 ssid_len	src/drivers/driver_nl80211.c	/^	size_t ssid_len;$/;"	m	struct:wpa_driver_nl80211_data	file:	access:public
@@ -20022,13 +20022,13 @@ wpa_igtk_kde::pn	src/common/wpa_common.h	/^	u8 pn[6];$/;"	m	struct:wpa_igtk_kde	
 wpa_init	src/ap/wpa_auth.c	/^struct wpa_authenticator * wpa_init(const u8 *addr,$/;"	f	signature:(const u8 *addr, struct wpa_auth_config *conf, struct wpa_auth_callbacks *cb)
 wpa_init	src/ap/wpa_auth.h	/^struct wpa_authenticator * wpa_init(const u8 *addr,$/;"	p	signature:(const u8 *addr, struct wpa_auth_config *conf, struct wpa_auth_callbacks *cb)
 wpa_init_params	src/drivers/driver.h	/^struct wpa_init_params {$/;"	s
-wpa_init_params::bridge	src/drivers/driver.h	/^	char **bridge;$/;"	m	struct:wpa_init_params	access:public
+wpa_init_params::bridge	src/drivers/driver.h	/^	char **bridge;      \/\/ 记录网桥名字的数组$/;"	m	struct:wpa_init_params	access:public
 wpa_init_params::bssid	src/drivers/driver.h	/^	const u8 *bssid;$/;"	m	struct:wpa_init_params	access:public
 wpa_init_params::ifname	src/drivers/driver.h	/^	const char *ifname;$/;"	m	struct:wpa_init_params	access:public
-wpa_init_params::num_bridge	src/drivers/driver.h	/^	size_t num_bridge;$/;"	m	struct:wpa_init_params	access:public
+wpa_init_params::num_bridge	src/drivers/driver.h	/^	size_t num_bridge;  \/\/ 网桥数量，等于当前接口下bss的数量$/;"	m	struct:wpa_init_params	access:public
 wpa_init_params::own_addr	src/drivers/driver.h	/^	u8 *own_addr; \/* buffer for writing own MAC address *\/$/;"	m	struct:wpa_init_params	access:public
-wpa_init_params::ssid	src/drivers/driver.h	/^	const u8 *ssid;$/;"	m	struct:wpa_init_params	access:public
-wpa_init_params::ssid_len	src/drivers/driver.h	/^	size_t ssid_len;$/;"	m	struct:wpa_init_params	access:public
+wpa_init_params::ssid	src/drivers/driver.h	/^	const u8 *ssid;     \/\/ 服务集标识(用于标识无线网名称)$/;"	m	struct:wpa_init_params	access:public
+wpa_init_params::ssid_len	src/drivers/driver.h	/^	size_t ssid_len;    \/\/ 服务集标识长度(一般小于32字节)$/;"	m	struct:wpa_init_params	access:public
 wpa_init_params::test_socket	src/drivers/driver.h	/^	const char *test_socket;$/;"	m	struct:wpa_init_params	access:public
 wpa_init_params::use_pae_group_addr	src/drivers/driver.h	/^	int use_pae_group_addr;$/;"	m	struct:wpa_init_params	access:public
 wpa_insert_pmkid	src/common/wpa_common.c	/^int wpa_insert_pmkid(u8 *ies, size_t ies_len, const u8 *pmkid)$/;"	f	signature:(u8 *ies, size_t ies_len, const u8 *pmkid)

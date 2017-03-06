@@ -149,7 +149,7 @@ int hostapd_mac_comp(const void *a, const void *b)
 	return os_memcmp(a, b, sizeof(macaddr));
 }
 
-
+// 判断目标mac是否为空
 int hostapd_mac_comp_empty(const void *a)
 {
 	macaddr empty = { 0 };

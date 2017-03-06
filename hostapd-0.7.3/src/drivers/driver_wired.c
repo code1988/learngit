@@ -84,7 +84,7 @@ struct dhcp_message {
 	u_int8_t options[308]; /* 312 - cookie */
 };
 
-
+// 配置物理层多播模式（add = 1表示加入多播组，add = 0表示退出多播组）
 static int wired_multicast_membership(int sock, int ifindex,
 				      const u8 *addr, int add)
 {
@@ -212,18 +212,20 @@ static int wired_init_sockets(struct wpa_driver_wired_data *drv, u8 *own_addr)
 	struct sockaddr_in addr2;
 	int n = 1;
 
+    // 创建802.1x的socket
 	drv->sock = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_PAE));
 	if (drv->sock < 0) {
 		perror("socket[PF_PACKET,SOCK_RAW]");
 		return -1;
 	}
 
-    // 为wire类型驱动器的socket读事件注册回调函数handle_read
+    // 将802.1x的socket读事件注册到epoll，回调函数handle_read
 	if (eloop_register_read_sock(drv->sock, handle_read, drv->ctx, NULL)) {
 		printf("Could not register read socket\n");
 		return -1;
 	}
 
+    // 根据接口名获取对应的接口号
 	os_memset(&ifr, 0, sizeof(ifr));
 	os_strlcpy(ifr.ifr_name, drv->ifname, sizeof(ifr.ifr_name));
 	if (ioctl(drv->sock, SIOCGIFINDEX, &ifr) != 0) {
@@ -237,12 +239,14 @@ static int wired_init_sockets(struct wpa_driver_wired_data *drv, u8 *own_addr)
 	wpa_printf(MSG_DEBUG, "Opening raw packet socket for ifindex %d",
 		   addr.sll_ifindex);
 
+    // 绑定802.1x套接字到指定接口上
 	if (bind(drv->sock, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
 		perror("bind");
 		return -1;
 	}
 
 	/* filter multicast address */
+    // 将802.1x套接字加入802.1x多播组
 	if (wired_multicast_membership(drv->sock, ifr.ifr_ifindex,
 				       pae_group_addr, 1) < 0) {
 		wpa_printf(MSG_ERROR, "wired: Failed to add multicast group "
@@ -250,6 +254,7 @@ static int wired_init_sockets(struct wpa_driver_wired_data *drv, u8 *own_addr)
 		return -1;
 	}
 
+    // 根据接口名获取对应的的mac地址
 	os_memset(&ifr, 0, sizeof(ifr));
 	os_strlcpy(ifr.ifr_name, drv->ifname, sizeof(ifr.ifr_name));
 	if (ioctl(drv->sock, SIOCGIFHWADDR, &ifr) != 0) {
@@ -265,11 +270,13 @@ static int wired_init_sockets(struct wpa_driver_wired_data *drv, u8 *own_addr)
 	os_memcpy(own_addr, ifr.ifr_hwaddr.sa_data, ETH_ALEN);
 
 	/* setup dhcp listen socket for sta detection */
+    // 创建dhcp监听套接字
 	if ((drv->dhcp_sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
 		perror("socket call failed for dhcp");
 		return -1;
 	}
 
+    // 将dhcp的socket读事件注册到epoll，回调函数handle_dhcp
 	if (eloop_register_read_sock(drv->dhcp_sock, handle_dhcp, drv->ctx,
 				     NULL)) {
 		printf("Could not register read socket\n");
@@ -300,6 +307,7 @@ static int wired_init_sockets(struct wpa_driver_wired_data *drv, u8 *own_addr)
 		return -1;
 	}
 
+    // 绑定dhcp套接字到指定端口上
 	if (bind(drv->dhcp_sock, (struct sockaddr *) &addr2,
 		 sizeof(struct sockaddr)) == -1) {
 		perror("bind");

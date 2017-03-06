@@ -106,7 +106,7 @@ struct hostapd_data {
 	struct hostapd_bss_config *conf;    // 指向上层hostapd_iface->conf->bss[i]，保存此bss的配置信息
 	int interface_added; /* virtual interface added for this BSS */
 
-	u8 own_addr[ETH_ALEN];              // 保存此bss的BSSID（估计就是mac）
+	u8 own_addr[ETH_ALEN];              // 保存此bss的BSSID（估计就是mac，调用driver层初始化时被配置）
 
 	int num_sta; /* number of entries in sta_list 链表形式站表中入口数量*/
 	struct sta_info *sta_list; /* STA info list head 站表链表头*/

@@ -148,7 +148,7 @@ struct hostapd_wmm_ac_params {
  */
 struct hostapd_bss_config {
 	char iface[IFNAMSIZ + 1];	// 此bss名
-	char bridge[IFNAMSIZ + 1];	// 此bss所属的网桥名
+	char bridge[IFNAMSIZ + 1];	// 此bss所属的网桥名，网桥这个参数这里似乎没有用在wire类型的驱动器中
 
 	enum hostapd_logger_level logger_syslog_level, logger_stdout_level;
 
@@ -322,7 +322,7 @@ struct hostapd_bss_config {
  */
 struct hostapd_config {
 	struct hostapd_bss_config *bss, *last_bss;
-	size_t num_bss;
+	size_t num_bss;     // 当前接口下bss的数量，同时也代表了有多少个网桥
 
 	u16 beacon_int;
 	int rts_threshold;
