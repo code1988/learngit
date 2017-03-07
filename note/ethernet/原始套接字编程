@@ -10,26 +10,52 @@
          维护的
          开启IP_HDRINCL的模板代码：
             const int on = 1;
-            if(setsockopt(fd,IPPROTO_IP,IP_HDRINCL,&on,sizeof(int)) < 0)
+            if(setsockopt(fd,SOL_IP,IP_HDRINCL,&on,sizeof(int)) < 0)
             {
                 printf("set socket option error!\n");
             }
 
 2. 面向链路层的原始套接字编程
 -----------------------------------------------------------------------------------------------------------------------------
-    socket(PF_PACKET,type,htons(protocol))
+    a). 链路层socket用法归纳：
+            socket(PF_PACKET,type,htons(protocol))
 
-    [1]. type字段可以取SOCK_DGRAM或SOCK_RAW，含义分别为：
-            SOCK_DGRAM - 这种类型的套接字我们所构造的报文冲链路层首部之后的第一个字节开始，跟IP层的原始套接字在开启
-                         IP_HDRINCL时的区别在于，它可以接收所有的二层报文
-            SOCK_RAW   - 这种类型的套接字是最强大的，处理的是完整的以太网报文
-    [2]. protocol字段可取的值如下：
-            ETH_P_IP    - 只接收目的mac是本机的IP类型数据帧
-            ETH_P_ARP   - 只接收目的mac是本机的ARP类型数据帧
-            ETH_P_RARP  - 只接收目的mac是本机的RARP类型数据帧
-            ETH_P_PAE   - 只接收目的mac是本机的802.1x类型的数据帧
-            ETH_P_ALL   - 接收目的mac是本机的所有类型数据帧，同时还可以接收本机发出的所有数据帧，混杂模式打开时，还可以接收到目
-                          的mac不是本机的数据帧
+            [1]. type字段可以取SOCK_DGRAM或SOCK_RAW，含义分别为：
+                    SOCK_DGRAM - 这种类型的套接字我们所构造的报文冲链路层首部之后的第一个字节开始，跟IP层的原始套接字在开启
+                                 IP_HDRINCL时的区别在于，它可以接收所有的二层报文
+                    SOCK_RAW   - 这种类型的套接字是最强大的，处理的是完整的以太网报文
+            [2]. protocol字段可取的值如下：
+                    ETH_P_IP    - 只接收目的mac是本机的IP类型数据帧
+                    ETH_P_ARP   - 只接收目的mac是本机的ARP类型数据帧
+                    ETH_P_RARP  - 只接收目的mac是本机的RARP类型数据帧
+                    ETH_P_PAE   - 只接收目的mac是本机的802.1x类型的数据帧
+                    ETH_P_ALL   - 接收目的mac是本机的所有类型数据帧，同时还可以接收本机发出的所有数据帧，混杂模式打开时，还可以接收到目
+                                  的mac不是本机的数据帧
+
+    b). 链路层地址struct sockaddr_ll用法归纳：
+            struct sockaddr_ll{
+                unsigned short sll_family;  // 地址族，固定为AF_PACKET
+                __be16 sll_protocol;        // 标识上层承载的802.3标准以太网协议类型
+                int sll_ifindex;            // 接口索引号（0匹配任何接口，但只允许用于bind时）
+                unsigned short sll_hatype;  // ARP硬件地址类型（optional,只有接收时有意义）
+                unsigned char sll_pkttype;  // 包类型（optional,只有接收时有意义）
+                unsigned char sll_halen;    // MAC地址长度（optional）
+                unsigend char sll_addr[8];  // 目的MAC地址（optional）
+            }
+
+    c). 链路层setsockopt用法归纳：
+            setsockopt在SOL_PACKET层的主要作用是 开启/禁止 多播和混杂模式(当然链路层原始套接字设置并不局限于在SOL_PACKET层，
+            比如BPF就是通过在SOL_SOCKET层配合SO_ATTACH_FILTER选项来设置具体的过滤规则实现的)。
+            optname 取PACKET_ADD_MEMBERSHIP表示加入，取PACKET_DROP_MEMBERSHIP表示禁止，PACKET_FANOUT
+            optval 则承载了具体的设置参数，这里是一个struct packet_mreq结构：
+                    struct packet_mreq {
+                        int             mr_ifindex;     // 接口索引号
+                        unsigned short  mr_type;        // PACKET_MR_PROMISC    - 表示设置混杂模式；
+                                                           PACKET_MR_MULTICAST  - 表示设置多播组；
+                                                           PACKET_MR_ALLMULTI   - 表示设置是否接收所有到达接口的多播包
+                        unsigned short  mr_alen;        // 多播组地址长度
+                        unsigned char   mr_address[8];  // 多播组地址
+                    }
 
     使用链路层原始套接字的注意事项：
             a). 原始套接字要尽量绑定网卡，因为收到的适合类型的报文除了会被分发给绑定在该网卡上的原始套接字外，还会分发给没有绑定网卡的原始套接字，
@@ -39,3 +65,4 @@
 
 
 备注：原始套接字编程必须是root用户
+      原始套接字不支持connect()操作

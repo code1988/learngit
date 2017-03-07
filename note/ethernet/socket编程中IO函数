@@ -39,7 +39,7 @@ flags标志可以取0或"|"以下值：
         char sun_path[108];     // 本地套接字路径名
     }
 
-    4) 这是链路层套接字地址，20字节
+    4) 这是链路层套接字地址，20字节 (详见《原始套接字编程》)
     struct sockaddr_ll{
         unsigned short sll_family;  // 地址族，固定为AF_PACKET
         __be16 sll_protocol;        // 上层的协议类型
