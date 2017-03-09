@@ -106,7 +106,7 @@ struct hostapd_data {
 	struct hostapd_bss_config *conf;    // 指向上层hostapd_iface->conf->bss[i]，保存此bss的配置信息
 	int interface_added; /* virtual interface added for this BSS */
 
-	u8 own_addr[ETH_ALEN];              // 保存此bss的BSSID（估计就是mac，调用driver层初始化时被配置）
+	u8 own_addr[ETH_ALEN];              // 保存此bss的BSSID（对于wire类型驱动器来说就是mac，调用driver层初始化时被配置）
 
 	int num_sta; /* number of entries in sta_list 链表形式站表中入口数量*/
 	struct sta_info *sta_list; /* STA info list head 站表链表头*/
@@ -140,7 +140,7 @@ struct hostapd_data {
 	struct hostapd_acl_query_data *acl_queries;
 
 	struct wpa_authenticator *wpa_auth;
-	struct eapol_authenticator *eapol_auth;
+	struct eapol_authenticator *eapol_auth;     // 供认证者使用的eapol层数据块
 
 	struct rsn_preauth_interface *preauth_iface;
 	time_t michael_mic_failure;

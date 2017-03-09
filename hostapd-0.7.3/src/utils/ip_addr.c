@@ -62,7 +62,7 @@ int hostapd_ip_diff(struct hostapd_ip_addr *a, struct hostapd_ip_addr *b)
 	return 0;
 }
 
-
+// 解析字符串格式的ip地址为点分十进制格式，并判断是ipv4/ipv6
 int hostapd_parse_ip_addr(const char *txt, struct hostapd_ip_addr *addr)
 {
 #ifndef CONFIG_NATIVE_WINDOWS

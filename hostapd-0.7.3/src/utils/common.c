@@ -130,6 +130,7 @@ int hexstr2bin(const char *hex, u8 *buf, size_t len)
  * inc_byte_array - Increment arbitrary length byte array by one
  * @counter: Pointer to byte array
  * @len: Length of the counter in bytes
+ * 任意长度的数组，按从右到左方向进位，对其中的元素进行自增
  *
  * This function increments the last byte of the counter by one and continues
  * rolling over to more significant bytes if the byte was incremented from

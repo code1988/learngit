@@ -67,7 +67,7 @@ struct uloop_fd
 	bool eof;               // 对端断开连接标志
 	bool error;             // 本fd的出错标志
 	bool registered;        // 本fd是否已经注册到epoll的标记位：0-未注册 1-已注册
-	uint8_t flags;
+	uint8_t flags;          // 记录了监听的事件类型
 };
 
 // 定时器链表节点定义

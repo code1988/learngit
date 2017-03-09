@@ -143,7 +143,7 @@ struct hostapd_config * hostapd_config_defaults(void)
 	return conf;
 }
 
-
+// 判断两个mac是否相等
 int hostapd_mac_comp(const void *a, const void *b)
 {
 	return os_memcmp(a, b, sizeof(macaddr));
@@ -266,7 +266,7 @@ static int hostapd_derive_psk(struct hostapd_ssid *ssid)
 	return 0;
 }
 
-
+// 设置wpa psk
 int hostapd_setup_wpa_psk(struct hostapd_bss_config *conf)
 {
 	struct hostapd_ssid *ssid = &conf->ssid;

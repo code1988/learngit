@@ -180,8 +180,8 @@ struct hostapd_bss_config {
 	int eapol_key_index_workaround;
 
 	size_t default_wep_key_len;
-	int individual_wep_key_len;
-	int wep_rekeying_period;
+	int individual_wep_key_len;     // 设置WEP用的key长度(不用wep就不用管)
+	int wep_rekeying_period;        // 设置WEP用的key周期
 	int broadcast_key_idx_min, broadcast_key_idx_max;
 	int eap_reauth_period;      // 重认证周期，大于0意味着该功能使能(只用于认证系统)
 
@@ -203,7 +203,7 @@ struct hostapd_bss_config {
 	int auth_algs; /* bitfield of allowed IEEE 802.11 authentication
 			* algorithms, WPA_AUTH_ALG_{OPEN,SHARED,LEAP} */
 
-	int wpa; /* bitfield of WPA_PROTO_WPA, WPA_PROTO_RSN */
+	int wpa; /* bitfield of WPA_PROTO_WPA, WPA_PROTO_RSN wpa/wpa2功能选择位*/
 	int wpa_key_mgmt;
 #ifdef CONFIG_IEEE80211W
 	enum mfp_options ieee80211w;

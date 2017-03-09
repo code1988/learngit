@@ -498,7 +498,7 @@ static void hostapd_wps_clear_ies(struct hostapd_data *hapd)
 	hapd->drv.set_ap_wps_ie(hapd);
 }
 
-
+// 初始化wps功能
 int hostapd_init_wps(struct hostapd_data *hapd,
 		     struct hostapd_bss_config *conf)
 {

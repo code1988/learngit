@@ -43,7 +43,7 @@
                                     - setsockopt设置SOL_PACKET层的数据结构struct packet_mreq;
                                     - setsockopt设置内容(用于mr_type)
 
-    #include <linux/in.h>   - 该头文件是IP层的全局定义
+    #include <netinet/in.h> - 该头文件是IP层的全局定义(要注意的一点是，不能用 linux/in.h 来替换该头文件，因为netinet/in.h定义了更多相关内容)
                             - 主要定义了IP层套接字地址 struct sockaddr_in;
                             - IP层的协议类型ID
                             - IP层地址结构struct in_addr，常用于IP地址格式转换

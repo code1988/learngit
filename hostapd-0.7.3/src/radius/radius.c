@@ -411,7 +411,7 @@ int radius_msg_finish_srv(struct radius_msg *msg, const u8 *secret,
 	return 0;
 }
 
-
+// 更新radius计费消息数据块
 void radius_msg_finish_acct(struct radius_msg *msg, const u8 *secret,
 			    size_t secret_len)
 {

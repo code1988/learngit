@@ -472,6 +472,7 @@ static int hostapd_config_read_eap_user(const char *fname,
 
 
 #ifndef CONFIG_NO_RADIUS
+// 从配置文件读取radius服务器信息
 static int
 hostapd_config_read_radius_addr(struct hostapd_radius_server **server,
 				int *num_server, const char *val, int def_port,
@@ -1446,7 +1447,7 @@ struct hostapd_config * hostapd_config_read(const char *fname)
 		} else if (os_strcmp(buf, "nas_identifier") == 0) {
 			bss->nas_identifier = os_strdup(pos);
 #ifndef CONFIG_NO_RADIUS
-		} else if (os_strcmp(buf, "auth_server_addr") == 0) {
+		} else if (os_strcmp(buf, "auth_server_addr") == 0) {   // "auth_server_addr"用来配置radius认证服务器地址
 			if (hostapd_config_read_radius_addr(
 				    &bss->radius->auth_servers,
 				    &bss->radius->num_auth_servers, pos, 1812,
@@ -1456,10 +1457,10 @@ struct hostapd_config * hostapd_config_read(const char *fname)
 				errors++;
 			}
 		} else if (bss->radius->auth_server &&
-			   os_strcmp(buf, "auth_server_port") == 0) {
+			   os_strcmp(buf, "auth_server_port") == 0) {       // "auth_server_port"用来配置radius认证服务器端口号
 			bss->radius->auth_server->port = atoi(pos);
 		} else if (bss->radius->auth_server &&
-			   os_strcmp(buf, "auth_server_shared_secret") == 0) {
+			   os_strcmp(buf, "auth_server_shared_secret") == 0) {  // "auth_server_shared_secret"用来配置radius认证服务器共享密钥
 			int len = os_strlen(pos);
 			if (len == 0) {
 				/* RFC 2865, Ch. 3 */
@@ -1470,7 +1471,7 @@ struct hostapd_config * hostapd_config_read(const char *fname)
 			bss->radius->auth_server->shared_secret =
 				(u8 *) os_strdup(pos);
 			bss->radius->auth_server->shared_secret_len = len;
-		} else if (os_strcmp(buf, "acct_server_addr") == 0) {
+		} else if (os_strcmp(buf, "acct_server_addr") == 0) {   // "acct_server_addr"用来配置radius计费服务器地址
 			if (hostapd_config_read_radius_addr(
 				    &bss->radius->acct_servers,
 				    &bss->radius->num_acct_servers, pos, 1813,
@@ -1480,10 +1481,10 @@ struct hostapd_config * hostapd_config_read(const char *fname)
 				errors++;
 			}
 		} else if (bss->radius->acct_server &&
-			   os_strcmp(buf, "acct_server_port") == 0) {
+			   os_strcmp(buf, "acct_server_port") == 0) {           // "acct_server_port"用来配置radius计费服务器端口号
 			bss->radius->acct_server->port = atoi(pos);
 		} else if (bss->radius->acct_server &&
-			   os_strcmp(buf, "acct_server_shared_secret") == 0) {
+			   os_strcmp(buf, "acct_server_shared_secret") == 0) {  // "acct_server_shared_secret"用来配置radius计费服务器共享密钥
 			int len = os_strlen(pos);
 			if (len == 0) {
 				/* RFC 2865, Ch. 3 */
@@ -1495,9 +1496,9 @@ struct hostapd_config * hostapd_config_read(const char *fname)
 				(u8 *) os_strdup(pos);
 			bss->radius->acct_server->shared_secret_len = len;
 		} else if (os_strcmp(buf, "radius_retry_primary_interval") ==
-			   0) {
+			   0) {                                             // "radius_retry_primary_interval"用来配置主服务器的重试间隔
 			bss->radius->retry_primary_interval = atoi(pos);
-		} else if (os_strcmp(buf, "radius_acct_interim_interval") == 0)
+		} else if (os_strcmp(buf, "radius_acct_interim_interval") == 0) // "radius_acct_interim_interval"用来配置流量信息更新间隔
 		{
 			bss->acct_interim_interval = atoi(pos);
 #endif /* CONFIG_NO_RADIUS */
@@ -1680,10 +1681,10 @@ struct hostapd_config * hostapd_config_read(const char *fname)
 #endif /* CONFIG_NATIVE_WINDOWS */
 #endif /* CONFIG_NO_CTRL_IFACE */
 #ifdef RADIUS_SERVER
-		} else if (os_strcmp(buf, "radius_server_clients") == 0) {
+		} else if (os_strcmp(buf, "radius_server_clients") == 0) {  // 作为独立的radius服务器时，"radius_server_clients"用来配置客户端信息
 			os_free(bss->radius_server_clients);
 			bss->radius_server_clients = os_strdup(pos);
-		} else if (os_strcmp(buf, "radius_server_auth_port") == 0) {
+		} else if (os_strcmp(buf, "radius_server_auth_port") == 0) {    // 作为独立的radius服务器时，"radius_server_auth_port"用来配置认证服务器端口号
 			bss->radius_server_auth_port = atoi(pos);
 		} else if (os_strcmp(buf, "radius_server_ipv6") == 0) {
 			bss->radius_server_ipv6 = atoi(pos);

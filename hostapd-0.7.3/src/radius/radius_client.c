@@ -83,6 +83,7 @@ struct radius_rx_handler {
 
 /**
  * struct radius_msg_list - RADIUS client message retransmit list
+ * radius客户端消息重传链表
  *
  * This data structure is used internally inside the RADIUS client module to
  * store pending RADIUS requests that may still need to be retransmitted.
@@ -107,11 +108,13 @@ struct radius_msg_list {
 
 	/**
 	 * first_try - Time of the first transmission attempt
+     * 距离第一次重传的时间
 	 */
 	os_time_t first_try;
 
 	/**
 	 * next_try - Time for the next transmission attempt
+     * 距离下一次重传的时间
 	 */
 	os_time_t next_try;
 
@@ -172,64 +175,66 @@ struct radius_client_data {
 	/**
 	 * auth_serv_sock - IPv4 socket for RADIUS authentication messages
 	 */
-	int auth_serv_sock;     // radius认证服务用的socket
+	int auth_serv_sock;     // radius认证服务用的IPV4 socket
 
 	/**
 	 * acct_serv_sock - IPv4 socket for RADIUS accounting messages
 	 */
-	int acct_serv_sock;     // radius计费服务用的socket
+	int acct_serv_sock;     // radius计费服务用的IPV4 socket
 
 	/**
 	 * auth_serv_sock6 - IPv6 socket for RADIUS authentication messages
 	 */
-	int auth_serv_sock6;
+	int auth_serv_sock6;    // radius认证服务用的IPV6 socket
 
 	/**
 	 * acct_serv_sock6 - IPv6 socket for RADIUS accounting messages
 	 */
-	int acct_serv_sock6;
+	int acct_serv_sock6;    // radius计费服务用的IPV6 socket
 
 	/**
 	 * auth_sock - Currently used socket for RADIUS authentication server
 	 */
-	int auth_sock;
+	int auth_sock;      // 当前选用的radius认证服务socket
 
 	/**
 	 * acct_sock - Currently used socket for RADIUS accounting server
 	 */
-	int acct_sock;
+	int acct_sock;      // 当前选用的radius计费服务socket
 
 	/**
 	 * auth_handlers - Authentication message handlers
-     * radius认证消息RX回调函数列表首地址
+     * radius认证消息RX回调函数控制块列表首地址
 	 */
 	struct radius_rx_handler *auth_handlers;
 
 	/**
 	 * num_auth_handlers - Number of handlers in auth_handlers
-     * radius认证消息RX回调函数列表中元素数量
+     * radius认证消息RX回调函数控制块列表中元素数量
 	 */
 	size_t num_auth_handlers;
 
 	/**
 	 * acct_handlers - Accounting message handlers
-     * radius计费消息RX回调函数列表首地址
+     * radius计费消息RX回调函数控制块列表首地址
 	 */
 	struct radius_rx_handler *acct_handlers;
 
 	/**
 	 * num_acct_handlers - Number of handlers in acct_handlers
-     * radius计费消息RX回调函数列表中元素数量
+     * radius计费消息RX回调函数控制块列表中元素数量
 	 */
 	size_t num_acct_handlers;
 
 	/**
 	 * msgs - Pending outgoing RADIUS messages
+     * radius消息发送链表
 	 */
 	struct radius_msg_list *msgs;
 
 	/**
 	 * num_msgs - Number of pending messages in the msgs list
+     * 发送链表中的消息数量
 	 */
 	size_t num_msgs;
 
@@ -264,7 +269,7 @@ static void radius_client_msg_free(struct radius_msg_list *req)
  * @data: Context pointer for handler callbacks
  * Returns: 0 on success, -1 on failure
  * 为radius客户端注册一个RX回调函数
- * RX回调函数似乎可以有多个，构成回调数组
+ * RX回调函数可以有多个，每个RX回调对应一项具体的应用，比如802.11-ACL、802.1x等，构成回调数组
  *
  * This function is used to register a handler for processing received RADIUS
  * authentication and accounting messages. The handler() callback function will
@@ -331,7 +336,7 @@ static void radius_client_handle_send_error(struct radius_client_data *radius,
 #endif /* CONFIG_NATIVE_WINDOWS */
 }
 
-
+// 客户端重传radius报文
 static int radius_client_retransmit(struct radius_client_data *radius,
 				    struct radius_msg_list *entry,
 				    os_time_t now)
@@ -383,7 +388,7 @@ static int radius_client_retransmit(struct radius_client_data *radius,
 	return 0;
 }
 
-
+// radius客户端超时定时器
 static void radius_client_timer(void *eloop_ctx, void *timeout_ctx)
 {
 	struct radius_client_data *radius = eloop_ctx;
@@ -891,6 +896,7 @@ u8 radius_client_get_id(struct radius_client_data *radius)
  * radius_client_flush - Flush all pending RADIUS client messages
  * @radius: RADIUS client context from radius_client_init()
  * @only_auth: Whether only authentication messages are removed
+ * 清除准备发送的radius消息
  */
 void radius_client_flush(struct radius_client_data *radius, int only_auth)
 {
@@ -923,7 +929,7 @@ void radius_client_flush(struct radius_client_data *radius, int only_auth)
 		eloop_cancel_timeout(radius_client_timer, radius, NULL);
 }
 
-
+// 更新radius客户端发送链表中每条计费消息的共享密钥
 static void radius_client_update_acct_msgs(struct radius_client_data *radius,
 					   const u8 *shared_secret,
 					   size_t shared_secret_len)
@@ -943,7 +949,7 @@ static void radius_client_update_acct_msgs(struct radius_client_data *radius,
 	}
 }
 
-
+// 刷新radius服务器(对于认证和计费服务器分别有不同的操作)
 static int
 radius_change_server(struct radius_client_data *radius,
 		     struct hostapd_radius_server *nserv,
@@ -968,6 +974,7 @@ radius_change_server(struct radius_client_data *radius,
 		       hostapd_ip_txt(&nserv->addr, abuf, sizeof(abuf)),
 		       nserv->port);
 
+    // 对于新创建的radius服务器（意味着没有对应的老服务器），或者新老服务器的共享密钥存在变化，就要执行以下代码块
 	if (!oserv || nserv->shared_secret_len != oserv->shared_secret_len ||
 	    os_memcmp(nserv->shared_secret, oserv->shared_secret,
 		      nserv->shared_secret_len) != 0) {
@@ -977,7 +984,9 @@ radius_change_server(struct radius_client_data *radius,
 		 * since they would require more changes and the new RADIUS
 		 * server may not be prepared to receive them anyway due to
 		 * missing state information. Client will likely retry
-		 * authentication, so this should not be an issue. */
+		 * authentication, so this should not be an issue. 
+         * 这里需要进一步区分认证和计费服务器，来做相应的操作
+         * */
 		if (auth)
 			radius_client_flush(radius, 1);
 		else {
@@ -988,6 +997,7 @@ radius_change_server(struct radius_client_data *radius,
 	}
 
 	/* Reset retry counters for the new server */
+    // 复位radius客户端发送链表中新radius服务器所属的消息重传时间
 	for (entry = radius->msgs; entry; entry = entry->next) {
 		if ((auth && entry->msg_type != RADIUS_AUTH) ||
 		    (!auth && entry->msg_type != RADIUS_ACCT))
@@ -997,6 +1007,7 @@ radius_change_server(struct radius_client_data *radius,
 		entry->next_wait = RADIUS_CLIENT_FIRST_WAIT * 2;
 	}
 
+    // 发送链表中如果存在待发送消息，则刷新重传定时器
 	if (radius->msgs) {
 		eloop_cancel_timeout(radius_client_timer, radius, NULL);
 		eloop_register_timeout(RADIUS_CLIENT_FIRST_WAIT, 0,
@@ -1096,13 +1107,14 @@ radius_change_server(struct radius_client_data *radius,
 	return 0;
 }
 
-// 重试定时器超时后的回调函数
+// 客户端对主服务器的重试间隔定时器超时后的回调函数
 static void radius_retry_primary_timer(void *eloop_ctx, void *timeout_ctx)
 {
 	struct radius_client_data *radius = eloop_ctx;
 	struct hostapd_radius_servers *conf = radius->conf;
 	struct hostapd_radius_server *oserv;
 
+    // 如果在使用备份的认证/计费服务器，则都切换回主服务器
 	if (radius->auth_sock >= 0 && conf->auth_servers &&
 	    conf->auth_server != conf->auth_servers) {
 		oserv = conf->auth_server;
@@ -1121,6 +1133,7 @@ static void radius_retry_primary_timer(void *eloop_ctx, void *timeout_ctx)
 				     radius->acct_serv_sock6, 0);
 	}
 
+    // 刷新重试间隔定时器
 	if (conf->retry_primary_interval)
 		eloop_register_timeout(conf->retry_primary_interval, 0,
 				       radius_retry_primary_timer, radius,
@@ -1143,7 +1156,7 @@ static int radius_client_disable_pmtu_discovery(int s)
 	return r;
 }
 
-// radius客户端认证功能初始化
+// radius认证客户端初始化
 static int radius_client_init_auth(struct radius_client_data *radius)
 {
 	struct hostapd_radius_servers *conf = radius->conf;
@@ -1170,6 +1183,7 @@ static int radius_client_init_auth(struct radius_client_data *radius)
 	if (ok == 0)
 		return -1;
 
+    // 刷新radius认证服务器相关的内容
 	radius_change_server(radius, conf->auth_server, NULL,
 			     radius->auth_serv_sock, radius->auth_serv_sock6,
 			     1);
@@ -1290,7 +1304,7 @@ radius_client_init(void *ctx, struct hostapd_radius_servers *conf)
 		return NULL;
 	}
 
-    // 如果retry_primary_interval非零，则在这里注册一个超时事件
+    // 如果配置了primary-interval，意味着使能了主服务器重试间隔功能，则在这里注册一个重试间隔定时器
 	if (conf->retry_primary_interval)
 		eloop_register_timeout(conf->retry_primary_interval, 0,
 				       radius_retry_primary_timer, radius,

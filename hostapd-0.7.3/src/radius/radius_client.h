@@ -26,6 +26,8 @@ struct radius_msg;
  * mainly for MIB information. The MIB variable prefix (radiusAuth or
  * radiusAcc) depends on whether this is an authentication or accounting
  * server.
+ * radius客户端上记录的某个radius服务器信息（认证/计费服务器）
+ * 这些信息往往用于MIB库
  *
  * radiusAuthClientPendingRequests (or radiusAccClientPendingRequests) is the
  * number struct radius_client_data::msgs for matching msg_type.
@@ -55,6 +57,7 @@ struct hostapd_radius_server {
 
 	/**
 	 * index - radiusAuthServerIndex or radiusAccServerIndex
+     * 当前bss中该radius服务器的序号（认证/计费服务器分开排序）
 	 */
 	int index;
 
@@ -122,21 +125,23 @@ struct hostapd_radius_server {
 
 /**
  * struct hostapd_radius_servers - RADIUS servers for RADIUS client
- * radius客户端配置的radius服务器信息
+ * radius客户端配置的所有radius服务器信息管理块
  */
 struct hostapd_radius_servers {
 	/**
 	 * auth_servers - RADIUS Authentication servers in priority order
 	 */
-	struct hostapd_radius_server *auth_servers;         // radius认证服务器信息管理块
+	struct hostapd_radius_server *auth_servers;         // radius认证服务器信息管理块数组
 
 	/**
 	 * num_auth_servers - Number of auth_servers entries
+     * radius认证服务器数量
 	 */
 	int num_auth_servers;
 
 	/**
 	 * auth_server - The current Authentication server
+     * 指向当前使用的radius认证服务器
 	 */
 	struct hostapd_radius_server *auth_server;
 
@@ -164,7 +169,11 @@ struct hostapd_radius_servers {
 	 * requests. If this interval is set (non-zero), the primary server
 	 * will be retried after the specified number of seconds has passed
 	 * even if the current used secondary server is still working.
-     * 基础服务器的重试间隔(单位s)
+     * 主服务器的重试间隔(单位s)
+     * 以radius认证服务器为例，如果radius客户端配置了多个radius认证服务器，意味着有一个主服务器和若干个备份服务器，
+     * 当主服务器没有响应客户端发出的radius请求报文时，客户端会自动依次尝试使用备份服务器。
+     * 针对这种机制，由此产生了primfary-interval变量，表示客户端对主服务器的重试间隔，
+     * 即便备份服务器工作得很好，客户端都会在重试间隔之后尝试切换回主服务器
 	 */
 	int retry_primary_interval;
 

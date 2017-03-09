@@ -139,7 +139,7 @@ static int hostapd_set_sta_flags(struct hostapd_data *hapd,
 				     flags_or, flags_and);
 }
 
-// hostapd模式下802.1x驱动层操作
+// AP模式下802.1x驱动层操作
 static int hostapd_set_drv_ieee8021x(struct hostapd_data *hapd,
 				     const char *ifname, int enabled)
 {
@@ -378,7 +378,7 @@ void hostapd_set_driver_ops(struct hostapd_driver_ops *ops)
 	ops->set_countermeasures = hostapd_set_countermeasures;
 }
 
-
+// 设置隐私
 int hostapd_set_privacy(struct hostapd_data *hapd, int enabled)
 {
 	if (hapd->driver == NULL || hapd->driver->set_privacy == NULL)
@@ -395,7 +395,7 @@ int hostapd_set_generic_elem(struct hostapd_data *hapd, const u8 *elem,
 	return hapd->driver->set_generic_elem(hapd->drv_priv, elem, elem_len);
 }
 
-
+// 从驱动器中获取BSSID
 int hostapd_get_ssid(struct hostapd_data *hapd, u8 *buf, size_t len)
 {
 	if (hapd->driver == NULL || hapd->driver->hapd_get_ssid == NULL)
@@ -431,11 +431,10 @@ int hostapd_if_remove(struct hostapd_data *hapd, enum wpa_driver_if_type type,
 	return hapd->driver->if_remove(hapd->drv_priv, type, ifname);
 }
 
-// hostapd模式下802.1x驱动层操作
+// AP模式下802.1x驱动层操作
 int hostapd_set_ieee8021x(struct hostapd_data *hapd,
 			  struct wpa_bss_params *params)
 {
-    // 非hostapd模式就在这里直接返回
 	if (hapd->driver == NULL || hapd->driver->set_ieee8021x == NULL)
 		return 0;
 	return hapd->driver->set_ieee8021x(hapd->drv_priv, params);
@@ -451,7 +450,7 @@ int hostapd_get_seqnum(const char *ifname, struct hostapd_data *hapd,
 					seq);
 }
 
-
+// flush驱动器上的旧状态
 int hostapd_flush(struct hostapd_data *hapd)
 {
 	if (hapd->driver == NULL || hapd->driver->flush == NULL)
@@ -556,7 +555,7 @@ int hostapd_set_tx_queue_params(struct hostapd_data *hapd, int queue, int aifs,
 						 cw_min, cw_max, burst_time);
 }
 
-
+// 使bss mask生效
 int hostapd_valid_bss_mask(struct hostapd_data *hapd, const u8 *addr,
 			   const u8 *mask)
 {

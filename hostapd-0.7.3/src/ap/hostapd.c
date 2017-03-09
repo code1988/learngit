@@ -272,7 +272,7 @@ static void hostapd_cleanup_iface(struct hostapd_iface *iface)
 	os_free(iface);
 }
 
-
+// 设置WEP加密(wire类型驱动器在这里不做任何事)
 static int hostapd_setup_encryption(char *iface, struct hostapd_data *hapd)
 {
 	int i;
@@ -302,7 +302,7 @@ static int hostapd_setup_encryption(char *iface, struct hostapd_data *hapd)
 	return 0;
 }
 
-
+// 清除该接口上旧的状态(wire类型驱动器在这里实际上不做任何事)
 static int hostapd_flush_old_stations(struct hostapd_data *hapd)
 {
 	int ret = 0;
@@ -411,6 +411,7 @@ skip_mask_ext:
 	wpa_printf(MSG_DEBUG, "BSS count %lu, BSSID mask " MACSTR " (%d bits)",
 		   (unsigned long) iface->conf->num_bss, MAC2STR(mask), bits);
 
+    // 使bss mask生效（对于wire类型驱动器，这里不做任何事）
 	res = hostapd_valid_bss_mask(hapd, hapd->own_addr, mask);
 	if (res == 0)
 		return 0;
@@ -440,7 +441,7 @@ skip_mask_ext:
 	return 0;
 }
 
-
+// 判断配置文件中的bssid是否跟a相等，相等意味着冲突
 static int mac_in_conf(struct hostapd_config *conf, const void *a)
 {
 	size_t i;
@@ -476,9 +477,12 @@ static int hostapd_setup_bss(struct hostapd_data *hapd, int first)
 	char force_ifname[IFNAMSIZ];
 	u8 if_addr[ETH_ALEN];
 
+    // 如果不是接口上的第一个bss，需要执行一些额外的操作
 	if (!first) {
+        // 判断配置文件是否有配置bssid
 		if (hostapd_mac_comp_empty(hapd->conf->bssid) == 0) {
 			/* Allocate the next available BSSID. */
+            // 如果配置文件没有配置bssid，则基于接口mac地址自动分配一个不冲突的bssid
 			do {
 				inc_byte_array(hapd->own_addr, ETH_ALEN);
 			} while (mac_in_conf(hapd->iconf, hapd->own_addr));
@@ -506,9 +510,11 @@ static int hostapd_setup_bss(struct hostapd_data *hapd, int first)
 		}
 	}
 
+    // 清除该接口上旧的状态，并设置隐私(wire类型驱动器在这里实际上不做任何事)
 	hostapd_flush_old_stations(hapd);
 	hostapd_set_privacy(hapd, 0);
 
+    // 关闭wep的广播key功能，并设置加密(wire类型驱动器在这里实际上不做任何事)
 	hostapd_broadcast_wep_clear(hapd);
 	if (hostapd_setup_encryption(hapd->conf->iface, hapd))
 		return -1;
@@ -517,6 +523,8 @@ static int hostapd_setup_bss(struct hostapd_data *hapd, int first)
 	 * Fetch the SSID from the system and use it or,
 	 * if one was specified in the config file, verify they
 	 * match.
+     * 如果配置文件设置了bssid，则跟驱动器中获取的bssid比较，不同则用配置文件中的bssid覆盖驱动器中bssid
+     * 如果配置文件没有设置bssid，则用驱动器中获取的bssid设置到hostapd_bss_config中
 	 */
 	ssid_len = hostapd_get_ssid(hapd, ssid, sizeof(ssid));
 	if (ssid_len < 0) {
@@ -549,6 +557,7 @@ static int hostapd_setup_bss(struct hostapd_data *hapd, int first)
 			   hapd->conf->ssid.ssid);
 	}
 
+    // 设置wpa psk
 	if (hostapd_setup_wpa_psk(conf)) {
 		wpa_printf(MSG_ERROR, "WPA-PSK setup failed.");
 		return -1;
@@ -573,13 +582,16 @@ static int hostapd_setup_bss(struct hostapd_data *hapd, int first)
 	}
 #endif /* CONFIG_NO_RADIUS */
 
+    // 802.11 ACL功能初始化（有线环境用不到）
 	if (hostapd_acl_init(hapd)) {
 		wpa_printf(MSG_ERROR, "ACL initialization failed.");
 		return -1;
 	}
+    // 初始化wps功能（有线环境用不到）
 	if (hostapd_init_wps(hapd, conf))
 		return -1;
 
+    // radius服务器初始化（前提是配置了CONFIG_RADIUS_SERVER=y）
 	if (authsrv_init(hapd) < 0)
 		return -1;
 
@@ -672,6 +684,7 @@ static int setup_interface(struct hostapd_iface *iface)
 		}
 	}
 
+    // 获取网卡的硬件功能（交换机没有实体网卡，直接掠过这部分）
 	if (hostapd_get_hw_features(iface)) {
 		/* Not all drivers support this yet, so continue without hw
 		 * feature data. */
@@ -708,6 +721,8 @@ int hostapd_setup_interface_complete(struct hostapd_iface *iface, int err)
 	}
 
 	wpa_printf(MSG_DEBUG, "Completing interface initialization");
+
+    // 对于实体网卡通常会在这里配置通道参数、rts_threshold、fragm_threshold
 	if (hapd->iconf->channel) {
 		iface->freq = hostapd_hw_get_freq(hapd, hapd->iconf->channel);
 		wpa_printf(MSG_DEBUG, "Mode: %s  Channel: %d  "

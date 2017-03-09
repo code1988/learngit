@@ -43,7 +43,7 @@ void hostapd_free_hw_features(struct hostapd_hw_modes *hw_features,
 	os_free(hw_features);
 }
 
-
+// 获取网卡的硬件功能（交换机没有实体网卡，直接返回-1）
 int hostapd_get_hw_features(struct hostapd_iface *iface)
 {
 	struct hostapd_data *hapd = iface->bss[0];
