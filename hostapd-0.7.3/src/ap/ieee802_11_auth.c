@@ -486,6 +486,8 @@ hostapd_acl_recv_radius(struct radius_msg *msg, struct radius_msg *req,
  * hostapd_acl_init: Initialize IEEE 802.11 ACL
  * @hapd: hostapd BSS data
  * Returns: 0 on success, -1 on failure
+ * 802.11 acl功能初始化
+ * 备注：顾名思义，该功能用于服务无线环境，对于有线环境下，虽然执行了这里的初始化，但是没有任何意义
  */
 int hostapd_acl_init(struct hostapd_data *hapd)
 {

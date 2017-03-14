@@ -195,6 +195,7 @@ static int hostapd_config_read_maclist(const char *fname,
 
 
 #ifdef EAP_SERVER
+// 当使能了EAP认证服务器功能时，这里解析用户数据库文件
 static int hostapd_config_read_eap_user(const char *fname,
 					struct hostapd_bss_config *conf)
 {
@@ -1228,7 +1229,7 @@ struct hostapd_config * hostapd_config_read(const char *fname)
 			bss->logger_stdout = atoi(pos);
 		} else if (os_strcmp(buf, "dump_file") == 0) {
 			bss->dump_log_name = os_strdup(pos);
-		} else if (os_strcmp(buf, "ssid") == 0) {
+		} else if (os_strcmp(buf, "ssid") == 0) {           // "ssid"用来设置局域网名称，以便区分不同的网络(一个ssid代表一个AP)
 			bss->ssid.ssid_len = os_strlen(pos);
 			if (bss->ssid.ssid_len > HOSTAPD_MAX_SSID_LEN ||
 			    bss->ssid.ssid_len < 1) {
@@ -1298,7 +1299,7 @@ struct hostapd_config * hostapd_config_read(const char *fname)
 				   "renamed to eap_server", line);
 		} else if (os_strcmp(buf, "eap_server") == 0) {
 			bss->eap_server = atoi(pos);
-		} else if (os_strcmp(buf, "eap_user_file") == 0) {
+		} else if (os_strcmp(buf, "eap_user_file") == 0) {     // 当使能了EAP认证服务器功能时， "eap_user_file"用于配置用户数据库文件
 			if (hostapd_config_read_eap_user(pos, bss))
 				errors++;
 		} else if (os_strcmp(buf, "ca_cert") == 0) {
@@ -2024,8 +2025,8 @@ struct hostapd_config * hostapd_config_read(const char *fname)
 		else
 			bss->wpa_group = WPA_CIPHER_CCMP;
 
-		bss->radius->auth_server = bss->radius->auth_servers;
-		bss->radius->acct_server = bss->radius->acct_servers;
+		bss->radius->auth_server = bss->radius->auth_servers;   // 当前默认使用数组中0号radius认证服务器，作为主认证服务器
+		bss->radius->acct_server = bss->radius->acct_servers;   // 当前默认使用数组中0号radius计数服务器，作为主计数服务器
 
 		if (bss->wpa && bss->ieee802_1x) {
 			bss->ssid.security_policy = SECURITY_WPA;

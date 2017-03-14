@@ -55,7 +55,7 @@ int ap_for_each_sta(struct hostapd_data *hapd,
 	return 0;
 }
 
-// 从hash表中查找符合的入口sta_info
+// 在当前bss上的hash表中查找符合的入口sta_info（只在当前bss上找）
 struct sta_info * ap_get_sta(struct hostapd_data *hapd, const u8 *sta)
 {
 	struct sta_info *s;
@@ -86,7 +86,7 @@ static void ap_sta_list_del(struct hostapd_data *hapd, struct sta_info *sta)
 		tmp->next = sta->next;
 }
 
-// 将一个入口元素插入hash表
+// 将一个入口元素插入hash表(插入指定槽位链表的头部)
 void ap_sta_hash_add(struct hostapd_data *hapd, struct sta_info *sta)
 {
 	sta->hnext = hapd->sta_hash[STA_HASH(sta->addr)];
@@ -232,6 +232,7 @@ void hostapd_free_stas(struct hostapd_data *hapd)
  * ap_handle_timer - Per STA timer handler
  * @eloop_ctx: struct hostapd_data *
  * @timeout_ctx: struct sta_info *
+ * sta老化状态机
  *
  * This function is called to check station activity and to remove inactive
  * stations.
@@ -481,7 +482,7 @@ static int ap_sta_remove(struct hostapd_data *hapd, struct sta_info *sta)
 	return 0;
 }
 
-// 删除当前接口的其他bss中的指定入口元素sta_info
+// 删除当前接口的其他bss中的指定mac
 static void ap_sta_remove_in_other_bss(struct hostapd_data *hapd,
 				       struct sta_info *sta)
 {

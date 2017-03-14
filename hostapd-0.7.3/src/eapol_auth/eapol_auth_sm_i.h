@@ -43,7 +43,7 @@ struct eapol_authenticator {
 
 /**
  * struct eapol_state_machine - Per-Supplicant Authenticator state machines
- * 定义了每个请求者对应的认证系统eapol层所有状态机统一管理块
+ * 定义了每个请求者对应的认证系统eapol层 + eap层 所有状态机统一管理块
  */
 struct eapol_state_machine {
 	/* timers */
@@ -173,7 +173,7 @@ struct eapol_state_machine {
 	u8 *eapol_key_crypt;
 	size_t eapol_key_crypt_len;
 
-	struct eap_sm *eap;
+	struct eap_sm *eap; // 指向EAP层状态机
 
 	Boolean initializing; /* in process of initializing state machines 标志位，表示正在进行状态机初始化*/
 	Boolean changed;    // 记录eapol层状态机组的状态是否发生变化

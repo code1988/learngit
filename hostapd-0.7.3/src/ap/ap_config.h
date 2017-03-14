@@ -52,6 +52,7 @@ typedef enum hostap_security_policy {
 	SECURITY_WPA = 4
 } secpolicy;
 
+// ssid控制块
 struct hostapd_ssid {
 	char ssid[HOSTAPD_MAX_SSID_LEN + 1];
 	size_t ssid_len;
@@ -104,6 +105,7 @@ struct hostapd_wpa_psk {
 };
 
 #define EAP_USER_MAX_METHODS 8
+// 使能EAP认证服务器功能时使用，用户信息控制块，通常用于读取/存储用户数据库信息
 struct hostapd_eap_user {
 	struct hostapd_eap_user *next;
 	u8 *identity;
@@ -172,7 +174,7 @@ struct hostapd_bss_config {
 	struct hostapd_radius_servers *radius;      // radius客户端配置的radius服务器信息
 	int acct_interim_interval;      // 本地配置的 对于某个确定的会话，中间更新流量信息的时间间隔
 
-	struct hostapd_ssid ssid;
+	struct hostapd_ssid ssid;       // ssid(服务集标识)控制块，用来区分不同的网络
 
 	char *eap_req_id_text; /* optional displayable message sent with
 				* EAP Request-Identity 认证者发送eap-req-id时，附带一个可显示的信息，这是非必须的*/

@@ -601,14 +601,17 @@ static int hostapd_setup_bss(struct hostapd_data *hapd, int first)
 		return -1;
 	}
 
+    // 如果配置了wpa则初始化wpa
 	if (hapd->conf->wpa && hostapd_setup_wpa(hapd))
 		return -1;
 
+    // 初始化计费功能
 	if (accounting_init(hapd)) {
 		wpa_printf(MSG_ERROR, "Accounting initialization failed.");
 		return -1;
 	}
 
+    // 如果配置了802.11f则进行相应初始化
 	if (hapd->conf->ieee802_11f &&
 	    (hapd->iapp = iapp_init(hapd, hapd->conf->iapp_iface)) == NULL) {
 		wpa_printf(MSG_ERROR, "IEEE 802.11F (IAPP) initialization "
@@ -616,17 +619,20 @@ static int hostapd_setup_bss(struct hostapd_data *hapd, int first)
 		return -1;
 	}
 
+    // 初始化CLI接口
 	if (hapd->iface->ctrl_iface_init &&
 	    hapd->iface->ctrl_iface_init(hapd)) {
 		wpa_printf(MSG_ERROR, "Failed to setup control interface");
 		return -1;
 	}
 
+    // 初始化vlan设置
 	if (!hostapd_drv_none(hapd) && vlan_init(hapd)) {
 		wpa_printf(MSG_ERROR, "VLAN initialization failed.");
 		return -1;
 	}
 
+    // 802.11设置beacon
 	ieee802_11_set_beacon(hapd);
 
 	return 0;
@@ -767,10 +773,13 @@ int hostapd_setup_interface_complete(struct hostapd_iface *iface, int err)
 			prev_addr = hapd->own_addr;
 	}
 
+    // 设置发送队列
 	hostapd_tx_queue_params(iface);
 
+    // 作为AP时进行的初始化
 	ap_list_init(iface);
 
+    // 对于一些有commit功能的驱动器，初始化完毕后需要提交一下
 	if (hostapd_driver_commit(hapd) < 0) {
 		wpa_printf(MSG_ERROR, "%s: Failed to commit driver "
 			   "configuration", __func__);
@@ -894,7 +903,7 @@ void hostapd_new_assoc_sta(struct hostapd_data *hapd, struct sta_info *sta,
 		return;
 	}
 
-    // 字面意思是删除当前接口下一些无关联系
+    // 遍历所有接口，对指定mac做唯一性检查
 	hostapd_prune_associations(hapd, sta->addr);
 
 	/* IEEE 802.11F (IAPP) */
@@ -912,6 +921,8 @@ void hostapd_new_assoc_sta(struct hostapd_data *hapd, struct sta_info *sta,
 	/* Start IEEE 802.1X authentication process for new stations */
     // 对一个新的站表元素（就是一个新的入口，就是一个新的mac），这里开始进行802.1x认证处理
 	ieee802_1x_new_station(hapd, sta);
+
+    // wpa相关的，略
 	if (reassoc) {
 		if (sta->auth_alg != WLAN_AUTH_FT &&
 		    !(sta->flags & (WLAN_STA_WPS | WLAN_STA_MAYBE_WPS)))

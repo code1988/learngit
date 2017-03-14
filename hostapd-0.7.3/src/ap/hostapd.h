@@ -247,7 +247,7 @@ struct hostapd_iface {
 
 	int (*for_each_interface)(struct hapd_interfaces *interfaces,
 				  int (*cb)(struct hostapd_iface *iface,
-					    void *ctx), void *ctx);
+					    void *ctx), void *ctx);     // 遍历每个接口 hostapd_for_each_interface
 };
 
 /* hostapd.c */

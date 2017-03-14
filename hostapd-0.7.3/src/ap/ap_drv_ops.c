@@ -495,7 +495,6 @@ int hostapd_set_frag(struct hostapd_data *hapd, int frag)
 int hostapd_sta_set_flags(struct hostapd_data *hapd, u8 *addr,
 			  int total_flags, int flags_or, int flags_and)
 {
-    // 对于无驱动模式或者非AP模式来说，不需要进行任何操作，直接返回
 	if (hapd->driver == NULL || hapd->driver->sta_set_flags == NULL)
 		return 0;
 	return hapd->driver->sta_set_flags(hapd->drv_priv, addr, total_flags,

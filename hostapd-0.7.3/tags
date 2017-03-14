@@ -31,8 +31,8 @@ ANonce	src/ap/wpa_auth_i.h	/^	u8 ANonce[WPA_NONCE_LEN];$/;"	m	struct:wpa_state_m
 APPLE80211_H	src/drivers/Apple80211.h	2;"	d
 APPLE80211_VALUE_BSSID	src/drivers/MobileApple80211.h	/^	APPLE80211_VALUE_BSSID = 9$/;"	e	enum:__anon83
 APPLE80211_VALUE_SSID	src/drivers/MobileApple80211.h	/^	APPLE80211_VALUE_SSID = 1,$/;"	e	enum:__anon83
-AP_DEAUTH_DELAY	src/ap/sta_info.h	118;"	d
-AP_DISASSOC_DELAY	src/ap/sta_info.h	117;"	d
+AP_DEAUTH_DELAY	src/ap/sta_info.h	119;"	d
+AP_DISASSOC_DELAY	src/ap/sta_info.h	118;"	d
 AP_DRV_OPS	src/ap/ap_drv_ops.h	16;"	d
 AP_LIST_H	src/ap/ap_list.h	18;"	d
 AP_MAC_CMD_FLUSH	src/drivers/driver_hostap.h	/^       AP_MAC_CMD_POLICY_DENY = 2, AP_MAC_CMD_FLUSH = 3,$/;"	e	enum:__anon71
@@ -40,9 +40,9 @@ AP_MAC_CMD_KICKALL	src/drivers/driver_hostap.h	/^       AP_MAC_CMD_KICKALL = 4 }
 AP_MAC_CMD_POLICY_ALLOW	src/drivers/driver_hostap.h	/^enum { AP_MAC_CMD_POLICY_OPEN = 0, AP_MAC_CMD_POLICY_ALLOW = 1,$/;"	e	enum:__anon71
 AP_MAC_CMD_POLICY_DENY	src/drivers/driver_hostap.h	/^       AP_MAC_CMD_POLICY_DENY = 2, AP_MAC_CMD_FLUSH = 3,$/;"	e	enum:__anon71
 AP_MAC_CMD_POLICY_OPEN	src/drivers/driver_hostap.h	/^enum { AP_MAC_CMD_POLICY_OPEN = 0, AP_MAC_CMD_POLICY_ALLOW = 1,$/;"	e	enum:__anon71
-AP_MAX_INACTIVITY	src/ap/sta_info.h	116;"	d
-AP_MAX_INACTIVITY_AFTER_DEAUTH	src/ap/sta_info.h	123;"	d
-AP_MAX_INACTIVITY_AFTER_DISASSOC	src/ap/sta_info.h	121;"	d
+AP_MAX_INACTIVITY	src/ap/sta_info.h	117;"	d
+AP_MAX_INACTIVITY_AFTER_DEAUTH	src/ap/sta_info.h	124;"	d
+AP_MAX_INACTIVITY_AFTER_DISASSOC	src/ap/sta_info.h	122;"	d
 AP_STA_CONNECTED	src/common/wpa_ctrl.h	98;"	d
 AP_STA_DISCONNECTED	src/common/wpa_ctrl.h	99;"	d
 ASEL_CAPABILITY_ANT_INDICES_FEEDBACK_BASED_TX_AS_CAP	src/common/ieee802_11_defs.h	442;"	d
@@ -530,13 +530,13 @@ DRV_BOTH_OBJS	src/drivers/drivers.mak	/^DRV_BOTH_OBJS := $(DRV_OBJS) $(DRV_WPA_O
 DSConfig	src/drivers/driver_ndis.c	/^	ULONG DSConfig;$/;"	m	struct:NDIS_802_11_CONFIGURATION	file:	access:public
 DSConfig	src/drivers/driver_ralink.h	/^   ULONG                           DSConfig;           \/\/ Frequency, units are kHz$/;"	m	struct:_NDIS_802_11_CONFIGURATION	access:public
 DUMP_STATE_H	hostapd/dump_state.h	16;"	d
-DVLAN_CLEAN_BR	src/ap/ap_config.h	90;"	d
-DVLAN_CLEAN_VLAN	src/ap/ap_config.h	91;"	d
-DVLAN_CLEAN_VLAN_PORT	src/ap/ap_config.h	92;"	d
-DVLAN_CLEAN_WLAN_PORT	src/ap/ap_config.h	93;"	d
-DYNAMIC_VLAN_DISABLED	src/ap/ap_config.h	69;"	d
-DYNAMIC_VLAN_OPTIONAL	src/ap/ap_config.h	70;"	d
-DYNAMIC_VLAN_REQUIRED	src/ap/ap_config.h	71;"	d
+DVLAN_CLEAN_BR	src/ap/ap_config.h	91;"	d
+DVLAN_CLEAN_VLAN	src/ap/ap_config.h	92;"	d
+DVLAN_CLEAN_VLAN_PORT	src/ap/ap_config.h	93;"	d
+DVLAN_CLEAN_WLAN_PORT	src/ap/ap_config.h	94;"	d
+DYNAMIC_VLAN_DISABLED	src/ap/ap_config.h	70;"	d
+DYNAMIC_VLAN_OPTIONAL	src/ap/ap_config.h	71;"	d
+DYNAMIC_VLAN_REQUIRED	src/ap/ap_config.h	72;"	d
 Data	src/drivers/driver_ndis.c	/^    UCHAR Data[sizeof(ULONG)];$/;"	m	struct:_NDISUIO_QUERY_OID	file:	access:public
 Data	src/drivers/driver_ndis.c	/^    UCHAR Data[sizeof(ULONG)];$/;"	m	struct:_NDISUIO_SET_OID	file:	access:public
 DeauthenticationRequest	src/ap/wpa_auth_i.h	/^	Boolean DeauthenticationRequest;$/;"	m	struct:wpa_state_machine	access:public
@@ -976,7 +976,7 @@ EAP_TYPE_TLS	src/eap_common/eap_defs.h	/^	EAP_TYPE_TLS = 13 \/* RFC 2716 *\/,$/;
 EAP_TYPE_TLV	src/eap_common/eap_defs.h	/^	EAP_TYPE_TLV = 33 \/* draft-josefsson-pppext-eap-tls-eap-07.txt *\/,$/;"	e	enum:__anon114
 EAP_TYPE_TNC	src/eap_common/eap_defs.h	/^	EAP_TYPE_TNC = 38 \/* TNC IF-T v1.0-r3; note: tentative assignment;$/;"	e	enum:__anon114
 EAP_TYPE_TTLS	src/eap_common/eap_defs.h	/^	EAP_TYPE_TTLS = 21 \/* RFC 5281 *\/,$/;"	e	enum:__anon114
-EAP_USER_MAX_METHODS	src/ap/ap_config.h	106;"	d
+EAP_USER_MAX_METHODS	src/ap/ap_config.h	107;"	d
 EAP_VENDOR_ID	src/eap_peer/eap_vendor_test.c	28;"	d	file:
 EAP_VENDOR_ID	src/eap_server/eap_server_vendor_test.c	21;"	d	file:
 EAP_VENDOR_IETF	src/eap_common/eap_defs.h	/^	EAP_VENDOR_IETF = 0,$/;"	e	enum:__anon115
@@ -2616,7 +2616,7 @@ NUM_INTEG_ALGS	src/eap_common/ikev2_common.c	29;"	d	file:
 NUM_PRF_ALGS	src/eap_common/ikev2_common.c	37;"	d	file:
 NUM_TLS_CIPHER_DATA	src/tls/tlsv1_common.c	83;"	d	file:
 NUM_TLS_CIPHER_SUITES	src/tls/tlsv1_common.c	57;"	d	file:
-NUM_TX_QUEUES	src/ap/ap_config.h	126;"	d
+NUM_TX_QUEUES	src/ap/ap_config.h	128;"	d
 NUM_WEP_KEYS	src/ap/ap_config.h	38;"	d
 Ndis802_11AuthModeAutoSwitch	src/drivers/driver_ndis.c	/^	Ndis802_11AuthModeAutoSwitch,$/;"	e	enum:NDIS_802_11_AUTHENTICATION_MODE	file:
 Ndis802_11AuthModeAutoSwitch	src/drivers/driver_ralink.h	/^   Ndis802_11AuthModeAutoSwitch,$/;"	e	enum:_NDIS_802_11_AUTHENTICATION_MODE
@@ -2860,7 +2860,7 @@ PMKID_HASH_SIZE	src/ap/pmksa_cache_auth.c	30;"	d	file:
 PMKID_LEN	src/common/wpa_common.h	21;"	d
 PMKSA_CACHE_H	src/ap/pmksa_cache_auth.h	16;"	d
 PMKSA_CACHE_H	src/rsn_supp/pmksa_cache.h	16;"	d
-PMK_LEN	src/ap/ap_config.h	98;"	d
+PMK_LEN	src/ap/ap_config.h	99;"	d
 PMK_LEN	src/common/wpa_common.h	22;"	d
 PMLME_DEAUTH_REQ_STRUCT	src/drivers/driver_ralink.h	/^} MLME_DEAUTH_REQ_STRUCT, *PMLME_DEAUTH_REQ_STRUCT;$/;"	t	typeref:struct:_MLME_DEAUTH_REQ_STRUCT
 PN531_PATH	hostapd/Makefile	/^PN531_PATH ?= \/usr\/local\/src\/nfc$/;"	m
@@ -4254,7 +4254,7 @@ Unauthorized	src/eapol_supp/eapol_supp_sm.h	/^typedef enum { Unauthorized, Autho
 VENDOR_HT_CAPAB_OUI_TYPE	src/common/ieee802_11_defs.h	592;"	d
 VERSION_H	src/common/version.h	2;"	d
 VERSION_STR	src/common/version.h	4;"	d
-VLAN_ID_WILDCARD	src/ap/ap_config.h	81;"	d
+VLAN_ID_WILDCARD	src/ap/ap_config.h	82;"	d
 VLAN_INIT_H	src/ap/vlan_init.h	17;"	d
 VOID	src/drivers/driver_ralink.h	93;"	d
 Version	src/drivers/driver_ndis.c	/^	ULONG Version;$/;"	m	struct:NDIS_802_11_CAPABILITY	file:	access:public
@@ -5423,8 +5423,8 @@ acct_interim_interval	src/ap/sta_info.h	/^	int acct_interim_interval;  \/\/ 描�
 acct_mac	src/drivers/driver_atheros.c	/^	u8	acct_mac[ETH_ALEN];$/;"	m	struct:madwifi_driver_data	file:	access:public
 acct_mac	src/drivers/driver_madwifi.c	/^	u8	acct_mac[ETH_ALEN];$/;"	m	struct:madwifi_driver_data	file:	access:public
 acct_output_gigawords	src/ap/sta_info.h	/^	u32 acct_output_gigawords; \/* Acct-Output-Gigawords *\/$/;"	m	struct:sta_info	access:public
-acct_serv_sock	src/radius/radius_client.c	/^	int acct_serv_sock;     \/\/ radius计费服务用的socket$/;"	m	struct:radius_client_data	file:	access:public
-acct_serv_sock6	src/radius/radius_client.c	/^	int acct_serv_sock6;$/;"	m	struct:radius_client_data	file:	access:public
+acct_serv_sock	src/radius/radius_client.c	/^	int acct_serv_sock;     \/\/ radius计费服务用的IPV4 socket$/;"	m	struct:radius_client_data	file:	access:public
+acct_serv_sock6	src/radius/radius_client.c	/^	int acct_serv_sock6;    \/\/ radius计费服务用的IPV6 socket$/;"	m	struct:radius_client_data	file:	access:public
 acct_server	src/radius/radius_client.h	/^	struct hostapd_radius_server *acct_server;$/;"	m	struct:hostapd_radius_servers	typeref:struct:hostapd_radius_servers::hostapd_radius_server	access:public
 acct_servers	src/radius/radius_client.h	/^	struct hostapd_radius_server *acct_servers;         \/\/ radius计费服务器信息管理块$/;"	m	struct:hostapd_radius_servers	typeref:struct:hostapd_radius_servers::hostapd_radius_server	access:public
 acct_session_id_hi	src/ap/hostapd.h	/^	u32 acct_session_id_hi, acct_session_id_lo;$/;"	m	struct:hostapd_data	access:public
@@ -5433,7 +5433,7 @@ acct_session_id_lo	src/ap/hostapd.h	/^	u32 acct_session_id_hi, acct_session_id_l
 acct_session_id_lo	src/ap/sta_info.h	/^	u32 acct_session_id_lo;$/;"	m	struct:sta_info	access:public
 acct_session_start	src/ap/sta_info.h	/^	time_t acct_session_start;$/;"	m	struct:sta_info	access:public
 acct_session_started	src/ap/sta_info.h	/^	int acct_session_started;$/;"	m	struct:sta_info	access:public
-acct_sock	src/radius/radius_client.c	/^	int acct_sock;$/;"	m	struct:radius_client_data	file:	access:public
+acct_sock	src/radius/radius_client.c	/^	int acct_sock;      \/\/ 当前选用的radius计费服务socket$/;"	m	struct:radius_client_data	file:	access:public
 acct_terminate_cause	src/ap/sta_info.h	/^	int acct_terminate_cause; \/* Acct-Terminate-Cause *\/$/;"	m	struct:sta_info	access:public
 aci_aifsn	src/common/ieee802_11_defs.h	/^	u8 aci_aifsn; \/* AIFSN, ACM, ACI *\/$/;"	m	struct:wmm_ac_parameter	access:public
 ack	src/drivers/driver.h	/^		int ack;$/;"	m	struct:wpa_event_data::tx_status	access:public
@@ -5922,12 +5922,12 @@ auth_response	src/eap_peer/eap_ttls.c	/^	u8 auth_response[MSCHAPV2_AUTH_RESPONSE
 auth_response	src/eap_server/eap_server_mschapv2.c	/^	u8 auth_response[20];$/;"	m	struct:eap_mschapv2_data	file:	access:public
 auth_response_valid	src/eap_peer/eap_mschapv2.c	/^	int auth_response_valid;$/;"	m	struct:eap_mschapv2_data	file:	access:public
 auth_response_valid	src/eap_peer/eap_ttls.c	/^	int auth_response_valid;$/;"	m	struct:eap_ttls_data	file:	access:public
-auth_serv_sock	src/radius/radius_client.c	/^	int auth_serv_sock;     \/\/ radius认证服务用的socket$/;"	m	struct:radius_client_data	file:	access:public
-auth_serv_sock6	src/radius/radius_client.c	/^	int auth_serv_sock6;$/;"	m	struct:radius_client_data	file:	access:public
+auth_serv_sock	src/radius/radius_client.c	/^	int auth_serv_sock;     \/\/ radius认证服务用的IPV4 socket$/;"	m	struct:radius_client_data	file:	access:public
+auth_serv_sock6	src/radius/radius_client.c	/^	int auth_serv_sock6;    \/\/ radius认证服务用的IPV6 socket$/;"	m	struct:radius_client_data	file:	access:public
 auth_server	src/radius/radius_client.h	/^	struct hostapd_radius_server *auth_server;$/;"	m	struct:hostapd_radius_servers	typeref:struct:hostapd_radius_servers::hostapd_radius_server	access:public
-auth_servers	src/radius/radius_client.h	/^	struct hostapd_radius_server *auth_servers;         \/\/ radius认证服务器信息管理块$/;"	m	struct:hostapd_radius_servers	typeref:struct:hostapd_radius_servers::hostapd_radius_server	access:public
+auth_servers	src/radius/radius_client.h	/^	struct hostapd_radius_server *auth_servers;         \/\/ radius认证服务器信息管理块数组$/;"	m	struct:hostapd_radius_servers	typeref:struct:hostapd_radius_servers::hostapd_radius_server	access:public
 auth_shared_key	src/ap/ieee802_11.c	/^static u16 auth_shared_key(struct hostapd_data *hapd, struct sta_info *sta,$/;"	f	file:	signature:(struct hostapd_data *hapd, struct sta_info *sta, u16 auth_transaction, const u8 *challenge, int iswep)
-auth_sock	src/radius/radius_client.c	/^	int auth_sock;$/;"	m	struct:radius_client_data	file:	access:public
+auth_sock	src/radius/radius_client.c	/^	int auth_sock;      \/\/ 当前选用的radius认证服务socket$/;"	m	struct:radius_client_data	file:	access:public
 auth_sock	src/radius/radius_server.c	/^	int auth_sock;$/;"	m	struct:radius_server_data	file:	access:public
 auth_supported	src/drivers/driver_nl80211.c	/^	int auth_supported;$/;"	m	struct:wiphy_info_data	file:	access:public
 auth_transaction	src/common/ieee802_11_defs.h	/^			le16 auth_transaction;$/;"	m	struct:ieee80211_mgmt::__anon37::__anon38	access:public
@@ -6059,7 +6059,7 @@ br_delbr	src/ap/vlan_init.c	/^static int br_delbr(const char *br_name)$/;"	f	fil
 br_delif	src/ap/vlan_init.c	/^static int br_delif(const char *br_name, const char *if_name)$/;"	f	file:	signature:(const char *br_name, const char *if_name)
 br_getnumports	src/ap/vlan_init.c	/^static int br_getnumports(const char *br_name)$/;"	f	file:	signature:(const char *br_name)
 bridge	src/ap/ap_config.h	/^	char bridge[IFNAMSIZ + 1];	\/\/ 此bss所属的网桥名，网桥这个参数这里似乎没有用在wire类型的驱动器中$/;"	m	struct:hostapd_bss_config	access:public
-bridge	src/drivers/driver.h	/^	char **bridge;      \/\/ 记录网桥名字的数组$/;"	m	struct:wpa_init_params	access:public
+bridge	src/drivers/driver.h	/^	char **bridge;      \/\/ 记录网桥名字的数组（网桥这个参数似乎没有用在wire类型的驱动器中）$/;"	m	struct:wpa_init_params	access:public
 bridge_ifname	src/rsn_supp/wpa_i.h	/^	const char *bridge_ifname;$/;"	m	struct:wpa_sm	access:public
 brname	src/drivers/driver_nl80211.c	/^	char brname[IFNAMSIZ];$/;"	m	struct:wpa_driver_nl80211_data	file:	access:public
 broadcast_key_idx_max	src/ap/ap_config.h	/^	int broadcast_key_idx_min, broadcast_key_idx_max;$/;"	m	struct:hostapd_bss_config	access:public
@@ -7080,7 +7080,7 @@ ea	src/drivers/driver_broadcom.c	/^	struct ether_addr ea;$/;"	m	struct:__anon96	
 eap	src/eap_peer/eap_tls_common.h	/^	struct eap_sm *eap;$/;"	m	struct:eap_ssl_data	typeref:struct:eap_ssl_data::eap_sm	access:public
 eap	src/eap_server/eap_server_ttls.c	/^	u8 *eap;$/;"	m	struct:eap_ttls_avp	file:	access:public
 eap	src/eap_server/eap_tls_common.h	/^	struct eap_sm *eap;$/;"	m	struct:eap_ssl_data	typeref:struct:eap_ssl_data::eap_sm	access:public
-eap	src/eapol_auth/eapol_auth_sm_i.h	/^	struct eap_sm *eap;$/;"	m	struct:eapol_state_machine	typeref:struct:eapol_state_machine::eap_sm	access:public
+eap	src/eapol_auth/eapol_auth_sm_i.h	/^	struct eap_sm *eap; \/\/ 指向EAP层状态机$/;"	m	struct:eapol_state_machine	typeref:struct:eapol_state_machine::eap_sm	access:public
 eap	src/eapol_supp/eapol_supp_sm.c	/^	struct eap_sm *eap;$/;"	m	struct:eapol_sm	typeref:struct:eapol_sm::eap_sm	file:	access:public
 eap	src/radius/radius_server.c	/^	struct eap_sm *eap;$/;"	m	struct:radius_session	typeref:struct:radius_session::eap_sm	file:	access:public
 eapFail	src/eap_server/eap.h	/^	Boolean eapFail;        \/\/ 此标志由EAP层管理，EAP层AUTH SM进入FAIL状态时设置TRUE并填充eapReqData，进入INITIALIZE状态时设置FALSE$/;"	m	struct:eap_eapol_interface	access:public
@@ -9599,7 +9599,7 @@ eapolEap	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean eapolEap;   \/\/ 作为认�
 eapolEap	src/eapol_supp/eapol_supp_sm.c	/^	Boolean eapolEap;$/;"	m	struct:eapol_sm	file:	access:public
 eapolLogoff	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean eapolLogoff;    \/\/ eapol层接收到eapol-logoff报文时设置TRUE；状态机进入DISCONNECTED\/HELD状态时设置FALSE$/;"	m	struct:eapol_state_machine	access:public
 eapolStart	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean eapolStart;     \/\/ eapol层接收到eapol-start报文时设置TRUE；状态机进入AUTHENTICATING\/FORCE_AUTH\/FORCE_UNAUTH状态时设置FALSE$/;"	m	struct:eapol_state_machine	access:public
-eapol_auth	src/ap/hostapd.h	/^	struct eapol_authenticator *eapol_auth;$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::eapol_authenticator	access:public
+eapol_auth	src/ap/hostapd.h	/^	struct eapol_authenticator *eapol_auth;     \/\/ 供认证者使用的eapol层数据块$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::eapol_authenticator	access:public
 eapol_auth_alloc	src/eapol_auth/eapol_auth_sm.c	/^eapol_auth_alloc(struct eapol_authenticator *eapol, const u8 *addr,$/;"	f	signature:(struct eapol_authenticator *eapol, const u8 *addr, int flags, const struct wpabuf *assoc_wps_ie, void *sta_ctx)
 eapol_auth_alloc	src/eapol_auth/eapol_auth_sm.h	/^eapol_auth_alloc(struct eapol_authenticator *eapol, const u8 *addr,$/;"	p	signature:(struct eapol_authenticator *eapol, const u8 *addr, int flags, const struct wpabuf *assoc_wps_ie, void *sta_ctx)
 eapol_auth_cb	src/eapol_auth/eapol_auth_sm.h	/^struct eapol_auth_cb {$/;"	s
@@ -9634,7 +9634,7 @@ eapol_auth_config::pac_key_refresh_time	src/eapol_auth/eapol_auth_sm.h	/^	int pa
 eapol_auth_config::pac_opaque_encr_key	src/eapol_auth/eapol_auth_sm.h	/^	u8 *pac_opaque_encr_key;$/;"	m	struct:eapol_auth_config	access:public
 eapol_auth_config::ssl_ctx	src/eapol_auth/eapol_auth_sm.h	/^	void *ssl_ctx;$/;"	m	struct:eapol_auth_config	access:public
 eapol_auth_config::tnc	src/eapol_auth/eapol_auth_sm.h	/^	int tnc;$/;"	m	struct:eapol_auth_config	access:public
-eapol_auth_config::wpa	src/eapol_auth/eapol_auth_sm.h	/^	int wpa;                \/\/ wpa功能的位码$/;"	m	struct:eapol_auth_config	access:public
+eapol_auth_config::wpa	src/eapol_auth/eapol_auth_sm.h	/^	int wpa;                \/\/ wpa\/wpa2功能选择位$/;"	m	struct:eapol_auth_config	access:public
 eapol_auth_config::wps	src/eapol_auth/eapol_auth_sm.h	/^	struct wps_context *wps;$/;"	m	struct:eapol_auth_config	typeref:struct:eapol_auth_config::wps_context	access:public
 eapol_auth_deinit	src/eapol_auth/eapol_auth_sm.c	/^void eapol_auth_deinit(struct eapol_authenticator *eapol)$/;"	f	signature:(struct eapol_authenticator *eapol)
 eapol_auth_deinit	src/eapol_auth/eapol_auth_sm.h	/^void eapol_auth_deinit(struct eapol_authenticator *eapol);$/;"	p	signature:(struct eapol_authenticator *eapol)
@@ -10004,7 +10004,7 @@ eapol_state_machine::dot1xAuthEapolRespIdFramesRx	src/eapol_auth/eapol_auth_sm_i
 eapol_state_machine::dot1xAuthEapolStartFramesRx	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter dot1xAuthEapolStartFramesRx;$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::dot1xAuthInvalidEapolFramesRx	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter dot1xAuthInvalidEapolFramesRx;$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::dot1xAuthLastEapolFrameVersion	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter dot1xAuthLastEapolFrameVersion;$/;"	m	struct:eapol_state_machine	access:public
-eapol_state_machine::eap	src/eapol_auth/eapol_auth_sm_i.h	/^	struct eap_sm *eap;$/;"	m	struct:eapol_state_machine	typeref:struct:eapol_state_machine::eap_sm	access:public
+eapol_state_machine::eap	src/eapol_auth/eapol_auth_sm_i.h	/^	struct eap_sm *eap; \/\/ 指向EAP层状态机$/;"	m	struct:eapol_state_machine	typeref:struct:eapol_state_machine::eap_sm	access:public
 eapol_state_machine::eap_if	src/eapol_auth/eapol_auth_sm_i.h	/^	struct eap_eapol_interface *eap_if;     \/\/ 指向EAP<-->EAPOL交互接口地址$/;"	m	struct:eapol_state_machine	typeref:struct:eapol_state_machine::eap_eapol_interface	access:public
 eapol_state_machine::eap_type_authsrv	src/eapol_auth/eapol_auth_sm_i.h	/^	u8 eap_type_authsrv; \/* EAP type of the last EAP packet from$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::eap_type_supp	src/eapol_auth/eapol_auth_sm_i.h	/^	u8 eap_type_supp; \/* EAP type of the last EAP packet from Supplicant 记录了从请求者发来的最后一个EAP报文的type字段*\/$/;"	m	struct:eapol_state_machine	access:public
@@ -11033,7 +11033,7 @@ hostapd_bss_config::ieee802_11f	src/ap/ap_config.h	/^	int ieee802_11f; \/* use I
 hostapd_bss_config::ieee802_1x	src/ap/ap_config.h	/^	int ieee802_1x; \/* use IEEE 802.1X *\/$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::iface	src/ap/ap_config.h	/^	char iface[IFNAMSIZ + 1];	\/\/ 此bss名$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::ignore_broadcast_ssid	src/ap/ap_config.h	/^	int ignore_broadcast_ssid;$/;"	m	struct:hostapd_bss_config	access:public
-hostapd_bss_config::individual_wep_key_len	src/ap/ap_config.h	/^	int individual_wep_key_len;$/;"	m	struct:hostapd_bss_config	access:public
+hostapd_bss_config::individual_wep_key_len	src/ap/ap_config.h	/^	int individual_wep_key_len;     \/\/ 设置WEP用的key长度(不用wep就不用管)$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::logger_stdout	src/ap/ap_config.h	/^	unsigned int logger_stdout; \/* module bitfield *\/$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::logger_stdout_level	src/ap/ap_config.h	/^	enum hostapd_logger_level logger_syslog_level, logger_stdout_level;$/;"	m	struct:hostapd_bss_config	typeref:enum:hostapd_bss_config::	access:public
 hostapd_bss_config::logger_syslog	src/ap/ap_config.h	/^	unsigned int logger_syslog; \/* module bitfield *\/$/;"	m	struct:hostapd_bss_config	access:public
@@ -11076,7 +11076,7 @@ hostapd_bss_config::rsn_preauth_interfaces	src/ap/ap_config.h	/^	char *rsn_preau
 hostapd_bss_config::serial_number	src/ap/ap_config.h	/^	char *serial_number;$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::server_cert	src/ap/ap_config.h	/^	char *server_cert;$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::skip_cred_build	src/ap/ap_config.h	/^	int skip_cred_build;$/;"	m	struct:hostapd_bss_config	access:public
-hostapd_bss_config::ssid	src/ap/ap_config.h	/^	struct hostapd_ssid ssid;$/;"	m	struct:hostapd_bss_config	typeref:struct:hostapd_bss_config::hostapd_ssid	access:public
+hostapd_bss_config::ssid	src/ap/ap_config.h	/^	struct hostapd_ssid ssid;       \/\/ ssid(服务集标识)控制块，用来区分不同的网络$/;"	m	struct:hostapd_bss_config	typeref:struct:hostapd_bss_config::hostapd_ssid	access:public
 hostapd_bss_config::test_socket	src/ap/ap_config.h	/^	char *test_socket; \/* UNIX domain socket path for driver_test *\/$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::tnc	src/ap/ap_config.h	/^	int tnc;$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::upc	src/ap/ap_config.h	/^	char *upc;$/;"	m	struct:hostapd_bss_config	access:public
@@ -11086,10 +11086,10 @@ hostapd_bss_config::uuid	src/ap/ap_config.h	/^	u8 uuid[16];$/;"	m	struct:hostapd
 hostapd_bss_config::vlan	src/ap/ap_config.h	/^	struct hostapd_vlan *vlan, *vlan_tail;$/;"	m	struct:hostapd_bss_config	typeref:struct:hostapd_bss_config::hostapd_vlan	access:public
 hostapd_bss_config::vlan_tail	src/ap/ap_config.h	/^	struct hostapd_vlan *vlan, *vlan_tail;$/;"	m	struct:hostapd_bss_config	typeref:struct:hostapd_bss_config::	access:public
 hostapd_bss_config::wds_sta	src/ap/ap_config.h	/^	int wds_sta;$/;"	m	struct:hostapd_bss_config	access:public
-hostapd_bss_config::wep_rekeying_period	src/ap/ap_config.h	/^	int wep_rekeying_period;$/;"	m	struct:hostapd_bss_config	access:public
+hostapd_bss_config::wep_rekeying_period	src/ap/ap_config.h	/^	int wep_rekeying_period;        \/\/ 设置WEP用的key周期$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::wmm_enabled	src/ap/ap_config.h	/^	int wmm_enabled;$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::wmm_uapsd	src/ap/ap_config.h	/^	int wmm_uapsd;$/;"	m	struct:hostapd_bss_config	access:public
-hostapd_bss_config::wpa	src/ap/ap_config.h	/^	int wpa; \/* bitfield of WPA_PROTO_WPA, WPA_PROTO_RSN *\/$/;"	m	struct:hostapd_bss_config	access:public
+hostapd_bss_config::wpa	src/ap/ap_config.h	/^	int wpa; \/* bitfield of WPA_PROTO_WPA, WPA_PROTO_RSN wpa\/wpa2功能选择位*\/$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::wpa_gmk_rekey	src/ap/ap_config.h	/^	int wpa_gmk_rekey;$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::wpa_group	src/ap/ap_config.h	/^	int wpa_group;$/;"	m	struct:hostapd_bss_config	access:public
 hostapd_bss_config::wpa_group_rekey	src/ap/ap_config.h	/^	int wpa_group_rekey;$/;"	m	struct:hostapd_bss_config	access:public
@@ -11258,7 +11258,7 @@ hostapd_data::driver	src/ap/hostapd.h	/^	const struct wpa_driver_ops *driver;   
 hostapd_data::drv	src/ap/hostapd.h	/^	struct hostapd_driver_ops drv;          \/\/ AP模式下驱动接口(在具体类型驱动上又做的一层封装)$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::hostapd_driver_ops	access:public
 hostapd_data::drv_priv	src/ap/hostapd.h	/^	void *drv_priv;                         \/\/ 指向此bss所使用的具体类型驱动控制块$/;"	m	struct:hostapd_data	access:public
 hostapd_data::eap_sim_db_priv	src/ap/hostapd.h	/^	void *eap_sim_db_priv;$/;"	m	struct:hostapd_data	access:public
-hostapd_data::eapol_auth	src/ap/hostapd.h	/^	struct eapol_authenticator *eapol_auth;$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::eapol_authenticator	access:public
+hostapd_data::eapol_auth	src/ap/hostapd.h	/^	struct eapol_authenticator *eapol_auth;     \/\/ 供认证者使用的eapol层数据块$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::eapol_authenticator	access:public
 hostapd_data::full_dynamic_vlan	src/ap/hostapd.h	/^	struct full_dynamic_vlan *full_dynamic_vlan;$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::full_dynamic_vlan	access:public
 hostapd_data::iapp	src/ap/hostapd.h	/^	struct iapp_data *iapp;$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::iapp_data	access:public
 hostapd_data::iconf	src/ap/hostapd.h	/^	struct hostapd_config *iconf;       \/\/ 指向上层hostapd_iface->conf$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::hostapd_config	access:public
@@ -11271,7 +11271,7 @@ hostapd_data::msg_ctx	src/ap/hostapd.h	/^	void *msg_ctx; \/* ctx for wpa_msg() c
 hostapd_data::new_assoc_sta_cb	src/ap/hostapd.h	/^	void (*new_assoc_sta_cb)(struct hostapd_data *hapd,$/;"	m	struct:hostapd_data	access:public
 hostapd_data::num_probereq_cb	src/ap/hostapd.h	/^	size_t num_probereq_cb;$/;"	m	struct:hostapd_data	access:public
 hostapd_data::num_sta	src/ap/hostapd.h	/^	int num_sta; \/* number of entries in sta_list 链表形式站表中入口数量*\/$/;"	m	struct:hostapd_data	access:public
-hostapd_data::own_addr	src/ap/hostapd.h	/^	u8 own_addr[ETH_ALEN];              \/\/ 保存此bss的BSSID（估计就是mac，调用driver层初始化时被配置）$/;"	m	struct:hostapd_data	access:public
+hostapd_data::own_addr	src/ap/hostapd.h	/^	u8 own_addr[ETH_ALEN];              \/\/ 保存此bss的BSSID（对于wire类型驱动器来说就是mac，调用driver层初始化时被配置）$/;"	m	struct:hostapd_data	access:public
 hostapd_data::parameter_set_count	src/ap/hostapd.h	/^	int parameter_set_count;$/;"	m	struct:hostapd_data	access:public
 hostapd_data::preauth_iface	src/ap/hostapd.h	/^	struct rsn_preauth_interface *preauth_iface;$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::rsn_preauth_interface	access:public
 hostapd_data::probereq_cb	src/ap/hostapd.h	/^	struct hostapd_probereq_cb *probereq_cb;$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::hostapd_probereq_cb	access:public
@@ -11550,7 +11550,7 @@ hostapd_radius_servers	src/radius/radius_client.h	/^struct hostapd_radius_server
 hostapd_radius_servers::acct_server	src/radius/radius_client.h	/^	struct hostapd_radius_server *acct_server;$/;"	m	struct:hostapd_radius_servers	typeref:struct:hostapd_radius_servers::hostapd_radius_server	access:public
 hostapd_radius_servers::acct_servers	src/radius/radius_client.h	/^	struct hostapd_radius_server *acct_servers;         \/\/ radius计费服务器信息管理块$/;"	m	struct:hostapd_radius_servers	typeref:struct:hostapd_radius_servers::hostapd_radius_server	access:public
 hostapd_radius_servers::auth_server	src/radius/radius_client.h	/^	struct hostapd_radius_server *auth_server;$/;"	m	struct:hostapd_radius_servers	typeref:struct:hostapd_radius_servers::hostapd_radius_server	access:public
-hostapd_radius_servers::auth_servers	src/radius/radius_client.h	/^	struct hostapd_radius_server *auth_servers;         \/\/ radius认证服务器信息管理块$/;"	m	struct:hostapd_radius_servers	typeref:struct:hostapd_radius_servers::hostapd_radius_server	access:public
+hostapd_radius_servers::auth_servers	src/radius/radius_client.h	/^	struct hostapd_radius_server *auth_servers;         \/\/ radius认证服务器信息管理块数组$/;"	m	struct:hostapd_radius_servers	typeref:struct:hostapd_radius_servers::hostapd_radius_server	access:public
 hostapd_radius_servers::client_addr	src/radius/radius_client.h	/^	struct hostapd_ip_addr client_addr;$/;"	m	struct:hostapd_radius_servers	typeref:struct:hostapd_radius_servers::hostapd_ip_addr	access:public
 hostapd_radius_servers::force_client_addr	src/radius/radius_client.h	/^	int force_client_addr;$/;"	m	struct:hostapd_radius_servers	access:public
 hostapd_radius_servers::msg_dumps	src/radius/radius_client.h	/^	int msg_dumps;$/;"	m	struct:hostapd_radius_servers	access:public
@@ -12803,7 +12803,7 @@ include_tls_length	src/eap_peer/eap_tls_common.h	/^	int include_tls_length;$/;"	
 index	src/drivers/driver.h	/^		int index;$/;"	m	struct:wpa_event_data::pmkid_candidate	access:public
 index	src/drivers/wireless_copy.h	/^	__u32		index; \/* the smaller the index, the higher the$/;"	m	struct:iw_pmkid_cand	access:public
 index	src/radius/radius_client.h	/^	int index;$/;"	m	struct:hostapd_radius_server	access:public
-individual_wep_key_len	src/ap/ap_config.h	/^	int individual_wep_key_len;$/;"	m	struct:hostapd_bss_config	access:public
+individual_wep_key_len	src/ap/ap_config.h	/^	int individual_wep_key_len;     \/\/ 设置WEP用的key长度(不用wep就不用管)$/;"	m	struct:hostapd_bss_config	access:public
 individual_wep_key_len	src/eapol_auth/eapol_auth_sm.h	/^	int individual_wep_key_len;$/;"	m	struct:eapol_auth_config	access:public
 info1	src/drivers/Apple80211.h	/^	WirelessInfo info1;$/;"	m	struct:WirelessInfo2	access:public
 init	src/drivers/driver.h	/^	void * (*init)(void *ctx, const char *ifname);$/;"	m	struct:wpa_driver_ops	access:public
@@ -14763,7 +14763,7 @@ out_used	src/eap_server/eap_server_tnc.c	/^	size_t out_used;$/;"	m	struct:eap_tn
 out_used	src/eap_server/eap_server_wsc.c	/^	size_t out_used;$/;"	m	struct:eap_wsc_data	file:	access:public
 over_the_ds_in_progress	src/rsn_supp/wpa_i.h	/^	int over_the_ds_in_progress;$/;"	m	struct:wpa_sm	access:public
 own	src/ap/iapp.c	/^	struct in_addr own, multicast;$/;"	m	struct:iapp_data	typeref:struct:iapp_data::in_addr	file:	access:public
-own_addr	src/ap/hostapd.h	/^	u8 own_addr[ETH_ALEN];              \/\/ 保存此bss的BSSID（估计就是mac，调用driver层初始化时被配置）$/;"	m	struct:hostapd_data	access:public
+own_addr	src/ap/hostapd.h	/^	u8 own_addr[ETH_ALEN];              \/\/ 保存此bss的BSSID（对于wire类型驱动器来说就是mac，调用driver层初始化时被配置）$/;"	m	struct:hostapd_data	access:public
 own_addr	src/drivers/driver.h	/^	u8 *own_addr; \/* buffer for writing own MAC address *\/$/;"	m	struct:wpa_init_params	access:public
 own_addr	src/drivers/driver_ndis.h	/^	u8 own_addr[ETH_ALEN];$/;"	m	struct:wpa_driver_ndis_data	access:public
 own_addr	src/drivers/driver_privsep.c	/^	u8 own_addr[ETH_ALEN];$/;"	m	struct:wpa_driver_privsep_data	file:	access:public
@@ -15500,13 +15500,13 @@ radius_client::shared_secret	src/radius/radius_server.c	/^	char *shared_secret;$
 radius_client::shared_secret_len	src/radius/radius_server.c	/^	int shared_secret_len;$/;"	m	struct:radius_client	file:	access:public
 radius_client_data	src/radius/radius_client.c	/^struct radius_client_data {$/;"	s	file:
 radius_client_data::acct_handlers	src/radius/radius_client.c	/^	struct radius_rx_handler *acct_handlers;$/;"	m	struct:radius_client_data	typeref:struct:radius_client_data::radius_rx_handler	file:	access:public
-radius_client_data::acct_serv_sock	src/radius/radius_client.c	/^	int acct_serv_sock;     \/\/ radius计费服务用的socket$/;"	m	struct:radius_client_data	file:	access:public
-radius_client_data::acct_serv_sock6	src/radius/radius_client.c	/^	int acct_serv_sock6;$/;"	m	struct:radius_client_data	file:	access:public
-radius_client_data::acct_sock	src/radius/radius_client.c	/^	int acct_sock;$/;"	m	struct:radius_client_data	file:	access:public
+radius_client_data::acct_serv_sock	src/radius/radius_client.c	/^	int acct_serv_sock;     \/\/ radius计费服务用的IPV4 socket$/;"	m	struct:radius_client_data	file:	access:public
+radius_client_data::acct_serv_sock6	src/radius/radius_client.c	/^	int acct_serv_sock6;    \/\/ radius计费服务用的IPV6 socket$/;"	m	struct:radius_client_data	file:	access:public
+radius_client_data::acct_sock	src/radius/radius_client.c	/^	int acct_sock;      \/\/ 当前选用的radius计费服务socket$/;"	m	struct:radius_client_data	file:	access:public
 radius_client_data::auth_handlers	src/radius/radius_client.c	/^	struct radius_rx_handler *auth_handlers;$/;"	m	struct:radius_client_data	typeref:struct:radius_client_data::radius_rx_handler	file:	access:public
-radius_client_data::auth_serv_sock	src/radius/radius_client.c	/^	int auth_serv_sock;     \/\/ radius认证服务用的socket$/;"	m	struct:radius_client_data	file:	access:public
-radius_client_data::auth_serv_sock6	src/radius/radius_client.c	/^	int auth_serv_sock6;$/;"	m	struct:radius_client_data	file:	access:public
-radius_client_data::auth_sock	src/radius/radius_client.c	/^	int auth_sock;$/;"	m	struct:radius_client_data	file:	access:public
+radius_client_data::auth_serv_sock	src/radius/radius_client.c	/^	int auth_serv_sock;     \/\/ radius认证服务用的IPV4 socket$/;"	m	struct:radius_client_data	file:	access:public
+radius_client_data::auth_serv_sock6	src/radius/radius_client.c	/^	int auth_serv_sock6;    \/\/ radius认证服务用的IPV6 socket$/;"	m	struct:radius_client_data	file:	access:public
+radius_client_data::auth_sock	src/radius/radius_client.c	/^	int auth_sock;      \/\/ 当前选用的radius认证服务socket$/;"	m	struct:radius_client_data	file:	access:public
 radius_client_data::conf	src/radius/radius_client.c	/^	struct hostapd_radius_servers *conf;    \/\/ radius客户端配置信息$/;"	m	struct:radius_client_data	typeref:struct:radius_client_data::hostapd_radius_servers	file:	access:public
 radius_client_data::ctx	src/radius/radius_client.c	/^	void *ctx;  \/\/ 指向所属的bss，也就是hostapd_data$/;"	m	struct:radius_client_data	file:	access:public
 radius_client_data::msgs	src/radius/radius_client.c	/^	struct radius_msg_list *msgs;$/;"	m	struct:radius_client_data	typeref:struct:radius_client_data::radius_msg_list	file:	access:public
@@ -16729,7 +16729,7 @@ ssi_signal	src/ap/ap_list.h	/^	int ssi_signal;$/;"	m	struct:ap_info	access:publi
 ssi_signal	src/ap/hostapd.h	/^	u32 ssi_signal;$/;"	m	struct:hostapd_frame_info	access:public
 ssi_signal	src/drivers/driver.h	/^		u32 ssi_signal;$/;"	m	struct:wpa_event_data::rx_mgmt	access:public
 ssid	src/ap/ap_config.h	/^	char ssid[HOSTAPD_MAX_SSID_LEN + 1];$/;"	m	struct:hostapd_ssid	access:public
-ssid	src/ap/ap_config.h	/^	struct hostapd_ssid ssid;$/;"	m	struct:hostapd_bss_config	typeref:struct:hostapd_bss_config::hostapd_ssid	access:public
+ssid	src/ap/ap_config.h	/^	struct hostapd_ssid ssid;       \/\/ ssid(服务集标识)控制块，用来区分不同的网络$/;"	m	struct:hostapd_bss_config	typeref:struct:hostapd_bss_config::hostapd_ssid	access:public
 ssid	src/ap/ap_list.h	/^	u8 ssid[33];$/;"	m	struct:ap_info	access:public
 ssid	src/ap/sta_info.h	/^	struct hostapd_ssid *ssid; \/* SSID selection based on (Re)AssocReq *\/$/;"	m	struct:sta_info	typeref:struct:sta_info::hostapd_ssid	access:public
 ssid	src/ap/wpa_auth.h	/^	u8 ssid[SSID_LEN];$/;"	m	struct:wpa_auth_config	access:public
@@ -18453,7 +18453,7 @@ wep_key	src/drivers/driver.h	/^	const u8 *wep_key[4];$/;"	m	struct:wpa_driver_as
 wep_key	src/drivers/driver.h	/^	const u8 *wep_key[4];$/;"	m	struct:wpa_driver_auth_params	access:public
 wep_key_len	src/drivers/driver.h	/^	size_t wep_key_len[4];$/;"	m	struct:wpa_driver_associate_params	access:public
 wep_key_len	src/drivers/driver.h	/^	size_t wep_key_len[4];$/;"	m	struct:wpa_driver_auth_params	access:public
-wep_rekeying_period	src/ap/ap_config.h	/^	int wep_rekeying_period;$/;"	m	struct:hostapd_bss_config	access:public
+wep_rekeying_period	src/ap/ap_config.h	/^	int wep_rekeying_period;        \/\/ 设置WEP用的key周期$/;"	m	struct:hostapd_bss_config	access:public
 wep_tx_keyidx	src/drivers/driver.h	/^	int wep_tx_keyidx;$/;"	m	struct:wpa_driver_associate_params	access:public
 wep_tx_keyidx	src/drivers/driver.h	/^	int wep_tx_keyidx;$/;"	m	struct:wpa_driver_auth_params	access:public
 wext	src/drivers/driver_atmel.c	/^	void *wext; \/* private data for driver_wext *\/$/;"	m	struct:wpa_driver_atmel_data	file:	access:public
@@ -18559,12 +18559,12 @@ word_eq	src/wps/httpread.c	/^static int word_eq(char *s1, char *s2)$/;"	f	file:	
 word_separation_length	src/wps/wps_upnp_ssdp.c	/^static int word_separation_length(const char *s)$/;"	f	file:	signature:(const char *s)
 workaround	src/eap_peer/eap_i.h	/^	unsigned int workaround;$/;"	m	struct:eap_sm	access:public
 workaround	src/eapol_supp/eapol_supp_sm.h	/^	unsigned int workaround;$/;"	m	struct:eapol_config	access:public
-wpa	src/ap/ap_config.h	/^	int wpa; \/* bitfield of WPA_PROTO_WPA, WPA_PROTO_RSN *\/$/;"	m	struct:hostapd_bss_config	access:public
+wpa	src/ap/ap_config.h	/^	int wpa; \/* bitfield of WPA_PROTO_WPA, WPA_PROTO_RSN wpa\/wpa2功能选择位*\/$/;"	m	struct:hostapd_bss_config	access:public
 wpa	src/ap/ap_list.h	/^	int wpa;$/;"	m	struct:ap_info	access:public
 wpa	src/ap/wpa_auth.h	/^	int wpa;$/;"	m	struct:wpa_auth_config	access:public
 wpa	src/ap/wpa_auth_i.h	/^	} wpa;$/;"	m	struct:wpa_state_machine	typeref:enum:wpa_state_machine::__anon17	access:public
 wpa	src/drivers/driver.h	/^	int wpa;$/;"	m	struct:wpa_bss_params	access:public
-wpa	src/eapol_auth/eapol_auth_sm.h	/^	int wpa;                \/\/ wpa功能的位码$/;"	m	struct:eapol_auth_config	access:public
+wpa	src/eapol_auth/eapol_auth_sm.h	/^	int wpa;                \/\/ wpa\/wpa2功能选择位$/;"	m	struct:eapol_auth_config	access:public
 wpa_add_ie	src/rsn_supp/peerkey.c	/^static u8 * wpa_add_ie(u8 *pos, const u8 *ie, size_t ie_len)$/;"	f	file:	signature:(u8 *pos, const u8 *ie, size_t ie_len)
 wpa_add_kde	src/ap/wpa_auth_ie.c	/^u8 * wpa_add_kde(u8 *pos, u32 kde, const u8 *data, size_t data_len,$/;"	f	signature:(u8 *pos, u32 kde, const u8 *data, size_t data_len, const u8 *data2, size_t data2_len)
 wpa_add_kde	src/ap/wpa_auth_ie.h	/^u8 * wpa_add_kde(u8 *pos, u32 kde, const u8 *data, size_t data_len,$/;"	p	signature:(u8 *pos, u32 kde, const u8 *data, size_t data_len, const u8 *data2, size_t data2_len)
@@ -20022,7 +20022,7 @@ wpa_igtk_kde::pn	src/common/wpa_common.h	/^	u8 pn[6];$/;"	m	struct:wpa_igtk_kde	
 wpa_init	src/ap/wpa_auth.c	/^struct wpa_authenticator * wpa_init(const u8 *addr,$/;"	f	signature:(const u8 *addr, struct wpa_auth_config *conf, struct wpa_auth_callbacks *cb)
 wpa_init	src/ap/wpa_auth.h	/^struct wpa_authenticator * wpa_init(const u8 *addr,$/;"	p	signature:(const u8 *addr, struct wpa_auth_config *conf, struct wpa_auth_callbacks *cb)
 wpa_init_params	src/drivers/driver.h	/^struct wpa_init_params {$/;"	s
-wpa_init_params::bridge	src/drivers/driver.h	/^	char **bridge;      \/\/ 记录网桥名字的数组$/;"	m	struct:wpa_init_params	access:public
+wpa_init_params::bridge	src/drivers/driver.h	/^	char **bridge;      \/\/ 记录网桥名字的数组（网桥这个参数似乎没有用在wire类型的驱动器中）$/;"	m	struct:wpa_init_params	access:public
 wpa_init_params::bssid	src/drivers/driver.h	/^	const u8 *bssid;$/;"	m	struct:wpa_init_params	access:public
 wpa_init_params::ifname	src/drivers/driver.h	/^	const char *ifname;$/;"	m	struct:wpa_init_params	access:public
 wpa_init_params::num_bridge	src/drivers/driver.h	/^	size_t num_bridge;  \/\/ 网桥数量，等于当前接口下bss的数量$/;"	m	struct:wpa_init_params	access:public

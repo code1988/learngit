@@ -59,6 +59,7 @@ struct sta_info {
 	u16 auth_alg;
 	u8 previous_ap[6];
 
+    // 定义了下一次ap_handle_timer超时处理的原因
 	enum {
 		STA_NULLFUNC = 0, STA_DISASSOC, STA_DEAUTH, STA_REMOVE
 	} timeout_next;

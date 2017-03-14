@@ -441,7 +441,7 @@ accounting_receive(struct radius_msg *msg, struct radius_msg *req,
 	return RADIUS_RX_PROCESSED;
 }
 
-
+// 向radius计费服务器上报计费开始/结束请求
 static void accounting_report_state(struct hostapd_data *hapd, int on)
 {
 	struct radius_msg *msg;
@@ -473,6 +473,8 @@ static void accounting_report_state(struct hostapd_data *hapd, int on)
  * accounting_init: Initialize accounting
  * @hapd: hostapd BSS data
  * Returns: 0 on success, -1 on failure
+ * 初始化计费功能
+ * 通过注册一个计费接口到radius RX回调函数中实现
  */
 int accounting_init(struct hostapd_data *hapd)
 {
@@ -484,6 +486,7 @@ int accounting_init(struct hostapd_data *hapd)
 				   accounting_receive, hapd))
 		return -1;
 
+    // 向radius计费服务器上报计费开始请求
 	accounting_report_state(hapd, 1);
 
 	return 0;

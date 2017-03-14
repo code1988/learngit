@@ -829,7 +829,7 @@ void ieee802_1x_receive(struct hostapd_data *hapd, const u8 *sa, const u8 *buf,
  *
  * This function is called to start IEEE 802.1X authentication when a new
  * station completes IEEE 802.11 association.
- * 当一个新站表元素完成了和hostapd关联后,调用此函数开始执行802.1x认证功能
+ * 当一个新sta完成了和bss关联后,调用此函数开始执行802.1x认证功能
  */
 void ieee802_1x_new_station(struct hostapd_data *hapd, struct sta_info *sta)
 {
@@ -903,6 +903,7 @@ void ieee802_1x_new_station(struct hostapd_data *hapd, struct sta_info *sta)
 			sta->vlan_id = 0;
 		ap_sta_bind_vlan(hapd, sta, old_vlanid);
 	} else {
+        // 当前sta的eapol状态机如果在进入当前函数之前已经存在，则会在这里触发eapol层的强制重认证机制
 		if (reassoc) {
 			/*
 			 * Force EAPOL state machines to start
@@ -1563,7 +1564,7 @@ static void _ieee802_1x_finished(void *ctx, void *sta_ctx, int success,
 		ieee802_1x_finished(hapd, sta, success);
 }
 
-// 基于802.1x协议的eap层用户信息获取
+// 基于802.1x协议的eap层用户信息获取(这是本机使能了EAP认证服务器时会用到的函数)
 static int ieee802_1x_get_eap_user(void *ctx, const u8 *identity,
 				   size_t identity_len, int phase2,
 				   struct eap_user *user)
@@ -1730,13 +1731,13 @@ int ieee802_1x_init(struct hostapd_data *hapd)
 	if (hapd->eapol_auth == NULL)
 		return -1;
 
-    // 开启了8021x或wpa功能，并且处于hostapd模式时，需要在这里初始化内核中802.1x相关设置
+    // 开启了8021x或wpa功能，并且处于AP模式时，需要在这里初始化内核中802.1x相关设置(对于选择了wire类型驱动器的不需要)
 	if ((hapd->conf->ieee802_1x || hapd->conf->wpa) &&
 	    hapd->drv.set_drv_ieee8021x(hapd, hapd->conf->iface, 1))
 		return -1;
 
 #ifndef CONFIG_NO_RADIUS
-    // radius客户端注册认证报文接收回调函数ieee802_1x_receive_auth(末参传入hapd)
+    // radius客户端注册一个802.1x功能的RX回调函数ieee802_1x_receive_auth(末参传入hapd)
 	if (radius_client_register(hapd->radius, RADIUS_AUTH,
 				   ieee802_1x_receive_auth, hapd))
 		return -1;

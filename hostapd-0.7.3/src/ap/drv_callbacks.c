@@ -336,10 +336,15 @@ static int hostapd_probe_req_rx(struct hostapd_data *hapd, const u8 *sa,
 	return ret;
 }
 
-// 驱动层对一个收到的mac进行处理
+/* 驱动层对一个收到的mac进行处理
+ * 处理原则：
+ *          如果该mac在当前bss上已经存在，则直接忽略
+ *          如果不存在则添加到当前bss
+ *          然后在添加完成后在所有接口上对该mac做唯一性检查
+ */
 static int hostapd_event_new_sta(struct hostapd_data *hapd, const u8 *addr)
 {
-    // 判断该mac是否已经被记录在某个sta_info中
+    // 判断该mac是否已经被记录在当前bss上的某个sta_info中
 	struct sta_info *sta = ap_get_sta(hapd, addr);
 	if (sta)
 		return 0;

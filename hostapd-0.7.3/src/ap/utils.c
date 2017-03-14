@@ -48,6 +48,7 @@ struct prune_data {
 	const u8 *addr;
 };
 
+// 在指定接口上对mac做唯一性检查
 static int prune_associations(struct hostapd_iface *iface, void *ctx)
 {
 	struct prune_data *data = ctx;
@@ -76,7 +77,7 @@ static int prune_associations(struct hostapd_iface *iface, void *ctx)
  *
  * This function looks through all radios and BSS's for previous
  * (stale) associations of STA. If any are found they are removed.
- * 字面意思是删除当前接口下一些无关联系
+ * 遍历所有接口，对指定mac做唯一性检查
  */
 void hostapd_prune_associations(struct hostapd_data *hapd, const u8 *addr)
 {
