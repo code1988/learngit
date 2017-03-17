@@ -240,6 +240,7 @@ struct radius_client_data {
 
 	/**
 	 * next_radius_identifier - Next RADIUS message identifier to use
+     * 下一个将被使用的ID号
 	 */
 	u8 next_radius_identifier;
 };
@@ -853,6 +854,8 @@ static void radius_client_receive(int sock, void *eloop_ctx, void *sock_ctx)
  * radius_client_get_id - Get an identifier for a new RADIUS message
  * @radius: RADIUS client context from radius_client_init()
  * Returns: Allocated identifier
+ * 获取一个用于radius-request报文的新ID号（通过在旧ID上累加生成）
+ * 同时需要遍历radius等待发送链表，删除相同ID号的消息，确保唯一
  *
  * This function is used to fetch a unique (among pending requests) identifier
  * for a new RADIUS message.

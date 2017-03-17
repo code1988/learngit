@@ -128,7 +128,7 @@ struct eap_sm {
 	} methodState;              // 当前EAP方法所处的状态
 	int retransCount;           // 当前的重传次数
 	struct wpabuf *lastReqData; // 保存了最近一次发送给eapol层的eap-req数据，触发重传的时候需要被用到
-	int methodTimeout;          // 当前EAP方法的超时值，来源有2种：通过EAP方法自带的getTimeout函数计算得到；通过aaaMethodTimeout赋值，通常为0表示不使用
+	int methodTimeout;          // 当前EAP方法的超时值，来源有2种：通过EAP方法自带的getTimeout函数计算得到；通过aaaMethodTimeout赋值
 
 	/* Short-term (not maintained between packets) */
 	Boolean rxResp;         // 如果接收到eap-resp包设置TRUE
@@ -149,7 +149,7 @@ struct eap_sm {
 	void *eapol_ctx, *msg_ctx;          // 分别指向状态机统一管理块
 	struct eapol_callbacks *eapol_cb;   // 指向依赖的eapol层接口函数集合
 	void *eap_method_priv;              // 指向所采用的EAP方法携带的私有数据，比如MD5校验数据
-	u8 *identity;                       // 存储了获得的用户名信息
+	u8 *identity;                       // 存储了获得的用户名信息(在EAP_METHOD_RESPONSE的EA中进行)
 	size_t identity_len;                // 存储了获得的用户名长度
 	/* Whether Phase 2 method should validate identity match */
 	int require_identity_match;

@@ -18,7 +18,7 @@
 
 // eapol层附加功能位
 #define EAPOL_SM_PREAUTH BIT(0)
-#define EAPOL_SM_WAIT_START BIT(1)
+#define EAPOL_SM_WAIT_START BIT(1)          // 状态机需要等待该标志位被清除才能运转下去（在收到eapol-start报文时清除）
 #define EAPOL_SM_USES_WPA BIT(2)
 #define EAPOL_SM_FROM_PMKSA_CACHE BIT(3)
 

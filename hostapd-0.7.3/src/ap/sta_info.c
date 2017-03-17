@@ -115,7 +115,7 @@ static void ap_sta_hash_del(struct hostapd_data *hapd, struct sta_info *sta)
 			   " from hash table", MAC2STR(sta->addr));
 }
 
-
+// 释放当前bss上指定sta的所有资源
 void ap_free_sta(struct hostapd_data *hapd, struct sta_info *sta)
 {
 	int set_beacon = 0;
@@ -741,7 +741,7 @@ void ap_sta_stop_sa_query(struct hostapd_data *hapd, struct sta_info *sta)
 
 #endif /* CONFIG_IEEE80211W */
 
-
+// 取消当前bss上添加的指定sta（异步过程）
 void ap_sta_disconnect(struct hostapd_data *hapd, struct sta_info *sta,
 		       const u8 *addr, u16 reason)
 {

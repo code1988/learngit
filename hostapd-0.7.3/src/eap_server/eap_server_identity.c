@@ -82,7 +82,7 @@ static struct wpabuf * eap_identity_buildReq(struct eap_sm *sm, void *priv,
 		return NULL;
 	}
 
-    // 填充type字段之后的payload
+    // 填充附加信息到type字段之后的payload中
 	wpabuf_put_data(req, req_data, req_data_len);
 
 	return req;

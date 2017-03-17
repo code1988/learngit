@@ -371,6 +371,7 @@ static void hostapd_event_eapol_rx(struct hostapd_data *hapd, const u8 *src,
 	struct hostapd_iface *iface = hapd->iface;
 	size_t j;
 
+    // 这里似乎是对原始接收bss做了调整，选择了一个已经存在的对应sta
 	for (j = 0; j < iface->num_bss; j++) {
 		if (ap_get_sta(iface->bss[j], src)) {
 			hapd = iface->bss[j];

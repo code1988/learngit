@@ -67,7 +67,6 @@ static void sm_ ## machine ## _ ## state ## _Enter(STATE_MACHINE_DATA *sm, \
  * 状态机进入某个状态需要执行的动作,通常就是设置新的状态
  *
  * 备注：该宏只能用于SM_STATE定义的函数内部，并且最好放在开头
- *       对于设置了global=1的调用，changed标志不会在这里被改变
  *       该宏主要工作是对状态机状态进行了update
  */
 #define SM_ENTRY(machine, state) \

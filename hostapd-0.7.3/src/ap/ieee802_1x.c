@@ -82,7 +82,7 @@ static void ieee802_1x_send(struct hostapd_data *hapd, struct sta_info *sta,
 	os_free(buf);
 }
 
-// 设置指定站表元素是否开启授权
+// 设置对指定sta是否开启授权
 void ieee802_1x_set_sta_authorized(struct hostapd_data *hapd,
 				   struct sta_info *sta, int authorized)
 {
@@ -392,6 +392,7 @@ int radius_sta_rate(struct hostapd_data *hapd, struct sta_info *sta)
 
 
 #ifndef CONFIG_NO_RADIUS
+// 记录下上层传下来的eap-resp-identify报文中的用户名信息
 static void ieee802_1x_learn_identity(struct hostapd_data *hapd,
 				      struct eapol_state_machine *sm,
 				      const u8 *eap, size_t len)
@@ -399,6 +400,7 @@ static void ieee802_1x_learn_identity(struct hostapd_data *hapd,
 	const u8 *identity;
 	size_t identity_len;
 
+    // 只有合法的eap-resp-identify报文才会往下执行
 	if (len <= sizeof(struct eap_hdr) ||
 	    eap[sizeof(struct eap_hdr)] != EAP_TYPE_IDENTITY)
 		return;
@@ -423,7 +425,7 @@ static void ieee802_1x_learn_identity(struct hostapd_data *hapd,
 	sm->dot1xAuthEapolRespIdFramesRx++;
 }
 
-
+// 封装上层传下来的eap数据到一个radius报文并发送
 static void ieee802_1x_encapsulate_radius(struct hostapd_data *hapd,
 					  struct sta_info *sta,
 					  const u8 *eap, size_t len)
@@ -435,12 +437,15 @@ static void ieee802_1x_encapsulate_radius(struct hostapd_data *hapd,
 	if (sm == NULL)
 		return;
 
+    // 记录下该eap数据中的用户名信息（非eap-resp-identify报文不做任何事）
 	ieee802_1x_learn_identity(hapd, sm, eap, len);
 
 	wpa_printf(MSG_DEBUG, "Encapsulating EAP message into a RADIUS "
 		   "packet");
 
+    // 生成一个新的radius报文ID号
 	sm->radius_identifier = radius_client_get_id(hapd->radius);
+    // 创建一个新的radius access-request消息
 	msg = radius_msg_new(RADIUS_CODE_ACCESS_REQUEST,
 			     sm->radius_identifier);
 	if (msg == NULL) {
@@ -448,8 +453,10 @@ static void ieee802_1x_encapsulate_radius(struct hostapd_data *hapd,
 		return;
 	}
 
+    // 生成一个16字节随机码作为新的radius报文的认证字域
 	radius_msg_make_authenticator(msg, (u8 *) sta, sizeof(*sta));
 
+    // 添加一条RADIUS_ATTR_USER_NAME属性
 	if (sm->identity &&
 	    !radius_msg_add_attr(msg, RADIUS_ATTR_USER_NAME,
 				 sm->identity, sm->identity_len)) {
@@ -457,6 +464,7 @@ static void ieee802_1x_encapsulate_radius(struct hostapd_data *hapd,
 		goto fail;
 	}
 
+    // 添加一条RADIUS_ATTR_NAS_IP_ADDRESS属性
 	if (hapd->conf->own_ip_addr.af == AF_INET &&
 	    !radius_msg_add_attr(msg, RADIUS_ATTR_NAS_IP_ADDRESS,
 				 (u8 *) &hapd->conf->own_ip_addr.u.v4, 4)) {
@@ -473,6 +481,7 @@ static void ieee802_1x_encapsulate_radius(struct hostapd_data *hapd,
 	}
 #endif /* CONFIG_IPV6 */
 
+    // 添加一条RADIUS_ATTR_NAS_IDENTIFIER属性
 	if (hapd->conf->nas_identifier &&
 	    !radius_msg_add_attr(msg, RADIUS_ATTR_NAS_IDENTIFIER,
 				 (u8 *) hapd->conf->nas_identifier,
@@ -481,6 +490,7 @@ static void ieee802_1x_encapsulate_radius(struct hostapd_data *hapd,
 		goto fail;
 	}
 
+    // 添加一条RADIUS_ATTR_NAS_PORT属性
 	if (!radius_msg_add_attr_int32(msg, RADIUS_ATTR_NAS_PORT, sta->aid)) {
 		printf("Could not add NAS-Port\n");
 		goto fail;
@@ -495,6 +505,7 @@ static void ieee802_1x_encapsulate_radius(struct hostapd_data *hapd,
 		goto fail;
 	}
 
+    // 添加一条RADIUS_ATTR_CALLING_STATION_ID属性
 	os_snprintf(buf, sizeof(buf), RADIUS_802_1X_ADDR_FORMAT,
 		    MAC2STR(sta->addr));
 	buf[sizeof(buf) - 1] = '\0';
@@ -507,11 +518,13 @@ static void ieee802_1x_encapsulate_radius(struct hostapd_data *hapd,
 	/* TODO: should probably check MTU from driver config; 2304 is max for
 	 * IEEE 802.11, but use 1400 to avoid problems with too large packets
 	 */
+    // 添加一条RADIUS_ATTR_FRAMED_MTU属性
 	if (!radius_msg_add_attr_int32(msg, RADIUS_ATTR_FRAMED_MTU, 1400)) {
 		printf("Could not add Framed-MTU\n");
 		goto fail;
 	}
 
+    // 添加一条RADIUS_ATTR_NAS_PORT_TYPE属性
 	if (!radius_msg_add_attr_int32(msg, RADIUS_ATTR_NAS_PORT_TYPE,
 				       RADIUS_NAS_PORT_TYPE_IEEE_802_11)) {
 		printf("Could not add NAS-Port-Type\n");
@@ -534,6 +547,7 @@ static void ieee802_1x_encapsulate_radius(struct hostapd_data *hapd,
 		goto fail;
 	}
 
+    // 添加EAP数据
 	if (eap && !radius_msg_add_eap(msg, eap, len)) {
 		printf("Could not add EAP-Message\n");
 		goto fail;
@@ -564,7 +578,7 @@ static void ieee802_1x_encapsulate_radius(struct hostapd_data *hapd,
 }
 #endif /* CONFIG_NO_RADIUS */
 
-
+// 处理来自请求者的eap-resp数据
 static void handle_eap_response(struct hostapd_data *hapd,
 				struct sta_info *sta, struct eap_hdr *eap,
 				size_t len)
@@ -591,13 +605,16 @@ static void handle_eap_response(struct hostapd_data *hapd,
 
 	sm->dot1xAuthEapolRespFramesRx++;
 
+    // EAPOL->EAP交互缓冲eapRespData存储新的之前先释放旧的
 	wpabuf_free(sm->eap_if->eapRespData);
 	sm->eap_if->eapRespData = wpabuf_alloc_copy(eap, len);
+    // 设置eapolEap为TRUE，用于通知eapol层BE_AUTH SM
 	sm->eapolEap = TRUE;
 }
 
 
 /* Process incoming EAP packet from Supplicant */
+// 处理来自请求者的EAP数据
 static void handle_eap(struct hostapd_data *hapd, struct sta_info *sta,
 		       u8 *buf, size_t len)
 {
@@ -670,6 +687,7 @@ ieee802_1x_alloc_eapol_sm(struct hostapd_data *hapd, struct sta_info *sta)
  * @sa: Source address (sender of the EAPOL frame)
  * @buf: EAPOL frame
  * @len: Length of buf in octets
+ * 处理来自请求者的EAPOL帧
  *
  * This function is called for each incoming EAPOL frame from the interface
  */
@@ -722,6 +740,7 @@ void ieee802_1x_receive(struct hostapd_data *hapd, const u8 *sa, const u8 *buf,
 		sta->eapol_sm->dot1xAuthEapolFramesRx++;
 	}
 
+    // 如果是EAPOL-KEY帧，则进入wpa处理中
 	key = (struct ieee802_1x_eapol_key *) (hdr + 1);
 	if (datalen >= sizeof(struct ieee802_1x_eapol_key) &&
 	    hdr->type == IEEE802_1X_TYPE_EAPOL_KEY &&
@@ -737,6 +756,7 @@ void ieee802_1x_receive(struct hostapd_data *hapd, const u8 *sa, const u8 *buf,
 	    wpa_key_mgmt_wpa_psk(wpa_auth_sta_key_mgmt(sta->wpa_sm)))
 		return;
 
+    // 如果状态机在之前因为某些原因还没有被创建，则在这里进行创建
 	if (!sta->eapol_sm) {
 		sta->eapol_sm = ieee802_1x_alloc_eapol_sm(hapd, sta);
 		if (!sta->eapol_sm)
@@ -773,6 +793,11 @@ void ieee802_1x_receive(struct hostapd_data *hapd, const u8 *sa, const u8 *buf,
 		hostapd_logger(hapd, sta->addr, HOSTAPD_MODULE_IEEE8021X,
 			       HOSTAPD_LEVEL_DEBUG, "received EAPOL-Start "
 			       "from STA");
+        /* 收到eapol-start报文后的动作
+         * 清除EAPOL_SM_WAIT_START标志
+         * eapolStart设置为TRUE，用于通知AUTH_PAE SM
+         * 执行wpa状态机(有线802.1x用不到)
+         */
 		sta->eapol_sm->flags &= ~EAPOL_SM_WAIT_START;
 		pmksa = wpa_auth_sta_get_pmksa(sta->wpa_sm);
 		if (pmksa) {
@@ -818,6 +843,7 @@ void ieee802_1x_receive(struct hostapd_data *hapd, const u8 *sa, const u8 *buf,
 		break;
 	}
 
+    // 运行一遍状态机自平衡流程
 	eapol_auth_step(sta->eapol_sm);
 }
 
@@ -1407,6 +1433,7 @@ void ieee802_1x_abort_auth(struct hostapd_data *hapd, struct sta_info *sta)
 		       HOSTAPD_LEVEL_DEBUG, "aborting authentication");
 
 #ifndef CONFIG_NO_RADIUS
+    // 释放radius消息管理块
 	radius_msg_free(sm->last_recv_radius);
 	sm->last_recv_radius = NULL;
 #endif /* CONFIG_NO_RADIUS */
@@ -1417,7 +1444,11 @@ void ieee802_1x_abort_auth(struct hostapd_data *hapd, struct sta_info *sta)
 		 * Disconnect the STA since it did not reply to the last EAP
 		 * request and we cannot continue EAP processing (EAP-Failure
 		 * could only be sent if the EAP peer actually replied).
+         *
+         * 认证失败后portEnabled标志被清除，
+         * 取消当前bss上添加的指定sta
 		 */
+        
 		sm->eap_if->portEnabled = FALSE;
 		ap_sta_disconnect(hapd, sta, sta->addr,
 				  WLAN_REASON_PREV_AUTH_NOT_VALID);

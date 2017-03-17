@@ -238,6 +238,11 @@ SM_STATE(EAP, IDLE)
 }
 
 
+/* EAP SM进入RETRANSMIT状态的EA:
+ *      重传次数累加
+ *      如果重传次数没有超过阈值，并且lastReqData记录的最近一次发送给eapol层的eap-req数据有效，
+ *      则EAP->EAPOL交互标志eapReq再次设置为TRUE，用于通知EAPOL层BE_AUTH SM
+ */
 SM_STATE(EAP, RETRANSMIT)
 {
 	SM_ENTRY(EAP, RETRANSMIT);
@@ -403,7 +408,9 @@ SM_STATE(EAP, PROPOSE_METHOD)
     // 初始化当前EAP方法携带的私有数据块
 	if (sm->m) {
 		sm->eap_method_priv = sm->m->init(sm);
+        // 如果当前EAP方法的私有数据块初始化失败，则取消使用该EAP方法
 		if (sm->eap_method_priv == NULL) {
+            /*  这里的错误处理可能会出问题 */
 			wpa_printf(MSG_DEBUG, "EAP: Failed to initialize EAP "
 				   "method %d", sm->currentMethod);
 			sm->m = NULL;
@@ -465,6 +472,9 @@ SM_STATE(EAP, SELECT_ACTION)
 }
 
 
+/* EAP SM进入TIMEOUT_FAILURE状态的EA:
+ *      EAP->EAPOL交互标志设置为TRUE，用于通知EAP层 BE_AUTH SM（最终通知到AUTH_PAE SM）
+ */
 SM_STATE(EAP, TIMEOUT_FAILURE)
 {
 	SM_ENTRY(EAP, TIMEOUT_FAILURE);
@@ -746,11 +756,11 @@ SM_STEP(EAP)
 		else if (sm->eap_if.eapResp)            //  2. 如果EAPOL->EAP交互标志eapResp被置位，则进入RECEIVED状态
 			SM_ENTER(EAP, RECEIVED);
 		break;
-	case EAP_RETRANSMIT:
-		if (sm->retransCount > sm->MaxRetrans)
-			SM_ENTER(EAP, TIMEOUT_FAILURE);
+	case EAP_RETRANSMIT:                        // 当前处于RETRANSMIT状态的话，需要分为2种情况进行处理：
+		if (sm->retransCount > sm->MaxRetrans)  //  1. 如果重传次数超过阈值，则进入TIMEOUT_FAILURE状态
+			SM_ENTER(EAP, TIMEOUT_FAILURE); 
 		else
-			SM_ENTER(EAP, IDLE);
+			SM_ENTER(EAP, IDLE);                //  2. 如果没超，则进入IDLE状态
 		break;
 	case EAP_RECEIVED:                                          // 当前处于RECEIVED状态的话，需要分为3种情况进行处理：
 		if (sm->rxResp && (sm->respId == sm->currentId) &&      //  1. 如果接收到的是eap-resp包，并同时满足以下3个条件:
@@ -916,7 +926,9 @@ static int eap_sm_calculateTimeout(struct eap_sm *sm, int retransCount,
 {
 	int rto, i;
 
-    // 首先根据methodTimeout值判断，当前采用的EAP方法是否隐含了一个指定的超时值
+    /* 首先根据methodTimeout值判断，当前采用的EAP方法是否隐含了一个指定的超时值
+     * 备注：该值可能来自该EAP方法内部提供的API，也可能来自RADIUS服务器
+     */
 	if (methodTimeout) {
 		/*
 		 * EAP method (either internal or through AAA server, provided
@@ -1487,6 +1499,7 @@ int eap_sm_method_pending(struct eap_sm *sm)
  * @sm: Pointer to EAP state machine allocated with eap_server_sm_init()
  * @len: Buffer for returning identity length
  * Returns: Pointer to the user identity or %NULL if not available
+ * 获取用户名
  */
 const u8 * eap_get_identity(struct eap_sm *sm, size_t *len)
 {

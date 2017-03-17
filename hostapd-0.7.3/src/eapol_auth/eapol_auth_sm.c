@@ -985,7 +985,7 @@ eapol_auth_alloc(struct eapol_authenticator *eapol, const u8 *addr,
 	return sm;
 }
 
-
+// 释放该状态机统一管理块
 void eapol_auth_free(struct eapol_state_machine *sm)
 {
 	if (sm == NULL)

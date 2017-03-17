@@ -42,12 +42,12 @@ struct radius_msg {
 	 * The values are number of bytes from buf to the beginning of
 	 * struct radius_attr_hdr.
 	 */
-	size_t *attr_pos;   // 记录每条属性距离属性头偏移量的数组
+	size_t *attr_pos;   // 记录每条属性距离属性头偏移量的数组(注意：这个数组由初始化时设置了固定长度，使用时不一定装满的)
 
 	/**
 	 * attr_size - Total size of the attribute pointer array
 	 */
-	size_t attr_size;
+	size_t attr_size;   // 记录上面这个数组的元素个数,一般就是RADIUS_DEFAULT_ATTR_COUNT
 
 	/**
 	 * attr_used - Total number of attributes in the array
@@ -75,14 +75,14 @@ radius_get_attr_hdr(struct radius_msg *msg, int idx)
 		(wpabuf_mhead_u8(msg->buf) + msg->attr_pos[idx]);
 }
 
-
+// 设置radius报文头
 static void radius_msg_set_hdr(struct radius_msg *msg, u8 code, u8 identifier)
 {
 	msg->hdr->code = code;
 	msg->hdr->identifier = identifier;
 }
 
-
+// 对struct radius_msg做初始化，主要就是生成一个记录属性偏移量的数组
 static int radius_msg_initialize(struct radius_msg *msg)
 {
 	msg->attr_pos =
@@ -102,6 +102,7 @@ static int radius_msg_initialize(struct radius_msg *msg)
  * @code: Code for RADIUS header
  * @identifier: Identifier for RADIUS header
  * Returns: Context for RADIUS message or %NULL on failure
+ * 创建一个新的radius消息，并做一些初始化
  *
  * The caller is responsible for freeing the returned data with
  * radius_msg_free().
@@ -455,7 +456,7 @@ static int radius_msg_add_attr_to_array(struct radius_msg *msg,
 	return 0;
 }
 
-
+// 添加一个指定类型的属性到radius报文中
 struct radius_attr_hdr *radius_msg_add_attr(struct radius_msg *msg, u8 type,
 					    const u8 *data, size_t data_len)
 {
@@ -560,7 +561,7 @@ struct radius_msg * radius_msg_parse(const u8 *data, size_t len)
 	return NULL;
 }
 
-
+// radius报文中添加eap数据
 int radius_msg_add_eap(struct radius_msg *msg, const u8 *data, size_t data_len)
 {
 	const u8 *pos = data;
@@ -753,7 +754,8 @@ int radius_msg_copy_attr(struct radius_msg *dst, struct radius_msg *src,
 /* Create Request Authenticator. The value should be unique over the lifetime
  * of the shared secret between authenticator and authentication server.
  * Use one-way MD5 hash calculated from current timestamp and some data given
- * by the caller. */
+ * by the caller. 
+ * 设置radius验证字域,在这里是一个16字节随机码*/
 void radius_msg_make_authenticator(struct radius_msg *msg,
 				   const u8 *data, size_t len)
 {

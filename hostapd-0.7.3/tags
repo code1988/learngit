@@ -3505,11 +3505,11 @@ SK_integ_len	src/eap_common/ikev2_common.h	/^	size_t SK_d_len, SK_integ_len, SK_
 SK_pi	src/eap_common/ikev2_common.h	/^	u8 *SK_d, *SK_ai, *SK_ar, *SK_ei, *SK_er, *SK_pi, *SK_pr;$/;"	m	struct:ikev2_keys	access:public
 SK_pr	src/eap_common/ikev2_common.h	/^	u8 *SK_d, *SK_ai, *SK_ar, *SK_ei, *SK_er, *SK_pi, *SK_pr;$/;"	m	struct:ikev2_keys	access:public
 SK_prf_len	src/eap_common/ikev2_common.h	/^	size_t SK_d_len, SK_integ_len, SK_encr_len, SK_prf_len;$/;"	m	struct:ikev2_keys	access:public
-SM_ENTER	src/utils/state_machine.h	133;"	d
-SM_ENTER_GLOBAL	src/utils/state_machine.h	147;"	d
-SM_ENTRY	src/utils/state_machine.h	73;"	d
-SM_ENTRY_M	src/utils/state_machine.h	93;"	d
-SM_ENTRY_MA	src/utils/state_machine.h	112;"	d
+SM_ENTER	src/utils/state_machine.h	132;"	d
+SM_ENTER_GLOBAL	src/utils/state_machine.h	146;"	d
+SM_ENTRY	src/utils/state_machine.h	72;"	d
+SM_ENTRY_M	src/utils/state_machine.h	92;"	d
+SM_ENTRY_MA	src/utils/state_machine.h	111;"	d
 SM_STATE	src/ap/wpa_auth.c	/^SM_STATE(WPA_PTK, AUTHENTICATION)$/;"	f
 SM_STATE	src/ap/wpa_auth.c	/^SM_STATE(WPA_PTK, AUTHENTICATION2)$/;"	f
 SM_STATE	src/ap/wpa_auth.c	/^SM_STATE(WPA_PTK, DISCONNECT)$/;"	f
@@ -3627,8 +3627,8 @@ SM_STEP	src/eapol_auth/eapol_auth_sm.c	/^SM_STEP(REAUTH_TIMER)$/;"	f
 SM_STEP	src/eapol_supp/eapol_supp_sm.c	/^SM_STEP(KEY_RX)$/;"	f
 SM_STEP	src/eapol_supp/eapol_supp_sm.c	/^SM_STEP(SUPP_BE)$/;"	f
 SM_STEP	src/eapol_supp/eapol_supp_sm.c	/^SM_STEP(SUPP_PAE)$/;"	f
-SM_STEP	src/utils/state_machine.h	161;"	d
-SM_STEP_RUN	src/utils/state_machine.h	172;"	d
+SM_STEP	src/utils/state_machine.h	160;"	d
+SM_STEP_RUN	src/utils/state_machine.h	171;"	d
 SNonce	src/ap/wpa_auth_i.h	/^	u8 SNonce[WPA_NONCE_LEN];$/;"	m	struct:wpa_state_machine	access:public
 SP1	src/crypto/des-internal.c	/^static const u32 SP1[64] =$/;"	v	file:
 SP2	src/crypto/des-internal.c	/^static const u32 SP2[64] =$/;"	v	file:
@@ -7016,11 +7016,11 @@ dot1xAuthEapolFramesTx	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter dot1xAuthEapo
 dot1xAuthEapolLogoffFramesRx	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter dot1xAuthEapolLogoffFramesRx;$/;"	m	struct:eapol_state_machine	access:public
 dot1xAuthEapolReqFramesTx	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter dot1xAuthEapolReqFramesTx;      \/\/ 记录了发送code = req的eapol帧数量$/;"	m	struct:eapol_state_machine	access:public
 dot1xAuthEapolReqIdFramesTx	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter dot1xAuthEapolReqIdFramesTx;    \/\/ 记录了发送code = req,type=id的eapol帧数量$/;"	m	struct:eapol_state_machine	access:public
-dot1xAuthEapolRespFramesRx	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter dot1xAuthEapolRespFramesRx;$/;"	m	struct:eapol_state_machine	access:public
-dot1xAuthEapolRespIdFramesRx	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter dot1xAuthEapolRespIdFramesRx;$/;"	m	struct:eapol_state_machine	access:public
+dot1xAuthEapolRespFramesRx	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter dot1xAuthEapolRespFramesRx;     \/\/ 记录了接收eap-resp帧数量$/;"	m	struct:eapol_state_machine	access:public
+dot1xAuthEapolRespIdFramesRx	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter dot1xAuthEapolRespIdFramesRx;   \/\/ 记录了接收eap-resp-id帧数量$/;"	m	struct:eapol_state_machine	access:public
 dot1xAuthEapolStartFramesRx	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter dot1xAuthEapolStartFramesRx;$/;"	m	struct:eapol_state_machine	access:public
 dot1xAuthInvalidEapolFramesRx	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter dot1xAuthInvalidEapolFramesRx;$/;"	m	struct:eapol_state_machine	access:public
-dot1xAuthLastEapolFrameVersion	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter dot1xAuthLastEapolFrameVersion;$/;"	m	struct:eapol_state_machine	access:public
+dot1xAuthLastEapolFrameVersion	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter dot1xAuthLastEapolFrameVersion; \/\/ 记录了最近收到的eapol帧的版本2001\/2004\/2010$/;"	m	struct:eapol_state_machine	access:public
 dot1xSuppEapLengthErrorFramesRx	src/eapol_supp/eapol_supp_sm.c	/^	unsigned int dot1xSuppEapLengthErrorFramesRx;$/;"	m	struct:eapol_sm	file:	access:public
 dot1xSuppEapolFramesRx	src/eapol_supp/eapol_supp_sm.c	/^	unsigned int dot1xSuppEapolFramesRx;$/;"	m	struct:eapol_sm	file:	access:public
 dot1xSuppEapolFramesTx	src/eapol_supp/eapol_supp_sm.c	/^	unsigned int dot1xSuppEapolFramesTx;$/;"	m	struct:eapol_sm	file:	access:public
@@ -7322,7 +7322,7 @@ eap_eapol_interface::eapRestart	src/eap_server/eap.h	/^	Boolean eapRestart;     
 eap_eapol_interface::eapSRTT	src/eap_server/eap.h	/^	int eapSRTT;$/;"	m	struct:eap_eapol_interface	access:public
 eap_eapol_interface::eapSuccess	src/eap_server/eap.h	/^	Boolean eapSuccess;     \/\/ 此标志由EAP层管理，EAP层AUTH SM进入SUCCESS状态时设置TRUE并填充eapReqData，进入INITIALIZE状态时设置FALSE$/;"	m	struct:eap_eapol_interface	access:public
 eap_eapol_interface::eapTimeout	src/eap_server/eap.h	/^	Boolean eapTimeout;     \/\/ 此标志由EAP层管理，EAP层AUTH SM进入TIMEOUT状态时设置TRUE，进入INITIALIZE状态时设置FALSE$/;"	m	struct:eap_eapol_interface	access:public
-eap_eapol_interface::portEnabled	src/eap_server/eap.h	/^	Boolean portEnabled;    \/\/ 此标志由EAPOL层管理，在开始进行802.1X认证时被设置TRUE，在认证失败时设置FALSE$/;"	m	struct:eap_eapol_interface	access:public
+eap_eapol_interface::portEnabled	src/eap_server/eap.h	/^	Boolean portEnabled;    \/\/ 此标志同时影响EAPOL层SM和EAP层SM，意味着该port是否可操作，在开始进行802.1X认证时被设置TRUE，在认证失败时设置FALSE$/;"	m	struct:eap_eapol_interface	access:public
 eap_eapol_interface::retransWhile	src/eap_server/eap.h	/^	int retransWhile;       \/\/ 重传定时器，由EAPOL层PORT_TIMER SM触发超时，由EAP层开启$/;"	m	struct:eap_eapol_interface	access:public
 eap_fast_a_id	src/ap/ap_config.h	/^	u8 *eap_fast_a_id;$/;"	m	struct:hostapd_bss_config	access:public
 eap_fast_a_id	src/eap_server/eap.h	/^	u8 *eap_fast_a_id;$/;"	m	struct:eap_config	access:public
@@ -9028,7 +9028,7 @@ eap_sm::eapol_ctx	src/eap_peer/eap_i.h	/^	void *eapol_ctx;$/;"	m	struct:eap_sm	a
 eap_sm::eapol_ctx	src/eap_server/eap_i.h	/^	void *eapol_ctx, *msg_ctx;          \/\/ 分别指向状态机统一管理块$/;"	m	struct:eap_sm	access:public
 eap_sm::fast_reauth	src/eap_peer/eap_i.h	/^	int fast_reauth;$/;"	m	struct:eap_sm	access:public
 eap_sm::force_disabled	src/eap_peer/eap_i.h	/^	int force_disabled;$/;"	m	struct:eap_sm	access:public
-eap_sm::identity	src/eap_server/eap_i.h	/^	u8 *identity;                       \/\/ 存储了获得的用户名信息$/;"	m	struct:eap_sm	access:public
+eap_sm::identity	src/eap_server/eap_i.h	/^	u8 *identity;                       \/\/ 存储了获得的用户名信息(在EAP_METHOD_RESPONSE的EA中进行)$/;"	m	struct:eap_sm	access:public
 eap_sm::identity_len	src/eap_server/eap_i.h	/^	size_t identity_len;                \/\/ 存储了获得的用户名长度$/;"	m	struct:eap_sm	access:public
 eap_sm::ignore	src/eap_peer/eap_i.h	/^	Boolean ignore;$/;"	m	struct:eap_sm	access:public
 eap_sm::ignore	src/eap_server/eap_i.h	/^	Boolean ignore;         \/\/ 此标志位用于决定是否丢弃当前收到的报文$/;"	m	struct:eap_sm	access:public
@@ -9044,7 +9044,7 @@ eap_sm::m	src/eap_peer/eap_i.h	/^	const struct eap_method *m; \/* selected EAP m
 eap_sm::m	src/eap_server/eap_i.h	/^	const struct eap_method *m;         \/\/ 指向被采用的 EAP 方法控制块$/;"	m	struct:eap_sm	typeref:struct:eap_sm::eap_method	access:public
 eap_sm::methodState	src/eap_peer/eap_i.h	/^	EapMethodState methodState;$/;"	m	struct:eap_sm	access:public
 eap_sm::methodState	src/eap_server/eap_i.h	/^	} methodState;              \/\/ 当前EAP方法所处的状态$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon158	access:public
-eap_sm::methodTimeout	src/eap_server/eap_i.h	/^	int methodTimeout;          \/\/ 当前EAP方法的超时值，来源有2种：通过EAP方法自带的getTimeout函数计算得到；通过aaaMethodTimeout赋值，通常为0表示不使用$/;"	m	struct:eap_sm	access:public
+eap_sm::methodTimeout	src/eap_server/eap_i.h	/^	int methodTimeout;          \/\/ 当前EAP方法的超时值，来源有2种：通过EAP方法自带的getTimeout函数计算得到；通过aaaMethodTimeout赋值$/;"	m	struct:eap_sm	access:public
 eap_sm::method_pending	src/eap_server/eap_i.h	/^	} method_pending;$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon160	access:public
 eap_sm::msg_ctx	src/eap_peer/eap_i.h	/^	void *msg_ctx;$/;"	m	struct:eap_sm	access:public
 eap_sm::msg_ctx	src/eap_server/eap_i.h	/^	void *eapol_ctx, *msg_ctx;          \/\/ 分别指向状态机统一管理块$/;"	m	struct:eap_sm	access:public
@@ -9999,11 +9999,11 @@ eapol_state_machine::dot1xAuthEapolFramesTx	src/eapol_auth/eapol_auth_sm_i.h	/^	
 eapol_state_machine::dot1xAuthEapolLogoffFramesRx	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter dot1xAuthEapolLogoffFramesRx;$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::dot1xAuthEapolReqFramesTx	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter dot1xAuthEapolReqFramesTx;      \/\/ 记录了发送code = req的eapol帧数量$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::dot1xAuthEapolReqIdFramesTx	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter dot1xAuthEapolReqIdFramesTx;    \/\/ 记录了发送code = req,type=id的eapol帧数量$/;"	m	struct:eapol_state_machine	access:public
-eapol_state_machine::dot1xAuthEapolRespFramesRx	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter dot1xAuthEapolRespFramesRx;$/;"	m	struct:eapol_state_machine	access:public
-eapol_state_machine::dot1xAuthEapolRespIdFramesRx	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter dot1xAuthEapolRespIdFramesRx;$/;"	m	struct:eapol_state_machine	access:public
+eapol_state_machine::dot1xAuthEapolRespFramesRx	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter dot1xAuthEapolRespFramesRx;     \/\/ 记录了接收eap-resp帧数量$/;"	m	struct:eapol_state_machine	access:public
+eapol_state_machine::dot1xAuthEapolRespIdFramesRx	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter dot1xAuthEapolRespIdFramesRx;   \/\/ 记录了接收eap-resp-id帧数量$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::dot1xAuthEapolStartFramesRx	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter dot1xAuthEapolStartFramesRx;$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::dot1xAuthInvalidEapolFramesRx	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter dot1xAuthInvalidEapolFramesRx;$/;"	m	struct:eapol_state_machine	access:public
-eapol_state_machine::dot1xAuthLastEapolFrameVersion	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter dot1xAuthLastEapolFrameVersion;$/;"	m	struct:eapol_state_machine	access:public
+eapol_state_machine::dot1xAuthLastEapolFrameVersion	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter dot1xAuthLastEapolFrameVersion; \/\/ 记录了最近收到的eapol帧的版本2001\/2004\/2010$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::eap	src/eapol_auth/eapol_auth_sm_i.h	/^	struct eap_sm *eap; \/\/ 指向EAP层状态机$/;"	m	struct:eapol_state_machine	typeref:struct:eapol_state_machine::eap_sm	access:public
 eapol_state_machine::eap_if	src/eapol_auth/eapol_auth_sm_i.h	/^	struct eap_eapol_interface *eap_if;     \/\/ 指向EAP<-->EAPOL交互接口地址$/;"	m	struct:eapol_state_machine	typeref:struct:eapol_state_machine::eap_eapol_interface	access:public
 eapol_state_machine::eap_type_authsrv	src/eapol_auth/eapol_auth_sm_i.h	/^	u8 eap_type_authsrv; \/* EAP type of the last EAP packet from$/;"	m	struct:eapol_state_machine	access:public
@@ -10017,8 +10017,8 @@ eapol_state_machine::eapol_key_crypt_len	src/eapol_auth/eapol_auth_sm_i.h	/^	siz
 eapol_state_machine::eapol_key_sign	src/eapol_auth/eapol_auth_sm_i.h	/^	u8 *eapol_key_sign;$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::eapol_key_sign_len	src/eapol_auth/eapol_auth_sm_i.h	/^	size_t eapol_key_sign_len;$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::flags	src/eapol_auth/eapol_auth_sm_i.h	/^	int flags; \/* EAPOL_SM_* eapol层附加功能位的集合*\/$/;"	m	struct:eapol_state_machine	access:public
-eapol_state_machine::identity	src/eapol_auth/eapol_auth_sm_i.h	/^	u8 *identity;           \/\/ 认证成功后记录的用户名$/;"	m	struct:eapol_state_machine	access:public
-eapol_state_machine::identity_len	src/eapol_auth/eapol_auth_sm_i.h	/^	size_t identity_len;    \/\/ 认证成功后记录的用户名长度$/;"	m	struct:eapol_state_machine	access:public
+eapol_state_machine::identity	src/eapol_auth/eapol_auth_sm_i.h	/^	u8 *identity;           \/\/ AAA接口在封装eap-resp-identify数据到radius报文时会记录下用户名信息$/;"	m	struct:eapol_state_machine	access:public
+eapol_state_machine::identity_len	src/eapol_auth/eapol_auth_sm_i.h	/^	size_t identity_len;    \/\/ 记录的用户名长度$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::initialize	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean initialize; \/\/ 当该标志强制初始化eapol层所有状态机$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::initializing	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean initializing; \/* in process of initializing state machines 标志位，表示正在进行状态机初始化*\/$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::keyDone	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean keyDone;$/;"	m	struct:eapol_state_machine	access:public
@@ -10029,13 +10029,13 @@ eapol_state_machine::last_eap_id	src/eapol_auth/eapol_auth_sm_i.h	/^	u8 last_eap
 eapol_state_machine::last_recv_radius	src/eapol_auth/eapol_auth_sm_i.h	/^	struct radius_msg *last_recv_radius;    \/\/ 指向最近一个收到的radius报文$/;"	m	struct:eapol_state_machine	typeref:struct:eapol_state_machine::radius_msg	access:public
 eapol_state_machine::operControlledDirections	src/eapol_auth/eapol_auth_sm_i.h	/^	ControlledDirection operControlledDirections;       \/\/ 受控方向，本值会被CTRL_DIR SM写入adminControlledDirections$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::operEdge	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean operEdge;                                   \/\/ 端口没有开启VLAN时，此标志位设置为TRUE$/;"	m	struct:eapol_state_machine	access:public
-eapol_state_machine::portControl	src/eapol_auth/eapol_auth_sm_i.h	/^	PortTypes portControl;  \/\/ 受控端口的全局控制模式,作为认证者，在eapol_auth_alloc时设置了固定值AUTO$/;"	m	struct:eapol_state_machine	access:public
-eapol_state_machine::portMode	src/eapol_auth/eapol_auth_sm_i.h	/^	PortTypes portMode;     \/\/ 状态机私有的端口模式,初始化时设置Auto，进入FORCE_AUTH状态时设置ForceAuthorized，进入FORCE_UNAUTH状态时设置ForceUnauthorized$/;"	m	struct:eapol_state_machine	access:public
-eapol_state_machine::portValid	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean portValid;      \/\/ 只在无线网络中被用到$/;"	m	struct:eapol_state_machine	access:public
+eapol_state_machine::portControl	src/eapol_auth/eapol_auth_sm_i.h	/^	PortTypes portControl;  \/\/ 受控端口的全局控制模式,作为802.1x认证者，在eapol_auth_alloc时设置了固定值AUTO$/;"	m	struct:eapol_state_machine	access:public
+eapol_state_machine::portMode	src/eapol_auth/eapol_auth_sm_i.h	/^	PortTypes portMode;     \/\/ AUTH_PEA SM私有的端口模式,初始化时设置Auto，进入FORCE_AUTH状态时设置ForceAuthorized，进入FORCE_UNAUTH状态时设置ForceUnauthorized$/;"	m	struct:eapol_state_machine	access:public
+eapol_state_machine::portValid	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean portValid;      \/\/ 只在无线网络中(wpa功能开启时)被用到$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::quietPeriod	src/eapol_auth/eapol_auth_sm_i.h	/^	unsigned int quietPeriod; \/* default 60; 0..65535 静默时间,应该是认证失败后到重新认证的间隔，用于设置定时器quietWhile*\/$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::quietWhile	src/eapol_auth/eapol_auth_sm_i.h	/^	int quietWhile; \/\/ 用于AUTH_PAE SM，此时间内认证者不会接受任何请求者，超时值为quietPeriod(也就是AUTH_PAE_DEFAULT_quietPeriod)$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::radius_class	src/eapol_auth/eapol_auth_sm_i.h	/^	struct radius_class_data radius_class;$/;"	m	struct:eapol_state_machine	typeref:struct:eapol_state_machine::radius_class_data	access:public
-eapol_state_machine::radius_identifier	src/eapol_auth/eapol_auth_sm_i.h	/^	int radius_identifier;$/;"	m	struct:eapol_state_machine	access:public
+eapol_state_machine::radius_identifier	src/eapol_auth/eapol_auth_sm_i.h	/^	int radius_identifier;                  \/\/ 记录了radius客户端最近发送的radius-request报文的id字段$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::reAuthCount	src/eapol_auth/eapol_auth_sm_i.h	/^	unsigned int reAuthCount;   \/\/ 状态机进入CONNECTING状态时累加，一旦超过reAuthMax则进入DISCONNECTED状态，进入DISCONNECTED\/AUTHENTICATED时清0$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::reAuthEnabled	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean reAuthEnabled;  \/\/ 重认证功能使能位(只用于认证系统)$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::reAuthMax	src/eapol_auth/eapol_auth_sm_i.h	/^	unsigned int reAuthMax; \/* default 2 重认证次数*\/$/;"	m	struct:eapol_state_machine	access:public
@@ -12097,11 +12097,11 @@ identity	src/ap/ap_config.h	/^	u8 *identity;$/;"	m	struct:hostapd_eap_user	acces
 identity	src/ap/pmksa_cache_auth.h	/^	u8 *identity;$/;"	m	struct:rsn_pmksa_cache_entry	access:public
 identity	src/eap_common/eap_sim_common.h	/^	const u8 *nonce_mt, *identity, *res, *auts;$/;"	m	struct:eap_sim_attrs	access:public
 identity	src/eap_peer/eap_config.h	/^	u8 *identity;$/;"	m	struct:eap_peer_config	access:public
-identity	src/eap_server/eap_i.h	/^	u8 *identity;                       \/\/ 存储了获得的用户名信息$/;"	m	struct:eap_sm	access:public
+identity	src/eap_server/eap_i.h	/^	u8 *identity;                       \/\/ 存储了获得的用户名信息(在EAP_METHOD_RESPONSE的EA中进行)$/;"	m	struct:eap_sm	access:public
 identity	src/eap_server/eap_server_fast.c	/^	u8 *identity; \/* from PAC-Opaque *\/$/;"	m	struct:eap_fast_data	file:	access:public
 identity	src/eap_server/eap_sim_db.c	/^	u8 *identity;$/;"	m	struct:eap_sim_pseudonym	file:	access:public
 identity	src/eap_server/eap_sim_db.h	/^	u8 *identity;$/;"	m	struct:eap_sim_reauth	access:public
-identity	src/eapol_auth/eapol_auth_sm_i.h	/^	u8 *identity;           \/\/ 认证成功后记录的用户名$/;"	m	struct:eapol_state_machine	access:public
+identity	src/eapol_auth/eapol_auth_sm_i.h	/^	u8 *identity;           \/\/ AAA接口在封装eap-resp-identify数据到radius报文时会记录下用户名信息$/;"	m	struct:eapol_state_machine	access:public
 identity_len	src/ap/ap_config.h	/^	size_t identity_len;$/;"	m	struct:hostapd_eap_user	access:public
 identity_len	src/ap/pmksa_cache_auth.h	/^	size_t identity_len;$/;"	m	struct:rsn_pmksa_cache_entry	access:public
 identity_len	src/eap_common/eap_sim_common.h	/^	size_t next_pseudonym_len, next_reauth_id_len, identity_len, res_len;$/;"	m	struct:eap_sim_attrs	access:public
@@ -12110,7 +12110,7 @@ identity_len	src/eap_server/eap_i.h	/^	size_t identity_len;                \/\/ 
 identity_len	src/eap_server/eap_server_fast.c	/^	size_t identity_len;$/;"	m	struct:eap_fast_data	file:	access:public
 identity_len	src/eap_server/eap_sim_db.c	/^	size_t identity_len;$/;"	m	struct:eap_sim_pseudonym	file:	access:public
 identity_len	src/eap_server/eap_sim_db.h	/^	size_t identity_len;$/;"	m	struct:eap_sim_reauth	access:public
-identity_len	src/eapol_auth/eapol_auth_sm_i.h	/^	size_t identity_len;    \/\/ 认证成功后记录的用户名长度$/;"	m	struct:eapol_state_machine	access:public
+identity_len	src/eapol_auth/eapol_auth_sm_i.h	/^	size_t identity_len;    \/\/ 记录的用户名长度$/;"	m	struct:eapol_state_machine	access:public
 idi	src/eap_common/ikev2_common.h	/^	const u8 *idi;$/;"	m	struct:ikev2_payloads	access:public
 idi_len	src/eap_common/ikev2_common.h	/^	size_t idi_len;$/;"	m	struct:ikev2_payloads	access:public
 idleWhile	src/eapol_supp/eapol_supp_sm.c	/^	unsigned int idleWhile; \/* for EAP state machine *\/$/;"	m	struct:eapol_sm	file:	access:public
@@ -13748,7 +13748,7 @@ method	src/eap_server/eap_i.h	/^	EapType method;$/;"	m	struct:eap_method	access:
 methodState	src/eap_peer/eap_i.h	/^	EapMethodState methodState;$/;"	m	struct:eap_method_ret	access:public
 methodState	src/eap_peer/eap_i.h	/^	EapMethodState methodState;$/;"	m	struct:eap_sm	access:public
 methodState	src/eap_server/eap_i.h	/^	} methodState;              \/\/ 当前EAP方法所处的状态$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon158	access:public
-methodTimeout	src/eap_server/eap_i.h	/^	int methodTimeout;          \/\/ 当前EAP方法的超时值，来源有2种：通过EAP方法自带的getTimeout函数计算得到；通过aaaMethodTimeout赋值，通常为0表示不使用$/;"	m	struct:eap_sm	access:public
+methodTimeout	src/eap_server/eap_i.h	/^	int methodTimeout;          \/\/ 当前EAP方法的超时值，来源有2种：通过EAP方法自带的getTimeout函数计算得到；通过aaaMethodTimeout赋值$/;"	m	struct:eap_sm	access:public
 method_pending	src/eap_server/eap_i.h	/^	} method_pending;$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon160	access:public
 methods	src/ap/ap_config.h	/^	} methods[EAP_USER_MAX_METHODS];$/;"	m	struct:hostapd_eap_user	typeref:struct:hostapd_eap_user::__anon2	access:public
 methods	src/eap_server/eap.h	/^	} methods[EAP_MAX_METHODS];$/;"	m	struct:eap_user	typeref:struct:eap_user::__anon136	access:public
@@ -15193,12 +15193,12 @@ pointer	src/drivers/wireless_copy.h	/^  void __user	*pointer;	\/* Pointer to the
 poll	src/drivers/driver.h	/^	void (*poll)(void *priv);$/;"	m	struct:wpa_driver_ops	access:public
 port	src/radius/radius_client.h	/^	int port;$/;"	m	struct:hostapd_radius_server	access:public
 port	src/wps/http_server.c	/^	int port;$/;"	m	struct:http_server	file:	access:public
-portControl	src/eapol_auth/eapol_auth_sm_i.h	/^	PortTypes portControl;  \/\/ 受控端口的全局控制模式,作为认证者，在eapol_auth_alloc时设置了固定值AUTO$/;"	m	struct:eapol_state_machine	access:public
+portControl	src/eapol_auth/eapol_auth_sm_i.h	/^	PortTypes portControl;  \/\/ 受控端口的全局控制模式,作为802.1x认证者，在eapol_auth_alloc时设置了固定值AUTO$/;"	m	struct:eapol_state_machine	access:public
 portControl	src/eapol_supp/eapol_supp_sm.c	/^	PortControl portControl;$/;"	m	struct:eapol_sm	file:	access:public
-portEnabled	src/eap_server/eap.h	/^	Boolean portEnabled;    \/\/ 此标志由EAPOL层管理，在开始进行802.1X认证时被设置TRUE，在认证失败时设置FALSE$/;"	m	struct:eap_eapol_interface	access:public
+portEnabled	src/eap_server/eap.h	/^	Boolean portEnabled;    \/\/ 此标志同时影响EAPOL层SM和EAP层SM，意味着该port是否可操作，在开始进行802.1X认证时被设置TRUE，在认证失败时设置FALSE$/;"	m	struct:eap_eapol_interface	access:public
 portEnabled	src/eapol_supp/eapol_supp_sm.c	/^	Boolean portEnabled;$/;"	m	struct:eapol_sm	file:	access:public
-portMode	src/eapol_auth/eapol_auth_sm_i.h	/^	PortTypes portMode;     \/\/ 状态机私有的端口模式,初始化时设置Auto，进入FORCE_AUTH状态时设置ForceAuthorized，进入FORCE_UNAUTH状态时设置ForceUnauthorized$/;"	m	struct:eapol_state_machine	access:public
-portValid	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean portValid;      \/\/ 只在无线网络中被用到$/;"	m	struct:eapol_state_machine	access:public
+portMode	src/eapol_auth/eapol_auth_sm_i.h	/^	PortTypes portMode;     \/\/ AUTH_PEA SM私有的端口模式,初始化时设置Auto，进入FORCE_AUTH状态时设置ForceAuthorized，进入FORCE_UNAUTH状态时设置ForceUnauthorized$/;"	m	struct:eapol_state_machine	access:public
+portValid	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean portValid;      \/\/ 只在无线网络中(wpa功能开启时)被用到$/;"	m	struct:eapol_state_machine	access:public
 portValid	src/eapol_supp/eapol_supp_sm.c	/^	Boolean portValid;$/;"	m	struct:eapol_sm	file:	access:public
 port_cb	src/eapol_supp/eapol_supp_sm.h	/^	void (*port_cb)(void *ctx, int authorized);$/;"	m	struct:eapol_ctx	access:public
 port_stat	src/drivers/Apple80211.h	/^	UInt16 port_stat;$/;"	m	struct:WirelessInfo	access:public
@@ -15559,7 +15559,7 @@ radius_hdr::code	src/radius/radius.h	/^	u8 code;                \/\/ radius包�
 radius_hdr::identifier	src/radius/radius.h	/^	u8 identifier;          \/\/ 包标识，用于匹配请求包和响应包$/;"	m	struct:radius_hdr	access:public
 radius_hdr::length	src/radius/radius.h	/^	u16 length; \/* including this header *\/ \/\/ 包长度，最小20字节，最大4096字节$/;"	m	struct:radius_hdr	access:public
 radius_id	src/ap/ieee802_11_auth.c	/^	u8 radius_id;$/;"	m	struct:hostapd_acl_query_data	file:	access:public
-radius_identifier	src/eapol_auth/eapol_auth_sm_i.h	/^	int radius_identifier;$/;"	m	struct:eapol_state_machine	access:public
+radius_identifier	src/eapol_auth/eapol_auth_sm_i.h	/^	int radius_identifier;                  \/\/ 记录了radius客户端最近发送的radius-request报文的id字段$/;"	m	struct:eapol_state_machine	access:public
 radius_mode_txt	src/ap/ieee802_1x.c	/^const char *radius_mode_txt(struct hostapd_data *hapd)$/;"	f	signature:(struct hostapd_data *hapd)
 radius_mode_txt	src/ap/ieee802_1x.h	/^const char *radius_mode_txt(struct hostapd_data *hapd);$/;"	p	signature:(struct hostapd_data *hapd)
 radius_ms_mppe_keys	src/radius/radius.h	/^struct radius_ms_mppe_keys {$/;"	s

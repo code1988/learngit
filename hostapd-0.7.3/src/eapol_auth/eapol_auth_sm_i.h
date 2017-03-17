@@ -63,8 +63,8 @@ struct eapol_state_machine {
 	Boolean keyDone;
 	Boolean keyRun;     // BE_AUTH SM 进入SUCCESS状态时设置TRUE；AUTH_PAE SM 进入AUTHENTICATING/ABORTING状态时设置FALSE
 	Boolean keyTxEnabled;
-	PortTypes portControl;  // 受控端口的全局控制模式,作为认证者，在eapol_auth_alloc时设置了固定值AUTO
-	Boolean portValid;      // 只在无线网络中被用到
+	PortTypes portControl;  // 受控端口的全局控制模式,作为802.1x认证者，在eapol_auth_alloc时设置了固定值AUTO
+	Boolean portValid;      // 只在无线网络中(wpa功能开启时)被用到
 	Boolean reAuthenticate; // Reauthentication Timer状态机进入REAUTHENTICATE状态时设置TRUE；Authenticator PAE状态机进入CONNECTING状态时设置FALSE
 
 	/* Port Timers state machine */
@@ -78,7 +78,7 @@ struct eapol_state_machine {
 	/* variables */
 	Boolean eapolLogoff;    // eapol层接收到eapol-logoff报文时设置TRUE；状态机进入DISCONNECTED/HELD状态时设置FALSE
 	Boolean eapolStart;     // eapol层接收到eapol-start报文时设置TRUE；状态机进入AUTHENTICATING/FORCE_AUTH/FORCE_UNAUTH状态时设置FALSE
-	PortTypes portMode;     // 状态机私有的端口模式,初始化时设置Auto，进入FORCE_AUTH状态时设置ForceAuthorized，进入FORCE_UNAUTH状态时设置ForceUnauthorized
+	PortTypes portMode;     // AUTH_PEA SM私有的端口模式,初始化时设置Auto，进入FORCE_AUTH状态时设置ForceAuthorized，进入FORCE_UNAUTH状态时设置ForceUnauthorized
 	unsigned int reAuthCount;   // 状态机进入CONNECTING状态时累加，一旦超过reAuthMax则进入DISCONNECTED状态，进入DISCONNECTED/AUTHENTICATED时清0
 	/* constants */
 	unsigned int quietPeriod; /* default 60; 0..65535 静默时间,应该是认证失败后到重新认证的间隔，用于设置定时器quietWhile*/
@@ -141,13 +141,13 @@ struct eapol_state_machine {
 	Counter dot1xAuthEapolFramesTx;         // 记录了发送eapol帧数量
 	Counter dot1xAuthEapolStartFramesRx;
 	Counter dot1xAuthEapolLogoffFramesRx;
-	Counter dot1xAuthEapolRespIdFramesRx;
-	Counter dot1xAuthEapolRespFramesRx;
+	Counter dot1xAuthEapolRespIdFramesRx;   // 记录了接收eap-resp-id帧数量
+	Counter dot1xAuthEapolRespFramesRx;     // 记录了接收eap-resp帧数量
 	Counter dot1xAuthEapolReqIdFramesTx;    // 记录了发送code = req,type=id的eapol帧数量
 	Counter dot1xAuthEapolReqFramesTx;      // 记录了发送code = req的eapol帧数量
 	Counter dot1xAuthInvalidEapolFramesRx;
 	Counter dot1xAuthEapLengthErrorFramesRx;
-	Counter dot1xAuthLastEapolFrameVersion;
+	Counter dot1xAuthLastEapolFrameVersion; // 记录了最近收到的eapol帧的版本2001/2004/2010
 
 	/* Other variables - not defined in IEEE 802.1X */
 	u8 addr[ETH_ALEN]; /* Supplicant address 请求者mac地址*/
@@ -156,12 +156,12 @@ struct eapol_state_machine {
 	/* EAPOL/AAA <-> EAP full authenticator interface */
 	struct eap_eapol_interface *eap_if;     // 指向EAP<-->EAPOL交互接口地址
 
-	int radius_identifier;
+	int radius_identifier;                  // 记录了radius客户端最近发送的radius-request报文的id字段(实际是0～255)
 	/* TODO: check when the last messages can be released */
 	struct radius_msg *last_recv_radius;    // 指向最近一个收到的radius报文
 	u8 last_eap_id; /* last used EAP Identifier 记录了最后一个使用的EAP报文的Identify字段*/
-	u8 *identity;           // 认证成功后记录的用户名
-	size_t identity_len;    // 认证成功后记录的用户名长度
+	u8 *identity;           // AAA接口在封装eap-resp-identify数据到radius报文时会记录下用户名信息
+	size_t identity_len;    // 记录的用户名长度
 	u8 eap_type_authsrv; /* EAP type of the last EAP packet from
 			      * Authentication server 记录了从radius认证服务器发来的最后一个EAP报文的type字段*/
 	u8 eap_type_supp; /* EAP type of the last EAP packet from Supplicant 记录了从请求者发来的最后一个EAP报文的type字段*/

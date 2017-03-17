@@ -160,7 +160,7 @@ struct wpabuf * wpabuf_alloc_ext_data(u8 *data, size_t len)
 	return buf;
 }
 
-
+// 申请len长度wpabuf数据块并写入data
 struct wpabuf * wpabuf_alloc_copy(const void *data, size_t len)
 {
 	struct wpabuf *buf = wpabuf_alloc(len);
