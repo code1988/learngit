@@ -441,7 +441,7 @@ static void ieee802_1x_encapsulate_radius(struct hostapd_data *hapd,
 	wpa_printf(MSG_DEBUG, "Encapsulating EAP message into a RADIUS "
 		   "packet");
 
-    // 生成一个新的radius报文ID号
+    // 生成一个新的radius报文ID号，并记录下来，用于匹配接下来收到的radius报文
 	sm->radius_identifier = radius_client_get_id(hapd->radius);
     // 创建一个新的radius access-request消息
 	msg = radius_msg_new(RADIUS_CODE_ACCESS_REQUEST,
@@ -1328,7 +1328,7 @@ ieee802_1x_receive_auth(struct radius_msg *msg, struct radius_msg *req,
 			   "Message-Authenticator since it does not include "
 			   "EAP-Message");
 	} else if (radius_msg_verify(msg, shared_secret, shared_secret_len,
-				     req, 1)) {     // 对radius报文进行校验(隐含这是一个radius-eap响应报文)
+				     req, 1)) {     // 对radius报文进行校验
 		printf("Incoming RADIUS packet did not have correct "
 		       "Message-Authenticator - dropped\n");
 		return RADIUS_RX_INVALID_AUTHENTICATOR;
@@ -1342,6 +1342,7 @@ ieee802_1x_receive_auth(struct radius_msg *msg, struct radius_msg *req,
 		return RADIUS_RX_UNKNOWN;
 	}
 
+    // 由于已经匹配成功，清除原本记录的radius id号
 	sm->radius_identifier = -1;
 	wpa_printf(MSG_DEBUG, "RADIUS packet matching with station " MACSTR,
 		   MAC2STR(sta->addr));
@@ -1468,7 +1469,8 @@ ieee802_1x_receive_auth(struct radius_msg *msg, struct radius_msg *req,
 
     // 进一步解析携带了EAP数据的radius报文
 	ieee802_1x_decapsulate_radius(hapd, sta);
-    // 如果override_eapReq标志被置位，则清除aaaEapReq标志，也就是只有收到Access-Challenge包才会置位此标志
+    // 如果override_eapReq标志被置位，则清除aaaEapReq标志，
+    // 确保只有收到Access-Challenge包才会置位aaaEapReq标志
 	if (override_eapReq)
 		sm->eap_if->aaaEapReq = FALSE;
 

@@ -637,7 +637,7 @@ SM_STATE(EAP, AAA_REQUEST)
 
 
 /* EAP SM进入AAA_RESPONSE状态的EA:
- *      转储AAA层->EAP层交互缓存aaaEapReqData中的数据到EAP层->EAPOL层交互缓存aaaEapReqData
+ *      转储AAA层->EAP层交互缓存aaaEapReqData中的数据到EAP层->EAPOL层交互缓存eapReqData
  *      从收到的EAP数据包中获取ID号，然后更新currentId
  *      更新当前EAP方法的超时值
  */
@@ -645,7 +645,7 @@ SM_STATE(EAP, AAA_RESPONSE)
 {
 	SM_ENTRY(EAP, AAA_RESPONSE);
 
-    // 转储AAA层->EAP层交互缓存aaaEapReqData中的数据到EAP层->EAPOL层交互缓存aaaEapReqData
+    // 转储AAA层->EAP层交互缓存aaaEapReqData中的数据到EAP层->EAPOL层交互缓存eapReqData
 	eap_copy_buf(&sm->eap_if.eapReqData, sm->eap_if.aaaEapReqData);
 	sm->currentId = eap_sm_getId(sm->eap_if.eapReqData);
 	sm->methodTimeout = sm->eap_if.aaaMethodTimeout;
@@ -750,11 +750,9 @@ SM_STEP(EAP)
 				  (sm->respMethod == EAP_TYPE_EXPANDED &&
 				   sm->respVendor == EAP_VENDOR_IETF &&
 				   sm->respVendorMethod == EAP_TYPE_NAK)))  // 1.2 如果rxResp标志被置位，并且respMethod为EAP_TYPE_NAK或者EAP_TYPE_EXPANDED
-
 				SM_ENTER(EAP, NAK);                         //      则进入NAK状态
 			else
 				SM_ENTER(EAP, PICK_UP_METHOD);              // 1.3 如果以上2种情况都不满足，则进入PICK_UP_METHOD状态
-
 		} else {
 			SM_ENTER(EAP, SELECT_ACTION);   // 2. 如果没有使能RADIUS_SERVER，则无条件进入SELECT_ACTION状态
 		}
@@ -928,14 +926,6 @@ SM_STEP(EAP)
 		else if (sm->eap_if.aaaEapReq)          //  3. 如果AAA->EAP交互标志aaaEapReq被置位，则进入AAA_RESPONSE状态
 			SM_ENTER(EAP, AAA_RESPONSE);
 		else if (sm->eap_if.aaaTimeout)         //  4. 如果AAA->EAP交互标志aaaTimeout被置位，则进入TIMEOUT_FAILURE2状态
-
-		if (sm->eap_if.aaaFail)
-			SM_ENTER(EAP, FAILURE2);
-		else if (sm->eap_if.aaaSuccess)
-			SM_ENTER(EAP, SUCCESS2);
-		else if (sm->eap_if.aaaEapReq)
-			SM_ENTER(EAP, AAA_RESPONSE);
-		else if (sm->eap_if.aaaTimeout)
 			SM_ENTER(EAP, TIMEOUT_FAILURE2);
 		break;
 	case EAP_TIMEOUT_FAILURE2:  // 当前处于TIMEOUT_FAILURE2、FAILURE2、SUCCESS2这些状态时，只有重新进入INITIALIZE状态的路径

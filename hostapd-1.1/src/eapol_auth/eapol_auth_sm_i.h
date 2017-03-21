@@ -155,11 +155,11 @@ struct eapol_state_machine {
 
 	/* EAPOL/AAA <-> EAP full authenticator interface */
 	struct eap_eapol_interface *eap_if; // 指向EAP<-->EAPOL交互接口地址
-	int radius_identifier;              // 记录了radius客户端最近发送的radius-request报文的id字段(实际是0～255)
+	int radius_identifier;              // 记录了radius客户端最近发送的radius-request报文的id字段(实际是0～255),用于匹配收到的radius报文
 	/* TODO: check when the last messages can be released */
 	struct radius_msg *last_recv_radius;    // 指向最近一个收到的radius报文
 	u8 last_eap_id; /* last used EAP Identifier 记录了最后一个使用的EAP报文的Identify字段*/
-	u8 *identity;           // AAA接口在封装eap-resp-identify数据到radius报文时会记录下用户名信息
+	u8 *identity;           // AAA接口在封装eap-resp-identify数据到radius报文时会记录下用户名信息;在收到radius-accept报文时会再次更新
 	size_t identity_len;    // 记录的用户名长度
 	u8 eap_type_authsrv; /* EAP type of the last EAP packet from
 			      * Authentication server 记录了从radius认证服务器发来的最后一个EAP报文的type字段*/
