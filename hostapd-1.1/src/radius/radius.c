@@ -439,7 +439,7 @@ void radius_msg_finish_acct(struct radius_msg *msg, const u8 *secret,
 	}
 }
 
-
+// 向radius消息管理块的属性数组中添加解析出来的属性条目
 static int radius_msg_add_attr_to_array(struct radius_msg *msg,
 					struct radius_attr_hdr *attr)
 {
@@ -502,6 +502,7 @@ struct radius_attr_hdr *radius_msg_add_attr(struct radius_msg *msg, u8 type,
  * @data: RADIUS message to be parsed
  * @len: Length of data buffer in octets
  * Returns: Parsed RADIUS message or %NULL on failure
+ * 解析一个radius报文，并填充到radius_msg
  *
  * This parses a RADIUS message and makes a copy of its data. The caller is
  * responsible for freeing the returned data with radius_msg_free().
@@ -544,7 +545,8 @@ struct radius_msg * radius_msg_parse(const u8 *data, size_t len)
 	/* parse attributes */
 	pos = wpabuf_mhead_u8(msg->buf) + sizeof(struct radius_hdr);
 	end = wpabuf_mhead_u8(msg->buf) + wpabuf_len(msg->buf);
-	while (pos < end) {
+	while (pos < end) 
+    {
 		if ((size_t) (end - pos) < sizeof(*attr))
 			goto fail;
 
@@ -555,6 +557,7 @@ struct radius_msg * radius_msg_parse(const u8 *data, size_t len)
 
 		/* TODO: check that attr->length is suitable for attr->type */
 
+        // 向radius消息管理块的属性数组中添加解析出来的属性条目
 		if (radius_msg_add_attr_to_array(msg, attr))
 			goto fail;
 

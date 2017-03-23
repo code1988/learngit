@@ -1,6 +1,7 @@
 /*
  *	Forwarding database
  *	Linux ethernet bridge
+ *	以太网桥使用的转发数据库
  *
  *	Authors:
  *	Lennert Buytenhek		<buytenh@gnu.org>
@@ -26,6 +27,7 @@
 #include <linux/if_vlan.h>
 #include "br_private.h"
 
+// 定义了一个为fdb服务的slab缓存对象
 static struct kmem_cache *br_fdb_cache __read_mostly;
 static struct net_bridge_fdb_entry *fdb_find(struct hlist_head *head,
 					     const unsigned char *addr,
@@ -35,10 +37,15 @@ static int fdb_insert(struct net_bridge *br, struct net_bridge_port *source,
 static void fdb_notify(struct net_bridge *br,
 		       const struct net_bridge_fdb_entry *, int);
 
+// 这个值随机生成
 static u32 fdb_salt __read_mostly;
 
+/* 初始化以太网桥使用的转发数据库
+ * 实际就是为其分配一个slab缓冲区
+ */
 int __init br_fdb_init(void)
 {
+    // 创建一片新的slab缓存
 	br_fdb_cache = kmem_cache_create("bridge_fdb_cache",
 					 sizeof(struct net_bridge_fdb_entry),
 					 0,
@@ -46,10 +53,14 @@ int __init br_fdb_init(void)
 	if (!br_fdb_cache)
 		return -ENOMEM;
 
+    // 为fdb_salt生成一个随机数
 	get_random_bytes(&fdb_salt, sizeof(fdb_salt));
 	return 0;
 }
 
+/* 销毁以太网桥使用的转发数据库
+ * 实际就是销毁分配的slab缓冲区对象
+ */
 void br_fdb_fini(void)
 {
 	kmem_cache_destroy(br_fdb_cache);

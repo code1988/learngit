@@ -69,7 +69,7 @@ struct eapol_auth_cb {
 			   size_t datalen); // ieee802_1x_eapol_send
 	void (*aaa_send)(void *ctx, void *sta_ctx, const u8 *data,
 			 size_t datalen);   // ieee802_1x_aaa_send
-	void (*finished)(void *ctx, void *sta_ctx, int success, int preauth);   // _ieee802_1x_finished 
+	void (*finished)(void *ctx, void *sta_ctx, int success, int preauth);   // _ieee802_1x_finished
 	int (*get_eap_user)(void *ctx, const u8 *identity, size_t identity_len,  
 			    int phase2, struct eap_user *user);                         // ieee802_1x_get_eap_user
 	int (*sta_entry_alive)(void *ctx, const u8 *addr);                      // ieee802_1x_sta_entry_alive

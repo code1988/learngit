@@ -103,6 +103,7 @@ struct radius_msg_list {
 
 	/**
 	 * msg_type - Message type
+     * 该消息属于认证/计费/临时计费
 	 */
 	RadiusType msg_type;
 
@@ -130,6 +131,7 @@ struct radius_msg_list {
 
 	/**
 	 * last_attempt - Time of the last transmission attempt
+     * 记录下该消息最近一次发送的时间戳
 	 */
 	struct os_time last_attempt;
 
@@ -228,13 +230,14 @@ struct radius_client_data {
 
 	/**
 	 * msgs - Pending outgoing RADIUS messages
-     * radius消息发送链表
+     * 等待被回复的radius-req消息链表
+     * 尾部插入原则，所以头部为最老的消息
 	 */
 	struct radius_msg_list *msgs;
 
 	/**
 	 * num_msgs - Number of pending messages in the msgs list
-     * 发送链表中的消息数量
+     * 等待链表中的消息数量
 	 */
 	size_t num_msgs;
 
@@ -293,6 +296,7 @@ int radius_client_register(struct radius_client_data *radius,
 	struct radius_rx_handler **handlers, *newh;
 	size_t *num;
 
+    // 分别注册计费和认证回调函数
 	if (msg_type == RADIUS_ACCT) {
 		handlers = &radius->acct_handlers;
 		num = &radius->num_acct_handlers;
@@ -728,6 +732,7 @@ static void radius_client_receive(int sock, void *eloop_ctx, void *sock_ctx)
 	struct hostapd_radius_server *rconf;
 	int invalid_authenticator = 0;
 
+    // 区分计费还是认证
 	if (msg_type == RADIUS_ACCT) {
 		handlers = radius->acct_handlers;
 		num_handlers = radius->num_acct_handlers;
@@ -752,6 +757,7 @@ static void radius_client_receive(int sock, void *eloop_ctx, void *sock_ctx)
 		return;
 	}
 
+    // 解析radius报文，并填充到radius消息管理块struct radius_msg
 	msg = radius_msg_parse(buf, len);
 	if (msg == NULL) {
 		printf("Parsing incoming RADIUS frame failed\n");
@@ -780,9 +786,11 @@ static void radius_client_receive(int sock, void *eloop_ctx, void *sock_ctx)
 		break;
 	}
 
+    // 从等待列表里查找一个类型匹配的消息
 	prev_req = NULL;
 	req = radius->msgs;
-	while (req) {
+	while (req) 
+    {
 		/* TODO: also match by src addr:port of the packet when using
 		 * alternative RADIUS servers (?) */
 		if ((req->msg_type == msg_type ||
@@ -805,6 +813,7 @@ static void radius_client_receive(int sock, void *eloop_ctx, void *sock_ctx)
 		goto fail;
 	}
 
+    // 计算radius报文的响应时间
 	os_get_time(&now);
 	roundtrip = (now.sec - req->last_attempt.sec) * 100 +
 		(now.usec - req->last_attempt.usec) / 10000;
@@ -816,12 +825,14 @@ static void radius_client_receive(int sock, void *eloop_ctx, void *sock_ctx)
 	rconf->round_trip_time = roundtrip;
 
 	/* Remove ACKed RADIUS packet from retransmit list */
+    // 从等待链表中删除该消息节点
 	if (prev_req)
 		prev_req->next = req->next;
 	else
 		radius->msgs = req->next;
 	radius->num_msgs--;
 
+    // 遍历对应的RX回调数组，调用匹配的回调函数
 	for (i = 0; i < num_handlers; i++) {
 		RadiusRxResult res;
 		res = handlers[i].handler(msg, req->msg, req->shared_secret,

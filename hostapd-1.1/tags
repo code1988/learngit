@@ -2247,7 +2247,7 @@ MacAddress	src/drivers/driver_ndis.c	/^	NDIS_802_11_MAC_ADDRESS MacAddress; \/* 
 MacAddress	src/drivers/driver_ralink.h	/^    NDIS_802_11_MAC_ADDRESS             MacAddress;         \/\/ BSSID$/;"	m	struct:_NDIS_WLAN_BSSID_EX	access:public
 MacAddress	src/drivers/driver_ralink.h	/^   NDIS_802_11_MAC_ADDRESS             MacAddress; \/\/ BSSID$/;"	m	struct:_NDIS_WLAN_BSSID	access:public
 Maj	src/crypto/sha256-internal.c	87;"	d	file:
-MaxRetrans	src/eap_server/eap_i.h	/^	int MaxRetrans;$/;"	m	struct:eap_sm	access:public
+MaxRetrans	src/eap_server/eap_i.h	/^	int MaxRetrans;     \/\/ EAP报文最大的重传次数，默认设置5$/;"	m	struct:eap_sm	access:public
 NAI_REALM_CRED_TYPE_ANONYMOUS	src/common/ieee802_11_defs.h	/^	NAI_REALM_CRED_TYPE_ANONYMOUS = 9,$/;"	e	enum:nai_realm_eap_cred_type
 NAI_REALM_CRED_TYPE_CERTIFICATE	src/common/ieee802_11_defs.h	/^	NAI_REALM_CRED_TYPE_CERTIFICATE = 6,$/;"	e	enum:nai_realm_eap_cred_type
 NAI_REALM_CRED_TYPE_HARDWARE_TOKEN	src/common/ieee802_11_defs.h	/^	NAI_REALM_CRED_TYPE_HARDWARE_TOKEN = 4,$/;"	e	enum:nai_realm_eap_cred_type
@@ -6968,7 +6968,7 @@ backendAuthSuccesses	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter backendAuthSucc
 backendOtherRequestsToSupplicant	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter backendOtherRequestsToSupplicant;   \/\/ 记录了BE_AUTH SM 发送给请求者request的数量$/;"	m	struct:eapol_state_machine	access:public
 backendResponses	src/eapol_auth/eapol_auth_sm_i.h	/^	Counter backendResponses;                   \/\/ 记录了BE_AUTH SM 发送给EAP层response的数量$/;"	m	struct:eapol_state_machine	access:public
 backend_auth	src/eap_server/eap.h	/^	Boolean backend_auth;$/;"	m	struct:eap_config	access:public
-backend_auth	src/eap_server/eap_i.h	/^	Boolean backend_auth;$/;"	m	struct:eap_sm	access:public
+backend_auth	src/eap_server/eap_i.h	/^	Boolean backend_auth;       \/\/ RADIUS后台认证服务器使能标志，默认不使能$/;"	m	struct:eap_sm	access:public
 bad_authenticators	src/radius/radius_client.h	/^	u32 bad_authenticators;$/;"	m	struct:hostapd_radius_server	access:public
 bad_authenticators	src/radius/radius_server.c	/^	u32 bad_authenticators;$/;"	m	struct:radius_server_counters	file:	access:public
 base64_decode	src/utils/base64.c	/^unsigned char * base64_decode(const unsigned char *src, size_t len,$/;"	f	signature:(const unsigned char *src, size_t len, size_t *out_len)
@@ -7183,7 +7183,7 @@ buf_len	src/eap_peer/eap_fast_pac.c	/^	size_t buf_len;$/;"	m	struct:eap_fast_rea
 buf_len	src/rsn_supp/tdls.c	/^		int buf_len;    \/* length of TPK message for retransmission *\/$/;"	m	struct:wpa_tdls_peer::tpk_timer	file:	access:public
 buffer	src/crypto/md4-internal.c	/^	u8 buffer[MD4_BLOCK_LENGTH];	\/* input buffer *\/$/;"	m	struct:MD4Context	file:	access:public
 buffer	src/crypto/sha1_i.h	/^	unsigned char buffer[64];$/;"	m	struct:SHA1Context	access:public
-buildReq	src/eap_server/eap_i.h	/^	struct wpabuf * (*buildReq)(struct eap_sm *sm, void *priv, u8 id);$/;"	m	struct:eap_method	typeref:struct:eap_method::buildReq	access:public
+buildReq	src/eap_server/eap_i.h	/^	struct wpabuf * (*buildReq)(struct eap_sm *sm, void *priv, u8 id);  \/\/ eap_identity_buildReq    \/ eap_md5_buildReq$/;"	m	struct:eap_method	typeref:struct:eap_method::buildReq	access:public
 build_fake_wsc_ack	src/wps/wps_upnp.c	/^static struct wpabuf * build_fake_wsc_ack(void)$/;"	f	file:	signature:(void)
 burst	src/ap/ap_config.h	/^	int burst; \/* maximum burst time in 0.1 ms, i.e., 10 = 1 ms *\/$/;"	m	struct:hostapd_tx_queue_params	access:public
 byteReverse	src/crypto/md5-internal.c	/^static void byteReverse(unsigned char *buf, unsigned longs)$/;"	f	file:	signature:(unsigned char *buf, unsigned longs)
@@ -7301,7 +7301,7 @@ chan_switch	src/common/ieee802_11_defs.h	/^				} STRUCT_PACKED chan_switch;$/;"	
 changed	src/ap/wpa_auth_i.h	/^	Boolean changed;$/;"	m	struct:wpa_group	access:public
 changed	src/ap/wpa_auth_i.h	/^	unsigned int changed:1;$/;"	m	struct:wpa_state_machine	access:public
 changed	src/eap_peer/eap_i.h	/^	Boolean changed;$/;"	m	struct:eap_sm	access:public
-changed	src/eap_server/eap_i.h	/^	Boolean changed;$/;"	m	struct:eap_sm	access:public
+changed	src/eap_server/eap_i.h	/^	Boolean changed;                                                                               $/;"	m	struct:eap_sm	access:public
 changed	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean changed;    \/\/ 记录eapol层状态机组的状态是否发生变化$/;"	m	struct:eapol_state_machine	access:public
 changed	src/eapol_supp/eapol_supp_sm.c	/^	Boolean changed;$/;"	m	struct:eapol_sm	file:	access:public
 changed	src/utils/eloop.c	/^	int changed;$/;"	m	struct:eloop_sock_table	file:	access:public
@@ -7327,7 +7327,7 @@ chap_md5	src/eap_common/chap.c	/^int chap_md5(u8 id, const u8 *secret, size_t se
 chap_md5	src/eap_common/chap.h	/^int chap_md5(u8 id, const u8 *secret, size_t secret_len, const u8 *challenge,$/;"	p	signature:(u8 id, const u8 *secret, size_t secret_len, const u8 *challenge, size_t challenge_len, u8 *response)
 chap_password	src/eap_server/eap_server_ttls.c	/^	u8 *chap_password;$/;"	m	struct:eap_ttls_avp	file:	access:public
 chap_password_len	src/eap_server/eap_server_ttls.c	/^	size_t chap_password_len;$/;"	m	struct:eap_ttls_avp	file:	access:public
-check	src/eap_server/eap_i.h	/^	Boolean (*check)(struct eap_sm *sm, void *priv,$/;"	m	struct:eap_method	access:public
+check	src/eap_server/eap_i.h	/^	Boolean (*check)(struct eap_sm *sm, void *priv,                     $/;"	m	struct:eap_method	access:public
 check_assoc_ies	src/ap/ieee802_11.c	/^static u16 check_assoc_ies(struct hostapd_data *hapd, struct sta_info *sta,$/;"	f	file:	signature:(struct hostapd_data *hapd, struct sta_info *sta, const u8 *ies, size_t ies_len, int reassoc)
 check_crl	src/ap/ap_config.h	/^	int check_crl;$/;"	m	struct:hostapd_bss_config	access:public
 check_crl	src/crypto/tls_internal.c	/^	int check_crl;$/;"	m	struct:tls_global	file:	access:public
@@ -7783,8 +7783,8 @@ cur_pmksa	src/rsn_supp/wpa_i.h	/^	struct rsn_pmksa_cache_entry *cur_pmksa; \/* c
 curlen	src/crypto/sha256-internal.c	/^	u32 state[8], curlen;$/;"	m	struct:sha256_state	file:	access:public
 currbuf	src/utils/edit.c	/^static char currbuf[CMD_BUF_LEN];$/;"	v	file:
 currbuf_valid	src/utils/edit.c	/^static int currbuf_valid = 0;$/;"	v	file:
-currentId	src/eap_server/eap_i.h	/^	int currentId;$/;"	m	struct:eap_sm	access:public
-currentMethod	src/eap_server/eap_i.h	/^	EapType currentMethod;$/;"	m	struct:eap_sm	access:public
+currentId	src/eap_server/eap_i.h	/^	int currentId;          \/\/ 当前使用的EAP-ID (0~255)，来源有2处：从旧的currentId中计算得到；从AAA层收到的EAP报文中得到$/;"	m	struct:eap_sm	access:public
+currentMethod	src/eap_server/eap_i.h	/^	EapType currentMethod;  \/\/ 当前的EAP-TYPE，也可理解为当前使用的EAP方法$/;"	m	struct:eap_sm	access:public
 current_ap	src/ap/iapp.c	/^	u8 current_ap[ETH_ALEN];$/;"	m	struct:iapp_cache_notify	file:	access:public
 current_ap	src/common/ieee802_11_defs.h	/^			u8 current_ap[6];$/;"	m	struct:ieee80211_mgmt::__anon38::__anon43	access:public
 current_cipher_suite	src/crypto/tls_gnutls.c	/^	cipher_suite_st current_cipher_suite;$/;"	m	struct:__anon192	file:	access:public
@@ -7847,7 +7847,7 @@ dec	src/crypto/crypto_gnutls.c	/^	gcry_cipher_hd_t dec;$/;"	m	struct:crypto_ciph
 dec	src/crypto/crypto_openssl.c	/^	EVP_CIPHER_CTX dec;$/;"	m	struct:crypto_cipher	file:	access:public
 decision	src/eap_peer/eap_i.h	/^	EapDecision decision;$/;"	m	struct:eap_method_ret	access:public
 decision	src/eap_peer/eap_i.h	/^	EapDecision decision;$/;"	m	struct:eap_sm	access:public
-decision	src/eap_server/eap_i.h	/^	} decision;$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon157	access:public
+decision	src/eap_server/eap_i.h	/^	} decision;                 \/\/ SELECT_ACTION状态中使用，存储作出的决定$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon157	access:public
 decrypt_ms_key	src/radius/radius.c	/^static u8 * decrypt_ms_key(const u8 *key, size_t len,$/;"	f	file:	signature:(const u8 *key, size_t len, const u8 *req_authenticator, const u8 *secret, size_t secret_len, size_t *reslen)
 default_if_indices	src/drivers/driver_nl80211.c	/^	int default_if_indices[16];$/;"	m	struct:wpa_driver_nl80211_data	file:	access:public
 default_len	src/ap/ap_config.h	/^	size_t default_len; \/* key length used for dynamic key generation *\/$/;"	m	struct:hostapd_wep_keys	access:public
@@ -8927,7 +8927,7 @@ eap_identity_isSuccess	src/eap_server/eap_server_identity.c	/^static Boolean eap
 eap_identity_len	src/wps/wps_i.h	/^	size_t eap_identity_len;$/;"	m	struct:wps_parse_attr	access:public
 eap_identity_process	src/eap_server/eap_server_identity.c	/^static void eap_identity_process(struct eap_sm *sm, void *priv,$/;"	f	file:	signature:(struct eap_sm *sm, void *priv, struct wpabuf *respData)
 eap_identity_reset	src/eap_server/eap_server_identity.c	/^static void eap_identity_reset(struct eap_sm *sm, void *priv)$/;"	f	file:	signature:(struct eap_sm *sm, void *priv)
-eap_if	src/eap_server/eap_i.h	/^	struct eap_eapol_interface eap_if;$/;"	m	struct:eap_sm	typeref:struct:eap_sm::eap_eapol_interface	access:public
+eap_if	src/eap_server/eap_i.h	/^	struct eap_eapol_interface eap_if;  \/\/ 认证者eap<-->eapol层交互接口$/;"	m	struct:eap_sm	typeref:struct:eap_sm::eap_eapol_interface	access:public
 eap_if	src/eapol_auth/eapol_auth_sm_i.h	/^	struct eap_eapol_interface *eap_if; \/\/ 指向EAP<-->EAPOL交互接口地址$/;"	m	struct:eapol_state_machine	typeref:struct:eapol_state_machine::eap_eapol_interface	access:public
 eap_if	src/radius/radius_server.c	/^	struct eap_eapol_interface *eap_if;$/;"	m	struct:radius_session	typeref:struct:radius_session::eap_eapol_interface	file:	access:public
 eap_ikev2_buildReq	src/eap_server/eap_server_ikev2.c	/^static struct wpabuf * eap_ikev2_buildReq(struct eap_sm *sm, void *priv, u8 id)$/;"	f	file:	signature:(struct eap_sm *sm, void *priv, u8 id)
@@ -9047,28 +9047,28 @@ eap_method	src/eap_peer/eap_aka.c	/^	u8 eap_method;$/;"	m	struct:eap_aka_data	fi
 eap_method	src/eap_peer/eap_i.h	/^struct eap_method {$/;"	s
 eap_method	src/eap_server/eap_i.h	/^struct eap_method {$/;"	s
 eap_method	src/eap_server/eap_server_aka.c	/^	u8 eap_method;$/;"	m	struct:eap_aka_data	file:	access:public
-eap_method::buildReq	src/eap_server/eap_i.h	/^	struct wpabuf * (*buildReq)(struct eap_sm *sm, void *priv, u8 id);$/;"	m	struct:eap_method	typeref:struct:eap_method::buildReq	access:public
-eap_method::check	src/eap_server/eap_i.h	/^	Boolean (*check)(struct eap_sm *sm, void *priv,$/;"	m	struct:eap_method	access:public
+eap_method::buildReq	src/eap_server/eap_i.h	/^	struct wpabuf * (*buildReq)(struct eap_sm *sm, void *priv, u8 id);  \/\/ eap_identity_buildReq    \/ eap_md5_buildReq$/;"	m	struct:eap_method	typeref:struct:eap_method::buildReq	access:public
+eap_method::check	src/eap_server/eap_i.h	/^	Boolean (*check)(struct eap_sm *sm, void *priv,                     $/;"	m	struct:eap_method	access:public
 eap_method::deinit	src/eap_peer/eap_i.h	/^	void (*deinit)(struct eap_sm *sm, void *priv);$/;"	m	struct:eap_method	access:public
 eap_method::deinit_for_reauth	src/eap_peer/eap_i.h	/^	void (*deinit_for_reauth)(struct eap_sm *sm, void *priv);$/;"	m	struct:eap_method	access:public
 eap_method::dl_handle	src/eap_peer/eap_i.h	/^	void *dl_handle;$/;"	m	struct:eap_method	access:public
 eap_method::free	src/eap_peer/eap_i.h	/^	void (*free)(struct eap_method *method);$/;"	m	struct:eap_method	access:public
 eap_method::free	src/eap_server/eap_i.h	/^	void (*free)(struct eap_method *method);$/;"	m	struct:eap_method	access:public
 eap_method::getKey	src/eap_peer/eap_i.h	/^	u8 * (*getKey)(struct eap_sm *sm, void *priv, size_t *len);$/;"	m	struct:eap_method	access:public
-eap_method::getKey	src/eap_server/eap_i.h	/^	u8 * (*getKey)(struct eap_sm *sm, void *priv, size_t *len);$/;"	m	struct:eap_method	access:public
-eap_method::getTimeout	src/eap_server/eap_i.h	/^	int (*getTimeout)(struct eap_sm *sm, void *priv);$/;"	m	struct:eap_method	access:public
+eap_method::getKey	src/eap_server/eap_i.h	/^	u8 * (*getKey)(struct eap_sm *sm, void *priv, size_t *len);                                                                 $/;"	m	struct:eap_method	access:public
+eap_method::getTimeout	src/eap_server/eap_i.h	/^	int (*getTimeout)(struct eap_sm *sm, void *priv);                                                                           $/;"	m	struct:eap_method	access:public
 eap_method::get_emsk	src/eap_peer/eap_i.h	/^	u8 * (*get_emsk)(struct eap_sm *sm, void *priv, size_t *len);$/;"	m	struct:eap_method	access:public
 eap_method::get_emsk	src/eap_server/eap_i.h	/^	u8 * (*get_emsk)(struct eap_sm *sm, void *priv, size_t *len);$/;"	m	struct:eap_method	access:public
 eap_method::get_identity	src/eap_peer/eap_i.h	/^	const u8 * (*get_identity)(struct eap_sm *sm, void *priv, size_t *len);$/;"	m	struct:eap_method	access:public
 eap_method::get_status	src/eap_peer/eap_i.h	/^	int (*get_status)(struct eap_sm *sm, void *priv, char *buf,$/;"	m	struct:eap_method	access:public
 eap_method::has_reauth_data	src/eap_peer/eap_i.h	/^	Boolean (*has_reauth_data)(struct eap_sm *sm, void *priv);$/;"	m	struct:eap_method	access:public
 eap_method::init	src/eap_peer/eap_i.h	/^	void * (*init)(struct eap_sm *sm);$/;"	m	struct:eap_method	access:public
-eap_method::init	src/eap_server/eap_i.h	/^	void * (*init)(struct eap_sm *sm);$/;"	m	struct:eap_method	access:public
-eap_method::initPickUp	src/eap_server/eap_i.h	/^	void * (*initPickUp)(struct eap_sm *sm);$/;"	m	struct:eap_method	access:public
+eap_method::init	src/eap_server/eap_i.h	/^	void * (*init)(struct eap_sm *sm);                                  \/\/ eap_identity_init        \/ eap_md5_init$/;"	m	struct:eap_method	access:public
+eap_method::initPickUp	src/eap_server/eap_i.h	/^	void * (*initPickUp)(struct eap_sm *sm);                            \/\/ eap_identity_initPickUp$/;"	m	struct:eap_method	access:public
 eap_method::init_for_reauth	src/eap_peer/eap_i.h	/^	void * (*init_for_reauth)(struct eap_sm *sm, void *priv);$/;"	m	struct:eap_method	access:public
-eap_method::isDone	src/eap_server/eap_i.h	/^	Boolean (*isDone)(struct eap_sm *sm, void *priv);$/;"	m	struct:eap_method	access:public
+eap_method::isDone	src/eap_server/eap_i.h	/^	Boolean (*isDone)(struct eap_sm *sm, void *priv);                   \/\/ eap_identity_isDone      \/ eap_md5_isDone           $/;"	m	struct:eap_method	access:public
 eap_method::isKeyAvailable	src/eap_peer/eap_i.h	/^	Boolean (*isKeyAvailable)(struct eap_sm *sm, void *priv);$/;"	m	struct:eap_method	access:public
-eap_method::isSuccess	src/eap_server/eap_i.h	/^	Boolean (*isSuccess)(struct eap_sm *sm, void *priv);$/;"	m	struct:eap_method	access:public
+eap_method::isSuccess	src/eap_server/eap_i.h	/^	Boolean (*isSuccess)(struct eap_sm *sm, void *priv);                \/\/ eap_identity_isSuccess   \/ eap_md5_isSuccess$/;"	m	struct:eap_method	access:public
 eap_method::method	src/eap_peer/eap_i.h	/^	EapType method;$/;"	m	struct:eap_method	access:public
 eap_method::method	src/eap_server/eap_i.h	/^	EapType method;$/;"	m	struct:eap_method	access:public
 eap_method::name	src/eap_peer/eap_i.h	/^	const char *name;$/;"	m	struct:eap_method	access:public
@@ -9076,14 +9076,14 @@ eap_method::name	src/eap_server/eap_i.h	/^	const char *name;$/;"	m	struct:eap_me
 eap_method::next	src/eap_peer/eap_i.h	/^	struct eap_method *next;$/;"	m	struct:eap_method	typeref:struct:eap_method::eap_method	access:public
 eap_method::next	src/eap_server/eap_i.h	/^	struct eap_method *next;$/;"	m	struct:eap_method	typeref:struct:eap_method::eap_method	access:public
 eap_method::process	src/eap_peer/eap_i.h	/^	struct wpabuf * (*process)(struct eap_sm *sm, void *priv,$/;"	m	struct:eap_method	typeref:struct:eap_method::process	access:public
-eap_method::process	src/eap_server/eap_i.h	/^	void (*process)(struct eap_sm *sm, void *priv,$/;"	m	struct:eap_method	access:public
-eap_method::reset	src/eap_server/eap_i.h	/^	void (*reset)(struct eap_sm *sm, void *priv);$/;"	m	struct:eap_method	access:public
+eap_method::process	src/eap_server/eap_i.h	/^	void (*process)(struct eap_sm *sm, void *priv,                                                                              $/;"	m	struct:eap_method	access:public
+eap_method::reset	src/eap_server/eap_i.h	/^	void (*reset)(struct eap_sm *sm, void *priv);                       \/\/ eap_identity_reset       \/ eap_md5_reset $/;"	m	struct:eap_method	access:public
 eap_method::vendor	src/eap_peer/eap_i.h	/^	int vendor;$/;"	m	struct:eap_method	access:public
 eap_method::vendor	src/eap_server/eap_i.h	/^	int vendor;$/;"	m	struct:eap_method	access:public
 eap_method::version	src/eap_peer/eap_i.h	/^	int version;$/;"	m	struct:eap_method	access:public
 eap_method::version	src/eap_server/eap_i.h	/^	int version;$/;"	m	struct:eap_method	access:public
 eap_method_priv	src/eap_peer/eap_i.h	/^	void *eap_method_priv;$/;"	m	struct:eap_sm	access:public
-eap_method_priv	src/eap_server/eap_i.h	/^	void *eap_method_priv;$/;"	m	struct:eap_sm	access:public
+eap_method_priv	src/eap_server/eap_i.h	/^	void *eap_method_priv;              \/\/ 指向所采用的EAP方法携带的私有数据，比如MD5校验数据$/;"	m	struct:eap_sm	access:public
 eap_method_ret	src/eap_peer/eap_i.h	/^struct eap_method_ret {$/;"	s
 eap_method_ret::allowNotifications	src/eap_peer/eap_i.h	/^	Boolean allowNotifications;$/;"	m	struct:eap_method_ret	access:public
 eap_method_ret::decision	src/eap_peer/eap_i.h	/^	EapDecision decision;$/;"	m	struct:eap_method_ret	access:public
@@ -9805,7 +9805,7 @@ eap_sake_state_txt	src/eap_server/eap_server_sake.c	/^static const char * eap_sa
 eap_seq	src/eap_server/eap_server_fast.c	/^	int eap_seq;$/;"	m	struct:eap_fast_data	file:	access:public
 eap_server	src/ap/ap_config.h	/^	int eap_server; \/* Use internal EAP server instead of external$/;"	m	struct:hostapd_bss_config	access:public
 eap_server	src/eap_server/eap.h	/^	int eap_server;$/;"	m	struct:eap_config	access:public
-eap_server	src/eap_server/eap_i.h	/^	int eap_server;$/;"	m	struct:eap_sm	access:public
+eap_server	src/eap_server/eap_i.h	/^	int eap_server;             \/\/ 是否使用内部集成的EAP认证服务器，默认使用外部RADIUS服务器$/;"	m	struct:eap_sm	access:public
 eap_server	src/eapol_auth/eapol_auth_sm.h	/^	int eap_server;         \/\/ 标志位，代表是否使用内部EAP服务器，0 = 使用外部$/;"	m	struct:eapol_auth_config	access:public
 eap_server_aka_prime_register	src/eap_server/eap_methods.h	/^int eap_server_aka_prime_register(void);$/;"	p	signature:(void)
 eap_server_aka_prime_register	src/eap_server/eap_server_aka.c	/^int eap_server_aka_prime_register(void)$/;"	f	signature:(void)
@@ -10259,20 +10259,20 @@ eap_sm::METHOD_PENDING_CONT	src/eap_server/eap_i.h	/^		METHOD_PENDING_NONE, METH
 eap_sm::METHOD_PENDING_NONE	src/eap_server/eap_i.h	/^		METHOD_PENDING_NONE, METHOD_PENDING_WAIT, METHOD_PENDING_CONT$/;"	e	enum:eap_sm::__anon158
 eap_sm::METHOD_PENDING_WAIT	src/eap_server/eap_i.h	/^		METHOD_PENDING_NONE, METHOD_PENDING_WAIT, METHOD_PENDING_CONT$/;"	e	enum:eap_sm::__anon158
 eap_sm::METHOD_PROPOSED	src/eap_server/eap_i.h	/^		METHOD_PROPOSED, METHOD_CONTINUE, METHOD_END$/;"	e	enum:eap_sm::__anon156
-eap_sm::MaxRetrans	src/eap_server/eap_i.h	/^	int MaxRetrans;$/;"	m	struct:eap_sm	access:public
+eap_sm::MaxRetrans	src/eap_server/eap_i.h	/^	int MaxRetrans;     \/\/ EAP报文最大的重传次数，默认设置5$/;"	m	struct:eap_sm	access:public
 eap_sm::NO_PROV	src/eap_server/eap_i.h	/^		NO_PROV, ANON_PROV, AUTH_PROV, BOTH_PROV$/;"	e	enum:eap_sm::__anon159
 eap_sm::allowNotifications	src/eap_peer/eap_i.h	/^	Boolean allowNotifications; \/* peer state machine <-> methods *\/$/;"	m	struct:eap_sm	access:public
 eap_sm::assoc_p2p_ie	src/eap_server/eap_i.h	/^	struct wpabuf *assoc_p2p_ie;$/;"	m	struct:eap_sm	typeref:struct:eap_sm::wpabuf	access:public
 eap_sm::assoc_wps_ie	src/eap_server/eap_i.h	/^	struct wpabuf *assoc_wps_ie;$/;"	m	struct:eap_sm	typeref:struct:eap_sm::wpabuf	access:public
 eap_sm::auth_challenge	src/eap_peer/eap_i.h	/^	u8 *peer_challenge, *auth_challenge;$/;"	m	struct:eap_sm	access:public
 eap_sm::auth_challenge	src/eap_server/eap_i.h	/^	u8 *auth_challenge;$/;"	m	struct:eap_sm	access:public
-eap_sm::backend_auth	src/eap_server/eap_i.h	/^	Boolean backend_auth;$/;"	m	struct:eap_sm	access:public
+eap_sm::backend_auth	src/eap_server/eap_i.h	/^	Boolean backend_auth;       \/\/ RADIUS后台认证服务器使能标志，默认不使能$/;"	m	struct:eap_sm	access:public
 eap_sm::changed	src/eap_peer/eap_i.h	/^	Boolean changed;$/;"	m	struct:eap_sm	access:public
-eap_sm::changed	src/eap_server/eap_i.h	/^	Boolean changed;$/;"	m	struct:eap_sm	access:public
-eap_sm::currentId	src/eap_server/eap_i.h	/^	int currentId;$/;"	m	struct:eap_sm	access:public
-eap_sm::currentMethod	src/eap_server/eap_i.h	/^	EapType currentMethod;$/;"	m	struct:eap_sm	access:public
+eap_sm::changed	src/eap_server/eap_i.h	/^	Boolean changed;                                                                               $/;"	m	struct:eap_sm	access:public
+eap_sm::currentId	src/eap_server/eap_i.h	/^	int currentId;          \/\/ 当前使用的EAP-ID (0~255)，来源有2处：从旧的currentId中计算得到；从AAA层收到的EAP报文中得到$/;"	m	struct:eap_sm	access:public
+eap_sm::currentMethod	src/eap_server/eap_i.h	/^	EapType currentMethod;  \/\/ 当前的EAP-TYPE，也可理解为当前使用的EAP方法$/;"	m	struct:eap_sm	access:public
 eap_sm::decision	src/eap_peer/eap_i.h	/^	EapDecision decision;$/;"	m	struct:eap_sm	access:public
-eap_sm::decision	src/eap_server/eap_i.h	/^	} decision;$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon157	access:public
+eap_sm::decision	src/eap_server/eap_i.h	/^	} decision;                 \/\/ SELECT_ACTION状态中使用，存储作出的决定$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon157	access:public
 eap_sm::eapKeyAvailable	src/eap_peer/eap_i.h	/^	Boolean eapKeyAvailable; \/* peer to lower layer *\/$/;"	m	struct:eap_sm	access:public
 eap_sm::eapKeyData	src/eap_peer/eap_i.h	/^	u8 *eapKeyData; \/* peer to lower layer *\/$/;"	m	struct:eap_sm	access:public
 eap_sm::eapKeyDataLen	src/eap_peer/eap_i.h	/^	size_t eapKeyDataLen; \/* peer to lower layer *\/$/;"	m	struct:eap_sm	access:public
@@ -10281,41 +10281,41 @@ eap_sm::eap_fast_a_id	src/eap_server/eap_i.h	/^	u8 *eap_fast_a_id;$/;"	m	struct:
 eap_sm::eap_fast_a_id_info	src/eap_server/eap_i.h	/^	char *eap_fast_a_id_info;$/;"	m	struct:eap_sm	access:public
 eap_sm::eap_fast_a_id_len	src/eap_server/eap_i.h	/^	size_t eap_fast_a_id_len;$/;"	m	struct:eap_sm	access:public
 eap_sm::eap_fast_prov	src/eap_server/eap_i.h	/^	} eap_fast_prov;$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon159	access:public
-eap_sm::eap_if	src/eap_server/eap_i.h	/^	struct eap_eapol_interface eap_if;$/;"	m	struct:eap_sm	typeref:struct:eap_sm::eap_eapol_interface	access:public
+eap_sm::eap_if	src/eap_server/eap_i.h	/^	struct eap_eapol_interface eap_if;  \/\/ 认证者eap<-->eapol层交互接口$/;"	m	struct:eap_sm	typeref:struct:eap_sm::eap_eapol_interface	access:public
 eap_sm::eap_method_priv	src/eap_peer/eap_i.h	/^	void *eap_method_priv;$/;"	m	struct:eap_sm	access:public
-eap_sm::eap_method_priv	src/eap_server/eap_i.h	/^	void *eap_method_priv;$/;"	m	struct:eap_sm	access:public
-eap_sm::eap_server	src/eap_server/eap_i.h	/^	int eap_server;$/;"	m	struct:eap_sm	access:public
+eap_sm::eap_method_priv	src/eap_server/eap_i.h	/^	void *eap_method_priv;              \/\/ 指向所采用的EAP方法携带的私有数据，比如MD5校验数据$/;"	m	struct:eap_sm	access:public
+eap_sm::eap_server	src/eap_server/eap_i.h	/^	int eap_server;             \/\/ 是否使用内部集成的EAP认证服务器，默认使用外部RADIUS服务器$/;"	m	struct:eap_sm	access:public
 eap_sm::eap_sim_aka_result_ind	src/eap_server/eap_i.h	/^	int eap_sim_aka_result_ind;$/;"	m	struct:eap_sm	access:public
 eap_sm::eap_sim_db_priv	src/eap_server/eap_i.h	/^	void *eap_sim_db_priv;$/;"	m	struct:eap_sm	access:public
 eap_sm::eapol_cb	src/eap_peer/eap_i.h	/^	struct eapol_callbacks *eapol_cb;$/;"	m	struct:eap_sm	typeref:struct:eap_sm::eapol_callbacks	access:public
-eap_sm::eapol_cb	src/eap_server/eap_i.h	/^	struct eapol_callbacks *eapol_cb;$/;"	m	struct:eap_sm	typeref:struct:eap_sm::eapol_callbacks	access:public
+eap_sm::eapol_cb	src/eap_server/eap_i.h	/^	struct eapol_callbacks *eapol_cb;   \/\/ 指向依赖的eapol层接口函数集合$/;"	m	struct:eap_sm	typeref:struct:eap_sm::eapol_callbacks	access:public
 eap_sm::eapol_ctx	src/eap_peer/eap_i.h	/^	void *eapol_ctx;$/;"	m	struct:eap_sm	access:public
-eap_sm::eapol_ctx	src/eap_server/eap_i.h	/^	void *eapol_ctx, *msg_ctx;$/;"	m	struct:eap_sm	access:public
+eap_sm::eapol_ctx	src/eap_server/eap_i.h	/^	void *eapol_ctx, *msg_ctx;          \/\/ 分别指向状态机统一管理块$/;"	m	struct:eap_sm	access:public
 eap_sm::fast_reauth	src/eap_peer/eap_i.h	/^	int fast_reauth;$/;"	m	struct:eap_sm	access:public
 eap_sm::force_disabled	src/eap_peer/eap_i.h	/^	int force_disabled;$/;"	m	struct:eap_sm	access:public
 eap_sm::fragment_size	src/eap_server/eap_i.h	/^	int fragment_size;$/;"	m	struct:eap_sm	access:public
-eap_sm::identity	src/eap_server/eap_i.h	/^	u8 *identity;$/;"	m	struct:eap_sm	access:public
-eap_sm::identity_len	src/eap_server/eap_i.h	/^	size_t identity_len;$/;"	m	struct:eap_sm	access:public
+eap_sm::identity	src/eap_server/eap_i.h	/^	u8 *identity;                       \/\/ 存储了获得的用户名信息(在EAP_METHOD_RESPONSE的EA中进行)$/;"	m	struct:eap_sm	access:public
+eap_sm::identity_len	src/eap_server/eap_i.h	/^	size_t identity_len;                \/\/ 存储了获得的用户名长度$/;"	m	struct:eap_sm	access:public
 eap_sm::ignore	src/eap_peer/eap_i.h	/^	Boolean ignore;$/;"	m	struct:eap_sm	access:public
-eap_sm::ignore	src/eap_server/eap_i.h	/^	Boolean ignore;$/;"	m	struct:eap_sm	access:public
+eap_sm::ignore	src/eap_server/eap_i.h	/^	Boolean ignore;             \/\/ 此标志位用于决定是否丢弃当前收到的报文$/;"	m	struct:eap_sm	access:public
 eap_sm::init_phase2	src/eap_peer/eap_i.h	/^	int init_phase2;$/;"	m	struct:eap_sm	access:public
 eap_sm::init_phase2	src/eap_server/eap_i.h	/^	int init_phase2;$/;"	m	struct:eap_sm	access:public
 eap_sm::lastId	src/eap_peer/eap_i.h	/^	int lastId;$/;"	m	struct:eap_sm	access:public
 eap_sm::lastId	src/eap_server/eap_i.h	/^	int lastId; \/* Identifier used in the last EAP-Packet *\/$/;"	m	struct:eap_sm	access:public
-eap_sm::lastReqData	src/eap_server/eap_i.h	/^	struct wpabuf *lastReqData;$/;"	m	struct:eap_sm	typeref:struct:eap_sm::wpabuf	access:public
+eap_sm::lastReqData	src/eap_server/eap_i.h	/^	struct wpabuf *lastReqData; \/\/ 保存了最近一次发送给eapol层的eap-req数据，触发重传的时候需要被用到$/;"	m	struct:eap_sm	typeref:struct:eap_sm::wpabuf	access:public
 eap_sm::lastRespData	src/eap_peer/eap_i.h	/^	struct wpabuf *lastRespData;$/;"	m	struct:eap_sm	typeref:struct:eap_sm::wpabuf	access:public
 eap_sm::last_md5	src/eap_peer/eap_i.h	/^	u8 last_md5[16]; \/* MD5() of the previously received EAP packet; used$/;"	m	struct:eap_sm	access:public
 eap_sm::leap_done	src/eap_peer/eap_i.h	/^	Boolean leap_done;$/;"	m	struct:eap_sm	access:public
 eap_sm::m	src/eap_peer/eap_i.h	/^	const struct eap_method *m; \/* selected EAP method *\/$/;"	m	struct:eap_sm	typeref:struct:eap_sm::eap_method	access:public
-eap_sm::m	src/eap_server/eap_i.h	/^	const struct eap_method *m; \/* selected EAP method *\/$/;"	m	struct:eap_sm	typeref:struct:eap_sm::eap_method	access:public
+eap_sm::m	src/eap_server/eap_i.h	/^	const struct eap_method *m;         \/\/ 指向被采用的 EAP 方法控制块$/;"	m	struct:eap_sm	typeref:struct:eap_sm::eap_method	access:public
 eap_sm::methodState	src/eap_peer/eap_i.h	/^	EapMethodState methodState;$/;"	m	struct:eap_sm	access:public
-eap_sm::methodState	src/eap_server/eap_i.h	/^	} methodState;$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon156	access:public
-eap_sm::methodTimeout	src/eap_server/eap_i.h	/^	int methodTimeout;$/;"	m	struct:eap_sm	access:public
+eap_sm::methodState	src/eap_server/eap_i.h	/^	} methodState;              \/\/ 当前EAP方法所处的状态$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon156	access:public
+eap_sm::methodTimeout	src/eap_server/eap_i.h	/^	int methodTimeout;          \/\/ 当前EAP方法的超时值，来源有2种：通过EAP方法自带的getTimeout函数计算得到；通过aaaMethodTimeout赋值$/;"	m	struct:eap_sm	access:public
 eap_sm::method_pending	src/eap_server/eap_i.h	/^	} method_pending;$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon158	access:public
 eap_sm::msg_ctx	src/eap_peer/eap_i.h	/^	void *msg_ctx;$/;"	m	struct:eap_sm	access:public
-eap_sm::msg_ctx	src/eap_server/eap_i.h	/^	void *eapol_ctx, *msg_ctx;$/;"	m	struct:eap_sm	access:public
+eap_sm::msg_ctx	src/eap_server/eap_i.h	/^	void *eapol_ctx, *msg_ctx;          \/\/ 分别指向状态机统一管理块$/;"	m	struct:eap_sm	access:public
 eap_sm::num_rounds	src/eap_peer/eap_i.h	/^	int num_rounds;$/;"	m	struct:eap_sm	access:public
-eap_sm::num_rounds	src/eap_server/eap_i.h	/^	int num_rounds;$/;"	m	struct:eap_sm	access:public
+eap_sm::num_rounds	src/eap_server/eap_i.h	/^	int num_rounds;             \/\/ eap层记录的往返次数：发出eap-req 到收到 eap-resp 报文算一次往返$/;"	m	struct:eap_sm	access:public
 eap_sm::pac_key_lifetime	src/eap_server/eap_i.h	/^	int pac_key_lifetime;$/;"	m	struct:eap_sm	access:public
 eap_sm::pac_key_refresh_time	src/eap_server/eap_i.h	/^	int pac_key_refresh_time;$/;"	m	struct:eap_sm	access:public
 eap_sm::pac_opaque_encr_key	src/eap_server/eap_i.h	/^	u8 *pac_opaque_encr_key;$/;"	m	struct:eap_sm	access:public
@@ -10332,15 +10332,15 @@ eap_sm::reqVendor	src/eap_peer/eap_i.h	/^	int reqVendor;$/;"	m	struct:eap_sm	acc
 eap_sm::reqVendorMethod	src/eap_peer/eap_i.h	/^	u32 reqVendorMethod;$/;"	m	struct:eap_sm	access:public
 eap_sm::req_md5	src/eap_peer/eap_i.h	/^	u8 req_md5[16]; \/* MD5() of the current EAP packet *\/$/;"	m	struct:eap_sm	access:public
 eap_sm::require_identity_match	src/eap_server/eap_i.h	/^	int require_identity_match;$/;"	m	struct:eap_sm	access:public
-eap_sm::respId	src/eap_server/eap_i.h	/^	int respId;$/;"	m	struct:eap_sm	access:public
-eap_sm::respMethod	src/eap_server/eap_i.h	/^	EapType respMethod;$/;"	m	struct:eap_sm	access:public
-eap_sm::respVendor	src/eap_server/eap_i.h	/^	int respVendor;$/;"	m	struct:eap_sm	access:public
-eap_sm::respVendorMethod	src/eap_server/eap_i.h	/^	u32 respVendorMethod;$/;"	m	struct:eap_sm	access:public
-eap_sm::retransCount	src/eap_server/eap_i.h	/^	int retransCount;$/;"	m	struct:eap_sm	access:public
+eap_sm::respId	src/eap_server/eap_i.h	/^	int respId;                 \/\/ 当前接收到的eap-resp包中的ID$/;"	m	struct:eap_sm	access:public
+eap_sm::respMethod	src/eap_server/eap_i.h	/^	EapType respMethod;         \/\/ 当前接收到的eap-resp包中的TYPE$/;"	m	struct:eap_sm	access:public
+eap_sm::respVendor	src/eap_server/eap_i.h	/^	int respVendor;             \/\/ 当前接收到的eap-resp包中的Vendor (TYPE = 254的EAP报文中使用)$/;"	m	struct:eap_sm	access:public
+eap_sm::respVendorMethod	src/eap_server/eap_i.h	/^	u32 respVendorMethod;       \/\/ 当前接收到的eap-resp包中的VendorMethod(TYPE = 254的EAP报文中使用)$/;"	m	struct:eap_sm	access:public
+eap_sm::retransCount	src/eap_server/eap_i.h	/^	int retransCount;           \/\/ 当前的重传次数$/;"	m	struct:eap_sm	access:public
 eap_sm::rxFailure	src/eap_peer/eap_i.h	/^	Boolean rxFailure;$/;"	m	struct:eap_sm	access:public
 eap_sm::rxReq	src/eap_peer/eap_i.h	/^	Boolean rxReq;$/;"	m	struct:eap_sm	access:public
 eap_sm::rxResp	src/eap_peer/eap_i.h	/^	Boolean rxResp \/* LEAP only *\/;$/;"	m	struct:eap_sm	access:public
-eap_sm::rxResp	src/eap_server/eap_i.h	/^	Boolean rxResp;$/;"	m	struct:eap_sm	access:public
+eap_sm::rxResp	src/eap_server/eap_i.h	/^	Boolean rxResp;             \/\/ 如果接收到eap-resp包设置TRUE$/;"	m	struct:eap_sm	access:public
 eap_sm::rxSuccess	src/eap_peer/eap_i.h	/^	Boolean rxSuccess;$/;"	m	struct:eap_sm	access:public
 eap_sm::scard_ctx	src/eap_peer/eap_i.h	/^	void *scard_ctx;$/;"	m	struct:eap_sm	access:public
 eap_sm::selectedMethod	src/eap_peer/eap_i.h	/^	EapType selectedMethod;$/;"	m	struct:eap_sm	access:public
@@ -10348,8 +10348,8 @@ eap_sm::ssl_ctx	src/eap_peer/eap_i.h	/^	void *ssl_ctx;$/;"	m	struct:eap_sm	acces
 eap_sm::ssl_ctx	src/eap_server/eap_i.h	/^	void *ssl_ctx;$/;"	m	struct:eap_sm	access:public
 eap_sm::start_reauth	src/eap_server/eap_i.h	/^	Boolean start_reauth;$/;"	m	struct:eap_sm	access:public
 eap_sm::tnc	src/eap_server/eap_i.h	/^	int tnc;$/;"	m	struct:eap_sm	access:public
-eap_sm::update_user	src/eap_server/eap_i.h	/^	Boolean update_user;$/;"	m	struct:eap_sm	access:public
-eap_sm::user	src/eap_server/eap_i.h	/^	struct eap_user *user;$/;"	m	struct:eap_sm	typeref:struct:eap_sm::eap_user	access:public
+eap_sm::update_user	src/eap_server/eap_i.h	/^	Boolean update_user;        \/\/ 是否更新eap_user信息标志$/;"	m	struct:eap_sm	access:public
+eap_sm::user	src/eap_server/eap_i.h	/^	struct eap_user *user;      \/\/ 指向eap层记录的用户信息管理块$/;"	m	struct:eap_sm	typeref:struct:eap_sm::eap_user	access:public
 eap_sm::user_eap_method_index	src/eap_server/eap_i.h	/^	int user_eap_method_index;$/;"	m	struct:eap_sm	access:public
 eap_sm::workaround	src/eap_peer/eap_i.h	/^	unsigned int workaround;$/;"	m	struct:eap_sm	access:public
 eap_sm::wps	src/eap_peer/eap_i.h	/^	struct wps_context *wps;$/;"	m	struct:eap_sm	typeref:struct:eap_sm::wps_context	access:public
@@ -10861,7 +10861,7 @@ eapol_auth_cb::aaa_send	src/eapol_auth/eapol_auth_sm.h	/^	void (*aaa_send)(void 
 eapol_auth_cb::abort_auth	src/eapol_auth/eapol_auth_sm.h	/^	void (*abort_auth)(void *ctx, void *sta_ctx);                           \/\/ _ieee802_1x_abort_auth $/;"	m	struct:eapol_auth_cb	access:public
 eapol_auth_cb::eapol_event	src/eapol_auth/eapol_auth_sm.h	/^	void (*eapol_event)(void *ctx, void *sta_ctx, enum eapol_event type);   \/\/ ieee802_1x_eapol_event$/;"	m	struct:eapol_auth_cb	access:public
 eapol_auth_cb::eapol_send	src/eapol_auth/eapol_auth_sm.h	/^	void (*eapol_send)(void *ctx, void *sta_ctx, u8 type, const u8 *data,$/;"	m	struct:eapol_auth_cb	access:public
-eapol_auth_cb::finished	src/eapol_auth/eapol_auth_sm.h	/^	void (*finished)(void *ctx, void *sta_ctx, int success, int preauth);   \/\/ _ieee802_1x_finished $/;"	m	struct:eapol_auth_cb	access:public
+eapol_auth_cb::finished	src/eapol_auth/eapol_auth_sm.h	/^	void (*finished)(void *ctx, void *sta_ctx, int success, int preauth);   \/\/ _ieee802_1x_finished$/;"	m	struct:eapol_auth_cb	access:public
 eapol_auth_cb::get_eap_user	src/eapol_auth/eapol_auth_sm.h	/^	int (*get_eap_user)(void *ctx, const u8 *identity, size_t identity_len,  $/;"	m	struct:eapol_auth_cb	access:public
 eapol_auth_cb::logger	src/eapol_auth/eapol_auth_sm.h	/^	void (*logger)(void *ctx, const u8 *addr, eapol_logger_level level,                                       $/;"	m	struct:eapol_auth_cb	access:public
 eapol_auth_cb::set_port_authorized	src/eapol_auth/eapol_auth_sm.h	/^	void (*set_port_authorized)(void *ctx, void *sta_ctx, int authorized);  \/\/ ieee802_1x_set_port_authorized$/;"	m	struct:eapol_auth_cb	access:public
@@ -10933,7 +10933,7 @@ eapol_callbacks::set_bool	src/eap_peer/eap.h	/^	void (*set_bool)(void *ctx, enum
 eapol_callbacks::set_config_blob	src/eap_peer/eap.h	/^	void (*set_config_blob)(void *ctx, struct wpa_config_blob *blob);$/;"	m	struct:eapol_callbacks	access:public
 eapol_callbacks::set_int	src/eap_peer/eap.h	/^	void (*set_int)(void *ctx, enum eapol_int_var variable,$/;"	m	struct:eapol_callbacks	access:public
 eapol_cb	src/eap_peer/eap_i.h	/^	struct eapol_callbacks *eapol_cb;$/;"	m	struct:eap_sm	typeref:struct:eap_sm::eapol_callbacks	access:public
-eapol_cb	src/eap_server/eap_i.h	/^	struct eapol_callbacks *eapol_cb;$/;"	m	struct:eap_sm	typeref:struct:eap_sm::eapol_callbacks	access:public
+eapol_cb	src/eap_server/eap_i.h	/^	struct eapol_callbacks *eapol_cb;   \/\/ 指向依赖的eapol层接口函数集合$/;"	m	struct:eap_sm	typeref:struct:eap_sm::eapol_callbacks	access:public
 eapol_cb	src/eapol_auth/eapol_auth_sm.c	/^static struct eapol_callbacks eapol_cb =$/;"	v	typeref:struct:eapol_callbacks	file:
 eapol_cb	src/eapol_auth/eapol_auth_sm.c	/^static struct eapol_callbacks eapol_cb;$/;"	v	typeref:struct:eapol_callbacks	file:
 eapol_cb	src/eapol_supp/eapol_supp_sm.c	/^static struct eapol_callbacks eapol_cb =$/;"	v	typeref:struct:eapol_callbacks	file:
@@ -10944,7 +10944,7 @@ eapol_config::fast_reauth	src/eapol_supp/eapol_supp_sm.h	/^	int fast_reauth;$/;"
 eapol_config::required_keys	src/eapol_supp/eapol_supp_sm.h	/^	int required_keys;$/;"	m	struct:eapol_config	access:public
 eapol_config::workaround	src/eapol_supp/eapol_supp_sm.h	/^	unsigned int workaround;$/;"	m	struct:eapol_config	access:public
 eapol_ctx	src/eap_peer/eap_i.h	/^	void *eapol_ctx;$/;"	m	struct:eap_sm	access:public
-eapol_ctx	src/eap_server/eap_i.h	/^	void *eapol_ctx, *msg_ctx;$/;"	m	struct:eap_sm	access:public
+eapol_ctx	src/eap_server/eap_i.h	/^	void *eapol_ctx, *msg_ctx;          \/\/ 分别指向状态机统一管理块$/;"	m	struct:eap_sm	access:public
 eapol_ctx	src/eapol_supp/eapol_supp_sm.h	/^struct eapol_ctx {$/;"	s
 eapol_ctx::aborted_cached	src/eapol_supp/eapol_supp_sm.h	/^	void (*aborted_cached)(void *ctx);$/;"	m	struct:eapol_ctx	access:public
 eapol_ctx::cb	src/eapol_supp/eapol_supp_sm.h	/^	void (*cb)(struct eapol_sm *eapol, int success, void *ctx);$/;"	m	struct:eapol_ctx	access:public
@@ -11281,7 +11281,7 @@ eapol_state_machine::eapol_key_crypt_len	src/eapol_auth/eapol_auth_sm_i.h	/^	siz
 eapol_state_machine::eapol_key_sign	src/eapol_auth/eapol_auth_sm_i.h	/^	u8 *eapol_key_sign;$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::eapol_key_sign_len	src/eapol_auth/eapol_auth_sm_i.h	/^	size_t eapol_key_sign_len;$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::flags	src/eapol_auth/eapol_auth_sm_i.h	/^	int flags; \/* EAPOL_SM_* eapol层附加功能位的集合*\/$/;"	m	struct:eapol_state_machine	access:public
-eapol_state_machine::identity	src/eapol_auth/eapol_auth_sm_i.h	/^	u8 *identity;           \/\/ AAA接口在封装eap-resp-identify数据到radius报文时会记录下用户名信息$/;"	m	struct:eapol_state_machine	access:public
+eapol_state_machine::identity	src/eapol_auth/eapol_auth_sm_i.h	/^	u8 *identity;           \/\/ AAA接口在封装eap-resp-identify数据到radius报文时会记录下用户名信息;在收到radius-accept报文时会再次更新$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::identity_len	src/eapol_auth/eapol_auth_sm_i.h	/^	size_t identity_len;    \/\/ 记录的用户名长度$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::initialize	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean initialize;     \/\/ 当该标志强制初始化eapol层所有状态机$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::initializing	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean initializing; \/* in process of initializing state machines 标志位，表示正在进行状态机初始化*\/$/;"	m	struct:eapol_state_machine	access:public
@@ -11299,7 +11299,7 @@ eapol_state_machine::portValid	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean portV
 eapol_state_machine::quietPeriod	src/eapol_auth/eapol_auth_sm_i.h	/^	unsigned int quietPeriod; \/* default 60; 0..65535 静默时间,应该是认证失败后到重新认证的间隔，用于设置定时器quietWhile*\/$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::quietWhile	src/eapol_auth/eapol_auth_sm_i.h	/^	int quietWhile; \/\/ 用于AUTH_PAE SM，此时间内认证者不会接受任何请求者，超时值为quietPeriod(也就是AUTH_PAE_DEFAULT_quietPeriod)$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::radius_class	src/eapol_auth/eapol_auth_sm_i.h	/^	struct radius_class_data radius_class;$/;"	m	struct:eapol_state_machine	typeref:struct:eapol_state_machine::radius_class_data	access:public
-eapol_state_machine::radius_identifier	src/eapol_auth/eapol_auth_sm_i.h	/^	int radius_identifier;              \/\/ 记录了radius客户端最近发送的radius-request报文的id字段(实际是0～255)$/;"	m	struct:eapol_state_machine	access:public
+eapol_state_machine::radius_identifier	src/eapol_auth/eapol_auth_sm_i.h	/^	int radius_identifier;              \/\/ 记录了radius客户端最近发送的radius-request报文的id字段(实际是0～255),用于匹配收到的radius报文$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::reAuthCount	src/eapol_auth/eapol_auth_sm_i.h	/^	unsigned int reAuthCount;   \/\/ 状态机进入CONNECTING状态时累加，一旦超过reAuthMax则进入DISCONNECTED状态，进入DISCONNECTED\/AUTHENTICATED时清0$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::reAuthEnabled	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean reAuthEnabled;  \/\/ 重认证功能使能位(只用于认证系统)$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::reAuthMax	src/eapol_auth/eapol_auth_sm_i.h	/^	unsigned int reAuthMax; \/* default 2 重认证次数*\/$/;"	m	struct:eapol_state_machine	access:public
@@ -11781,7 +11781,7 @@ find_er	src/wps/wps_upnp_web.c	/^static struct subscription * find_er(struct upn
 find_er_addr	src/wps/wps_upnp_web.c	/^static int find_er_addr(struct subscription *s, struct sockaddr_in *cli)$/;"	f	file:	signature:(struct subscription *s, struct sockaddr_in *cli)
 find_type	src/p2p/p2p_i.h	/^	enum p2p_discovery_type find_type;$/;"	m	struct:p2p_data	typeref:enum:p2p_data::p2p_discovery_type	access:public
 finish_handler	src/drivers/driver_nl80211.c	/^static int finish_handler(struct nl_msg *msg, void *arg)$/;"	f	file:	signature:(struct nl_msg *msg, void *arg)
-finished	src/eapol_auth/eapol_auth_sm.h	/^	void (*finished)(void *ctx, void *sta_ctx, int success, int preauth);   \/\/ _ieee802_1x_finished $/;"	m	struct:eapol_auth_cb	access:public
+finished	src/eapol_auth/eapol_auth_sm.h	/^	void (*finished)(void *ctx, void *sta_ctx, int success, int preauth);   \/\/ _ieee802_1x_finished$/;"	m	struct:eapol_auth_cb	access:public
 fips186_2_prf	src/crypto/crypto.h	/^int __must_check fips186_2_prf(const u8 *seed, size_t seed_len, u8 *x,$/;"	p	signature:(const u8 *seed, size_t seed_len, u8 *x, size_t xlen)
 fips186_2_prf	src/crypto/fips_prf_cryptoapi.c	/^int fips186_2_prf(const u8 *seed, size_t seed_len, u8 *x, size_t xlen)$/;"	f	signature:(const u8 *seed, size_t seed_len, u8 *x, size_t xlen)
 fips186_2_prf	src/crypto/fips_prf_gnutls.c	/^int fips186_2_prf(const u8 *seed, size_t seed_len, u8 *x, size_t xlen)$/;"	f	signature:(const u8 *seed, size_t seed_len, u8 *x, size_t xlen)
@@ -12041,8 +12041,8 @@ genl_ctrl_resolve	src/drivers/driver_nl80211.c	2197;"	d	file:
 get80211param	src/drivers/driver_bsd.c	/^get80211param(struct bsd_driver_data *drv, int op)$/;"	f	file:	signature:(struct bsd_driver_data *drv, int op)
 get80211var	src/drivers/driver_bsd.c	/^get80211var(struct bsd_driver_data *drv, int op, void *arg, int arg_len)$/;"	f	file:	signature:(struct bsd_driver_data *drv, int op, void *arg, int arg_len)
 getKey	src/eap_peer/eap_i.h	/^	u8 * (*getKey)(struct eap_sm *sm, void *priv, size_t *len);$/;"	m	struct:eap_method	access:public
-getKey	src/eap_server/eap_i.h	/^	u8 * (*getKey)(struct eap_sm *sm, void *priv, size_t *len);$/;"	m	struct:eap_method	access:public
-getTimeout	src/eap_server/eap_i.h	/^	int (*getTimeout)(struct eap_sm *sm, void *priv);$/;"	m	struct:eap_method	access:public
+getKey	src/eap_server/eap_i.h	/^	u8 * (*getKey)(struct eap_sm *sm, void *priv, size_t *len);                                                                 $/;"	m	struct:eap_method	access:public
+getTimeout	src/eap_server/eap_i.h	/^	int (*getTimeout)(struct eap_sm *sm, void *priv);                                                                           $/;"	m	struct:eap_method	access:public
 get_args	src/drivers/wireless_copy.h	/^	__u16		get_args;	\/* Type and number of args *\/$/;"	m	struct:iw_priv_args	access:public
 get_asymetric_start_key	src/crypto/ms_funcs.c	/^int get_asymetric_start_key(const u8 *master_key, u8 *session_key,$/;"	f	signature:(const u8 *master_key, u8 *session_key, size_t session_key_len, int is_send, int is_server)
 get_asymetric_start_key	src/crypto/ms_funcs.h	/^int get_asymetric_start_key(const u8 *master_key, u8 *session_key,$/;"	p	signature:(const u8 *master_key, u8 *session_key, size_t session_key_len, int is_send, int is_server)
@@ -13655,16 +13655,16 @@ identity	src/ap/pmksa_cache_auth.h	/^	u8 *identity;$/;"	m	struct:rsn_pmksa_cache
 identity	src/eap_common/eap_pwd_common.h	/^	u8 identity[0];     \/* length inferred from payload *\/$/;"	m	struct:eap_pwd_id	access:public
 identity	src/eap_common/eap_sim_common.h	/^	const u8 *nonce_mt, *identity, *res, *auts;$/;"	m	struct:eap_sim_attrs	access:public
 identity	src/eap_peer/eap_config.h	/^	u8 *identity;$/;"	m	struct:eap_peer_config	access:public
-identity	src/eap_server/eap_i.h	/^	u8 *identity;$/;"	m	struct:eap_sm	access:public
+identity	src/eap_server/eap_i.h	/^	u8 *identity;                       \/\/ 存储了获得的用户名信息(在EAP_METHOD_RESPONSE的EA中进行)$/;"	m	struct:eap_sm	access:public
 identity	src/eap_server/eap_server_fast.c	/^	u8 *identity; \/* from PAC-Opaque *\/$/;"	m	struct:eap_fast_data	file:	access:public
 identity	src/eap_server/eap_sim_db.c	/^	u8 *identity;$/;"	m	struct:eap_sim_pseudonym	file:	access:public
 identity	src/eap_server/eap_sim_db.h	/^	u8 *identity;$/;"	m	struct:eap_sim_reauth	access:public
-identity	src/eapol_auth/eapol_auth_sm_i.h	/^	u8 *identity;           \/\/ AAA接口在封装eap-resp-identify数据到radius报文时会记录下用户名信息$/;"	m	struct:eapol_state_machine	access:public
+identity	src/eapol_auth/eapol_auth_sm_i.h	/^	u8 *identity;           \/\/ AAA接口在封装eap-resp-identify数据到radius报文时会记录下用户名信息;在收到radius-accept报文时会再次更新$/;"	m	struct:eapol_state_machine	access:public
 identity_len	src/ap/ap_config.h	/^	size_t identity_len;$/;"	m	struct:hostapd_eap_user	access:public
 identity_len	src/ap/pmksa_cache_auth.h	/^	size_t identity_len;$/;"	m	struct:rsn_pmksa_cache_entry	access:public
 identity_len	src/eap_common/eap_sim_common.h	/^	size_t next_pseudonym_len, next_reauth_id_len, identity_len, res_len;$/;"	m	struct:eap_sim_attrs	access:public
 identity_len	src/eap_peer/eap_config.h	/^	size_t identity_len;$/;"	m	struct:eap_peer_config	access:public
-identity_len	src/eap_server/eap_i.h	/^	size_t identity_len;$/;"	m	struct:eap_sm	access:public
+identity_len	src/eap_server/eap_i.h	/^	size_t identity_len;                \/\/ 存储了获得的用户名长度$/;"	m	struct:eap_sm	access:public
 identity_len	src/eap_server/eap_server_fast.c	/^	size_t identity_len;$/;"	m	struct:eap_fast_data	file:	access:public
 identity_len	src/eap_server/eap_sim_db.c	/^	size_t identity_len;$/;"	m	struct:eap_sim_pseudonym	file:	access:public
 identity_len	src/eap_server/eap_sim_db.h	/^	size_t identity_len;$/;"	m	struct:eap_sim_reauth	access:public
@@ -14098,7 +14098,7 @@ ifr_ifrn	src/drivers/wireless_copy.h	/^	} ifr_ifrn;$/;"	m	struct:iwreq	typeref:u
 ifrn_name	src/drivers/wireless_copy.h	/^		char	ifrn_name[IFNAMSIZ];	\/* if name, e.g. "eth0" *\/$/;"	m	union:iwreq::__anon92	access:public
 ignore	src/eap_peer/eap_i.h	/^	Boolean ignore;$/;"	m	struct:eap_method_ret	access:public
 ignore	src/eap_peer/eap_i.h	/^	Boolean ignore;$/;"	m	struct:eap_sm	access:public
-ignore	src/eap_server/eap_i.h	/^	Boolean ignore;$/;"	m	struct:eap_sm	access:public
+ignore	src/eap_server/eap_i.h	/^	Boolean ignore;             \/\/ 此标志位用于决定是否丢弃当前收到的报文$/;"	m	struct:eap_sm	access:public
 ignore_broadcast_ssid	src/ap/ap_config.h	/^	int ignore_broadcast_ssid;$/;"	m	struct:hostapd_bss_config	access:public
 ignore_if_down_event	src/drivers/driver_nl80211.c	/^	int ignore_if_down_event;$/;"	m	struct:wpa_driver_nl80211_data	file:	access:public
 igtk	src/ap/wpa_auth_ie.h	/^	const u8 *igtk;$/;"	m	struct:wpa_eapol_ie_parse	access:public
@@ -14410,9 +14410,9 @@ info	src/p2p/p2p_i.h	/^	struct p2p_peer_info info;$/;"	m	struct:p2p_device	typer
 info1	src/drivers/Apple80211.h	/^	WirelessInfo info1;$/;"	m	struct:WirelessInfo2	access:public
 init	src/drivers/driver.h	/^	void * (*init)(void *ctx, const char *ifname);$/;"	m	struct:wpa_driver_ops	access:public
 init	src/eap_peer/eap_i.h	/^	void * (*init)(struct eap_sm *sm);$/;"	m	struct:eap_method	access:public
-init	src/eap_server/eap_i.h	/^	void * (*init)(struct eap_sm *sm);$/;"	m	struct:eap_method	access:public
+init	src/eap_server/eap_i.h	/^	void * (*init)(struct eap_sm *sm);                                  \/\/ eap_identity_init        \/ eap_md5_init$/;"	m	struct:eap_method	access:public
 init2	src/drivers/driver.h	/^	void * (*init2)(void *ctx, const char *ifname, void *global_priv);$/;"	m	struct:wpa_driver_ops	access:public
-initPickUp	src/eap_server/eap_i.h	/^	void * (*initPickUp)(struct eap_sm *sm);$/;"	m	struct:eap_method	access:public
+initPickUp	src/eap_server/eap_i.h	/^	void * (*initPickUp)(struct eap_sm *sm);                            \/\/ eap_identity_initPickUp$/;"	m	struct:eap_method	access:public
 init_for_reauth	src/eap_peer/eap_i.h	/^	void * (*init_for_reauth)(struct eap_sm *sm, void *priv);$/;"	m	struct:eap_method	access:public
 init_func	src/wps/wps.h	/^	int (*init_func)(char *);$/;"	m	struct:oob_nfc_device_data	access:public
 init_func	src/wps/wps.h	/^	void * (*init_func)(struct wps_context *, struct oob_device_data *,$/;"	m	struct:oob_device_data	access:public
@@ -14499,9 +14499,9 @@ ipv6	src/radius/radius_server.c	/^	int ipv6;$/;"	m	struct:radius_server_data	fil
 ipv6	src/radius/radius_server.h	/^	int ipv6;$/;"	m	struct:radius_server_conf	access:public
 iqmp	src/tls/rsa.c	/^	struct bignum *iqmp; \/* 1 \/ q mod p; CRT coefficient *\/$/;"	m	struct:crypto_rsa_key	typeref:struct:crypto_rsa_key::bignum	file:	access:public
 iresult	src/eap_common/eap_fast_common.h	/^	int iresult;$/;"	m	struct:eap_fast_tlv_parse	access:public
-isDone	src/eap_server/eap_i.h	/^	Boolean (*isDone)(struct eap_sm *sm, void *priv);$/;"	m	struct:eap_method	access:public
+isDone	src/eap_server/eap_i.h	/^	Boolean (*isDone)(struct eap_sm *sm, void *priv);                   \/\/ eap_identity_isDone      \/ eap_md5_isDone           $/;"	m	struct:eap_method	access:public
 isKeyAvailable	src/eap_peer/eap_i.h	/^	Boolean (*isKeyAvailable)(struct eap_sm *sm, void *priv);$/;"	m	struct:eap_method	access:public
-isSuccess	src/eap_server/eap_i.h	/^	Boolean (*isSuccess)(struct eap_sm *sm, void *priv);$/;"	m	struct:eap_method	access:public
+isSuccess	src/eap_server/eap_i.h	/^	Boolean (*isSuccess)(struct eap_sm *sm, void *priv);                \/\/ eap_identity_isSuccess   \/ eap_md5_isSuccess$/;"	m	struct:eap_method	access:public
 is_11b	src/p2p/p2p.c	/^static int is_11b(u8 rate)$/;"	f	file:	signature:(u8 rate)
 is_5350	src/drivers/driver_roboswitch.c	/^	int fd, is_5350;$/;"	m	struct:wpa_driver_roboswitch_data	file:	access:public
 is_ap	src/drivers/driver_bsd.c	/^	int	is_ap;			\/* Access point mode *\/$/;"	m	struct:bsd_driver_data	file:	access:public
@@ -14973,7 +14973,7 @@ l2_tdls	src/rsn_supp/wpa_i.h	/^	struct l2_packet_data *l2_tdls;$/;"	m	struct:wpa
 l_bit	src/eap_common/eap_pwd_common.h	/^	u8 l_bit:1;$/;"	m	struct:eap_pwd_hdr	access:public
 lastId	src/eap_peer/eap_i.h	/^	int lastId;$/;"	m	struct:eap_sm	access:public
 lastId	src/eap_server/eap_i.h	/^	int lastId; \/* Identifier used in the last EAP-Packet *\/$/;"	m	struct:eap_sm	access:public
-lastReqData	src/eap_server/eap_i.h	/^	struct wpabuf *lastReqData;$/;"	m	struct:eap_sm	typeref:struct:eap_sm::wpabuf	access:public
+lastReqData	src/eap_server/eap_i.h	/^	struct wpabuf *lastReqData; \/\/ 保存了最近一次发送给eapol层的eap-req数据，触发重传的时候需要被用到$/;"	m	struct:eap_sm	typeref:struct:eap_sm::wpabuf	access:public
 lastRespData	src/eap_peer/eap_i.h	/^	struct wpabuf *lastRespData;$/;"	m	struct:eap_sm	typeref:struct:eap_sm::wpabuf	access:public
 last_ack_rssi	src/drivers/driver.h	/^	int last_ack_rssi;$/;"	m	struct:hostap_sta_driver_data	access:public
 last_assoc_req	src/ap/sta_info.h	/^	struct ieee80211_mgmt *last_assoc_req;$/;"	m	struct:sta_info	typeref:struct:sta_info::ieee80211_mgmt	access:public
@@ -15146,7 +15146,7 @@ low_ack	src/drivers/driver.h	/^	struct low_ack {$/;"	s	union:wpa_event_data	acce
 low_ack	src/drivers/driver.h	/^	} low_ack;$/;"	m	union:wpa_event_data	typeref:struct:wpa_event_data::low_ack	access:public
 m	src/drivers/wireless_copy.h	/^	__s32		m;		\/* Mantissa *\/$/;"	m	struct:iw_freq	access:public
 m	src/eap_peer/eap_i.h	/^	const struct eap_method *m; \/* selected EAP method *\/$/;"	m	struct:eap_sm	typeref:struct:eap_sm::eap_method	access:public
-m	src/eap_server/eap_i.h	/^	const struct eap_method *m; \/* selected EAP method *\/$/;"	m	struct:eap_sm	typeref:struct:eap_sm::eap_method	access:public
+m	src/eap_server/eap_i.h	/^	const struct eap_method *m;         \/\/ 指向被采用的 EAP 方法控制块$/;"	m	struct:eap_sm	typeref:struct:eap_sm::eap_method	access:public
 m1_handler	src/wps/wps_er.h	/^	void (*m1_handler)(struct wps_er_ap *ap, struct wpabuf *m1);$/;"	m	struct:wps_er_ap	access:public
 m1_received	src/wps/wps.h	/^		int m1_received;$/;"	m	struct:wps_event_data::wps_event_er_enrollee	access:public
 m1_received	src/wps/wps_er.h	/^	int m1_received;$/;"	m	struct:wps_er_sta	access:public
@@ -15362,8 +15362,8 @@ method	src/eap_server/eap.h	/^		u32 method;$/;"	m	struct:eap_user::__anon133	acc
 method	src/eap_server/eap_i.h	/^	EapType method;$/;"	m	struct:eap_method	access:public
 methodState	src/eap_peer/eap_i.h	/^	EapMethodState methodState;$/;"	m	struct:eap_method_ret	access:public
 methodState	src/eap_peer/eap_i.h	/^	EapMethodState methodState;$/;"	m	struct:eap_sm	access:public
-methodState	src/eap_server/eap_i.h	/^	} methodState;$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon156	access:public
-methodTimeout	src/eap_server/eap_i.h	/^	int methodTimeout;$/;"	m	struct:eap_sm	access:public
+methodState	src/eap_server/eap_i.h	/^	} methodState;              \/\/ 当前EAP方法所处的状态$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon156	access:public
+methodTimeout	src/eap_server/eap_i.h	/^	int methodTimeout;          \/\/ 当前EAP方法的超时值，来源有2种：通过EAP方法自带的getTimeout函数计算得到；通过aaaMethodTimeout赋值$/;"	m	struct:eap_sm	access:public
 method_pending	src/eap_server/eap_i.h	/^	} method_pending;$/;"	m	struct:eap_sm	typeref:enum:eap_sm::__anon158	access:public
 methods	src/ap/ap_config.h	/^	} methods[EAP_USER_MAX_METHODS];$/;"	m	struct:hostapd_eap_user	typeref:struct:hostapd_eap_user::__anon2	access:public
 methods	src/eap_server/eap.h	/^	} methods[EAP_MAX_METHODS];$/;"	m	struct:eap_user	typeref:struct:eap_user::__anon133	access:public
@@ -15662,7 +15662,7 @@ msg	src/wps/wps.h	/^	struct wpabuf *msg;$/;"	m	struct:upnp_pending_message	typer
 msg_ctx	src/ap/hostapd.h	/^	void *msg_ctx; \/* ctx for wpa_msg() calls *\/$/;"	m	struct:hostapd_data	access:public
 msg_ctx	src/eap_peer/eap_i.h	/^	void *msg_ctx;$/;"	m	struct:eap_sm	access:public
 msg_ctx	src/eap_server/eap.h	/^	void *msg_ctx;$/;"	m	struct:eap_config	access:public
-msg_ctx	src/eap_server/eap_i.h	/^	void *eapol_ctx, *msg_ctx;$/;"	m	struct:eap_sm	access:public
+msg_ctx	src/eap_server/eap_i.h	/^	void *eapol_ctx, *msg_ctx;          \/\/ 分别指向状态机统一管理块$/;"	m	struct:eap_sm	access:public
 msg_ctx	src/eapol_auth/eapol_auth_sm.h	/^	void *msg_ctx;$/;"	m	struct:eapol_auth_config	access:public
 msg_ctx	src/eapol_supp/eapol_supp_sm.h	/^	void *msg_ctx;$/;"	m	struct:eapol_ctx	access:public
 msg_ctx	src/p2p/p2p.h	/^	void *msg_ctx;$/;"	m	struct:p2p_config	access:public
@@ -16223,7 +16223,7 @@ num_rates	src/drivers/driver.h	/^	int num_rates;$/;"	m	struct:hostapd_hw_modes	a
 num_req_dev_type	src/wps/wps_i.h	/^	size_t num_req_dev_type;$/;"	m	struct:wps_parse_attr	access:public
 num_req_dev_types	src/p2p/p2p_i.h	/^	unsigned int num_req_dev_types;$/;"	m	struct:p2p_data	access:public
 num_rounds	src/eap_peer/eap_i.h	/^	int num_rounds;$/;"	m	struct:eap_sm	access:public
-num_rounds	src/eap_server/eap_i.h	/^	int num_rounds;$/;"	m	struct:eap_sm	access:public
+num_rounds	src/eap_server/eap_i.h	/^	int num_rounds;             \/\/ eap层记录的往返次数：发出eap-req 到收到 eap-resp 报文算一次往返$/;"	m	struct:eap_sm	access:public
 num_scanres	src/drivers/driver_test.c	/^	size_t num_scanres;$/;"	m	struct:wpa_driver_test_data	file:	access:public
 num_sec_dev_types	src/drivers/driver.h	/^	size_t num_sec_dev_types;$/;"	m	struct:p2p_params	access:public
 num_sec_dev_types	src/p2p/p2p.h	/^	size_t num_sec_dev_types;$/;"	m	struct:p2p_config	access:public
@@ -18056,7 +18056,7 @@ probereq_cb	src/ap/hostapd.h	/^	struct hostapd_probereq_cb *probereq_cb;$/;"	m	s
 proberesp_ies	src/drivers/driver.h	/^	const struct wpabuf *proberesp_ies;$/;"	m	struct:wpa_driver_ap_params	typeref:struct:wpa_driver_ap_params::wpabuf	access:public
 process	hostapd/hlr_auc_gw.c	/^static int process(int s)$/;"	f	file:	signature:(int s)
 process	src/eap_peer/eap_i.h	/^	struct wpabuf * (*process)(struct eap_sm *sm, void *priv,$/;"	m	struct:eap_method	typeref:struct:eap_method::process	access:public
-process	src/eap_server/eap_i.h	/^	void (*process)(struct eap_sm *sm, void *priv,$/;"	m	struct:eap_method	access:public
+process	src/eap_server/eap_i.h	/^	void (*process)(struct eap_sm *sm, void *priv,                                                                              $/;"	m	struct:eap_method	access:public
 processKey	src/eapol_auth/eapol_auth_sm.c	60;"	d	file:
 process_cmd	src/utils/edit.c	/^static void process_cmd(void)$/;"	f	file:	signature:(void)
 process_event	src/drivers/driver_nl80211.c	/^static int process_event(struct nl_msg *msg, void *arg)$/;"	f	file:	signature:(struct nl_msg *msg, void *arg)
@@ -18280,7 +18280,7 @@ radius_hdr::code	src/radius/radius.h	/^	u8 code;        \/\/ radius包类型$/;"
 radius_hdr::identifier	src/radius/radius.h	/^	u8 identifier;  \/\/ 包标识，用于匹配请求包和响应包$/;"	m	struct:radius_hdr	access:public
 radius_hdr::length	src/radius/radius.h	/^	u16 length; \/* including this header *\/ \/\/ 包长度，最小20字节，最大4096字节$/;"	m	struct:radius_hdr	access:public
 radius_id	src/ap/ieee802_11_auth.c	/^	u8 radius_id;$/;"	m	struct:hostapd_acl_query_data	file:	access:public
-radius_identifier	src/eapol_auth/eapol_auth_sm_i.h	/^	int radius_identifier;              \/\/ 记录了radius客户端最近发送的radius-request报文的id字段(实际是0～255)$/;"	m	struct:eapol_state_machine	access:public
+radius_identifier	src/eapol_auth/eapol_auth_sm_i.h	/^	int radius_identifier;              \/\/ 记录了radius客户端最近发送的radius-request报文的id字段(实际是0～255),用于匹配收到的radius报文$/;"	m	struct:eapol_state_machine	access:public
 radius_mode_txt	src/ap/ieee802_1x.c	/^const char *radius_mode_txt(struct hostapd_data *hapd)$/;"	f	signature:(struct hostapd_data *hapd)
 radius_mode_txt	src/ap/ieee802_1x.h	/^const char *radius_mode_txt(struct hostapd_data *hapd);$/;"	p	signature:(struct hostapd_data *hapd)
 radius_ms_mppe_keys	src/radius/radius.h	/^struct radius_ms_mppe_keys {$/;"	s
@@ -18731,11 +18731,11 @@ reserved	src/eap_common/ikev2_common.h	/^	u8 reserved;$/;"	m	struct:ikev2_transf
 reserved	src/eap_peer/eap_mschapv2.c	/^	u8 reserved[8];$/;"	m	struct:ms_change_password	file:	access:public
 reserved	src/eap_peer/eap_mschapv2.c	/^	u8 reserved[8];$/;"	m	struct:ms_response	file:	access:public
 reserved2	src/eap_common/ikev2_common.h	/^	u8 reserved2;$/;"	m	struct:ikev2_transform	access:public
-reset	src/eap_server/eap_i.h	/^	void (*reset)(struct eap_sm *sm, void *priv);$/;"	m	struct:eap_method	access:public
-respId	src/eap_server/eap_i.h	/^	int respId;$/;"	m	struct:eap_sm	access:public
-respMethod	src/eap_server/eap_i.h	/^	EapType respMethod;$/;"	m	struct:eap_sm	access:public
-respVendor	src/eap_server/eap_i.h	/^	int respVendor;$/;"	m	struct:eap_sm	access:public
-respVendorMethod	src/eap_server/eap_i.h	/^	u32 respVendorMethod;$/;"	m	struct:eap_sm	access:public
+reset	src/eap_server/eap_i.h	/^	void (*reset)(struct eap_sm *sm, void *priv);                       \/\/ eap_identity_reset       \/ eap_md5_reset $/;"	m	struct:eap_method	access:public
+respId	src/eap_server/eap_i.h	/^	int respId;                 \/\/ 当前接收到的eap-resp包中的ID$/;"	m	struct:eap_sm	access:public
+respMethod	src/eap_server/eap_i.h	/^	EapType respMethod;         \/\/ 当前接收到的eap-resp包中的TYPE$/;"	m	struct:eap_sm	access:public
+respVendor	src/eap_server/eap_i.h	/^	int respVendor;             \/\/ 当前接收到的eap-resp包中的Vendor (TYPE = 254的EAP报文中使用)$/;"	m	struct:eap_sm	access:public
+respVendorMethod	src/eap_server/eap_i.h	/^	u32 respVendorMethod;       \/\/ 当前接收到的eap-resp包中的VendorMethod(TYPE = 254的EAP报文中使用)$/;"	m	struct:eap_sm	access:public
 resp_ies	src/drivers/driver.h	/^		const u8 *resp_ies;$/;"	m	struct:wpa_event_data::assoc_info	access:public
 resp_ies	src/drivers/driver.h	/^		const u8 *resp_ies;$/;"	m	struct:wpa_event_data::assoc_reject	access:public
 resp_ies_len	src/drivers/driver.h	/^		size_t resp_ies_len;$/;"	m	struct:wpa_event_data::assoc_info	access:public
@@ -18753,7 +18753,7 @@ resume	src/drivers/driver.h	/^	void (*resume)(void *priv);$/;"	m	struct:wpa_driv
 resuming	src/eap_peer/eap_fast.c	/^	int resuming; \/* starting a resumed session *\/$/;"	m	struct:eap_fast_data	file:	access:public
 resuming	src/eap_peer/eap_peap.c	/^	int resuming; \/* starting a resumed session *\/$/;"	m	struct:eap_peap_data	file:	access:public
 resuming	src/eap_peer/eap_ttls.c	/^	int resuming; \/* starting a resumed session *\/$/;"	m	struct:eap_ttls_data	file:	access:public
-retransCount	src/eap_server/eap_i.h	/^	int retransCount;$/;"	m	struct:eap_sm	access:public
+retransCount	src/eap_server/eap_i.h	/^	int retransCount;           \/\/ 当前的重传次数$/;"	m	struct:eap_sm	access:public
 retransWhile	src/eap_server/eap.h	/^	int retransWhile;       \/\/ 重传定时器，由EAPOL层PORT_TIMER SM触发超时，由EAP层开启 $/;"	m	struct:eap_eapol_interface	access:public
 retransmissions	src/radius/radius_client.h	/^	u32 retransmissions;$/;"	m	struct:hostapd_radius_server	access:public
 retries	src/drivers/wireless_copy.h	/^	__u32		retries;	\/* Tx : Max MAC retries num reached *\/$/;"	m	struct:iw_discarded	access:public
@@ -18990,7 +18990,7 @@ rxKey	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean rxKey;$/;"	m	struct:eapol_stat
 rxKey	src/eapol_supp/eapol_supp_sm.c	/^	Boolean rxKey;$/;"	m	struct:eapol_sm	file:	access:public
 rxReq	src/eap_peer/eap_i.h	/^	Boolean rxReq;$/;"	m	struct:eap_sm	access:public
 rxResp	src/eap_peer/eap_i.h	/^	Boolean rxResp \/* LEAP only *\/;$/;"	m	struct:eap_sm	access:public
-rxResp	src/eap_server/eap_i.h	/^	Boolean rxResp;$/;"	m	struct:eap_sm	access:public
+rxResp	src/eap_server/eap_i.h	/^	Boolean rxResp;             \/\/ 如果接收到eap-resp包设置TRUE$/;"	m	struct:eap_sm	access:public
 rxSuccess	src/eap_peer/eap_i.h	/^	Boolean rxSuccess;$/;"	m	struct:eap_sm	access:public
 rx_action	src/drivers/driver.h	/^	struct rx_action {$/;"	s	union:wpa_event_data	access:public
 rx_action	src/drivers/driver.h	/^	} rx_action;$/;"	m	union:wpa_event_data	typeref:struct:wpa_event_data::rx_action	access:public
@@ -21097,7 +21097,7 @@ update_indic	src/drivers/driver.h	/^		u16 update_indic;$/;"	m	struct:wpa_event_d
 update_indic	src/drivers/driver.h	/^		u16 update_indic;$/;"	m	struct:wpa_event_data::p2p_sd_resp	access:public
 update_sta_ht	src/ap/ieee802_11_ht.c	/^static void update_sta_ht(struct hostapd_data *hapd, struct sta_info *sta)$/;"	f	file:	signature:(struct hostapd_data *hapd, struct sta_info *sta)
 update_sta_no_ht	src/ap/ieee802_11_ht.c	/^static void update_sta_no_ht(struct hostapd_data *hapd, struct sta_info *sta)$/;"	f	file:	signature:(struct hostapd_data *hapd, struct sta_info *sta)
-update_user	src/eap_server/eap_i.h	/^	Boolean update_user;$/;"	m	struct:eap_sm	access:public
+update_user	src/eap_server/eap_i.h	/^	Boolean update_user;        \/\/ 是否更新eap_user信息标志$/;"	m	struct:eap_sm	access:public
 updated	src/drivers/wireless_copy.h	/^	__u8		updated;	\/* Flags to know if updated *\/$/;"	m	struct:iw_quality	access:public
 upnp_er_remove_notification	src/wps/wps_upnp_ap.c	/^void upnp_er_remove_notification(struct subscription *s)$/;"	f	signature:(struct subscription *s)
 upnp_er_remove_notification	src/wps/wps_upnp_i.h	/^void upnp_er_remove_notification(struct subscription *s);$/;"	p	signature:(struct subscription *s)
@@ -21189,7 +21189,7 @@ used	src/tls/libtommath.c	/^    int used, alloc, sign;$/;"	m	struct:__anon109	fi
 used	src/utils/wpabuf.h	/^	size_t used; \/* length of data in the buffer *\/$/;"	m	struct:wpabuf	access:public
 used_bytes	src/crypto/crypto_internal-cipher.c	/^			size_t used_bytes;$/;"	m	struct:crypto_cipher::__anon186::__anon187	file:	access:public
 used_bytes	src/crypto/crypto_libtomcrypt.c	/^			size_t used_bytes;$/;"	m	struct:crypto_cipher::__anon199::__anon200	file:	access:public
-user	src/eap_server/eap_i.h	/^	struct eap_user *user;$/;"	m	struct:eap_sm	typeref:struct:eap_sm::eap_user	access:public
+user	src/eap_server/eap_i.h	/^	struct eap_user *user;      \/\/ 指向eap层记录的用户信息管理块$/;"	m	struct:eap_sm	typeref:struct:eap_sm::eap_user	access:public
 userLogoff	src/eapol_supp/eapol_supp_sm.c	/^	Boolean userLogoff;$/;"	m	struct:eapol_sm	file:	access:public
 user_data	src/utils/eloop.c	/^	void *user_data;            \/\/ 回调函数参数3$/;"	m	struct:eloop_sock	file:	access:public
 user_data	src/utils/eloop.c	/^	void *user_data;$/;"	m	struct:eloop_signal	file:	access:public

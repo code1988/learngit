@@ -1,5 +1,6 @@
 /*
  * Operations on the network namespace
+ * 网络命名空间
  */
 #ifndef __NET_NET_NAMESPACE_H
 #define __NET_NET_NAMESPACE_H
@@ -38,7 +39,7 @@ struct netns_ipvs;
 #define NETDEV_HASHBITS    8
 #define NETDEV_HASHENTRIES (1 << NETDEV_HASHBITS)
 
-// 网络顶层控制块
+// 定义了网络命名空间
 struct net {
 	atomic_t		passive;	/* To decided when the network
 						 * namespace should be freed.

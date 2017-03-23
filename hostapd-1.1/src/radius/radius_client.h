@@ -64,6 +64,7 @@ struct hostapd_radius_server {
 	/**
 	 * round_trip_time - radiusAuthClientRoundTripTime or radiusAccClientRoundTripTime
 	 * Round-trip time in hundredths of a second.
+     * radius-req报文被响应的往返时间
 	 */
 	int round_trip_time;
 

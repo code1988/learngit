@@ -263,6 +263,12 @@ out_free_cache:
 	goto out_unlock;
 }
 
+/* 创建一片新的slab缓存
+ * @name    为这片缓存命名
+ * @size    长度
+ * @align   对齐方式 默认0
+ * @flag    也可以设置对其方式比如SLAB_HWCACHE_ALIGN
+ */
 struct kmem_cache *
 kmem_cache_create(const char *name, size_t size, size_t align,
 		  unsigned long flags, void (*ctor)(void *))

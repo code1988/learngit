@@ -45,16 +45,19 @@ static const struct stp_proto br_stp_proto = {
 	.rcv	= br_stp_rcv,
 };
 
+// 网桥初始化
 static int __init br_init(void)
 {
 	int err;
 
+    // 注册生成树协议(stp/rstp/mstp，内核默认是stp)
 	err = stp_proto_register(&br_stp_proto);
 	if (err < 0) {
 		pr_err("bridge: can't register sap for STP\n");
 		return err;
 	}
 
+    // 初始化以太网桥使用的转发数据库
 	err = br_fdb_init();
 	if (err)
 		goto err_out;

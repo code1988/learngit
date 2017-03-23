@@ -32,21 +32,21 @@ struct eap_method {
 	EapType method;
 	const char *name;
 
-	void * (*init)(struct eap_sm *sm);
-	void * (*initPickUp)(struct eap_sm *sm);
-	void (*reset)(struct eap_sm *sm, void *priv);
-
-	struct wpabuf * (*buildReq)(struct eap_sm *sm, void *priv, u8 id);
-	int (*getTimeout)(struct eap_sm *sm, void *priv);
-	Boolean (*check)(struct eap_sm *sm, void *priv,
-			 struct wpabuf *respData);
-	void (*process)(struct eap_sm *sm, void *priv,
-			struct wpabuf *respData);
-	Boolean (*isDone)(struct eap_sm *sm, void *priv);
-	u8 * (*getKey)(struct eap_sm *sm, void *priv, size_t *len);
+	void * (*init)(struct eap_sm *sm);                                  // eap_identity_init        / eap_md5_init
+	void * (*initPickUp)(struct eap_sm *sm);                            // eap_identity_initPickUp
+	void (*reset)(struct eap_sm *sm, void *priv);                       // eap_identity_reset       / eap_md5_reset 
+                                                                                                                                
+	struct wpabuf * (*buildReq)(struct eap_sm *sm, void *priv, u8 id);  // eap_identity_buildReq    / eap_md5_buildReq
+	int (*getTimeout)(struct eap_sm *sm, void *priv);                                                                           
+	Boolean (*check)(struct eap_sm *sm, void *priv,                     
+			 struct wpabuf *respData);                                  // eap_identity_check       / eap_md5_check
+	void (*process)(struct eap_sm *sm, void *priv,                                                                              
+			struct wpabuf *respData);                                   // eap_identity_process     / eap_md5_process          
+	Boolean (*isDone)(struct eap_sm *sm, void *priv);                   // eap_identity_isDone      / eap_md5_isDone           
+	u8 * (*getKey)(struct eap_sm *sm, void *priv, size_t *len);                                                                 
 	/* isSuccess is not specified in draft-ietf-eap-statemachine-05.txt,
-	 * but it is useful in implementing Policy.getDecision() */
-	Boolean (*isSuccess)(struct eap_sm *sm, void *priv);
+	 * but it is useful in implementing Policy.getDecision() */                                                                 
+	Boolean (*isSuccess)(struct eap_sm *sm, void *priv);                // eap_identity_isSuccess   / eap_md5_isSuccess
 
 	/**
 	 * free - Free EAP method data
@@ -76,6 +76,7 @@ struct eap_method {
 
 	/**
 	 * next - Pointer to the next EAP method
+	 *  指向下一种EAP方法
 	 *
 	 * This variable is used internally in the EAP method registration code
 	 * to create a linked list of registered EAP methods.
@@ -98,6 +99,7 @@ struct eap_method {
 
 /**
  * struct eap_sm - EAP server state machine data
+ * EAP服务器状态机(意味着只供认证系统方使用)
  */
 struct eap_sm {
 	enum {
@@ -113,56 +115,56 @@ struct eap_sm {
 	} EAP_state;
 
 	/* Constants */
-	int MaxRetrans;
+	int MaxRetrans;     // EAP报文最大的重传次数，默认设置5
 
-	struct eap_eapol_interface eap_if;
+	struct eap_eapol_interface eap_if;  // 认证者eap<-->eapol层交互接口
 
 	/* Full authenticator state machine local variables */
 
 	/* Long-term (maintained between packets) */
-	EapType currentMethod;
-	int currentId;
+	EapType currentMethod;  // 当前的EAP-TYPE，也可理解为当前使用的EAP方法
+	int currentId;          // 当前使用的EAP-ID (0~255)，来源有2处：从旧的currentId中计算得到；从AAA层收到的EAP报文中得到
 	enum {
 		METHOD_PROPOSED, METHOD_CONTINUE, METHOD_END
-	} methodState;
-	int retransCount;
-	struct wpabuf *lastReqData;
-	int methodTimeout;
+	} methodState;              // 当前EAP方法所处的状态
+	int retransCount;           // 当前的重传次数
+	struct wpabuf *lastReqData; // 保存了最近一次发送给eapol层的eap-req数据，触发重传的时候需要被用到
+	int methodTimeout;          // 当前EAP方法的超时值，来源有2种：通过EAP方法自带的getTimeout函数计算得到；通过aaaMethodTimeout赋值
 
 	/* Short-term (not maintained between packets) */
-	Boolean rxResp;
-	int respId;
-	EapType respMethod;
-	int respVendor;
-	u32 respVendorMethod;
-	Boolean ignore;
+	Boolean rxResp;             // 如果接收到eap-resp包设置TRUE
+	int respId;                 // 当前接收到的eap-resp包中的ID
+	EapType respMethod;         // 当前接收到的eap-resp包中的TYPE
+	int respVendor;             // 当前接收到的eap-resp包中的Vendor (TYPE = 254的EAP报文中使用)
+	u32 respVendorMethod;       // 当前接收到的eap-resp包中的VendorMethod(TYPE = 254的EAP报文中使用)
+	Boolean ignore;             // 此标志位用于决定是否丢弃当前收到的报文
 	enum {
 		DECISION_SUCCESS, DECISION_FAILURE, DECISION_CONTINUE,
 		DECISION_PASSTHROUGH
-	} decision;
+	} decision;                 // SELECT_ACTION状态中使用，存储作出的决定
 
 	/* Miscellaneous variables */
-	const struct eap_method *m; /* selected EAP method */
-	/* not defined in RFC 4137 */
-	Boolean changed;
-	void *eapol_ctx, *msg_ctx;
-	struct eapol_callbacks *eapol_cb;
-	void *eap_method_priv;
-	u8 *identity;
-	size_t identity_len;
+	const struct eap_method *m;         // 指向被采用的 EAP 方法控制块
+	/* not defined in RFC 4137 */                                                                  
+	Boolean changed;                                                                               
+	void *eapol_ctx, *msg_ctx;          // 分别指向状态机统一管理块
+	struct eapol_callbacks *eapol_cb;   // 指向依赖的eapol层接口函数集合
+	void *eap_method_priv;              // 指向所采用的EAP方法携带的私有数据，比如MD5校验数据
+	u8 *identity;                       // 存储了获得的用户名信息(在EAP_METHOD_RESPONSE的EA中进行)
+	size_t identity_len;                // 存储了获得的用户名长度
 	/* Whether Phase 2 method should validate identity match */
 	int require_identity_match;
 	int lastId; /* Identifier used in the last EAP-Packet */
-	struct eap_user *user;
+	struct eap_user *user;      // 指向eap层记录的用户信息管理块
 	int user_eap_method_index;
 	int init_phase2;
 	void *ssl_ctx;
 	void *eap_sim_db_priv;
-	Boolean backend_auth;
-	Boolean update_user;
-	int eap_server;
-
-	int num_rounds;
+	Boolean backend_auth;       // RADIUS后台认证服务器使能标志，默认不使能
+	Boolean update_user;        // 是否更新eap_user信息标志
+	int eap_server;             // 是否使用内部集成的EAP认证服务器，默认使用外部RADIUS服务器
+                                                                                                   
+	int num_rounds;             // eap层记录的往返次数：发出eap-req 到收到 eap-resp 报文算一次往返
 	enum {
 		METHOD_PENDING_NONE, METHOD_PENDING_WAIT, METHOD_PENDING_CONT
 	} method_pending;

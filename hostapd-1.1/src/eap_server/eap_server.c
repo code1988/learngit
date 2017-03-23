@@ -613,7 +613,7 @@ SM_STATE(EAP, SEND_REQUEST2)
 
 
 /* EAP SM进入AAA_REQUEST状态的EA:
- *      转储收到的eap-resp
+ *      转储收到的eap-resp: 从EAPOL->EAP交互缓冲eapRespData到EAP->AAA交互缓冲aaaEapRespData
  */
 SM_STATE(EAP, AAA_REQUEST)
 {
@@ -693,7 +693,7 @@ SM_STATE(EAP, FAILURE2)
 
 
 /* EAP SM进入SUCCESS2状态的EA:
- *      转储AAA层->EAP层交互缓存aaaEapReqData中的数据到EAP层->EAPOL层交互缓存aaaEapReqData
+ *      转储AAA层->EAP层交互缓存aaaEapReqData中的数据到EAP层->EAPOL层交互缓存eapReqData(这会导致发给客户端的eap-id号不变，应该是个bug)
  *      EAP层->EAPOL层交互标志eapFail设置为TRUE，用于通知EAPOL层
  *      start_reauth设置为TRUE，用于SELECT_ACTION状态中对下一步采取的策略做一个决定时
  */

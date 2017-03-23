@@ -78,7 +78,7 @@ static inline size_t wpabuf_tailroom(const struct wpabuf *buf)
  * wpabuf_head - Get pointer to the head of the buffer data
  * @buf: wpabuf buffer
  * Returns: Pointer to the head of the buffer data
- * 获取数据空间首地址
+ * 获取数据空间首地址(返回值带const意味着内容不允许修改)
  */
 static inline const void * wpabuf_head(const struct wpabuf *buf)
 {
@@ -96,7 +96,7 @@ static inline const u8 * wpabuf_head_u8(const struct wpabuf *buf)
  * wpabuf_mhead - Get modifiable pointer to the head of the buffer data
  * @buf: wpabuf buffer
  * Returns: Pointer to the head of the buffer data
- * 获取数据空间可修改的首地址
+ * 获取数据空间可修改的首地址返回值不带const意味着内容允许修改)
  */
 static inline void * wpabuf_mhead(struct wpabuf *buf)
 {

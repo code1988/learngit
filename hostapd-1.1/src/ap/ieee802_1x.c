@@ -552,7 +552,9 @@ static void ieee802_1x_encapsulate_radius(struct hostapd_data *hapd,
 	}
 
 	/* State attribute must be copied if and only if this packet is
-	 * Access-Request reply to the previous Access-Challenge */
+	 * Access-Request reply to the previous Access-Challenge 
+     * 如果RADIUS服务器发送给设备的认证挑战报文中包含该属性值，则设备在后续的认证请求报文中必须包含相同的值
+     * */
 	if (sm->last_recv_radius &&
 	    radius_msg_get_hdr(sm->last_recv_radius)->code ==
 	    RADIUS_CODE_ACCESS_CHALLENGE) {
@@ -1639,7 +1641,9 @@ static void ieee802_1x_aaa_send(void *ctx, void *sta_ctx,
 #endif /* CONFIG_NO_RADIUS */
 }
 
-// 基于802.1x协议的认证结束处理
+/* 基于802.1x协议的认证结束处理
+ * @success 1-进入的原因是认证成功；0-进入的原因是认证失败/客户端主动下线
+ */
 static void _ieee802_1x_finished(void *ctx, void *sta_ctx, int success,
 				 int preauth)
 {
@@ -2153,7 +2157,9 @@ int ieee802_1x_get_mib_sta(struct hostapd_data *hapd, struct sta_info *sta,
 	return len;
 }
 
-// 802.1x认证结束时的动作
+/* 预认证功能关闭情况下，802.1x认证结束时的动作
+ * @success 1-进入的原因是认证成功；0-进入的原因是认证失败/客户端主动下线
+ */
 static void ieee802_1x_finished(struct hostapd_data *hapd,
 				struct sta_info *sta, int success)
 {
@@ -2172,6 +2178,7 @@ static void ieee802_1x_finished(struct hostapd_data *hapd,
 			       "Added PMKSA cache entry (IEEE 802.1X)");
 	}
 
+    // 对于认证失败/客户端主动下线这两种情况，需要执行删除对应sta的操作
 	if (!success) {
 		/*
 		 * Many devices require deauthentication after WPS provisioning
