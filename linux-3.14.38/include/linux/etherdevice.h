@@ -167,6 +167,7 @@ static inline bool is_valid_ether_addr(const u8 *addr)
 /**
  * eth_random_addr - Generate software assigned random Ethernet address
  * @addr: Pointer to a six-byte array containing the Ethernet address
+ * 随机生成一个mac地址(非组播mac)
  *
  * Generate a random Ethernet address (MAC) that is not multicast
  * and has the local assigned bit set.
@@ -206,6 +207,7 @@ static inline void eth_zero_addr(u8 *addr)
  * eth_hw_addr_random - Generate software assigned random Ethernet and
  * set device flag
  * @dev: pointer to net_device structure
+ * 生成一个随机mac，并设置相应标志位
  *
  * Generate a random Ethernet address (MAC) to be used by a net device
  * and set addr_assign_type so the state can be read by sysfs and be

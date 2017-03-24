@@ -50,26 +50,32 @@
 typedef	int (*notifier_fn_t)(struct notifier_block *nb,
 			unsigned long action, void *data);
 
+// 组成通知链的节点
 struct notifier_block {
-	notifier_fn_t notifier_call;
+	notifier_fn_t notifier_call;        // 当相应事件发生时应该调用的函数，由被通知方提供，比如bridge
 	struct notifier_block __rcu *next;
-	int priority;
+	int priority;                       // 回调函数优先级，默认为0
 };
 
+/**<    kernel 定义了以下4种通知链类型 */
+// 原子通知链头结构（通知链中的每个回调函数在中断或原子操作上下文中进行，不允许阻塞）
 struct atomic_notifier_head {
 	spinlock_t lock;
 	struct notifier_block __rcu *head;
 };
 
+// 可阻塞通知链头结构（通知链中的每个回调函数在进程上下文中进行，允许阻塞）
 struct blocking_notifier_head {
 	struct rw_semaphore rwsem;
 	struct notifier_block __rcu *head;
 };
 
+// 原始通知链头结构（对通知链中的每个回调函数没有任何限制，所有锁和保护机制都由调用者维护）
 struct raw_notifier_head {
 	struct notifier_block __rcu *head;
 };
 
+// SRCU通知链结构（可阻塞通知链的一种变体）
 struct srcu_notifier_head {
 	struct mutex mutex;
 	struct srcu_struct srcu;
@@ -103,12 +109,15 @@ extern void srcu_init_notifier_head(struct srcu_notifier_head *nh);
 		.head = NULL }
 /* srcu_notifier_heads cannot be initialized statically */
 
+// 定义并初始化一个原子通知链头
 #define ATOMIC_NOTIFIER_HEAD(name)				\
 	struct atomic_notifier_head name =			\
 		ATOMIC_NOTIFIER_INIT(name)
+// 定义并初始化一个可阻塞通知链头
 #define BLOCKING_NOTIFIER_HEAD(name)				\
 	struct blocking_notifier_head name =			\
 		BLOCKING_NOTIFIER_INIT(name)
+// 定义并初始化一个原始通知链头
 #define RAW_NOTIFIER_HEAD(name)					\
 	struct raw_notifier_head name =				\
 		RAW_NOTIFIER_INIT(name)

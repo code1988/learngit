@@ -976,8 +976,9 @@ static ssize_t sock_aio_write(struct kiocb *iocb, const struct iovec *iov,
  */
 
 static DEFINE_MUTEX(br_ioctl_mutex);
-static int (*br_ioctl_hook) (struct net *, unsigned int cmd, void __user *arg);
+static int (*br_ioctl_hook) (struct net *, unsigned int cmd, void __user *arg); // 定义了一个用于网桥ioctl操作的钩子函数指针
 
+// 设置网桥ioctl操作的钩子函数
 void brioctl_set(int (*hook) (struct net *, unsigned int, void __user *))
 {
 	mutex_lock(&br_ioctl_mutex);

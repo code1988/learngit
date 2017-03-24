@@ -1,6 +1,7 @@
 /*
  *	Userspace interface
  *	Linux ethernet bridge
+ *	用户空间对应的功能接口
  *
  *	Authors:
  *	Lennert Buytenhek		<buytenh@gnu.org>
@@ -233,11 +234,13 @@ static struct net_bridge_port *new_nbp(struct net_bridge *br,
 	return p;
 }
 
+// 创建网桥
 int br_add_bridge(struct net *net, const char *name)
 {
 	struct net_device *dev;
 	int res;
 
+    // 创建一个网桥设备
 	dev = alloc_netdev(sizeof(struct net_bridge), name,
 			   br_dev_setup);
 

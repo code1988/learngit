@@ -1,6 +1,7 @@
 /*
  *	Handle firewalling
  *	Linux ethernet bridge
+ *	网桥中的netfilter处理
  *
  *	Authors:
  *	Lennert Buytenhek		<buytenh@gnu.org>

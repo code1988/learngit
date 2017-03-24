@@ -21,15 +21,16 @@
 /*
  *	Our network namespace constructor/destructor lists
  */
-
+// 定义了一个网络功能模块链表头(每创建一个网络功能模块都要插入该链表)
 static LIST_HEAD(pernet_list);
 static struct list_head *first_device = &pernet_list;
 DEFINE_MUTEX(net_mutex);
 
+// 定义了一个网络命名空间链表头(每创建一个网络命名空间都要插入该链表)
 LIST_HEAD(net_namespace_list);
 EXPORT_SYMBOL_GPL(net_namespace_list);
 
-// 定义了一个全局的网络命名空间
+// 定义了一个缺省的全局的网络命名空间(不论单/多网络命名空间，都至少有这一个)
 struct net init_net = {
 	.dev_base_head = LIST_HEAD_INIT(init_net.dev_base_head),
 };
@@ -88,6 +89,7 @@ assign:
 	return 0;
 }
 
+// 注册一个网络功能模块到一个网络命名空间
 static int ops_init(const struct pernet_operations *ops, struct net *net)
 {
 	int err = -ENOMEM;
@@ -436,7 +438,8 @@ static int __init net_ns_init(void)
 
 pure_initcall(net_ns_init);
 
-#ifdef CONFIG_NET_NS
+#ifdef CONFIG_NET_NS    // 以下函数用于支持自定义网络命名空间情况下
+// 注册网络功能模块到多网络命名空间
 static int __register_pernet_operations(struct list_head *list,
 					struct pernet_operations *ops)
 {
@@ -444,7 +447,10 @@ static int __register_pernet_operations(struct list_head *list,
 	int error;
 	LIST_HEAD(net_exit_list);
 
+    // 将该网络功能模块从尾部插入pernet_list链表
 	list_add_tail(&ops->list, list);
+
+    // 如果该网络功能模块定义了init函数或者定义了id和size，则需要进一步添加到每个网络命名空间
 	if (ops->init || (ops->id && ops->size)) {
 		for_each_net(net) {
 			error = ops_init(ops, net);
@@ -475,11 +481,12 @@ static void __unregister_pernet_operations(struct pernet_operations *ops)
 	ops_free_list(ops, &net_exit_list);
 }
 
-#else
-
+#else       // 以下函数用于不支持自定义网络命名空间情况下
+// 注册网络功能模块到单网络命名空间
 static int __register_pernet_operations(struct list_head *list,
 					struct pernet_operations *ops)
 {
+    // 注册该网络功能模块到缺省的网络命名空间init_net
 	return ops_init(ops, &init_net);
 }
 
@@ -495,6 +502,7 @@ static void __unregister_pernet_operations(struct pernet_operations *ops)
 
 static DEFINE_IDA(net_generic_ids);
 
+// 注册网络子系统到每个网络命名空间(内部封装)
 static int register_pernet_operations(struct list_head *list,
 				      struct pernet_operations *ops)
 {
@@ -533,7 +541,7 @@ static void unregister_pernet_operations(struct pernet_operations *ops)
 
 /**
  *      register_pernet_subsys - register a network namespace subsystem
- *      注册一个网络子系统
+ *      注册一个指定的网络功能模块到每个网络命名空间(对外封装)
  *	@ops:  pernet operations structure for the subsystem
  *
  *	Register a subsystem which has init and exit functions

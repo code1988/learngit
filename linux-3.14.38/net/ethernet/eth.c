@@ -353,6 +353,7 @@ const struct header_ops eth_header_ops ____cacheline_aligned = {
 /**
  * ether_setup - setup Ethernet network device
  * @dev: network device
+ * 为该网络设备的链路层参数设置一些缺省值
  *
  * Fill in the fields of the device structure with Ethernet-generic values.
  */

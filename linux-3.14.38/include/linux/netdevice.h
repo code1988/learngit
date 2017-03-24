@@ -1153,7 +1153,9 @@ struct net_device_ops {
  *	Actually, this whole structure is a big mistake.  It mixes I/O
  *	data with strictly "high-level" data, and it has to know about
  *	almost every data structure used in the INET module.
+ *	网络设备管理块结构
  *
+ *  备注：这个结构有一个待优化的地方
  *	FIXME: cleanup struct net_device such that network protocol info
  *	moves out.
  */
@@ -1598,7 +1600,9 @@ static inline bool netdev_uses_trailer_tags(struct net_device *dev)
 /**
  *	netdev_priv - access network device private data
  *	@dev: network device
+ *	返回通用网络设备net_device对应的私有数据块
  *
+ *  备注：这个私有数据块看起来应该是在struct net_device之后，考虑到对齐需求，二者之间应该存在pading
  * Get network device private data
  */
 static inline void *netdev_priv(const struct net_device *dev)
@@ -2900,6 +2904,7 @@ void ether_setup(struct net_device *dev);
 struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
 				    void (*setup)(struct net_device *),
 				    unsigned int txqs, unsigned int rxqs);
+// 创建一个网络设备
 #define alloc_netdev(sizeof_priv, name, setup) \
 	alloc_netdev_mqs(sizeof_priv, name, setup, 1, 1)
 

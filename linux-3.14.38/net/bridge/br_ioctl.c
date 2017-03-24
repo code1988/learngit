@@ -1,6 +1,7 @@
 /*
  *	Ioctl handler
  *	Linux ethernet bridge
+ *	用于网桥的ioctl操作
  *
  *	Authors:
  *	Lennert Buytenhek		<buytenh@gnu.org>
@@ -349,6 +350,11 @@ static int old_deviceless(struct net *net, void __user *uarg)
 	return -EOPNOTSUPP;
 }
 
+/* 用于网桥操作的ioctl钩子函数
+ * @net     指向当前的网络命名空间
+ * @cmd     用户层调用ioctl的命令ID号
+ * @uarg    用户层调用ioctl时传入的参数
+ */
 int br_ioctl_deviceless_stub(struct net *net, unsigned int cmd, void __user *uarg)
 {
 	switch (cmd) {
@@ -356,22 +362,24 @@ int br_ioctl_deviceless_stub(struct net *net, unsigned int cmd, void __user *uar
 	case SIOCSIFBR:
 		return old_deviceless(net, uarg);
 
-	case SIOCBRADDBR:
-	case SIOCBRDELBR:
+	case SIOCBRADDBR:   // 创建一个网桥
+	case SIOCBRDELBR:   // 删除一个网桥
 	{
 		char buf[IFNAMSIZ];
 
+        // 先对该用户命名空间进行CAP_NET_ADMIN权限测试
 		if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
 			return -EPERM;
 
+        // 转储ioctl传入的参数uarg，这里就是桥名
 		if (copy_from_user(buf, uarg, IFNAMSIZ))
 			return -EFAULT;
 
 		buf[IFNAMSIZ-1] = 0;
 		if (cmd == SIOCBRADDBR)
-			return br_add_bridge(net, buf);
+			return br_add_bridge(net, buf); // 如果是SIOCBRADDBR则创建网桥
 
-		return br_del_bridge(net, buf);
+		return br_del_bridge(net, buf);     // 如果是SIOCBRDELBR则删除网桥
 	}
 	}
 	return -EOPNOTSUPP;

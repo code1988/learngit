@@ -45,7 +45,7 @@ static const struct stp_proto br_stp_proto = {
 	.rcv	= br_stp_rcv,
 };
 
-// 网桥初始化
+// 网桥功能初始化
 static int __init br_init(void)
 {
 	int err;
@@ -62,22 +62,27 @@ static int __init br_init(void)
 	if (err)
 		goto err_out;
 
+    // 将网桥模块添加到每一个网络命名空间
 	err = register_pernet_subsys(&br_net_ops);
 	if (err)
 		goto err_out1;
 
+    // 注册网络防火墙相关的钩子函数
 	err = br_netfilter_init();
 	if (err)
 		goto err_out2;
 
+    // 向通知链中注册一个网桥事件通知块
 	err = register_netdevice_notifier(&br_device_notifier);
 	if (err)
 		goto err_out3;
 
+    // 初始化操作网桥用的netlink接口
 	err = br_netlink_init();
 	if (err)
 		goto err_out4;
 
+    // 设置用于网桥操作的ioctl钩子函数
 	brioctl_set(br_ioctl_deviceless_stub);
 
 #if IS_ENABLED(CONFIG_ATM_LANE)
@@ -98,6 +103,7 @@ err_out:
 	return err;
 }
 
+// 注销网桥功能
 static void __exit br_deinit(void)
 {
 	stp_proto_unregister(&br_stp_proto);

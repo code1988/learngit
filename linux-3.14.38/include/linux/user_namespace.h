@@ -21,6 +21,7 @@ struct uid_gid_map {	/* 64 bytes -- 1 cache line */
 
 #define USERNS_INIT_FLAGS USERNS_SETGROUPS_ALLOWED
 
+// 用户命名空间结构
 struct user_namespace {
 	struct uid_gid_map	uid_map;
 	struct uid_gid_map	gid_map;

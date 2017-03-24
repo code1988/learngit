@@ -1,5 +1,6 @@
 /*
  *	Bridge netlink control interface
+ *	操作网桥用的netlink接口
  *
  *	Authors:
  *	Stephen Hemminger		<shemminger@osdl.org>

@@ -140,10 +140,11 @@ struct net_bridge_mdb_htable
 	u32				ver;
 };
 
+// 网桥端口管理块结构
 struct net_bridge_port
 {
-	struct net_bridge		*br;
-	struct net_device		*dev;
+	struct net_bridge		*br;    // 指向所属网桥
+	struct net_device		*dev;   // 指向对应的网络设备
 	struct list_head		list;
 
 	/* STP */
@@ -211,11 +212,12 @@ static inline struct net_bridge_port *br_port_get_rtnl(const struct net_device *
 		rtnl_dereference(dev->rx_handler_data) : NULL;
 }
 
+// 网桥管理块结构
 struct net_bridge
 {
 	spinlock_t			lock;
-	struct list_head		port_list;
-	struct net_device		*dev;
+	struct list_head		port_list;  // 包含的端口的链表头
+	struct net_device		*dev;       // 指向网桥对应的虚拟网络设备
 
 	struct pcpu_sw_netstats		__percpu *stats;
 	spinlock_t			hash_lock;

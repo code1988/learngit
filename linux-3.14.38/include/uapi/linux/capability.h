@@ -345,6 +345,7 @@ struct vfs_cap_data {
 
 #define CAP_LAST_CAP         CAP_BLOCK_SUSPEND
 
+// 判断权限至是否有效
 #define cap_valid(x) ((x) >= 0 && (x) <= CAP_LAST_CAP)
 
 /*

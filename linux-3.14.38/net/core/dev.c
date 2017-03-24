@@ -250,7 +250,7 @@ static void unlist_netdevice(struct net_device *dev)
 /*
  *	Our notifier list
  */
-
+// 定义并初始化一个网络设备通知链头(采用原始通知链类型，该通知链用于通知设备注册、状态变化)
 static RAW_NOTIFIER_HEAD(netdev_chain);
 
 /*
@@ -1462,14 +1462,14 @@ static int dev_boot_phase = 1;
 
 /**
  *	register_netdevice_notifier - register a network notifier block
- *	注册一个网络设备上报通知块
+ *	网络子系统中注册一个网络设备事件上报通知块
  *	@nb: notifier
  *
  *	Register a notifier to be called when network device events occur.
  *	The notifier passed is linked into the kernel structures and must
  *	not be reused until it has been unregistered. A negative errno code
  *	is returned on a failure.
- *	当底层网络设备有事件被触发时，该通知块中的回调函数将被调用
+ *	当网络设备有事件被触发时，该通知块中的回调函数将被调用
  *	成功调用的条件是通知块已经被注册并且一旦通知块被调用后必须重新注册
  *
  * 	When registered all registration and up events are replayed
@@ -1485,11 +1485,13 @@ int register_netdevice_notifier(struct notifier_block *nb)
 	int err;
 
 	rtnl_lock();
+    // 在netdev_chain通知链上注册该通知块
 	err = raw_notifier_chain_register(&netdev_chain, nb);
 	if (err)
 		goto unlock;
 	if (dev_boot_phase)
 		goto unlock;
+    // 遍历每个网络命名空间中的每个网络功能模块
 	for_each_net(net) {
 		for_each_netdev(net, dev) {
 			err = call_netdevice_notifier(nb, NETDEV_REGISTER, dev);
@@ -6430,6 +6432,7 @@ void netdev_freemem(struct net_device *dev)
  *	@setup:		callback to initialize device
  *	@txqs:		the number of TX subqueues to allocate
  *	@rxqs:		the number of RX subqueues to allocate
+ *	创建一个网络设备
  *
  *	Allocates a struct net_device with private data area for driver use
  *	and performs basic initialization.  Also allocates subqueue structs
