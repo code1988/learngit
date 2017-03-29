@@ -314,7 +314,7 @@ static int hostapd_driver_init(struct hostapd_iface *iface)
 	return 0;
 }
 
-
+// 完整的释放一个接口
 static void hostapd_interface_deinit_free(struct hostapd_iface *iface)
 {
 	const struct wpa_driver_ops *driver;
@@ -323,9 +323,11 @@ static void hostapd_interface_deinit_free(struct hostapd_iface *iface)
 		return;
 	driver = iface->bss[0]->driver;
 	drv_priv = iface->bss[0]->drv_priv;
+    // 释放该接口包含的bss下辖的所有资源(只释放bss下辖的资源，其余不在这里释放)
 	hostapd_interface_deinit(iface);
 	if (driver && driver->hapd_deinit)
 		driver->hapd_deinit(drv_priv);
+    // 进一步释放该接口包含的所有资源(调用本函数的前提是事先调用了hostapd_interface_deinit)
 	hostapd_interface_free(iface);
 }
 
@@ -352,6 +354,7 @@ hostapd_interface_init(struct hapd_interfaces *interfaces,
     // 根据配置文件初始化接口驱动器,并根据配置信息设置接口(包括下属每个bss设置，在每个bss设置中包含了802.1x初始化)
 	if (hostapd_driver_init(iface) ||
 	    hostapd_setup_interface(iface)) {
+        // 释放一个接口
 		hostapd_interface_deinit_free(iface);
 		return NULL;
 	}

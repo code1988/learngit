@@ -52,8 +52,8 @@ sm->eapol->cb.set_port_authorized(sm->eapol->conf.ctx, sm->sta, 1)
 sm->eapol->cb.set_port_authorized(sm->eapol->conf.ctx, sm->sta, 0)
 
 /* procedures */
-#define txCannedFail() eapol_auth_tx_canned_eap(sm, 0)
-#define txCannedSuccess() eapol_auth_tx_canned_eap(sm, 1)
+#define txCannedFail() eapol_auth_tx_canned_eap(sm, 0)      // 认证失败
+#define txCannedSuccess() eapol_auth_tx_canned_eap(sm, 1)   // 认证成功
 #define txReq() eapol_auth_tx_req(sm)       // eapol层发送帧的总接口
 #define abortAuth() sm->eapol->cb.abort_auth(sm->eapol->conf.ctx, sm->sta)  // 清除认证过的痕迹
 #define txKey() sm->eapol->cb.tx_key(sm->eapol->conf.ctx, sm->sta)
@@ -100,7 +100,11 @@ static void eapol_auth_vlogger(struct eapol_authenticator *eapol,
 	os_free(format);
 }
 
-
+/* eapol层发送认证成功/失败的总接口
+ *
+ * 备注：1.1版本中只被强制处于授权/强制处于未授权调用
+ *       这里做了部分eap层的工作，即组eap包
+ */
 static void eapol_auth_tx_canned_eap(struct eapol_state_machine *sm,
 				     int success)
 {
@@ -122,7 +126,7 @@ static void eapol_auth_tx_canned_eap(struct eapol_state_machine *sm,
 }
 
 
-// eapol层发送帧的总接口
+// eapol层发送请求帧的总接口(当前1.1版本实际在这里混合了认证成功/失败数据)
 static void eapol_auth_tx_req(struct eapol_state_machine *sm)
 {
     // 检查EAP->EAPOL交互的eapReqData是否有效
@@ -513,9 +517,9 @@ SM_STEP(AUTH_PAE)
 				SM_ENTER(AUTH_PAE, ABORTING);               //      3.2 如果BE_AUTH SM设置了authTimeout标志，则进入ABORTING状态
 			break;                                                                                                                                  
 		case AUTH_PAE_ABORTING:                             // 当前处于ABORTING状态的话，需要分为2种情况进行处理：
-			if (sm->eapolLogoff && !sm->authAbort)          //      1. 如果收到eapol-logoff报文，并且authAbort标志并未置位，则进入DISCONNECTED状态
+			if (sm->eapolLogoff && !sm->authAbort)          //      1. 如果收到eapol-logoff报文，并且authAbort标志被清除，则进入DISCONNECTED状态
 				SM_ENTER(AUTH_PAE, DISCONNECTED);                                                                                                   
-			else if (!sm->eapolLogoff && !sm->authAbort)    //      2. 如果没有收到eapol-logoff报文，并且authAbort标志并未置位，则进入RESTART状态
+			else if (!sm->eapolLogoff && !sm->authAbort)    //      2. 如果没有收到eapol-logoff报文，并且authAbort标志被清除，则进入RESTART状态
 				SM_ENTER(AUTH_PAE, RESTART);
 			break;
 		case AUTH_PAE_FORCE_AUTH:
@@ -1281,7 +1285,7 @@ static int eapol_auth_conf_clone(struct eapol_auth_config *dst,
 	return 0;
 }
 
-
+// 释放eapol层配置信息管理块
 static void eapol_auth_conf_free(struct eapol_auth_config *conf)
 {
 	os_free(conf->eap_req_id_text);
@@ -1329,7 +1333,7 @@ struct eapol_authenticator * eapol_auth_init(struct eapol_auth_config *conf,
 	return eapol;
 }
 
-
+// 注销整个eapol认证器(意味着所在bss即将关闭802.1x认证功能)
 void eapol_auth_deinit(struct eapol_authenticator *eapol)
 {
 	if (eapol == NULL)

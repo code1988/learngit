@@ -230,7 +230,7 @@ int hostapd_set_sta_flags(struct hostapd_data *hapd, struct sta_info *sta)
 				     flags_or, flags_and);
 }
 
-// AP模式下802.1x驱动层操作
+// AP模式下802.1x使能/禁止功能的驱动层操作
 int hostapd_set_drv_ieee8021x(struct hostapd_data *hapd, const char *ifname,
 			      int enabled)
 {
@@ -404,7 +404,7 @@ int hostapd_if_remove(struct hostapd_data *hapd, enum wpa_driver_if_type type,
 	return hapd->driver->if_remove(hapd->drv_priv, type, ifname);
 }
 
-// AP模式下802.1x驱动层操作
+// AP模式下802.1x使能/禁止功能的驱动层操作
 int hostapd_set_ieee8021x(struct hostapd_data *hapd,
 			  struct wpa_bss_params *params)
 {

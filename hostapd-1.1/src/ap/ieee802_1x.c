@@ -44,7 +44,7 @@
 static void ieee802_1x_finished(struct hostapd_data *hapd,
 				struct sta_info *sta, int success);
 
-// 发送可能承载了一个上层数据的EAPOL报文
+// 发送必定承载了一个上层eap数据的EAPOL报文(作为认证者，这里必定承载了一个EAP数据)
 static void ieee802_1x_send(struct hostapd_data *hapd, struct sta_info *sta,
 			    u8 type, const u8 *data, size_t datalen)
 {
@@ -1009,7 +1009,7 @@ void ieee802_1x_new_station(struct hostapd_data *hapd, struct sta_info *sta)
 	}
 }
 
-
+// 释放sta上跟802.1x协议相关的数据块
 void ieee802_1x_free_station(struct sta_info *sta)
 {
 	struct eapol_state_machine *sm = sta->eapol_sm;
@@ -1494,7 +1494,7 @@ void ieee802_1x_abort_auth(struct hostapd_data *hapd, struct sta_info *sta)
 		       HOSTAPD_LEVEL_DEBUG, "aborting authentication");
 
 #ifndef CONFIG_NO_RADIUS
-    // 释放radius消息管理块
+    // 释放保存了最近收到的radius消息的管理块
 	radius_msg_free(sm->last_recv_radius);
 	sm->last_recv_radius = NULL;
 #endif /* CONFIG_NO_RADIUS */
@@ -1598,7 +1598,11 @@ static void ieee802_1x_rekey(void *eloop_ctx, void *timeout_ctx)
 	}
 }
 
-// 基于802.1X协议的EAPOL报文发送
+/* 802.1X协议的EAPOL报文发送(承载一个eap报文)
+ * @type - 必定是IEEE802_1X_TYPE_EAP_PACKET
+ * @data - eap数据
+ * @datalen - eap数据长度
+ */
 static void ieee802_1x_eapol_send(void *ctx, void *sta_ctx, u8 type,
 				  const u8 *data, size_t datalen)
 {
@@ -1695,7 +1699,7 @@ static int ieee802_1x_get_eap_user(void *ctx, const u8 *identity,
 	return 0;
 }
 
-// 基于802.1X协议的站表元素有效性检测
+// 基于802.1X协议的sta有效性检测
 static int ieee802_1x_sta_entry_alive(void *ctx, const u8 *addr)
 {
 	struct hostapd_data *hapd = ctx;
@@ -1733,7 +1737,7 @@ static void ieee802_1x_logger(void *ctx, const u8 *addr,
 }
 
 /*  基于802.1X协议的端口授权设置
- *  @authorized  : 1-授权; 2-不授权
+ *  @authorized  : 1-授权; 0-不授权
  *  */
 static void ieee802_1x_set_port_authorized(void *ctx, void *sta_ctx,
 					   int authorized)
@@ -1743,7 +1747,11 @@ static void ieee802_1x_set_port_authorized(void *ctx, void *sta_ctx,
 	ieee802_1x_set_sta_authorized(hapd, sta, authorized);
 }
 
-// 基于802.1X协议的取消认证
+/* 基于802.1X协议的取消该轮认证
+ *
+ * 备注：取消的原因是AUTH_PAE SM 在AUTHENTICATING时收到eapol-start/eapol-logoff/超时
+ *       abort并不意味着finish，只有当原因是收到eapol-logoff时，abort之后会接着finish
+ */
 static void _ieee802_1x_abort_auth(void *ctx, void *sta_ctx)
 {
 	struct hostapd_data *hapd = ctx;
@@ -1852,7 +1860,7 @@ int ieee802_1x_init(struct hostapd_data *hapd)
 	return 0;
 }
 
-
+// 关闭802.1x功能
 void ieee802_1x_deinit(struct hostapd_data *hapd)
 {
 	eloop_cancel_timeout(ieee802_1x_rekey, hapd, NULL);
@@ -1935,7 +1943,7 @@ int ieee802_1x_tx_status(struct hostapd_data *hapd, struct sta_info *sta,
 	return 1;
 }
 
-
+// 获取用户名信息
 u8 * ieee802_1x_get_identity(struct eapol_state_machine *sm, size_t *len)
 {
 	if (sm == NULL || sm->identity == NULL)
@@ -1968,7 +1976,7 @@ const u8 * ieee802_1x_get_key(struct eapol_state_machine *sm, size_t *len)
 	return sm->eap_if->eapKeyData;
 }
 
-
+// 外界设置eap<->eapol交互接口中的portEnabled标志(该标志决定了状态机是否激活)
 void ieee802_1x_notify_port_enabled(struct eapol_state_machine *sm,
 				    int enabled)
 {

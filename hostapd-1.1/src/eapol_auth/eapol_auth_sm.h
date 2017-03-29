@@ -76,7 +76,7 @@ struct eapol_auth_cb {
 	void (*logger)(void *ctx, const u8 *addr, eapol_logger_level level,                                       
 		       const char *txt);    // ieee802_1x_logger                                  
 	void (*set_port_authorized)(void *ctx, void *sta_ctx, int authorized);  // ieee802_1x_set_port_authorized
-	void (*abort_auth)(void *ctx, void *sta_ctx);                           // _ieee802_1x_abort_auth 
+	void (*abort_auth)(void *ctx, void *sta_ctx);                           // _ieee802_1x_abort_auth
 	void (*tx_key)(void *ctx, void *sta_ctx);                               // _ieee802_1x_tx_key
 	void (*eapol_event)(void *ctx, void *sta_ctx, enum eapol_event type);   // ieee802_1x_eapol_event
 };

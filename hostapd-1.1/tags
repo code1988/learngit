@@ -6295,7 +6295,7 @@ aaaSuccess	src/eap_server/eap.h	/^	Boolean aaaSuccess;     \/\/ AAA层收到一�
 aaaTimeout	src/eap_server/eap.h	/^	Boolean aaaTimeout;$/;"	m	struct:eap_eapol_interface	access:public
 aaa_send	src/eapol_auth/eapol_auth_sm.h	/^	void (*aaa_send)(void *ctx, void *sta_ctx, const u8 *data,$/;"	m	struct:eapol_auth_cb	access:public
 abortAuth	src/eapol_auth/eapol_auth_sm.c	58;"	d	file:
-abort_auth	src/eapol_auth/eapol_auth_sm.h	/^	void (*abort_auth)(void *ctx, void *sta_ctx);                           \/\/ _ieee802_1x_abort_auth $/;"	m	struct:eapol_auth_cb	access:public
+abort_auth	src/eapol_auth/eapol_auth_sm.h	/^	void (*abort_auth)(void *ctx, void *sta_ctx);                           \/\/ _ieee802_1x_abort_auth$/;"	m	struct:eapol_auth_cb	access:public
 aborted	src/drivers/driver.h	/^		int aborted;$/;"	m	struct:wpa_event_data::scan_info	access:public
 aborted_cached	src/eapol_supp/eapol_supp_sm.h	/^	void (*aborted_cached)(void *ctx);$/;"	m	struct:eapol_ctx	access:public
 above_threshold	src/drivers/driver.h	/^	int above_threshold;$/;"	m	struct:wpa_signal_info	access:public
@@ -8486,7 +8486,7 @@ eap_eapol_interface::eapRestart	src/eap_server/eap.h	/^	Boolean eapRestart;     
 eap_eapol_interface::eapSRTT	src/eap_server/eap.h	/^	int eapSRTT;$/;"	m	struct:eap_eapol_interface	access:public
 eap_eapol_interface::eapSuccess	src/eap_server/eap.h	/^	Boolean eapSuccess; \/\/ 此标志由EAP层管理，EAP层AUTH SM进入SUCCESS状态时设置TRUE并填充eapReqData，进入INITIALIZE状态时设置FALSE $/;"	m	struct:eap_eapol_interface	access:public
 eap_eapol_interface::eapTimeout	src/eap_server/eap.h	/^	Boolean eapTimeout; \/\/ 此标志由EAP层管理，EAP层AUTH SM进入TIMEOUT状态时设置TRUE，进入INITIALIZE状态时设置FALSE$/;"	m	struct:eap_eapol_interface	access:public
-eap_eapol_interface::portEnabled	src/eap_server/eap.h	/^	Boolean portEnabled;    \/\/ 此标志同时影响EAPOL层SM和EAP层SM，意味着该port是否可操作，在开始进行802.1X认证时被设置TRUE，在认证失败时设置FALSE $/;"	m	struct:eap_eapol_interface	access:public
+eap_eapol_interface::portEnabled	src/eap_server/eap.h	/^	Boolean portEnabled;    \/\/ 此标志同时影响EAPOL层SM和EAP层SM，意味着该port是否可操作，开始802.1X认证时被设置TRUE，认证失败时设置FALSE(或者删除接口时)$/;"	m	struct:eap_eapol_interface	access:public
 eap_eapol_interface::retransWhile	src/eap_server/eap.h	/^	int retransWhile;       \/\/ 重传定时器，由EAPOL层PORT_TIMER SM触发超时，由EAP层开启 $/;"	m	struct:eap_eapol_interface	access:public
 eap_fast_a_id	src/ap/ap_config.h	/^	u8 *eap_fast_a_id;$/;"	m	struct:hostapd_bss_config	access:public
 eap_fast_a_id	src/eap_server/eap.h	/^	u8 *eap_fast_a_id;$/;"	m	struct:eap_config	access:public
@@ -10858,7 +10858,7 @@ eapol_auth_alloc	src/eapol_auth/eapol_auth_sm.c	/^eapol_auth_alloc(struct eapol_
 eapol_auth_alloc	src/eapol_auth/eapol_auth_sm.h	/^eapol_auth_alloc(struct eapol_authenticator *eapol, const u8 *addr,$/;"	p	signature:(struct eapol_authenticator *eapol, const u8 *addr, int flags, const struct wpabuf *assoc_wps_ie, const struct wpabuf *assoc_p2p_ie, void *sta_ctx)
 eapol_auth_cb	src/eapol_auth/eapol_auth_sm.h	/^struct eapol_auth_cb {$/;"	s
 eapol_auth_cb::aaa_send	src/eapol_auth/eapol_auth_sm.h	/^	void (*aaa_send)(void *ctx, void *sta_ctx, const u8 *data,$/;"	m	struct:eapol_auth_cb	access:public
-eapol_auth_cb::abort_auth	src/eapol_auth/eapol_auth_sm.h	/^	void (*abort_auth)(void *ctx, void *sta_ctx);                           \/\/ _ieee802_1x_abort_auth $/;"	m	struct:eapol_auth_cb	access:public
+eapol_auth_cb::abort_auth	src/eapol_auth/eapol_auth_sm.h	/^	void (*abort_auth)(void *ctx, void *sta_ctx);                           \/\/ _ieee802_1x_abort_auth$/;"	m	struct:eapol_auth_cb	access:public
 eapol_auth_cb::eapol_event	src/eapol_auth/eapol_auth_sm.h	/^	void (*eapol_event)(void *ctx, void *sta_ctx, enum eapol_event type);   \/\/ ieee802_1x_eapol_event$/;"	m	struct:eapol_auth_cb	access:public
 eapol_auth_cb::eapol_send	src/eapol_auth/eapol_auth_sm.h	/^	void (*eapol_send)(void *ctx, void *sta_ctx, u8 type, const u8 *data,$/;"	m	struct:eapol_auth_cb	access:public
 eapol_auth_cb::finished	src/eapol_auth/eapol_auth_sm.h	/^	void (*finished)(void *ctx, void *sta_ctx, int success, int preauth);   \/\/ _ieee802_1x_finished$/;"	m	struct:eapol_auth_cb	access:public
@@ -11290,7 +11290,7 @@ eapol_state_machine::keyRun	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean keyRun; 
 eapol_state_machine::keyTxEnabled	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean keyTxEnabled;$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::key_rx_state	src/eapol_auth/eapol_auth_sm_i.h	/^	enum { KEY_RX_NO_KEY_RECEIVE, KEY_RX_KEY_RECEIVE } key_rx_state;    \/\/ key接收状态机$/;"	m	struct:eapol_state_machine	typeref:enum:eapol_state_machine::__anon70	access:public
 eapol_state_machine::last_eap_id	src/eapol_auth/eapol_auth_sm_i.h	/^	u8 last_eap_id; \/* last used EAP Identifier 记录了最后一个使用的EAP报文的Identify字段*\/$/;"	m	struct:eapol_state_machine	access:public
-eapol_state_machine::last_recv_radius	src/eapol_auth/eapol_auth_sm_i.h	/^	struct radius_msg *last_recv_radius;    \/\/ 指向最近一个收到的radius报文$/;"	m	struct:eapol_state_machine	typeref:struct:eapol_state_machine::radius_msg	access:public
+eapol_state_machine::last_recv_radius	src/eapol_auth/eapol_auth_sm_i.h	/^	struct radius_msg *last_recv_radius;    \/\/ 指向最近一个收到的radius报文消息管理块$/;"	m	struct:eapol_state_machine	typeref:struct:eapol_state_machine::radius_msg	access:public
 eapol_state_machine::operControlledDirections	src/eapol_auth/eapol_auth_sm_i.h	/^	ControlledDirection operControlledDirections;   \/\/ 受控方向，本值会被CTRL_DIR SM写入adminControlledDirections$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::operEdge	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean operEdge;                               \/\/ 端口没有开启VLAN时，此标志位设置为TRUE$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::portControl	src/eapol_auth/eapol_auth_sm_i.h	/^	PortTypes portControl;  \/\/ 受控端口的全局控制模式,作为802.1x认证者，在eapol_auth_alloc时设置了固定值AUTO$/;"	m	struct:eapol_state_machine	access:public
@@ -15006,7 +15006,7 @@ last_p2p_find_timeout	src/p2p/p2p_i.h	/^	unsigned int last_p2p_find_timeout;$/;"
 last_path	src/utils/wpa_debug.c	/^static char *last_path = NULL;$/;"	v	file:
 last_prog_scan_chan	src/p2p/p2p_i.h	/^	u8 last_prog_scan_chan;$/;"	m	struct:p2p_data	access:public
 last_prog_scan_class	src/p2p/p2p_i.h	/^	u8 last_prog_scan_class;$/;"	m	struct:p2p_data	access:public
-last_recv_radius	src/eapol_auth/eapol_auth_sm_i.h	/^	struct radius_msg *last_recv_radius;    \/\/ 指向最近一个收到的radius报文$/;"	m	struct:eapol_state_machine	typeref:struct:eapol_state_machine::radius_msg	access:public
+last_recv_radius	src/eapol_auth/eapol_auth_sm_i.h	/^	struct radius_msg *last_recv_radius;    \/\/ 指向最近一个收到的radius报文消息管理块$/;"	m	struct:eapol_state_machine	typeref:struct:eapol_state_machine::radius_msg	access:public
 last_replay_counter	src/eapol_supp/eapol_supp_sm.c	/^	u8 last_replay_counter[16];$/;"	m	struct:eapol_sm	file:	access:public
 last_reply	src/radius/radius_server.c	/^	struct radius_msg *last_reply;$/;"	m	struct:radius_session	typeref:struct:radius_session::radius_msg	file:	access:public
 last_rssi	src/drivers/driver.h	/^	int last_rssi;$/;"	m	struct:hostap_sta_driver_data	access:public
@@ -17886,7 +17886,7 @@ port	src/radius/radius_client.h	/^	int port;$/;"	m	struct:hostapd_radius_server	
 port	src/wps/http_server.c	/^	int port;$/;"	m	struct:http_server	file:	access:public
 portControl	src/eapol_auth/eapol_auth_sm_i.h	/^	PortTypes portControl;  \/\/ 受控端口的全局控制模式,作为802.1x认证者，在eapol_auth_alloc时设置了固定值AUTO$/;"	m	struct:eapol_state_machine	access:public
 portControl	src/eapol_supp/eapol_supp_sm.c	/^	PortControl portControl;$/;"	m	struct:eapol_sm	file:	access:public
-portEnabled	src/eap_server/eap.h	/^	Boolean portEnabled;    \/\/ 此标志同时影响EAPOL层SM和EAP层SM，意味着该port是否可操作，在开始进行802.1X认证时被设置TRUE，在认证失败时设置FALSE $/;"	m	struct:eap_eapol_interface	access:public
+portEnabled	src/eap_server/eap.h	/^	Boolean portEnabled;    \/\/ 此标志同时影响EAPOL层SM和EAP层SM，意味着该port是否可操作，开始802.1X认证时被设置TRUE，认证失败时设置FALSE(或者删除接口时)$/;"	m	struct:eap_eapol_interface	access:public
 portEnabled	src/eapol_supp/eapol_supp_sm.c	/^	Boolean portEnabled;$/;"	m	struct:eapol_sm	file:	access:public
 portMode	src/eapol_auth/eapol_auth_sm_i.h	/^	PortTypes portMode;     \/\/ AUTH_PEA SM私有的端口模式,初始化时设置Auto，进入FORCE_AUTH状态时设置ForceAuthorized，进入FORCE_UNAUTH状态时设置ForceUnauthorized$/;"	m	struct:eapol_state_machine	access:public
 portValid	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean portValid;      \/\/ 只在无线网络中(wpa功能开启时)被用到$/;"	m	struct:eapol_state_machine	access:public

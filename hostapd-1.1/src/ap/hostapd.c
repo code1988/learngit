@@ -220,6 +220,7 @@ static int hostapd_broadcast_wep_set(struct hostapd_data *hapd)
 /**
  * hostapd_cleanup - Per-BSS cleanup (deinitialization)
  * @hapd: Pointer to BSS data
+ * 释放该bss下辖的所有资源（不包括该bss本身）
  *
  * This function is used to free all per-BSS data structures and resources.
  * This gets called in a loop for each BSS between calls to
@@ -898,7 +899,7 @@ hostapd_alloc_bss_data(struct hostapd_iface *hapd_iface,
 	return hapd;
 }
 
-
+// 释放该接口包含的bss下辖的所有资源(只释放bss下辖的资源，其余不在这里释放)
 void hostapd_interface_deinit(struct hostapd_iface *iface)
 {
 	size_t j;
@@ -909,18 +910,23 @@ void hostapd_interface_deinit(struct hostapd_iface *iface)
 	hostapd_cleanup_iface_pre(iface);
 	for (j = 0; j < iface->num_bss; j++) {
 		struct hostapd_data *hapd = iface->bss[j];
+        // 释放该bss上的所有sta
 		hostapd_free_stas(hapd);
+        // 清除该bss上旧的状态(wire类型驱动器在这里实际上不做任何事)
 		hostapd_flush_old_stations(hapd, WLAN_REASON_DEAUTH_LEAVING);
+        // 释放该bss下辖的所有资源（不包括该bss本身）
 		hostapd_cleanup(hapd);
 	}
 }
 
-
+// 进一步释放该接口包含的所有资源(调用本函数的前提是事先调用了hostapd_interface_deinit)
 void hostapd_interface_free(struct hostapd_iface *iface)
 {
 	size_t j;
+    // 释放包含的所有bss本身
 	for (j = 0; j < iface->num_bss; j++)
 		os_free(iface->bss[j]);
+    // 释放该接口其他资源
 	hostapd_cleanup_iface(iface);
 }
 

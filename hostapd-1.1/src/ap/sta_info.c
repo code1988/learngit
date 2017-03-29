@@ -201,6 +201,7 @@ void ap_free_sta(struct hostapd_data *hapd, struct sta_info *sta)
 	if (set_beacon)
 		ieee802_11_set_beacons(hapd->iface);
 
+    // 关闭所有4个定时器
 	eloop_cancel_timeout(ap_handle_timer, hapd, sta);
 	eloop_cancel_timeout(ap_handle_session_timer, hapd, sta);
 	eloop_cancel_timeout(ap_sta_deauth_cb_timeout, hapd, sta);
@@ -233,13 +234,14 @@ void ap_free_sta(struct hostapd_data *hapd, struct sta_info *sta)
 	os_free(sta);
 }
 
-
+// 释放该bss上的所有sta
 void hostapd_free_stas(struct hostapd_data *hapd)
 {
 	struct sta_info *sta, *prev;
 
 	sta = hapd->sta_list;
 
+    // 遍历该bss上的sta
 	while (sta) {
 		prev = sta;
 		if (sta->flags & WLAN_STA_AUTH) {
@@ -249,6 +251,7 @@ void hostapd_free_stas(struct hostapd_data *hapd)
 		sta = sta->next;
 		wpa_printf(MSG_DEBUG, "Removing station " MACSTR,
 			   MAC2STR(prev->addr));
+        // 不经老化，直接释放每个sta
 		ap_free_sta(hapd, prev);
 	}
 }
@@ -258,7 +261,7 @@ void hostapd_free_stas(struct hostapd_data *hapd)
  * ap_handle_timer - Per STA timer handler
  * @eloop_ctx: struct hostapd_data *
  * @timeout_ctx: struct sta_info *
- * sta老化状态机
+ * sta老化定时器超时处理函数(执行该回调时deauth和disassoc定时器已经都执行完毕)
  *
  * This function is called to check station activity and to remove inactive
  * stations.
@@ -269,6 +272,7 @@ void ap_handle_timer(void *eloop_ctx, void *timeout_ctx)
 	struct sta_info *sta = timeout_ctx;
 	unsigned long next_time = 0;
 
+    // 如果老化原因是STA_REMOVE，在这里就是直接释放该sta资源
 	if (sta->timeout_next == STA_REMOVE) {
 		hostapd_logger(hapd, sta->addr, HOSTAPD_MODULE_IEEE80211,
 			       HOSTAPD_LEVEL_INFO, "deauthenticated due to "
@@ -410,6 +414,7 @@ static void ap_handle_session_timer(void *eloop_ctx, void *timeout_ctx)
 	sta->acct_terminate_cause =
 		RADIUS_ACCT_TERMINATE_CAUSE_SESSION_TIMEOUT;
 	os_memcpy(addr, sta->addr, ETH_ALEN);
+    // 由于服务超时，所以不经老化，直接释放该sta资源
 	ap_free_sta(hapd, sta);
 	hostapd_drv_sta_deauth(hapd, addr, WLAN_REASON_PREV_AUTH_NOT_VALID);
 }
@@ -477,13 +482,15 @@ struct sta_info * ap_sta_add(struct hostapd_data *hapd, const u8 *addr)
 	return sta;
 }
 
-
+// 删除该sta(只被deauth和disassoc两个超时回调中调用)
 static int ap_sta_remove(struct hostapd_data *hapd, struct sta_info *sta)
 {
+    // 清除eap<->eapol交互接口中的portEnabled标志，用于通知状态机不再激活
 	ieee802_1x_notify_port_enabled(sta->eapol_sm, 0);
 
 	wpa_printf(MSG_DEBUG, "Removing STA " MACSTR " from kernel driver",
 		   MAC2STR(sta->addr));
+    // 调用驱动层的删除操作
 	if (hostapd_drv_sta_remove(hapd, sta->addr) &&
 	    sta->flags & WLAN_STA_ASSOC) {
 		wpa_printf(MSG_DEBUG, "Could not remove station " MACSTR
@@ -513,22 +520,24 @@ static void ap_sta_remove_in_other_bss(struct hostapd_data *hapd,
 		if (!sta2)
 			continue;
 
+        // 注销其他bss上相同mac的sta
 		ap_sta_disconnect(bss, sta2, sta2->addr,
 				  WLAN_REASON_PREV_AUTH_NOT_VALID);
 	}
 }
 
-
+// sta的disassoc超时处理函数(被确保在该sta老化超时前执行)
 static void ap_sta_disassoc_cb_timeout(void *eloop_ctx, void *timeout_ctx)
 {
 	struct hostapd_data *hapd = eloop_ctx;
 	struct sta_info *sta = timeout_ctx;
 
+    // 删除disassoc超时的sta
 	ap_sta_remove(hapd, sta);
 	mlme_disassociate_indication(hapd, sta, sta->disassoc_reason);
 }
 
-
+// 取消当前bss跟指定sta的联系
 void ap_sta_disassociate(struct hostapd_data *hapd, struct sta_info *sta,
 			 u16 reason)
 {
@@ -536,32 +545,37 @@ void ap_sta_disassociate(struct hostapd_data *hapd, struct sta_info *sta,
 		   hapd->conf->iface, MAC2STR(sta->addr));
 	sta->flags &= ~WLAN_STA_ASSOC;
 	ap_sta_set_authorized(hapd, sta, 0);
+    // 注册sta的老化定时器（老化原因STA_DEAUTH）
 	sta->timeout_next = STA_DEAUTH;
 	eloop_cancel_timeout(ap_handle_timer, hapd, sta);
 	eloop_register_timeout(AP_MAX_INACTIVITY_AFTER_DISASSOC, 0,
 			       ap_handle_timer, hapd, sta);
+    // 停止计费
 	accounting_sta_stop(hapd, sta);
+    // 释放sta上跟802.1x协议相关的数据块
 	ieee802_1x_free_station(sta);
 
 	sta->disassoc_reason = reason;
 	sta->flags |= WLAN_STA_PENDING_DISASSOC_CB;
+    // 注册sta的disassoc定时器
 	eloop_cancel_timeout(ap_sta_disassoc_cb_timeout, hapd, sta);
 	eloop_register_timeout(hapd->iface->drv_flags &
 			       WPA_DRIVER_FLAGS_DEAUTH_TX_STATUS ? 2 : 0, 0,
 			       ap_sta_disassoc_cb_timeout, hapd, sta);
 }
 
-
+// sta的deauth超时处理函数(被确保在该sta老化超时前执行)
 static void ap_sta_deauth_cb_timeout(void *eloop_ctx, void *timeout_ctx)
 {
 	struct hostapd_data *hapd = eloop_ctx;
 	struct sta_info *sta = timeout_ctx;
 
+    // 删除deauth超时的sta
 	ap_sta_remove(hapd, sta);
 	mlme_deauthenticate_indication(hapd, sta, sta->deauth_reason);
 }
 
-
+// 注销当前bss上指定sta的认证通过状态
 void ap_sta_deauthenticate(struct hostapd_data *hapd, struct sta_info *sta,
 			   u16 reason)
 {
@@ -570,6 +584,7 @@ void ap_sta_deauthenticate(struct hostapd_data *hapd, struct sta_info *sta,
 	sta->flags &= ~(WLAN_STA_AUTH | WLAN_STA_ASSOC);
 	ap_sta_set_authorized(hapd, sta, 0);
 	sta->timeout_next = STA_REMOVE;
+    // 注册sta的老化定时器（老化原因STA_REMOVE）
 	eloop_cancel_timeout(ap_handle_timer, hapd, sta);
 	eloop_register_timeout(AP_MAX_INACTIVITY_AFTER_DEAUTH, 0,
 			       ap_handle_timer, hapd, sta);
@@ -578,6 +593,7 @@ void ap_sta_deauthenticate(struct hostapd_data *hapd, struct sta_info *sta,
 
 	sta->deauth_reason = reason;
 	sta->flags |= WLAN_STA_PENDING_DEAUTH_CB;
+    // 注册sta的deauth定时器
 	eloop_cancel_timeout(ap_sta_deauth_cb_timeout, hapd, sta);
 	eloop_register_timeout(hapd->iface->drv_flags &
 			       WPA_DRIVER_FLAGS_DEAUTH_TX_STATUS ? 2 : 0, 0,
@@ -840,7 +856,7 @@ void ap_sta_set_authorized(struct hostapd_data *hapd, struct sta_info *sta,
 					sta->addr, authorized, dev_addr);
 }
 
-// 取消当前bss上添加的指定sta（异步过程）
+// 注销当前bss上添加的指定sta（异步过程）
 void ap_sta_disconnect(struct hostapd_data *hapd, struct sta_info *sta,
 		       const u8 *addr, u16 reason)
 {
@@ -848,15 +864,19 @@ void ap_sta_disconnect(struct hostapd_data *hapd, struct sta_info *sta,
 	if (sta == NULL && addr)
 		sta = ap_get_sta(hapd, addr);
 
+    // 调用驱动层的deauth操作
 	if (addr)
 		hostapd_drv_sta_deauth(hapd, addr, reason);
 
 	if (sta == NULL)
 		return;
 	ap_sta_set_authorized(hapd, sta, 0);
+    // wpa状态机中设置WPA_DEAUTH，略过
 	wpa_auth_sm_event(sta->wpa_sm, WPA_DEAUTH);
+    // 清除eap<->eapol交互接口中的portEnabled标志，用于通知状态机不再激活
 	ieee802_1x_notify_port_enabled(sta->eapol_sm, 0);
 	sta->flags &= ~(WLAN_STA_AUTH | WLAN_STA_ASSOC);
+    // 注册sta老化定时器(设置老化原因STA_REMOVE)
 	eloop_cancel_timeout(ap_handle_timer, hapd, sta);
 	eloop_register_timeout(AP_MAX_INACTIVITY_AFTER_DEAUTH, 0,
 			       ap_handle_timer, hapd, sta);
@@ -864,6 +884,7 @@ void ap_sta_disconnect(struct hostapd_data *hapd, struct sta_info *sta,
 
 	sta->deauth_reason = reason;
 	sta->flags |= WLAN_STA_PENDING_DEAUTH_CB;
+    // 注册sta的deauth定时器
 	eloop_cancel_timeout(ap_sta_deauth_cb_timeout, hapd, sta);
 	eloop_register_timeout(hapd->iface->drv_flags &
 			       WPA_DRIVER_FLAGS_DEAUTH_TX_STATUS ? 2 : 0, 0,
