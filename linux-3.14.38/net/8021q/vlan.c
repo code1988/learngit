@@ -44,7 +44,7 @@
 
 /* Global VLAN variables */
 
-int vlan_net_id __read_mostly;
+int vlan_net_id __read_mostly;  // 用于记录vlan模块在所有网络命名空间中的ID号（初始化注册时分配）
 
 const char vlan_fullname[] = "802.1Q VLAN Support";
 const char vlan_version[] = DRV_VERSION;
@@ -602,11 +602,14 @@ out:
 	return err;
 }
 
+// 具体的vlan功能初始化
 static int __net_init vlan_init_net(struct net *net)
 {
+    // 根据vlan_net_id在该网络命名空间下索引对应的私有数据块，也就是vlan_net
 	struct vlan_net *vn = net_generic(net, vlan_net_id);
 	int err;
 
+    // 设置用户层vlan的默认显示风格，类似 eth0.10
 	vn->name_type = VLAN_NAME_TYPE_RAW_PLUS_VID_NO_PAD;
 
 	err = vlan_proc_init(net);
@@ -614,11 +617,13 @@ static int __net_init vlan_init_net(struct net *net)
 	return err;
 }
 
+// vlan功能注销
 static void __net_exit vlan_exit_net(struct net *net)
 {
 	vlan_proc_cleanup(net);
 }
 
+// 定义了vlan模块在网络命名空间层面的操作集合
 static struct pernet_operations vlan_net_ops = {
 	.init = vlan_init_net,
 	.exit = vlan_exit_net,
@@ -633,7 +638,7 @@ static int __init vlan_proto_init(void)
 
 	pr_info("%s v%s\n", vlan_fullname, vlan_version);
 
-    // 将vlan模块添加到每一个网络命名空间
+    // 将vlan模块添加到每一个网络命名空间，并且执行了vlan_init_net
 	err = register_pernet_subsys(&vlan_net_ops);
 	if (err < 0)
 		goto err0;

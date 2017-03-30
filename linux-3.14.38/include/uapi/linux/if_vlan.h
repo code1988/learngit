@@ -37,6 +37,7 @@ enum vlan_flags {
 	VLAN_FLAG_MVRP		= 0x8,
 };
 
+// vlan名字的显示风格
 enum vlan_name_types {
 	VLAN_NAME_TYPE_PLUS_VID, /* Name will look like:  vlan0005 */
 	VLAN_NAME_TYPE_RAW_PLUS_VID, /* name will look like:  eth1.0005 */

@@ -161,13 +161,14 @@ extern int vlan_net_id;
 
 struct proc_dir_entry;
 
+// 定义了有关vlan的proc文件系统信息
 struct vlan_net {
 	/* /proc/net/vlan */
 	struct proc_dir_entry *proc_vlan_dir;
 	/* /proc/net/vlan/config */
 	struct proc_dir_entry *proc_vlan_conf;
 	/* Determines interface naming scheme. */
-	unsigned short name_type;
+	unsigned short name_type;   // vlan名字在用户层的显示风格，通常选择eth0.10的风格
 };
 
 #endif /* !(__BEN_VLAN_802_1Q_INC__) */
