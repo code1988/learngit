@@ -988,8 +988,9 @@ void brioctl_set(int (*hook) (struct net *, unsigned int, void __user *))
 EXPORT_SYMBOL(brioctl_set);
 
 static DEFINE_MUTEX(vlan_ioctl_mutex);
-static int (*vlan_ioctl_hook) (struct net *, void __user *arg);
+static int (*vlan_ioctl_hook) (struct net *, void __user *arg); // 定义了一个用于vlan ioctl操作的钩子函数指针
 
+// 设置vlan ioctl操作的钩子函数
 void vlan_ioctl_set(int (*hook) (struct net *, void __user *))
 {
 	mutex_lock(&vlan_ioctl_mutex);
@@ -1030,6 +1031,7 @@ static long sock_do_ioctl(struct net *net, struct socket *sock,
 /*
  *	With an ioctl, arg may well be a user mode pointer, but we don't know
  *	what to do with it - that's up to the protocol still.
+ *	内核中ioctl的总接口
  */
 
 static long sock_ioctl(struct file *file, unsigned cmd, unsigned long arg)
@@ -1066,18 +1068,19 @@ static long sock_ioctl(struct file *file, unsigned cmd, unsigned long arg)
 			break;
 		case SIOCGIFBR:
 		case SIOCSIFBR:
-		case SIOCBRADDBR:
+		case SIOCBRADDBR:       // 以下是网桥模块ioctl函数的ID号
 		case SIOCBRDELBR:
 			err = -ENOPKG;
 			if (!br_ioctl_hook)
 				request_module("bridge");
 
 			mutex_lock(&br_ioctl_mutex);
+            // 调用网桥模块注册的钩子函数
 			if (br_ioctl_hook)
 				err = br_ioctl_hook(net, cmd, argp);
 			mutex_unlock(&br_ioctl_mutex);
 			break;
-		case SIOCGIFVLAN:
+		case SIOCGIFVLAN:       // 以下是vlan模块ioctl函数的ID号
 		case SIOCSIFVLAN:
 			err = -ENOPKG;
 			if (!vlan_ioctl_hook)
