@@ -612,6 +612,7 @@ static int __net_init vlan_init_net(struct net *net)
     // 设置用户层vlan的默认显示风格，类似 eth0.10
 	vn->name_type = VLAN_NAME_TYPE_RAW_PLUS_VID_NO_PAD;
 
+    // 在proc文件系统中创建vlan接口(/proc/net/vlan)
 	err = vlan_proc_init(net);
 
 	return err;

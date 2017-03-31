@@ -23,6 +23,8 @@ struct mempolicy;
  * create an in-memory tree (like the actual /proc filesystem
  * tree) of these proc_dir_entries, so that we can dynamically
  * add new files to /proc.
+ * 定义了proc文件系统下的通用入口结构(不区分文件还是目录)
+ * 3.14.38版本，这是一个尚未完全实现的结构
  *
  * The "next" pointer creates a linked list of one /proc directory,
  * while parent/subdir create the directory structure (every
@@ -37,7 +39,7 @@ struct proc_dir_entry {
 	kgid_t gid;
 	loff_t size;
 	const struct inode_operations *proc_iops;
-	const struct file_operations *proc_fops;
+	const struct file_operations *proc_fops;    // 指向用户层对该proc文件操作函数集合
 	struct proc_dir_entry *next, *parent, *subdir;
 	void *data;
 	atomic_t count;		/* use count */

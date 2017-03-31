@@ -9,6 +9,9 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+ * 特别要注意事项：
+ *  一个ubus客户端控制块(ubus_context)上同时只能操作一个ubus对象，
+ *  也就是说，在本次ubus对象操作未完成期间，绝不允许对一个新的ubus对象发起操作，因为会导致原有对象空间数据被flush掉，甚至导致进程崩溃
  */
 
 #ifndef __LIBUBUS_H

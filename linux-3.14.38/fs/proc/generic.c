@@ -312,6 +312,7 @@ static int proc_register(struct proc_dir_entry * dir, struct proc_dir_entry * dp
 	return 0;
 }
 
+// proc文件系统下创建目录和文件的统一接口(需要设置一个初始硬链接计数)
 static struct proc_dir_entry *__proc_create(struct proc_dir_entry **parent,
 					  const char *name,
 					  umode_t mode,
@@ -375,14 +376,17 @@ struct proc_dir_entry *proc_symlink(const char *name,
 }
 EXPORT_SYMBOL(proc_symlink);
 
+// proc文件系统下创建目录
 struct proc_dir_entry *proc_mkdir_data(const char *name, umode_t mode,
 		struct proc_dir_entry *parent, void *data)
 {
 	struct proc_dir_entry *ent;
 
+    // 目录缺省情况下对用户、组、和其他全部拥有可读可执行权限
 	if (mode == 0)
 		mode = S_IRUGO | S_IXUGO;
 
+    // 创建一个目录文件，初始硬链接计数固定为2(原理详见APUE Chapter-4) 
 	ent = __proc_create(&parent, name, S_IFDIR | mode, 2);
 	if (ent) {
 		ent->data = data;
@@ -409,12 +413,15 @@ struct proc_dir_entry *proc_mkdir(const char *name,
 }
 EXPORT_SYMBOL(proc_mkdir);
 
+// proc文件系统下创建文件(必须是一个普通文件)
 struct proc_dir_entry *proc_create_data(const char *name, umode_t mode,
 					struct proc_dir_entry *parent,
 					const struct file_operations *proc_fops,
 					void *data)
 {
 	struct proc_dir_entry *pde;
+
+    // 确保是一个普通文件
 	if ((mode & S_IFMT) == 0)
 		mode |= S_IFREG;
 
@@ -423,8 +430,11 @@ struct proc_dir_entry *proc_create_data(const char *name, umode_t mode,
 		return NULL;
 	}
 
+    // 用户、组和其他对proc文件至少都会拥有可读权限
 	if ((mode & S_IALLUGO) == 0)
 		mode |= S_IRUGO;
+
+    // 创建一个普通文件，初始硬链接计数固定为1
 	pde = __proc_create(&parent, name, mode, 1);
 	if (!pde)
 		goto out;

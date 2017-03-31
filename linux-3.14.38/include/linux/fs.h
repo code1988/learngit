@@ -1522,6 +1522,7 @@ struct block_device_operations;
 #define HAVE_COMPAT_IOCTL 1
 #define HAVE_UNLOCKED_IOCTL 1
 
+// 定义了通用的文件操作函数集合（linux设计思想：一切设备皆文件）
 struct file_operations {
 	struct module *owner;
 	loff_t (*llseek) (struct file *, loff_t, int);

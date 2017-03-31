@@ -62,8 +62,8 @@ struct net {
 
 	unsigned int		proc_inum;
 
-	struct proc_dir_entry 	*proc_net;
-	struct proc_dir_entry 	*proc_net_stat;
+	struct proc_dir_entry 	*proc_net;      // 指向/proc/net 目录
+	struct proc_dir_entry 	*proc_net_stat; // 指向/proc/net/stat 目录
 
 #ifdef CONFIG_SYSCTL
 	struct ctl_table_set	sysctls;

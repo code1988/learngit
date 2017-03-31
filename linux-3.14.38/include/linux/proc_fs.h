@@ -9,7 +9,7 @@
 
 struct proc_dir_entry;
 
-#ifdef CONFIG_PROC_FS
+#ifdef CONFIG_PROC_FS   // 如果配置了内核proc文件系统，则启用以下内容
 
 extern void proc_root_init(void);
 extern void proc_flush_task(struct task_struct *);
@@ -27,6 +27,12 @@ extern struct proc_dir_entry *proc_create_data(const char *, umode_t,
 					       const struct file_operations *,
 					       void *);
 
+/* proc文件系统下创建文件(对外封装)
+ * @name    - 文件名
+ * @mode    - 文件属性 
+ * @parent  - 上级proc目录结构（即父目录）
+ * @proc_fops - 用户层对vlan设备的操作集合
+ */
 static inline struct proc_dir_entry *proc_create(
 	const char *name, umode_t mode, struct proc_dir_entry *parent,
 	const struct file_operations *proc_fops)
@@ -42,7 +48,7 @@ extern void proc_remove(struct proc_dir_entry *);
 extern void remove_proc_entry(const char *, struct proc_dir_entry *);
 extern int remove_proc_subtree(const char *, struct proc_dir_entry *);
 
-#else /* CONFIG_PROC_FS */
+#else /* CONFIG_PROC_FS */  // 如果没有配置内核proc文件系统，则启用以下内容
 
 static inline void proc_flush_task(struct task_struct *task)
 {
@@ -70,6 +76,11 @@ static inline int remove_proc_subtree(const char *name, struct proc_dir_entry *p
 
 #endif /* CONFIG_PROC_FS */
 
+/* proc文件系统下创建目录(对外封装)
+ * @net     - 操作所在命名空间
+ * @name    - 所要创建的目录名(不带路径)
+ * @parent  - 上级proc目录结构（即父目录）
+ */
 static inline struct proc_dir_entry *proc_net_mkdir(
 	struct net *net, const char *name, struct proc_dir_entry *parent)
 {
