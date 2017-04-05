@@ -76,7 +76,7 @@
 #define	ENETRESET	102	/* Network dropped connection because of reset */
 #define	ECONNABORTED	103	/* Software caused connection abort */
 #define	ECONNRESET	104	/* Connection reset by peer */
-#define	ENOBUFS		105	/* No buffer space available */
+#define	ENOBUFS		105	/* No buffer space available 通常就是申请空间失败*/
 #define	EISCONN		106	/* Transport endpoint is already connected */
 #define	ENOTCONN	107	/* Transport endpoint is not connected */
 #define	ESHUTDOWN	108	/* Cannot send after transport endpoint shutdown */

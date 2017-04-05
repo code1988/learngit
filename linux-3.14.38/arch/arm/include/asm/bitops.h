@@ -190,8 +190,8 @@ extern int _find_next_bit_be(const unsigned long *p, int size, int offset);
 #define set_bit(nr,p)			ATOMIC_BITOP(set_bit,nr,p)
 #define clear_bit(nr,p)			ATOMIC_BITOP(clear_bit,nr,p)
 #define change_bit(nr,p)		ATOMIC_BITOP(change_bit,nr,p)
-#define test_and_set_bit(nr,p)		ATOMIC_BITOP(test_and_set_bit,nr,p)
-#define test_and_clear_bit(nr,p)	ATOMIC_BITOP(test_and_clear_bit,nr,p)
+#define test_and_set_bit(nr,p)		ATOMIC_BITOP(test_and_set_bit,nr,p)     // 将变量*p的第nr位设置为1，并返回原来这一位的值
+#define test_and_clear_bit(nr,p)	ATOMIC_BITOP(test_and_clear_bit,nr,p)   // 将变量*p的第nr位设置为0，并返回原来这一位的值
 #define test_and_change_bit(nr,p)	ATOMIC_BITOP(test_and_change_bit,nr,p)
 
 #ifndef __ARMEB__

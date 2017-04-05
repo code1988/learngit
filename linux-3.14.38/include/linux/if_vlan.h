@@ -73,6 +73,7 @@ static inline struct vlan_ethhdr *vlan_eth_hdr(const struct sk_buff *skb)
 /* found in socket.c */
 extern void vlan_ioctl_set(int (*hook)(struct net *, void __user *));
 
+// 检查是否是vlan设备
 static inline bool is_vlan_dev(struct net_device *dev)
 {
         return dev->priv_flags & IFF_802_1Q_VLAN;
@@ -128,6 +129,7 @@ struct netpoll;
 
 /**
  *	struct vlan_dev_priv - VLAN private device data
+ *	定义了vlan设备附属的私有空间结构
  *	@nr_ingress_mappings: number of ingress priority mappings
  *	@ingress_priority_map: ingress priority mappings
  *	@nr_egress_mappings: number of egress priority mappings
@@ -146,12 +148,12 @@ struct vlan_dev_priv {
 	unsigned int				nr_egress_mappings;
 	struct vlan_priority_tci_mapping	*egress_priority_map[16];
 
-	__be16					vlan_proto;
-	u16					vlan_id;
+	__be16					vlan_proto; // vlan协议类型ID(大端)
+	u16					vlan_id;        // vlan id
 	u16					flags;
 
-	struct net_device			*real_dev;
-	unsigned char				real_dev_addr[ETH_ALEN];
+	struct net_device			*real_dev;  // 宿主设备
+	unsigned char				real_dev_addr[ETH_ALEN];    // 宿主设备mac
 
 	struct proc_dir_entry			*dent;
 	struct vlan_pcpu_stats __percpu		*vlan_pcpu_stats;
@@ -161,6 +163,7 @@ struct vlan_dev_priv {
 	unsigned int				nest_level;
 };
 
+// 获取vlan设备附属的私有空间
 static inline struct vlan_dev_priv *vlan_dev_priv(const struct net_device *dev)
 {
 	return netdev_priv(dev);

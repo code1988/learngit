@@ -12,26 +12,32 @@
 #define VLAN_GROUP_ARRAY_SPLIT_PARTS  8
 #define VLAN_GROUP_ARRAY_PART_LEN     (VLAN_N_VID/VLAN_GROUP_ARRAY_SPLIT_PARTS)
 
+// vlan协议序号定义(这里仅用于在vlan组中进行索引)
 enum vlan_protos {
 	VLAN_PROTO_8021Q	= 0,
 	VLAN_PROTO_8021AD,
 	VLAN_PROTO_NUM,
 };
 
+/* 定义同一个宿主设备下的vlan组模型
+ * 存储的vlan设备呈现四维结构：VLAN_PROTO_NUM * VLAN_GROUP_ARRAY_SPLIT_PARTS * VLAN_GROUP_ARRAY_PART_LEN * struct net_device指针
+ */
 struct vlan_group {
-	unsigned int		nr_vlan_devs;
+	unsigned int		nr_vlan_devs;   // 记录了该vlan组中包含的vlan数量
 	struct hlist_node	hlist;	/* linked list */
 	struct net_device **vlan_devices_arrays[VLAN_PROTO_NUM]
-					       [VLAN_GROUP_ARRAY_SPLIT_PARTS];
+					       [VLAN_GROUP_ARRAY_SPLIT_PARTS];  // 记录了该vlan组中包含的所有vlan设备
 };
 
+// 定义一个记录vlan设备信息的结构，保存了一个宿主设备上绑定的所有vlan设备的信息
 struct vlan_info {
 	struct net_device	*real_dev; /* The ethernet(like) device
 					    * the vlan is attached to.
+                        * 宿主设备
 					    */
-	struct vlan_group	grp;
-	struct list_head	vid_list;
-	unsigned int		nr_vids;
+	struct vlan_group	grp;        // vlan组，记录了所有绑定了的vlan设备
+	struct list_head	vid_list;   // vlan id的链表头
+	unsigned int		nr_vids;    // 记录了该vlan id链表中节点数量
 	struct rcu_head		rcu;
 };
 
@@ -78,7 +84,9 @@ static inline void vlan_group_set_device(struct vlan_group *vg,
 	array[vlan_id % VLAN_GROUP_ARRAY_PART_LEN] = dev;
 }
 
-/* Must be invoked with rcu_read_lock or with RTNL. */
+/* Must be invoked with rcu_read_lock or with RTNL. 
+ * 检查相同vlan id的vlan设备是否已经在该宿主设备上存在
+ * */
 static inline struct net_device *vlan_find_dev(struct net_device *real_dev,
 					       __be16 vlan_proto, u16 vlan_id)
 {

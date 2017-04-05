@@ -301,6 +301,7 @@ static void dev_watchdog_down(struct net_device *dev)
 
 /**
  *	netif_carrier_on - set carrier
+ *	通知内核链路完整
  *	@dev: network device
  *
  * Device has detected that carrier.
@@ -319,6 +320,7 @@ EXPORT_SYMBOL(netif_carrier_on);
 
 /**
  *	netif_carrier_off - clear carrier
+ *	通知内核链路断开
  *	@dev: network device
  *
  * Device has detected loss of carrier.

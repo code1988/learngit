@@ -130,6 +130,7 @@ static void vlan_info_rcu_free(struct rcu_head *rcu)
 	vlan_info_free(container_of(rcu, struct vlan_info, rcu));
 }
 
+// 为宿主设备dev创建一个vlan_info管理块
 static struct vlan_info *vlan_info_alloc(struct net_device *dev)
 {
 	struct vlan_info *vlan_info;
@@ -143,13 +144,15 @@ static struct vlan_info *vlan_info_alloc(struct net_device *dev)
 	return vlan_info;
 }
 
+// 定义一个记录vlan id信息的节点结构
 struct vlan_vid_info {
 	struct list_head list;
-	__be16 proto;
-	u16 vid;
-	int refcount;
+	__be16 proto;   // 使用的vlan类型ID
+	u16 vid;        // vlan id
+	int refcount;   // 对该节点的引用计数
 };
 
+// 检查该vlan设备是否具有过滤vlan TAG的能力
 static bool vlan_hw_filter_capable(const struct net_device *dev,
 				     const struct vlan_vid_info *vid_info)
 {
@@ -162,6 +165,7 @@ static bool vlan_hw_filter_capable(const struct net_device *dev,
 	return false;
 }
 
+// 遍历记录了所有vlan id的链表，根据指定vlan id和vlan类型ID索引对应的节点
 static struct vlan_vid_info *vlan_vid_info_get(struct vlan_info *vlan_info,
 					       __be16 proto, u16 vid)
 {
@@ -174,6 +178,7 @@ static struct vlan_vid_info *vlan_vid_info_get(struct vlan_info *vlan_info,
 	return NULL;
 }
 
+// 创建一个vlan_vid_info节点
 static struct vlan_vid_info *vlan_vid_info_alloc(__be16 proto, u16 vid)
 {
 	struct vlan_vid_info *vid_info;
@@ -187,6 +192,7 @@ static struct vlan_vid_info *vlan_vid_info_alloc(__be16 proto, u16 vid)
 	return vid_info;
 }
 
+// 创建一个vlan_vid_info节点并插入到管理vlan id信息的链表中
 static int __vlan_vid_add(struct vlan_info *vlan_info, __be16 proto, u16 vid,
 			  struct vlan_vid_info **pvid_info)
 {
@@ -199,6 +205,7 @@ static int __vlan_vid_add(struct vlan_info *vlan_info, __be16 proto, u16 vid,
 	if (!vid_info)
 		return -ENOMEM;
 
+    // 检查该vlan设备是否具有过滤vlan TAG的能力
 	if (vlan_hw_filter_capable(dev, vid_info)) {
 		err =  ops->ndo_vlan_rx_add_vid(dev, proto, vid);
 		if (err) {
@@ -212,6 +219,7 @@ static int __vlan_vid_add(struct vlan_info *vlan_info, __be16 proto, u16 vid,
 	return 0;
 }
 
+// 将指定vlan协议ID的vlan id添加到宿主设备的vlan_info管理块中
 int vlan_vid_add(struct net_device *dev, __be16 proto, u16 vid)
 {
 	struct vlan_info *vlan_info;
@@ -221,21 +229,30 @@ int vlan_vid_add(struct net_device *dev, __be16 proto, u16 vid)
 
 	ASSERT_RTNL();
 
+    // 获取宿主设备的vlan_info管理块
 	vlan_info = rtnl_dereference(dev->vlan_info);
+
+    // 如果宿主设备dev还不存在vlan_info，则创建一个
 	if (!vlan_info) {
 		vlan_info = vlan_info_alloc(dev);
 		if (!vlan_info)
 			return -ENOMEM;
 		vlan_info_created = true;
 	}
+    // 根据vlan协议ID和vlan id查找对应的vlan_vid_info节点
 	vid_info = vlan_vid_info_get(vlan_info, proto, vid);
+    
+    // 如果管理vlan id信息的链表中还不存在匹配的节点，则创建一个
 	if (!vid_info) {
 		err = __vlan_vid_add(vlan_info, proto, vid, &vid_info);
 		if (err)
 			goto out_free_vlan_info;
 	}
+
+    // 将匹配的vlan id节点引用计数加1
 	vid_info->refcount++;
 
+    // 如果vlan_info管理块是新创建的，则需要跟所属的宿主设备进行关联
 	if (vlan_info_created)
 		rcu_assign_pointer(dev->vlan_info, vlan_info);
 

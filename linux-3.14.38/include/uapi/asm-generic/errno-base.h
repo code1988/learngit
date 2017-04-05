@@ -18,7 +18,7 @@
 #define	EFAULT		14	/* Bad address 用户空间数据的地址有效性检查没通过*/
 #define	ENOTBLK		15	/* Block device required */
 #define	EBUSY		16	/* Device or resource busy */
-#define	EEXIST		17	/* File exists */
+#define	EEXIST		17	/* File exists 需要创建的文件/设备已经存在 */
 #define	EXDEV		18	/* Cross-device link */
 #define	ENODEV		19	/* No such device 没查找到实际对应的设备管理块(struct net_device)*/
 #define	ENOTDIR		20	/* Not a directory */
@@ -35,6 +35,6 @@
 #define	EMLINK		31	/* Too many links */
 #define	EPIPE		32	/* Broken pipe */
 #define	EDOM		33	/* Math argument out of domain of func */
-#define	ERANGE		34	/* Math result not representable */
+#define	ERANGE		34	/* Math result not representable 参数值的范围超出阈值*/
 
 #endif

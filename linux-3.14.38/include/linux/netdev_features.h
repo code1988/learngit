@@ -1,5 +1,6 @@
 /*
  * Network device features.
+ * 用来设置struct net_device中的features成员，表示该网络设备支持的功能列表
  *
  *
  * This program is free software; you can redistribute it and/or
@@ -24,8 +25,8 @@ enum {
 	NETIF_F_FRAGLIST_BIT,		/* Scatter/gather IO. */
 	NETIF_F_HW_VLAN_CTAG_TX_BIT,	/* Transmit VLAN CTAG HW acceleration */
 	NETIF_F_HW_VLAN_CTAG_RX_BIT,	/* Receive VLAN CTAG HW acceleration */
-	NETIF_F_HW_VLAN_CTAG_FILTER_BIT,/* Receive filtering on VLAN CTAGs */
-	NETIF_F_VLAN_CHALLENGED_BIT,	/* Device cannot handle VLAN packets */
+	NETIF_F_HW_VLAN_CTAG_FILTER_BIT,/* Receive filtering on VLAN CTAGs 置位了该标志就意味着该网络设备接收数据时支持对802.1q vlan tag的过滤功能*/
+	NETIF_F_VLAN_CHALLENGED_BIT,	/* Device cannot handle VLAN packets 置位了该标志就意味着该网络设备不支持vlan协议*/
 	NETIF_F_GSO_BIT,		/* Enable software GSO. */
 	NETIF_F_LLTX_BIT,		/* LockLess TX - deprecated. Please */
 					/* do not use LLTX in new drivers */
@@ -61,7 +62,7 @@ enum {
 	NETIF_F_RXALL_BIT,		/* Receive errored frames too */
 	NETIF_F_HW_VLAN_STAG_TX_BIT,	/* Transmit VLAN STAG HW acceleration */
 	NETIF_F_HW_VLAN_STAG_RX_BIT,	/* Receive VLAN STAG HW acceleration */
-	NETIF_F_HW_VLAN_STAG_FILTER_BIT,/* Receive filtering on VLAN STAGs */
+	NETIF_F_HW_VLAN_STAG_FILTER_BIT,/* Receive filtering on VLAN STAGs 置位了该标志就意味着该网络设备接收数据时支持对802.1ad QinQ vlan tag的过滤功能*/
 	NETIF_F_HW_L2FW_DOFFLOAD_BIT,	/* Allow L2 Forwarding in Hardware */
 
 	/*

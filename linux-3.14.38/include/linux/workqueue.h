@@ -1,5 +1,6 @@
 /*
  * workqueue.h --- work queue handling for Linux.
+ * 工作队列操作接口
  */
 
 #ifndef _LINUX_WORKQUEUE_H
@@ -172,6 +173,7 @@ struct execute_work {
 #define DECLARE_WORK(n, f)						\
 	struct work_struct n = __WORK_INITIALIZER(n, f)
 
+// 定义并初始化一个延迟工作队列n
 #define DECLARE_DELAYED_WORK(n, f)					\
 	struct delayed_work n = __DELAYED_WORK_INITIALIZER(n, f, 0)
 

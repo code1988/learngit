@@ -44,13 +44,14 @@
 
 /* Global VLAN variables */
 
-int vlan_net_id __read_mostly;  // 用于记录vlan模块在所有网络命名空间中的ID号（初始化注册时分配）
+int vlan_net_id __read_mostly;  // 用于记录vlan模块在所有网络命名空间中的ID号（注册到网络命名空间时分配）
 
 const char vlan_fullname[] = "802.1Q VLAN Support";
 const char vlan_version[] = DRV_VERSION;
 
 /* End of global variables definitions. */
 
+// 对四维结构的vlan组模型在第三维度上进行预分配
 static int vlan_group_prealloc_vid(struct vlan_group *vg,
 				   __be16 vlan_proto, u16 vlan_id)
 {
@@ -60,12 +61,16 @@ static int vlan_group_prealloc_vid(struct vlan_group *vg,
 
 	ASSERT_RTNL();
 
+    // 根据vlan协议序号和vlan id序号，索引对应的二维数组元素
 	pidx  = vlan_proto_idx(vlan_proto);
 	vidx  = vlan_id / VLAN_GROUP_ARRAY_PART_LEN;
 	array = vg->vlan_devices_arrays[pidx][vidx];
+    // 每个二维数组元素又被看作是一个指针数组，数组的元素是指向每个vlan设备的指针
+    // 如果对应的二维数组元素存在，也就是已经做过第三维度的预分配，所以直接返回
 	if (array != NULL)
 		return 0;
 
+    // 程序运行到这里意味着对应的第三维度还未存在，则申请一个包含VLAN_GROUP_ARRAY_PART_LEN个元素的指针数组
 	size = sizeof(struct net_device *) * VLAN_GROUP_ARRAY_PART_LEN;
 	array = kzalloc(size, GFP_KERNEL);
 	if (array == NULL)
@@ -122,16 +127,19 @@ void unregister_vlan_dev(struct net_device *dev, struct list_head *head)
 	dev_put(real_dev);
 }
 
+// 检查宿主设备是否支持vlan协议以及要创建的vlan id在该设备上是否已经存在
 int vlan_check_real_dev(struct net_device *real_dev,
 			__be16 protocol, u16 vlan_id)
 {
 	const char *name = real_dev->name;
 
+    // 检查该宿主设备的功能列表中是否支持vlan协议
 	if (real_dev->features & NETIF_F_VLAN_CHALLENGED) {
 		pr_info("VLANs not supported on %s\n", name);
 		return -EOPNOTSUPP;
 	}
 
+    // 检查相同vlan id的vlan设备是否已经在该宿主设备上存在
 	if (vlan_find_dev(real_dev, protocol, vlan_id) != NULL)
 		return -EEXIST;
 
@@ -140,22 +148,25 @@ int vlan_check_real_dev(struct net_device *real_dev,
 
 int register_vlan_dev(struct net_device *dev)
 {
-	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
-	struct net_device *real_dev = vlan->real_dev;
-	u16 vlan_id = vlan->vlan_id;
+	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);    // 获取vlan设备附属的私有空间
+	struct net_device *real_dev = vlan->real_dev;       // 获取宿主设备 
+	u16 vlan_id = vlan->vlan_id;    // 获取vlan id
 	struct vlan_info *vlan_info;
 	struct vlan_group *grp;
 	int err;
 
+    // 将指定vlan协议ID的vlan id添加到宿主设备的vlan_info管理块中
 	err = vlan_vid_add(real_dev, vlan->vlan_proto, vlan_id);
 	if (err)
 		return err;
 
+    // 确保程序运行到这里时宿主设备的vlan_info成员不再为空
 	vlan_info = rtnl_dereference(real_dev->vlan_info);
 	/* vlan_info should be there now. vlan_vid_add took care of it */
 	BUG_ON(!vlan_info);
 
 	grp = &vlan_info->grp;
+    // 该宿主设备第一次绑定vlan设备时，需要初始化gvrp和mvrp功能(如果使能了这两个功能)
 	if (grp->nr_vlan_devs == 0) {
 		err = vlan_gvrp_init_applicant(real_dev);
 		if (err < 0)
@@ -165,23 +176,31 @@ int register_vlan_dev(struct net_device *dev)
 			goto out_uninit_gvrp;
 	}
 
+    // 对四维结构的vlan组模型在第三维度上进行预分配
 	err = vlan_group_prealloc_vid(grp, vlan->vlan_proto, vlan_id);
 	if (err < 0)
 		goto out_uninit_mvrp;
 
+    // 设置该vlan设备的嵌套级别
 	vlan->nest_level = dev_get_nest_level(real_dev, is_vlan_dev) + 1;
+    // 注册该网络设备到内核中，注册结果会从通知链中反馈
 	err = register_netdevice(dev);
 	if (err < 0)
 		goto out_uninit_mvrp;
 
+    // 将vlan设备加入宿主设备的upper邻接链表中
 	err = netdev_upper_dev_link(real_dev, dev);
 	if (err)
 		goto out_unregister_netdev;
 
-	/* Account for reference in struct vlan_dev_priv */
+	/* Account for reference in struct vlan_dev_priv 
+     * 宿主设备的引用计数加1
+     * */
 	dev_hold(real_dev);
 
+    // 从宿主设备继承一些状态
 	netif_stacked_transfer_operstate(real_dev, dev);
+    // 将vlan设备加入lweventlist通知链
 	linkwatch_fire_event(dev); /* _MUST_ call rfc2863_policy() */
 
 	/* So, got the sucker initialized, now lets place
@@ -207,7 +226,7 @@ out_vid_del:
 
 /*  Attach a VLAN device to a mac address (ie Ethernet Card).
  *  注册一个新的vlan设备
- *  @real_dev   - 宿主设备
+ *  @real_dev   - 宿主设备(一般就是真实的网卡，但对交换机来说，可能是DSA中创建的虚拟端口)
  *  @vlan_id    - 要创建的vlan设备的ID号
  *  Returns 0 if the device was created or a negative error code otherwise.
  */
@@ -216,18 +235,23 @@ static int register_vlan_device(struct net_device *real_dev, u16 vlan_id)
 	struct net_device *new_dev;
 	struct vlan_dev_priv *vlan;
 	struct net *net = dev_net(real_dev);
+    // 根据vlan_net_id在该网络命名空间下索引对应的私有数据块，也就是vlan_net
 	struct vlan_net *vn = net_generic(net, vlan_net_id);
 	char name[IFNAMSIZ];
 	int err;
 
+    // vlan id号不能超过4096
 	if (vlan_id >= VLAN_VID_MASK)
 		return -ERANGE;
 
+    // 检查宿主设备是否支持vlan协议以及要创建的vlan id在该设备上是否已经存在
 	err = vlan_check_real_dev(real_dev, htons(ETH_P_8021Q), vlan_id);
 	if (err < 0)
 		return err;
 
-	/* Gotta set up the fields for the device. */
+	/* Gotta set up the fields for the device. 
+     * 根据vlan设备在用户层不同的显示风格生成相应的vlan设备名
+     * */
 	switch (vn->name_type) {
 	case VLAN_NAME_TYPE_RAW_PLUS_VID:
 		/* name will look like:	 eth1.0005 */
@@ -253,26 +277,29 @@ static int register_vlan_device(struct net_device *real_dev, u16 vlan_id)
 		snprintf(name, IFNAMSIZ, "vlan%.4i", vlan_id);
 	}
 
+    // 创建一个vlan设备，并执行基本的初始化
 	new_dev = alloc_netdev(sizeof(struct vlan_dev_priv), name, vlan_setup);
 
 	if (new_dev == NULL)
 		return -ENOBUFS;
 
+    // 将新创建的vlan设备关联到当前的网络命名空间
 	dev_net_set(new_dev, net);
 	/* need 4 bytes for extra VLAN header info,
 	 * hope the underlying device can handle it.
 	 */
-	new_dev->mtu = real_dev->mtu;
-	new_dev->priv_flags |= (real_dev->priv_flags & IFF_UNICAST_FLT);
+	new_dev->mtu = real_dev->mtu;   // 将宿主设备的mtu继承到vlan设备
+	new_dev->priv_flags |= (real_dev->priv_flags & IFF_UNICAST_FLT);    // 如果宿主设备支持单播过滤功能，则同样继承到vlan设备
 
+    // 获取vlan设备附属的私有空间，初始化其中的成员
 	vlan = vlan_dev_priv(new_dev);
-	vlan->vlan_proto = htons(ETH_P_8021Q);
-	vlan->vlan_id = vlan_id;
-	vlan->real_dev = real_dev;
-	vlan->dent = NULL;
+	vlan->vlan_proto = htons(ETH_P_8021Q);  // 记录vlan类型ID号
+	vlan->vlan_id = vlan_id;                // 记录vlan id
+	vlan->real_dev = real_dev;              // 记录宿主设备
+	vlan->dent = NULL;                      // 清除在proc文件系统中的入口
 	vlan->flags = VLAN_FLAG_REORDER_HDR;
 
-	new_dev->rtnl_link_ops = &vlan_link_ops;
+	new_dev->rtnl_link_ops = &vlan_link_ops;// 注册rtnetlink接口管理该vlan设备的回调函数集
 	err = register_vlan_dev(new_dev);
 	if (err < 0)
 		goto out_free_newdev;

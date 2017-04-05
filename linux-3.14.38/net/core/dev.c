@@ -4448,11 +4448,12 @@ softnet_break:
 	goto out;
 }
 
+// 定义网络设备的邻接表节点
 struct netdev_adjacent {
-	struct net_device *dev;
+	struct net_device *dev; // 指向该节点对应的网络设备
 
 	/* upper master flag, there can only be one master device per list */
-	bool master;
+	bool master;            // 每个顶点链表中只允许存在一个master设备(通常就是net_device中每条邻接链表头节点后的那个节点)
 
 	/* counter for the number of times this device was added to us */
 	u16 ref_nr;
@@ -4511,6 +4512,7 @@ static bool netdev_has_any_upper_dev(struct net_device *dev)
 
 /**
  * netdev_master_upper_dev_get - Get master upper device
+ * 获取upper设备邻接链表的master节点
  * @dev: device
  *
  * Find a master upper device and return pointer to it or NULL in case
@@ -4904,10 +4906,11 @@ static int __netdev_upper_dev_link(struct net_device *dev,
 	if (dev == upper_dev)
 		return -EBUSY;
 
-	/* To prevent loops, check if dev is not upper device to upper_dev. */
+	/* To prevent loops, check if dev is not upper device to upper_dev. 
+     * 为了避免陷入循环，这里检查的目的是确保upper_dev和dev各自的upper邻接链表中不存在彼此;
+     * */
 	if (__netdev_find_adj(upper_dev, dev, &upper_dev->all_adj_list.upper))
 		return -EBUSY;
-
 	if (__netdev_find_adj(dev, upper_dev, &dev->all_adj_list.upper))
 		return -EEXIST;
 
@@ -4995,6 +4998,7 @@ rollback_mesh:
 
 /**
  * netdev_upper_dev_link - Add a link to the upper device
+ * 将upper_dev加入dev的upper邻接链表中
  * @dev: device
  * @upper_dev: new upper device
  *
@@ -5163,7 +5167,7 @@ void *netdev_lower_dev_get_private(struct net_device *dev,
 }
 EXPORT_SYMBOL(netdev_lower_dev_get_private);
 
-
+// 递归获取该网络设备的嵌套级别
 int dev_get_nest_level(struct net_device *dev,
 		       bool (*type_check)(struct net_device *dev))
 {
@@ -5883,6 +5887,7 @@ EXPORT_SYMBOL(netdev_change_features);
 
 /**
  *	netif_stacked_transfer_operstate -	transfer operstate
+ *	状态继承
  *	@rootdev: the root or lower level device to transfer state from
  *	@dev: the device to transfer operstate to
  *
@@ -5893,11 +5898,13 @@ EXPORT_SYMBOL(netdev_change_features);
 void netif_stacked_transfer_operstate(const struct net_device *rootdev,
 					struct net_device *dev)
 {
+    // 从源设备继承operstate状态
 	if (rootdev->operstate == IF_OPER_DORMANT)
 		netif_dormant_on(dev);
 	else
 		netif_dormant_off(dev);
 
+    // 从源设备继承链路状态
 	if (netif_carrier_ok(rootdev)) {
 		if (!netif_carrier_ok(dev))
 			netif_carrier_on(dev);
@@ -5974,6 +5981,7 @@ static int netif_alloc_netdev_queues(struct net_device *dev)
 
 /**
  *	register_netdevice	- register a network device
+ *	注册该网络设备到内核中
  *	@dev: device to register
  *
  *	Take a completed network device structure and add it to the kernel
@@ -6428,12 +6436,12 @@ void netdev_freemem(struct net_device *dev)
 
 /**
  *	alloc_netdev_mqs - allocate network device
- *	@sizeof_priv:	size of private data to allocate space for
- *	@name:		device name format string
- *	@setup:		callback to initialize device
+ *	创建一个网络设备以及附属的私有空间，并完成基本初始化操作
+ *	@sizeof_priv:	size of private data to allocate space for 该网络设备附属的私有空间大小
+ *	@name:		device name format string 设备名
+ *	@setup:		callback to initialize device 设备创建后的初始化回调函数
  *	@txqs:		the number of TX subqueues to allocate
  *	@rxqs:		the number of RX subqueues to allocate
- *	创建一个网络设备
  *
  *	Allocates a struct net_device with private data area for driver use
  *	and performs basic initialization.  Also allocates subqueue structs
@@ -6503,6 +6511,7 @@ struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
 	INIT_LIST_HEAD(&dev->all_adj_list.upper);
 	INIT_LIST_HEAD(&dev->all_adj_list.lower);
 	dev->priv_flags = IFF_XMIT_DST_RELEASE;
+    // 调用传入的初始化回调函数，对新创建的网络设备执行基本的初始化
 	setup(dev);
 
 	dev->num_tx_queues = txqs;

@@ -803,17 +803,19 @@ static void vlan_dev_free(struct net_device *dev)
 	free_netdev(dev);
 }
 
+// vlan设备初始化回调函数
 void vlan_setup(struct net_device *dev)
 {
+    // 为vlan设备设置一些链路层基本参数
 	ether_setup(dev);
 
-	dev->priv_flags		|= IFF_802_1Q_VLAN;
+	dev->priv_flags		|= IFF_802_1Q_VLAN; // 表明这是一个vlan设备
 	dev->priv_flags		&= ~(IFF_XMIT_DST_RELEASE | IFF_TX_SKB_SHARING);
 	dev->tx_queue_len	= 0;
 
-	dev->netdev_ops		= &vlan_netdev_ops;
-	dev->destructor		= vlan_dev_free;
-	dev->ethtool_ops	= &vlan_ethtool_ops;
+	dev->netdev_ops		= &vlan_netdev_ops;     // 注册vlan设备管理操作回调函数集
+	dev->destructor		= vlan_dev_free;        // 注册vlan设备注销回调函数
+	dev->ethtool_ops	= &vlan_ethtool_ops;    // 注册使用ethtool工具操作vlan设备的回调函数集
 
-	memset(dev->broadcast, 0, ETH_ALEN);
+	memset(dev->broadcast, 0, ETH_ALEN);        // 清零广播mac
 }

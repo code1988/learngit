@@ -1,5 +1,6 @@
 /*
  * Linux network device link state notification
+ * 网络设备link状态通知操作接口
  *
  * Author:
  *     Stefan Rompf <sux@loplof.de>
@@ -32,10 +33,10 @@ static unsigned long linkwatch_flags;
 static unsigned long linkwatch_nextevent;
 
 static void linkwatch_event(struct work_struct *dummy);
-static DECLARE_DELAYED_WORK(linkwatch_work, linkwatch_event);
+static DECLARE_DELAYED_WORK(linkwatch_work, linkwatch_event);   // 创建并初始化一个延迟工作队列linkwatch_work
 
-static LIST_HEAD(lweventlist);
-static DEFINE_SPINLOCK(lweventlist_lock);
+static LIST_HEAD(lweventlist);      // 创建并初始化一个lweventlist通知链表头
+static DEFINE_SPINLOCK(lweventlist_lock);   // 创建并初始化一个linkwatch事件的原子锁
 
 static unsigned char default_operstate(const struct net_device *dev)
 {
@@ -83,22 +84,25 @@ void linkwatch_init_dev(struct net_device *dev)
 		rfc2863_policy(dev);
 }
 
-
+// 对该网络设备进行一些状态参数检查
 static bool linkwatch_urgent_event(struct net_device *dev)
 {
+    // 检查该网络设备是否处于up状态
 	if (!netif_running(dev))
 		return false;
 
+    // 检查设备标识符ifindex和iflink是否相等
 	if (dev->ifindex != dev->iflink)
 		return true;
 
+    // 检查该设备是否设置了IFF_TEAM_PORT标志
 	if (dev->priv_flags & IFF_TEAM_PORT)
 		return true;
 
 	return netif_carrier_ok(dev) &&	qdisc_tx_changing(dev);
 }
 
-
+// 将该网络设备添加进lweventlist通知链
 static void linkwatch_add_event(struct net_device *dev)
 {
 	unsigned long flags;
@@ -230,7 +234,7 @@ void linkwatch_run_queue(void)
 	__linkwatch_run_queue(0);
 }
 
-
+// 延迟工作队列linkwatch_work的执行函数
 static void linkwatch_event(struct work_struct *dummy)
 {
 	rtnl_lock();
@@ -241,13 +245,18 @@ static void linkwatch_event(struct work_struct *dummy)
 
 void linkwatch_fire_event(struct net_device *dev)
 {
+    // 首先对该网络设备进行一些状态参数检查
 	bool urgent = linkwatch_urgent_event(dev);
 
+    // 置位该网络设备的__LINK_STATE_LINKWATCH_PENDING标志，并判断原先的状态
 	if (!test_and_set_bit(__LINK_STATE_LINKWATCH_PENDING, &dev->state)) {
+        // 对于原先该标志没有置位的情况，则将该设备添加进lweventlist通知链
 		linkwatch_add_event(dev);
 	} else if (!urgent)
+        // 对于原先已经置位的情况，意味着通知链中已经添加，所以直接返回
 		return;
 
+    // 执行通知链调度
 	linkwatch_schedule_work(urgent);
 }
 EXPORT_SYMBOL(linkwatch_fire_event);

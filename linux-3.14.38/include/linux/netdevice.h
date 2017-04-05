@@ -280,10 +280,10 @@ struct header_ops {
  */
 
 enum netdev_state_t {
-	__LINK_STATE_START,
+	__LINK_STATE_START,         // 标识网络设备是否up
 	__LINK_STATE_PRESENT,
-	__LINK_STATE_NOCARRIER,
-	__LINK_STATE_LINKWATCH_PENDING,
+	__LINK_STATE_NOCARRIER,     // 标识网络设备链路上是否有载波
+	__LINK_STATE_LINKWATCH_PENDING, // 标识link监视是否处于等待状态
 	__LINK_STATE_DORMANT,
 };
 
@@ -1153,7 +1153,7 @@ struct net_device_ops {
  *	Actually, this whole structure is a big mistake.  It mixes I/O
  *	data with strictly "high-level" data, and it has to know about
  *	almost every data structure used in the INET module.
- *	网络设备管理块结构
+ *	通用网络设备管理块结构
  *
  *  备注：这个结构有一个待优化的地方
  *	FIXME: cleanup struct net_device such that network protocol info
@@ -1166,6 +1166,7 @@ struct net_device {
 	 * This is the first field of the "visible" part of this structure
 	 * (i.e. as seen by users in the "Space.c" file).  It is the name
 	 * of the interface.
+     * 网络设备名
 	 */
 	char			name[IFNAMSIZ];
 
@@ -1189,7 +1190,7 @@ struct net_device {
 	 *	part of the usual set specified in Space.c.
 	 */
 
-	unsigned long		state;
+	unsigned long		state;          // 通常是由netdev_state_t定义
 
 	struct list_head	dev_list;
 	struct list_head	napi_list;
@@ -1200,13 +1201,13 @@ struct net_device {
 	struct {
 		struct list_head upper;
 		struct list_head lower;
-	} adj_list;
+	} adj_list;         // 定义了upper和lower两条邻接链表头节点(只包含直连设备)
 
 	/* all linked devices, *including* neighbours */
 	struct {
 		struct list_head upper;
 		struct list_head lower;
-	} all_adj_list;
+	} all_adj_list;     // 定义了upper和lower两条邻接链表头节点(包含全部设备)
 
 
 	/* currently active device features */
@@ -1227,8 +1228,8 @@ struct net_device {
 	netdev_features_t	mpls_features;
 
 	/* Interface index. Unique device identifier	*/
-	int			ifindex;
-	int			iflink;
+	int			ifindex;        // 该网络设备的索引号，用来唯一标识该设备
+	int			iflink;         // 用于标识虚拟网络设备对应的真实设备
 
 	struct net_device_stats	stats;
 	atomic_long_t		rx_dropped; /* dropped packets by core network
@@ -1243,8 +1244,8 @@ struct net_device {
 	struct iw_public_data *	wireless_data;
 #endif
 	/* Management operations */
-	const struct net_device_ops *netdev_ops;
-	const struct ethtool_ops *ethtool_ops;
+	const struct net_device_ops *netdev_ops;    // 对该网络设备进行通用管理操作的回调函数集
+	const struct ethtool_ops *ethtool_ops;      // 使用ethtool工具进行管理操作的回调函数集
 	const struct forwarding_accel_ops *fwd_ops;
 
 	/* Hardware header description */
@@ -1252,11 +1253,13 @@ struct net_device {
 
 	unsigned int		flags;	/* interface flags (a la BSD)	*/
 	unsigned int		priv_flags; /* Like 'flags' but invisible to userspace.
-					     * See if.h for definitions. */
+					     * See if.h for definitions. 
+                         * 记录了仅内核可见的标志位集合
+                         * */
 	unsigned short		gflags;
 	unsigned short		padded;	/* How much padding added by alloc_netdev() */
 
-	unsigned char		operstate; /* RFC2863 operstate */
+	unsigned char		operstate; /* RFC2863 operstate 设备的可操作状态*/
 	unsigned char		link_mode; /* mapping policy to operstate */
 
 	unsigned char		if_port;	/* Selectable AUI, TP,..*/
@@ -1300,7 +1303,7 @@ struct net_device {
 	/* Protocol specific pointers */
 
 #if IS_ENABLED(CONFIG_VLAN_8021Q)
-	struct vlan_info __rcu	*vlan_info;	/* VLAN info */
+	struct vlan_info __rcu	*vlan_info;	/* VLAN info 绑定在该网络设备上的所有vlan设备信息管理块*/
 #endif
 #if IS_ENABLED(CONFIG_NET_DSA)
 	struct dsa_switch_tree	*dsa_ptr;	/* dsa specific data */
@@ -1348,7 +1351,7 @@ struct net_device {
 	void __rcu		*rx_handler_data;
 
 	struct netdev_queue __rcu *ingress_queue;
-	unsigned char		broadcast[MAX_ADDR_LEN];	/* hw bcast add	*/
+	unsigned char		broadcast[MAX_ADDR_LEN];	/* hw bcast add	硬件广播地址(mac)*/
 
 
 /*
@@ -1390,7 +1393,7 @@ struct net_device {
 	struct timer_list	watchdog_timer;
 
 	/* Number of references to this device */
-	int __percpu		*pcpu_refcnt;
+	int __percpu		*pcpu_refcnt;   // 该设备的引用计数
 
 	/* delayed register/unregister */
 	struct list_head	todo_list;
@@ -1415,7 +1418,9 @@ struct net_device {
 		RTNL_LINK_INITIALIZING,
 	} rtnl_link_state:16;
 
-	/* Called from unregister, can be used to call free_netdev */
+	/* Called from unregister, can be used to call free_netdev 
+     * 设备注销用的回调函数
+     * */
 	void (*destructor)(struct net_device *dev);
 
 #ifdef CONFIG_NETPOLL
@@ -1424,7 +1429,7 @@ struct net_device {
 
 #ifdef CONFIG_NET_NS
 	/* Network namespace this network device is inside */
-	struct net		*nd_net;
+	struct net		*nd_net;    // 多网络命名空间下，该网络设备所属的网络命名空间
 #endif
 
 	/* mid-layer private */
@@ -1448,7 +1453,7 @@ struct net_device {
 	const struct attribute_group *sysfs_rx_queue_group;
 
 	/* rtnetlink link ops */
-	const struct rtnl_link_ops *rtnl_link_ops;
+	const struct rtnl_link_ops *rtnl_link_ops;  // 通过rtnetlink接口管理该网络设备的回调函数集
 
 	/* for setting kernel sock attribute on TCP connection setup */
 #define GSO_MAX_SIZE		65536
@@ -1568,6 +1573,10 @@ struct net *dev_net(const struct net_device *dev)
 	return read_pnet(&dev->nd_net);
 }
 
+/* 该函数的执行前提：多网络命名空间
+ *
+ * 关联指定网络命名空间和指定设备，同时更新该网络命名空间的关联设备计数值(开启了对应的调试开关)
+ */
 static inline
 void dev_net_set(struct net_device *dev, struct net *net)
 {
@@ -2305,6 +2314,7 @@ static inline u16 netdev_cap_txqueue(struct net_device *dev, u16 queue_index)
 
 /**
  *	netif_running - test if up
+ *	检查该网络设备是否up
  *	@dev: network device
  *
  *	Test if the device has been brought up.
@@ -2575,6 +2585,7 @@ static inline void dev_put(struct net_device *dev)
 
 /**
  *	dev_hold - get reference to device
+ *	该设备的引用计数加1
  *	@dev: network device
  *
  * Hold reference to device to keep it from being freed.
@@ -2599,6 +2610,7 @@ void linkwatch_forget_dev(struct net_device *dev);
 
 /**
  *	netif_carrier_ok - test if carrier present
+ *	检查设备当前的链路状态
  *	@dev: network device
  *
  * Check if carrier is present on device

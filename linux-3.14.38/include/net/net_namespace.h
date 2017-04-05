@@ -50,6 +50,7 @@ struct net {
 #ifdef NETNS_REFCNT_DEBUG
 	atomic_t		use_count;	/* To track references we
 						 * destroy on demand
+                         * 该命名空间下关联的网络设备数量
 						 */
 #endif
 	spinlock_t		rules_mod_lock;
@@ -233,7 +234,8 @@ int net_eq(const struct net *net1, const struct net *net2)
 #endif
 
 
-#ifdef NETNS_REFCNT_DEBUG
+#ifdef NETNS_REFCNT_DEBUG   // 网络命名空间的一个调试开关打开时
+// 将指定网络命名空间的关联设备计数值加1
 static inline struct net *hold_net(struct net *net)
 {
 	if (net)
@@ -241,6 +243,7 @@ static inline struct net *hold_net(struct net *net)
 	return net;
 }
 
+// 将指定网络命名空间的关联设备计数值减1
 static inline void release_net(struct net *net)
 {
 	if (net)
