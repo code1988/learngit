@@ -280,10 +280,10 @@ struct header_ops {
  */
 
 enum netdev_state_t {
-	__LINK_STATE_START,         // 标识网络设备是否up
-	__LINK_STATE_PRESENT,
-	__LINK_STATE_NOCARRIER,     // 标识网络设备链路上是否有载波
-	__LINK_STATE_LINKWATCH_PENDING, // 标识link监视是否处于等待状态
+	__LINK_STATE_START,         // 标识网络设备是否启用，该标志可被netif_running检测
+	__LINK_STATE_PRESENT,       // 标识网络设备是否可用？ 该标志可被netif_device_present检测
+	__LINK_STATE_NOCARRIER,     // 标识网络设备链路上是否有载波，该标志可被netif_carrier_ok检测
+	__LINK_STATE_LINKWATCH_PENDING, // 标识link监视是否处于等待状态，当设备链路状态改变时需要被置位
 	__LINK_STATE_DORMANT,
 };
 
@@ -2314,7 +2314,7 @@ static inline u16 netdev_cap_txqueue(struct net_device *dev, u16 queue_index)
 
 /**
  *	netif_running - test if up
- *	检查该网络设备是否up
+ *	检测该网络设备是否处于启用状态
  *	@dev: network device
  *
  *	Test if the device has been brought up.

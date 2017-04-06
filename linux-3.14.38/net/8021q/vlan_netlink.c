@@ -18,7 +18,7 @@
 #include <net/rtnetlink.h>
 #include "vlan.h"
 
-
+// 定义了一个网络接口链路中有关vlan部分的策略组
 static const struct nla_policy vlan_policy[IFLA_VLAN_MAX + 1] = {
 	[IFLA_VLAN_ID]		= { .type = NLA_U16 },
 	[IFLA_VLAN_FLAGS]	= { .len = sizeof(struct ifla_vlan_flags) },
@@ -39,6 +39,7 @@ static inline int vlan_validate_qos_map(struct nlattr *attr)
 	return nla_validate_nested(attr, IFLA_VLAN_QOS_MAX, vlan_map_policy);
 }
 
+// 验证用于vlan的netlink接口参数是否有效
 static int vlan_validate(struct nlattr *tb[], struct nlattr *data[])
 {
 	struct ifla_vlan_flags *flags;
@@ -87,6 +88,7 @@ static int vlan_validate(struct nlattr *tb[], struct nlattr *data[])
 	return 0;
 }
 
+// 对一个已经存在的vlan设备进行参数修改
 static int vlan_changelink(struct net_device *dev,
 			   struct nlattr *tb[], struct nlattr *data[])
 {
@@ -114,6 +116,7 @@ static int vlan_changelink(struct net_device *dev,
 	return 0;
 }
 
+// 配置并注册一个新的vlan设备
 static int vlan_newlink(struct net *src_net, struct net_device *dev,
 			struct nlattr *tb[], struct nlattr *data[])
 {
@@ -166,6 +169,7 @@ static inline size_t vlan_qos_map_size(unsigned int n)
 	       nla_total_size(sizeof(struct ifla_vlan_qos_mapping)) * n;
 }
 
+// 计算转储vlan设备netlink属性所需空间大小
 static size_t vlan_get_size(const struct net_device *dev)
 {
 	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
@@ -177,6 +181,7 @@ static size_t vlan_get_size(const struct net_device *dev)
 	       vlan_qos_map_size(vlan->nr_egress_mappings);
 }
 
+// 转储vlan设备的netlink属性
 static int vlan_fill_info(struct sk_buff *skb, const struct net_device *dev)
 {
 	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
@@ -257,11 +262,14 @@ struct rtnl_link_ops vlan_link_ops __read_mostly = {
 // 初始化操作vlan用的netlink接口
 int __init vlan_netlink_init(void)
 {
+    // 将定义好的vlan_link_ops注册到rtnetlink接口中
 	return rtnl_link_register(&vlan_link_ops);
 }
 
+// 注销操作vlan用的netlink接口
 void __exit vlan_netlink_fini(void)
 {
+    // 将vlan_link_ops从rtnetlink接口中注销
 	rtnl_link_unregister(&vlan_link_ops);
 }
 

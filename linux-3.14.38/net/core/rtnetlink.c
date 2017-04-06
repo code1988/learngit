@@ -294,8 +294,9 @@ void rtnl_unregister_all(int protocol)
 }
 EXPORT_SYMBOL_GPL(rtnl_unregister_all);
 
-static LIST_HEAD(link_ops);
+static LIST_HEAD(link_ops); // 创建并初始化一个link_ops链表头，用于管理所有已经注册的rtnl_link_ops
 
+// 遍历link_ops链表，根据标识符查找对应的rtnl_link_ops
 static const struct rtnl_link_ops *rtnl_link_ops_get(const char *kind)
 {
 	const struct rtnl_link_ops *ops;
@@ -314,17 +315,21 @@ static const struct rtnl_link_ops *rtnl_link_ops_get(const char *kind)
  * The caller must hold the rtnl_mutex. This function should be used
  * by drivers that create devices during module initialization. It
  * must be called before registering the devices.
+ * 备注： 本函数必须在具体的设备被创建之前执行，也就是应该在具体设备所属的功能模块初始化时被执行
  *
  * Returns 0 on success or a negative error code.
  */
 int __rtnl_link_register(struct rtnl_link_ops *ops)
 {
+    // 注册之前先要检查link_ops链表中是否已经存在相同的ops
 	if (rtnl_link_ops_get(ops->kind))
 		return -EEXIST;
 
+    // 如果没有自定义dellink函数，这里会设置缺省函数
 	if (!ops->dellink)
 		ops->dellink = unregister_netdevice_queue;
 
+    // 将ops插入link_ops链表
 	list_add_tail(&ops->list, &link_ops);
 	return 0;
 }
@@ -332,8 +337,10 @@ EXPORT_SYMBOL_GPL(__rtnl_link_register);
 
 /**
  * rtnl_link_register - Register rtnl_link_ops with rtnetlink.
+ * 将具体功能模块的rtnl_link_ops集合注册到rtnetlink中
  * @ops: struct rtnl_link_ops * to register
  *
+ * 备注： 实际就是插入link_ops链表
  * Returns 0 on success or a negative error code.
  */
 int rtnl_link_register(struct rtnl_link_ops *ops)

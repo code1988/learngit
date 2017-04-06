@@ -18,7 +18,7 @@
 #define	EFAULT		14	/* Bad address 用户空间数据的地址有效性检查没通过*/
 #define	ENOTBLK		15	/* Block device required */
 #define	EBUSY		16	/* Device or resource busy */
-#define	EEXIST		17	/* File exists 需要创建的文件/设备已经存在 */
+#define	EEXIST		17	/* File exists 需要创建的文件/设备等已经存在 */
 #define	EXDEV		18	/* Cross-device link */
 #define	ENODEV		19	/* No such device 没查找到实际对应的设备管理块(struct net_device)*/
 #define	ENOTDIR		20	/* Not a directory */

@@ -154,6 +154,7 @@
 
  /**
   * Standard attribute types to specify validation policy
+  * 标准netlink接口的属性类型枚举（实际不同的netlink协议会有自已一套属性类型枚举）
   */
 enum {
 	NLA_UNSPEC,
@@ -175,16 +176,16 @@ enum {
 	__NLA_TYPE_MAX,
 };
 
-#define NLA_TYPE_MAX (__NLA_TYPE_MAX - 1)
+#define NLA_TYPE_MAX (__NLA_TYPE_MAX - 1)   // 标准netlink接口定义的最大属性数量
 
 /**
  * struct nla_policy - attribute validation policy
- * 属性是否有效的判断规则
- * @type: Type of attribute or NLA_UNSPEC
- * @len: Type specific length of payload
+ * 一条属性是否有效的判断策略
+ * @type: Type of attribute or NLA_UNSPEC * @len: Type specific length of payload
  *
  * Policies are defined as arrays of this struct, the array must be
  * accessible by attribute type up to the highest identifier to be expected.
+ * 所有的策略往往被定义成一个数组形式，而该数组的长度必须是指定消息类型(比如ifinfomsg)定义的全部数量的属性类型(比如IFLA_MAX) + 1
  *
  * Meaning of `len' field:
  *    NLA_STRING           Maximum length of string
@@ -211,8 +212,8 @@ enum {
  * };
  */
 struct nla_policy {
-	u16		type;   // 类型
-	u16		len;    // 长度
+	u16		type;   // 合法类型
+	u16		len;    // 正确长度
 };
 
 /**

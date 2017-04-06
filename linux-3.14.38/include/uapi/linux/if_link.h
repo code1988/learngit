@@ -101,8 +101,9 @@ struct rtnl_link_ifmap {
  *           [IFLA_INET6_CONF] = ...,
  *       }
  *   }
+ *
+ *   网络接口的链路状态所包含的属性类型枚举
  */
-
 enum {
 	IFLA_UNSPEC,
 	IFLA_ADDRESS,

@@ -3731,6 +3731,7 @@ static int netif_receive_skb_internal(struct sk_buff *skb)
 
 /**
  *	netif_receive_skb - process receive buffer from network
+ *	这是一个L2和L3之间的接口函数，主要是根据skb->protocol向注册的三层函数做分发
  *	@skb: buffer to process
  *
  *	netif_receive_skb() is the main receive data processing function.
@@ -6611,6 +6612,7 @@ EXPORT_SYMBOL(synchronize_net);
 
 /**
  *	unregister_netdevice_queue - remove device from the kernel
+ *	缺省的将指定设备从内核中注销函数
  *	@dev: device
  *	@head: list
  *
