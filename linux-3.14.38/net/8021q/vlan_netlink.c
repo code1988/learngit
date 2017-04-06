@@ -1,5 +1,6 @@
 /*
  *	VLAN netlink control interface
+ *	基于netlink接口的vlan操作集合
  *
  * 	Copyright (c) 2007 Patrick McHardy <kaber@trash.net>
  *
@@ -238,6 +239,7 @@ nla_put_failure:
 	return -EMSGSIZE;
 }
 
+// 定义一个用于vlan的rtnetlink接口操作集合
 struct rtnl_link_ops vlan_link_ops __read_mostly = {
 	.kind		= "vlan",
 	.maxtype	= IFLA_VLAN_MAX,
@@ -252,6 +254,7 @@ struct rtnl_link_ops vlan_link_ops __read_mostly = {
 	.fill_info	= vlan_fill_info,
 };
 
+// 初始化操作vlan用的netlink接口
 int __init vlan_netlink_init(void)
 {
 	return rtnl_link_register(&vlan_link_ops);

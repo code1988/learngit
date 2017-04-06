@@ -25,6 +25,7 @@ static inline int rtnl_msg_family(const struct nlmsghdr *nlh)
 
 /**
  *	struct rtnl_link_ops - rtnetlink link operations
+ *	定义一个rtnetlink接口的操作集合结构
  *
  *	@list: Used internally
  *	@kind: Identifier
@@ -50,10 +51,10 @@ static inline int rtnl_msg_family(const struct nlmsghdr *nlh)
 struct rtnl_link_ops {
 	struct list_head	list;
 
-	const char		*kind;
+	const char		*kind;      // 用于标识这组操作集合，通常就是本集合服务的具体功能模块名
 
-	size_t			priv_size;
-	void			(*setup)(struct net_device *dev);
+	size_t			priv_size;  // 记录具体网络设备的私有空间大小(net_device-->priv)
+	void			(*setup)(struct net_device *dev);   // 具体网络设备的初始化函数
 
 	int			maxtype;
 	const struct nla_policy	*policy;

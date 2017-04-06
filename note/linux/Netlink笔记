@@ -28,7 +28,7 @@ netlink涉及的数据结构：
         ====================================================================================================
             netlink消息头结构
                 struct nlmsghdr {
-                    unsigned int    nlmsg_len;  // 消息实际长（nlmsghdr + payload）
+                    unsigned int    nlmsg_len;  // 消息长（nlmsghdr + pad + payload）
                     unsigned short  nlmsg_type; // 消息类型
                     unsigned short  nlmsg_flags;// 附加的标志位,用来对消息进行额外的控制,NLM_F_*
                     unsigned int    nlmsg_seq;  // 序号（用于追踪）
@@ -70,7 +70,7 @@ netlink涉及的数据结构：
                         unsigned char __ifi_pad;        // 1字节填充，用于对齐，无含义
                         unsigned short ifi_type;        // ARPHRD_* 格式   
                         int ifi_index;                  // 接口序号
-                        unsigned ifi_flags;             // 标准的接口标志位集合，定义在/net/if.h中，IFF_* 格式
+                        unsigned ifi_flags;             // 标准的BSD风格接口标志位集合，定义在/net/if.h中，IFF_* 格式
                         unsigned ifi_change;            // IFF_* 格式
                     }
                     // rtnetlink协议的地址消息(如RTM_NEWADDR)的族头
@@ -121,7 +121,7 @@ netlink socket API:
         bind函数是把一个本地netlink地址与一个打开的socket进行关联
         nl_pid作为这个netlink socket的本地标识，可以设置为当前进程的pid相关，以确保这是一个唯一的32位整数
             公式一： nl_pid = getpid();
-            公式一直接使用进程pid作为nl_pid的至，前提是该进程只需要一个该类型协议的netlink socket
+            公式一直接使用进程pid作为nl_pid的值，前提是该进程只需要一个该类型协议的netlink socket
             公式二： nl_pid = pthread_self() << 16 | getpid();
             公式二可以使同一进程的不同线程都能获得属于它们的相同协议类型的不同netlink socket
             对于单进程/线程下多个同一类型的netlink socket，需要用其他方法去对nl_pid作区分

@@ -1,3 +1,8 @@
+/* 网络设备的地址状态接口集合
+ * 
+ * 备注：以下内容都是为netlink接口服务；
+ *       跟该文件相同性质的还有<linux/if_link.h>
+ */
 #ifndef __LINUX_IF_ADDR_H
 #define __LINUX_IF_ADDR_H
 

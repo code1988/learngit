@@ -1,3 +1,9 @@
+/* 网络设备的链路状态接口集合
+ * 
+ * 备注：以下内容都是为netlink接口服务；
+ *       链路状态只是统称，实际该文件包含了网络设备的大部分信息；
+ *       跟该文件相同性质的还有<linux/if_addr.h>
+ */
 #ifndef _UAPI_LINUX_IF_LINK_H
 #define _UAPI_LINUX_IF_LINK_H
 
@@ -85,8 +91,6 @@ struct rtnl_link_ifmap {
  *   Contains nested attributes for address family specific attributes.
  *   Each address family may create a attribute with the address family
  *   number as type and create its own attribute structure in it.
- *   网络接口消息(如RTM_GETLINK等)属性类型集合
- *   类似ubus中每条method的参数,嵌套规则也类似
  *   Example:
  *   [IFLA_AF_SPEC] = {
  *       [AF_INET] = {
@@ -135,7 +139,7 @@ enum {
 	IFLA_STATS64,
 	IFLA_VF_PORTS,
 	IFLA_PORT_SELF,
-	IFLA_AF_SPEC,
+	IFLA_AF_SPEC,   // 这号属性属于可嵌套类型，具体的属性含义跟协议族相关
 	IFLA_GROUP,		/* Group the device belongs to */
 	IFLA_NET_NS_FD,
 	IFLA_EXT_MASK,		/* Extended info mask, VFs, etc */
@@ -149,13 +153,13 @@ enum {
 };
 
 
-#define IFLA_MAX (__IFLA_MAX - 1)   // 接口的最大属性数量
+#define IFLA_MAX (__IFLA_MAX - 1)   // 网络设备链路状态包含的最大属性数量
 
 /* backwards compatibility for userspace */
 #ifndef __KERNEL__
 // 获取ifinfomsg类型消息的attributes结构首地址,r是ifinfomsg首地址
 #define IFLA_RTA(r)  ((struct rtattr*)(((char*)(r)) + NLMSG_ALIGN(sizeof(struct ifinfomsg))))
-// 获取ifinfomsg类型消息的attributes长度
+// 获取ifinfomsg类型消息的attributes长度(一条netlink消息可以包含多条属性)
 #define IFLA_PAYLOAD(n) NLMSG_PAYLOAD(n,sizeof(struct ifinfomsg))
 #endif
 

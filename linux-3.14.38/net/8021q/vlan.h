@@ -12,7 +12,7 @@
 #define VLAN_GROUP_ARRAY_SPLIT_PARTS  8
 #define VLAN_GROUP_ARRAY_PART_LEN     (VLAN_N_VID/VLAN_GROUP_ARRAY_SPLIT_PARTS)
 
-// vlan协议序号定义(这里仅用于在vlan组中进行索引)
+// vlan协议序号定义(用于定位四维结构的第一维)
 enum vlan_protos {
 	VLAN_PROTO_8021Q	= 0,
 	VLAN_PROTO_8021AD,
@@ -41,6 +41,7 @@ struct vlan_info {
 	struct rcu_head		rcu;
 };
 
+// 根据vlan协议ID获取对应的协议序号(四维结构的第一维)
 static inline unsigned int vlan_proto_idx(__be16 proto)
 {
 	switch (proto) {
@@ -72,6 +73,7 @@ static inline struct net_device *vlan_group_get_device(struct vlan_group *vg,
 	return __vlan_group_get_device(vg, vlan_proto_idx(vlan_proto), vlan_id);
 }
 
+// 将指定的vlan设备记录到四维vlan组模型中
 static inline void vlan_group_set_device(struct vlan_group *vg,
 					 __be16 vlan_proto, u16 vlan_id,
 					 struct net_device *dev)

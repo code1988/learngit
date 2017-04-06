@@ -27,7 +27,9 @@
 #define	IFALIASZ	256
 #include <linux/hdlc/ioctl.h>
 
-/* Standard interface flags (netdevice->flags). */
+/* Standard interface flags (netdevice->flags). 
+ * 以下定义的是BSD风格的标准网络接口标志
+ * */
 #define	IFF_UP		0x1		/* interface is up		*/
 #define	IFF_BROADCAST	0x2		/* broadcast address valid	*/
 #define	IFF_DEBUG	0x4		/* turn on debugging		*/

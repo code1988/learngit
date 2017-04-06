@@ -80,6 +80,7 @@ static int vlan_group_prealloc_vid(struct vlan_group *vg,
 	return 0;
 }
 
+// 注销一个vlan设备
 void unregister_vlan_dev(struct net_device *dev, struct list_head *head)
 {
 	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
@@ -146,6 +147,7 @@ int vlan_check_real_dev(struct net_device *real_dev,
 	return 0;
 }
 
+// 进一步注册一个新的vlan设备
 int register_vlan_dev(struct net_device *dev)
 {
 	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);    // 获取vlan设备附属的私有空间
@@ -198,15 +200,17 @@ int register_vlan_dev(struct net_device *dev)
      * */
 	dev_hold(real_dev);
 
-    // 从宿主设备继承一些状态
+    // 从宿主设备继承一些状态(比如设备的链路状态)
 	netif_stacked_transfer_operstate(real_dev, dev);
     // 将vlan设备加入lweventlist通知链
 	linkwatch_fire_event(dev); /* _MUST_ call rfc2863_policy() */
 
 	/* So, got the sucker initialized, now lets place
 	 * it into our local structure.
+     * 将指定的vlan设备记录到四维vlan组模型中
 	 */
 	vlan_group_set_device(grp, vlan->vlan_proto, vlan_id, dev);
+    // vlan组中的vlan设备数量加1
 	grp->nr_vlan_devs++;
 
 	return 0;
@@ -277,7 +281,7 @@ static int register_vlan_device(struct net_device *real_dev, u16 vlan_id)
 		snprintf(name, IFNAMSIZ, "vlan%.4i", vlan_id);
 	}
 
-    // 创建一个vlan设备，并执行基本的初始化
+    // 创建一个vlan设备，并执行vlan_setup完成基本的初始化
 	new_dev = alloc_netdev(sizeof(struct vlan_dev_priv), name, vlan_setup);
 
 	if (new_dev == NULL)
@@ -300,6 +304,8 @@ static int register_vlan_device(struct net_device *real_dev, u16 vlan_id)
 	vlan->flags = VLAN_FLAG_REORDER_HDR;
 
 	new_dev->rtnl_link_ops = &vlan_link_ops;// 注册rtnetlink接口管理该vlan设备的回调函数集
+    
+    // 进一步注册一个新的vlan设备
 	err = register_vlan_dev(new_dev);
 	if (err < 0)
 		goto out_free_newdev;
