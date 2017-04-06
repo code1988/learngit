@@ -116,7 +116,7 @@ static int vlan_changelink(struct net_device *dev,
 	return 0;
 }
 
-// 配置并注册一个新的vlan设备
+// 注册并配置一个新的vlan设备
 static int vlan_newlink(struct net *src_net, struct net_device *dev,
 			struct nlattr *tb[], struct nlattr *data[])
 {

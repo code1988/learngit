@@ -1251,10 +1251,11 @@ struct net_device {
 	/* Hardware header description */
 	const struct header_ops *header_ops;
 
-	unsigned int		flags;	/* interface flags (a la BSD)	标准BSD风格的接口(也就是该网卡设备)标志集合*/
+    /**<    以下二个flags都用来记录标准BSD风格的接口标志  IFF_*  */
+	unsigned int		flags;	/* interface flags (a la BSD)	这部分标志集合对用户空间可见 */
 	unsigned int		priv_flags; /* Like 'flags' but invisible to userspace.
 					     * See if.h for definitions. 
-                         * 记录了仅内核可见的标志集合
+                         * 这部分标志集合仅对内核可见
                          * */
 	unsigned short		gflags;
 	unsigned short		padded;	/* How much padding added by alloc_netdev() */

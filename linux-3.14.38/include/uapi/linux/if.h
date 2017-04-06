@@ -27,8 +27,9 @@
 #define	IFALIASZ	256
 #include <linux/hdlc/ioctl.h>
 
+/**********************<     以下定义的是BSD风格的标准网络接口标志**************/
 /* Standard interface flags (netdevice->flags). 
- * 以下定义的是BSD风格的标准网络接口标志
+ * 以下这部分标志用于设置net_device->flags，意味着对用户空间可见
  * */
 #define	IFF_UP		0x1		/* interface is up		*/
 #define	IFF_BROADCAST	0x2		/* broadcast address valid	*/
@@ -58,7 +59,9 @@
 #define IFF_VOLATILE	(IFF_LOOPBACK|IFF_POINTOPOINT|IFF_BROADCAST|IFF_ECHO|\
 		IFF_MASTER|IFF_SLAVE|IFF_RUNNING|IFF_LOWER_UP|IFF_DORMANT)
 
-/* Private (from user) interface flags (netdevice->priv_flags). */
+/* Private (from user) interface flags (netdevice->priv_flags). 
+ * 以下这部分标志用于设置net_device->priv_flags，意味着仅对内核可见
+ * */
 #define IFF_802_1Q_VLAN 0x1             /* 802.1Q VLAN device.          */
 #define IFF_EBRIDGE	0x2		/* Ethernet bridging device.	*/
 #define IFF_SLAVE_INACTIVE	0x4	/* bonding slave not the curr. active */
