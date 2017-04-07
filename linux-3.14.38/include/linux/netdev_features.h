@@ -1,7 +1,6 @@
 /*
  * Network device features.
- * 用来设置struct net_device中的features成员，表示该网络设备支持的功能列表
- *
+ * 定义了网络设备支持的功能列表(用来设置 net_device->*features 成员)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,7 +25,7 @@ enum {
 	NETIF_F_HW_VLAN_CTAG_TX_BIT,	/* Transmit VLAN CTAG HW acceleration */
 	NETIF_F_HW_VLAN_CTAG_RX_BIT,	/* Receive VLAN CTAG HW acceleration */
 	NETIF_F_HW_VLAN_CTAG_FILTER_BIT,/* Receive filtering on VLAN CTAGs 置位了该标志就意味着该网络设备接收数据时支持对802.1q vlan tag的过滤功能*/
-	NETIF_F_VLAN_CHALLENGED_BIT,	/* Device cannot handle VLAN packets 置位了该标志就意味着该网络设备不支持vlan协议*/
+	NETIF_F_VLAN_CHALLENGED_BIT,	/* Device cannot handle VLAN packets 置位了该标志就意味着该网络设备不支持作为vlan设备的宿主设备*/
 	NETIF_F_GSO_BIT,		/* Enable software GSO. */
 	NETIF_F_LLTX_BIT,		/* LockLess TX - deprecated. Please */
 					/* do not use LLTX in new drivers */

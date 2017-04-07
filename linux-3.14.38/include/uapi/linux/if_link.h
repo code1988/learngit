@@ -108,9 +108,9 @@ enum {
 	IFLA_UNSPEC,
 	IFLA_ADDRESS,
 	IFLA_BROADCAST,
-	IFLA_IFNAME,        // 对应的属性payload字段保存了接口名(.e "Fex-1")
-	IFLA_MTU,
-	IFLA_LINK,
+	IFLA_IFNAME,        // 对应的属性payload字段携带了接口名(.e "Fex-1")
+	IFLA_MTU,           // 对应的属性payload字段携带了mtu值
+	IFLA_LINK,          // 对应的属性payload字段携带了实际设备接口序号
 	IFLA_QDISC,
 	IFLA_STATS,
 	IFLA_COST,
@@ -255,22 +255,24 @@ enum {
 
 #define IFLA_INFO_MAX	(__IFLA_INFO_MAX - 1)
 
-/* VLAN section */
-
+/* VLAN section 
+ * vlan模块属性类型枚举
+ * */
 enum {
 	IFLA_VLAN_UNSPEC,
-	IFLA_VLAN_ID,           // 对应的属性payload字段保存了vlan id
-	IFLA_VLAN_FLAGS,
+	IFLA_VLAN_ID,           // 对应的属性payload字段携带了vlan id
+	IFLA_VLAN_FLAGS,        // 对应的属性payload字段携带了struct ifla_vlan_flags
 	IFLA_VLAN_EGRESS_QOS,
 	IFLA_VLAN_INGRESS_QOS,
-	IFLA_VLAN_PROTOCOL,
+	IFLA_VLAN_PROTOCOL,     // 对应的属性payload字段携带了vlan的协议类型，通常就是802.1q(0x8100)
 	__IFLA_VLAN_MAX,
 };
 
 #define IFLA_VLAN_MAX	(__IFLA_VLAN_MAX - 1)
 
+// IFLA_VLAN_FLAGS属性的payload结构
 struct ifla_vlan_flags {
-	__u32	flags;
+	__u32	flags;  // 携带了vlan_dev_priv->flags标志集合
 	__u32	mask;
 };
 

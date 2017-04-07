@@ -297,7 +297,7 @@ static int register_vlan_device(struct net_device *real_dev, u16 vlan_id)
 
     // 获取vlan设备附属的私有空间，初始化其中的成员
 	vlan = vlan_dev_priv(new_dev);
-	vlan->vlan_proto = htons(ETH_P_8021Q);  // 记录vlan类型ID号
+	vlan->vlan_proto = htons(ETH_P_8021Q);  // 记录vlan协议类型
 	vlan->vlan_id = vlan_id;                // 记录vlan id
 	vlan->real_dev = real_dev;              // 记录宿主设备
 	vlan->dent = NULL;                      // 清除在proc文件系统中的入口
@@ -553,7 +553,7 @@ static int vlan_ioctl_handler(struct net *net, void __user *arg)
 			goto out;
 
 		err = -EINVAL;
-        // 如果不是添加vlan设备命令时，需要检测设备是否为vlan设备
+        // 如果不是添加vlan设备命令时，必须确保该设备是vlan设备
 		if (args.cmd != ADD_VLAN_CMD && !is_vlan_dev(dev))
 			goto out;
 	}

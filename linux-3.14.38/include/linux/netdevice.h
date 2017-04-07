@@ -1211,7 +1211,7 @@ struct net_device {
 
 
 	/* currently active device features */
-	netdev_features_t	features;
+	netdev_features_t	features;   // 当前在该网络设备上已经使能的功能集合
 	/* user-changeable features */
 	netdev_features_t	hw_features;
 	/* user-requested features */

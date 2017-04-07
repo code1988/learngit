@@ -679,7 +679,7 @@ static inline int nla_type(const struct nlattr *nla)
 
 /**
  * nla_data - head of payload
- * netlink属性payload首地址
+ * netlink每条属性的payload首地址
  * @nla: netlink attribute
  */
 static inline void *nla_data(const struct nlattr *nla)
@@ -978,6 +978,7 @@ static inline int nla_put_msecs(struct sk_buff *skb, int attrtype,
 
 /**
  * nla_get_u32 - return payload of u32 attribute
+ * 获取该属性的payload，并以 u32类型 返回
  * @nla: u32 netlink attribute
  */
 static inline u32 nla_get_u32(const struct nlattr *nla)
@@ -987,6 +988,7 @@ static inline u32 nla_get_u32(const struct nlattr *nla)
 
 /**
  * nla_get_be32 - return payload of __be32 attribute
+ * 获取该属性的payload，并以 大端的u32类型 返回
  * @nla: __be32 netlink attribute
  */
 static inline __be32 nla_get_be32(const struct nlattr *nla)
@@ -996,6 +998,7 @@ static inline __be32 nla_get_be32(const struct nlattr *nla)
 
 /**
  * nla_get_u16 - return payload of u16 attribute
+ * 获取该属性的payload，并以 u16类型 返回
  * @nla: u16 netlink attribute
  */
 static inline u16 nla_get_u16(const struct nlattr *nla)
@@ -1005,6 +1008,7 @@ static inline u16 nla_get_u16(const struct nlattr *nla)
 
 /**
  * nla_get_be16 - return payload of __be16 attribute
+ * 获取该属性的payload，并以 大端的u16类型 返回
  * @nla: __be16 netlink attribute
  */
 static inline __be16 nla_get_be16(const struct nlattr *nla)
@@ -1014,6 +1018,7 @@ static inline __be16 nla_get_be16(const struct nlattr *nla)
 
 /**
  * nla_get_le16 - return payload of __le16 attribute
+ * 获取该属性的payload，并以 小端的u16类型 返回
  * @nla: __le16 netlink attribute
  */
 static inline __le16 nla_get_le16(const struct nlattr *nla)
@@ -1023,6 +1028,7 @@ static inline __le16 nla_get_le16(const struct nlattr *nla)
 
 /**
  * nla_get_u8 - return payload of u8 attribute
+ * 获取该属性的payload，并以 u8类型 返回
  * @nla: u8 netlink attribute
  */
 static inline u8 nla_get_u8(const struct nlattr *nla)
@@ -1032,6 +1038,7 @@ static inline u8 nla_get_u8(const struct nlattr *nla)
 
 /**
  * nla_get_u64 - return payload of u64 attribute
+ * 获取该属性的payload，并以 u64类型 返回
  * @nla: u64 netlink attribute
  */
 static inline u64 nla_get_u64(const struct nlattr *nla)
@@ -1045,6 +1052,7 @@ static inline u64 nla_get_u64(const struct nlattr *nla)
 
 /**
  * nla_get_be64 - return payload of __be64 attribute
+ * 获取该属性的payload，并以 大端的u64类型 返回
  * @nla: __be64 netlink attribute
  */
 static inline __be64 nla_get_be64(const struct nlattr *nla)

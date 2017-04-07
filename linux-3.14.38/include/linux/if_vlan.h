@@ -148,9 +148,9 @@ struct vlan_dev_priv {
 	unsigned int				nr_egress_mappings;
 	struct vlan_priority_tci_mapping	*egress_priority_map[16];
 
-	__be16					vlan_proto; // vlan协议类型ID(大端)
+	__be16					vlan_proto; // vlan协议类型(大端)
 	u16					vlan_id;        // vlan id
-	u16					flags;
+	u16					flags;          // VLAN_FLAG_* 
 
 	struct net_device			*real_dev;  // 宿主设备
 	unsigned char				real_dev_addr[ETH_ALEN];    // 宿主设备mac

@@ -32,8 +32,9 @@ enum vlan_ioctl_cmds {
 	GET_VLAN_VID_CMD /* Get the VID of this VLAN (specified by name) */
 };
 
+// vlan私有空间vlan_dev_priv->flags标志枚举
 enum vlan_flags {
-	VLAN_FLAG_REORDER_HDR	= 0x1,
+	VLAN_FLAG_REORDER_HDR	= 0x1,      // 报文发送时是否需要打上vlan tag(创建vlan设备时缺省设置了该标志)
 	VLAN_FLAG_GVRP		= 0x2,
 	VLAN_FLAG_LOOSE_BINDING	= 0x4,
 	VLAN_FLAG_MVRP		= 0x8,

@@ -657,7 +657,7 @@ __setup("netdev=", netdev_boot_setup);
 
 /**
  *	__dev_get_by_name	- find a device by its name
- *	根据设备名查找对应的设备管理块
+ *	根据设备名查找对应的网络设备
  *	@net: the applicable net namespace
  *	@name: name to find
  *
@@ -733,7 +733,7 @@ EXPORT_SYMBOL(dev_get_by_name);
 
 /**
  *	__dev_get_by_index - find a device by its ifindex
- *	通过序号索引对应的网络设备
+ *	通过接口序号查找对应的网络设备
  *	@net: the applicable net namespace
  *	@ifindex: index of device
  *
