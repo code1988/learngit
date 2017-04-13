@@ -358,7 +358,8 @@ typedef unsigned char *sk_buff_data_t;
 
 /** 
  *	struct sk_buff - socket buffer
- *	内核中socket收发数据都是放在该结构体中
+ *	本结构体是linux网络协议栈核心中的核心，几乎所有操作都是围绕该结构体进行的
+ *	本结构体就是 [网络数据包本身 + 针对它的操作集合]，本人称作"网络数据包元"
  *
  *	@next: Next buffer in list
  *	@prev: Previous buffer in list
@@ -434,7 +435,7 @@ struct sk_buff {
 	ktime_t			tstamp;
 
 	struct sock		*sk;
-	struct net_device	*dev;
+	struct net_device	*dev;   // 指向该skb当前所属的网络设备
 
 	/*
 	 * This is the control buffer. It is free to use for every
@@ -448,9 +449,9 @@ struct sk_buff {
 #ifdef CONFIG_XFRM
 	struct	sec_path	*sp;
 #endif
-	unsigned int		len,
+	unsigned int		len,    // 记录了该skb->data指针控制的数据长度
 				data_len;
-	__u16			mac_len,
+	__u16			mac_len,    // 记录了network layer相对mac地址的偏移量，也就是链路层长度
 				hdr_len;
 	union {
 		__wsum		csum;
@@ -459,10 +460,10 @@ struct sk_buff {
 			__u16	csum_offset;
 		};
 	};
-	__u32			priority;
+	__u32			priority;   // 记录了该skb的数据包优先级
 	kmemcheck_bitfield_begin(flags1);
 	__u8			local_df:1,
-				cloned:1,
+				cloned:1,       // 标识该skb是否是clone的 
 				ip_summed:2,
 				nohdr:1,
 				nfctinfo:3;
@@ -472,7 +473,7 @@ struct sk_buff {
 				peeked:1,
 				nf_trace:1;
 	kmemcheck_bitfield_end(flags1);
-	__be16			protocol;
+	__be16			protocol;       // 记录了以太网帧协议ID(如vlan ID: 0x8100)
 
 	void			(*destructor)(struct sk_buff *skb);
 #if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
@@ -486,8 +487,8 @@ struct sk_buff {
 
 	__u32			rxhash;
 
-	__be16			vlan_proto;
-	__u16			vlan_tci;
+	__be16			vlan_proto;     // 如果该skb是802.1q/802.1ad协议的，则这里记录了vlan帧的协议ID
+	__u16			vlan_tci;       // 如果该skb是802.1q/802.1ad协议的，则这里记录了vlan帧的TCI字段
 
 #ifdef CONFIG_NET_SCHED
 	__u16			tc_index;	/* traffic control index */
@@ -536,16 +537,16 @@ struct sk_buff {
 	__u16			inner_transport_header;
 	__u16			inner_network_header;
 	__u16			inner_mac_header;
-	__u16			transport_header;
-	__u16			network_header;
-	__u16			mac_header;
+	__u16			transport_header;   // 记录了协议栈的transport layer相对缓冲区头部的偏移量
+	__u16			network_header;     // 记录了协议栈的network layer相对缓冲区头部的偏移量
+	__u16			mac_header;         // 记录了mac地址相对缓冲区头部的偏移量
 	/* These elements must be at the end, see alloc_skb() for details.  */
-	sk_buff_data_t		tail;
-	sk_buff_data_t		end;
-	unsigned char		*head,
-				*data;
-	unsigned int		truesize;
-	atomic_t		users;
+	sk_buff_data_t		tail;       // 根据sk_buff_data_t类型不同，指向该skb当前处理的数据尾地址 / 记录了相对data的偏移量
+	sk_buff_data_t		end;        // 根据sk_buff_data_t类型不同，指向缓冲区尾部 / 记录了相对head的偏移量，由alloc_skb分配之后不再变化
+	unsigned char		*head,      // 指向缓冲区头部，由alloc_skb分配之后不再变化
+				*data;              // 指向该skb当前处理的数据首地址。这是一个活动指针，在封装中作为写指针使用，而在解封装中作为读指针使用
+	unsigned int		truesize;   // 记录了[ sk_buff结构 + 缓冲区 ] 的总长
+	atomic_t		users;          // 记录了该skb的数据包缓冲区的被其他skb引用计数
 };
 
 #ifdef __KERNEL__
@@ -664,6 +665,11 @@ bool skb_try_coalesce(struct sk_buff *to, struct sk_buff *from,
 struct sk_buff *__alloc_skb(unsigned int size, gfp_t priority, int flags,
 			    int node);
 struct sk_buff *build_skb(void *data, unsigned int frag_size);
+/* 分配一个完整的skb数据包元
+ * @size - skb的数据包缓冲区大小
+ * 
+ * 备注：如果该函数成功返回，意味着已经有了一个size大小的空数据包缓冲区以及操作该缓冲区的skb_buff结构体
+ */
 static inline struct sk_buff *alloc_skb(unsigned int size,
 					gfp_t priority)
 {
@@ -919,6 +925,7 @@ static inline struct sk_buff *skb_get(struct sk_buff *skb)
 
 /**
  *	skb_cloned - is the buffer a clone
+ *	判断该skb的数据包缓冲区是否是clone的
  *	@skb: buffer to check
  *
  *	Returns true if the buffer was generated with skb_clone() and is
@@ -977,6 +984,7 @@ static inline void skb_header_release(struct sk_buff *skb)
 
 /**
  *	skb_shared - is the buffer shared
+ *	检查该skb的数据包缓冲区是否被其他skb共用
  *	@skb: buffer to check
  *
  *	Returns true if more than one person has a reference to this
@@ -989,6 +997,7 @@ static inline int skb_shared(const struct sk_buff *skb)
 
 /**
  *	skb_share_check - check if buffer is shared and if so clone it
+ *	检查该skb的数据包缓冲区是否被其他skb共用，如果是则clone一份出来
  *	@skb: buffer to check
  *	@pri: priority for memory allocation
  *
@@ -1455,6 +1464,7 @@ void skb_coalesce_rx_frag(struct sk_buff *skb, int i, int size,
 #define SKB_LINEAR_ASSERT(skb)  BUG_ON(skb_is_nonlinear(skb))
 
 #ifdef NET_SKBUFF_DATA_USES_OFFSET
+// 找到当前操作数据的尾部
 static inline unsigned char *skb_tail_pointer(const struct sk_buff *skb)
 {
 	return skb->head + skb->tail;
@@ -1472,6 +1482,7 @@ static inline void skb_set_tail_pointer(struct sk_buff *skb, const int offset)
 }
 
 #else /* NET_SKBUFF_DATA_USES_OFFSET */
+// 找到当前操作数据的尾部
 static inline unsigned char *skb_tail_pointer(const struct sk_buff *skb)
 {
 	return skb->tail;
@@ -1551,6 +1562,7 @@ static inline int pskb_may_pull(struct sk_buff *skb, unsigned int len)
 
 /**
  *	skb_headroom - bytes at buffer head
+ *	返回headroom的大小
  *	@skb: buffer to check
  *
  *	Return the number of bytes of free space at the head of an &sk_buff.
@@ -1588,11 +1600,13 @@ static inline int skb_availroom(const struct sk_buff *skb)
 
 /**
  *	skb_reserve - adjust headroom
+ *	通过减小tailroom从而增大headroom(在整个数据包缓冲区为空的状态下，只由headroom + tailroom组成)
  *	@skb: buffer to alter
  *	@len: bytes to move
  *
  *	Increase the headroom of an empty &sk_buff by reducing the tail
  *	room. This is only allowed for an empty buffer.
+ *	备注： 本函数只允许对一个空的数据包缓冲区进行操作
  */
 static inline void skb_reserve(struct sk_buff *skb, int len)
 {
@@ -1607,6 +1621,7 @@ static inline void skb_reset_inner_headers(struct sk_buff *skb)
 	skb->inner_transport_header = skb->transport_header;
 }
 
+// 计算network layer相对mac地址的偏移量
 static inline void skb_reset_mac_len(struct sk_buff *skb)
 {
 	skb->mac_len = skb->network_header - skb->mac_header;
@@ -1673,6 +1688,7 @@ static inline unsigned char *skb_transport_header(const struct sk_buff *skb)
 	return skb->head + skb->transport_header;
 }
 
+// 计算transport layer相对缓冲区头部的偏移量
 static inline void skb_reset_transport_header(struct sk_buff *skb)
 {
 	skb->transport_header = skb->data - skb->head;
@@ -1690,6 +1706,7 @@ static inline unsigned char *skb_network_header(const struct sk_buff *skb)
 	return skb->head + skb->network_header;
 }
 
+// 计算network layer相对缓冲区头部的偏移量
 static inline void skb_reset_network_header(struct sk_buff *skb)
 {
 	skb->network_header = skb->data - skb->head;
@@ -1701,6 +1718,7 @@ static inline void skb_set_network_header(struct sk_buff *skb, const int offset)
 	skb->network_header += offset;
 }
 
+// 获取缓冲区中mac地址字段的位置
 static inline unsigned char *skb_mac_header(const struct sk_buff *skb)
 {
 	return skb->head + skb->mac_header;
@@ -2192,6 +2210,10 @@ static inline int skb_clone_writable(const struct sk_buff *skb, unsigned int len
 	       skb_headroom(skb) + len <= skb->hdr_len;
 }
 
+/* skb_cow的具体实现
+ *
+ * 备注：除了headroom的空间大小可能会根据delta值扩展，数据包缓冲区的其他部分空间都是不变的
+ */
 static inline int __skb_cow(struct sk_buff *skb, unsigned int headroom,
 			    int cloned)
 {
@@ -2208,6 +2230,9 @@ static inline int __skb_cow(struct sk_buff *skb, unsigned int headroom,
 
 /**
  *	skb_cow - copy header of skb when it is required
+ *	这里会判断2个条件：该skb的headroom空间是否足够；该skb是否是clone的
+ *	    如果是headroom空间不够这里就会扩展数据包缓冲区，增加的空间作为headroom
+ *	    如果是clone的，就触发copy-on-write机制，即分配一个新的数据包缓冲区并转储旧缓冲区中的数据
  *	@skb: buffer to cow
  *	@headroom: needed headroom
  *

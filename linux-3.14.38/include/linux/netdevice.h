@@ -1334,7 +1334,7 @@ struct net_device {
 	/* Interface address info used in eth_type_trans() */
 	unsigned char		*dev_addr;	/* hw address, (before bcast
 						   because most packets are
-						   unicast) */
+						   unicast) 记录了该网络设备的mac地址信息 */
 
 
 #ifdef CONFIG_SYSFS

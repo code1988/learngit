@@ -132,10 +132,11 @@ static inline netdev_tx_t vlan_netpoll_send_skb(struct vlan_dev_priv *vlan, stru
 	return NETDEV_TX_OK;
 }
 
+// vlan设备的发送函数(在dev_hard_start_xmit中被调用)
 static netdev_tx_t vlan_dev_hard_start_xmit(struct sk_buff *skb,
 					    struct net_device *dev)
 {
-	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
+	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);    // 获取该vlan设备附属的私有空间
 	struct vlan_ethhdr *veth = (struct vlan_ethhdr *)(skb->data);
 	unsigned int len;
 	int ret;
@@ -765,6 +766,7 @@ static const struct ethtool_ops vlan_ethtool_ops = {
 	.get_link		= ethtool_op_get_link,
 };
 
+// 定义了一个vlan设备管理操作回调函数集
 static const struct net_device_ops vlan_netdev_ops = {
 	.ndo_change_mtu		= vlan_dev_change_mtu,
 	.ndo_init		= vlan_dev_init,

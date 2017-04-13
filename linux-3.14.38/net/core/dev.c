@@ -2559,6 +2559,12 @@ netdev_features_t netif_skb_dev_features(struct sk_buff *skb,
 }
 EXPORT_SYMBOL(netif_skb_dev_features);
 
+/*
+ *
+ * 备注：本函数开始处，该skb的数据包缓冲区中是一个普通的以太网帧，同时该skb->data指向mac地址字段
+ *       如果该skb携带了vlan标志，那么
+ *       本函数结束处，普通的以太网帧变成了vlan帧，该skb->data指向vlan帧 [12字节的mac地址 + 2字节vlan协议类型ID] 之后的位置
+ */
 int dev_hard_start_xmit(struct sk_buff *skb, struct net_device *dev,
 			struct netdev_queue *txq)
 {
@@ -2578,6 +2584,7 @@ int dev_hard_start_xmit(struct sk_buff *skb, struct net_device *dev,
 
 		features = netif_skb_features(skb);
 
+        // 如果该skb携带了vlan标志，并且对应的设备不支持发送时vlan硬件加速功能，这里就会打上vlan tag
 		if (vlan_tx_tag_present(skb) &&
 		    !vlan_hw_offload_capable(features, skb->vlan_proto)) {
 			skb = __vlan_put_tag(skb, skb->vlan_proto,
@@ -2585,6 +2592,7 @@ int dev_hard_start_xmit(struct sk_buff *skb, struct net_device *dev,
 			if (unlikely(!skb))
 				goto out;
 
+            // skb->vlan_tci的任务到这里已经完成，所以清除
 			skb->vlan_tci = 0;
 		}
 
@@ -2910,6 +2918,7 @@ out:
 	return rc;
 }
 
+// 网络设备发送数据时L3->L2层总接口
 int dev_queue_xmit(struct sk_buff *skb)
 {
 	return __dev_queue_xmit(skb, NULL);
@@ -3563,6 +3572,7 @@ another_round:
 
 	__this_cpu_inc(softnet_data.processed);
 
+    // 如果接收到的skb是802.1q/802.1ad协议的，则在这里去掉tag，从而实现对上层的透明
 	if (skb->protocol == cpu_to_be16(ETH_P_8021Q) ||
 	    skb->protocol == cpu_to_be16(ETH_P_8021AD)) {
 		skb = skb_vlan_untag(skb);
@@ -3570,6 +3580,7 @@ another_round:
 			goto unlock;
 	}
 
+    // 程序运行到这里，skb的数据包缓冲区中已经变成一个普通的以太网帧
 #ifdef CONFIG_NET_CLS_ACT
 	if (skb->tc_verd & TC_NCLS) {
 		skb->tc_verd = CLR_TC_NCLS(skb->tc_verd);
@@ -3599,17 +3610,20 @@ ncls:
 	if (pfmemalloc && !skb_pfmemalloc_protocol(skb))
 		goto drop;
 
+    // 如果该skb携带了vlan标志，意味着携带了vlan信息，这里就进行相关处理
 	if (vlan_tx_tag_present(skb)) {
 		if (pt_prev) {
 			ret = deliver_skb(skb, pt_prev, orig_dev);
 			pt_prev = NULL;
 		}
+        // 这里就进入了vlan模块的vlan接收信息处理函数
 		if (vlan_do_receive(&skb))
 			goto another_round;
 		else if (unlikely(!skb))
 			goto unlock;
 	}
 
+    // 程序运行到这里，该skb已经是一个彻底的普通的以太网数据包了
 	rx_handler = rcu_dereference(skb->dev->rx_handler);
 	if (rx_handler) {
 		if (pt_prev) {
@@ -3731,7 +3745,7 @@ static int netif_receive_skb_internal(struct sk_buff *skb)
 
 /**
  *	netif_receive_skb - process receive buffer from network
- *	这是一个L2和L3之间的接口函数，主要是根据skb->protocol向注册的三层函数做分发
+ *	网络设备接收数据时L2->L3的接口函数，主要是根据skb->protocol向注册的三层函数做分发
  *	@skb: buffer to process
  *
  *	netif_receive_skb() is the main receive data processing function.

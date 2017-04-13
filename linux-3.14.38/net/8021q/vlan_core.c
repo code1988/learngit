@@ -5,31 +5,43 @@
 #include <linux/export.h>
 #include "vlan.h"
 
+// 接收处理携带了vlan信息的skb，主要就是根据vlan id，将skb重定向到对应的vlan设备
 bool vlan_do_receive(struct sk_buff **skbp)
 {
 	struct sk_buff *skb = *skbp;
-	__be16 vlan_proto = skb->vlan_proto;
-	u16 vlan_id = vlan_tx_tag_get_id(skb);
+	__be16 vlan_proto = skb->vlan_proto;    // 提取vlan协议类型
+	u16 vlan_id = vlan_tx_tag_get_id(skb);  // 提取vlan id
 	struct net_device *vlan_dev;
 	struct vlan_pcpu_stats *rx_stats;
 
+    // 根据vlan id在该宿主设备上索引对应的vlan设备
 	vlan_dev = vlan_find_dev(skb->dev, vlan_proto, vlan_id);
 	if (!vlan_dev)
 		return false;
 
+    // 检查该skb的数据包缓冲区是否被其他skb共用，如果是则clone一份出来
 	skb = *skbp = skb_share_check(skb, GFP_ATOMIC);
 	if (unlikely(!skb))
 		return false;
 
+    // 重定向该skb->dev为索引到的vlan设备
 	skb->dev = vlan_dev;
+    
+    // 如果收到的数据包属于PACKET_OTHERHOST类型，这里需要做再次确认
 	if (skb->pkt_type == PACKET_OTHERHOST) {
 		/* Our lower layer thinks this is not local, let's make sure.
 		 * This allows the VLAN to have a different MAC than the
-		 * underlying device, and still route correctly. */
+		 * underlying device, and still route correctly. 
+         *
+         * kernel在这里似乎还有另外一个目的:
+         *          就是允许vlan帧携带和宿主设备不同、但和vlan设备相同的mac地址
+         *          从中也就意味着vlan设备的mac地址可以和宿主设备不同
+         * */
 		if (ether_addr_equal(eth_hdr(skb)->h_dest, vlan_dev->dev_addr))
 			skb->pkt_type = PACKET_HOST;
 	}
 
+    // 如果该vlan设备的vlan_dev_priv->flags中没有置位VLAN_FLAG_REORDER_HDR，则要在这里找回之前脱掉的vlan tag(默认vlan设备都设置了该标志)
 	if (!(vlan_dev_priv(vlan_dev)->flags & VLAN_FLAG_REORDER_HDR)) {
 		unsigned int offset = skb->data - skb_mac_header(skb);
 
@@ -38,16 +50,18 @@ bool vlan_do_receive(struct sk_buff **skbp)
 		 * So change skb->data before calling it and change back to
 		 * original position later
 		 */
-		skb_push(skb, offset);
+		skb_push(skb, offset);              // skb->data指针前移offset字节，指向mac字段  
 		skb = *skbp = vlan_insert_tag(skb, skb->vlan_proto,
-					      skb->vlan_tci);
+					      skb->vlan_tci);   // 插回之前脱掉的4字节vlan tag
 		if (!skb)
 			return false;
-		skb_pull(skb, offset + VLAN_HLEN);
+		skb_pull(skb, offset + VLAN_HLEN);  // skb->data指针后移offset+VLAN_HLEN字节，从而恢复到一开始进入本函数时指向的字段
 		skb_reset_mac_len(skb);
 	}
 
+    // 根据vlan-TCI中的帧优先级，获取该vlan设备上对应的入口优先级
 	skb->priority = vlan_get_ingress_priority(vlan_dev, skb->vlan_tci);
+    // skb->vlan_tci的使命已经完成，所以这里清除
 	skb->vlan_tci = 0;
 
 	rx_stats = this_cpu_ptr(vlan_dev_priv(vlan_dev)->vlan_pcpu_stats);

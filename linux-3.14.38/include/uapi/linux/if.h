@@ -62,7 +62,7 @@
 /* Private (from user) interface flags (netdevice->priv_flags). 
  * 以下这部分标志用于设置net_device->priv_flags，意味着仅对内核可见
  * */
-#define IFF_802_1Q_VLAN 0x1             /* 802.1Q VLAN device.          */
+#define IFF_802_1Q_VLAN 0x1             /* 802.1Q VLAN device.         用于标示该网络设备是802.1q vlan设备 */
 #define IFF_EBRIDGE	0x2		/* Ethernet bridging device.	*/
 #define IFF_SLAVE_INACTIVE	0x4	/* bonding slave not the curr. active */
 #define IFF_MASTER_8023AD	0x8	/* bonding master, 802.3ad. 	*/

@@ -14,17 +14,20 @@ struct sockaddr_ll {
 	__be16		sll_protocol;
 	int		sll_ifindex;
 	unsigned short	sll_hatype;
-	unsigned char	sll_pkttype;
+	unsigned char	sll_pkttype;    // 包类型
 	unsigned char	sll_halen;
 	unsigned char	sll_addr[8];
 };
 
-/* Packet types */
-
-#define PACKET_HOST		0		/* To us		*/
-#define PACKET_BROADCAST	1		/* To all		*/
-#define PACKET_MULTICAST	2		/* To group		*/
-#define PACKET_OTHERHOST	3		/* To someone else 	*/
+/* Packet types 
+ * 包类型
+ *
+ * 备注： 只对接收到的数据包有意义
+ * */
+#define PACKET_HOST		0		/* To us		标示目标地址是本机的数据包 */
+#define PACKET_BROADCAST	1		/* To all		标示物理层广播包 */
+#define PACKET_MULTICAST	2		/* To group		标示物理层组播包 */
+#define PACKET_OTHERHOST	3		/* To someone else 	标示目标地址是其他主机的数据包 */
 #define PACKET_OUTGOING		4		/* Outgoing of any type */
 #define PACKET_LOOPBACK		5		/* MC/BRD frame looped back */
 #define PACKET_USER		6		/* To user space	*/

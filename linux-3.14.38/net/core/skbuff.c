@@ -845,6 +845,7 @@ EXPORT_SYMBOL_GPL(skb_copy_ubufs);
  *	copies share the same packet data but not structure. The new
  *	buffer has a reference count of 1. If the allocation fails the
  *	function returns %NULL otherwise the new buffer is returned.
+ *	clone相当于进行了一次半拷贝，只生成一个新的skb_buff，不会生成新的缓冲区，也就是说，新skb->buff的skb->head指向旧head内存区
  *
  *	If this function is called from an interrupt gfp_mask() must be
  *	%GFP_ATOMIC.
@@ -957,6 +958,8 @@ EXPORT_SYMBOL(skb_copy);
  *	@headroom: headroom of new skb
  *	@gfp_mask: allocation priority
  *
+ *	copy则相当于进行了一次全拷贝，生成一份新的skb_buff结构体和数据包缓冲区
+ *
  *	Make a copy of both an &sk_buff and part of its data, located
  *	in header. Fragmented data remain shared. This is used when
  *	the caller wishes to modify only header of &sk_buff and needs
@@ -1013,6 +1016,7 @@ EXPORT_SYMBOL(__pskb_copy);
 
 /**
  *	pskb_expand_head - reallocate header of &sk_buff
+ *	根据指定入参nhead/ntail重新扩展该skb的headroom/tailroom
  *	@skb: buffer to reallocate
  *	@nhead: room to add at head
  *	@ntail: room to add at tail
@@ -1255,6 +1259,7 @@ EXPORT_SYMBOL_GPL(pskb_put);
 
 /**
  *	skb_put - add data to a buffer
+ *	找到已经封装的数据尾部，目的是将在尾部增加len个字节数据
  *	@skb: buffer to use
  *	@len: amount of data to add
  *
@@ -1276,8 +1281,11 @@ EXPORT_SYMBOL(skb_put);
 
 /**
  *	skb_push - add data to the start of a buffer
+ *	写指针前移len字节，这样从返回的位置可以写入len个字节数据
  *	@skb: buffer to use
  *	@len: amount of data to add
+ *
+ *  备注：该函数是linux网络协议栈进行封装的核心接口，和skb_pull严格相对
  *
  *	This function extends the used data area of the buffer at the buffer
  *	start. If this would exceed the total buffer headroom the kernel will
@@ -1295,8 +1303,11 @@ EXPORT_SYMBOL(skb_push);
 
 /**
  *	skb_pull - remove data from the start of a buffer
+ *	读指针后移len字节
  *	@skb: buffer to use
  *	@len: amount of data to remove
+ *
+ *  备注：该函数是linux网络协议栈进行解封装的核心接口，和skb_push严格相对
  *
  *	This function removes data from the start of a buffer, returning
  *	the memory to the headroom. A pointer to the next data in the buffer
@@ -2831,6 +2842,7 @@ EXPORT_SYMBOL(skb_append_datato_frags);
 
 /**
  *	skb_pull_rcsum - pull skb and update receive checksum
+ *	读指针向后偏移len长度，并且更新校验和
  *	@skb: buffer to update
  *	@len: length of data pulled
  *
@@ -3969,18 +3981,27 @@ unsigned int skb_gso_transport_seglen(const struct sk_buff *skb)
 }
 EXPORT_SYMBOL_GPL(skb_gso_transport_seglen);
 
+// 彻底去掉vlan帧中的4字节vlan信息，至此，该数据包缓冲区中是一个普通的以太网帧
 static struct sk_buff *skb_reorder_vlan_header(struct sk_buff *skb)
 {
+    // 如果该vlan帧所在的skb是clone的，这里就会触发copy-on-write机制
 	if (skb_cow(skb, skb_headroom(skb)) < 0) {
 		kfree_skb(skb);
 		return NULL;
 	}
 
+    // 这里彻底删除了vlan帧的 [2字节vlan协议类型ID + 2字节vlan-TCI]
 	memmove(skb->data - ETH_HLEN, skb->data - VLAN_ETH_HLEN, 2 * ETH_ALEN);
+    // 同时更新mac地址偏移量
 	skb->mac_header += VLAN_HLEN;
 	return skb;
 }
 
+/* 去掉4字节vlan tag
+ * 
+ * 备注：本函数开始处，该skb->data指向vlan帧 [12字节的mac地址 + 2字节vlan协议类型ID] 之后的位置
+ *       本函数结束处，vlan帧变成了普通的以太网帧，同时该skb->data指向 [2字节以太网协议类型ID/len] 之后的位置
+ */
 struct sk_buff *skb_vlan_untag(struct sk_buff *skb)
 {
 	struct vlan_hdr *vhdr;
@@ -3991,6 +4012,7 @@ struct sk_buff *skb_vlan_untag(struct sk_buff *skb)
 		return skb;
 	}
 
+    // 检查该skb是否是共享的
 	skb = skb_share_check(skb, GFP_ATOMIC);
 	if (unlikely(!skb))
 		goto err_free;
@@ -3998,17 +4020,22 @@ struct sk_buff *skb_vlan_untag(struct sk_buff *skb)
 	if (unlikely(!pskb_may_pull(skb, VLAN_HLEN)))
 		goto err_free;
 
+    // 将该vlan帧中的vlan协议类型和TCI转储到该skb
 	vhdr = (struct vlan_hdr *)skb->data;
 	vlan_tci = ntohs(vhdr->h_vlan_TCI);
 	__vlan_hwaccel_put_tag(skb, skb->protocol, vlan_tci);
 
+    // 读指针向后偏移4字节struct vlan_hdr类型的vlan帧头
 	skb_pull_rcsum(skb, VLAN_HLEN);
+    // 将该vlan帧中封装的以太网类型ID转储到该skb
 	vlan_set_encap_proto(skb, vhdr);
 
+    // 彻底去掉vlan帧中的4字节vlan信息
 	skb = skb_reorder_vlan_header(skb);
 	if (unlikely(!skb))
 		goto err_free;
 
+    // 更新skb的network_header、transport_header、mac_len字段
 	skb_reset_network_header(skb);
 	skb_reset_transport_header(skb);
 	skb_reset_mac_len(skb);

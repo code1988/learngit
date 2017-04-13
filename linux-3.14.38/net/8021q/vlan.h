@@ -87,7 +87,7 @@ static inline void vlan_group_set_device(struct vlan_group *vg,
 }
 
 /* Must be invoked with rcu_read_lock or with RTNL. 
- * 检查相同vlan id的vlan设备是否已经在该宿主设备上存在
+ * 根据vlan id在该宿主设备上索引对应的vlan设备
  * */
 static inline struct net_device *vlan_find_dev(struct net_device *real_dev,
 					       __be16 vlan_proto, u16 vlan_id)
@@ -120,6 +120,7 @@ void vlan_setup(struct net_device *dev);
 int register_vlan_dev(struct net_device *dev);
 void unregister_vlan_dev(struct net_device *dev, struct list_head *head);
 
+// 根据传入的vlan-TCI中的帧优先级，返回vlan设备上对应的入口优先级
 static inline u32 vlan_get_ingress_priority(struct net_device *dev,
 					    u16 vlan_tci)
 {

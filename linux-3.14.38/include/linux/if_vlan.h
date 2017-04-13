@@ -32,12 +32,15 @@
 
 /*
  * 	struct vlan_hdr - vlan header
+ * 	定义了vlan报文头
+ *
+ * 	备注：该vlan头并不包括vlan id，与此同时，包含了位于4个字节vlan字段后面的以太网帧类型ID/len
  * 	@h_vlan_TCI: priority and VLAN ID
  *	@h_vlan_encapsulated_proto: packet type ID or len
  */
 struct vlan_hdr {
-	__be16	h_vlan_TCI;
-	__be16	h_vlan_encapsulated_proto;
+	__be16	h_vlan_TCI; // 包含3部分：801.1p优先级(3bit)、CFI(1bit)、vlan-id(12bit)
+	__be16	h_vlan_encapsulated_proto;  // 以太网帧类型ID
 };
 
 /**
@@ -63,6 +66,7 @@ static inline struct vlan_ethhdr *vlan_eth_hdr(const struct sk_buff *skb)
 	return (struct vlan_ethhdr *)skb_mac_header(skb);
 }
 
+/**< 以下宏用于操作帧中的4字节vlan字段*/
 #define VLAN_PRIO_MASK		0xe000 /* Priority Code Point */
 #define VLAN_PRIO_SHIFT		13
 #define VLAN_CFI_MASK		0x1000 /* Canonical Format Indicator */
@@ -79,8 +83,11 @@ static inline bool is_vlan_dev(struct net_device *dev)
         return dev->priv_flags & IFF_802_1Q_VLAN;
 }
 
+// 检查是否设置了vlan字段中的CFI(实际kernel通常用该位来判断该skb是否携带了vlan标志)
 #define vlan_tx_tag_present(__skb)	((__skb)->vlan_tci & VLAN_TAG_PRESENT)
+// 提取CFI之外的vlan字段内容
 #define vlan_tx_tag_get(__skb)		((__skb)->vlan_tci & ~VLAN_TAG_PRESENT)
+// 提取vlan-id
 #define vlan_tx_tag_get_id(__skb)	((__skb)->vlan_tci & VLAN_VID_MASK)
 
 /**
@@ -256,6 +263,7 @@ static inline bool vlan_uses_dev(const struct net_device *dev)
 }
 #endif
 
+// 判断是否支持vlan发送时硬件加速功能
 static inline bool vlan_hw_offload_capable(netdev_features_t features,
 					   __be16 proto)
 {
@@ -268,6 +276,7 @@ static inline bool vlan_hw_offload_capable(netdev_features_t features,
 
 /**
  * vlan_insert_tag - regular VLAN tag inserting
+ * 插入4字节vlan tag
  * @skb: skbuff to tag
  * @vlan_proto: VLAN encapsulation protocol
  * @vlan_tci: VLAN TCI to insert
@@ -306,6 +315,8 @@ static inline struct sk_buff *vlan_insert_tag(struct sk_buff *skb,
 
 /**
  * __vlan_put_tag - regular VLAN tag inserting
+ * 插入4字节vlan tag，并且更新该skb为vlan协议类型
+ * 
  * @skb: skbuff to tag
  * @vlan_tci: VLAN TCI to insert
  *
@@ -326,6 +337,7 @@ static inline struct sk_buff *__vlan_put_tag(struct sk_buff *skb,
 
 /**
  * __vlan_hwaccel_put_tag - hardware accelerated VLAN inserting
+ * 将vlan协议ID和TCI分别写入该skb的相应字段
  * @skb: skbuff to tag
  * @vlan_proto: VLAN encapsulation protocol
  * @vlan_tci: VLAN TCI to insert
@@ -441,6 +453,7 @@ static inline __be16 vlan_get_protocol(const struct sk_buff *skb)
 	return protocol;
 }
 
+// 提取vlan帧中封装的以太网协议类型ID，并更新skb->protocol
 static inline void vlan_set_encap_proto(struct sk_buff *skb,
 					struct vlan_hdr *vhdr)
 {
@@ -453,13 +466,15 @@ static inline void vlan_set_encap_proto(struct sk_buff *skb,
 	 */
 
 	proto = vhdr->h_vlan_encapsulated_proto;
+    // 首先是判断该字段是type还是len，如果是type字段，则在这里直接更新skb->protocol并返回了
 	if (ntohs(proto) >= ETH_P_802_3_MIN) {
 		skb->protocol = proto;
 		return;
 	}
 
+    // 程序运行到这里意味着该字段是len字段，为了确定以太网类型ID，就需要根据len字段后面的2字节做进一步分析
 	rawp = (unsigned short *)(vhdr + 1);
-	if (*rawp == 0xFFFF)
+	if (*rawp == 0xFFFF)    // len字段后紧跟0xffff意味着这是一个raw 802.3封装的以太网帧
 		/*
 		 * This is a magic hack to spot IPX packets. Older Novell
 		 * breaks the protocol design and runs IPX over 802.3 without
@@ -468,7 +483,7 @@ static inline void vlan_set_encap_proto(struct sk_buff *skb,
 		 * but does for the rest.
 		 */
 		skb->protocol = htons(ETH_P_802_3);
-	else
+	else                    // 其余都统称为802.3+802.2封装的以太网帧
 		/*
 		 * Real 802.2 LLC
 		 */
