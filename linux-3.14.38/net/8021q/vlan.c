@@ -683,6 +683,7 @@ static struct pernet_operations vlan_net_ops = {
 // vlan模块初始化
 static int __init vlan_proto_init(void)
 {
+    nsproxy
 	int err;
 
 	pr_info("%s v%s\n", vlan_fullname, vlan_version);
