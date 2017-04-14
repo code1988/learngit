@@ -154,13 +154,16 @@ static netdev_tx_t vlan_dev_hard_start_xmit(struct sk_buff *skb,
 		skb = __vlan_hwaccel_put_tag(skb, vlan->vlan_proto, vlan_tci);
 	}
 
+    // 将该skb->dev重定向到vlan设备的宿主设备
 	skb->dev = vlan->real_dev;
 	len = skb->len;
 	if (unlikely(netpoll_tx_running(dev)))
 		return vlan_netpoll_send_skb(vlan, skb);
 
+    // 重新进入网络设备发送数据的L3->L2层总接口
 	ret = dev_queue_xmit(skb);
 
+    // 根据ret统计vlan设备的收发信息
 	if (likely(ret == NET_XMIT_SUCCESS || ret == NET_XMIT_CN)) {
 		struct vlan_pcpu_stats *stats;
 

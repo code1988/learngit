@@ -71,8 +71,8 @@ void netdev_set_default_ethtool_ops(struct net_device *dev,
 					 * dev_set_mac_address() */
 
 /* Backlog congestion levels */
-#define NET_RX_SUCCESS		0	/* keep 'em coming, baby */
-#define NET_RX_DROP		1	/* packet dropped */
+#define NET_RX_SUCCESS		0	/* keep 'em coming, baby 通常意味着没有发生拥塞 */
+#define NET_RX_DROP		1	/* packet dropped 数据包被丢弃 */
 
 /*
  * Transmit return codes: transmit return codes originate from three different
@@ -1348,7 +1348,7 @@ struct net_device {
 
 #endif
 
-	rx_handler_func_t __rcu	*rx_handler;
+	rx_handler_func_t __rcu	*rx_handler;    // 指向一个额外的数据包接收处理函数(普通设备不会注册该回调，一般就是作为bridge端口的设备才会有)
 	void __rcu		*rx_handler_data;
 
 	struct netdev_queue __rcu *ingress_queue;

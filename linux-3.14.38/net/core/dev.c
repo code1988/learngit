@@ -1722,6 +1722,7 @@ int dev_forward_skb(struct net_device *dev, struct sk_buff *skb)
 }
 EXPORT_SYMBOL_GPL(dev_forward_skb);
 
+// 接收到的L2数据包最终会在这里交付到L3
 static inline int deliver_skb(struct sk_buff *skb,
 			      struct packet_type *pt_prev,
 			      struct net_device *orig_dev)
@@ -2635,6 +2636,7 @@ int dev_hard_start_xmit(struct sk_buff *skb, struct net_device *dev,
 
 		skb_len = skb->len;
 		trace_net_dev_start_xmit(skb, dev);
+        // 最终在这里调用设备已经注册好的发送函数，对于实际设备来说，也就是从这里进入了设备具体驱动部分
 		rc = ops->ndo_start_xmit(skb, dev);
 		trace_net_dev_xmit(skb, rc, dev, skb_len);
 		if (rc == NETDEV_TX_OK)
@@ -3624,21 +3626,24 @@ ncls:
 	}
 
     // 程序运行到这里，该skb已经是一个彻底的普通的以太网数据包了
+    // 这里尝试获取该skb所属设备的dev->rx_handler，如果注册，则在这里执行该回调(通常只有bridge端口设备会注册)
 	rx_handler = rcu_dereference(skb->dev->rx_handler);
 	if (rx_handler) {
+        // 如果之前有遗留下来尚未被上层处理的普通数据包，则先将它传递给上层处理掉
 		if (pt_prev) {
 			ret = deliver_skb(skb, pt_prev, orig_dev);
 			pt_prev = NULL;
 		}
+        // 执行该设备(通常就是bridge端口设备)的额外的接收处理函数，并对返回值做相应处理
 		switch (rx_handler(&skb)) {
-		case RX_HANDLER_CONSUMED:
+		case RX_HANDLER_CONSUMED:   // 这种情况意味着skb->dev在处理过程中已经被重定向，剩下的工作都由重定向后的设备完成了，所以处理完后直接返回了
 			ret = NET_RX_SUCCESS;
 			goto unlock;
 		case RX_HANDLER_ANOTHER:
 			goto another_round;
 		case RX_HANDLER_EXACT:
 			deliver_exact = true;
-		case RX_HANDLER_PASS:
+		case RX_HANDLER_PASS:       // 这种情况意味着skb->dev并没有在处理过程中被重定向，所以处理完后又回来继续走下面的流程
 			break;
 		default:
 			BUG();

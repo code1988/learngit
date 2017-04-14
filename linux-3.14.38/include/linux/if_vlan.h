@@ -54,7 +54,7 @@ struct vlan_hdr {
 struct vlan_ethhdr {
 	unsigned char	h_dest[ETH_ALEN];
 	unsigned char	h_source[ETH_ALEN];
-	__be16		h_vlan_proto;
+	__be16		h_vlan_proto;       // 通常就是0x8100
 	__be16		h_vlan_TCI;
 	__be16		h_vlan_encapsulated_proto;
 };
