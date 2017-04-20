@@ -547,7 +547,7 @@ static int vlan_ioctl_handler(struct net *net, void __user *arg)
 	case GET_VLAN_REALDEV_NAME_CMD:
 	case GET_VLAN_VID_CMD:
 		err = -ENODEV;
-        // 根据用户传入的设备名查找实际对应的设备管理块
+        // 根据用户传入的设备名查找对应的设备管理块
 		dev = __dev_get_by_name(net, args.device1);
 		if (!dev)
 			goto out;
