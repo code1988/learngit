@@ -114,8 +114,10 @@ struct net_device *vlan_dev_real_dev(const struct net_device *dev)
 }
 EXPORT_SYMBOL(vlan_dev_real_dev);
 
+// 获取该vlan设备的vid
 u16 vlan_dev_vlan_id(const struct net_device *dev)
 {
+    // 从该vlan设备附属的私有空间获取vid
 	return vlan_dev_priv(dev)->vlan_id;
 }
 EXPORT_SYMBOL(vlan_dev_vlan_id);

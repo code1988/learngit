@@ -27,12 +27,12 @@ enum vlan_ioctl_cmds {
 	GET_VLAN_INGRESS_PRIORITY_CMD,
 	GET_VLAN_EGRESS_PRIORITY_CMD,
 	SET_VLAN_NAME_TYPE_CMD,         // 设置vlan名字的显示风格，设置前的已有的vlan显示风格不变，设置时不需要指定device1
-	SET_VLAN_FLAG_CMD,
+	SET_VLAN_FLAG_CMD,              // 设置该vlan设备私有空间的flags，主要用来开启GVRP/MVRP功能(这条命令使用比较繁琐)。
 	GET_VLAN_REALDEV_NAME_CMD, /* If this works, you know it's a VLAN device, btw */
-	GET_VLAN_VID_CMD /* Get the VID of this VLAN (specified by name) */
+	GET_VLAN_VID_CMD /* Get the VID of this VLAN (specified by name) 根据传入的vlan设备名获取对应的VID，其实根据vlan设备名就可以知道了 */
 };
 
-// vlan私有空间vlan_dev_priv->flags标志枚举
+// vlan设备私有空间vlan_dev_priv->flags标志枚举
 enum vlan_flags {
 	VLAN_FLAG_REORDER_HDR	= 0x1,      // 决定了报文发送时是否需要打上vlan tag / 报文接收时是否需要脱掉vlan tag(创建vlan设备时缺省设置了该标志)
 	VLAN_FLAG_GVRP		= 0x2,
@@ -53,7 +53,8 @@ enum vlan_name_types {
 struct vlan_ioctl_args {
 	int cmd; /* Should be one of the vlan_ioctl_cmds enum above. */
 	char device1[24];       // 用户传入的设备名，用于内核查找实际对应的设备
-                            // 调用ADD_VLAN_CMD/SET_VLAN_FLAG_CMD时，该参数传入的是vlan的宿主设备名
+                            // 调用ADD_VLAN_CMD时，该参数传入的是vlan的宿主设备名
+                            // 调用SET_VLAN_NAME_TYPE_CMD时，该参数不用填
                             // 调用其他命令时，该参数传入的是vlan设备名
         union {
 		char device2[24];   // 用于返回vlan设备名
@@ -61,7 +62,7 @@ struct vlan_ioctl_args {
 		unsigned int skb_priority;
 		unsigned int name_type;
 		unsigned int bind_type;
-		unsigned int flag; /* Matches vlan_dev_priv flags */
+		unsigned int flag; /* Matches vlan_dev_priv flags 注意点，想要开启某功能时需要同时设置vlan_qos为非0*/
         } u;
 
 	short vlan_qos;   

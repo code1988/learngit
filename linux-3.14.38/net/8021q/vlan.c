@@ -553,7 +553,7 @@ static int vlan_ioctl_handler(struct net *net, void __user *arg)
 			goto out;
 
 		err = -EINVAL;
-        // 如果不是添加vlan设备命令时，必须确保该设备是vlan设备
+        // 以上这些命令中除了ADD_VLAN_CMD，必须确保device1传入的设备名指的是vlan设备
 		if (args.cmd != ADD_VLAN_CMD && !is_vlan_dev(dev))
 			goto out;
 	}
@@ -635,6 +635,7 @@ static int vlan_ioctl_handler(struct net *net, void __user *arg)
 
 	case GET_VLAN_VID_CMD:
 		err = 0;
+        // 获取该vlan设备的vid
 		args.u.VID = vlan_dev_vlan_id(dev);
 		if (copy_to_user(arg, &args,
 				 sizeof(struct vlan_ioctl_args)))

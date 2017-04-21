@@ -1,0 +1,40 @@
+一. VLAN的核心概念
+    1. 划分VLAN的核心目的只有一个：分割广播域。
+       通过VLAN对广播域进行合理分割之后，一是可以缩小ARP攻击的范围，从而提高网络的安全性；二是可以缩小广播域的大小，从而提高网络的性能。
+
+       所以要注意的是，划分VLAN的目的中根本没有隔离不同VLAN用户互访这一说法，这只是划分VLAN之后的一种应用，不然使用三层设备实现不同VLAN
+       间互访就成了多此一举。
+
+    2. 单独的一个VLAN模拟了一个常规的以太网交换机，因此VLAN实际上就是将一台物理交换机分割成了多台逻辑交换机，变相也节省了物理设备。
+       站在二层的角度，不同VLAN间是无法通信的，VLAN间想要进行通信必须有三层参与。 
+       
+    3. 本地VLAN的实现方式有很多种，常见的有基于端口的VLAN、基于MAC地址的VLAN、基于IP地址的VLAN、基于用户的VLAN等，这里略过。
+    
+    4. 跨设备的VLAN，标准的实现方法主要就是802.1q，通过VID来识别不同的VLAN，本文主要就是记录了802.1q的相关内容。
+
+    5. 802.1q的应用原则：通常在上行链路的第一台VLAN交换机打上tag，在下行链路的最后一台VLAN交换机去掉tag；
+                         基于802.1q的VLAN划分既要合理，又要尽量简单，原则就是只有当一个数据帧不打tag就不能区分属于哪个VLAN时才打上tag，
+                         能去掉时尽早去掉。
+
+
+二. Linux中VLAN的实现原理
+    Linux中跟VLAN相关的代码主要位于net/8021q目录中。
+    Linux中的VLAN是一种特殊的虚拟设备，所有的VLAN设备必须依赖于它的宿主设备才能存在。
+
+    1. VLAN模块的初始化
+        int __init vlan_proto_init(void)
+        {
+            // 将vlan模块注册到每一个网络命名空间，并且执行了vlan_init_net
+            register_pernet_subsys(&vlan_net_ops);
+            // 向通知链中注册一个vlan事件通知块
+            register_netdevice_notifier(&vlan_notifier_block);
+            // 初始化操作vlan用的netlink接口
+            vlan_netlink_init();
+            // 设置用于vlan操作的ioctl钩子函数
+            vlan_ioctl_set(vlan_ioctl_handler);
+        }
+        
+        备注：以上4步操作基本是加载一个顶层网络模块的通用格式，
+    
+        
+    2. VLAN设备的创建流程

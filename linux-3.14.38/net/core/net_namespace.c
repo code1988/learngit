@@ -90,7 +90,7 @@ assign:
 	return 0;
 }
 
-// 注册一个网络功能模块到一个网络命名空间
+// 注册一个网络功能模块到一个网络命名空间(主要就是创建模块的私有空间、执行模块具体的init函数)
 static int ops_init(const struct pernet_operations *ops, struct net *net)
 {
 	int err = -ENOMEM;
