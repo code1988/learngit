@@ -23,7 +23,7 @@ enum vlan_protos {
  * 存储的vlan设备呈现四维结构：VLAN_PROTO_NUM * VLAN_GROUP_ARRAY_SPLIT_PARTS * VLAN_GROUP_ARRAY_PART_LEN * struct net_device指针
  */
 struct vlan_group {
-	unsigned int		nr_vlan_devs;   // 记录了该vlan组中包含的vlan数量
+	unsigned int		nr_vlan_devs;   // 记录了该vlan组中包含的vlan设备数量
 	struct hlist_node	hlist;	/* linked list */
 	struct net_device **vlan_devices_arrays[VLAN_PROTO_NUM]
 					       [VLAN_GROUP_ARRAY_SPLIT_PARTS];  // 记录了该vlan组中包含的所有vlan设备
@@ -35,7 +35,7 @@ struct vlan_info {
 					    * the vlan is attached to.
                         * 宿主设备
 					    */
-	struct vlan_group	grp;        // vlan组，记录了所有绑定了的vlan设备
+	struct vlan_group	grp;        // vlan组，记录了所有绑定在该宿主设备上的vlan设备
 	struct list_head	vid_list;   // vlan id的链表头
 	unsigned int		nr_vids;    // 记录了该vlan id链表中节点数量
 	struct rcu_head		rcu;
@@ -172,14 +172,16 @@ extern int vlan_net_id;
 
 struct proc_dir_entry;
 
-// 定义了有关vlan的proc文件系统信息
+/* 定义了整个VLAN模块公用的私有空间(当然公用的前提是同一个网络命名空间下)
+ * 这里具体就是记录了有关vlan的proc文件系统信息
+ */
 struct vlan_net {
 	/* /proc/net/vlan */
 	struct proc_dir_entry *proc_vlan_dir;
 	/* /proc/net/vlan/config */
 	struct proc_dir_entry *proc_vlan_conf;
 	/* Determines interface naming scheme. */
-	unsigned short name_type;   // vlan名字在用户层的显示风格，通常选择eth0.10的风格
+	unsigned short name_type;   // vlan设备名字显示风格，通常选择eth0.10的风格
 };
 
 #endif /* !(__BEN_VLAN_802_1Q_INC__) */

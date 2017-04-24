@@ -277,6 +277,7 @@ int vlan_dev_change_flags(const struct net_device *dev, u32 flags, u32 mask)
 	return 0;
 }
 
+// 获取vlan设备对应的宿主设备名
 void vlan_dev_get_realdev_name(const struct net_device *dev, char *result)
 {
 	strncpy(result, vlan_dev_priv(dev)->real_dev->name, 23);
@@ -810,7 +811,7 @@ static void vlan_dev_free(struct net_device *dev)
 	free_netdev(dev);
 }
 
-// vlan设备初始化回调函数
+// 每个新创建的vlan设备初始化回调函数
 void vlan_setup(struct net_device *dev)
 {
     // 为vlan设备设置一些链路层基本参数

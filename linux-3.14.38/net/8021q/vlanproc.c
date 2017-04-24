@@ -142,8 +142,8 @@ void vlan_proc_cleanup(struct net *net)
 
 /*
  *	Create /proc/net/vlan entries
+ *	在proc文件系统中创建VLAN模块的节点
  */
-
 int __net_init vlan_proc_init(struct net *net)
 {
     // 根据vlan_net_id索引得到对应的vlan_net结构

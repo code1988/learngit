@@ -157,7 +157,7 @@ struct vlan_dev_priv {
 
 	__be16					vlan_proto; // vlan协议类型(大端)
 	u16					vlan_id;        // vlan id
-	u16					flags;          // VLAN_FLAG_* 
+	u16					flags;          // VLAN_FLAG_* 用来记录该vlan设备的几个特征标志，默认总是设置了REORDER_HDR
 
 	struct net_device			*real_dev;  // 宿主设备
 	unsigned char				real_dev_addr[ETH_ALEN];    // 宿主设备mac

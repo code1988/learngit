@@ -147,7 +147,7 @@ int vlan_check_real_dev(struct net_device *real_dev,
 	return 0;
 }
 
-// 进一步注册一个新的vlan设备
+// 进一步注册该vlan设备
 int register_vlan_dev(struct net_device *dev)
 {
 	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);    // 获取vlan设备附属的私有空间
@@ -157,7 +157,7 @@ int register_vlan_dev(struct net_device *dev)
 	struct vlan_group *grp;
 	int err;
 
-    // 将指定vlan协议ID的vlan id添加到宿主设备的vlan_info管理块中
+    // 将指定vlan协议类型的vlan id添加到宿主设备的vlan_info管理块中
 	err = vlan_vid_add(real_dev, vlan->vlan_proto, vlan_id);
 	if (err)
 		return err;
@@ -254,7 +254,7 @@ static int register_vlan_device(struct net_device *real_dev, u16 vlan_id)
 		return err;
 
 	/* Gotta set up the fields for the device. 
-     * 根据vlan设备在用户层不同的显示风格生成相应的vlan设备名
+     * 根据vlan设备不同的显示风格生成相应的vlan设备名
      * */
 	switch (vn->name_type) {
 	case VLAN_NAME_TYPE_RAW_PLUS_VID:
@@ -281,7 +281,7 @@ static int register_vlan_device(struct net_device *real_dev, u16 vlan_id)
 		snprintf(name, IFNAMSIZ, "vlan%.4i", vlan_id);
 	}
 
-    // 创建一个vlan设备，并执行vlan_setup完成基本的初始化
+    // 创建一个vlan设备以及附属的私有空间，并执行vlan_setup完成基本的初始化
 	new_dev = alloc_netdev(sizeof(struct vlan_dev_priv), name, vlan_setup);
 
 	if (new_dev == NULL)
@@ -300,10 +300,10 @@ static int register_vlan_device(struct net_device *real_dev, u16 vlan_id)
 	vlan->vlan_proto = htons(ETH_P_8021Q);  // 记录vlan协议类型
 	vlan->vlan_id = vlan_id;                // 记录vlan id
 	vlan->real_dev = real_dev;              // 记录宿主设备
-	vlan->dent = NULL;                      // 清除在proc文件系统中的入口
-	vlan->flags = VLAN_FLAG_REORDER_HDR;
+	vlan->dent = NULL;                      // 暂且先清除在proc文件系统中的入口
+	vlan->flags = VLAN_FLAG_REORDER_HDR;    // 每个新创建的VLAN默认都设置了REORDER_HDR标志
 
-	new_dev->rtnl_link_ops = &vlan_link_ops;// 注册rtnetlink接口管理该vlan设备的回调函数集
+	new_dev->rtnl_link_ops = &vlan_link_ops;// 注册netlink接口操作集合用于管理该vlan设备(这组集合其实在模块层面的初始化中已经被注册进netlink)
     
     // 进一步注册一个新的vlan设备
 	err = register_vlan_dev(new_dev);
@@ -595,6 +595,7 @@ static int vlan_ioctl_handler(struct net *net, void __user *arg)
         // 设置vlan设备名风格的用户需要进行管理员级别权限测试
 		if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
 			break;
+        // 如果传入的vlan设备名风格有效则更新
 		if ((args.u.name_type >= 0) &&
 		    (args.u.name_type < VLAN_NAME_TYPE_HIGHEST)) {
 			struct vlan_net *vn;
@@ -621,12 +622,14 @@ static int vlan_ioctl_handler(struct net *net, void __user *arg)
         // 删除vlan设备的用户需要进行管理员级别权限测试
 		if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
 			break;
+        // 注销该vlan设备
 		unregister_vlan_dev(dev, NULL);
 		err = 0;
 		break;
 
 	case GET_VLAN_REALDEV_NAME_CMD:
 		err = 0;
+        // 获取vlan设备对应的宿主设备名
 		vlan_dev_get_realdev_name(dev, args.u.device2);
 		if (copy_to_user(arg, &args,
 				 sizeof(struct vlan_ioctl_args)))
@@ -654,11 +657,11 @@ out:
 // 具体的vlan功能初始化(实际就是创建proc文件系统下的vlan接口)
 static int __net_init vlan_init_net(struct net *net)
 {
-    // 根据vlan_net_id在该网络命名空间下索引对应的私有数据块，也就是vlan_net
+    // 根据vlan_net_id在该网络命名空间下索引对应的私有空间，也就是vlan_net
 	struct vlan_net *vn = net_generic(net, vlan_net_id);
 	int err;
 
-    // 设置用户层vlan的默认显示风格，类似 eth0.10
+    // 设置vlan设备名的默认显示风格，类似 eth0.10
 	vn->name_type = VLAN_NAME_TYPE_RAW_PLUS_VID_NO_PAD;
 
     // 在proc文件系统中创建vlan接口(/proc/net/vlan)

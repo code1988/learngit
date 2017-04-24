@@ -25,7 +25,7 @@ static inline int rtnl_msg_family(const struct nlmsghdr *nlh)
 
 /**
  *	struct rtnl_link_ops - rtnetlink link operations
- *	定义一个rtnetlink接口的连接状态操作集合结构
+ *	定义一个rtnetlink接口的link操作集合结构
  *
  *	@list: Used internally
  *	@kind: Identifier
