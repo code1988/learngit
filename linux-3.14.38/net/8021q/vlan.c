@@ -585,6 +585,7 @@ static int vlan_ioctl_handler(struct net *net, void __user *arg)
         // 设置vlan标志位命令的用户需要进行管理员级别权限测试
 		if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
 			break;
+        // 修改vlan设备附属的私有空间vlan_dev_priv->flags标志
 		err = vlan_dev_change_flags(dev,
 					    args.vlan_qos ? args.u.flag : 0,
 					    args.u.flag);

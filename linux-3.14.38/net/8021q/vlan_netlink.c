@@ -88,7 +88,7 @@ static int vlan_validate(struct nlattr *tb[], struct nlattr *data[])
 	return 0;
 }
 
-// 对一个已经存在的vlan设备进行参数修改(处理来自用户空间设置的参数)
+// 对一个已经存在的vlan设备进行参数修改(处理来自用户空间设置的参数，用来设置设备私有空间vlan_dev_priv中的成员)
 static int vlan_changelink(struct net_device *dev,
 			   struct nlattr *tb[], struct nlattr *data[])
 {
@@ -125,7 +125,7 @@ static int vlan_changelink(struct net_device *dev,
  * @tb[]        - ?
  * @data[]      - ?
  *
- * 备注：对应ioctl接口的函数register_vlan_device
+ * 备注：对应ioctl接口的函数register_vlan_device，主要的区别在于调用本函数前vlan设备管理块已经被创建
  */
 static int vlan_newlink(struct net *src_net, struct net_device *dev,
 			struct nlattr *tb[], struct nlattr *data[])
@@ -160,7 +160,7 @@ static int vlan_newlink(struct net *src_net, struct net_device *dev,
 	vlan->real_dev	 = real_dev;    // 记录宿主设备
 	vlan->flags	 = VLAN_FLAG_REORDER_HDR;   // vlan设备缺省都会打上VLAN_FLAG_REORDER_HDR标志
 
-    // 检查宿主设备是否支持在其上面创建vlan设备以及要创建的vlan id在该设备上是否已经存在
+    // 检查宿主设备是否支持vlan协议以及要创建的vlan id在该设备上是否已经存在
 	err = vlan_check_real_dev(real_dev, vlan->vlan_proto, vlan->vlan_id);
 	if (err < 0)
 		return err;
