@@ -65,7 +65,9 @@ struct blob_attr_info {
 	bool (*validate)(const struct blob_attr_info *, struct blob_attr *);
 };
 
-// blob模块控制块
+/* blob模块控制块
+ * 注意： blob_buf数据使用完后一定要调用blob_buf_free销毁，特别是当定义成局部变量的blob_buf，切记！！
+ */
 struct blob_buf {
 	struct blob_attr *head; // 指向当前嵌套级别的领袖blob的属性空间（属性空间其实是在缓冲区中分配的，刚初始化时head和buf地址重合）
 	bool (*grow)(struct blob_buf *buf, int minlen); // 指向blob缓冲区容量调整函数

@@ -135,7 +135,9 @@ int blobmsg_parse_array(const struct blobmsg_policy *policy, int policy_len,
 	return 0;
 }
 
-// 解析父消息的下一级消息，根据指定的消息策略过滤，通过的子消息存储到指定数组tb
+/* 解析父消息的下一级消息，根据指定的消息策略过滤，通过的子消息存储到指定数组tb
+ * 由于有长度入参policy_len，所以本函数的使用场景是下一级消息数量为固定值的情况
+ */
 int blobmsg_parse(const struct blobmsg_policy *policy, int policy_len,
                   struct blob_attr **tb, void *data, unsigned int len)
 {

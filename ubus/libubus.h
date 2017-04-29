@@ -142,7 +142,9 @@ struct ubus_event_handler {
 	ubus_event_handler_t cb;
 };
 
-// ubus客户端控制块
+/* ubus客户端控制块
+ * 对于全局形式的ubus_context变量，一定要注意不能嵌套使用，切记！！
+ */
 struct ubus_context {
 	struct list_head requests;
 	struct avl_tree objects;            // avl树控制块
