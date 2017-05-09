@@ -1,0 +1,34 @@
+core文件包含了程序崩溃时的内存，寄存器状态，堆栈指针，内存管理信息等。
+---------------------------------------------------------------------
+
+linux系统中coredump功能默认是关闭的，开启的方法是：
+        $ ulimit -c [size]/unlimited
+备注：以上操作只会在当前进程环境下生效，要想针对所有用户全局生效，一种方式是将上面命令写入/etc/profile
+        ulimit -S -c unlimited > /dev/null 2>&1
+
+core文件默认的生成位置跟对应的可执行文件在同一目录下，文件名默认是core。
+备注：如果程序中调用chdir函数改变了当前工作目录，这时候core文件将会默认生成在chdir指定的目录下。
+
+proc文件/proc/sys/kernel/core_pattern中记录了core文件遵循的格式，主要是以下几种用法：
+        [1]. 执行下面这条命令后，coredump文件将会生成在 /var/coredump/ 目录下
+            # echo "/var/coredump/core" > /proc/sys/kernel/core_pattern        
+        [2]. 执行下面这条命令后，生成的coredump文件名格式将会变成 core.对应的pid
+            # echo "core.%p" > /proc/sys/kernel/core_pattern        
+            备注： 以下是支持的参数列表
+                    %p - 添加pid
+                    %u - 添加uid
+                    %g - 添加gid
+                    %s - 添加导致产生core文件的信号
+                    %t - 添加core文件生成时间
+                    %h - 添加主机名
+                    %e - 添加可执行文件名
+
+proc文件/proc/sys/kernel/core_uses_pid中记录了生成的core文件是否会带pid(默认为0表示不带)
+        执行下面这条命令后，生成的coredump文件名格式将会变成 core.对应的pid
+            # echo "1" > /proc/sys/kernel/core_uses_pid
+
+备注： 以上对proc文件进行操作时，必须确保拥有root权限
+
+
+        
+        
