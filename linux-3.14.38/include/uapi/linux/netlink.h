@@ -166,7 +166,7 @@ enum {
  */
 // netlink消息attributes结构中的标准头格式
 struct nlattr {
-	__u16           nla_len;    // 属性实际长度，不包含尾部padding
+	__u16           nla_len;    // 属性头 + 填充 + payload (不包含尾部padding)
 	__u16           nla_type;   // 属性类型
 };
 
