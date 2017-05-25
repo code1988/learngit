@@ -31,6 +31,8 @@ typedef unsigned int Counter;
 /**
  * struct eapol_authenticator - Global EAPOL authenticator data
  * 供认证者使用的eapol层数据块
+ * 备注：不同于下面的struct eapol_state_machine，该数据结构的服务对象是整个bss，所以在bss初始化时同时完成了初始化
+ *       
  */
 struct eapol_authenticator {
 	struct eapol_auth_config conf;  // 配置信息
@@ -44,6 +46,7 @@ struct eapol_authenticator {
 /**
  * struct eapol_state_machine - Per-Supplicant Authenticator state machines
  * 定义了每个请求者对应的认证系统eapol层 + eap层 所有状态机统一管理块
+ * 备注：不同于上面的struct eapol_authenticator，该数据结构的服务对象是bss上接入的每个sta，所以是在有客户端接入并生成对应的sta时初始化
  */
 struct eapol_state_machine {
 	/* timers */

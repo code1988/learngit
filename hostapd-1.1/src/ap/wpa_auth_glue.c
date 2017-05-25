@@ -545,7 +545,7 @@ void hostapd_reconfig_wpa(struct hostapd_data *hapd)
 	wpa_reconfig(hapd->wpa_auth, &wpa_auth_conf);
 }
 
-
+// 包含了关闭该bss上的802.1x功能
 void hostapd_deinit_wpa(struct hostapd_data *hapd)
 {
 	ieee80211_tkip_countermeasures_deinit(hapd);
@@ -566,6 +566,7 @@ void hostapd_deinit_wpa(struct hostapd_data *hapd)
 				   hapd->conf->iface);
 		}
 	}
+    // 关闭该bss上的802.1x功能
 	ieee802_1x_deinit(hapd);
 
 #ifdef CONFIG_IEEE80211R

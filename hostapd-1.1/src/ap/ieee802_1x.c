@@ -665,7 +665,7 @@ static void handle_eap(struct hostapd_data *hapd, struct sta_info *sta,
 	}
 }
 
-// 为当前这个站表元素创建一个状态机统一控制块
+// 为当前这个sta创建一个状态机统一控制块
 static struct eapol_state_machine *
 ieee802_1x_alloc_eapol_sm(struct hostapd_data *hapd, struct sta_info *sta)
 {
@@ -772,6 +772,7 @@ void ieee802_1x_receive(struct hostapd_data *hapd, const u8 *sa, const u8 *buf,
 	if (!sta->eapol_sm) {
 		sta->eapol_sm = ieee802_1x_alloc_eapol_sm(hapd, sta);
 		if (!sta->eapol_sm)
+            // 因为是创建失败，所以就没必要调用ieee802_1x_free_station进行释放
 			return;
 
 #ifdef CONFIG_WPS
@@ -928,6 +929,7 @@ void ieee802_1x_new_station(struct hostapd_data *hapd, struct sta_info *sta)
 			       HOSTAPD_LEVEL_DEBUG, "start authentication");
 		sta->eapol_sm = ieee802_1x_alloc_eapol_sm(hapd, sta);
 		if (sta->eapol_sm == NULL) {
+            // 因为是创建失败，所以就没必要调用ieee802_1x_free_station进行释放
 			hostapd_logger(hapd, sta->addr,
 				       HOSTAPD_MODULE_IEEE8021X,
 				       HOSTAPD_LEVEL_INFO,
@@ -1009,7 +1011,9 @@ void ieee802_1x_new_station(struct hostapd_data *hapd, struct sta_info *sta)
 	}
 }
 
-// 释放sta上跟802.1x协议相关的数据块
+/* 释放sta上跟802.1x协议相关的数据块，包括状态机的注销
+ * 备注：不考虑本文件内，本函数只会被sta层调用
+ */
 void ieee802_1x_free_station(struct sta_info *sta)
 {
 	struct eapol_state_machine *sm = sta->eapol_sm;
@@ -1783,7 +1787,9 @@ static void ieee802_1x_eapol_event(void *ctx, void *sta_ctx,
 	}
 }
 
-// 每个bss上802.1x初始化函数，最初的入口在hostapd_setup_interface函数中
+/* 每个bss上802.1x初始化函数，最初的入口在hostapd_setup_interface函数中
+ * 备注：本函数操作的对象是整个bss，所以是在bss初始化时同时完成的
+ */
 int ieee802_1x_init(struct hostapd_data *hapd)
 {
 	int i;
@@ -1860,7 +1866,10 @@ int ieee802_1x_init(struct hostapd_data *hapd)
 	return 0;
 }
 
-// 关闭802.1x功能
+/* 关闭802.1x功能
+ * 备注：本函数操作的对象是整个bss
+ *       只是简单的关闭了bss上的802.1x功能，并没有去处理bss上已经存在的sta表，所以调用本函数的前提是那些sta已经释放
+ */
 void ieee802_1x_deinit(struct hostapd_data *hapd)
 {
 	eloop_cancel_timeout(ieee802_1x_rekey, hapd, NULL);

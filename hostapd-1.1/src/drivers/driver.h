@@ -1444,6 +1444,8 @@ struct wpa_driver_ops {
 	/**
 	 * hapd_deinit - Deinitialize driver interface (hostapd only)
 	 * @priv: Private driver interface data from hapd_init()
+     * 注销驱动器，在main.c的删除接口函数中被调用
+     * 备注：注销驱动器之前，先要调用下面的set_ieee8021x执行驱动层的关闭802.1x操作
 	 */
 	void (*hapd_deinit)(void *priv);
 
@@ -1458,6 +1460,7 @@ struct wpa_driver_ops {
 	 * can be left undefined (set to %NULL) if IEEE 802.1X support is
 	 * always enabled and the driver uses set_ap() to set WPA/RSN IE
 	 * for Beacon frames.
+     * 驱动层的使能/禁止802.1x操作
 	 *
 	 * DEPRECATED - use set_ap() instead
 	 */

@@ -926,7 +926,9 @@ SM_STEP(CTRL_DIR)
 	}
 }
 
-// 创建认证系统eapol层 + eap层 状态机统一管理块
+/* 创建认证系统eapol层 + eap层 状态机统一管理块
+ * 备注：不同于eapol_auth_init，本函数是针对bss上具体一个sta的802.1x-eapol模块执行初始化
+ */
 struct eapol_state_machine *
 eapol_auth_alloc(struct eapol_authenticator *eapol, const u8 *addr,
 		 int flags, const struct wpabuf *assoc_wps_ie,
@@ -1018,7 +1020,9 @@ eapol_auth_alloc(struct eapol_authenticator *eapol, const u8 *addr,
 }
 
 
-// 释放该状态机统一管理块
+/* 释放该状态机统一管理块
+ * 备注：不同于eapol_auth_deinit，本函数是针对bss上具体一个sta的802.1x-eapol模块执行注销
+ */
 void eapol_auth_free(struct eapol_state_machine *sm)
 {
 	if (sm == NULL)
@@ -1299,7 +1303,9 @@ static void eapol_auth_conf_free(struct eapol_auth_config *conf)
 }
 
 
-// 执行eapol认证器初始化,实际就是申请一个eapol认证控制块，并导入配置信息和回调函数
+/* 执行eapol认证器初始化,实际就是申请一个eapol认证控制块，并导入配置信息和回调函数
+ * 备注：不同于eapol_auth_alloc，本函数是对整个bss上的802.x-eapol模块执行初始化
+ */
 struct eapol_authenticator * eapol_auth_init(struct eapol_auth_config *conf,
 					     struct eapol_auth_cb *cb)
 {
@@ -1333,7 +1339,9 @@ struct eapol_authenticator * eapol_auth_init(struct eapol_auth_config *conf,
 	return eapol;
 }
 
-// 注销整个eapol认证器(意味着所在bss即将关闭802.1x认证功能)
+/* 注销整个eapol认证器(意味着所在bss即将关闭802.1x认证功能)
+ * 备注：不同于eapol_auth_free，本函数是对整个bss上的802.x-eapol模块执行注销
+ */
 void eapol_auth_deinit(struct eapol_authenticator *eapol)
 {
 	if (eapol == NULL)

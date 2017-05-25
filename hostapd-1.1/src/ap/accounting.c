@@ -481,7 +481,7 @@ static void accounting_report_state(struct hostapd_data *hapd, int on)
  * accounting_init: Initialize accounting
  * @hapd: hostapd BSS data
  * Returns: 0 on success, -1 on failure
- * 初始化计费功能
+ * 针对指定bss，初始化计费功能
  * 通过注册一个计费接口到radius RX回调函数中实现
  */
 int accounting_init(struct hostapd_data *hapd)
@@ -506,6 +506,7 @@ int accounting_init(struct hostapd_data *hapd)
 /**
  * accounting_deinit: Deinitilize accounting
  * @hapd: hostapd BSS data
+ * 注销指定bss的计费功能
  */
 void accounting_deinit(struct hostapd_data *hapd)
 {

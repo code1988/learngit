@@ -235,11 +235,14 @@ static void hostapd_cleanup(struct hostapd_data *hapd)
 
 	iapp_deinit(hapd->iapp);
 	hapd->iapp = NULL;
+    // 注销指定bss的计费功能
 	accounting_deinit(hapd);
+    // 包含了关闭该bss上的802.1x功能
 	hostapd_deinit_wpa(hapd);
 	vlan_deinit(hapd);
 	hostapd_acl_deinit(hapd);
 #ifndef CONFIG_NO_RADIUS
+    // 注销指定bss上的radius客户端控制块
 	radius_client_deinit(hapd->radius);
 	hapd->radius = NULL;
 #endif /* CONFIG_NO_RADIUS */
@@ -899,7 +902,9 @@ hostapd_alloc_bss_data(struct hostapd_iface *hapd_iface,
 	return hapd;
 }
 
-// 释放该接口包含的bss下辖的所有资源(只释放bss下辖的资源，其余不在这里释放)
+/* 释放该接口包含的bss下辖的所有资源(只释放bss下辖的资源，其余不在这里释放)
+ * 本函数有个bug：没有调用ieee802_1x_deinit注销bss上的802.1x功能
+ */
 void hostapd_interface_deinit(struct hostapd_iface *iface)
 {
 	size_t j;

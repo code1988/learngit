@@ -325,6 +325,7 @@ static void hostapd_interface_deinit_free(struct hostapd_iface *iface)
 	drv_priv = iface->bss[0]->drv_priv;
     // 释放该接口包含的bss下辖的所有资源(只释放bss下辖的资源，其余不在这里释放)
 	hostapd_interface_deinit(iface);
+    // 注销该接口的驱动器
 	if (driver && driver->hapd_deinit)
 		driver->hapd_deinit(drv_priv);
     // 进一步释放该接口包含的所有资源(调用本函数的前提是事先调用了hostapd_interface_deinit)

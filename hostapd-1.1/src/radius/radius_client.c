@@ -1346,6 +1346,7 @@ radius_client_init(void *ctx, struct hostapd_radius_servers *conf)
 /**
  * radius_client_deinit - Deinitialize RADIUS client
  * @radius: RADIUS client context from radius_client_init()
+ * 注销指定bss上的radius客户端控制块
  */
 void radius_client_deinit(struct radius_client_data *radius)
 {

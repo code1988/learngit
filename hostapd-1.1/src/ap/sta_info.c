@@ -207,6 +207,7 @@ void ap_free_sta(struct hostapd_data *hapd, struct sta_info *sta)
 	eloop_cancel_timeout(ap_sta_deauth_cb_timeout, hapd, sta);
 	eloop_cancel_timeout(ap_sta_disassoc_cb_timeout, hapd, sta);
 
+    // 注销该sta上的802.1x相关内容
 	ieee802_1x_free_station(sta);
 	wpa_auth_sta_deinit(sta->wpa_sm);
 	rsn_preauth_free_station(hapd, sta);
