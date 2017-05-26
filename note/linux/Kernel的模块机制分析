@@ -1,0 +1,98 @@
+1. 概述
+    尽管linux是一个单内核的操作系统，但内核本身却支持模块化的特性，也就是内核运行时可以动态加载/卸载代码。
+    支持模块的好处是基本内核镜像可以做得很小，因为可选的驱动和功能可以利用模块动态加载。
+    模块可以在源码树之外的任意位置构建，也可以在kernel源码树中的某个位置构建，前者主要适用于调试开发阶段，
+    后者主要适用于之后的集成发布阶段。
+2. kernel模块代码编写范例
+    两种位置构建的模块，代码本身并无差异，以"hello"为例
+            #include <linux/kernel.h>
+            #include <linux/init.h>
+            #include <linux/module.h>
+
+            MODULE_LICENSE("GPL");
+            MODULE_AUTHOR("CODE");
+
+            static char *name = "CODE";
+            static int val = 1;
+            static int hello;
+
+            // 模块加载函数（必须）
+            // 函数名可以自定义，通过模块加载宏注册
+            // __init 宏(非必须)，告诉内核该函数使用完后直接释放
+            static int __init hello_init(void)
+            {
+                int i;
+                for(i = 0;i < val;i++)
+                    printk(KERN_ALERT "Hello %s!\r\n",name);
+                return 0;
+            }
+
+            // 模块卸载函数（必须）
+            // 函数名可以自定义，通过模块卸载宏注册
+            // __exit 宏(非必须)，告诉内核该函数使用完后直接释放
+            static void __exit hello_exit(void)
+            {
+                printk(KERN_ALERT "Byebye %s",name);	
+            }
+
+            // 模块加载宏（必须）
+            module_init(hello_init);	// insmod命令加载驱动时，宏内的加载函数会自动被内核运行，完成驱动的初始化
+            // 模块卸载宏（必须）
+            module_exit(hello_eixt);	// rmmod命令卸载驱动时，宏内的卸载函数会自动被内核运行，完成驱动的卸载
+
+            // 模块参数（可选）
+            module_param(name,charp,S_IRUGO);	// 驱动被加载时，可以被传入的参数，这些参数对应驱动内部的全局变量
+            module_param(val,int,S_IRUGO);		// 参数1 - 参数名
+                                                // 参数2 - 参数类型，包括byte、short、ushort、int、uint、long、ulong、charp、bool
+                                                // 参数3 - 参数读/写权限，包括S_IRUGO、S_IWUGO、S_IXUGO、S_IRWXUGO、S_IALLUGO
+
+            // 模块导出符号（可选）
+            EXPORT_SYMBOL(hello);		// 驱动模块可以导出函数/变量到内核，这样其他模块就可以使用这些导出的符号
+                                        // 符号必须在驱动的全局部分导出，不能在函数部分导出								
+
+3. kernel模块Makefile编写范例
+    两种位置构建的模块，Makefile存在差异，以"hello"为例
+    以下是kernel源码树之外构建的模块Makefile：
+            ifeq ($(KERNELRELEASE),)
+
+            KERNELDIR := /home/linux-2.6.32.2
+            #KERNELDIR := /lib/modules/$(shell uname -r)/build 
+            #KERNELDIR := /usr/src/$(shell uname -r)
+            PWD := $(shell pwd)
+
+            modules:
+                $(MAKE) -C $(KERNELDIR) M=$(PWD) modules
+            modules-install:
+                $(MAKE) -C $(KERNELDIR) M=$(PWD) modules-install
+            clean:
+                rm -rf *.o *~ core .depend .*.cmd *.ko *.mod.c .tmp_versions
+            .PHONY: modules modules-install clean
+
+            else
+                obj-m := hello.o
+                hello-objs := a.o b.o
+            endif
+
+            备注：KERNELRELEASE一开始并未定义，所以一开始执行前半部分分支；
+                  KERNELDIR用于指定kernel源码树的位置，因为模块的构建过程必须依赖kernel的源码树环境，当模块
+                  位于kernel源码树之外时，必须告诉make如何找到源码树环境；
+                  第一行KERNELDIR适用于嵌入式开发的交叉编译，第二、三行KERNELDIR适用于桌面系统;
+                  3个伪目标，缺省就会执行第一个，在这条命令的执行过程中KERNELRELEASE就会被定义，所以当第二次
+                  进入该Makefile时就会执行后半部分分支；
+                  "obj-m := 模块名.o"用来指定生成的模块名字，这里就是hello(不考虑后缀)，需要注意的是，模块名绝对不可以和本
+                  目录内的任何文件同名；
+                  "模块名-objs"用来指定该模块所有依赖的文件，这里就是a.o、b.o 
+    以下是kernel源码树中构建的模块Makefile(假设模块以目录hello的形式加入)：
+        在hello目录平级的Makefile中，需要添加一行：
+                obj-$(CONFIG_HELLO) += hello/
+        在hello目录平级的Kconfig中，需要添加一行：
+                source "xx/hello/Kconfig"
+        在hello目录下的Makefile：
+                obj-$(CONFIG_HELLO) += hello.o
+                hello-objs := a.o b.o 
+        在hello目录下的Kconfig：
+                menu "this is hello menu"
+                config HELLO
+                    bool "hello module"
+                    ---help---
+                endmenu
