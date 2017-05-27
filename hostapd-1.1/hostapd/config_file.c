@@ -32,6 +32,7 @@ extern struct wpa_driver_ops *wpa_drivers[];
 
 
 #ifndef CONFIG_NO_VLAN
+// 读取指定的vlan配置文件
 static int hostapd_config_read_vlan_file(struct hostapd_bss_config *bss,
 					 const char *fname)
 {
@@ -1863,9 +1864,9 @@ struct hostapd_config * hostapd_config_read(const char *fname)
 				errors++;
 			}
 #ifndef CONFIG_NO_VLAN
-		} else if (os_strcmp(buf, "dynamic_vlan") == 0) {
+		} else if (os_strcmp(buf, "dynamic_vlan") == 0) {       // 用来配置是否开启动态vlan功能
 			bss->ssid.dynamic_vlan = atoi(pos);
-		} else if (os_strcmp(buf, "vlan_file") == 0) {
+		} else if (os_strcmp(buf, "vlan_file") == 0) {          // 用来指定vlan配置文件
 			if (hostapd_config_read_vlan_file(bss, pos)) {
 				wpa_printf(MSG_ERROR, "Line %d: failed to "
 					   "read VLAN file '%s'", line, pos);

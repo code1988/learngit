@@ -71,7 +71,7 @@ struct hostapd_ssid {
 #define DYNAMIC_VLAN_DISABLED 0
 #define DYNAMIC_VLAN_OPTIONAL 1
 #define DYNAMIC_VLAN_REQUIRED 2
-	int dynamic_vlan;
+	int dynamic_vlan;       // 动态vlan功能是否开启的标志位
 #ifdef CONFIG_FULL_DYNAMIC_VLAN
 	char *vlan_tagged_interface;
 #endif /* CONFIG_FULL_DYNAMIC_VLAN */

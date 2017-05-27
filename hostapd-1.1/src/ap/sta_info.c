@@ -127,9 +127,12 @@ void ap_free_sta(struct hostapd_data *hapd, struct sta_info *sta)
 {
 	int set_beacon = 0;
 
+    // 停止对该sta计费
 	accounting_sta_stop(hapd, sta);
 
-	/* just in case */
+	/* just in case 
+     * 停止对该sta的授权
+     * */
 	ap_sta_set_authorized(hapd, sta, 0);
 
 	if (sta->flags & WLAN_STA_WDS)
@@ -601,7 +604,7 @@ void ap_sta_deauthenticate(struct hostapd_data *hapd, struct sta_info *sta,
 			       ap_sta_deauth_cb_timeout, hapd, sta);
 }
 
-
+// 为该sta绑定一个新的vlan
 int ap_sta_bind_vlan(struct hostapd_data *hapd, struct sta_info *sta,
 		     int old_vlanid)
 {
@@ -613,6 +616,7 @@ int ap_sta_bind_vlan(struct hostapd_data *hapd, struct sta_info *sta,
 	/*
 	 * Do not proceed furthur if the vlan id remains same. We do not want
 	 * duplicate dynamic vlan entries.
+     * 如果新老vlan id相同，直接退出，省得重复操作
 	 */
 	if (sta->vlan_id == old_vlanid)
 		return 0;

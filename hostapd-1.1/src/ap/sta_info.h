@@ -98,7 +98,7 @@ struct sta_info {
 	struct hostapd_ssid *ssid; /* SSID selection based on (Re)AssocReq */
 	struct hostapd_ssid *ssid_probe; /* SSID selection based on ProbeReq */
 
-	int vlan_id;
+	int vlan_id;        // 记录了该sta所属的vlan
 
 	struct ieee80211_ht_capabilities *ht_capabilities;
 

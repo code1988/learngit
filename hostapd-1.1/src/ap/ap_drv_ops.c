@@ -523,7 +523,7 @@ int hostapd_driver_commit(struct hostapd_data *hapd)
 	return hapd->driver->commit(hapd->drv_priv);
 }
 
-// 判断是否采用了驱动
+// 判断是否采用了驱动(1 - 未采用； 0 - 采用)
 int hostapd_drv_none(struct hostapd_data *hapd)
 {
 	return hapd->driver && os_strcmp(hapd->driver->name, "none") == 0;

@@ -1413,6 +1413,7 @@ ieee802_1x_receive_auth(struct radius_msg *msg, struct radius_msg *req,
 		}
 #endif /* CONFIG_NO_VLAN */
 
+        // 为该sta绑定新的vlan(不开vlan或者vlan没变则这里不做任何事)
 		if (ap_sta_bind_vlan(hapd, sta, old_vlanid) < 0)
 			break;
 
