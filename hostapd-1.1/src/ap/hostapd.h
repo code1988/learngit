@@ -151,8 +151,8 @@ struct hostapd_data {
 	void *wps_event_cb_ctx;
 
 	void (*sta_authorized_cb)(void *ctx, const u8 *mac_addr,
-				  int authorized, const u8 *p2p_dev_addr);
-	void *sta_authorized_cb_ctx;
+				  int authorized, const u8 *p2p_dev_addr);      // v1.1 工程中未使用
+	void *sta_authorized_cb_ctx;                                // v1.1 工程中未使用
 
 	void (*setup_complete_cb)(void *ctx);
 	void *setup_complete_cb_ctx;

@@ -803,7 +803,7 @@ void ap_sta_stop_sa_query(struct hostapd_data *hapd, struct sta_info *sta)
 
 #endif /* CONFIG_IEEE80211W */
 
-
+// 执行对sta的授权/非授权操作（实际该函数不做任何事）
 void ap_sta_set_authorized(struct hostapd_data *hapd, struct sta_info *sta,
 			   int authorized)
 {
