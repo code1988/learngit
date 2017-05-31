@@ -21,7 +21,7 @@
 #include <linux/socket.h>
 #include <asm/socket.h>
 
-#define NPROTO		AF_MAX
+#define NPROTO		AF_MAX  // 目前为止支持的地址族上限
 
 #define SYS_SOCKET	1		/* sys_socket(2)		*/
 #define SYS_BIND	2		/* sys_bind(2)			*/

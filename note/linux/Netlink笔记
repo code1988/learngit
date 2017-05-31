@@ -36,14 +36,17 @@ netlink涉及的数据结构：
                 }
 
                 消息类型：
-                    NETLINK_ROUTE的消息类型定义位于rtnetlink.h，RTM_*格式，这里列出常用的几个：
-                    RTM_NEWLINK/RTM_DELLINK     - 当网卡变动时内核会发出这个消息
-                    RTM_NEWADDR/RTM_DELADDR     - 当地址(IP)变动时内核会发出这个消息
-                    RTM_NEWROUTE/RTM_DELROUTE   - 当路由变动时内核会发出这个消息
-
+                    netlink消息分为控制消息和普通消息两种，预定义的控制消息有：
+                            NLMSG_NOOP、NLMSG_ERROR、NLMSG_DONE、NLMSG_OVERRUN
+                            备注： 同时预留了自定义的空间(< 0x10).
+                    普通消息跟使用的具体的netlink协议相关，NETLINK_ROUTE的消息类型定义位于rtnetlink.h，RTM_*格式，这里列出常用的几个：
+                            RTM_NEWLINK/RTM_DELLINK     - 当网卡变动时内核会发出这个消息
+                            RTM_NEWADDR/RTM_DELADDR     - 当地址(IP)变动时内核会发出这个消息
+                            RTM_NEWROUTE/RTM_DELROUTE   - 当路由变动时内核会发出这个消息
                 附加标志位：
-                    NLM_F_REQUEST   - 表示消息是一个请求。所有用户首先发起的消息都要设置该标志，可以和GET request和NEW request系列标志组合
-                    NLM_F_MULTI     - 表示消息由多个分部组成，最后一个分部的消息会标注NLMSG_DONE
+                    NLM_F_REQUEST   - 表示消息是一个请求。所有用户层首先发起的消息都要设置该标志，不然kernel丢弃消息，并直接尝试返回一个errno=0的ack(前提是同时设置了NLM_F_ACK标志)。
+                                      可以和GET request和NEW request系列标志组合
+                    NLM_F_MULTI     - 表示消息由多个分部组成，最后一个分部的消息会标注NLMSG_DONE类型
                     NLM_F_ACK       - 表示这是一条ACK消息，具体内容就是承载了一个返回值（0或错误代号）
                     NLM_F_ECHO      - echo this request
                     NLM_F_DUMP_INTER

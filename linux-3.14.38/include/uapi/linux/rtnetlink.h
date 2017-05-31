@@ -18,7 +18,12 @@
  *		Routing/neighbour discovery messages.
  ****/
 
-/* Types of messages */
+/* Types of messages 
+ * 以下定义了所有rtnetlink协议包含的消息类型
+ * 
+ * 备注：从中可以看出，这些协议一共分成了(87-15)每组分配了4个ID号，分别代表RTM_NEW*、RTM_DEL*、RTM_GET*、RTM_SET*子类型；
+ *       
+ * */
 
 enum {
 	RTM_BASE	= 16,

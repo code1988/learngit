@@ -137,7 +137,9 @@ struct ucred {
 	__u32	gid;
 };
 
-/* Supported address families. */
+/* Supported address families. 
+ * 以下列出了目前位置支持的地址族
+ * */
 #define AF_UNSPEC	0
 #define AF_UNIX		1	/* Unix domain sockets 		*/
 #define AF_LOCAL	1	/* POSIX name for AF_UNIX	*/

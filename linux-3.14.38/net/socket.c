@@ -2589,6 +2589,7 @@ SYSCALL_DEFINE2(socketcall, int, call, unsigned long __user *, args)
 
 /**
  *	sock_register - add a socket protocol handler
+ *	注册一个指定的协议族(比如AF_NETLINK、AF_UNIX)
  *	@ops: description of protocol
  *
  *	This function is called by a protocol handler that wants to

@@ -180,20 +180,22 @@ static rtnl_calcit_func rtnl_get_calcit(int protocol, int msgindex)
 
 /**
  * __rtnl_register - Register a rtnetlink message type
- * 注册一个rtnetlink消息类型(整个注册过程实际就是填充数组rtnl_msg_handlers的过程)
+ * 注册一条基于rtnetlink协议的具体消息(整个注册过程实际就是填充数组rtnl_msg_handlers的过程)
  * @protocol: Protocol family or PF_UNSPEC
  * @msgtype: rtnetlink message type
- * @doit: Function pointer called for each request message
- * @dumpit: Function pointer called for each dump request (NLM_F_DUMP) message
- * @calcit: Function pointer to calc size of dump message
+ * @doit: Function pointer called for each request message 本函数指针用于带NLM_F_REQUEST标志的消息)
+ * @dumpit: Function pointer called for each dump request (NLM_F_DUMP) message 本函数指针用于带NLM_F_REQUEST + NLM_F_DUMP标志的消息
+ * @calcit: Function pointer to calc size of dump message 本函数指针用于计算带NLM_F_REQUEST + NLM_F_DUMP标志的消息的返回消息长度
  *
  * Registers the specified function pointers (at least one of them has
  * to be non-NULL) to be called whenever a request message for the
  * specified protocol family and message type is received.
+ * 3个函数指针必须确保至少有1个非空
  *
  * The special protocol family PF_UNSPEC may be used to define fallback
  * function pointers for the case when no entry for the specific protocol
  * family exists.
+ * 标记为PF_UNSPEC的那些消息是为了以备那些找不到指定协议族的同名消息使用
  *
  * Returns 0 on success or a negative error code.
  */
@@ -235,7 +237,7 @@ EXPORT_SYMBOL_GPL(__rtnl_register);
 
 /**
  * rtnl_register - Register a rtnetlink message type
- * 注册一个rtnetlink消息类型(带出错打印)
+ * 注册一条基于rtnetlink协议的具体消息(带出错打印)
  *
  * Identical to __rtnl_register() but panics on failure. This is useful
  * as failure of this function is very unlikely, it can only happen due
@@ -2850,11 +2852,12 @@ out:
 	return err;
 }
 
-/* Process one rtnetlink message. */
-// 处理一条完整的rtnetlink消息
+/* Process one rtnetlink message. 
+ * 处理一条完整的rtnetlink消息
+ * */
 static int rtnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
 {
-	struct net *net = sock_net(skb->sk);    // 获取该rtnetlink数据所属的顶层net控制块
+	struct net *net = sock_net(skb->sk);    // 获取指定socket控制块所属的网络命名空间
 	rtnl_doit_func doit;
 	int sz_idx, kind;
 	int family;
@@ -2866,16 +2869,18 @@ static int rtnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
 	if (type > RTM_MAX)
 		return -EOPNOTSUPP;
 
-    // 获取消息index，这里type实际就是index
+    // 计算得到不带偏移量的rtnetlink消息类型ID
 	type -= RTM_BASE;
 
-	/* All the messages must have at least 1 byte length */
-    // rtnetlink消息payload长度合法性检测
+	/* All the messages must have at least 1 byte length 
+     * rtnetlink消息payload长度合法性检测，至少1字节长
+     * */
 	if (nlmsg_len(nlh) < sizeof(struct rtgenmsg))
 		return 0;
 
     // 获取rtnetlink消息的地址族
 	family = ((struct rtgenmsg *)nlmsg_data(nlh))->rtgen_family;
+    // 计算得到消息的组号(4个一组)、消息的子类型ID
 	sz_idx = type>>2;
 	kind = type&3;
 
@@ -2921,7 +2926,7 @@ static int rtnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
 	return doit(skb, nlh);
 }
 
-// 接收从用户空间过来的rtnetlink消息
+// 接收处理从用户空间过来的rtnetlink消息
 static void rtnetlink_rcv(struct sk_buff *skb)
 {
 	rtnl_lock();
@@ -2959,7 +2964,10 @@ static struct notifier_block rtnetlink_dev_notifier = {
 	.notifier_call	= rtnetlink_event,
 };
 
-// rtnetlink网络初始化(注册了接收函数)
+/* 具体的rtnetlink功能初始化(实际就是创建一个NETLINK_ROUTE协议的netlink socket控制块)
+ * 
+ * 备注：这里实际的内容跟其他很多模块不一样，其他模块基本都是在proc文件系统中创建相应接口
+ */
 static int __net_init rtnetlink_net_init(struct net *net)
 {
 	struct sock *sk;
@@ -2970,7 +2978,7 @@ static int __net_init rtnetlink_net_init(struct net *net)
 		.flags		= NL_CFG_F_NONROOT_RECV,
 	};
 
-    // 内核创建一个netlink接口的NETLINK_ROUTE协议的socket控制块
+    // 内核创建一个NETLINK_ROUTE协议的netlink socket控制块
 	sk = netlink_kernel_create(net, NETLINK_ROUTE, &cfg);
 	if (!sk)
 		return -ENOMEM;
@@ -2994,7 +3002,7 @@ static struct pernet_operations rtnetlink_net_ops = {
 // rtnetlink初始化(在netlink_proto_init中被调用) 
 void __init rtnetlink_init(void)
 {
-    // 注册一个rtnetlink网络子系统(包含rtnetlink网络初始化/结束函数)
+    // 将rtnetlink模块注册到每一个网络命名空间，并且执行了rtnetlink_net_init
 	if (register_pernet_subsys(&rtnetlink_net_ops))
 		panic("rtnetlink_init: cannot initialize rtnetlink\n");
 

@@ -2237,7 +2237,7 @@ static inline void sk_eat_skb(struct sock *sk, struct sk_buff *skb, bool copied_
 }
 #endif
 
-// 从是socket控制块中获取所属的顶层网络控制块
+// 获取指定socket控制块所属的网络命名空间
 static inline
 struct net *sock_net(const struct sock *sk)
 {

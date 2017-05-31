@@ -2760,6 +2760,7 @@ static inline void release_proto_idx(struct proto *prot)
 }
 #endif
 
+// socket层面的指定协议注册
 int proto_register(struct proto *prot, int alloc_slab)
 {
 	if (alloc_slab) {

@@ -66,7 +66,7 @@ struct nl_portid_hash {
 	u32			rnd;
 };
 
-// netlink表
+// netlink表每个表项的数据结构
 struct netlink_table {
 	struct nl_portid_hash	hash;       // hash表
 	struct hlist_head	mc_list;

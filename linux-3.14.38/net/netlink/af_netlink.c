@@ -966,7 +966,7 @@ netlink_unlock_table(void)
 		wake_up(&nl_table_wait);
 }
 
-// 比较net是否相同
+// 比较net是否相同，从而判断是否属于同一个网络命名空间
 static bool netlink_compare(struct net *net, struct sock *sk)
 {
 	return net_eq(sock_net(sk), net);
@@ -1145,7 +1145,7 @@ static void netlink_remove(struct sock *sk)
 	netlink_table_ungrab();
 }
 
-// 定义了一个socket层面的netlink协议
+// 定义了一个socket层面的netlink协议接口
 static struct proto netlink_proto = {
 	.name	  = "NETLINK",
 	.owner	  = THIS_MODULE,
@@ -2794,12 +2794,14 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err)
 }
 EXPORT_SYMBOL(netlink_ack);
 
+// 处理收到的netlink消息
 int netlink_rcv_skb(struct sk_buff *skb, int (*cb)(struct sk_buff *,
 						     struct nlmsghdr *))
 {
 	struct nlmsghdr *nlh;
 	int err;
 
+    // 逐条解析netlink消息
 	while (skb->len >= nlmsg_total_size(0)) 
     {
 		int msglen;
@@ -2807,22 +2809,29 @@ int netlink_rcv_skb(struct sk_buff *skb, int (*cb)(struct sk_buff *,
 		nlh = nlmsg_hdr(skb);
 		err = 0;
 
+        // 从长度方面对消息进行合法性检测，有问题的直接丢弃
 		if (nlh->nlmsg_len < NLMSG_HDRLEN || skb->len < nlh->nlmsg_len)
 			return 0;
 
-		/* Only requests are handled by the kernel */
+		/* Only requests are handled by the kernel 
+         * kernel只处理带NLM_F_REQUEST标记的消息，不然就直接尝试返回一个errno=0的ack
+         * */
 		if (!(nlh->nlmsg_flags & NLM_F_REQUEST))
 			goto ack;
 
-		/* Skip control messages */
+		/* Skip control messages 
+         * kernel不处理netlink控制消息，所以直接尝试返回一个errno=0的ack
+         * */
 		if (nlh->nlmsg_type < NLMSG_MIN_TYPE)
 			goto ack;
 
+        // 基于某个指定的netlink协议对该消息做进一步处理
 		err = cb(skb, nlh);
 		if (err == -EINTR)
 			goto skip;
 
 ack:
+        // 设置了NLM_F_ACK标志或者处理过程中出现错误，kernel都会回一个ack给用户空间
 		if (nlh->nlmsg_flags & NLM_F_ACK || err)
 			netlink_ack(skb, nlh, err);
 
@@ -3059,15 +3068,18 @@ static const struct net_proto_family netlink_family_ops = {
 	.owner	= THIS_MODULE,	/* for consistency 8) */
 };
 
+// 具体的netlink功能初始化(实际就是创建proc文件系统下的netlink接口)
 static int __net_init netlink_net_init(struct net *net)
 {
 #ifdef CONFIG_PROC_FS
+    // proc文件系统下创建/proc/net/netlink文件(文件属性:普通文件 + 只读)
 	if (!proc_create("netlink", 0, net->proc_net, &netlink_seq_fops))
 		return -ENOMEM;
 #endif
 	return 0;
 }
 
+// netlink功能注销
 static void __net_exit netlink_net_exit(struct net *net)
 {
 #ifdef CONFIG_PROC_FS
@@ -3075,7 +3087,7 @@ static void __net_exit netlink_net_exit(struct net *net)
 #endif
 }
 
-// 添加用户态socket协议入口
+// 注册NETLINK_USERSOCK协议到nl_table中
 static void __init netlink_add_usersock_entry(void)
 {
 	struct listeners *listeners;
@@ -3096,7 +3108,7 @@ static void __init netlink_add_usersock_entry(void)
 	netlink_table_ungrab();
 }
 
-// 定义了一个netlink模块在网络命名空间层面的操作集合
+// 定义了netlink模块在网络命名空间层面的操作集合
 static struct pernet_operations __net_initdata netlink_net_ops = {
 	.init = netlink_net_init,
 	.exit = netlink_net_exit,
@@ -3152,10 +3164,10 @@ static int __init netlink_proto_init(void)
 		nl_table[i].compare = netlink_compare;
 	}
 
-    // 初始化netlink_tap_all
+    // 初始化netlink_tap_all链表头
 	INIT_LIST_HEAD(&netlink_tap_all);
 
-    // 添加用户态socket协议入口(即填充NETLINK_USERSOCK号表项)
+    // 注册NETLINK_USERSOCK协议到nl_table中
 	netlink_add_usersock_entry();
 
     // 注册netlink协议族(包含netlink接口创建函数)
@@ -3165,6 +3177,7 @@ static int __init netlink_proto_init(void)
 	/* The netlink device handler may be needed early. */
     // netlink 路由设备初始化
 	rtnetlink_init();
+
 out:
 	return err;
 panic:

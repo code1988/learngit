@@ -259,7 +259,7 @@ int nla_append(struct sk_buff *skb, int attrlen, const void *data);
 
 /**
  * nlmsg_msg_size - length of netlink message not including padding
- * 计算netlink消息实际长度(消息header + 消息payload）
+ * 计算netlink消息长度(netlink消息头 + pading + netlink消息payload）
  * @payload: length of message payload
  */
 static inline int nlmsg_msg_size(int payload)
@@ -269,7 +269,7 @@ static inline int nlmsg_msg_size(int payload)
 
 /**
  * nlmsg_total_size - length of netlink message including padding
- * 计算netlink消息对齐后总长度（消息header + 消息payload + 尾部padding）
+ * 计算netlink消息占用的总空间（netlink消息头 + pading + netlink消息payload + padding）
  * @payload: length of message payload
  */
 static inline int nlmsg_total_size(int payload)

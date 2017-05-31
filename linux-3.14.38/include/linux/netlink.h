@@ -10,6 +10,7 @@
 
 struct net;
 
+// 获取netlink消息头
 static inline struct nlmsghdr *nlmsg_hdr(const struct sk_buff *skb)
 {
 	return (struct nlmsghdr *)skb->data;
@@ -43,11 +44,11 @@ extern void netlink_table_ungrab(void);
 #define NL_CFG_F_NONROOT_SEND	(1 << 1)
 
 /* optional Netlink kernel configuration parameters */
-// netlink 内核配置参数控制块
+// netlink参数控制块，内核用于配置一个具体的netlink协议
 struct netlink_kernel_cfg {
 	unsigned int	groups; // 多播组数量
 	unsigned int	flags;   
-	void		(*input)(struct sk_buff *skb);  // 消息接收函数
+	void		(*input)(struct sk_buff *skb);  // 消息接收函数，用户空间发送该协议的netlink消息给内核后，就会调用本函数
 	struct mutex	*cb_mutex;
 	void		(*bind)(int group);
 	bool		(*compare)(struct net *net, struct sock *sk);
@@ -56,7 +57,11 @@ struct netlink_kernel_cfg {
 extern struct sock *__netlink_kernel_create(struct net *net, int unit,
 					    struct module *module,
 					    struct netlink_kernel_cfg *cfg);
-// 内核创建一个netlink协议(如NETLINK_ROUTE),成功返回创建的网络层socket控制块
+/* 内核用于创建一个具体的netlink协议(如NETLINK_ROUTE),成功返回创建的netlink socket控制块
+ *
+ * 备注：内核创建了该netlink socket控制块之后，只要用户空间发送了一个相应协议的netlink消息到内核，
+ *       通过本函数注册的相应协议的input函数就会被调用
+ */
 static inline struct sock *
 netlink_kernel_create(struct net *net, int unit, struct netlink_kernel_cfg *cfg)
 {
