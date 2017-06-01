@@ -5,10 +5,13 @@
 #include <linux/socket.h> /* for __kernel_sa_family_t */
 #include <linux/types.h>
 
-// netlink协议，除了以下预定义的之外，还可以自定义，目前上限MAX_LINKS个
+/* netlink协议，除了以下预定义的之外，还可以自定义，目前上限MAX_LINKS个
+ * 备注： 不推荐添加自定义协议类型这种方式（万一日后该协议ID被纳入标准），
+ *        正确的做法是使用NETLINK_GENERIC自行扩展
+ */
 #define NETLINK_ROUTE		0	/* Routing/device hook				*/
 #define NETLINK_UNUSED		1	/* Unused number				*/
-#define NETLINK_USERSOCK	2	/* Reserved for user mode socket protocols 	*/
+#define NETLINK_USERSOCK	2	/* Reserved for user mode socket protocols 	用于应用层进程间通信*/
 #define NETLINK_FIREWALL	3	/* Unused number, formerly ip_queue		*/
 #define NETLINK_SOCK_DIAG	4	/* socket monitoring				*/
 #define NETLINK_NFLOG		5	/* netfilter/iptables ULOG */
@@ -22,7 +25,7 @@
 #define NETLINK_IP6_FW		13
 #define NETLINK_DNRTMSG		14	/* DECnet routing messages */
 #define NETLINK_KOBJECT_UEVENT	15	/* Kernel messages to userspace */
-#define NETLINK_GENERIC		16
+#define NETLINK_GENERIC		16  /* 通用的netlink协议类型，便于用户自行扩展子协议类型 */
 /* leave room for NETLINK_DM (DM Events) */
 #define NETLINK_SCSITRANSPORT	18	/* SCSI Transports */
 #define NETLINK_ECRYPTFS	19

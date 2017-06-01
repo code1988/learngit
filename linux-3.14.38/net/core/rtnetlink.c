@@ -130,7 +130,7 @@ static inline int rtm_msgindex(int msgtype)
 	return msgindex;
 }
 
-// 根据协议族和消息index索引得到对应的doit函数
+// 根据协议族和消息类型ID(无偏)，索引得到对应的doit函数
 static rtnl_doit_func rtnl_get_doit(int protocol, int msgindex)
 {
 	struct rtnl_link *tab;
@@ -140,13 +140,16 @@ static rtnl_doit_func rtnl_get_doit(int protocol, int msgindex)
 	else
 		tab = NULL;
 
+    /* 如果rtnl_msg_handlers表中没有注册指定协议族，或者该协议族下指定消息类型的doit回调函数未定义，
+     * 就会去rtnl_msg_handlers表中的PF_UNSPEC下寻找对应消息类型的doit回调函数
+     */
 	if (tab == NULL || tab[msgindex].doit == NULL)
 		tab = rtnl_msg_handlers[PF_UNSPEC];
 
 	return tab[msgindex].doit;
 }
 
-// 根据协议族和消息index索引得到对应的dumpit函数
+// 根据协议族和消息类型ID(无偏)，索引得到对应的dumpit函数
 static rtnl_dumpit_func rtnl_get_dumpit(int protocol, int msgindex)
 {
 	struct rtnl_link *tab;
@@ -156,13 +159,16 @@ static rtnl_dumpit_func rtnl_get_dumpit(int protocol, int msgindex)
 	else
 		tab = NULL;
 
+    /* 如果rtnl_msg_handlers表中没有注册指定协议族，或者该协议族下指定消息类型的dumpit回调函数未定义，
+     * 就会去rtnl_msg_handlers表中的PF_UNSPEC下寻找对应消息类型的dumpit回调函数
+     */
 	if (tab == NULL || tab[msgindex].dumpit == NULL)
 		tab = rtnl_msg_handlers[PF_UNSPEC];
 
 	return tab[msgindex].dumpit;
 }
 
-// 根据协议族和消息index索引得到对应的calcit函数
+// 根据协议族和消息类型ID(无偏)，索引得到对应的calcit函数
 static rtnl_calcit_func rtnl_get_calcit(int protocol, int msgindex)
 {
 	struct rtnl_link *tab;
@@ -172,6 +178,9 @@ static rtnl_calcit_func rtnl_get_calcit(int protocol, int msgindex)
 	else
 		tab = NULL;
 
+    /* 如果rtnl_msg_handlers表中没有注册指定协议族，或者该协议族下指定消息类型的calcit回调函数未定义，
+     * 就会去rtnl_msg_handlers表中的PF_UNSPEC下寻找对应消息类型的calcit回调函数
+     */
 	if (tab == NULL || tab[msgindex].calcit == NULL)
 		tab = rtnl_msg_handlers[PF_UNSPEC];
 
@@ -2617,6 +2626,7 @@ EXPORT_SYMBOL(ndo_dflt_bridge_getlink);
 
 static int rtnl_bridge_getlink(struct sk_buff *skb, struct netlink_callback *cb)
 {
+    // 获取收到该rtnetlink消息的socket控制块所属的网络命名空间
 	struct net *net = sock_net(skb->sk);
 	struct net_device *dev;
 	int idx = 0;
@@ -2884,11 +2894,11 @@ static int rtnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
 	sz_idx = type>>2;
 	kind = type&3;
 
-    // 对于RTM_GETLINK以外的netlink消息，需要做权限验证
+    // 对于 RTM_GET* 以外的netlink消息，需要做权限验证
 	if (kind != 2 && !netlink_net_capable(skb, CAP_NET_ADMIN))
 		return -EPERM;
 
-    // 对于RTM_GETLINK类型并且标记了NLM_F_DUMP的netlink消息,需要在这里做特别处理
+    // 对于 RTM_GET* 类型并且标记了NLM_F_DUMP的netlink消息,直接从这里开始执行dump分支操作去了
 	if (kind == 2 && nlh->nlmsg_flags&NLM_F_DUMP) 
     {
 		struct sock *rtnl;
@@ -2896,29 +2906,37 @@ static int rtnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
 		rtnl_calcit_func calcit;
 		u16 min_dump_alloc = 0;
 
-        // 根据协议族和消息index索引得到对应的dumpit函数
+        // 根据协议族和消息类型ID，索引得到对应的dumpit函数
 		dumpit = rtnl_get_dumpit(family, type);
 		if (dumpit == NULL)
 			return -EOPNOTSUPP;
-        // 根据协议族和消息index索引得到对应的calcit函数,执行calcit
+
+        /* 根据协议族和消息类型ID，索引得到对应的calcit函数,
+         * 然后执行calcit，得到dump操作需要的空间大小min_dump_alloc
+         */
 		calcit = rtnl_get_calcit(family, type);
 		if (calcit)
 			min_dump_alloc = calcit(skb, nlh);
 
 		__rtnl_unlock();
+
+        // 获取当前网络命名空间下的rtnetlink socket控制块(就是在rtnetlink_net_init中创建并注册的)
 		rtnl = net->rtnl;
 		{
+            // 初始化一个dump操作控制块
 			struct netlink_dump_control c = {
 				.dump		= dumpit,
 				.min_dump_alloc	= min_dump_alloc,
 			};
+            // 执行dump操作了
 			err = netlink_dump_start(rtnl, skb, nlh, &c);
 		}
 		rtnl_lock();
 		return err;
 	}
 
-    // 根据协议族和消息index索引得到对应的doit函数,执行doit
+    // 程序运行到这里，意味着没有去执行dump分支操作
+    // 根据协议族和消息类型ID，索引得到对应的doit函数,然后执行doit
 	doit = rtnl_get_doit(family, type);
 	if (doit == NULL)
 		return -EOPNOTSUPP;
@@ -2964,7 +2982,7 @@ static struct notifier_block rtnetlink_dev_notifier = {
 	.notifier_call	= rtnetlink_event,
 };
 
-/* 具体的rtnetlink功能初始化(实际就是创建一个NETLINK_ROUTE协议的netlink socket控制块)
+/* 具体的rtnetlink功能初始化(实际就是创建一个NETLINK_ROUTE协议的socket，并注册到当前网络命名空间)
  * 
  * 备注：这里实际的内容跟其他很多模块不一样，其他模块基本都是在proc文件系统中创建相应接口
  */
@@ -2978,10 +2996,11 @@ static int __net_init rtnetlink_net_init(struct net *net)
 		.flags		= NL_CFG_F_NONROOT_RECV,
 	};
 
-    // 内核创建一个NETLINK_ROUTE协议的netlink socket控制块
+    // 内核创建一个NETLINK_ROUTE协议的netlink-socket
 	sk = netlink_kernel_create(net, NETLINK_ROUTE, &cfg);
 	if (!sk)
 		return -ENOMEM;
+    // 注册到当前网络命名空间
 	net->rtnl = sk;
 	return 0;
 }

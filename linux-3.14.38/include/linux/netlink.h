@@ -26,7 +26,7 @@ enum netlink_skb_flags {
 // netlink参数控制块
 struct netlink_skb_parms {
 	struct scm_creds	creds;		/* Skb credentials	*/
-	__u32			portid;
+	__u32			portid;         // 记录了该参数控制块所属的上层进程id
 	__u32			dst_group;
 	__u32			flags;
 	struct sock		*sk;
@@ -40,15 +40,15 @@ struct netlink_skb_parms {
 extern void netlink_table_grab(void);
 extern void netlink_table_ungrab(void);
 
-#define NL_CFG_F_NONROOT_RECV	(1 << 0)
-#define NL_CFG_F_NONROOT_SEND	(1 << 1)
+#define NL_CFG_F_NONROOT_RECV	(1 << 0)    // 用来限定非超级用户是否可以绑定到多播组
+#define NL_CFG_F_NONROOT_SEND	(1 << 1)    // 用来限定非超级用户是否可以发送组播
 
 /* optional Netlink kernel configuration parameters */
-// netlink参数控制块，内核用于配置一个具体的netlink协议
+// netlink配置参数控制块，内核用于配置一个具体的netlink协议
 struct netlink_kernel_cfg {
-	unsigned int	groups; // 多播组数量
-	unsigned int	flags;   
-	void		(*input)(struct sk_buff *skb);  // 消息接收函数，用户空间发送该协议的netlink消息给内核后，就会调用本函数
+	unsigned int	groups; // 该协议类型支持的最大多播组数量
+	unsigned int	flags;  // 用来设置NL_CFG_F_NONROOT_SEND/NL_CFG_F_NONROOT_RECV这两个标志
+	void		(*input)(struct sk_buff *skb);  // 消息接收函数，用户空间发送该协议类型的netlink消息给内核后，就会调用本函数
 	struct mutex	*cb_mutex;
 	void		(*bind)(int group);
 	bool		(*compare)(struct net *net, struct sock *sk);
@@ -57,9 +57,9 @@ struct netlink_kernel_cfg {
 extern struct sock *__netlink_kernel_create(struct net *net, int unit,
 					    struct module *module,
 					    struct netlink_kernel_cfg *cfg);
-/* 内核用于创建一个具体的netlink协议(如NETLINK_ROUTE),成功返回创建的netlink socket控制块
+/* 内核用于创建一个具体协议(如NETLINK_ROUTE)的netlink-socket,成功返回创建的socket控制块
  *
- * 备注：内核创建了该netlink socket控制块之后，只要用户空间发送了一个相应协议的netlink消息到内核，
+ * 备注：内核创建了该协议的netlink-socket之后，只要用户空间发送了一个相应协议的netlink消息到内核，
  *       通过本函数注册的相应协议的input函数就会被调用
  */
 static inline struct sock *
@@ -124,7 +124,7 @@ netlink_skb_clone(struct sk_buff *skb, gfp_t gfp_mask)
 
 #define NLMSG_DEFAULT_SIZE (NLMSG_GOODSIZE - NLMSG_HDRLEN)
 
-
+// 定义了当前某次netlink操作的集合
 struct netlink_callback {
 	struct sk_buff		*skb;
 	const struct nlmsghdr	*nlh;
@@ -149,17 +149,19 @@ struct netlink_notify {
 struct nlmsghdr *
 __nlmsg_put(struct sk_buff *skb, u32 portid, u32 seq, int type, int len, int flags);
 
+// netlink用于dump操作的控制块
 struct netlink_dump_control {
-	int (*dump)(struct sk_buff *skb, struct netlink_callback *);
+	int (*dump)(struct sk_buff *skb, struct netlink_callback *);    // 一般就是指向dumpit回调函数
 	int (*done)(struct netlink_callback *);
 	void *data;
 	struct module *module;
-	u16 min_dump_alloc;
+	u16 min_dump_alloc;         // 用于dump的数据空间大小
 };
 
 extern int __netlink_dump_start(struct sock *ssk, struct sk_buff *skb,
 				const struct nlmsghdr *nlh,
 				struct netlink_dump_control *control);
+// 执行dump操作(封装)
 static inline int netlink_dump_start(struct sock *ssk, struct sk_buff *skb,
 				     const struct nlmsghdr *nlh,
 				     struct netlink_dump_control *control)

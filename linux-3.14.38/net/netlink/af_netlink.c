@@ -111,6 +111,7 @@ static inline u32 netlink_group_mask(u32 group)
 	return group ? 1 << (group - 1) : 0;
 }
 
+// 根据portid计算出在该hash表的散列地址，然后返回对应的表项
 static inline struct hlist_head *nl_portid_hashfn(struct nl_portid_hash *hash, u32 portid)
 {
 	return &hash->table[jhash_1word(portid, hash->rnd) & hash->mask];
@@ -972,6 +973,7 @@ static bool netlink_compare(struct net *net, struct sock *sk)
 	return net_eq(sock_net(sk), net);
 }
 
+// 根据protocol和portid查找对应的netlink socket控制块
 static struct sock *netlink_lookup(struct net *net, int protocol, u32 portid)
 {
 	struct netlink_table *table = &nl_table[protocol];
@@ -980,7 +982,9 @@ static struct sock *netlink_lookup(struct net *net, int protocol, u32 portid)
 	struct sock *sk;
 
 	read_lock(&nl_table_lock);
+    // 根据portid计算的到对应的hash表项
 	head = nl_portid_hashfn(hash, portid);
+    // 根据注册的比较函数遍历该表项，查找匹配节点
 	sk_for_each(sk, head) {
 		if (table->compare(net, sk) &&
 		    (nlk_sk(sk)->portid == portid)) {
@@ -1183,6 +1187,7 @@ static int __netlink_create(struct net *net, struct socket *sock,
 	return 0;
 }
 
+// 应用层创建PF_NETLINK类型的socket时就会调用到这里
 static int netlink_create(struct net *net, struct socket *sock, int protocol,
 			  int kern)
 {
@@ -2451,6 +2456,7 @@ static void netlink_data_ready(struct sock *sk, int len)
  *	We export these functions to other modules. They provide a
  *	complete set of kernel non-blocking support for message
  *	queueing.
+ *  内核用于创建一个具体协议(如NETLINK_ROUTE)的netlink-socket,成功返回创建的socket控制块
  */
 
 struct sock *
@@ -2469,6 +2475,7 @@ __netlink_kernel_create(struct net *net, int unit, struct module *module,
 	if (unit < 0 || unit >= MAX_LINKS)
 		return NULL;
 
+    // 首先是创建并初始化一个socket结构
 	if (sock_create_lite(PF_NETLINK, SOCK_DGRAM, unit, &sock))
 		return NULL;
 
@@ -2617,6 +2624,7 @@ EXPORT_SYMBOL(__nlmsg_put);
 /*
  * It looks a bit ugly.
  * It would be better to create kernel thread.
+ * 继续执行dump操作，确实丑陋
  */
 
 static int netlink_dump(struct sock *sk)
@@ -2645,6 +2653,7 @@ static int netlink_dump(struct sock *sk)
 		goto errout_skb;
 	netlink_skb_set_owner_r(skb, sk);
 
+    // 这里终于真正执行了dumpit函数...
 	len = cb->dump(skb, cb);
 
 	if (len > 0) {
@@ -2685,6 +2694,11 @@ errout_skb:
 	return err;
 }
 
+/* 执行dump操作
+ *
+ * 备注：需要注意的是，ssk代表的是当前网络命名空间下某个netlink协议（比如rtnetlink）注册的总的socket控制块
+ *       而函数内的sk代表的是该具体的netlink协议跟上层用户进程关联后的socket控制块，所以原则上会有多个sk来对应不同进程
+ */
 int __netlink_dump_start(struct sock *ssk, struct sk_buff *skb,
 			 const struct nlmsghdr *nlh,
 			 struct netlink_dump_control *control)
@@ -2705,15 +2719,19 @@ int __netlink_dump_start(struct sock *ssk, struct sk_buff *skb,
 	} else
 		atomic_inc(&skb->users);
 
+    // 根据protocol和portid查找对应的socket控制块
 	sk = netlink_lookup(sock_net(ssk), ssk->sk_protocol, NETLINK_CB(skb).portid);
 	if (sk == NULL) {
 		ret = -ECONNREFUSED;
 		goto error_free;
 	}
 
+    // 进而得到netlink-socket控制块
 	nlk = nlk_sk(sk);
 	mutex_lock(nlk->cb_mutex);
-	/* A dump is in progress... */
+	/* A dump is in progress... 
+     * 每个netlink-socket控制块同时只能处理一个dump操作
+     * */
 	if (nlk->cb_running) {
 		ret = -EBUSY;
 		goto error_unlock;
@@ -2724,6 +2742,7 @@ int __netlink_dump_start(struct sock *ssk, struct sk_buff *skb,
 		goto error_unlock;
 	}
 
+    // 设置该netlink-socket控制块当前有效的操作集合
 	cb = &nlk->cb;
 	memset(cb, 0, sizeof(*cb));
 	cb->dump = control->dump;
@@ -3061,7 +3080,7 @@ static const struct proto_ops netlink_ops = {
 	.sendpage =	sock_no_sendpage,
 };
 
-// 定义了一个netlink协议族(包含netlink接口创建函数)
+// 定义了一个netlink协议族操作集合(主要包含netlink接口创建函数)
 static const struct net_proto_family netlink_family_ops = {
 	.family = PF_NETLINK,
 	.create = netlink_create,
@@ -3087,7 +3106,7 @@ static void __net_exit netlink_net_exit(struct net *net)
 #endif
 }
 
-// 注册NETLINK_USERSOCK协议到nl_table中
+// 创建并注册NETLINK_USERSOCK协议到nl_table中
 static void __init netlink_add_usersock_entry(void)
 {
 	struct listeners *listeners;
@@ -3114,13 +3133,15 @@ static struct pernet_operations __net_initdata netlink_net_ops = {
 	.exit = netlink_net_exit,
 };
 
-// 内核netlink功能模块初始化
+/* 内核netlink功能模块初始化
+ * 备注：内核在这里默认创建了两种协议类型的netlink：NETLINK_USERSOCK和NETLINK_ROUTE
+ */
 static int __init netlink_proto_init(void)
 {
 	int i;
 	unsigned long limit;
 	unsigned int order;
-    // socket层面的netlink协议注册
+    // 向内核的socket层面注册netlink协议
 	int err = proto_register(&netlink_proto, 0);
 
 	if (err != 0)
@@ -3129,7 +3150,7 @@ static int __init netlink_proto_init(void)
     // 确保netlink参数控制块大小不超过通用的socket buffer预留的控制块大小
 	BUILD_BUG_ON(sizeof(struct netlink_skb_parms) > FIELD_SIZEOF(struct sk_buff, cb));
 
-    // 申请一张MAX_LINKS长度的netlink表
+    // 创建了一张MAX_LINKS长度的nl_table表，这张表是整个netlink功能模块的核心，每种协议类型占一个表项
 	nl_table = kcalloc(MAX_LINKS, sizeof(*nl_table), GFP_KERNEL);
 	if (!nl_table)
 		goto panic;
@@ -3143,11 +3164,12 @@ static int __init netlink_proto_init(void)
 	limit = (1UL << order) / sizeof(struct hlist_head);
 	order = get_bitmask_order(min(limit, (unsigned long)UINT_MAX)) - 1;
 
-    // 给netlink表每个表项申请一张hash表并且注册net比较函数
+    // 给nl_table表每个表项申请一张hash表并且注册net比较函数
 	for (i = 0; i < MAX_LINKS; i++) 
     {
 		struct nl_portid_hash *hash = &nl_table[i].hash;
 
+        // 每张hash表默认都会创建1个初始bucket，实际也就是存放一个链表头指针
 		hash->table = nl_portid_hash_zalloc(1 * sizeof(*hash->table));
 		if (!hash->table) {
 			while (i-- > 0)
@@ -3167,15 +3189,17 @@ static int __init netlink_proto_init(void)
     // 初始化netlink_tap_all链表头
 	INIT_LIST_HEAD(&netlink_tap_all);
 
-    // 注册NETLINK_USERSOCK协议到nl_table中
+    // 创建并注册NETLINK_USERSOCK协议到nl_table中
 	netlink_add_usersock_entry();
 
-    // 注册netlink协议族(包含netlink接口创建函数)
+    /* 注册netlink协议族操作集合到内核中(主要包含netlink接口创建函数)
+     * 后续，应用层创建netlink类型的socket时就会调用这里注册的create函数
+     */
 	sock_register(&netlink_family_ops);
     // 将netlink模块注册到每一个网络命名空间，并且执行了netlink_net_init
 	register_pernet_subsys(&netlink_net_ops);
 	/* The netlink device handler may be needed early. */
-    // netlink 路由设备初始化
+    // 创建并注册NETLINK_ROUTE协议到nl_table中
 	rtnetlink_init();
 
 out:

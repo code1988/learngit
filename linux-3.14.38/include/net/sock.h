@@ -219,6 +219,10 @@ struct cg_proto;
 /**
   *	struct sock - network layer representation of sockets
   *	socket 在网络层的表示
+  *
+  *	备注： 每个socket结构都对应有一个sock结构，即socket->sk指向对应的sock，sock->socket指向对应的socket
+  *	       不将这两个数据结构合并为一的原因是，socket的内容跟文件系统密切相关(涉及inode结构)，而sock的内容跟通信密切相关模块，
+  *	       拆分成两个数据结构有利于减小每个结构的大小
   *	@__sk_common: shared layout with inet_timewait_sock
   *	@sk_shutdown: mask of %SEND_SHUTDOWN and/or %RCV_SHUTDOWN
   *	@sk_userlocks: %SO_SNDBUF and %SO_RCVBUF settings

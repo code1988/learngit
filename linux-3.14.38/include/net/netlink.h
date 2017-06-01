@@ -385,11 +385,13 @@ static inline int nlmsg_parse(const struct nlmsghdr *nlh, int hdrlen,
 
 /**
  * nlmsg_find_attr - find a specific attribute in a netlink message
+ * 在该netlink消息中查找指定类型的属性条目
  * @nlh: netlink message header
  * @hdrlen: length of familiy specific header
  * @attrtype: type of attribute to look for
  *
  * Returns the first attribute which matches the specified type.
+ * 成功则返回第一条匹配的属性条目首地址
  */
 static inline struct nlattr *nlmsg_find_attr(const struct nlmsghdr *nlh,
 					     int hdrlen, int attrtype)

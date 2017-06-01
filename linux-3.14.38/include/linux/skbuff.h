@@ -434,7 +434,7 @@ struct sk_buff {
 
 	ktime_t			tstamp;
 
-	struct sock		*sk;
+	struct sock		*sk;        // 指向该sbk所属的socket控制块
 	struct net_device	*dev;   // 指向该skb当前所属的网络设备
 
 	/*

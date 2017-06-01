@@ -21,7 +21,7 @@
 /* Types of messages 
  * 以下定义了所有rtnetlink协议包含的消息类型
  * 
- * 备注：从中可以看出，这些协议一共分成了(87-15)每组分配了4个ID号，分别代表RTM_NEW*、RTM_DEL*、RTM_GET*、RTM_SET*子类型；
+ * 备注：从中可以看出，这些协议一共分成了(87-15)/4 = 18 组，每组分配了4个ID号，分别代表RTM_NEW*、RTM_DEL*、RTM_GET*、RTM_SET*子类型；
  *       
  * */
 
@@ -573,7 +573,9 @@ enum {
 #define RTMGRP_IPV6_PREFIX	0x20000
 #endif
 
-/* RTnetlink multicast groups */
+/* RTnetlink multicast groups 
+ * 定义了rtnetlink协议支持的组播类型ID号
+ * */
 enum rtnetlink_groups {
 	RTNLGRP_NONE,
 #define RTNLGRP_NONE		RTNLGRP_NONE
