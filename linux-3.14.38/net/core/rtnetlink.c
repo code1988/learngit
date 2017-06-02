@@ -2993,7 +2993,7 @@ static int __net_init rtnetlink_net_init(struct net *net)
 		.groups		= RTNLGRP_MAX,
 		.input		= rtnetlink_rcv,
 		.cb_mutex	= &rtnl_mutex,
-		.flags		= NL_CFG_F_NONROOT_RECV,
+		.flags		= NL_CFG_F_NONROOT_RECV,    // 意味着非超级用户可以绑定到rtnetlink协议的多播组，但不能发送组播
 	};
 
     // 内核创建一个NETLINK_ROUTE协议的netlink-socket

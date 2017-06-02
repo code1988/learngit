@@ -633,6 +633,7 @@ static int __init dsa_init_module(void)
 	if (rc)
 		return rc;
 
+    // 注册具体的ETH_P_DSA协议，目前就是dsa_packet_type
 #ifdef CONFIG_NET_DSA_TAG_DSA
 	dev_add_pack(&dsa_packet_type);
 #endif

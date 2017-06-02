@@ -143,8 +143,8 @@
 
 static DEFINE_SPINLOCK(ptype_lock);
 static DEFINE_SPINLOCK(offload_lock);
-struct list_head ptype_base[PTYPE_HASH_SIZE] __read_mostly;
-struct list_head ptype_all __read_mostly;	/* Taps */
+struct list_head ptype_base[PTYPE_HASH_SIZE] __read_mostly; /* 除了ETH_P_ALL 之外的协议管理块都会注册到这张hash表中 */
+struct list_head ptype_all __read_mostly;	/* Taps 协议类型为ETH_P_ALL 协议管理块都会注册到这张链表中 */
 static struct list_head offload_base __read_mostly;
 
 static int netif_rx_internal(struct sk_buff *skb);
@@ -347,12 +347,14 @@ static inline void netdev_set_addr_lockdep_class(struct net_device *dev)
 
 		Protocol management and registration routines
 
+以下是内核中的以太网协议(ETH_P_*)管理和注册程序
 *******************************************************************************/
 
 /*
  *	Add a protocol ID to the list. Now that the input handler is
  *	smarter we can dispense with all the messy stuff that used to be
  *	here.
+ *	判断该以太网协议管理块是加入到ptype_all还是ptype_base中
  *
  *	BEWARE!!! Protocol handlers, mangling input packets,
  *	MUST BE last in hash buckets and checking protocol handlers
@@ -375,6 +377,7 @@ static inline struct list_head *ptype_head(const struct packet_type *pt)
 
 /**
  *	dev_add_pack - add packet handler
+ *	注册一个指定的以太网协议到内核
  *	@pt: packet type declaration
  *
  *	Add a protocol handler to the networking stack. The passed &packet_type

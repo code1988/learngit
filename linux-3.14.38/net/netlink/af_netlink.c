@@ -1156,6 +1156,11 @@ static struct proto netlink_proto = {
 	.obj_size = sizeof(struct netlink_sock),
 };
 
+/* 创建并初始化一个sock结构
+ * 本函数在2种情况下会被调用到：
+ *          1. 某个协议类型(比如NETLINK_ROUTE)初始化时，会将init函数注册到内核的每个网络命名空间，并init函数创建netlink-socket时就会调用到
+ *          2. 用户层调用PF_NETLINK类型的socket()时，内核这边会调用相应的netlink_create函数，其中也会调用到
+ */
 static int __netlink_create(struct net *net, struct socket *sock,
 			    struct mutex *cb_mutex, int protocol)
 {
@@ -2485,6 +2490,7 @@ __netlink_kernel_create(struct net *net, int unit, struct module *module,
 	 * So we create one inside init_net and the move it to net.
 	 */
 
+    // 然后是创建并初始化一个sock结构
 	if (__netlink_create(&init_net, sock, cb_mutex, unit) < 0)
 		goto out_sock_release_nosk;
 
@@ -2504,6 +2510,7 @@ __netlink_kernel_create(struct net *net, int unit, struct module *module,
 	if (cfg && cfg->input)
 		nlk_sk(sk)->netlink_rcv = cfg->input;
 
+    // 将创建的netlink-socket添加到nl_table对应表项中的hash表中
 	if (netlink_insert(sk, net, 0))
 		goto out_sock_release;
 
@@ -2511,6 +2518,7 @@ __netlink_kernel_create(struct net *net, int unit, struct module *module,
 	nlk->flags |= NETLINK_KERNEL_SOCKET;
 
 	netlink_table_grab();
+    // 初始化nl_table对应的表项
 	if (!nl_table[unit].registered) {
 		nl_table[unit].groups = groups;
 		rcu_assign_pointer(nl_table[unit].listeners, listeners);
