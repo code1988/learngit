@@ -125,6 +125,7 @@ struct sockaddr;
 struct msghdr;
 struct module;
 
+// 定义了协议族的操作集合
 struct proto_ops {
 	int		family;
 	struct module	*owner;
