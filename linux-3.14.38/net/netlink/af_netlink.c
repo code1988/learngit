@@ -76,11 +76,12 @@ struct listeners {
 #define NETLINK_CONGESTED	0x0
 
 /* flags */
-#define NETLINK_KERNEL_SOCKET	0x1
+#define NETLINK_KERNEL_SOCKET	0x1     // 用来标识该netlink套接字是内核套接字
 #define NETLINK_RECV_PKTINFO	0x2
 #define NETLINK_BROADCAST_SEND_ERROR	0x4
 #define NETLINK_RECV_NO_ENOBUFS	0x8
 
+// 判断该netlink套接字是否是内核套接字
 static inline int netlink_is_kernel(struct sock *sk)
 {
 	return nlk_sk(sk)->flags & NETLINK_KERNEL_SOCKET;
@@ -876,6 +877,7 @@ static void netlink_skb_set_owner_r(struct sk_buff *skb, struct sock *sk)
 	sk_mem_charge(sk, skb->truesize);
 }
 
+// netlink sock结构的析构函数
 static void netlink_sock_destruct(struct sock *sk)
 {
 	struct netlink_sock *nlk = nlk_sk(sk);
@@ -1098,6 +1100,7 @@ netlink_update_listeners(struct sock *sk)
 	 * makes sure updates are visible before bind or setsockopt return. */
 }
 
+// 将netlink套接字添加到nl_table中的相应位置
 static int netlink_insert(struct sock *sk, struct net *net, u32 portid)
 {
 	struct netlink_table *table = &nl_table[sk->sk_protocol];
@@ -1108,8 +1111,10 @@ static int netlink_insert(struct sock *sk, struct net *net, u32 portid)
 	int len;
 
 	netlink_table_grab();
+    // 首先根据portid计算出在该hash表的散列地址，取得对应的表项，也就是一个链表头
 	head = nl_portid_hashfn(hash, portid);
 	len = 0;
+    // 遍历链表，通过注册的compare函数查找对应网络命名空间下的netlink套接字
 	sk_for_each(osk, head) {
 		if (table->compare(net, osk) &&
 		    (nlk_sk(osk)->portid == portid))
@@ -1131,6 +1136,7 @@ static int netlink_insert(struct sock *sk, struct net *net, u32 portid)
 		head = nl_portid_hashfn(hash, portid);
 	hash->entries++;
 	nlk_sk(sk)->portid = portid;
+    // 最后将符合条件的netlink套接字加入hash表
 	sk_add_node(sk, head);
 	err = 0;
 
@@ -1149,7 +1155,7 @@ static void netlink_remove(struct sock *sk)
 	netlink_table_ungrab();
 }
 
-// 定义了一个socket层面的netlink协议接口
+// 定义了一个绑在netlink-socket上的netlink协议块
 static struct proto netlink_proto = {
 	.name	  = "NETLINK",
 	.owner	  = THIS_MODULE,
@@ -1167,12 +1173,15 @@ static int __netlink_create(struct net *net, struct socket *sock,
 	struct sock *sk;
 	struct netlink_sock *nlk;
 
+    // 将socket结构和netlink协议的操作集关联
 	sock->ops = &netlink_ops;
 
+    // 分配基于netlink协议的sock结构
 	sk = sk_alloc(net, PF_NETLINK, GFP_KERNEL, &netlink_proto);
 	if (!sk)
 		return -ENOMEM;
 
+    // 初始化sock的发送接收队列、数据缓存、等待队列和互斥锁等
 	sock_init_data(sock, sk);
 
 	nlk = nlk_sk(sk);
@@ -1187,7 +1196,7 @@ static int __netlink_create(struct net *net, struct socket *sock,
 	mutex_init(&nlk->pg_vec_lock);
 #endif
 
-	sk->sk_destruct = netlink_sock_destruct;
+	sk->sk_destruct = netlink_sock_destruct;    // 设置netlink sock结构的析构函数
 	sk->sk_protocol = protocol;
 	return 0;
 }
@@ -2461,9 +2470,8 @@ static void netlink_data_ready(struct sock *sk, int len)
  *	We export these functions to other modules. They provide a
  *	complete set of kernel non-blocking support for message
  *	queueing.
- *  内核用于创建一个具体协议(如NETLINK_ROUTE)的netlink-socket,成功返回创建的socket控制块
+ *  内核用于创建一个具体协议(如NETLINK_ROUTE)的netlink套接字,成功返回创建的sock结构
  */
-
 struct sock *
 __netlink_kernel_create(struct net *net, int unit, struct module *module,
 			struct netlink_kernel_cfg *cfg)
@@ -2490,35 +2498,46 @@ __netlink_kernel_create(struct net *net, int unit, struct module *module,
 	 * So we create one inside init_net and the move it to net.
 	 */
 
-    // 然后是创建并初始化一个sock结构
+    /* 然后是创建并初始化一个sock结构
+     *
+     * 备注： 这里要注意的是，首先使用了init_net缺省网络命名空间来创建sock结构，然后再转回到当前的网络命名空间
+     *        从上面的注释来看，这么做的原因大概是无法对当前的网络命名空间执行get_net()操作(__netlink_create->sk_alloc中有调用到)
+     */
 	if (__netlink_create(&init_net, sock, cb_mutex, unit) < 0)
 		goto out_sock_release_nosk;
 
 	sk = sock->sk;
 	sk_change_net(sk, net);
 
+    // 内核默认支持32个组播地址
 	if (!cfg || cfg->groups < 32)
 		groups = 32;
 	else
 		groups = cfg->groups;
 
+    // 分配linsters的空间
 	listeners = kzalloc(sizeof(*listeners) + NLGRPSZ(groups), GFP_KERNEL);
 	if (!listeners)
 		goto out_sock_release;
 
+    // 这里 V3.14.38 实际没有注册
 	sk->sk_data_ready = netlink_data_ready;
+    // 如果某个具体的netlink协议配置了消息处理函数，就将其注册到netlink-socket控制块的对应位置
 	if (cfg && cfg->input)
 		nlk_sk(sk)->netlink_rcv = cfg->input;
 
-    // 将创建的netlink-socket添加到nl_table对应表项中的hash表中
+    /* 将创建的netlink套接字添加到nl_table对应表项中的hash表中
+     * 由于本函数创建的都是内核nelink套接字，所以portid 固定为 0
+     */
 	if (netlink_insert(sk, net, 0))
 		goto out_sock_release;
 
 	nlk = nlk_sk(sk);
-	nlk->flags |= NETLINK_KERNEL_SOCKET;
+	nlk->flags |= NETLINK_KERNEL_SOCKET;    // 标记这是个内核netlink套接字
 
 	netlink_table_grab();
-    // 初始化nl_table对应的表项
+
+    // 判断该协议类型是否已经注册过了，如果没有则在这里初始化nl_table对应的表项，如果有就不再初始化该表项了
 	if (!nl_table[unit].registered) {
 		nl_table[unit].groups = groups;
 		rcu_assign_pointer(nl_table[unit].listeners, listeners);
@@ -2549,8 +2568,8 @@ out_sock_release_nosk:
 }
 EXPORT_SYMBOL(__netlink_kernel_create);
 
-void
-netlink_kernel_release(struct sock *sk)
+// 内核用于注销一个具体协议(如NETLINK_ROUTE)的netlink-socket
+void netlink_kernel_release(struct sock *sk)
 {
 	sk_release_kernel(sk);
 }
@@ -2863,6 +2882,7 @@ ack:
 			netlink_ack(skb, nlh, err);
 
 skip:
+        // skb的读指针掠过这条处理完毕的netlink消息
 		msglen = NLMSG_ALIGN(nlh->nlmsg_len);
 		if (msglen > skb->len)
 			msglen = skb->len;

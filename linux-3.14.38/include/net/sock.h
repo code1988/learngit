@@ -131,6 +131,7 @@ typedef __u64 __bitwise __addrpair;
 
 /**
  *	struct sock_common - minimal network layer representation of sockets
+ *	sock结构中网络层内容的最小形式
  *	@skc_daddr: Foreign IPv4 addr
  *	@skc_rcv_saddr: Bound local IPv4 addr
  *	@skc_hash: hash value used with various protocol lookup tables
@@ -178,7 +179,7 @@ struct sock_common {
 		};
 	};
 
-	unsigned short		skc_family;
+	unsigned short		skc_family;     // 记录该sock所属的地址族
 	volatile unsigned char	skc_state;
 	unsigned char		skc_reuse:4;
 	unsigned char		skc_reuseport:4;
@@ -187,7 +188,7 @@ struct sock_common {
 		struct hlist_node	skc_bind_node;
 		struct hlist_nulls_node skc_portaddr_node;
 	};
-	struct proto		*skc_prot;
+	struct proto		*skc_prot;      // 指向该跟sock绑定的协议块
 #ifdef CONFIG_NET_NS
 	struct net	 	*skc_net;
 #endif
@@ -223,6 +224,9 @@ struct cg_proto;
   *	备注： 每个socket结构都对应有一个sock结构，即socket->sk指向对应的sock，sock->socket指向对应的socket
   *	       不将这两个数据结构合并为一的原因是，socket的内容跟文件系统密切相关(涉及inode结构)，而sock的内容跟通信密切相关模块，
   *	       拆分成两个数据结构有利于减小每个结构的大小
+  *
+  *	注意点： sock结构往往是作为一个模块嵌入到具体的协议中，类似于list_head，所以往往存在一个父结构
+  *
   *	@__sk_common: shared layout with inet_timewait_sock
   *	@sk_shutdown: mask of %SEND_SHUTDOWN and/or %RCV_SHUTDOWN
   *	@sk_userlocks: %SO_SNDBUF and %SO_RCVBUF settings
@@ -378,7 +382,7 @@ struct sock {
 	unsigned int		sk_shutdown  : 2,
 				sk_no_check  : 2,
 				sk_userlocks : 4,
-				sk_protocol  : 8,
+				sk_protocol  : 8,           // 记录了该sock的具体协议类型
 				sk_type      : 16;
 	kmemcheck_bitfield_end(flags);
 	int			sk_wmem_queued;
@@ -393,7 +397,7 @@ struct sock {
 	int			sk_rcvlowat;
 	unsigned long	        sk_lingertime;
 	struct sk_buff_head	sk_error_queue;
-	struct proto		*sk_prot_creator;
+	struct proto		*sk_prot_creator;   // 指向该跟sock绑定的协议块
 	rwlock_t		sk_callback_lock;
 	int			sk_err,
 				sk_err_soft;
@@ -428,7 +432,7 @@ struct sock {
 	void			(*sk_error_report)(struct sock *sk);
 	int			(*sk_backlog_rcv)(struct sock *sk,
 						  struct sk_buff *skb);
-	void                    (*sk_destruct)(struct sock *sk);
+	void                    (*sk_destruct)(struct sock *sk);        // 该sock结构的析构函数
 };
 
 #define __sk_user_data(sk) ((*((void __rcu **)&(sk)->sk_user_data)))
@@ -923,7 +927,9 @@ static inline void sk_prot_clear_nulls(struct sock *sk, int size)
 }
 
 /* Networking protocol blocks we attach to sockets.
- * socket层到传输层的接口
+ * 定义了一个网络协议块，跟sock结构密切相关
+ * 
+ * 备注：这是一个socket层到传输层的接口
  * socket layer -> transport layer interface
  * transport -> network interface is defined by struct inet_proto
  */
@@ -1007,7 +1013,7 @@ struct proto {
 	bool			no_autobind;
 
 	struct kmem_cache	*slab;
-	unsigned int		obj_size;
+	unsigned int		obj_size;   // 指定了sock结构的父结构的大小
 	int			slab_flags;
 
 	struct percpu_counter	*orphan_count;

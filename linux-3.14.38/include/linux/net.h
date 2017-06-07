@@ -43,6 +43,8 @@ struct net;
 #ifndef ARCH_HAS_SOCKET_TYPES
 /**
  * enum sock_type - Socket types
+ * socket类型枚举
+ *
  * @SOCK_STREAM: stream (connection) socket
  * @SOCK_DGRAM: datagram (conn.less) socket
  * @SOCK_RAW: raw socket
@@ -94,6 +96,11 @@ struct socket_wq {
 
 /**
  *  struct socket - general BSD socket
+ *  定义了socket在虚拟文件系统中的存在形式(可以看成一个文件)
+ *
+ *	备注： 每个socket结构都对应有一个sock结构，即socket->sk指向对应的sock，sock->socket指向对应的socket
+ *	       不将这两个数据结构合并为一的原因是，socket的内容跟文件系统密切相关(涉及inode结构)，而sock的内容跟通信密切相关模块，
+ *	       拆分成两个数据结构有利于减小每个结构的大小
  *  @state: socket state (%SS_CONNECTED, etc)
  *  @type: socket type (%SOCK_STREAM, etc)
  *  @flags: socket flags (%SOCK_ASYNC_NOSPACE, etc)
@@ -103,10 +110,10 @@ struct socket_wq {
  *  @wq: wait queue for several uses
  */
 struct socket {
-	socket_state		state;
+	socket_state		state;      // 用于表示该socket所处的状态(从状态的枚举中也可以看出，只对tcp socket有效，udp和raw不需要维护该状态)
 
 	kmemcheck_bitfield_begin(type);
-	short			type;
+	short			type;           // 记录了该socket的类型
 	kmemcheck_bitfield_end(type);
 
 	unsigned long		flags;
@@ -114,8 +121,8 @@ struct socket {
 	struct socket_wq __rcu	*wq;
 
 	struct file		*file;
-	struct sock		*sk;
-	const struct proto_ops	*ops;
+	struct sock		*sk;            // 该socket在网络层的表示
+	const struct proto_ops	*ops;   // 该socket对应协议的操作函数集
 };
 
 struct vm_area_struct;
@@ -125,9 +132,9 @@ struct sockaddr;
 struct msghdr;
 struct module;
 
-// 定义了协议族的操作集合
+// 定义了socket网络协议相关的一组操作集合
 struct proto_ops {
-	int		family;
+	int		family;             // 所属协议族ID
 	struct module	*owner;
 	int		(*release)   (struct socket *sock);
 	int		(*bind)	     (struct socket *sock,

@@ -20,7 +20,7 @@ struct netlink_ring {
 	atomic_t		pending;
 };
 
-// 内核这边的netlink-socket控制块
+// 内核这边的netlink套接字
 struct netlink_sock {
 	/* struct sock has to be the first member of netlink_sock */
 	struct sock		sk;     // 通用的socket控制块
@@ -48,21 +48,21 @@ struct netlink_sock {
 #endif /* CONFIG_NETLINK_MMAP */
 };
 
-// 获取指定socket控制块所属的netlink-socket控制块
+// 获取sock结构所属的netlink套接字
 static inline struct netlink_sock *nlk_sk(struct sock *sk)
 {
 	return container_of(sk, struct netlink_sock, sk);
 }
 
-// netlink每个协议表项中的hash表控制块
+// netlink每个协议表项中的hash表控制块，记录了同种协议类型的不同netlink套接字实例，通过portid和net(网络命名空间)进行索引
 struct nl_portid_hash {
-	struct hlist_head	*table;     // 这里才真正指向一张hash表
+	struct hlist_head	*table;     // 这里才真正指向一张hash表 "table[]"
 	unsigned long		rehash_time;
 
 	unsigned int		mask;
 	unsigned int		shift;
 
-	unsigned int		entries;
+	unsigned int		entries;    // 记录了该hash表当前记录的netlink套接字数量
 	unsigned int		max_shift;
 
 	u32			rnd;
@@ -73,13 +73,13 @@ struct netlink_table {
 	struct nl_portid_hash	hash;       // hash表控制块，这张hash表用来索引同种协议类型的不同netlink套接字实例
 	struct hlist_head	mc_list;        // 这是用于组播的hash表
 	struct listeners __rcu	*listeners; // 记录了监听者的掩码
-	unsigned int		flags;
+	unsigned int		flags;          // 这里的标志位来自配置netlink_kernel_cfg,
 	unsigned int		groups;         // 记录了该协议类型支持的最大组播数量
 	struct mutex		*cb_mutex;
 	struct module		*module;
 	void			(*bind)(int group);
-	bool			(*compare)(struct net *net, struct sock *sock); // net比较函数
-	int			registered;     // 标记是否注册，1=标记 0=未标记
+	bool			(*compare)(struct net *net, struct sock *sock); // 网络命名空间比较函数
+	int			registered;     // 标记该协议类型是否已经注册，0表示未注册，>=1表示已经有注册过
 };
 
 extern struct netlink_table *nl_table;

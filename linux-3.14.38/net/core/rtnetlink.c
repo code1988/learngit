@@ -2982,7 +2982,7 @@ static struct notifier_block rtnetlink_dev_notifier = {
 	.notifier_call	= rtnetlink_event,
 };
 
-/* 具体的rtnetlink功能初始化(实际就是创建一个NETLINK_ROUTE协议的socket，并注册到当前网络命名空间)
+/* 具体的rtnetlink功能初始化(实际就是创建一个NETLINK_ROUTE协议的netlink套接字，并注册到当前网络命名空间)
  * 
  * 备注：这里实际的内容跟其他很多模块不一样，其他模块基本都是在proc文件系统中创建相应接口
  */
@@ -2996,7 +2996,7 @@ static int __net_init rtnetlink_net_init(struct net *net)
 		.flags		= NL_CFG_F_NONROOT_RECV,    // 意味着非超级用户可以绑定到rtnetlink协议的多播组，但不能发送组播
 	};
 
-    // 内核创建一个NETLINK_ROUTE协议的netlink-socket
+    // 内核创建一个NETLINK_ROUTE协议的netlink套接字
 	sk = netlink_kernel_create(net, NETLINK_ROUTE, &cfg);
 	if (!sk)
 		return -ENOMEM;
@@ -3005,7 +3005,7 @@ static int __net_init rtnetlink_net_init(struct net *net)
 	return 0;
 }
 
-// rtnetlink网络结束
+// 注销rtnetlink功能(实际就是从指定网络命名空间中注销一个NETLINK_ROUTE协议的netlink-socket)
 static void __net_exit rtnetlink_net_exit(struct net *net)
 {
 	netlink_kernel_release(net->rtnl);

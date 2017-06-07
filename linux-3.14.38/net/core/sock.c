@@ -1373,6 +1373,9 @@ EXPORT_SYMBOL_GPL(sock_update_netprioidx);
 
 /**
  *	sk_alloc - All socket objects are allocated here
+ *	分配sock结构(实质是分配了包含sock结构的父结构)
+ *
+ *	备注：分配成功后还做了一些初始化，比如绑上指定的协议块等
  *	@net: the applicable net namespace
  *	@family: protocol family
  *	@priority: for allocation (%GFP_KERNEL, %GFP_ATOMIC, etc)
@@ -1385,14 +1388,14 @@ struct sock *sk_alloc(struct net *net, int family, gfp_t priority,
 
 	sk = sk_prot_alloc(prot, priority | __GFP_ZERO, family);
 	if (sk) {
-		sk->sk_family = family;
+		sk->sk_family = family;                     // 设置该sock所属的地址族
 		/*
 		 * See comment in struct sock definition to understand
 		 * why we need sk_prot_creator -acme
 		 */
-		sk->sk_prot = sk->sk_prot_creator = prot;
+		sk->sk_prot = sk->sk_prot_creator = prot;   // 将该sock结构绑上指定的协议块
 		sock_lock_init(sk);
-		sock_net_set(sk, get_net(net));
+		sock_net_set(sk, get_net(net));             // 设置该sock所属的网络命名空间
 		atomic_set(&sk->sk_wmem_alloc, 1);
 
 		sock_update_classid(sk);
