@@ -195,7 +195,7 @@ struct proto_ops {
 #define DECLARE_SOCKADDR(type, dst, src)	\
 	type dst = ({ __sockaddr_check_size(sizeof(*dst)); (type) src; })
 
-// 定义了网络命名空间中通用的协议族结构
+// 定义了网络命名空间中通用的协议族管理块(当创建该协议族的套接字时会调用这里对应的create回调)
 struct net_proto_family {
 	int		family;     // 该协议的族ID号
 	int		(*create)(struct net *net, struct socket *sock,

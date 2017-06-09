@@ -70,7 +70,7 @@ struct net {
 	struct ctl_table_set	sysctls;
 #endif
 
-	struct sock 		*rtnl;			/* rtnetlink socket 控制块，
+	struct sock 		*rtnl;			/* 网络命名空间只专门为NETLINK_ROUTE预留了一个sock指针，
                                            注册了该socket控制块后，该网络命名空间下收到任何rtnetlink协议的消息，都会触发该socket控制块中的input回调函数 */
 	struct sock		*genl_sock;
 

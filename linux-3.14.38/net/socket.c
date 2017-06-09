@@ -390,6 +390,7 @@ struct file *sock_alloc_file(struct socket *sock, int flags, const char *dname)
 }
 EXPORT_SYMBOL(sock_alloc_file);
 
+// 分配fd描述符
 static int sock_map_fd(struct socket *sock, int flags)
 {
 	struct file *newfile;
@@ -529,6 +530,7 @@ static const struct inode_operations sockfs_inode_ops = {
 
 /**
  *	sock_alloc	-	allocate a socket
+ *	分配一个socket结构
  *
  *	Allocate a new inode and socket object. The two are bound together
  *	and initialised. The socket is then returned. If we are out of inodes
@@ -1109,6 +1111,12 @@ static long sock_ioctl(struct file *file, unsigned cmd, unsigned long arg)
 	return err;
 }
 
+/* 创建并初始化一个指定类型的socket结构
+ * @family  - socket的协议族
+ * @type    - socket类型
+ * @protocol- socket的协议类型
+ * @res     - 存储创建的socket结构
+ */
 int sock_create_lite(int family, int type, int protocol, struct socket **res)
 {
 	int err;
@@ -1118,6 +1126,7 @@ int sock_create_lite(int family, int type, int protocol, struct socket **res)
 	if (err)
 		goto out;
 
+    // 分配一个socket结构
 	sock = sock_alloc();
 	if (!sock) {
 		err = -ENOMEM;
@@ -1243,6 +1252,7 @@ call_kill:
 }
 EXPORT_SYMBOL(sock_wake_async);
 
+// 内核创建一个指定类型的套接字
 int __sock_create(struct net *net, int family, int type, int protocol,
 			 struct socket **res, int kern)
 {
@@ -1281,6 +1291,8 @@ int __sock_create(struct net *net, int family, int type, int protocol,
 	 *	Allocate the socket and allow the family to set things up. if
 	 *	the protocol is 0, the family is instructed to select an appropriate
 	 *	default.
+     *
+     *	创建并初始化一个socket结构
 	 */
 	sock = sock_alloc();
 	if (!sock) {
@@ -1356,6 +1368,7 @@ out_release:
 }
 EXPORT_SYMBOL(__sock_create);
 
+// 内核创建一个指定类型的套接字
 int sock_create(int family, int type, int protocol, struct socket **res)
 {
 	return __sock_create(current->nsproxy->net_ns, family, type, protocol, res, 0);
@@ -1368,6 +1381,7 @@ int sock_create_kern(int family, int type, int protocol, struct socket **res)
 }
 EXPORT_SYMBOL(sock_create_kern);
 
+// 对应用户态的socket()系统调用
 SYSCALL_DEFINE3(socket, int, family, int, type, int, protocol)
 {
 	int retval;
@@ -1388,10 +1402,12 @@ SYSCALL_DEFINE3(socket, int, family, int, type, int, protocol)
 	if (SOCK_NONBLOCK != O_NONBLOCK && (flags & SOCK_NONBLOCK))
 		flags = (flags & ~SOCK_NONBLOCK) | O_NONBLOCK;
 
+    // 内核创建一个对应的套接字
 	retval = sock_create(family, type, protocol, &sock);
 	if (retval < 0)
 		goto out;
 
+    // 分配fd描述符
 	retval = sock_map_fd(sock, flags & (O_CLOEXEC | O_NONBLOCK));
 	if (retval < 0)
 		goto out_release;
@@ -1407,6 +1423,7 @@ out_release:
 
 /*
  *	Create a pair of connected sockets.
+ *	对应用户态的socketpair()系统调用
  */
 
 SYSCALL_DEFINE4(socketpair, int, family, int, type, int, protocol,
@@ -1516,6 +1533,8 @@ out:
  *
  *	We move the socket address to kernel space before we call
  *	the protocol layer (having also checked the address is ok).
+ *
+ *  对应用户态的bind()系统调用
  */
 
 SYSCALL_DEFINE3(bind, int, fd, struct sockaddr __user *, umyaddr, int, addrlen)
@@ -1545,6 +1564,8 @@ SYSCALL_DEFINE3(bind, int, fd, struct sockaddr __user *, umyaddr, int, addrlen)
  *	Perform a listen. Basically, we allow the protocol to do anything
  *	necessary for a listen, and if that works, we mark the socket as
  *	ready for listening.
+ *
+ *  对应用户态的listen()系统调用
  */
 
 SYSCALL_DEFINE2(listen, int, fd, int, backlog)
