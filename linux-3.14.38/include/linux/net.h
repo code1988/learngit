@@ -43,7 +43,7 @@ struct net;
 #ifndef ARCH_HAS_SOCKET_TYPES
 /**
  * enum sock_type - Socket types
- * socket类型枚举
+ * 套接字类型枚举
  *
  * @SOCK_STREAM: stream (connection) socket
  * @SOCK_DGRAM: datagram (conn.less) socket
@@ -68,7 +68,7 @@ enum sock_type {
 	SOCK_PACKET	= 10,
 };
 
-#define SOCK_MAX (SOCK_PACKET + 1)
+#define SOCK_MAX (SOCK_PACKET + 1)  // 套接字类型上限
 /* Mask which covers at least up to SOCK_MASK-1.  The
  * remaining bits are used as flags. */
 #define SOCK_TYPE_MASK 0xf
@@ -195,11 +195,11 @@ struct proto_ops {
 #define DECLARE_SOCKADDR(type, dst, src)	\
 	type dst = ({ __sockaddr_check_size(sizeof(*dst)); (type) src; })
 
-// 定义了网络命名空间中通用的协议族管理块(当创建该协议族的套接字时会调用这里对应的create回调)
+// 定义了网络命名空间中通用的协议族管理块(当用户态创建该协议族的套接字时，内核会调用这里对应的create回调)
 struct net_proto_family {
 	int		family;     // 该协议的族ID号
 	int		(*create)(struct net *net, struct socket *sock,
-				  int protocol, int kern);  // 基于该协议族的create函数
+				  int protocol, int kern);  // 基于该协议族的create函数，该函数通常会创建并初始化一个sock结构(对应的socket结构已经在外面初始化了)
 	struct module	*owner; // 指向该协议族的所有者
 };
 

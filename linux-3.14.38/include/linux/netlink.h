@@ -50,8 +50,8 @@ struct netlink_kernel_cfg {
 	unsigned int	flags;  // 用来设置NL_CFG_F_NONROOT_SEND/NL_CFG_F_NONROOT_RECV这两个标志
 	void		(*input)(struct sk_buff *skb);  // 消息接收函数，用户空间发送该协议类型的netlink消息给内核后，就会调用本函数
 	struct mutex	*cb_mutex;
-	void		(*bind)(int group);
-	bool		(*compare)(struct net *net, struct sock *sk);
+	void		(*bind)(int group); // 用来配置协议类型私有的bind回调函数
+	bool		(*compare)(struct net *net, struct sock *sk);   // 用来配置协议类型私有的compare回调函数
 };
 
 extern struct sock *__netlink_kernel_create(struct net *net, int unit,

@@ -52,7 +52,7 @@ struct eap_eapol_interface {
 	Boolean eapResp;    // EAPOL层 BE_AUTH SM 进入RESPONSE状态时设置TRUE，EAP层AUTH SM进入SEND_REQUEST/DISCARD状态时设置FALSE
 	struct wpabuf *eapRespData; // 此buffer由EAPOL层填充，同时设置eapResp，然后递交EAP层处理
 	Boolean portEnabled;    // 此标志同时影响EAPOL层SM和EAP层SM，意味着该port是否可操作，开始802.1X认证时被设置TRUE，认证失败时设置FALSE(或者删除接口时)
-	int retransWhile;       // 重传定时器，由EAPOL层PORT_TIMER SM触发超时，由EAP层开启 
+	int retransWhile;       // EAP层发送的REQUEST*报文重传定时器，由EAPOL层PORT_TIMER SM触发超时，由EAP进入IDLE/IDLE2时层开启 (并且只会在这两种状态下有用)
 	Boolean eapRestart;     // EAPOL层 AUTH_PAE SM进入RESTART状态时设置TRUE，EAP层AUTH SM进入INITIALIZE状态时设置FALSE
 	int eapSRTT;
 	int eapRTTVAR;

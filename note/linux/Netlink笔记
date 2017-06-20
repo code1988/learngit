@@ -12,8 +12,12 @@ netlink涉及的数据结构：
             struct sockaddr_nl {
                 sa_family_t     nl_family;  // AF_NETLINK
                 unsigned short  nl_pad;     // 填充0
-                unsigned int    nl_pid;     // 进程ID
+                unsigned int    nl_pid;     // netlink套接字的单播地址，所以设置时要确保唯一性，对于内核来说固定为0
+                                            // 用户空间bind时可以手动指定一个值，或者不设置(bind时由内核自动设置为当前进程的pid)
+                                            // 发送消息时用于指定目的套接字的地址，接收消息时记录了源套接字地址
                 unsigned int    nl_groups;  // 多播组mask
+                                            // 用户空间执行bind时可以设置加入哪些多播组
+                                            // 发送消息时用于指定目的多播组
             }
             NETLINK_ROUTE的多播组定义位于retnetlink.h，RTMGRP_*格式，这里列出常用的几个：
             RTMGRP_LINK         - 当网卡变动时会触发这个多播组，例如插拔网线、增减网卡设备、启用禁用接口等

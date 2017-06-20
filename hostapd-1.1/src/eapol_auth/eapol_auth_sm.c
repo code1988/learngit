@@ -636,7 +636,7 @@ SM_STATE(BE_AUTH, FAIL)
 
 /* BE_AUTH SM进入TIMEOUT状态的EA:
  *      authTimeout标志设置为TRUE，用于通知AUTH_PAE SM
- * 备注：进入此状态的可能原因有2个，一个是EAPOL层的aWhile定时器超时引起，另一个是EAP-EAPOL交互变量eapTimeout被置位引起
+ * 备注：进入此状态的可能原因有2个，一个是EAPOL层的aWhile定时器超时引起，另一个是EAP-EAPOL交互变量eapTimeout(其实就是retransWhile定时器超时)被置位引起
  */
 SM_STATE(BE_AUTH, TIMEOUT)
 {

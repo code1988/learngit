@@ -2613,6 +2613,7 @@ static inline int security_inode_getsecctx(struct inode *inode, void **ctx, u32 
 }
 #endif	/* CONFIG_SECURITY */
 
+// 以下函数跟kernel是否使能了CONFIG_SECURITY_NETWORK配置选项有关
 #ifdef CONFIG_SECURITY_NETWORK
 
 int security_unix_stream_connect(struct sock *sock, struct sock *other, struct sock *newsk);

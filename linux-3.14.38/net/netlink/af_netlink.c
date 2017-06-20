@@ -1076,8 +1076,8 @@ static inline int nl_portid_hash_dilute(struct nl_portid_hash *hash, int len)
 
 static const struct proto_ops netlink_ops;
 
-static void
-netlink_update_listeners(struct sock *sk)
+// 更新套接字所属协议类型的监听集合
+static void netlink_update_listeners(struct sock *sk)
 {
 	struct netlink_table *tbl = &nl_table[sk->sk_protocol];
 	unsigned long mask;
@@ -1088,8 +1088,10 @@ netlink_update_listeners(struct sock *sk)
 	if (!listeners)
 		return;
 
+    // 以下的for实际应该只循环了1次
 	for (i = 0; i < NLGRPLONGS(tbl->groups); i++) {
 		mask = 0;
+        // 遍历该协议类型下的组播hash链表，收集所有关心的组播消息
 		sk_for_each_bound(sk, &tbl->mc_list) {
 			if (i < NLGRPLONGS(nlk_sk(sk)->ngroups))
 				mask |= nlk_sk(sk)->groups[i];
@@ -1100,7 +1102,10 @@ netlink_update_listeners(struct sock *sk)
 	 * makes sure updates are visible before bind or setsockopt return. */
 }
 
-// 将netlink套接字添加到nl_table中的相应位置
+/* 将netlink套接字添加到nl_table中的相应位置
+ * 
+ * 备注：这其实也就是用户空间bind该netlink套接字到某个单播地址的过程
+ */
 static int netlink_insert(struct sock *sk, struct net *net, u32 portid)
 {
 	struct netlink_table *table = &nl_table[sk->sk_protocol];
@@ -1114,13 +1119,14 @@ static int netlink_insert(struct sock *sk, struct net *net, u32 portid)
     // 首先根据portid计算出在该hash表的散列地址，取得对应的表项，也就是一个链表头
 	head = nl_portid_hashfn(hash, portid);
 	len = 0;
-    // 遍历链表，通过注册的compare函数查找对应网络命名空间下的netlink套接字
+    // 遍历链表，通过注册的compare函数判断对应net命名空间下是否存在相同portid的netlink套接字
 	sk_for_each(osk, head) {
 		if (table->compare(net, osk) &&
 		    (nlk_sk(osk)->portid == portid))
 			break;
 		len++;
 	}
+    // osk有效意味着已经有相同portid的netlink套接字注册在相同的net命名空间，所以不通过
 	if (osk)
 		goto err;
 
@@ -1135,6 +1141,7 @@ static int netlink_insert(struct sock *sk, struct net *net, u32 portid)
 	if (len && nl_portid_hash_dilute(hash, len))
 		head = nl_portid_hashfn(hash, portid);
 	hash->entries++;
+    // 绑定成功后就在这里更新该netlink套接字单播地址
 	nlk_sk(sk)->portid = portid;
     // 最后将符合条件的netlink套接字加入hash表
 	sk_add_node(sk, head);
@@ -1201,7 +1208,7 @@ static int __netlink_create(struct net *net, struct socket *sock,
 	return 0;
 }
 
-// 应用层创建PF_NETLINK类型的socket时就会调用到这里
+// 应用层创建PF_NETLINK类型的socket时就会在__sock_create中调用到这里
 static int netlink_create(struct net *net, struct socket *sock, int protocol,
 			  int kern)
 {
@@ -1211,14 +1218,18 @@ static int netlink_create(struct net *net, struct socket *sock, int protocol,
 	void (*bind)(int group);
 	int err = 0;
 
+    // 首先将套接字状态标记为未连接
 	sock->state = SS_UNCONNECTED;
 
+    // netlink接口只支持SOCK_RAW和SOCK_DGRAM这两种套接字类型
 	if (sock->type != SOCK_RAW && sock->type != SOCK_DGRAM)
 		return -ESOCKTNOSUPPORT;
 
+    // 检查具体的协议类型是否有效
 	if (protocol < 0 || protocol >= MAX_LINKS)
 		return -EPROTONOSUPPORT;
 
+    // 以下这个锁区域主要是完成了几个赋值操作
 	netlink_lock_table();
 #ifdef CONFIG_MODULES
 	if (!nl_table[protocol].registered) {
@@ -1227,6 +1238,7 @@ static int netlink_create(struct net *net, struct socket *sock, int protocol,
 		netlink_lock_table();
 	}
 #endif
+    // 检查该协议类型的netlink是否已经注册了，只有nl_table中已经注册的协议类型才能继续创建下去
 	if (nl_table[protocol].registered &&
 	    try_module_get(nl_table[protocol].module))
 		module = nl_table[protocol].module;
@@ -1239,6 +1251,9 @@ static int netlink_create(struct net *net, struct socket *sock, int protocol,
 	if (err < 0)
 		goto out;
 
+    /* 创建并初始化一个sock结构
+     * 跟内核主动创建netlink套接字时不同的是，这里似乎不再关心传入的net命名空间
+     */
 	err = __netlink_create(net, sock, cb_mutex, protocol);
 	if (err < 0)
 		goto out_module;
@@ -1247,6 +1262,7 @@ static int netlink_create(struct net *net, struct socket *sock, int protocol,
 	sock_prot_inuse_add(net, &netlink_proto, 1);
 	local_bh_enable();
 
+    // 最后对内核netlink套接字相关参数进行赋值
 	nlk = nlk_sk(sock->sk);
 	nlk->module = module;
 	nlk->netlink_bind = bind;
@@ -1321,6 +1337,7 @@ static int netlink_release(struct socket *sock)
 	return 0;
 }
 
+// 内核将一个netlink套接字自动绑定到某个单播地址上
 static int netlink_autobind(struct socket *sock)
 {
 	struct sock *sk = sock->sk;
@@ -1329,10 +1346,14 @@ static int netlink_autobind(struct socket *sock)
 	struct nl_portid_hash *hash = &table->hash;
 	struct hlist_head *head;
 	struct sock *osk;
-	s32 portid = task_tgid_vnr(current);
+	s32 portid = task_tgid_vnr(current);    // 获取当前进程ID
 	int err;
 	static s32 rover = -4097;
 
+    /* 首先尝试用当前进程ID作为绑定的单播地址；
+     * 如果当前进程ID已经绑过其他的相同协议类型的netlink套接字，则选用rover为基准进行查找，直到找到可用的值
+     * 最后用找到的可用值作为该netlink的单播地址，执行绑定操作
+     */
 retry:
 	cond_resched();
 	netlink_table_grab();
@@ -1351,6 +1372,7 @@ retry:
 	}
 	netlink_table_ungrab();
 
+    // 根据找到的portid完成绑定
 	err = netlink_insert(sk, net, portid);
 	if (err == -EADDRINUSE)
 		goto retry;
@@ -1429,14 +1451,18 @@ bool netlink_net_capable(const struct sk_buff *skb, int cap)
 }
 EXPORT_SYMBOL(netlink_net_capable);
 
+/* 判断该套接字是否具有flag标识的某项权限
+ * 
+ * 备注：对于超级用户，flag标识的权限都开放；对于非超级用户，则只有已经被设置为允许的操作才开放
+ */
 static inline int netlink_allowed(const struct socket *sock, unsigned int flag)
 {
 	return (nl_table[sock->sk->sk_protocol].flags & flag) ||
 		ns_capable(sock_net(sock->sk)->user_ns, CAP_NET_ADMIN);
 }
 
-static void
-netlink_update_subscriptions(struct sock *sk, unsigned int subscriptions)
+// 将指定套接字加入所属netlink协议类型的多播hash链表
+static void netlink_update_subscriptions(struct sock *sk, unsigned int subscriptions)
 {
 	struct netlink_sock *nlk = nlk_sk(sk);
 
@@ -1444,9 +1470,12 @@ netlink_update_subscriptions(struct sock *sk, unsigned int subscriptions)
 		__sk_del_bind_node(sk);
 	else if (!nlk->subscriptions && subscriptions)
 		sk_add_bind_node(sk, &nl_table[sk->sk_protocol].mc_list);
+    
+    // 更新该netlink套接字阅订的组播数量
 	nlk->subscriptions = subscriptions;
 }
 
+// 为指定套接字分配组播空间
 static int netlink_realloc_groups(struct sock *sk)
 {
 	struct netlink_sock *nlk = nlk_sk(sk);
@@ -1473,6 +1502,7 @@ static int netlink_realloc_groups(struct sock *sk)
 	memset((char *)new_groups + NLGRPSZ(nlk->ngroups), 0,
 	       NLGRPSZ(groups) - NLGRPSZ(nlk->ngroups));
 
+    // 记录下分配的组播空间信息
 	nlk->groups = new_groups;
 	nlk->ngroups = groups;
  out_unlock:
@@ -1480,6 +1510,11 @@ static int netlink_realloc_groups(struct sock *sk)
 	return err;
 }
 
+/* 用户态对netlink接口的套接字执行系统调用bind()时就会进入到这里
+ * @sock    - 要绑定的socket结构，也就是套接字
+ * @addr    - 要绑定的套接字地址
+ * @addr_len- 套接字地址长度
+ */
 static int netlink_bind(struct socket *sock, struct sockaddr *addr,
 			int addr_len)
 {
@@ -1489,25 +1524,36 @@ static int netlink_bind(struct socket *sock, struct sockaddr *addr,
 	struct sockaddr_nl *nladdr = (struct sockaddr_nl *)addr;
 	int err;
 
+    // 首先是入参合法性检测
 	if (addr_len < sizeof(struct sockaddr_nl))
 		return -EINVAL;
 
 	if (nladdr->nl_family != AF_NETLINK)
 		return -EINVAL;
 
-	/* Only superuser is allowed to listen multicasts */
+	/* Only superuser is allowed to listen multicasts 
+     *
+     * 如果传入的套接字地址中指定了要监听的组播，需要判断该套接字是否具有监听组播的权限
+     * 备注：上面的英文描述有问题，实际不只是root用户
+     * */
 	if (nladdr->nl_groups) {
 		if (!netlink_allowed(sock, NL_CFG_F_NONROOT_RECV))
 			return -EPERM;
+        // 为该套接字分配组播空间
 		err = netlink_realloc_groups(sk);
 		if (err)
 			return err;
 	}
 
+     /* 需要注意的一点就是，如果netlink套接字已经绑定在一个地址上，就不能再绑到一个新的地址.
+     *      对于尚未绑定的netlink套接字，这时候如果传入的套接字地址中指定了要绑定的单播地址就用该地址绑定;
+     *      如果没有指定就自动绑定一个
+     */
 	if (nlk->portid) {
 		if (nladdr->nl_pid != nlk->portid)
 			return -EINVAL;
 	} else {
+        // 绑定netlink套接字的过程，其实就是将其加入nl_table的过程
 		err = nladdr->nl_pid ?
 			netlink_insert(sk, net, nladdr->nl_pid) :
 			netlink_autobind(sock);
@@ -1515,17 +1561,23 @@ static int netlink_bind(struct socket *sock, struct sockaddr *addr,
 			return err;
 	}
 
+    // 如果用户态没有指定组播地址，并且没有分配组播的内存，那么bind工作就到此结束了
 	if (!nladdr->nl_groups && (nlk->groups == NULL || !(u32)nlk->groups[0]))
 		return 0;
 
+    // 程序运行到这里意味着用户态指定了需要绑定的组播地址
 	netlink_table_grab();
+    // 将指定套接字加入所属netlink协议类型的多播hash链表
 	netlink_update_subscriptions(sk, nlk->subscriptions +
 					 hweight32(nladdr->nl_groups) -
 					 hweight32(nlk->groups[0]));
+    // 保存组播地址mask值
 	nlk->groups[0] = (nlk->groups[0] & ~0xffffffffUL) | nladdr->nl_groups;
+    // 更新套接字所属协议类型的监听集合
 	netlink_update_listeners(sk);
 	netlink_table_ungrab();
 
+    // 如果具体的netlink协议类型注册了私有的bind函数，并且用户态指定了要绑定的组播地址，则在这里调用该私有的bind函数
 	if (nlk->netlink_bind && nlk->groups[0]) {
 		int i;
 

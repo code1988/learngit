@@ -185,7 +185,7 @@ struct sock_common {
 	unsigned char		skc_reuseport:4;
 	int			skc_bound_dev_if;
 	union {
-		struct hlist_node	skc_bind_node;
+		struct hlist_node	skc_bind_node;  // 目前发现的应用是：作为netlink中具体协议类型的多播hash表节点模块
 		struct hlist_nulls_node skc_portaddr_node;
 	};
 	struct proto		*skc_prot;      // 指向该跟sock绑定的协议块
@@ -639,6 +639,7 @@ static inline void __sk_del_bind_node(struct sock *sk)
 	__hlist_del(&sk->sk_bind_node);
 }
 
+// 将指定套接字加入hash链表
 static inline void sk_add_bind_node(struct sock *sk,
 					struct hlist_head *list)
 {

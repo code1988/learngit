@@ -209,8 +209,8 @@ AUTH_PAE_ABORTING	src/eapol_auth/eapol_auth_sm_i.h	/^	       AUTH_PAE_ABORTING, 
 AUTH_PAE_AUTHENTICATED	src/eapol_auth/eapol_auth_sm_i.h	/^	       AUTH_PAE_AUTHENTICATING, AUTH_PAE_AUTHENTICATED,$/;"	e	enum:eapol_state_machine::__anon66
 AUTH_PAE_AUTHENTICATING	src/eapol_auth/eapol_auth_sm_i.h	/^	       AUTH_PAE_AUTHENTICATING, AUTH_PAE_AUTHENTICATED,$/;"	e	enum:eapol_state_machine::__anon66
 AUTH_PAE_CONNECTING	src/eapol_auth/eapol_auth_sm_i.h	/^	enum { AUTH_PAE_INITIALIZE, AUTH_PAE_DISCONNECTED, AUTH_PAE_CONNECTING,$/;"	e	enum:eapol_state_machine::__anon66
-AUTH_PAE_DEFAULT_quietPeriod	src/eapol_auth/eapol_auth_sm_i.h	85;"	d
-AUTH_PAE_DEFAULT_reAuthMax	src/eapol_auth/eapol_auth_sm_i.h	87;"	d
+AUTH_PAE_DEFAULT_quietPeriod	src/eapol_auth/eapol_auth_sm_i.h	88;"	d
+AUTH_PAE_DEFAULT_reAuthMax	src/eapol_auth/eapol_auth_sm_i.h	90;"	d
 AUTH_PAE_DISCONNECTED	src/eapol_auth/eapol_auth_sm_i.h	/^	enum { AUTH_PAE_INITIALIZE, AUTH_PAE_DISCONNECTED, AUTH_PAE_CONNECTING,$/;"	e	enum:eapol_state_machine::__anon66
 AUTH_PAE_FORCE_AUTH	src/eapol_auth/eapol_auth_sm_i.h	/^	       AUTH_PAE_ABORTING, AUTH_PAE_HELD, AUTH_PAE_FORCE_AUTH,$/;"	e	enum:eapol_state_machine::__anon66
 AUTH_PAE_FORCE_UNAUTH	src/eapol_auth/eapol_auth_sm_i.h	/^	       AUTH_PAE_FORCE_UNAUTH, AUTH_PAE_RESTART } auth_pae_state;    \/\/ Authenticator PAE状态机$/;"	e	enum:eapol_state_machine::__anon66
@@ -268,7 +268,7 @@ BCHECK	hostapd/Makefile	/^BCHECK=..\/src\/drivers\/build.hostapd$/;"	m
 BEACON_H	src/ap/beacon.h	17;"	d
 BEACON_HEAD_BUF_SIZE	src/ap/beacon.c	451;"	d	file:
 BEACON_TAIL_BUF_SIZE	src/ap/beacon.c	452;"	d	file:
-BE_AUTH_DEFAULT_serverTimeout	src/eapol_auth/eapol_auth_sm_i.h	108;"	d
+BE_AUTH_DEFAULT_serverTimeout	src/eapol_auth/eapol_auth_sm_i.h	111;"	d
 BE_AUTH_FAIL	src/eapol_auth/eapol_auth_sm_i.h	/^	       BE_AUTH_FAIL, BE_AUTH_TIMEOUT, BE_AUTH_IDLE, BE_AUTH_INITIALIZE,$/;"	e	enum:eapol_state_machine::__anon67
 BE_AUTH_IDLE	src/eapol_auth/eapol_auth_sm_i.h	/^	       BE_AUTH_FAIL, BE_AUTH_TIMEOUT, BE_AUTH_IDLE, BE_AUTH_INITIALIZE,$/;"	e	enum:eapol_state_machine::__anon67
 BE_AUTH_IGNORE	src/eapol_auth/eapol_auth_sm_i.h	/^	       BE_AUTH_IGNORE$/;"	e	enum:eapol_state_machine::__anon67
@@ -8226,7 +8226,7 @@ dwCtlFlags	src/drivers/driver_ndis.c	/^	DWORD dwCtlFlags;$/;"	m	struct:__anon97	
 dwDataLen	src/drivers/driver_ndis.c	/^	DWORD dwDataLen;$/;"	m	struct:__anon96	file:	access:public
 dwNumIntfs	src/drivers/driver_ndis.c	/^	DWORD dwNumIntfs;$/;"	m	struct:__anon95	file:	access:public
 dyn_vlan_keys	src/ap/ap_config.h	/^	struct hostapd_wep_keys **dyn_vlan_keys;$/;"	m	struct:hostapd_ssid	typeref:struct:hostapd_ssid::hostapd_wep_keys	access:public
-dynamic_vlan	src/ap/ap_config.h	/^	int dynamic_vlan;$/;"	m	struct:hostapd_ssid	access:public
+dynamic_vlan	src/ap/ap_config.h	/^	int dynamic_vlan;       \/\/ 动态vlan功能是否开启的标志位$/;"	m	struct:hostapd_ssid	access:public
 dynamic_vlan	src/ap/ap_config.h	/^	int dynamic_vlan;$/;"	m	struct:hostapd_vlan	access:public
 e	src/drivers/wireless_copy.h	/^	__s16		e;		\/* Exponent *\/$/;"	m	struct:iw_freq	access:public
 e	src/eap_peer/eap_pax.c	/^		u8 e[2 * EAP_PAX_RAND_LEN];$/;"	m	union:eap_pax_data::__anon170	file:	access:public
@@ -12785,7 +12785,7 @@ hostapd_data::setup_complete_cb_ctx	src/ap/hostapd.h	/^	void *setup_complete_cb_
 hostapd_data::ssl_ctx	src/ap/hostapd.h	/^	void *ssl_ctx;$/;"	m	struct:hostapd_data	access:public
 hostapd_data::sta_aid	src/ap/hostapd.h	/^	u32 sta_aid[AID_WORDS];$/;"	m	struct:hostapd_data	access:public
 hostapd_data::sta_authorized_cb	src/ap/hostapd.h	/^	void (*sta_authorized_cb)(void *ctx, const u8 *mac_addr,$/;"	m	struct:hostapd_data	access:public
-hostapd_data::sta_authorized_cb_ctx	src/ap/hostapd.h	/^	void *sta_authorized_cb_ctx;$/;"	m	struct:hostapd_data	access:public
+hostapd_data::sta_authorized_cb_ctx	src/ap/hostapd.h	/^	void *sta_authorized_cb_ctx;                                \/\/ v1.1 工程中未使用$/;"	m	struct:hostapd_data	access:public
 hostapd_data::sta_hash	src/ap/hostapd.h	/^	struct sta_info *sta_hash[STA_HASH_SIZE];   \/\/ 拉链式hash表，记录了所有站表入口$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::sta_info	access:public
 hostapd_data::sta_list	src/ap/hostapd.h	/^	struct sta_info *sta_list; \/* STA info list head 站表链表头*\/$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::sta_info	access:public
 hostapd_data::time_adv	src/ap/hostapd.h	/^	struct wpabuf *time_adv;$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::wpabuf	access:public
@@ -13171,7 +13171,7 @@ hostapd_sim_db_cb	src/ap/authsrv.c	/^static void hostapd_sim_db_cb(void *ctx, vo
 hostapd_sim_db_cb_sta	src/ap/authsrv.c	/^static int hostapd_sim_db_cb_sta(struct hostapd_data *hapd,$/;"	f	file:	signature:(struct hostapd_data *hapd, struct sta_info *sta, void *ctx)
 hostapd_ssid	src/ap/ap_config.h	/^struct hostapd_ssid {$/;"	s
 hostapd_ssid::dyn_vlan_keys	src/ap/ap_config.h	/^	struct hostapd_wep_keys **dyn_vlan_keys;$/;"	m	struct:hostapd_ssid	typeref:struct:hostapd_ssid::hostapd_wep_keys	access:public
-hostapd_ssid::dynamic_vlan	src/ap/ap_config.h	/^	int dynamic_vlan;$/;"	m	struct:hostapd_ssid	access:public
+hostapd_ssid::dynamic_vlan	src/ap/ap_config.h	/^	int dynamic_vlan;       \/\/ 动态vlan功能是否开启的标志位$/;"	m	struct:hostapd_ssid	access:public
 hostapd_ssid::max_dyn_vlan_keys	src/ap/ap_config.h	/^	size_t max_dyn_vlan_keys;$/;"	m	struct:hostapd_ssid	access:public
 hostapd_ssid::security_policy	src/ap/ap_config.h	/^	secpolicy security_policy;$/;"	m	struct:hostapd_ssid	access:public
 hostapd_ssid::ssid	src/ap/ap_config.h	/^	char ssid[HOSTAPD_MAX_SSID_LEN + 1];$/;"	m	struct:hostapd_ssid	access:public
@@ -19656,7 +19656,7 @@ sta_aid	src/ap/hostapd.h	/^	u32 sta_aid[AID_WORDS];$/;"	m	struct:hostapd_data	ac
 sta_assoc	src/drivers/driver.h	/^	 int (*sta_assoc)(void *priv, const u8 *own_addr, const u8 *addr,$/;"	m	struct:wpa_driver_ops	access:public
 sta_auth	src/drivers/driver.h	/^	 int (*sta_auth)(void *priv, const u8 *own_addr, const u8 *addr,$/;"	m	struct:wpa_driver_ops	access:public
 sta_authorized_cb	src/ap/hostapd.h	/^	void (*sta_authorized_cb)(void *ctx, const u8 *mac_addr,$/;"	m	struct:hostapd_data	access:public
-sta_authorized_cb_ctx	src/ap/hostapd.h	/^	void *sta_authorized_cb_ctx;$/;"	m	struct:hostapd_data	access:public
+sta_authorized_cb_ctx	src/ap/hostapd.h	/^	void *sta_authorized_cb_ctx;                                \/\/ v1.1 工程中未使用$/;"	m	struct:hostapd_data	access:public
 sta_clear_stats	src/drivers/driver.h	/^	int (*sta_clear_stats)(void *priv, const u8 *addr);$/;"	m	struct:wpa_driver_ops	access:public
 sta_deauth	src/drivers/driver.h	/^	int (*sta_deauth)(void *priv, const u8 *own_addr, const u8 *addr,$/;"	m	struct:wpa_driver_ops	access:public
 sta_disassoc	src/drivers/driver.h	/^	int (*sta_disassoc)(void *priv, const u8 *own_addr, const u8 *addr,$/;"	m	struct:wpa_driver_ops	access:public
@@ -19714,7 +19714,7 @@ sta_info::ssid_probe	src/ap/sta_info.h	/^	struct hostapd_ssid *ssid_probe; \/* S
 sta_info::supported_rates	src/ap/sta_info.h	/^	u8 supported_rates[WLAN_SUPP_RATES_MAX];$/;"	m	struct:sta_info	access:public
 sta_info::supported_rates_len	src/ap/sta_info.h	/^	int supported_rates_len;$/;"	m	struct:sta_info	access:public
 sta_info::timeout_next	src/ap/sta_info.h	/^	} timeout_next;$/;"	m	struct:sta_info	typeref:enum:sta_info::__anon12	access:public
-sta_info::vlan_id	src/ap/sta_info.h	/^	int vlan_id;$/;"	m	struct:sta_info	access:public
+sta_info::vlan_id	src/ap/sta_info.h	/^	int vlan_id;        \/\/ 记录了该sta所属的vlan$/;"	m	struct:sta_info	access:public
 sta_info::wpa_sm	src/ap/sta_info.h	/^	struct wpa_state_machine *wpa_sm;$/;"	m	struct:sta_info	typeref:struct:sta_info::wpa_state_machine	access:public
 sta_info::wps_ie	src/ap/sta_info.h	/^	struct wpabuf *wps_ie; \/* WPS IE from (Re)Association Request *\/$/;"	m	struct:sta_info	typeref:struct:sta_info::wpabuf	access:public
 sta_list	src/ap/hostapd.h	/^	struct sta_info *sta_list; \/* STA info list head 站表链表头*\/$/;"	m	struct:hostapd_data	typeref:struct:hostapd_data::sta_info	access:public
@@ -21324,7 +21324,7 @@ vlan_id	src/ap/ap_config.h	/^	int vlan_id; \/* VLAN ID or -1 (VLAN_ID_WILDCARD) 
 vlan_id	src/ap/ap_config.h	/^	int vlan_id;$/;"	m	struct:mac_acl_entry	access:public
 vlan_id	src/ap/ieee802_11_auth.c	/^	int vlan_id;$/;"	m	struct:hostapd_cached_radius_acl	file:	access:public
 vlan_id	src/ap/pmksa_cache_auth.h	/^	int vlan_id;$/;"	m	struct:rsn_pmksa_cache_entry	access:public
-vlan_id	src/ap/sta_info.h	/^	int vlan_id;$/;"	m	struct:sta_info	access:public
+vlan_id	src/ap/sta_info.h	/^	int vlan_id;        \/\/ 记录了该sta所属的vlan$/;"	m	struct:sta_info	access:public
 vlan_id	src/ap/wpa_auth_i.h	/^	int vlan_id;$/;"	m	struct:wpa_group	access:public
 vlan_init	src/ap/vlan_init.c	/^int vlan_init(struct hostapd_data *hapd)$/;"	f	signature:(struct hostapd_data *hapd)
 vlan_init	src/ap/vlan_init.h	/^int vlan_init(struct hostapd_data *hapd);$/;"	p	signature:(struct hostapd_data *hapd)

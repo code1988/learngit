@@ -694,7 +694,7 @@ SM_STATE(EAP, FAILURE2)
 
 /* EAP SM进入SUCCESS2状态的EA:
  *      转储AAA层->EAP层交互缓存aaaEapReqData中的数据到EAP层->EAPOL层交互缓存eapReqData(这会导致发给客户端的eap-id号不变，应该是个bug)
- *      EAP层->EAPOL层交互标志eapFail设置为TRUE，用于通知EAPOL层
+ *      EAP层->EAPOL层交互标志eapSuccess设置为TRUE，用于通知EAPOL层
  *      start_reauth设置为TRUE，用于SELECT_ACTION状态中对下一步采取的策略做一个决定时
  */
 SM_STATE(EAP, SUCCESS2)
@@ -1076,7 +1076,7 @@ static int eap_sm_getId(const struct wpabuf *data)
 	return hdr->identifier;
 }
 
-
+// 创建一个EAP-Success报文
 static struct wpabuf * eap_sm_buildSuccess(struct eap_sm *sm, u8 id)
 {
 	struct wpabuf *msg;
@@ -1094,7 +1094,7 @@ static struct wpabuf * eap_sm_buildSuccess(struct eap_sm *sm, u8 id)
 	return msg;
 }
 
-
+// 创建一个EAP-Failure报文
 static struct wpabuf * eap_sm_buildFailure(struct eap_sm *sm, u8 id)
 {
 	struct wpabuf *msg;
@@ -1553,6 +1553,7 @@ struct eap_eapol_interface * eap_get_interface(struct eap_sm *sm)
 
 /**
  * eap_server_clear_identity - Clear EAP identity information
+ * 清除eap状态机中记录的用户名信息
  * @sm: Pointer to EAP state machine allocated with eap_server_sm_init()
  *
  * This function can be used to clear the EAP identity information in the EAP

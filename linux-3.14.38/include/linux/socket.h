@@ -25,7 +25,7 @@ typedef __kernel_sa_family_t	sa_family_t;
 /*
  *	1003.1g requires sa_family_t and that sa_data is char.
  */
- 
+// 这是个通用的套接字地址格式 
 struct sockaddr {
 	sa_family_t	sa_family;	/* address family, AF_xxx	*/
 	char		sa_data[14];	/* 14 bytes of protocol address	*/
@@ -36,6 +36,7 @@ struct linger {
 	int		l_linger;	/* How long to linger for	*/
 };
 
+// 内核空间中定义的通用套接字地址结构
 #define sockaddr_storage __kernel_sockaddr_storage
 
 /*

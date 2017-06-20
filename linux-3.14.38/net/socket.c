@@ -162,6 +162,10 @@ static const struct file_operations socket_file_ops = {
  */
 
 static DEFINE_SPINLOCK(net_family_lock);
+
+/* 这张表用记录了socket层所有的协议族管理块，索引号就是协议族ID
+ * 当用户态执行系统调用socket()创建指定协议族的套接字时，内核就从这张表中索引得到对应的协议族管理块，然后调用其中的create回调创建内核中对应的套接字
+ */
 static const struct net_proto_family __rcu *net_families[NPROTO] __read_mostly;
 
 /*
@@ -1252,7 +1256,9 @@ call_kill:
 }
 EXPORT_SYMBOL(sock_wake_async);
 
-// 内核创建一个指定类型的套接字
+/* 内核创建一个指定类型的套接字
+ * @kern    - 1表示由内核主动创建，0表示这是从用户态发起的创建操作
+ */
 int __sock_create(struct net *net, int family, int type, int protocol,
 			 struct socket **res, int kern)
 {
@@ -1262,6 +1268,7 @@ int __sock_create(struct net *net, int family, int type, int protocol,
 
 	/*
 	 *      Check protocol is in range
+     *      首先检查地址族、套接字类型是否有效
 	 */
 	if (family < 0 || family >= NPROTO)
 		return -EAFNOSUPPORT;
@@ -1283,6 +1290,7 @@ int __sock_create(struct net *net, int family, int type, int protocol,
 		family = PF_PACKET;
 	}
 
+    // kernel没有使能CONFIG_SECURITY_NETWORK配置选项时，这里不做任何处理
 	err = security_socket_create(family, type, protocol, kern);
 	if (err)
 		return err;
@@ -1314,6 +1322,7 @@ int __sock_create(struct net *net, int family, int type, int protocol,
 		request_module("net-pf-%d", family);
 #endif
 
+    // 根据协议族ID索引得到对应的协议族管理块
 	rcu_read_lock();
 	pf = rcu_dereference(net_families[family]);
 	err = -EAFNOSUPPORT;
@@ -1330,6 +1339,7 @@ int __sock_create(struct net *net, int family, int type, int protocol,
 	/* Now protected by module ref count */
 	rcu_read_unlock();
 
+    // 执行协议族管理块中的create回调，通常是在每个协议族调用sock_register进行注册时传入的
 	err = pf->create(net, sock, protocol, kern);
 	if (err < 0)
 		goto out_module_put;
@@ -1407,7 +1417,7 @@ SYSCALL_DEFINE3(socket, int, family, int, type, int, protocol)
 	if (retval < 0)
 		goto out;
 
-    // 分配fd描述符
+    // 分配描述符给该套接字，最后返回该描述符
 	retval = sock_map_fd(sock, flags & (O_CLOEXEC | O_NONBLOCK));
 	if (retval < 0)
 		goto out_release;
@@ -1543,13 +1553,17 @@ SYSCALL_DEFINE3(bind, int, fd, struct sockaddr __user *, umyaddr, int, addrlen)
 	struct sockaddr_storage address;
 	int err, fput_needed;
 
+    // 通过fd查找对应的socket结构
 	sock = sockfd_lookup_light(fd, &err, &fput_needed);
 	if (sock) {
+        // 将传入的用户态绑定地址拷贝到kernel空间
 		err = move_addr_to_kernel(umyaddr, addrlen, &address);
 		if (err >= 0) {
+            // kernel没有使能CONFIG_SECURITY_NETWORK配置选项时，这里不做任何处理
 			err = security_socket_bind(sock,
 						   (struct sockaddr *)&address,
 						   addrlen);
+            // 这里就是执行绑定在该socket结构上的对应协议的bind回调
 			if (!err)
 				err = sock->ops->bind(sock,
 						      (struct sockaddr *)
@@ -2611,6 +2625,8 @@ SYSCALL_DEFINE2(socketcall, int, call, unsigned long __user *, args)
 /**
  *	sock_register - add a socket protocol handler
  *	注册一个指定的协议族(比如AF_NETLINK、AF_UNIX)
+ *	实际就是将该协议组管理块加入socket层的全局表net_families中
+ *
  *	@ops: description of protocol
  *
  *	This function is called by a protocol handler that wants to
