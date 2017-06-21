@@ -928,7 +928,7 @@ static inline void sk_prot_clear_nulls(struct sock *sk, int size)
 }
 
 /* Networking protocol blocks we attach to sockets.
- * 定义了一个网络协议块，跟sock结构密切相关
+ * 定义了一个通用的网络协议块，跟sock结构密切相关
  * 
  * 备注：这是一个socket层到传输层的接口
  * socket layer -> transport layer interface

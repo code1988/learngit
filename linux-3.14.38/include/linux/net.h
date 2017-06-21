@@ -132,7 +132,7 @@ struct sockaddr;
 struct msghdr;
 struct module;
 
-// 定义了socket网络协议相关的一组操作集合
+// 定义了socket层跟具体协议相关的一组操作集合
 struct proto_ops {
 	int		family;             // 所属协议族ID
 	struct module	*owner;

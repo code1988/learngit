@@ -143,6 +143,8 @@
 #include <net/busy_poll.h>
 
 static DEFINE_MUTEX(proto_list_mutex);
+
+// 定义了一张全局的链表，记录了所有已经注册的proto结构，这些proto结构为对应协议的数据从socket层进入传输层指明了方向
 static LIST_HEAD(proto_list);
 
 /**
@@ -2763,7 +2765,7 @@ static inline void release_proto_idx(struct proto *prot)
 }
 #endif
 
-// socket层面的指定协议注册
+// 将指定协议类型的proto结构注册到全局的proto_list链表中
 int proto_register(struct proto *prot, int alloc_slab)
 {
 	if (alloc_slab) {

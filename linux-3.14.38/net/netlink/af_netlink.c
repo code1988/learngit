@@ -969,7 +969,7 @@ netlink_unlock_table(void)
 		wake_up(&nl_table_wait);
 }
 
-// 比较net是否相同，从而判断是否属于同一个网络命名空间
+// 缺省的net命名空间比较函数，比较net是否相同，从而判断是否属于同一个网络命名空间
 static bool netlink_compare(struct net *net, struct sock *sk)
 {
 	return net_eq(sock_net(sk), net);
@@ -1162,7 +1162,7 @@ static void netlink_remove(struct sock *sk)
 	netlink_table_ungrab();
 }
 
-// 定义了一个绑在netlink-socket上的netlink协议块
+// 定义了一个所有netlink协议共有的proto结构
 static struct proto netlink_proto = {
 	.name	  = "NETLINK",
 	.owner	  = THIS_MODULE,
@@ -3139,7 +3139,7 @@ int netlink_unregister_notifier(struct notifier_block *nb)
 }
 EXPORT_SYMBOL(netlink_unregister_notifier);
 
-// 定义了netlink协议族的通用操作集合
+// 定义了socket层netlink协议族的通用操作集合
 static const struct proto_ops netlink_ops = {
 	.family =	PF_NETLINK,
 	.owner =	THIS_MODULE,
@@ -3222,7 +3222,7 @@ static int __init netlink_proto_init(void)
 	int i;
 	unsigned long limit;
 	unsigned int order;
-    // 向内核的socket层面注册netlink协议
+    // 向内核的proto_list链表注册所有netlink协议共有的proto结构，至此所有从socket层下来的netlink消息都可以通过该接口到达相应的传输层
 	int err = proto_register(&netlink_proto, 0);
 
 	if (err != 0)
@@ -3245,7 +3245,7 @@ static int __init netlink_proto_init(void)
 	limit = (1UL << order) / sizeof(struct hlist_head);
 	order = get_bitmask_order(min(limit, (unsigned long)UINT_MAX)) - 1;
 
-    // 给nl_table表每个表项申请一张hash表并且注册net比较函数
+    // 给nl_table表每个表项申请一张hash表并且注册缺省的net命名空间比较函数
 	for (i = 0; i < MAX_LINKS; i++) 
     {
 		struct nl_portid_hash *hash = &nl_table[i].hash;
@@ -3277,7 +3277,9 @@ static int __init netlink_proto_init(void)
      * 后续，应用层创建netlink类型的socket时就会调用这里注册的create函数
      */
 	sock_register(&netlink_family_ops);
-    // 将netlink模块注册到每一个网络命名空间，并且执行了netlink_net_init
+    /* 将netlink模块注册到每一个网络命名空间，并且执行了netlink_net_init
+     * 需要注意的是，由于netlink_net_ops.size = 0，意味着netlink模块没有私有空间
+     */
 	register_pernet_subsys(&netlink_net_ops);
 	/* The netlink device handler may be needed early. */
     // 创建并注册NETLINK_ROUTE协议到nl_table中

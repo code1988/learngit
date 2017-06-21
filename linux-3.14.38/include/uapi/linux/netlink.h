@@ -9,7 +9,7 @@
  * 备注： 不推荐添加自定义协议类型这种方式（万一日后该协议ID被纳入标准），
  *        正确的做法是使用NETLINK_GENERIC自行扩展
  */
-#define NETLINK_ROUTE		0	/* Routing/device hook				*/
+#define NETLINK_ROUTE		0	/* Routing/device hook 这种类型的netlink协议是当初设计netlink协议的初衷，所以在netlink初始化中就也顺便完成对它的初始化 */
 #define NETLINK_UNUSED		1	/* Unused number				*/
 #define NETLINK_USERSOCK	2	/* Reserved for user mode socket protocols 	用于应用层进程间通信*/
 #define NETLINK_FIREWALL	3	/* Unused number, formerly ip_queue		*/
