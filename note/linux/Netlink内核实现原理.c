@@ -1,6 +1,10 @@
 目前为止，netlink协议族支持32种(MAX_LINKS)协议类型，其中已经被预定义的有22种。
-在实际项目中，如果有定制化的需求时，最好不要去占用剩下的暂未定义的协议类型ID号，而是使用预定义的通用netlink协议类型NETLINK_GENERIC。
-LINUX中跟netlink相关的核心代码位于net/netlink目录中，至于具体的协议类型相关代码位于其他相关目录(比如最常见的NETLINK_ROUTE相关代码在net/core/rtnetlink.c中)
+在实际项目中，如果有定制化的需求时，最好不要去占用剩下的暂未定义的协议类型ID号，而是使用预定义的通用netlink协议类型NETLINK_GENERIC来进行扩展。
+LINUX中跟netlink相关的核心代码位于net/netlink目录中，其中核心头文件主要有3个(这些都是所有协议类型的netllink共享的)：
+        [1]. net/netlink/af_netlink.h   - 这个头文件主要包含了实现netlink的核心数据结构
+        [2]. include/linux/netlink.h    - 这个头文件主要包含了netlink套接字相关的内容
+        [3]. include/net/netlink.h      - 这个头文件主要包含了netlink消息相关的通用格式
+各种协议类型的netlink代码位于其他相关目录(比如最常见的NETLINK_ROUTE相关代码在net/core/rtnetlink.c中)
 
 1. netlink模块涉及的主要结构和变量
     /* 以下是一张全局的netlink接口总表，是netlink模块的核心变量.
@@ -45,9 +49,22 @@ LINUX中跟netlink相关的核心代码位于net/netlink目录中，至于具体
         struct module       *module; 
     };
 
+    /* 以下是内核创建具体协议类型的netlink套接字时传入的参数配置数据结构
+     */
+    struct netlink_kernel_cfg {
+        unsigned int    groups; // 该协议类型支持的最大多播组数量
+        unsigned int    flags;  // 用来设置NL_CFG_F_NONROOT_SEND/NL_CFG_F_NONROOT_RECV这两个标志
+        void        (*input)(struct sk_buff *skb);  // 用来配置消息接收函数，用户空间发送该协议类型的netlink消息给内核后，就会调用本函数
+        struct mutex    *cb_mutex;      // 用来配置协议类型私有的互斥锁
+        void        (*bind)(int group); // 用来配置协议类型私有的bind回调函数
+        bool        (*compare)(struct net *net, struct sock *sk);   // 用来配置协议类型私有的compare回调函数
+    };
+    }
+
 2. 内核netlink模块初始化
     
     /* 以下是整个netlink模块的初始化入口
+     *
      * 备注：内核在这里默认创建了两种协议类型的netlink：NETLINK_USERSOCK和NETLINK_ROUTE
      */
     static int __init netlink_proto_init(void)
@@ -99,7 +116,6 @@ LINUX中跟netlink相关的核心代码位于net/netlink目录中，至于具体
     }
 
     /* 以下就是具体的netlink功能初始化(实际就是创建proc文件系统下的netlink接口)
-     * 
      */
     static int __net_init netlink_net_init(struct net *net)
     {
@@ -114,3 +130,14 @@ LINUX中跟netlink相关的核心代码位于net/netlink目录中，至于具体
           以下的分析都是基于NETLINK_ROUTE协议来完成的。
 
 
+3. 内核创建基于具体协议类型的netlink套接字
+    /* 以下就是创建属于内核的具体协议的netlink套接字
+     *
+     * 备注：只要是跟用户态交互的netlink协议，就需要在初始化时调用本函数，以创建一个属于内核的netlink套接字
+     *       之后，只要用户态发送了一个该协议类型的netlink消息到内核，就会执行本函数传入的input回调函数
+     */
+    static inline struct sock *netlink_kernel_create(struct net *net, int unit, struct netlink_kernel_cfg *cfg)
+    {
+        return __netlink_kernel_create(net, unit, THIS_MODULE, cfg);
+    }    
+    

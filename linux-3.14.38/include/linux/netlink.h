@@ -44,12 +44,12 @@ extern void netlink_table_ungrab(void);
 #define NL_CFG_F_NONROOT_SEND	(1 << 1)    // 用来限定非超级用户是否可以发送组播
 
 /* optional Netlink kernel configuration parameters */
-// netlink配置参数控制块，内核用于配置一个具体的netlink协议
+// 内核创建具体协议类型的netlink套接字时传入的配置参数控制块
 struct netlink_kernel_cfg {
 	unsigned int	groups; // 该协议类型支持的最大多播组数量
 	unsigned int	flags;  // 用来设置NL_CFG_F_NONROOT_SEND/NL_CFG_F_NONROOT_RECV这两个标志
-	void		(*input)(struct sk_buff *skb);  // 消息接收函数，用户空间发送该协议类型的netlink消息给内核后，就会调用本函数
-	struct mutex	*cb_mutex;
+	void		(*input)(struct sk_buff *skb);  // 用来配置协议类型私有的消息接收函数，用户空间发送该协议类型的netlink消息给内核后，就会调用本函数
+	struct mutex	*cb_mutex;      // 用来配置协议私有的互斥锁
 	void		(*bind)(int group); // 用来配置协议类型私有的bind回调函数
 	bool		(*compare)(struct net *net, struct sock *sk);   // 用来配置协议类型私有的compare回调函数
 };

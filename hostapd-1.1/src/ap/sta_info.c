@@ -400,7 +400,7 @@ void ap_handle_timer(void *eloop_ctx, void *timeout_ctx)
 	}
 }
 
-// 服务超时处理函数
+// 对应每个用户认证通过后提供服务的超时处理函数，超时后意味着该用户将被踢下线
 static void ap_handle_session_timer(void *eloop_ctx, void *timeout_ctx)
 {
 	struct hostapd_data *hapd = eloop_ctx;

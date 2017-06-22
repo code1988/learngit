@@ -1427,7 +1427,7 @@ ieee802_1x_receive_auth(struct radius_msg *msg, struct radius_msg *req,
 			sm->reAuthPeriod = session_timeout;
 		} else if (session_timeout_set)
             /*  另一种情况是光携带了Session-Timeout属性项
-             *  则Session-Timeout属性项的值是被用来设置被用户提供服务的剩余时间
+             *  则Session-Timeout属性项的值是被用来设置为用户提供服务的剩余时间
              *  */
 			ap_sta_session_timeout(hapd, sta, session_timeout);
 

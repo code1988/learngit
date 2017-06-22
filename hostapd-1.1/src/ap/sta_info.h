@@ -17,11 +17,11 @@
 
 /* STA flags */
 #define WLAN_STA_AUTH BIT(0)
-#define WLAN_STA_ASSOC BIT(1)
+#define WLAN_STA_ASSOC BIT(1)           // 标识sta跟某个bss被关联起来
 #define WLAN_STA_PS BIT(2)
 #define WLAN_STA_TIM BIT(3)
 #define WLAN_STA_PERM BIT(4)
-#define WLAN_STA_AUTHORIZED BIT(5)
+#define WLAN_STA_AUTHORIZED BIT(5)      // 标识sta认证通过
 #define WLAN_STA_PENDING_POLL BIT(6) /* pending activity poll not ACKed */
 #define WLAN_STA_SHORT_PREAMBLE BIT(7)
 #define WLAN_STA_PREAUTH BIT(8)
@@ -47,7 +47,7 @@ struct sta_info {
 	struct sta_info *hnext; /* next entry in hash table list */
 	u8 addr[6];     // 每个元素都对应一个唯一的mac地址
 	u16 aid; /* STA's unique AID (1 .. 2007) or 0 if not yet assigned */
-	u32 flags; /* Bitfield of WLAN_STA_* */
+	u32 flags; /* Bitfield of WLAN_STA_*  记录该station相关的状态集合 */
 	u16 capability;
 	u16 listen_interval; /* or beacon_int for APs */
 	u8 supported_rates[WLAN_SUPP_RATES_MAX];
@@ -61,7 +61,7 @@ struct sta_info {
 	unsigned int ht_20mhz_set:1;
 	unsigned int no_p2p_set:1;
 
-	u16 auth_alg;
+	u16 auth_alg;       // 使用的认证算法(开放系统认证/共享密钥认证)选择标志
 	u8 previous_ap[6];
 
     // 定义了下一次ap_handle_timer超时处理的原因
