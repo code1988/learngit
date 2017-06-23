@@ -27,7 +27,7 @@ struct netlink_sock {
 	u32			portid;     // 记录了该netlink套接字绑定的单播地址，对内核来说就是0
 	u32			dst_portid; 
 	u32			dst_group;
-	u32			flags;
+	u32			flags;      // 用来标识该netlink套接字的属性，比如NETLINK_KERNEL_SOCKET
 	u32			subscriptions;  // 记录该netlink套接字当前阅订的组播数量
 	u32			ngroups;        // 记录该netlink套接字支持的最大组播数量
 	unsigned long		*groups;// 指向该netlink套接字的组播空间
@@ -35,7 +35,7 @@ struct netlink_sock {
 	wait_queue_head_t	wait;
 	bool			cb_running; // 用来标志该netlink套接字是否处于dump操作中
 	struct netlink_callback	cb; // 用来记录该netlink套接字当前有效的操作集合
-	struct mutex		*cb_mutex;
+	struct mutex		*cb_mutex;  // 这把锁在内核netlink套接字创建时传入，相同协议类型的netlink套接字共用一把锁
 	struct mutex		cb_def_mutex;
 	void			(*netlink_rcv)(struct sk_buff *skb);    // 指向所属的某个netlink协议的input回调函数
 	void			(*netlink_bind)(int group);             // 指向某个netlink协议自身特有的bind操作(如果未指定，就采用netlink通用策略)

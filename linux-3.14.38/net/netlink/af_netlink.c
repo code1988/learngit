@@ -75,7 +75,9 @@ struct listeners {
 /* state bits */
 #define NETLINK_CONGESTED	0x0
 
-/* flags */
+/* flags 用来标识netlink套接字的属性
+ * 用于netlink_sock->flags中
+ * */
 #define NETLINK_KERNEL_SOCKET	0x1     // 用来标识该netlink套接字是内核套接字
 #define NETLINK_RECV_PKTINFO	0x2
 #define NETLINK_BROADCAST_SEND_ERROR	0x4
@@ -1169,10 +1171,10 @@ static struct proto netlink_proto = {
 	.obj_size = sizeof(struct netlink_sock),
 };
 
-/* 创建并初始化一个sock结构
- * 本函数在2种情况下会被调用到：
- *          1. 某个协议类型(比如NETLINK_ROUTE)初始化时，会将init函数注册到内核的每个网络命名空间，并init函数创建netlink-socket时就会调用到
- *          2. 用户层调用PF_NETLINK类型的socket()时，内核这边会调用相应的netlink_create函数，其中也会调用到
+/* 创建并初始化一个netlink_sock结构(其中包含了sock结构)
+ * 本函数是创建netlink套接字的核心，在2种情况下会被调用到：
+ *          1. 内核主动创建完全属于内核的netlink套接字时
+ *          2. 由用户进程调用socket()系统调用，从而在内核中创建属于用户进程的netlink套接字时
  */
 static int __netlink_create(struct net *net, struct socket *sock,
 			    struct mutex *cb_mutex, int protocol)
@@ -1180,7 +1182,7 @@ static int __netlink_create(struct net *net, struct socket *sock,
 	struct sock *sk;
 	struct netlink_sock *nlk;
 
-    // 将socket结构和netlink协议的操作集关联
+    // netlink套接字和socket层netlink协议族的通用操作集合关联
 	sock->ops = &netlink_ops;
 
     // 分配基于netlink协议的sock结构
@@ -1208,7 +1210,10 @@ static int __netlink_create(struct net *net, struct socket *sock,
 	return 0;
 }
 
-// 应用层创建PF_NETLINK类型的socket时就会在__sock_create中调用到这里
+/* 应用层创建PF_NETLINK类型的套接字时就会在__sock_create中调用到这里
+ * 
+ * 备注：其实本函数只是创建了半个netlink套接字(sock结构)，另一半在__sock_create中创建(socket结构)
+ */
 static int netlink_create(struct net *net, struct socket *sock, int protocol,
 			  int kern)
 {
@@ -1238,12 +1243,14 @@ static int netlink_create(struct net *net, struct socket *sock, int protocol,
 		netlink_lock_table();
 	}
 #endif
-    // 检查该协议类型的netlink是否已经注册了，只有nl_table中已经注册的协议类型才能继续创建下去
+    // 检查该协议类型的内核netlink套接字是否已经注册了，只有nl_table中已经注册的协议类型才能继续创建下去
 	if (nl_table[protocol].registered &&
 	    try_module_get(nl_table[protocol].module))
 		module = nl_table[protocol].module;
 	else
 		err = -EPROTONOSUPPORT;
+
+    // 取出内核netlink创建时注册的私有锁和bind函数，接下来就要用到了
 	cb_mutex = nl_table[protocol].cb_mutex;
 	bind = nl_table[protocol].bind;
 	netlink_unlock_table();
@@ -1251,8 +1258,9 @@ static int netlink_create(struct net *net, struct socket *sock, int protocol,
 	if (err < 0)
 		goto out;
 
-    /* 创建并初始化一个sock结构
-     * 跟内核主动创建netlink套接字时不同的是，这里似乎不再关心传入的net命名空间
+    /* 创建并初始化一个协议类型相关的sock结构
+     *
+     * 备注：跟内核主动创建netlink套接字时不同的是，创建属于用户进程的netlink套接字似乎不再关心传入的net命名空间
      */
 	err = __netlink_create(net, sock, cb_mutex, protocol);
 	if (err < 0)
@@ -1262,7 +1270,7 @@ static int netlink_create(struct net *net, struct socket *sock, int protocol,
 	sock_prot_inuse_add(net, &netlink_proto, 1);
 	local_bh_enable();
 
-    // 最后对内核netlink套接字相关参数进行赋值
+    // 最后对netlink套接字相关参数进行赋值
 	nlk = nlk_sk(sock->sk);
 	nlk->module = module;
 	nlk->netlink_bind = bind;
@@ -1571,7 +1579,7 @@ static int netlink_bind(struct socket *sock, struct sockaddr *addr,
 	netlink_update_subscriptions(sk, nlk->subscriptions +
 					 hweight32(nladdr->nl_groups) -
 					 hweight32(nlk->groups[0]));
-    // 保存组播地址mask值
+    // 保存组播地址mask值到开头申请的组播空间
 	nlk->groups[0] = (nlk->groups[0] & ~0xffffffffUL) | nladdr->nl_groups;
     // 更新套接字所属协议类型的监听集合
 	netlink_update_listeners(sk);
@@ -2561,7 +2569,7 @@ __netlink_kernel_create(struct net *net, int unit, struct module *module,
 	sk = sock->sk;
 	sk_change_net(sk, net);
 
-    // 内核默认支持32个组播地址
+    // 这里可以看出，内核默认支持最少32个组播地址
 	if (!cfg || cfg->groups < 32)
 		groups = 32;
 	else
@@ -2574,7 +2582,7 @@ __netlink_kernel_create(struct net *net, int unit, struct module *module,
 
     // 这里 V3.14.38 实际没有注册
 	sk->sk_data_ready = netlink_data_ready;
-    // 如果某个具体的netlink协议配置了消息处理函数，就将其注册到netlink-socket控制块的对应位置
+    // 如果某个具体的netlink协议配置了消息处理函数，就将其注册到netlink套接字的对应位置
 	if (cfg && cfg->input)
 		nlk_sk(sk)->netlink_rcv = cfg->input;
 
@@ -2589,7 +2597,10 @@ __netlink_kernel_create(struct net *net, int unit, struct module *module,
 
 	netlink_table_grab();
 
-    // 判断该协议类型是否已经注册过了，如果没有则在这里初始化nl_table对应的表项，如果有就不再初始化该表项了
+    /* 判断该协议类型是否已经注册过了，如果没有则在这里初始化nl_table对应的表项，如果有就不再初始化该表项了
+     *
+     * 个人的初步猜测：基于不同的net命名空间，相同协议类型的内核netlink套接字可以对应创建多个
+     */
 	if (!nl_table[unit].registered) {
 		nl_table[unit].groups = groups;
 		rcu_assign_pointer(nl_table[unit].listeners, listeners);
@@ -2603,6 +2614,7 @@ __netlink_kernel_create(struct net *net, int unit, struct module *module,
 		}
 		nl_table[unit].registered = 1;
 	} else {
+        // 多个相同协议类型的内核netlink套接字为何在这里取消listeners空间?
 		kfree(listeners);
 		nl_table[unit].registered++;
 	}
@@ -2620,7 +2632,7 @@ out_sock_release_nosk:
 }
 EXPORT_SYMBOL(__netlink_kernel_create);
 
-// 内核用于注销一个具体协议(如NETLINK_ROUTE)的netlink-socket
+// 内核用于注销一个具体协议(如NETLINK_ROUTE)的netlink套接字
 void netlink_kernel_release(struct sock *sk)
 {
 	sk_release_kernel(sk);
@@ -2805,11 +2817,11 @@ int __netlink_dump_start(struct sock *ssk, struct sk_buff *skb,
 		goto error_free;
 	}
 
-    // 进而得到netlink-socket控制块
+    // 进而得到netlink套接字
 	nlk = nlk_sk(sk);
 	mutex_lock(nlk->cb_mutex);
 	/* A dump is in progress... 
-     * 每个netlink-socket控制块同时只能处理一个dump操作
+     * 每个netlink套接字同时只能处理一个dump操作
      * */
 	if (nlk->cb_running) {
 		ret = -EBUSY;
@@ -2821,7 +2833,7 @@ int __netlink_dump_start(struct sock *ssk, struct sk_buff *skb,
 		goto error_unlock;
 	}
 
-    // 设置该netlink-socket控制块当前有效的操作集合
+    // 设置该netlink套接字控制块当前有效的操作集合
 	cb = &nlk->cb;
 	memset(cb, 0, sizeof(*cb));
 	cb->dump = control->dump;

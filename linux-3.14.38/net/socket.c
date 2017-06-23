@@ -1257,7 +1257,7 @@ call_kill:
 EXPORT_SYMBOL(sock_wake_async);
 
 /* 内核创建一个指定类型的套接字
- * @kern    - 1表示由内核主动创建，0表示这是从用户态发起的创建操作
+ * @kern    - 1表示该套接字属于内核，0表示该套接字属于用户进程(虽然由内核创建)
  */
 int __sock_create(struct net *net, int family, int type, int protocol,
 			 struct socket **res, int kern)

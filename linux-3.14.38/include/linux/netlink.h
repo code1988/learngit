@@ -57,10 +57,10 @@ struct netlink_kernel_cfg {
 extern struct sock *__netlink_kernel_create(struct net *net, int unit,
 					    struct module *module,
 					    struct netlink_kernel_cfg *cfg);
-/* 内核用于创建一个具体协议(如NETLINK_ROUTE)的netlink套接字,成功返回创建的sock结构
+/* 创建属于内核的具体协议(如NETLINK_ROUTE)的netlink套接字,成功返回创建的sock结构
  *
- * 备注：内核创建了该协议的netlink套接字之后，只要用户空间发送了一个相应协议的netlink消息到内核，
- *       通过本函数注册的相应协议的input函数就会被调用
+ * 备注：只要是跟用户态交互的netlink协议，就需要在初始化时调用本函数，以创建一个属于内核的netlink套接字
+ *      之后，只要用户空间发送了一个该协议的netlink消息到内核，通过本函数注册的相应协议的input函数就会被调用
  */
 static inline struct sock *
 netlink_kernel_create(struct net *net, int unit, struct netlink_kernel_cfg *cfg)
