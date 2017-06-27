@@ -275,6 +275,7 @@ static void netlink_rcv_wake(struct sock *sk)
 		wake_up_interruptible(&nlk->wait);
 }
 
+// 根据内核是否配置了CONFIG_NETLINK_MMAP选项，来决定以下这些函数是否生效
 #ifdef CONFIG_NETLINK_MMAP
 static bool netlink_skb_is_mmaped(const struct sk_buff *skb)
 {
@@ -870,11 +871,12 @@ static void netlink_skb_destructor(struct sk_buff *skb)
 		sock_rfree(skb);
 }
 
+// 设置该携带了netlink消息的skb为哪个netlink套接字所拥有
 static void netlink_skb_set_owner_r(struct sk_buff *skb, struct sock *sk)
 {
 	WARN_ON(skb->sk != NULL);
-	skb->sk = sk;
-	skb->destructor = netlink_skb_destructor;
+	skb->sk = sk;                                   // 设置该skb属于指定的netlink套接字
+	skb->destructor = netlink_skb_destructor;       // 为该skb注册特定的析构函数
 	atomic_add(skb->truesize, &sk->sk_rmem_alloc);
 	sk_mem_charge(sk, skb->truesize);
 }
@@ -977,7 +979,7 @@ static bool netlink_compare(struct net *net, struct sock *sk)
 	return net_eq(sock_net(sk), net);
 }
 
-// 根据protocol和portid查找对应的netlink socket控制块
+// 根据protocol和portid查找对应的netlink套接字
 static struct sock *netlink_lookup(struct net *net, int protocol, u32 portid)
 {
 	struct netlink_table *table = &nl_table[protocol];
@@ -1655,16 +1657,25 @@ static int netlink_getname(struct socket *sock, struct sockaddr *addr,
 	return 0;
 }
 
+/* 根据源sock结构和目的单播地址，得到目的sock结构
+ *
+ * @ssk         - 源sock结构
+ * @portid      - 目的单播地址
+ */
 static struct sock *netlink_getsockbyportid(struct sock *ssk, u32 portid)
 {
 	struct sock *sock;
 	struct netlink_sock *nlk;
 
+    // 根据protocol和portid查找对应的netlink套接字，也就是目的netlink套接字
 	sock = netlink_lookup(sock_net(ssk), ssk->sk_protocol, portid);
 	if (!sock)
 		return ERR_PTR(-ECONNREFUSED);
 
-	/* Don't bother queuing skb if kernel socket has no input function */
+	/* Don't bother queuing skb if kernel socket has no input function 
+     *
+     * 对于已经处于connect状态的目的netlink套接字，还需要确认两端是否匹配
+     * */
 	nlk = nlk_sk(sock);
 	if (sock->sk_state == NETLINK_CONNECTED &&
 	    nlk->dst_portid != nlk_sk(ssk)->portid) {
@@ -1800,6 +1811,7 @@ void netlink_detachskb(struct sock *sk, struct sk_buff *skb)
 	sock_put(sk);
 }
 
+// 重新调整skb数据区大小
 static struct sk_buff *netlink_trim(struct sk_buff *skb, gfp_t allocation)
 {
 	int delta;
@@ -1809,9 +1821,11 @@ static struct sk_buff *netlink_trim(struct sk_buff *skb, gfp_t allocation)
 		return skb;
 
 	delta = skb->end - skb->tail;
+    // 如果原本skb的数据区是在vmalloc中，或者数据区的剩余部分很小，就不做处理直接返回了
 	if (is_vmalloc_addr(skb->head) || delta * 2 < skb->truesize)
 		return skb;
 
+    // 如果该skb的数据包缓冲区被其他skb共用，这里就要clone出一个新的skb结构
 	if (skb_shared(skb)) {
 		struct sk_buff *nskb = skb_clone(skb, allocation);
 		if (!nskb)
@@ -1820,12 +1834,19 @@ static struct sk_buff *netlink_trim(struct sk_buff *skb, gfp_t allocation)
 		skb = nskb;
 	}
 
+    // 重新调整该skb的数据包缓冲区的tailroom大小
 	if (!pskb_expand_head(skb, 0, -delta, allocation))
 		skb->truesize -= delta;
 
 	return skb;
 }
 
+/* 将单播netlink消息发往内核
+ *
+ * @sk  - 目的sock结构
+ * @skb - 存储了netlink消息的skb
+ * @ssk - 源sock结构
+ */
 static int netlink_unicast_kernel(struct sock *sk, struct sk_buff *skb,
 				  struct sock *ssk)
 {
@@ -1833,20 +1854,32 @@ static int netlink_unicast_kernel(struct sock *sk, struct sk_buff *skb,
 	struct netlink_sock *nlk = nlk_sk(sk);
 
 	ret = -ECONNREFUSED;
+    // 检查属于内核的netlink套接字是否注册了netlink_rcv回调(就是各个协议在创建内核netlink套接字时通常会传入的input函数)
 	if (nlk->netlink_rcv != NULL) {
 		ret = skb->len;
+        // 设置该skb的所有者是内核的netlink套接字
 		netlink_skb_set_owner_r(skb, sk);
+        // 保存该netlink消息的源sock结构
 		NETLINK_CB(skb).sk = ssk;
+        // 暂略
 		netlink_deliver_tap_kernel(sk, ssk, skb);
+        // 调用已经注册了的netlink_rcv回调
 		nlk->netlink_rcv(skb);
 		consume_skb(skb);
 	} else {
+        // 没有注册该回调就直接丢弃
 		kfree_skb(skb);
 	}
 	sock_put(sk);
 	return ret;
 }
 
+/* 发送netlink单播消息
+ *
+ * @ssk         - 源sock结构
+ * @portid      - 目的单播地址
+ * @nonblock    - 1：非阻塞调用，2：阻塞调用
+ */
 int netlink_unicast(struct sock *ssk, struct sk_buff *skb,
 		    u32 portid, int nonblock)
 {
@@ -1854,18 +1887,24 @@ int netlink_unicast(struct sock *ssk, struct sk_buff *skb,
 	int err;
 	long timeo;
 
+    // 重新调整skb数据区大小
 	skb = netlink_trim(skb, gfp_any());
 
+    // 计算发送超时时间
 	timeo = sock_sndtimeo(ssk, nonblock);
 retry:
+    // 根据源sock结构和目的单播地址，得到目的sock结构
 	sk = netlink_getsockbyportid(ssk, portid);
 	if (IS_ERR(sk)) {
 		kfree_skb(skb);
 		return PTR_ERR(sk);
 	}
+
+    // 如果该目的netlink套接字属于内核，则将netlink消息往内核单播
 	if (netlink_is_kernel(sk))
 		return netlink_unicast_kernel(sk, skb, ssk);
 
+    // 程序运行到这里意味着该目的netlink套接字属于用户进程
 	if (sk_filter(sk, skb)) {
 		err = skb->len;
 		kfree_skb(skb);
@@ -2345,6 +2384,9 @@ static void netlink_cmsg_recv_pktinfo(struct msghdr *msg, struct sk_buff *skb)
 	put_cmsg(msg, SOL_NETLINK, NETLINK_PKTINFO, sizeof(info), &info);
 }
 
+/* 用户态对netlink接口的套接字执行系统调用sendmsg()时就会进入到这里
+ *
+ */
 static int netlink_sendmsg(struct kiocb *kiocb, struct socket *sock,
 			   struct msghdr *msg, size_t len)
 {
@@ -2369,6 +2411,7 @@ static int netlink_sendmsg(struct kiocb *kiocb, struct socket *sock,
 	if (err < 0)
 		return err;
 
+    // 获取该netlink消息的目的单播和组播地址
 	if (msg->msg_namelen) {
 		err = -EINVAL;
 		if (addr->nl_family != AF_NETLINK)
@@ -2381,16 +2424,19 @@ static int netlink_sendmsg(struct kiocb *kiocb, struct socket *sock,
 			goto out;
 		netlink_skb_flags |= NETLINK_SKB_DST;
 	} else {
+        // 如果用户进程没有指定目的地址，则使用该netlink套接字默认的
 		dst_portid = nlk->dst_portid;
 		dst_group = nlk->dst_group;
 	}
 
+    // 如果该netlink套接字还没有被绑定过，首先执行动态绑定
 	if (!nlk->portid) {
 		err = netlink_autobind(sock);
 		if (err)
 			goto out;
 	}
 
+    // 以下这部分只有当内核配置了CONFIG_NETLINK_MMAP选项才生效
 	if (netlink_tx_is_mmaped(sk) &&
 	    msg->msg_iov->iov_base == NULL) {
 		err = netlink_mmap_sendmsg(sk, msg, dst_portid, dst_group,
@@ -2398,35 +2444,43 @@ static int netlink_sendmsg(struct kiocb *kiocb, struct socket *sock,
 		goto out;
 	}
 
+    // 检查需要发送的数据长度是否合法
 	err = -EMSGSIZE;
 	if (len > sk->sk_sndbuf - 32)
 		goto out;
 	err = -ENOBUFS;
+
+    // 分配skb结构空间
 	skb = netlink_alloc_large_skb(len, dst_group);
 	if (skb == NULL)
 		goto out;
 
+    // 初始化这个skb中的cb字段
 	NETLINK_CB(skb).portid	= nlk->portid;
 	NETLINK_CB(skb).dst_group = dst_group;
 	NETLINK_CB(skb).creds	= siocb->scm->creds;
 	NETLINK_CB(skb).flags	= netlink_skb_flags;
 
 	err = -EFAULT;
+    // 将数据从msg_iov拷贝到skb中
 	if (memcpy_fromiovec(skb_put(skb, len), msg->msg_iov, len)) {
 		kfree_skb(skb);
 		goto out;
 	}
 
+    // 执行LSM模块，略过
 	err = security_netlink_send(sk, skb);
 	if (err) {
 		kfree_skb(skb);
 		goto out;
 	}
 
+    // 发送netlink组播消息
 	if (dst_group) {
 		atomic_inc(&skb->users);
 		netlink_broadcast(sk, skb, dst_portid, dst_group, GFP_KERNEL);
 	}
+    // 发送netlink单播消息
 	err = netlink_unicast(sk, skb, dst_portid, msg->msg_flags&MSG_DONTWAIT);
 
 out:
@@ -2810,7 +2864,7 @@ int __netlink_dump_start(struct sock *ssk, struct sk_buff *skb,
 	} else
 		atomic_inc(&skb->users);
 
-    // 根据protocol和portid查找对应的socket控制块
+    // 根据protocol和portid查找对应的netlink套接字
 	sk = netlink_lookup(sock_net(ssk), ssk->sk_protocol, NETLINK_CB(skb).portid);
 	if (sk == NULL) {
 		ret = -ECONNREFUSED;

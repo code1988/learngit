@@ -409,8 +409,8 @@ struct sock {
 #endif
 	struct pid		*sk_peer_pid;
 	const struct cred	*sk_peer_cred;
-	long			sk_rcvtimeo;
-	long			sk_sndtimeo;
+	long			sk_rcvtimeo;        // 接收超时时间
+	long			sk_sndtimeo;        // 发送超时时间
 	void			*sk_protinfo;
 	struct timer_list	sk_timer;
 	ktime_t			sk_stamp;
@@ -2136,11 +2136,13 @@ static inline gfp_t gfp_any(void)
 	return in_softirq() ? GFP_ATOMIC : GFP_KERNEL;
 }
 
+// 计算接收超时时间
 static inline long sock_rcvtimeo(const struct sock *sk, bool noblock)
 {
 	return noblock ? 0 : sk->sk_rcvtimeo;
 }
 
+// 计算发送超时时间
 static inline long sock_sndtimeo(const struct sock *sk, bool noblock)
 {
 	return noblock ? 0 : sk->sk_sndtimeo;

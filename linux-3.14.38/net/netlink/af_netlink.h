@@ -25,8 +25,8 @@ struct netlink_sock {
 	/* struct sock has to be the first member of netlink_sock */
 	struct sock		sk;     // 该netlink套接字的sock结构
 	u32			portid;     // 记录了该netlink套接字绑定的单播地址，对内核来说就是0
-	u32			dst_portid; 
-	u32			dst_group;
+	u32			dst_portid; // 记录了该netlink套接字的默认目的单播地址(缺省为0,当用户进程调用connect时可以指定)
+	u32			dst_group;  // 记录了该netlink套接字的默认目的组播地址(缺省为0,当用户进程调用connect时可以指定)
 	u32			flags;      // 用来标识该netlink套接字的属性，比如NETLINK_KERNEL_SOCKET
 	u32			subscriptions;  // 记录该netlink套接字当前阅订的组播数量
 	u32			ngroups;        // 记录该netlink套接字支持的最大组播数量

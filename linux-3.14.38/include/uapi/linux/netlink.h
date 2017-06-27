@@ -104,7 +104,7 @@ struct nlmsghdr {
 #define NLMSG_DONE		0x3	/* End of a dump	*/
 #define NLMSG_OVERRUN		0x4	/* Data lost		*/
 
-#define NLMSG_MIN_TYPE		0x10	/* < 0x10: reserved control messages 这里保留了0x10数量的控制消息，意味着处理以上这些，还可以自定义一部分 */
+#define NLMSG_MIN_TYPE		0x10	/* < 0x10: reserved control messages 这里保留了0x10数量的控制消息，意味着除了以上这些，还可以自定义一部分 */
 
 // NLMSG_ERROR错误消息的数据结构，位于NLMSG_DATA(nlh)地址上
 struct nlmsgerr {

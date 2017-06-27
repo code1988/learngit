@@ -188,7 +188,7 @@ struct eap_sm {
 	struct wpabuf *assoc_wps_ie;
 	struct wpabuf *assoc_p2p_ie;
 
-	Boolean start_reauth;
+	Boolean start_reauth;   // 用于SELECT_ACTION状态中对下一步采取的策略做一个决定时
 
 	u8 peer_addr[ETH_ALEN];
 

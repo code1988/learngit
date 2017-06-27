@@ -626,6 +626,7 @@ void sock_tx_timestamp(struct sock *sk, __u8 *tx_flags)
 }
 EXPORT_SYMBOL(sock_tx_timestamp);
 
+// send系列系统调用最终都会调用到这里，
 static inline int __sock_sendmsg_nosec(struct kiocb *iocb, struct socket *sock,
 				       struct msghdr *msg, size_t size)
 {
@@ -636,9 +637,14 @@ static inline int __sock_sendmsg_nosec(struct kiocb *iocb, struct socket *sock,
 	si->msg = msg;
 	si->size = size;
 
+    // 这里就是执行绑定在该socket结构上的对应协议的sendmsg回调
 	return sock->ops->sendmsg(iocb, sock, msg, size);
 }
 
+/* send系列系统调用都会调用到本函数，主要是进一步处理要发送的数据
+ *
+ * 这里实际就是过了LSM模块
+ */
 static inline int __sock_sendmsg(struct kiocb *iocb, struct socket *sock,
 				 struct msghdr *msg, size_t size)
 {
@@ -647,6 +653,10 @@ static inline int __sock_sendmsg(struct kiocb *iocb, struct socket *sock,
 	return err ?: __sock_sendmsg_nosec(iocb, sock, msg, size);
 }
 
+/* send系列系统调用都会调用到本函数，主要是进一步处理要发送的数据
+ *
+ * 这里实际就是加了一层kiocb结构的封装
+ */
 int sock_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
 {
 	struct kiocb iocb;
@@ -2031,6 +2041,10 @@ static int copy_msghdr_from_user(struct msghdr *kmsg,
 	return 0;
 }
 
+/* 用户态sendmsg/sendmmsg陷入到内核中的接口
+ *
+ * @used_address - 指向之前使用过的目的地址（如果存在）,该参数通常只应用于sendmmsg系统调用
+ */
 static int ___sys_sendmsg(struct socket *sock, struct msghdr __user *msg,
 			 struct msghdr *msg_sys, unsigned int flags,
 			 struct used_address *used_address)
@@ -2046,15 +2060,18 @@ static int ___sys_sendmsg(struct socket *sock, struct msghdr __user *msg,
 	int err, ctl_len, total_len;
 
 	err = -EFAULT;
+    // 通常应该不会设置MSG_CMSG_COMPAT标志
 	if (MSG_CMSG_COMPAT & flags) {
 		if (get_compat_msghdr(msg_sys, msg_compat))
 			return -EFAULT;
 	} else {
+        // 所以这里一般就是将消息从用户空间拷贝到内核
 		err = copy_msghdr_from_user(msg_sys, msg);
 		if (err)
 			return err;
 	}
 
+    // 如果消息的iovec结构的数量超过了UIO_FASTIOV并且小于UIO_MAXIOV，意味着事先申请的数组放不下，需要通过kmalloc动态分配
 	if (msg_sys->msg_iovlen > UIO_FASTIOV) {
 		err = -EMSGSIZE;
 		if (msg_sys->msg_iovlen > UIO_MAXIOV)
@@ -2066,7 +2083,10 @@ static int ___sys_sendmsg(struct socket *sock, struct msghdr __user *msg,
 			goto out;
 	}
 
-	/* This will also move the address data into kernel space */
+	/* This will also move the address data into kernel space 
+     *
+     * 备注：通常应该不会设置MSG_CMSG_COMPAT标志
+     * */
 	if (MSG_CMSG_COMPAT & flags) {
 		err = verify_compat_iovec(msg_sys, iov, &address, VERIFY_READ);
 	} else
@@ -2077,6 +2097,7 @@ static int ___sys_sendmsg(struct socket *sock, struct msghdr __user *msg,
 
 	err = -ENOBUFS;
 
+    // 以下这段代码用于拷贝辅助消息数据到内核
 	if (msg_sys->msg_controllen > INT_MAX)
 		goto out_freeiov;
 	ctl_len = msg_sys->msg_controllen;
@@ -2106,8 +2127,11 @@ static int ___sys_sendmsg(struct socket *sock, struct msghdr __user *msg,
 			goto out_freectl;
 		msg_sys->msg_control = ctl_buf;
 	}
+
+    // 首先存储用户态调用sendmsg时传入的flags参数
 	msg_sys->msg_flags = flags;
 
+    // 再检查当前的套接字属性，如果已经配置为非阻塞模式，则继续添加MSG_DONTWAIT标志
 	if (sock->file->f_flags & O_NONBLOCK)
 		msg_sys->msg_flags |= MSG_DONTWAIT;
 	/*
@@ -2115,6 +2139,9 @@ static int ___sys_sendmsg(struct socket *sock, struct msghdr __user *msg,
 	 * previously succeeded address, omit asking LSM's decision.
 	 * used_address->name_len is initialized to UINT_MAX so that the first
 	 * destination address never matches.
+     *
+     * 以下这段代码主要用于sendmmsg，sendmmsg每次发送多条消息时，由于目的地址都一致，
+     * 所以只需要在第一条消息时执行LSM模块即可，这种策略的目的就是加速数据的发送
 	 */
 	if (used_address && msg_sys->msg_name &&
 	    used_address->name_len == msg_sys->msg_namelen &&
@@ -2123,10 +2150,13 @@ static int ___sys_sendmsg(struct socket *sock, struct msghdr __user *msg,
 		err = sock_sendmsg_nosec(sock, msg_sys, total_len);
 		goto out_freectl;
 	}
+    // 对于sendmsg，每次都需要老老实实通过LSM模块的检查才行
 	err = sock_sendmsg(sock, msg_sys, total_len);
 	/*
 	 * If this is sendmmsg() and sending to current destination address was
 	 * successful, remember it.
+     *
+     * 以下这段代码主要用于sendmmsg，就是记住每次发送的目的地址
 	 */
 	if (used_address && err >= 0) {
 		used_address->name_len = msg_sys->msg_namelen;
@@ -2147,6 +2177,9 @@ out:
 
 /*
  *	BSD sendmsg interface
+ *	用户态sendmsg陷入到内核中的接口
+ *
+ *  备注：3.14.38版本内核的msghdr结构在用户态和内核态一样，但是后续版本中，用户态和内核态的msghdr结构将会存在一些差异
  */
 
 long __sys_sendmsg(int fd, struct msghdr __user *msg, unsigned flags)
@@ -2155,6 +2188,7 @@ long __sys_sendmsg(int fd, struct msghdr __user *msg, unsigned flags)
 	struct msghdr msg_sys;
 	struct socket *sock;
 
+    // 通过fd查找对应的socket结构
 	sock = sockfd_lookup_light(fd, &err, &fput_needed);
 	if (!sock)
 		goto out;
@@ -2166,6 +2200,7 @@ out:
 	return err;
 }
 
+// 对应用户态的sendmsg()系统调用
 SYSCALL_DEFINE3(sendmsg, int, fd, struct msghdr __user *, msg, unsigned int, flags)
 {
 	if (flags & MSG_CMSG_COMPAT)
@@ -3505,3 +3540,4 @@ int kernel_sock_shutdown(struct socket *sock, enum sock_shutdown_cmd how)
 	return sock->ops->shutdown(sock, how);
 }
 EXPORT_SYMBOL(kernel_sock_shutdown);
+

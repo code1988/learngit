@@ -23,8 +23,8 @@ struct iovec
  *	UIO_MAXIOV shall be at least 16 1003.1g (5.4.1.1)
  */
  
-#define UIO_FASTIOV	8
-#define UIO_MAXIOV	1024
+#define UIO_FASTIOV	8       // 顾名思义，是为了加速用户数据拷贝到内核用的(通过事先定义一个UIO_FASTIOV长度的数组)
+#define UIO_MAXIOV	1024    // 消息的iovec结构的数量不能超过该阈值
 
 
 #endif /* _UAPI__LINUX_UIO_H */

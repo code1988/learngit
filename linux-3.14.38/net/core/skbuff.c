@@ -1016,7 +1016,7 @@ EXPORT_SYMBOL(__pskb_copy);
 
 /**
  *	pskb_expand_head - reallocate header of &sk_buff
- *	根据指定入参nhead/ntail重新扩展该skb的headroom/tailroom
+ *	根据指定入参nhead/ntail重新调整该skb的headroom/tailroom
  *	@skb: buffer to reallocate
  *	@nhead: room to add at head
  *	@ntail: room to add at tail

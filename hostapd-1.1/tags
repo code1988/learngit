@@ -209,8 +209,8 @@ AUTH_PAE_ABORTING	src/eapol_auth/eapol_auth_sm_i.h	/^	       AUTH_PAE_ABORTING, 
 AUTH_PAE_AUTHENTICATED	src/eapol_auth/eapol_auth_sm_i.h	/^	       AUTH_PAE_AUTHENTICATING, AUTH_PAE_AUTHENTICATED,$/;"	e	enum:eapol_state_machine::__anon66
 AUTH_PAE_AUTHENTICATING	src/eapol_auth/eapol_auth_sm_i.h	/^	       AUTH_PAE_AUTHENTICATING, AUTH_PAE_AUTHENTICATED,$/;"	e	enum:eapol_state_machine::__anon66
 AUTH_PAE_CONNECTING	src/eapol_auth/eapol_auth_sm_i.h	/^	enum { AUTH_PAE_INITIALIZE, AUTH_PAE_DISCONNECTED, AUTH_PAE_CONNECTING,$/;"	e	enum:eapol_state_machine::__anon66
-AUTH_PAE_DEFAULT_quietPeriod	src/eapol_auth/eapol_auth_sm_i.h	88;"	d
-AUTH_PAE_DEFAULT_reAuthMax	src/eapol_auth/eapol_auth_sm_i.h	90;"	d
+AUTH_PAE_DEFAULT_quietPeriod	src/eapol_auth/eapol_auth_sm_i.h	90;"	d
+AUTH_PAE_DEFAULT_reAuthMax	src/eapol_auth/eapol_auth_sm_i.h	92;"	d
 AUTH_PAE_DISCONNECTED	src/eapol_auth/eapol_auth_sm_i.h	/^	enum { AUTH_PAE_INITIALIZE, AUTH_PAE_DISCONNECTED, AUTH_PAE_CONNECTING,$/;"	e	enum:eapol_state_machine::__anon66
 AUTH_PAE_FORCE_AUTH	src/eapol_auth/eapol_auth_sm_i.h	/^	       AUTH_PAE_ABORTING, AUTH_PAE_HELD, AUTH_PAE_FORCE_AUTH,$/;"	e	enum:eapol_state_machine::__anon66
 AUTH_PAE_FORCE_UNAUTH	src/eapol_auth/eapol_auth_sm_i.h	/^	       AUTH_PAE_FORCE_UNAUTH, AUTH_PAE_RESTART } auth_pae_state;    \/\/ Authenticator PAE状态机$/;"	e	enum:eapol_state_machine::__anon66
@@ -268,7 +268,7 @@ BCHECK	hostapd/Makefile	/^BCHECK=..\/src\/drivers\/build.hostapd$/;"	m
 BEACON_H	src/ap/beacon.h	17;"	d
 BEACON_HEAD_BUF_SIZE	src/ap/beacon.c	451;"	d	file:
 BEACON_TAIL_BUF_SIZE	src/ap/beacon.c	452;"	d	file:
-BE_AUTH_DEFAULT_serverTimeout	src/eapol_auth/eapol_auth_sm_i.h	111;"	d
+BE_AUTH_DEFAULT_serverTimeout	src/eapol_auth/eapol_auth_sm_i.h	113;"	d
 BE_AUTH_FAIL	src/eapol_auth/eapol_auth_sm_i.h	/^	       BE_AUTH_FAIL, BE_AUTH_TIMEOUT, BE_AUTH_IDLE, BE_AUTH_INITIALIZE,$/;"	e	enum:eapol_state_machine::__anon67
 BE_AUTH_IDLE	src/eapol_auth/eapol_auth_sm_i.h	/^	       BE_AUTH_FAIL, BE_AUTH_TIMEOUT, BE_AUTH_IDLE, BE_AUTH_INITIALIZE,$/;"	e	enum:eapol_state_machine::__anon67
 BE_AUTH_IGNORE	src/eapol_auth/eapol_auth_sm_i.h	/^	       BE_AUTH_IGNORE$/;"	e	enum:eapol_state_machine::__anon67
@@ -6272,7 +6272,7 @@ _wpa_ctrl_command	hostapd/hostapd_cli.c	/^static int _wpa_ctrl_command(struct wp
 _wpa_hexdump	src/utils/wpa_debug.c	/^static void _wpa_hexdump(int level, const char *title, const u8 *buf,$/;"	f	file:	signature:(int level, const char *title, const u8 *buf, size_t len, int show)
 _wpa_hexdump_ascii	src/utils/wpa_debug.c	/^static void _wpa_hexdump_ascii(int level, const char *title, const u8 *buf,$/;"	f	file:	signature:(int level, const char *title, const u8 *buf, size_t len, int show)
 _wpa_snprintf_hex	src/utils/common.c	/^static inline int _wpa_snprintf_hex(char *buf, size_t buf_size, const u8 *data,$/;"	f	file:	signature:(char *buf, size_t buf_size, const u8 *data, size_t len, int uppercase)
-aWhile	src/eapol_auth/eapol_auth_sm_i.h	/^	int aWhile;     \/\/ 用于BE_AUTH SM ，定义了eapol层递交eapolEap报文给eap层，然后等待回复的计时,超时值为serverTimeout(也就是BE_AUTH_DEFAULT_serverTimeout)$/;"	m	struct:eapol_state_machine	access:public
+aWhile	src/eapol_auth/eapol_auth_sm_i.h	/^	int aWhile;     \/\/ 用于BE_AUTH SM ，定义了eapol层递交eapolEap报文给eap层，然后等待回复的计时,$/;"	m	struct:eapol_state_machine	access:public
 a_id	src/eap_peer/eap_fast_pac.h	/^	u8 *a_id;$/;"	m	struct:eap_fast_pac	access:public
 a_id_info	src/eap_peer/eap_fast_pac.h	/^	u8 *a_id_info;$/;"	m	struct:eap_fast_pac	access:public
 a_id_info_len	src/eap_peer/eap_fast_pac.h	/^	size_t a_id_info_len;$/;"	m	struct:eap_fast_pac	access:public
@@ -6889,7 +6889,7 @@ authStart	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean authStart;      \/\/ AUTH_
 authSuccess	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean authSuccess;    \/\/ BE_AUTH SM 进入SUCCESS状态时设置TRUE；AUTH_PAE SM 进入AUTHENTICATING状态时设置FALSE$/;"	m	struct:eapol_state_machine	access:public
 authTimeout	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean authTimeout;    \/\/ BE_AUTH SM 进入TIMEOUT状态时设置TRUE；AUTH_PAE SM 进入AUTHENTICATING状态时设置FALSE$/;"	m	struct:eapol_state_machine	access:public
 authWhile	src/eapol_supp/eapol_supp_sm.c	/^	unsigned int authWhile;$/;"	m	struct:eapol_sm	file:	access:public
-auth_alg	src/ap/sta_info.h	/^	u16 auth_alg;$/;"	m	struct:sta_info	access:public
+auth_alg	src/ap/sta_info.h	/^	u16 auth_alg;       \/\/ 使用的认证算法(开放系统认证\/共享密钥认证)选择标志$/;"	m	struct:sta_info	access:public
 auth_alg	src/common/ieee802_11_defs.h	/^			le16 auth_alg;$/;"	m	struct:ieee80211_mgmt::__anon38::__anon39	access:public
 auth_alg	src/common/privsep_commands.h	/^	int auth_alg;$/;"	m	struct:privsep_cmd_associate	access:public
 auth_alg	src/drivers/driver.h	/^	int auth_alg;$/;"	m	struct:wpa_driver_associate_params	access:public
@@ -8487,7 +8487,7 @@ eap_eapol_interface::eapSRTT	src/eap_server/eap.h	/^	int eapSRTT;$/;"	m	struct:e
 eap_eapol_interface::eapSuccess	src/eap_server/eap.h	/^	Boolean eapSuccess; \/\/ 此标志由EAP层管理，EAP层AUTH SM进入SUCCESS状态时设置TRUE并填充eapReqData，进入INITIALIZE状态时设置FALSE $/;"	m	struct:eap_eapol_interface	access:public
 eap_eapol_interface::eapTimeout	src/eap_server/eap.h	/^	Boolean eapTimeout; \/\/ 此标志由EAP层管理，EAP层AUTH SM进入TIMEOUT状态时设置TRUE，进入INITIALIZE状态时设置FALSE$/;"	m	struct:eap_eapol_interface	access:public
 eap_eapol_interface::portEnabled	src/eap_server/eap.h	/^	Boolean portEnabled;    \/\/ 此标志同时影响EAPOL层SM和EAP层SM，意味着该port是否可操作，开始802.1X认证时被设置TRUE，认证失败时设置FALSE(或者删除接口时)$/;"	m	struct:eap_eapol_interface	access:public
-eap_eapol_interface::retransWhile	src/eap_server/eap.h	/^	int retransWhile;       \/\/ 重传定时器，由EAPOL层PORT_TIMER SM触发超时，由EAP层开启 $/;"	m	struct:eap_eapol_interface	access:public
+eap_eapol_interface::retransWhile	src/eap_server/eap.h	/^	int retransWhile;       \/\/ EAP层发送的REQUEST*报文重传定时器，由EAPOL层PORT_TIMER SM触发超时，由EAP进入IDLE\/IDLE2时层开启 (并且只会在这两种状态下有用)$/;"	m	struct:eap_eapol_interface	access:public
 eap_fast_a_id	src/ap/ap_config.h	/^	u8 *eap_fast_a_id;$/;"	m	struct:hostapd_bss_config	access:public
 eap_fast_a_id	src/eap_server/eap.h	/^	u8 *eap_fast_a_id;$/;"	m	struct:eap_config	access:public
 eap_fast_a_id	src/eap_server/eap_i.h	/^	u8 *eap_fast_a_id;$/;"	m	struct:eap_sm	access:public
@@ -11227,7 +11227,7 @@ eapol_state_machine::KEY_RX_KEY_RECEIVE	src/eapol_auth/eapol_auth_sm_i.h	/^	enum
 eapol_state_machine::KEY_RX_NO_KEY_RECEIVE	src/eapol_auth/eapol_auth_sm_i.h	/^	enum { KEY_RX_NO_KEY_RECEIVE, KEY_RX_KEY_RECEIVE } key_rx_state;    \/\/ key接收状态机$/;"	e	enum:eapol_state_machine::__anon70
 eapol_state_machine::REAUTH_TIMER_INITIALIZE	src/eapol_auth/eapol_auth_sm_i.h	/^	enum { REAUTH_TIMER_INITIALIZE, REAUTH_TIMER_REAUTHENTICATE$/;"	e	enum:eapol_state_machine::__anon68
 eapol_state_machine::REAUTH_TIMER_REAUTHENTICATE	src/eapol_auth/eapol_auth_sm_i.h	/^	enum { REAUTH_TIMER_INITIALIZE, REAUTH_TIMER_REAUTHENTICATE$/;"	e	enum:eapol_state_machine::__anon68
-eapol_state_machine::aWhile	src/eapol_auth/eapol_auth_sm_i.h	/^	int aWhile;     \/\/ 用于BE_AUTH SM ，定义了eapol层递交eapolEap报文给eap层，然后等待回复的计时,超时值为serverTimeout(也就是BE_AUTH_DEFAULT_serverTimeout)$/;"	m	struct:eapol_state_machine	access:public
+eapol_state_machine::aWhile	src/eapol_auth/eapol_auth_sm_i.h	/^	int aWhile;     \/\/ 用于BE_AUTH SM ，定义了eapol层递交eapolEap报文给eap层，然后等待回复的计时,$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::addr	src/eapol_auth/eapol_auth_sm_i.h	/^	u8 addr[ETH_ALEN]; \/* Supplicant address 请求者mac地址*\/$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::adminControlledDirections	src/eapol_auth/eapol_auth_sm_i.h	/^	ControlledDirection adminControlledDirections;  \/\/ 受控方向，本值不会被CTRL_DIR SM修改$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::authAbort	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean authAbort;  \/\/ AUTH_PAE SM 进入ABORTING状态时设置TRUE；BE_AUTH SM 进入INITIALIZE状态时设置FALSE$/;"	m	struct:eapol_state_machine	access:public
@@ -11304,7 +11304,7 @@ eapol_state_machine::reAuthCount	src/eapol_auth/eapol_auth_sm_i.h	/^	unsigned in
 eapol_state_machine::reAuthEnabled	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean reAuthEnabled;  \/\/ 重认证功能使能位(只用于认证系统)$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::reAuthMax	src/eapol_auth/eapol_auth_sm_i.h	/^	unsigned int reAuthMax; \/* default 2 重认证次数*\/$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::reAuthPeriod	src/eapol_auth/eapol_auth_sm_i.h	/^	unsigned int reAuthPeriod; \/* default 3600 s 重认证周期(可以由本地配置文件设置，也可以被radius服务器设置),用于设置重认证定时器reAuthWhen*\/$/;"	m	struct:eapol_state_machine	access:public
-eapol_state_machine::reAuthWhen	src/eapol_auth/eapol_auth_sm_i.h	/^	int reAuthWhen; \/\/ 用于REAUTH_TIMER SM ，定义了认证系统发起重认证的间隔,超时值为reAuthPeriod$/;"	m	struct:eapol_state_machine	access:public
+eapol_state_machine::reAuthWhen	src/eapol_auth/eapol_auth_sm_i.h	/^	int reAuthWhen; \/\/ 用于REAUTH_TIMER SM ，定义了认证成功后nas发起重认证的间隔,超时值为reAuthPeriod$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::reAuthenticate	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean reAuthenticate; \/\/ Reauthentication Timer状态机进入REAUTHENTICATE状态时设置TRUE；Authenticator PAE状态机进入CONNECTING状态时设置FALSE$/;"	m	struct:eapol_state_machine	access:public
 eapol_state_machine::reauth_timer_state	src/eapol_auth/eapol_auth_sm_i.h	/^	} reauth_timer_state;   \/\/ 重认证定时器状态机$/;"	m	struct:eapol_state_machine	typeref:enum:eapol_state_machine::__anon68	access:public
 eapol_state_machine::rxKey	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean rxKey;$/;"	m	struct:eapol_state_machine	access:public
@@ -11797,7 +11797,7 @@ first_try	src/radius/radius_client.c	/^	os_time_t first_try;$/;"	m	struct:radius
 fixed	src/drivers/wireless_copy.h	/^  __u8		fixed;		\/* Hardware should not use auto select *\/$/;"	m	struct:iw_param	access:public
 flag	src/drivers/driver.h	/^	int flag;$/;"	m	struct:hostapd_channel_data	access:public
 flags	src/ap/hostapd.h	/^	int flags; \/* HOSTAPD_RATE_ flags *\/$/;"	m	struct:hostapd_rate_data	access:public
-flags	src/ap/sta_info.h	/^	u32 flags; \/* Bitfield of WLAN_STA_* *\/$/;"	m	struct:sta_info	access:public
+flags	src/ap/sta_info.h	/^	u32 flags; \/* Bitfield of WLAN_STA_*  记录该station相关的状态集合 *\/$/;"	m	struct:sta_info	access:public
 flags	src/crypto/tls.h	/^	unsigned int flags;$/;"	m	struct:tls_connection_params	access:public
 flags	src/crypto/tls_openssl.c	/^	unsigned int flags;$/;"	m	struct:tls_connection	file:	access:public
 flags	src/drivers/driver.h	/^	u32 flags; \/* bitmask of WPA_STA_* flags *\/$/;"	m	struct:hostapd_sta_add_params	access:public
@@ -18564,7 +18564,7 @@ reAuthCount	src/eapol_auth/eapol_auth_sm_i.h	/^	unsigned int reAuthCount;   \/\/
 reAuthEnabled	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean reAuthEnabled;  \/\/ 重认证功能使能位(只用于认证系统)$/;"	m	struct:eapol_state_machine	access:public
 reAuthMax	src/eapol_auth/eapol_auth_sm_i.h	/^	unsigned int reAuthMax; \/* default 2 重认证次数*\/$/;"	m	struct:eapol_state_machine	access:public
 reAuthPeriod	src/eapol_auth/eapol_auth_sm_i.h	/^	unsigned int reAuthPeriod; \/* default 3600 s 重认证周期(可以由本地配置文件设置，也可以被radius服务器设置),用于设置重认证定时器reAuthWhen*\/$/;"	m	struct:eapol_state_machine	access:public
-reAuthWhen	src/eapol_auth/eapol_auth_sm_i.h	/^	int reAuthWhen; \/\/ 用于REAUTH_TIMER SM ，定义了认证系统发起重认证的间隔,超时值为reAuthPeriod$/;"	m	struct:eapol_state_machine	access:public
+reAuthWhen	src/eapol_auth/eapol_auth_sm_i.h	/^	int reAuthWhen; \/\/ 用于REAUTH_TIMER SM ，定义了认证成功后nas发起重认证的间隔,超时值为reAuthPeriod$/;"	m	struct:eapol_state_machine	access:public
 reAuthenticate	src/eapol_auth/eapol_auth_sm_i.h	/^	Boolean reAuthenticate; \/\/ Reauthentication Timer状态机进入REAUTHENTICATE状态时设置TRUE；Authenticator PAE状态机进入CONNECTING状态时设置FALSE$/;"	m	struct:eapol_state_machine	access:public
 read_alerts	src/crypto/tls_gnutls.c	/^	int read_alerts, write_alerts, failed;$/;"	m	struct:tls_connection	file:	access:public
 read_alerts	src/crypto/tls_openssl.c	/^	int read_alerts, write_alerts, failed;$/;"	m	struct:tls_connection	file:	access:public
@@ -18754,7 +18754,7 @@ resuming	src/eap_peer/eap_fast.c	/^	int resuming; \/* starting a resumed session
 resuming	src/eap_peer/eap_peap.c	/^	int resuming; \/* starting a resumed session *\/$/;"	m	struct:eap_peap_data	file:	access:public
 resuming	src/eap_peer/eap_ttls.c	/^	int resuming; \/* starting a resumed session *\/$/;"	m	struct:eap_ttls_data	file:	access:public
 retransCount	src/eap_server/eap_i.h	/^	int retransCount;           \/\/ 当前的重传次数$/;"	m	struct:eap_sm	access:public
-retransWhile	src/eap_server/eap.h	/^	int retransWhile;       \/\/ 重传定时器，由EAPOL层PORT_TIMER SM触发超时，由EAP层开启 $/;"	m	struct:eap_eapol_interface	access:public
+retransWhile	src/eap_server/eap.h	/^	int retransWhile;       \/\/ EAP层发送的REQUEST*报文重传定时器，由EAPOL层PORT_TIMER SM触发超时，由EAP进入IDLE\/IDLE2时层开启 (并且只会在这两种状态下有用)$/;"	m	struct:eap_eapol_interface	access:public
 retransmissions	src/radius/radius_client.h	/^	u32 retransmissions;$/;"	m	struct:hostapd_radius_server	access:public
 retries	src/drivers/wireless_copy.h	/^	__u32		retries;	\/* Tx : Max MAC retries num reached *\/$/;"	m	struct:iw_discarded	access:public
 retry	src/drivers/wireless_copy.h	/^	struct iw_param	retry;		\/* Retry limits & lifetime *\/$/;"	m	union:iwreq_data	typeref:struct:iwreq_data::iw_param	access:public
@@ -19681,13 +19681,13 @@ sta_info::acct_session_started	src/ap/sta_info.h	/^	int acct_session_started;$/;
 sta_info::acct_terminate_cause	src/ap/sta_info.h	/^	int acct_terminate_cause; \/* Acct-Terminate-Cause *\/$/;"	m	struct:sta_info	access:public
 sta_info::addr	src/ap/sta_info.h	/^	u8 addr[6];     \/\/ 每个元素都对应一个唯一的mac地址$/;"	m	struct:sta_info	access:public
 sta_info::aid	src/ap/sta_info.h	/^	u16 aid; \/* STA's unique AID (1 .. 2007) or 0 if not yet assigned *\/$/;"	m	struct:sta_info	access:public
-sta_info::auth_alg	src/ap/sta_info.h	/^	u16 auth_alg;$/;"	m	struct:sta_info	access:public
+sta_info::auth_alg	src/ap/sta_info.h	/^	u16 auth_alg;       \/\/ 使用的认证算法(开放系统认证\/共享密钥认证)选择标志$/;"	m	struct:sta_info	access:public
 sta_info::capability	src/ap/sta_info.h	/^	u16 capability;$/;"	m	struct:sta_info	access:public
 sta_info::challenge	src/ap/sta_info.h	/^	u8 *challenge; \/* IEEE 802.11 Shared Key Authentication Challenge *\/$/;"	m	struct:sta_info	access:public
 sta_info::deauth_reason	src/ap/sta_info.h	/^	u16 deauth_reason;$/;"	m	struct:sta_info	access:public
 sta_info::disassoc_reason	src/ap/sta_info.h	/^	u16 disassoc_reason;$/;"	m	struct:sta_info	access:public
 sta_info::eapol_sm	src/ap/sta_info.h	/^	struct eapol_state_machine *eapol_sm;       \/\/ eapol层状态机组$/;"	m	struct:sta_info	typeref:struct:sta_info::eapol_state_machine	access:public
-sta_info::flags	src/ap/sta_info.h	/^	u32 flags; \/* Bitfield of WLAN_STA_* *\/$/;"	m	struct:sta_info	access:public
+sta_info::flags	src/ap/sta_info.h	/^	u32 flags; \/* Bitfield of WLAN_STA_*  记录该station相关的状态集合 *\/$/;"	m	struct:sta_info	access:public
 sta_info::hnext	src/ap/sta_info.h	/^	struct sta_info *hnext; \/* next entry in hash table list *\/$/;"	m	struct:sta_info	typeref:struct:sta_info::sta_info	access:public
 sta_info::ht_20mhz_set	src/ap/sta_info.h	/^	unsigned int ht_20mhz_set:1;$/;"	m	struct:sta_info	access:public
 sta_info::ht_capabilities	src/ap/sta_info.h	/^	struct ieee80211_ht_capabilities *ht_capabilities;$/;"	m	struct:sta_info	typeref:struct:sta_info::ieee80211_ht_capabilities	access:public

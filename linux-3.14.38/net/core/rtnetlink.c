@@ -2944,7 +2944,7 @@ static int rtnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
 	return doit(skb, nlh);
 }
 
-// 接收处理从用户空间过来的rtnetlink消息
+// 接收处理从用户空间过来的rtnetlink消息(在netlink_unicast_kernel函数中被调用)
 static void rtnetlink_rcv(struct sk_buff *skb)
 {
 	rtnl_lock();

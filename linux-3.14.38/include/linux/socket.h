@@ -235,6 +235,8 @@ struct ucred {
 
 /* Flags we can use with send/ and recv. 
    Added those for 1003.1g not all are supported yet
+
+   以下这些MSG_*都是附加标志位，用于设置send/recv系统调用中的flags参数
  */
  
 #define MSG_OOB		1
@@ -262,6 +264,8 @@ struct ucred {
 #define MSG_CMSG_CLOEXEC 0x40000000	/* Set close_on_exit for file
 					   descriptor received through
 					   SCM_RIGHTS */
+
+// 根据是否有预定义宏CONFIG_COMPAT，来决定是否定义32bit修正标识
 #if defined(CONFIG_COMPAT)
 #define MSG_CMSG_COMPAT	0x80000000	/* This message needs 32 bit fixups */
 #else

@@ -16,6 +16,7 @@ static inline struct nlmsghdr *nlmsg_hdr(const struct sk_buff *skb)
 	return (struct nlmsghdr *)skb->data;
 }
 
+// skb中netlink消息属性枚举
 enum netlink_skb_flags {
 	NETLINK_SKB_MMAPED	= 0x1,	/* Packet data is mmaped */
 	NETLINK_SKB_TX		= 0x2,	/* Packet was sent by userspace */
@@ -23,16 +24,16 @@ enum netlink_skb_flags {
 	NETLINK_SKB_DST		= 0x8,	/* Dst set in sendto or sendmsg */
 };
 
-// netlink参数控制块
+// skb中针对netlink消息的附加信息
 struct netlink_skb_parms {
 	struct scm_creds	creds;		/* Skb credentials	*/
-	__u32			portid;         // 记录了该参数控制块所属的上层进程id
-	__u32			dst_group;
-	__u32			flags;
-	struct sock		*sk;
+	__u32			portid;         // 记录了发送该netlink消息的netlink套接字绑定的单播地址，
+	__u32			dst_group;      // 记录了发送该netlink消息时指定的目的地址
+	__u32			flags;          // 记录了该netlink消息的附加信息
+	struct sock		*sk;            // 记录了该netlink消息的源sock结构
 };
 
-// 将通用socket收发控制块中的cb字段自定义用于保存netlink参数控制块
+// 将skb结构中的cb字段自定义用于保存netlink参数控制块
 #define NETLINK_CB(skb)		(*(struct netlink_skb_parms*)&((skb)->cb))
 #define NETLINK_CREDS(skb)	(&NETLINK_CB((skb)).creds)
 
