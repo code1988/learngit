@@ -45,37 +45,44 @@ const char lua_ident[] =
 #define api_incr_top(L)   {api_check(L, L->top < L->ci->top); L->top++;}
 
 
-
-static TValue *index2adr (lua_State *L, int idx) {
-  if (idx > 0) {
-    TValue *o = L->base + (idx - 1);
-    api_check(L, idx <= L->ci->top - L->base);
-    if (o >= L->top) return cast(TValue *, luaO_nilobject);
-    else return o;
-  }
-  else if (idx > LUA_REGISTRYINDEX) {
-    api_check(L, idx != 0 && -idx <= L->top - L->base);
-    return L->top + idx;
-  }
-  else switch (idx) {  /* pseudo-indices */
-    case LUA_REGISTRYINDEX: return registry(L);
-    case LUA_ENVIRONINDEX: {
-      Closure *func = curr_func(L);
-      sethvalue(L, &L->env, func->c.env);
-      return &L->env;
+// 返回栈中对应索引号的元素
+static TValue *index2adr (lua_State *L, int idx) 
+{
+    if (idx > 0)    // 正数索引
+    {
+        // 从栈底开始索引,起始索引号1
+        TValue *o = L->base + (idx - 1);
+        api_check(L, idx <= L->ci->top - L->base);
+        if (o >= L->top) return cast(TValue *, luaO_nilobject);
+        else return o;
     }
-    case LUA_GLOBALSINDEX: return gt(L);
-    default: {
-      Closure *func = curr_func(L);
-      idx = LUA_GLOBALSINDEX - idx;
-      return (idx <= func->c.nupvalues)
-                ? &func->c.upvalue[idx-1]
-                : cast(TValue *, luaO_nilobject);
+    else if (idx > LUA_REGISTRYINDEX)   // 负数索引
+    {
+        api_check(L, idx != 0 && -idx <= L->top - L->base);
+        // 从栈顶开始索引，起始索引号-1
+        return L->top + idx;
     }
-  }
+    else                    // 一些特定的索引号 
+        switch (idx) 
+        {  /* pseudo-indices */
+            case LUA_REGISTRYINDEX: return registry(L);
+            case LUA_ENVIRONINDEX: 
+            {
+                Closure *func = curr_func(L);
+                sethvalue(L, &L->env, func->c.env);
+                return &L->env;
+            }
+            case LUA_GLOBALSINDEX: return gt(L);
+            default: 
+            {
+                Closure *func = curr_func(L);
+                idx = LUA_GLOBALSINDEX - idx;
+                return (idx <= func->c.nupvalues) ? &func->c.upvalue[idx-1] : cast(TValue *, luaO_nilobject);
+            }
+        }
 }
 
-
+// 获取当前的环境
 static Table *getcurrenv (lua_State *L) {
   if (L->ci == L->base_ci)  /* no enclosing function? */
     return hvalue(gt(L));  /* use global table as environment */
@@ -224,7 +231,7 @@ LUA_API void lua_replace (lua_State *L, int idx) {
   lua_unlock(L);
 }
 
-
+// 
 LUA_API void lua_pushvalue (lua_State *L, int idx) {
   lua_lock(L);
   setobj2s(L, L->top, index2adr(L, idx));
@@ -250,7 +257,11 @@ LUA_API const char *lua_typename (lua_State *L, int t) {
   return (t == LUA_TNONE) ? "no value" : luaT_typenames[t];
 }
 
-
+/*
+ *  API提供了lua_is*系列函数用于检查栈中该索引处元素是否是一个指定的类型
+ *
+ */
+// 检查该索引处的元素类型是否是 LUA_TFUNCTION 且是C闭包
 LUA_API int lua_iscfunction (lua_State *L, int idx) {
   StkId o = index2adr(L, idx);
   return iscfunction(o);
@@ -308,18 +319,25 @@ LUA_API int lua_lessthan (lua_State *L, int index1, int index2) {
   return i;
 }
 
-
-
+/*
+ *  API 提供了lua_to*系列函数用于获取栈中元素
+ *  注意：正索引通常用于获取栈底，负索引通常用于获取栈顶
+ */
+// 把索引处的lua值转换为lua_Number类型的C类型
 LUA_API lua_Number lua_tonumber (lua_State *L, int idx) {
   TValue n;
+
+  // 根据索引号取出对应的值
   const TValue *o = index2adr(L, idx);
+
+  // 该lua值必须是一个数字或是可转换成数字的字符串
   if (tonumber(o, &n))
     return nvalue(o);
   else
     return 0;
 }
 
-
+// 把给丁索引处的lua值转换为带符号的整数类型
 LUA_API lua_Integer lua_tointeger (lua_State *L, int idx) {
   TValue n;
   const TValue *o = index2adr(L, idx);
@@ -339,7 +357,7 @@ LUA_API int lua_toboolean (lua_State *L, int idx) {
   return !l_isfalse(o);
 }
 
-
+// 把给定索引处的lua值转换为一个C字符串
 LUA_API const char *lua_tolstring (lua_State *L, int idx, size_t *len) {
   StkId o = index2adr(L, idx);
   if (!ttisstring(o)) {
@@ -397,7 +415,7 @@ LUA_API lua_State *lua_tothread (lua_State *L, int idx) {
   return (!ttisthread(o)) ? NULL : thvalue(o);
 }
 
-
+// 把给定索引处的lua值转换为一般的C指针
 LUA_API const void *lua_topointer (lua_State *L, int idx) {
   StkId o = index2adr(L, idx);
   switch (ttype(o)) {
@@ -414,10 +432,10 @@ LUA_API const void *lua_topointer (lua_State *L, int idx) {
 
 
 /*
-** push functions (C -> stack)
+ *  API 提供了lua_push*系列函数用于将C value压栈以便传递给lua
 */
 
-
+// 向lua栈中压入一个nil值
 LUA_API void lua_pushnil (lua_State *L) {
   lua_lock(L);
   setnilvalue(L->top);
@@ -425,7 +443,7 @@ LUA_API void lua_pushnil (lua_State *L) {
   lua_unlock(L);
 }
 
-
+// 向lua栈中压入一个float数值
 LUA_API void lua_pushnumber (lua_State *L, lua_Number n) {
   lua_lock(L);
   setnvalue(L->top, n);
@@ -482,17 +500,26 @@ LUA_API const char *lua_pushfstring (lua_State *L, const char *fmt, ...) {
   return ret;
 }
 
-
+// 将C函数压栈的实质是将对应的C闭包压栈
+// 创建C闭包，并把这个C闭包压栈
 LUA_API void lua_pushcclosure (lua_State *L, lua_CFunction fn, int n) {
   Closure *cl;
   lua_lock(L);
   luaC_checkGC(L);
   api_checknelems(L, n);
+
+  // 创建一个C闭包,继承创建了这个闭包的环境
   cl = luaF_newCclosure(L, n, getcurrenv(L));
+
+  // 把这个C函数注册到这个闭包里
   cl->c.f = fn;
   L->top -= n;
+
+  // 如果这个C函数关联值个数n非0,将这些值依次拷贝到这个闭包里
   while (n--)
     setobj2n(L, &cl->c.upvalue[n], L->top+n);
+
+  // 压入这个闭包到栈顶
   setclvalue(L, L->top, cl);
   lua_assert(iswhite(obj2gco(cl)));
   api_incr_top(L);
@@ -540,7 +567,7 @@ LUA_API void lua_gettable (lua_State *L, int idx) {
   lua_unlock(L);
 }
 
-
+// 取table中的元素k的值
 LUA_API void lua_getfield (lua_State *L, int idx, const char *k) {
   StkId t;
   TValue key;
@@ -653,7 +680,7 @@ LUA_API void lua_settable (lua_State *L, int idx) {
   lua_unlock(L);
 }
 
-
+// 给table中的元素k赋值,值来自栈顶
 LUA_API void lua_setfield (lua_State *L, int idx, const char *k) {
   StkId t;
   TValue key;
@@ -662,6 +689,8 @@ LUA_API void lua_setfield (lua_State *L, int idx, const char *k) {
   t = index2adr(L, idx);
   api_checkvalidindex(L, t);
   setsvalue(L, &key, luaS_new(L, k));
+
+  // 从栈顶弹出一个值赋给t[key]
   luaV_settable(L, t, &key, L->top - 1);
   L->top--;  /* pop value */
   lua_unlock(L);

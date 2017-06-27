@@ -15,6 +15,7 @@
 
 #define tostring(L,o) ((ttype(o) == LUA_TSTRING) || (luaV_tostring(L, o)))
 
+// 判断该lua值是否是一个数字或是可转换为数字的字符串
 #define tonumber(o,n)	(ttype(o) == LUA_TNUMBER || \
                          (((o) = luaV_tonumber(o,n)) != NULL))
 

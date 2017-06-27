@@ -225,7 +225,7 @@ LUALIB_API int luaL_callmeta (lua_State *L, int obj, const char *event) {
   return 1;
 }
 
-
+// 用于批量注册C函数到lua(5.1.5之后的版本中被废除)
 LUALIB_API void (luaL_register) (lua_State *L, const char *libname,
                                 const luaL_Reg *l) {
   luaI_openlib(L, libname, l, 0);
@@ -238,7 +238,7 @@ static int libsize (const luaL_Reg *l) {
   return size;
 }
 
-
+// 批量注册C函数到lua(5.1.5之后的版本中被废除)
 LUALIB_API void luaI_openlib (lua_State *L, const char *libname,
                               const luaL_Reg *l, int nup) {
   if (libname) {
@@ -257,11 +257,18 @@ LUALIB_API void luaI_openlib (lua_State *L, const char *libname,
     lua_remove(L, -2);  /* remove _LOADED table */
     lua_insert(L, -(nup+1));  /* move library table to below upvalues */
   }
-  for (; l->name; l++) {
+
+  // 为每个C函数创建对应的C闭包
+  for (; l->name; l++) 
+  {
     int i;
     for (i=0; i<nup; i++)  /* copy upvalues to the top */
       lua_pushvalue(L, -nup);
+
+    // 创建对应的C闭包，并把C闭包压栈
     lua_pushcclosure(L, l->func, nup);
+
+    // 给table中的元素l->name赋值
     lua_setfield(L, -(nup+2), l->name);
   }
   lua_pop(L, nup);  /* remove upvalues */
@@ -623,7 +630,7 @@ LUALIB_API int (luaL_loadstring) (lua_State *L, const char *s) {
 
 /* }====================================================== */
 
-
+// 分配nsize长度的内存块
 static void *l_alloc (void *ud, void *ptr, size_t osize, size_t nsize) {
   (void)ud;
   (void)osize;
@@ -643,7 +650,7 @@ static int panic (lua_State *L) {
   return 0;
 }
 
-
+// 创建一个新的lua状态机,并打印出错信息到标准错误输出
 LUALIB_API lua_State *luaL_newstate (void) {
   lua_State *L = lua_newstate(l_alloc, NULL);
   if (L) lua_atpanic(L, &panic);

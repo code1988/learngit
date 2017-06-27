@@ -31,7 +31,7 @@
 /* limit for table tag-method chains (to avoid loops) */
 #define MAXTAGLOOP	100
 
-
+// 判断该lua值是否是数字或是一个可转换为数字的字符串
 const TValue *luaV_tonumber (const TValue *obj, TValue *n) {
   lua_Number num;
   if (ttisnumber(obj)) return obj;

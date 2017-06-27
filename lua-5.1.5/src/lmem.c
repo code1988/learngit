@@ -72,15 +72,19 @@ void *luaM_toobig (lua_State *L) {
 
 /*
 ** generic allocation routine.
+    内存分配
 */
-void *luaM_realloc_ (lua_State *L, void *block, size_t osize, size_t nsize) {
-  global_State *g = G(L);
-  lua_assert((osize == 0) == (block == NULL));
-  block = (*g->frealloc)(g->ud, block, osize, nsize);
-  if (block == NULL && nsize > 0)
+void *luaM_realloc_ (lua_State *L, void *block, size_t osize, size_t nsize) 
+{
+    global_State *g = G(L);
+    lua_assert((osize == 0) == (block == NULL));
+    // 调用内存分配函数指针完成分配
+    block = (*g->frealloc)(g->ud, block, osize, nsize);
+
+    if (block == NULL && nsize > 0)
     luaD_throw(L, LUA_ERRMEM);
-  lua_assert((nsize == 0) == (block == NULL));
-  g->totalbytes = (g->totalbytes - osize) + nsize;
-  return block;
+    lua_assert((nsize == 0) == (block == NULL));
+    g->totalbytes = (g->totalbytes - osize) + nsize;
+    return block;
 }
 

@@ -20,16 +20,20 @@
 
 
 
+// 创建一个c闭包
 Closure *luaF_newCclosure (lua_State *L, int nelems, Table *e) {
+    // 申请闭包的内存
   Closure *c = cast(Closure *, luaM_malloc(L, sizeCclosure(nelems)));
+    // 将这个闭包（也就是可回收对象）插入全局的可回收链表池
   luaC_link(L, obj2gco(c), LUA_TFUNCTION);
+
   c->c.isC = 1;
   c->c.env = e;
   c->c.nupvalues = cast_byte(nelems);
   return c;
 }
 
-
+// 创建一个lua闭包
 Closure *luaF_newLclosure (lua_State *L, int nelems, Table *e) {
   Closure *c = cast(Closure *, luaM_malloc(L, sizeLclosure(nelems)));
   luaC_link(L, obj2gco(c), LUA_TFUNCTION);

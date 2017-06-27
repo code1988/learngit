@@ -39,6 +39,8 @@ typedef union GCObject GCObject;
 /*
 ** Common Header for all collectable objects (in macro form, to be
 ** included in other objects)
+    所有可回收对象的通用头
+    包含一个链表模块、lua类型标记
 */
 #define CommonHeader	GCObject *next; lu_byte tt; lu_byte marked
 
@@ -55,21 +57,25 @@ typedef struct GCheader {
 
 /*
 ** Union of all Lua values
+    该联合体定义了lua中所有类型的值
 */
 typedef union {
-  GCObject *gc;
-  void *p;
-  lua_Number n;
-  int b;
+  GCObject *gc; // 所有需要内存管理、垃圾回收的类型
+  void *p;      // 可以存一个指针，实质是lua中light userdata结构
+  lua_Number n; // 所有的数值，不论是int还是float
+  int b;        // bool
 } Value;
 
 
 /*
 ** Tagged Values
+    给每个值配上对应的标记
 */
-
+// value存放lua所有类型的值，tt记录value的类型
 #define TValuefields	Value value; int tt
 
+// TValue用来表示lua中的所有数据类型
+// TValue是一个{值，类型}的结构，这就是lua中动态类型的实现，它把值和类型绑在一起
 typedef struct lua_TValue {
   TValuefields;
 } TValue;
@@ -125,6 +131,7 @@ typedef struct lua_TValue {
 #define setbvalue(obj,x) \
   { TValue *i_o=(obj); i_o->value.b=(x); i_o->tt=LUA_TBOOLEAN; }
 
+// 为数据设置字符串类型的标记
 #define setsvalue(L,obj,x) \
   { TValue *i_o=(obj); \
     i_o->value.gc=cast(GCObject *, (x)); i_o->tt=LUA_TSTRING; \
@@ -157,7 +164,7 @@ typedef struct lua_TValue {
 
 
 
-
+// 完成带标记的值的拷贝
 #define setobj(L,obj1,obj2) \
   { const TValue *o2=(obj2); TValue *o1=(obj1); \
     o1->value = o2->value; o1->tt=o2->tt; \
@@ -189,7 +196,7 @@ typedef struct lua_TValue {
 #define iscollectable(o)	(ttype(o) >= LUA_TSTRING)
 
 
-
+// 堆栈中的元素，这个元素是一个指向具体lua值的指针，其实也就是一个unsigned int 地址值
 typedef TValue *StkId;  /* index to stack elements */
 
 
@@ -286,26 +293,29 @@ typedef struct UpVal {
 
 /*
 ** Closures
+    闭包
 */
 
+// 闭包头,包含可回收对象的通用头结构、C闭包标志、
 #define ClosureHeader \
 	CommonHeader; lu_byte isC; lu_byte nupvalues; GCObject *gclist; \
 	struct Table *env
 
+// C闭包控制块
 typedef struct CClosure {
-  ClosureHeader;
-  lua_CFunction f;
-  TValue upvalue[1];
+  ClosureHeader;        // 闭包头
+  lua_CFunction f;      // 闭包函数,就是注册的C函数
+  TValue upvalue[1];    // 存储栈中的元素
 } CClosure;
 
-
+// lua闭包控制块
 typedef struct LClosure {
   ClosureHeader;
   struct Proto *p;
   UpVal *upvals[1];
 } LClosure;
 
-
+// 闭包联合体
 typedef union Closure {
   CClosure c;
   LClosure l;

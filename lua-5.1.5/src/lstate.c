@@ -38,14 +38,16 @@ typedef struct LG {
 } LG;
   
 
-
-static void stack_init (lua_State *L1, lua_State *L) {
+// 堆栈区申请和初始化
+static void stack_init (lua_State *L1, lua_State *L) 
+{
   /* initialize CallInfo array */
   L1->base_ci = luaM_newvector(L, BASIC_CI_SIZE, CallInfo);
   L1->ci = L1->base_ci;
   L1->size_ci = BASIC_CI_SIZE;
   L1->end_ci = L1->base_ci + L1->size_ci - 1;
   /* initialize stack array */
+  // 堆栈申请，堆栈单元：TValue，堆栈长度（BASIC_STACK_SIZE + EXTRA_STACK）字节
   L1->stack = luaM_newvector(L, BASIC_STACK_SIZE + EXTRA_STACK, TValue);
   L1->stacksize = BASIC_STACK_SIZE + EXTRA_STACK;
   L1->top = L1->stack;
@@ -70,6 +72,8 @@ static void freestack (lua_State *L, lua_State *L1) {
 static void f_luaopen (lua_State *L, void *ud) {
   global_State *g = G(L);
   UNUSED(ud);
+
+  // 完成堆栈申请，以及初始化
   stack_init(L, L);  /* init stack */
   sethvalue(L, gt(L), luaH_new(L, 0, 2));  /* table of globals */
   sethvalue(L, registry(L), luaH_new(L, 0, 2));  /* registry */
@@ -139,15 +143,21 @@ void luaE_freethread (lua_State *L, lua_State *L1) {
   luaM_freemem(L, fromstate(L1), state_size(lua_State));
 }
 
-
+// 创建一个运行在新的独立状态机中的线程
 LUA_API lua_State *lua_newstate (lua_Alloc f, void *ud) {
   int i;
   lua_State *L;
   global_State *g;
+
+  // 申请这个线程需要的所有内存块(实际长度为lua_State + global_State)
   void *l = (*f)(ud, NULL, 0, state_size(LG));
   if (l == NULL) return NULL;
+
+  // 将内存块格式化为L和g两块
   L = tostate(l);
   g = &((LG *)L)->g;
+  
+  // 填充线程变量树和全局变量树
   L->next = NULL;
   L->tt = LUA_TTHREAD;
   g->currentwhite = bit2mask(WHITE0BIT, FIXEDBIT);
@@ -179,6 +189,8 @@ LUA_API lua_State *lua_newstate (lua_Alloc f, void *ud) {
   g->gcstepmul = LUAI_GCMUL;
   g->gcdept = 0;
   for (i=0; i<NUM_TAGS; i++) g->mt[i] = NULL;
+
+  // 完成lua堆栈区申请(好像还做了其他任务)
   if (luaD_rawrunprotected(L, f_luaopen, NULL) != 0) {
     /* memory allocation error: free partial state */
     close_state(L);

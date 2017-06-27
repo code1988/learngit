@@ -49,6 +49,7 @@
 
 typedef struct lua_State lua_State;
 
+// 和lua交互的C函数必须遵循的格式
 typedef int (*lua_CFunction) (lua_State *L);
 
 
@@ -68,6 +69,7 @@ typedef void * (*lua_Alloc) (void *ud, void *ptr, size_t osize, size_t nsize);
 
 /*
 ** basic types
+    lua中的基本数据类型
 */
 #define LUA_TNONE		(-1)
 
@@ -255,8 +257,11 @@ LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud);
 
 #define lua_newtable(L)		lua_createtable(L, 0, 0)
 
+// 把C函数f注册到全局变量name中
 #define lua_register(L,n,f) (lua_pushcfunction(L, (f)), lua_setglobal(L, (n)))
 
+// 将一个C函数压栈,这个C函数必须按照lua_CFunction格式来定义
+// 并且这个C函数没有关联值
 #define lua_pushcfunction(L,f)	lua_pushcclosure(L, (f), 0)
 
 #define lua_strlen(L,i)		lua_objlen(L, (i))
@@ -273,7 +278,10 @@ LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud);
 #define lua_pushliteral(L, s)	\
 	lua_pushlstring(L, "" s, (sizeof(s)/sizeof(char))-1)
 
+// 从堆栈上弹出一个值，并将其设为全局table中的元素s的新值
 #define lua_setglobal(L,s)	lua_setfield(L, LUA_GLOBALSINDEX, (s))
+
+// 将全局table中的元素s的值压栈，返回该值的类型
 #define lua_getglobal(L,s)	lua_getfield(L, LUA_GLOBALSINDEX, (s))
 
 #define lua_tostring(L,i)	lua_tolstring(L, (i), NULL)

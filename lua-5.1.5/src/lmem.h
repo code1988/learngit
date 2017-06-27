@@ -15,9 +15,9 @@
 
 #define MEMERRMSG	"not enough memory"
 
-
+// L：线程变量树，b：NULL，on：0,n：堆栈长度，e：堆栈单元长度
 #define luaM_reallocv(L,b,on,n,e) \
-	((cast(size_t, (n)+1) <= MAX_SIZET/(e)) ?  /* +1 to avoid warnings */ \
+	((cast(size_t, (n)+1) <= MAX_SIZET/(e)) ?  /* 内存申请大小合法性检测，跟架构有关，+1 to avoid warnings */ \
 		luaM_realloc_(L, (b), (on)*(e), (n)*(e)) : \
 		luaM_toobig(L))
 
@@ -27,6 +27,8 @@
 
 #define luaM_malloc(L,t)	luaM_realloc_(L, NULL, 0, (t))
 #define luaM_new(L,t)		cast(t *, luaM_malloc(L, sizeof(t)))
+
+// L：线程变量树，n：堆栈长度，t：堆栈单元类型
 #define luaM_newvector(L,n,t) \
 		cast(t *, luaM_reallocv(L, NULL, 0, n, sizeof(t)))
 
