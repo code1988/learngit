@@ -2091,7 +2091,7 @@ out:
 	}
 }
 
-// 获取端口link状态
+// 获取普通意义上的端口(不一定只限于桥)link状态
 static int rtnl_getlink(struct sk_buff *skb, struct nlmsghdr* nlh)
 {
 	struct net *net = sock_net(skb->sk);
@@ -2103,7 +2103,7 @@ static int rtnl_getlink(struct sk_buff *skb, struct nlmsghdr* nlh)
 	int err;
 	u32 ext_filter_mask = 0;
 
-    // 根据既定的每种类型的策略解析rtnetlink消息,解析出来的每条子消息分别存入tb数组对应位置
+    // 根据既定的每种类型的策略解析rtnetlink-RTM_GETLINK消息,解析出来的每条子消息分别存入tb数组对应位置
 	err = nlmsg_parse(nlh, sizeof(*ifm), tb, IFLA_MAX, ifla_policy);
 	if (err < 0)
 		return err;
@@ -2624,23 +2624,34 @@ nla_put_failure:
 }
 EXPORT_SYMBOL(ndo_dflt_bridge_getlink);
 
+/* 获取桥端口的link状态
+ *
+ * @skb - 这个skb是为netlink消息的接收方所有的，里面存储了接收方准备要回复的netlink消息
+ * @cb  - 这个当前有效操作集合实际上挂在netlink消息的发送方下面，里面的skb存储了当前正在处理的这条netlink消息
+ *
+ * 备注：本函数只会获取bridge端口，所以eth、lo这些不属于bridge的端口不会在这里被获取到
+ */
 static int rtnl_bridge_getlink(struct sk_buff *skb, struct netlink_callback *cb)
 {
-    // 获取收到该rtnetlink消息的socket控制块所属的网络命名空间
+    // 获取当前所在的net命名空间
 	struct net *net = sock_net(skb->sk);
 	struct net_device *dev;
 	int idx = 0;
-	u32 portid = NETLINK_CB(cb->skb).portid;
-	u32 seq = cb->nlh->nlmsg_seq;
+	u32 portid = NETLINK_CB(cb->skb).portid;    // netlink消息发送方的单播地址
+	u32 seq = cb->nlh->nlmsg_seq;               // netlink消息中追踪用的序号
 	struct nlattr *extfilt;
 	u32 filter_mask = 0;
 
+    /* 首先检查netlink消息的属性条目中是否存在IFLA_EXT_MASK项
+     * 如果存在该项，就提取相应的payload
+     */
 	extfilt = nlmsg_find_attr(cb->nlh, sizeof(struct ifinfomsg),
 				  IFLA_EXT_MASK);
 	if (extfilt)
 		filter_mask = nla_get_u32(extfilt);
 
 	rcu_read_lock();
+    // 遍历当前net命名空间下的所有网络设备，对每个bridge设备执行ndo_bridge_getlink获取所属端口的link状态
 	for_each_netdev_rcu(net, dev) {
 		const struct net_device_ops *ops = dev->netdev_ops;
 		struct net_device *br_dev = netdev_master_upper_dev_get(dev);
@@ -2894,7 +2905,7 @@ static int rtnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
 	sz_idx = type>>2;
 	kind = type&3;
 
-    // 对于 RTM_GET* 以外的netlink消息，需要做权限验证
+    // 对于 RTM_GET* 以外的rtnetlink消息，需要做权限验证
 	if (kind != 2 && !netlink_net_capable(skb, CAP_NET_ADMIN))
 		return -EPERM;
 
@@ -2920,7 +2931,7 @@ static int rtnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
 
 		__rtnl_unlock();
 
-        // 获取当前网络命名空间下的rtnetlink socket控制块(就是在rtnetlink_net_init中创建并注册的)
+        // 获取当前网络命名空间下，属于rtnetlink套接字的sock结构(就是在rtnetlink_net_init中创建并注册的)
 		rtnl = net->rtnl;
 		{
             // 初始化一个dump操作控制块

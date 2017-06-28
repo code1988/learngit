@@ -1922,6 +1922,12 @@ retry:
 }
 EXPORT_SYMBOL(netlink_unicast);
 
+/* 创建一个用于存储netlink消息的skb结构
+ *
+ * @ssk     - netlink消息的源sock结构
+ * @size    - 将要创建的skb数据缓冲区大小
+ * @dst_portid  - netlink消息的目的单播地址
+ */
 struct sk_buff *netlink_alloc_skb(struct sock *ssk, unsigned int size,
 				  u32 dst_portid, gfp_t gfp_mask)
 {
@@ -1932,6 +1938,7 @@ struct sk_buff *netlink_alloc_skb(struct sock *ssk, unsigned int size,
 	struct nl_mmap_hdr *hdr;
 	unsigned int maxlen;
 
+    // 根据源sock结构和目的单播地址，得到目的sock结构
 	sk = netlink_getsockbyportid(ssk, dst_portid);
 	if (IS_ERR(sk))
 		goto out;
@@ -2769,7 +2776,9 @@ EXPORT_SYMBOL(__nlmsg_put);
 /*
  * It looks a bit ugly.
  * It would be better to create kernel thread.
- * 继续执行dump操作，确实丑陋
+ * 实际执行dump操作了，很多操作都重复进行，确实丑陋
+ *
+ * @sk  - 指向netlink消息的源sock结构
  */
 
 static int netlink_dump(struct sock *sk)
@@ -2793,9 +2802,13 @@ static int netlink_dump(struct sock *sk)
 	if (!netlink_rx_is_mmaped(sk) &&
 	    atomic_read(&sk->sk_rmem_alloc) >= sk->sk_rcvbuf)
 		goto errout_skb;
+
+    // 这里创建了一个新的skb，用于存储回复用的netlink消息
 	skb = netlink_alloc_skb(sk, alloc_size, nlk->portid, GFP_KERNEL);
 	if (!skb)
 		goto errout_skb;
+
+    // 设置该携带了netlink消息的skb为最初的源netlink套接字所拥有
 	netlink_skb_set_owner_r(skb, sk);
 
     // 这里终于真正执行了dumpit函数...
@@ -2839,10 +2852,15 @@ errout_skb:
 	return err;
 }
 
-/* 执行dump操作
+/* dump操作前的准备工作
  *
- * 备注：需要注意的是，ssk代表的是当前网络命名空间下某个netlink协议（比如rtnetlink）注册的总的socket控制块
- *       而函数内的sk代表的是该具体的netlink协议跟上层用户进程关联后的socket控制块，所以原则上会有多个sk来对应不同进程
+ * @ssk     - 这个sock结构也就是对应了一个netlink套接字
+ * @skb     - 存储了netlink消息的skb
+ * @nlh     - 一条完整的netlink消息
+ * @control - 用于dump操作的控制块，里面主要记录了dump回调函数和dump的数据空间大小
+ *
+ * 备注：需要注意的是，ssk表示接收到该netlink消息并进行处理的一方
+ *       而函数内的sk代表的是发送该netlink消息的一方
  */
 int __netlink_dump_start(struct sock *ssk, struct sk_buff *skb,
 			 const struct nlmsghdr *nlh,
@@ -2864,18 +2882,18 @@ int __netlink_dump_start(struct sock *ssk, struct sk_buff *skb,
 	} else
 		atomic_inc(&skb->users);
 
-    // 根据protocol和portid查找对应的netlink套接字
+    // 根据protocol和portid查找对应的源netlink套接字(其实netlink_skb_parms结构中的sk字段就已经记录了源sock结构，这里没必要多此一举)
 	sk = netlink_lookup(sock_net(ssk), ssk->sk_protocol, NETLINK_CB(skb).portid);
 	if (sk == NULL) {
 		ret = -ECONNREFUSED;
 		goto error_free;
 	}
 
-    // 进而得到netlink套接字
+    // 注意，以下的所有操作都是基于源netlink套接字！
 	nlk = nlk_sk(sk);
 	mutex_lock(nlk->cb_mutex);
 	/* A dump is in progress... 
-     * 每个netlink套接字同时只能处理一个dump操作
+     * 每个源netlink套接字同时只能处理一个dump操作
      * */
 	if (nlk->cb_running) {
 		ret = -EBUSY;
@@ -2887,7 +2905,7 @@ int __netlink_dump_start(struct sock *ssk, struct sk_buff *skb,
 		goto error_unlock;
 	}
 
-    // 设置该netlink套接字控制块当前有效的操作集合
+    // 设置该netlink套接字当前有效的操作集合
 	cb = &nlk->cb;
 	memset(cb, 0, sizeof(*cb));
 	cb->dump = control->dump;
@@ -2898,10 +2916,12 @@ int __netlink_dump_start(struct sock *ssk, struct sk_buff *skb,
 	cb->min_dump_alloc = control->min_dump_alloc;
 	cb->skb = skb;
 
+    // 标记源netlink套接字正处于dump操作中
 	nlk->cb_running = true;
 
 	mutex_unlock(nlk->cb_mutex);
 
+    // 执行实际的dump操作
 	ret = netlink_dump(sk);
 	sock_put(sk);
 

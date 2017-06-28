@@ -53,6 +53,7 @@ struct eapol_state_machine {
 	int aWhile;     // 用于BE_AUTH SM ，定义了eapol层递交eapolEap报文给eap层，然后等待回复的计时,
                     // 也就是BE_AUTH进入BE_AUTH_RESPONSE时开启，并且只在BE_AUTH_RESPONSE期间有效
                     // 超时值为serverTimeout(也就是BE_AUTH_DEFAULT_serverTimeout)
+                    
 	int quietWhile; // 用于AUTH_PAE SM，此时间内认证者不会接受任何请求者，超时值为quietPeriod(也就是AUTH_PAE_DEFAULT_quietPeriod)
 	int reAuthWhen; // 用于REAUTH_TIMER SM ，定义了认证成功后nas发起重认证的间隔,超时值为reAuthPeriod
 	/* global variables */
@@ -62,7 +63,10 @@ struct eapol_state_machine {
 	Boolean authStart;      // AUTH_PAE SM 进入AUTHENTICATING状态时设置TRUE；BE_AUTH SM 进入IDLE状态时设置FALSE
 	Boolean authTimeout;    // BE_AUTH SM 进入TIMEOUT状态时设置TRUE；AUTH_PAE SM 进入AUTHENTICATING状态时设置FALSE
 	Boolean authSuccess;    // BE_AUTH SM 进入SUCCESS状态时设置TRUE；AUTH_PAE SM 进入AUTHENTICATING状态时设置FALSE
-	Boolean eapolEap;       // 作为认证者，接收到承载了EAP-PACKET(通常是一个resp)的EAPOL报文时设置TRUE；BE_AUTH SM 进入REQUEST(非标准)/RESPONSE状态时设置FALSE
+	Boolean eapolEap;       // 作为认证者，接收到承载了EAP-PACKET(通常是一个resp)的EAPOL报文时设置TRUE；
+                            // BE_AUTH SM 进入REQUEST(非标准)/RESPONSE状态时设置FALSE。
+                            // 只在BE_AUTH_REQUEST/BE_AUTH_IGNORE期间有效
+                            
 	Boolean initialize;     // 当该标志强制初始化eapol层所有状态机
 	Boolean keyDone;                                                                                                                                           
 	Boolean keyRun;         // BE_AUTH SM 进入SUCCESS状态时设置TRUE；AUTH_PAE SM 进入AUTHENTICATING/ABORTING状态时设置FALSE

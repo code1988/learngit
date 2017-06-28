@@ -27,7 +27,7 @@ enum netlink_skb_flags {
 // skb中针对netlink消息的附加信息
 struct netlink_skb_parms {
 	struct scm_creds	creds;		/* Skb credentials	*/
-	__u32			portid;         // 记录了发送该netlink消息的netlink套接字绑定的单播地址，
+	__u32			portid;         // 记录了发送该netlink消息的源netlink套接字绑定的单播地址，
 	__u32			dst_group;      // 记录了发送该netlink消息时指定的目的地址
 	__u32			flags;          // 记录了该netlink消息的附加信息
 	struct sock		*sk;            // 记录了该netlink消息的源sock结构
@@ -125,18 +125,18 @@ netlink_skb_clone(struct sk_buff *skb, gfp_t gfp_mask)
 
 #define NLMSG_DEFAULT_SIZE (NLMSG_GOODSIZE - NLMSG_HDRLEN)
 
-// 定义了当前某次netlink操作的集合
+// 定义了当前某条netlink消息期间有效的操作集合
 struct netlink_callback {
-	struct sk_buff		*skb;
-	const struct nlmsghdr	*nlh;
+	struct sk_buff		*skb;                           // 指向当前收到的正在处理的skb
+	const struct nlmsghdr	*nlh;                       // 指向一条当前正在处理的netlink消息
 	int			(*dump)(struct sk_buff * skb,
-					struct netlink_callback *cb);
+					struct netlink_callback *cb);       // 指向dump回调
 	int			(*done)(struct netlink_callback *cb);
 	void			*data;
 	/* the module that dump function belong to */
 	struct module		*module;
 	u16			family;
-	u16			min_dump_alloc;
+	u16			min_dump_alloc;                         // 记录了需要dump的数据空间大小
 	unsigned int		prev_seq, seq;
 	long			args[6];
 };
@@ -162,7 +162,13 @@ struct netlink_dump_control {
 extern int __netlink_dump_start(struct sock *ssk, struct sk_buff *skb,
 				const struct nlmsghdr *nlh,
 				struct netlink_dump_control *control);
-// 执行dump操作(封装)
+/* 执行dump操作(封装)
+ *
+ * @ssk     - 这个sock结构也就是对应了一个netlink套接字
+ * @skb     - 存储了netlink消息的skb
+ * @nlh     - 一条完整的netlink消息
+ * @control - 用于dump操作的控制块，里面主要记录了dump回调函数和dump的数据空间大小
+ */
 static inline int netlink_dump_start(struct sock *ssk, struct sk_buff *skb,
 				     const struct nlmsghdr *nlh,
 				     struct netlink_dump_control *control)
