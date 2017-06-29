@@ -2624,12 +2624,13 @@ nla_put_failure:
 }
 EXPORT_SYMBOL(ndo_dflt_bridge_getlink);
 
-/* 获取桥端口的link状态
+/* 获取桥端口的链路状态
  *
  * @skb - 这个skb是为netlink消息的接收方所有的，里面存储了接收方准备要回复的netlink消息
  * @cb  - 这个当前有效操作集合实际上挂在netlink消息的发送方下面，里面的skb存储了当前正在处理的这条netlink消息
  *
  * 备注：本函数只会获取bridge端口，所以eth、lo这些不属于bridge的端口不会在这里被获取到
+ *       AF_BRIDGE + RTM_GETLINK消息的族头结构类型没有任何要求，一般就是使用最小族头rtgenmsg结构
  */
 static int rtnl_bridge_getlink(struct sk_buff *skb, struct netlink_callback *cb)
 {
@@ -2733,6 +2734,13 @@ errout:
 	return err;
 }
 
+/* 设置桥端口的链路参数
+ *
+ * @skb     - 存储了该netlink消息的skb
+ * @nlh     - 一条完整的netlink-RTM_SETLINK消息
+ *
+ * 备注： AF_BRIDGE + RTM_SETLINK消息的族头使用的是ifinfomsg结构
+ */
 static int rtnl_bridge_setlink(struct sk_buff *skb, struct nlmsghdr *nlh)
 {
 	struct net *net = sock_net(skb->sk);
@@ -2743,6 +2751,7 @@ static int rtnl_bridge_setlink(struct sk_buff *skb, struct nlmsghdr *nlh)
 	u16 oflags, flags = 0;
 	bool have_flags = false;
 
+    // 首先是做一些参数合法性检测
 	if (nlmsg_len(nlh) < sizeof(*ifm))
 		return -EINVAL;
 
@@ -2750,12 +2759,16 @@ static int rtnl_bridge_setlink(struct sk_buff *skb, struct nlmsghdr *nlh)
 	if (ifm->ifi_family != AF_BRIDGE)
 		return -EPFNOSUPPORT;
 
+    // 通过接口序号查找对应的网络设备
 	dev = __dev_get_by_index(net, ifm->ifi_index);
 	if (!dev) {
 		pr_info("PF_BRIDGE: RTM_SETLINK with unknown ifindex\n");
 		return -ENODEV;
 	}
 
+    /* 检查netlink消息的一级属性条目中是否存在IFLA_AF_SPEC项
+     * 如果存在该项，就遍历嵌套的子属性，检查其子属性条目中是否存在IFLA_BRIDGE_FLAGS项
+     */
 	br_spec = nlmsg_find_attr(nlh, sizeof(struct ifinfomsg), IFLA_AF_SPEC);
 	if (br_spec) {
 		nla_for_each_nested(attr, br_spec, rem) {
@@ -2769,6 +2782,9 @@ static int rtnl_bridge_setlink(struct sk_buff *skb, struct nlmsghdr *nlh)
 
 	oflags = flags;
 
+    /* 如果二级属性条目中不存在IFLA_BRIDGE_FLAGS项，或者如果存在该条目但是其payload中存在BRIDGE_FLAGS_MASTER标志
+     * 就意味着这是一个lowwer设备，需要先找到它的upper设备，通常就是bridge设备，然后执行bridge设备的ndo_bridge_setlink回调
+     */
 	if (!flags || (flags & BRIDGE_FLAGS_MASTER)) {
 		struct net_device *br_dev = netdev_master_upper_dev_get(dev);
 
@@ -2784,6 +2800,9 @@ static int rtnl_bridge_setlink(struct sk_buff *skb, struct nlmsghdr *nlh)
 		flags &= ~BRIDGE_FLAGS_MASTER;
 	}
 
+    /* 如果二级属性条目中存在IFLA_BRIDGE_FLAGS项，并且其payload中存在BRIDGE_FLAGS_SELF标志
+     * 就意味着这是一个upper设备，通常就是bridge设备，直接执行其ndo_bridge_setlink回调即可
+     */
 	if ((flags & BRIDGE_FLAGS_SELF)) {
 		if (!dev->netdev_ops->ndo_bridge_setlink)
 			err = -EOPNOTSUPP;
@@ -2794,9 +2813,14 @@ static int rtnl_bridge_setlink(struct sk_buff *skb, struct nlmsghdr *nlh)
 			flags &= ~BRIDGE_FLAGS_SELF;
 	}
 
+    /* 以上代码意味着设备a既可以是设备b的lowwer设备，同时又可以是设备c的upper设备 */
+
+    // 如果二级属性条目中存在IFLA_BRIDGE_FLAGS项，会直接在该属性项位置更新掉原来的payload
 	if (have_flags)
 		memcpy(nla_data(attr), &flags, sizeof(flags));
-	/* Generate event to notify upper layer of bridge change */
+	/* Generate event to notify upper layer of bridge change 
+     * 最后通过内核通知链通知bridge
+     * */
 	if (!err)
 		err = rtnl_bridge_notify(dev, oflags);
 out:

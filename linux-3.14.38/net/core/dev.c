@@ -4537,9 +4537,10 @@ static bool netdev_has_any_upper_dev(struct net_device *dev)
 
 /**
  * netdev_master_upper_dev_get - Get master upper device
- * 获取upper设备邻接链表的master节点
+ * 从该网络设备的upper设备邻接链表中获取master节点
  * @dev: device
  *
+ * 备注：一个例子就是根据端口设备获取它所属的upper设备---bridge设备
  * Find a master upper device and return pointer to it or NULL in case
  * it's not there. The caller must hold the RTNL lock.
  */

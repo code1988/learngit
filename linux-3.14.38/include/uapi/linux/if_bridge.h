@@ -111,10 +111,12 @@ struct __fdb_entry {
  *     [IFLA_BRIDGE_MODE]
  *     [IFLA_BRIDGE_VLAN_INFO]
  * }
+ *
+ * 以下是bridge管理相关的属性枚举，属于二级属性，需要嵌套在IFLA_AF_SPEC属性中才能传输
  */
 enum {
-	IFLA_BRIDGE_FLAGS,
-	IFLA_BRIDGE_MODE,
+	IFLA_BRIDGE_FLAGS,      // 这号属性记录的就是 BRIDGE_FLAGS_* 标志
+	IFLA_BRIDGE_MODE,       // 这号属性记录的就是 BRIDGE_MODE_* 标志
 	IFLA_BRIDGE_VLAN_INFO,
 	__IFLA_BRIDGE_MAX,
 };

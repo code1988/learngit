@@ -103,6 +103,8 @@ struct rtnl_link_ifmap {
  *   }
  *
  *   网络接口的链路状态所包含的属性类型枚举
+ *
+ *   备注：这些都是一级属性，其他的二级属性必须要嵌套在相应的一级属性中才能传输
  */
 enum {
 	IFLA_UNSPEC,
@@ -121,7 +123,7 @@ enum {
 #define IFLA_MASTER IFLA_MASTER
 	IFLA_WIRELESS,		/* Wireless Extension event - see wireless.h */
 #define IFLA_WIRELESS IFLA_WIRELESS
-	IFLA_PROTINFO,		/* Protocol specific information for a link */
+	IFLA_PROTINFO,		/* Protocol specific information for a link 这号属性跟具体协议相关*/
 #define IFLA_PROTINFO IFLA_PROTINFO
 	IFLA_TXQLEN,
 #define IFLA_TXQLEN IFLA_TXQLEN

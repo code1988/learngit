@@ -1206,9 +1206,10 @@ static inline int nla_validate_nested(const struct nlattr *start, int maxtype,
 
 /**
  * nla_for_each_nested - iterate over nested attributes
- * @pos: loop counter, set to current attribute
- * @nla: attribute containing the nested attributes
- * @rem: initialized to len, holds bytes currently remaining in stream
+ * 遍历支持嵌套的属性，获取每一个内部的子属性(不递归)
+ * @pos: loop counter, set to current attribute 指向每个遍历到的子属性
+ * @nla: attribute containing the nested attributes 支持嵌套的父属性
+ * @rem: initialized to len, holds bytes currently remaining in stream 记录偏移量的变量
  */
 #define nla_for_each_nested(pos, nla, rem) \
 	nla_for_each_attr(pos, nla_data(nla), nla_len(nla), rem)
