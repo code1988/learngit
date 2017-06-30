@@ -71,7 +71,7 @@ struct nl_portid_hash {
 // netlink表每个表项的数据结构
 struct netlink_table {
 	struct nl_portid_hash	hash;       // hash表控制块，内部的hash表记录了已经创建的同种协议类型的所有netlink套接字
-	struct hlist_head	mc_list;        // 这个hash表头节点用于记录同种协议类型下所有阅订了组播功能的套接字
+	struct hlist_head	mc_list;        // 这个hash桶头节点用于记录同种协议类型下所有阅订了组播功能的套接字
 	struct listeners __rcu	*listeners; // 记录了同种协议类型下所有被阅订了的组播消息集合
 	unsigned int		flags;          // 这里的标志位来自配置netlink_kernel_cfg,目前主要记录了该协议类型允许的用户态操作权限
 	unsigned int		groups;         // 记录了该协议类型支持的最大组播数量

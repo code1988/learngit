@@ -610,6 +610,7 @@ static inline int hlist_empty(const struct hlist_head *h)
 	return !h->first;
 }
 
+// 将普通节点n从所在的hash桶中删除
 static inline void __hlist_del(struct hlist_node *n)
 {
 	struct hlist_node *next = n->next;
@@ -619,6 +620,7 @@ static inline void __hlist_del(struct hlist_node *n)
 		next->pprev = pprev;
 }
 
+// 将普通节点n从所在的hash桶中删除，并且将n的next和pprev指针指向无用值
 static inline void hlist_del(struct hlist_node *n)
 {
 	__hlist_del(n);

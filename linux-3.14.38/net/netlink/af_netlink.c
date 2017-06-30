@@ -114,7 +114,7 @@ static inline u32 netlink_group_mask(u32 group)
 	return group ? 1 << (group - 1) : 0;
 }
 
-// 根据portid计算出在该hash表的散列地址，然后返回对应的表项
+// 根据portid计算出要插入的hash桶头节点
 static inline struct hlist_head *nl_portid_hashfn(struct nl_portid_hash *hash, u32 portid)
 {
 	return &hash->table[jhash_1word(portid, hash->rnd) & hash->mask];
@@ -1106,9 +1106,7 @@ static void netlink_update_listeners(struct sock *sk)
 	 * makes sure updates are visible before bind or setsockopt return. */
 }
 
-/* 将netlink套接字添加到nl_table中的相应位置
- * 
- * 备注：这其实也就是用户空间bind该netlink套接字到某个单播地址的过程
+/* 将netlink套接字添加到nl_table中的相应的hash表中
  */
 static int netlink_insert(struct sock *sk, struct net *net, u32 portid)
 {
@@ -1120,7 +1118,7 @@ static int netlink_insert(struct sock *sk, struct net *net, u32 portid)
 	int len;
 
 	netlink_table_grab();
-    // 首先根据portid计算出在该hash表的散列地址，取得对应的表项，也就是一个链表头
+    // 首先根据portid计算出将要插入的hash桶头节点
 	head = nl_portid_hashfn(hash, portid);
 	len = 0;
     // 遍历链表，通过注册的compare函数判断对应net命名空间下是否存在相同portid的netlink套接字
@@ -1471,14 +1469,20 @@ static inline int netlink_allowed(const struct socket *sock, unsigned int flag)
 		ns_capable(sock_net(sock->sk)->user_ns, CAP_NET_ADMIN);
 }
 
-// 将指定套接字加入所属netlink协议类型的多播hash链表
+// 将指定netlink套接字加入所属netlink协议类型的多播hash链表
 static void netlink_update_subscriptions(struct sock *sk, unsigned int subscriptions)
 {
 	struct netlink_sock *nlk = nlk_sk(sk);
 
 	if (nlk->subscriptions && !subscriptions)
+        /* 如果该netlink套接字有阅订过组播消息，并且当前传入组播数量为0,
+         * 意味不再阅订组播，所以需要将该netlink套接字从组播hash桶中删除
+         */
 		__sk_del_bind_node(sk);
 	else if (!nlk->subscriptions && subscriptions)
+        /* 如果该netlink套接字第一次阅订组播消息，
+         * 那么将该netlink套接字作为一个普通节点插入头节点list对应的hash桶中
+         */
 		sk_add_bind_node(sk, &nl_table[sk->sk_protocol].mc_list);
     
     // 更新该netlink套接字阅订的组播数量
