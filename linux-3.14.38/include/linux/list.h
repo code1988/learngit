@@ -636,6 +636,7 @@ static inline void hlist_del_init(struct hlist_node *n)
 	}
 }
 
+// 将普通节点n插入到头节点h对应的hash桶的第一个节点的位置
 static inline void hlist_add_head(struct hlist_node *n, struct hlist_head *h)
 {
 	struct hlist_node *first = h->first;
