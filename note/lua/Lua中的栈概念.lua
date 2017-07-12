@@ -47,42 +47,46 @@ C-API是一组能使C代码与Lua交互的函数，这些API实现了读写Lua�
           但是当遇到需要占用大量栈空间的情况时，就需要调用本函数来检查栈中是否有足够的空间
 
 2. lua_push*系列API用于将C类型的数据压入栈，使之转换为对应的lua类型的数据，以便进入lua的世界
-    -- lua_pushnil
-    往栈中压入一个常量nil
-    -- lua_pushnumber
-    往栈中压入一个双精度浮点数
-    -- lua_pushinteger
-    往栈中压入一个整数
-    -- lua_pushboolean
-    往栈中压入一个boolean值
-    -- lua_pushlstring(s,len)
-    往栈中压入一个长度为len的字符串s
-    -- lua_pushstring(s)
-    往栈中压入一个"\0"结尾的字符串s
+    -- lua_pushnil              : 往栈中压入一个常量nil
+    -- lua_pushnumber           : 往栈中压入一个双精度浮点数
+    -- lua_pushinteger          : 往栈中压入一个整数 
+    -- lua_pushboolean          : 往栈中压入一个boolean值
+    
+    -- lua_pushlstring(s,len)       : 往栈中压入一个长度为len的字符串s
+    -- lua_pushstring(s)            : 往栈中压入一个"\0"结尾的字符串s
     备注：lua中不会去持有指向外部(比如C中)字符串的指针，所以在通过栈往lua中传递字符串时，都会在lua中生成一份拷贝。
           基于这种机制，外部函数在操作完字符串压栈后立刻释放或修改该字符串，不会有任何问题。
     
-    -- lua_pushfstring(fmt,...)
-    往栈中压入一个格式化过的字符串fmt，并返回指向这个字符串的指针 
+    -- lua_pushfstring(fmt,...)     : 往栈中压入一个格式化过的字符串fmt，并返回指向这个字符串的指针
     备注：类似于C中的sprintf，但也有区别：
             [1]. 无需提供这个字符串的缓冲区，因为会由lua来管理这个缓存
             [2]. 本函数接受的格式化符号极为有限(仅支持%%、%s、%d、%f、%c)
-    -- lua_pushvfstring(fmt,argp)
-    基本类似于lua_pushfstring，区别仅仅在于可变形参的格式
-
-    -- lua_pushcclosure(fn,n)
-    将符合lua_CFunction格式的C函数压栈以创建一个C闭包，其中包含n个upvalue
+    -- lua_pushvfstring(fmt,argp)   : 基本类似于lua_pushfstring，区别仅仅在于可变形参的格式
+    
+    -- lua_pushcclosure(fn,n)       : 将符合lua_CFunction格式的C函数压栈以创建一个C闭包，其中包含n个upvalue
     备注：创建C闭包的步骤：
             [1].将需要关联的任意数量upvalue依次压栈 
             [2].调用本函数将C函数fn改造成C闭包，并将这个C闭包压栈
     要注意的是，本函数调用过程中首先会从栈中弹出所有的upvalue来创建C闭包，然后才是将C闭包压栈
-        -- #define lua_pushcfunction(L,f)  lua_pushcclosure(L, (f), 0) 
-        由lua_pushcclosure衍生出来的API宏，用于将一个普通的C函数压栈
+        -- #define lua_pushcfunction(L,f)  lua_pushcclosure(L, (f), 0) : 由lua_pushcclosure衍生出来的API宏，用于将一个普通的C函数压栈
         备注：这个C函数必须按照lua_CFunction格式来定义;
               这个C函数没有upvalue(也就是意味着压入栈中的是一个普通的C函数)
 
-    -- lua_pushlightuserdata
-    往栈中压入一个C指针
+    -- lua_pushlightuserdata        : 往栈中压入一个C指针
     备注：在lua中light userdata是一个像数字一样的值（猜测是C指针指向的地址值）;
 
-3. lua_is*系列API用于检查指定索引处的元素是否为特定的lua类型
+3. 这部分API都是用于访问栈上的元素，这部分API有另外一个共同点，那就是不会引起栈上元素的变化
+    -- lua_type(idx)            : 返回索引idx处的元素类型
+    
+    -- lua_isnumber(idx)        : 如果索引idx处的元素是LUA_TNUMBER类型返回true
+    备注：LUA_TNUMBER 或者是可以转换成LUA_TNUMBER的字符串都会判断为true
+    -- lua_isstring(idx)        : 如果索引idx处的元素是LUA_TSTRING类型返回true
+    备注：LUA_TSTRING或者是LUA_TNUMBER都会判断为true
+    -- lua_isnil(idx)           : 如果索引idx处的元素是LUA_TNIL类型返回true
+    -- lua_isboolean(idx)       : 如果索引idx处的元素是LUA_TBOOLEAN类型返回true
+    -- lua_isnone(idx)          : 如果索引idx处的元素不存在返回true
+    -- lua_istable(idx)         : 如果索引idx处的元素是LUA_TTABLE类型返回true
+    -- lua_isfunction(idx)      : 如果索引idx处的元素是函数(lua函数或c函数都可)返回true
+    -- lua_iscfunction(idx)     : 如果索引idx处的元素是C函数返回true
+
+    -- lua_to*系列API：

@@ -321,8 +321,9 @@ typedef union Closure {
   LClosure l;
 } Closure;
 
-
+// 判断元素o是否是C函数
 #define iscfunction(o)	(ttype(o) == LUA_TFUNCTION && clvalue(o)->c.isC)
+// 判断元素o是否是lua函数
 #define isLfunction(o)	(ttype(o) == LUA_TFUNCTION && !clvalue(o)->c.isC)
 
 

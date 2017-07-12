@@ -266,16 +266,18 @@ LUA_API void lua_pushvalue (lua_State *L, int idx) {
 
 /*
 ** access functions (stack -> C)
-以下这些函数都是用于操作面向C环境的栈
 */
 
-// 获取栈中元素在lua中的类型
+// 获取栈中元素的lua类型
 LUA_API int lua_type (lua_State *L, int idx) {
   StkId o = index2adr(L, idx);
   return (o == luaO_nilobject) ? LUA_TNONE : ttype(o);
 }
 
-
+/* 获取lua数据类型编码对应的字符串名
+ *
+ * @t   - 类型编码，比如LUA_TBOOLEAN
+ */
 LUA_API const char *lua_typename (lua_State *L, int t) {
   UNUSED(L);
   return (t == LUA_TNONE) ? "no value" : luaT_typenames[t];
@@ -285,7 +287,7 @@ LUA_API const char *lua_typename (lua_State *L, int t) {
  *  基础API提供了lua_is*系列函数用于检查栈中该索引处元素是否是一个指定的类型
  *
  */
-// 检查该索引处的元素类型是否是 LUA_TFUNCTION 且是C闭包
+// 如果索引idx处的元素是C函数返回true
 LUA_API int lua_iscfunction (lua_State *L, int idx) {
   StkId o = index2adr(L, idx);
   return iscfunction(o);
@@ -310,7 +312,7 @@ LUA_API int lua_isstring (lua_State *L, int idx) {
   return (t == LUA_TSTRING || t == LUA_TNUMBER);
 }
 
-
+// 如果索引idx处的元素是userdata(完整的userdata或lightuserdata都可)则返回true
 LUA_API int lua_isuserdata (lua_State *L, int idx) {
   const TValue *o = index2adr(L, idx);
   return (ttisuserdata(o) || ttislightuserdata(o));
