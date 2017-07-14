@@ -39,7 +39,7 @@
 */
 #define LUA_REGISTRYINDEX	(-10000)    // 该索引位置处存放了注册表
 #define LUA_ENVIRONINDEX	(-10001)    // 该索引位置处存放了环境table
-#define LUA_GLOBALSINDEX	(-10002)
+#define LUA_GLOBALSINDEX	(-10002)    // 该索引位置处存放了全局table
 #define lua_upvalueindex(i)	(LUA_GLOBALSINDEX-(i))  // 用来生成指定C闭包的一个upvalue的"伪索引"
 
 
@@ -309,7 +309,7 @@ LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud);
 // 从堆栈上弹出一个值，并将其赋给全局table中的元素s
 #define lua_setglobal(L,s)	lua_setfield(L, LUA_GLOBALSINDEX, (s))
 
-// 将全局table中元素s的值压栈
+// 获取全局table中指定元素s的值(值被压入栈顶)
 #define lua_getglobal(L,s)	lua_getfield(L, LUA_GLOBALSINDEX, (s))
 
 #define lua_tostring(L,i)	lua_tolstring(L, (i), NULL)

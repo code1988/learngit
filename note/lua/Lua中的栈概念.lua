@@ -46,7 +46,7 @@ C-API是一组能使C代码与Lua交互的函数，这些API实现了读写Lua�
     备注：栈缺省的最小槽位数量是LUA_MINSTACK，一般情况下完全足够，
           但是当遇到需要占用大量栈空间的情况时，就需要调用本函数来检查栈中是否有足够的空间
 
-2. lua_push*系列API用于将C类型的数据压入栈，使之转换为对应的lua类型的数据，以便进入lua的世界
+2. 这部分API专门用于往"栈"中压入一个lua类型的数据，显然，这些API操作会引起"栈"上元素的变化
     -- lua_pushnil              : 往栈中压入一个常量nil
     -- lua_pushnumber           : 往栈中压入一个双精度浮点数
     -- lua_pushinteger          : 往栈中压入一个整数 
@@ -73,9 +73,19 @@ C-API是一组能使C代码与Lua交互的函数，这些API实现了读写Lua�
               这个C函数没有upvalue(也就是意味着压入栈中的是一个普通的C函数)
 
     -- lua_pushlightuserdata        : 往栈中压入一个C指针
-    备注：在lua中light userdata是一个像数字一样的值（猜测是C指针指向的地址值）;
+    备注：在lua中light userdata是一个像数字一样的值;
+          lightuserdata没有自己的元表；
+          只要指针指向的地址相同，两个lightuserdata就相等
+    -- lua_newuserdata(size)        : 分配一块size大小的内存，并将其地址作为userdata压入堆栈，同时返回这个地址
+    备注：在lua中完整的userdata被表示为一个对象(类似table);
+          完整的userdata有自己的元表；
+          一个完整的userdata只和自己相等 
+    
+    -- lua_createtable(narr,nrec)   : 创建一个空table并压栈
+    备注：这个新table将被预分配narray个元素的数组空间以及nrec个元素的非数组空间
+        -- #define lua_newtable(L)     lua_createtable(L, 0, 0) : 由lua_createtable衍生出来的API宏，也是用于创建一个空table并压栈，区别在于不会预分配任何元素空间
 
-3. 这部分API专门用于访问栈上的元素，并且有另外一个共同点，那就是这些API操作不会引起栈上元素的变化
+3. 这部分API专门用于访问"栈"上的元素，并且有另外一个共同点，那就是这些API操作不会引起"栈"上元素的变化
     -- lua_type(idx)            : 返回索引idx处的元素类型
     -- lua_typename(type)       : 返回lua数据类型type对应的字符串名
     -- lua_objlen(idx)          : 返回索引idx处的元素的长度
@@ -94,14 +104,37 @@ C-API是一组能使C代码与Lua交互的函数，这些API实现了读写Lua�
     -- lua_to*系列API用于从指定索引处获取特定类型的值
     备注：如果指定索引处的元素不具有正确的类型，则根据特定API返回0或NULL
 
-4. 这部分API专门用于对table进行操作
+4. 这部分API通过"栈"实现了获取lua中的变量，并且有另外一些共同点，这些API操作会引起"栈"上元素的变化;返回的值会被压入栈顶
     -- lua_gettable(idx)        : 用于获取table中指定元素的值，类似"t[k]"，本函数可能会触发__index元方法
     备注：t是指定索引idx处的值，k是栈顶(-1)处的值;
           本函数会弹出栈顶的k，然后将获得的值"t[k]"压入栈顶
 
     -- lua_getfield(idx,k)      : 类似lua_gettable，区别在于"k"不来自栈顶而来自入参
+        -- #define lua_getglobal(L,s)  lua_getfield(L, LUA_GLOBALSINDEX, (s))   : 由lua_getfield衍生出来的API宏，用于获取全局table中指定元素s的值
+        
     -- lua_rawget(idx)          : 类似lua_gettable，区别在于本函数不会触发__index元方法
+    
     -- lua_rawgeti(idx,n)       : 用于获取数组中指定元素的值
     备注：跟lua_getfield的相似点在于table/array的索引都来自入参;
           跟lua_rawget的相似点在于都不会触发__index元方法
 
+    -- lua_getmetatable(objindex)   : 获取索引objindex处的值的元表
+
+5. 这部分API通过"栈"实现了设置lua中的变量，并且有另外一个共同点，这些API操作会引起"栈"上元素的变化
+    -- lua_settable(idx)        : 用于为table中指定元素赋值，类似"t[k] = v"，本函数可能会触发__newindex元方法
+    备注：t是指定索引idx处的值，v是栈顶(-1)处的值，k是栈顶之下(-2)那个值
+          本函数执行过程中会弹出栈中的v和k值
+
+    -- lua_setfield(idx,k)      : 类似lua_settable，区别在于"k"不来自栈顶而来自入参
+        -- #define lua_setglobal(L,s)  lua_setfield(L, LUA_GLOBALSINDEX, (s))   : 由lua_setfield衍生出来的API宏，用于为全局table中指定元素s赋值
+
+    -- lua_rawset(idx)          : 类似lua_settable，区别在于本函数不会触发__newindex元方法
+
+    -- lua_rawseti(idx,n)       : 用于为数组中指定元素赋值
+    备注：跟lua_setfield的相似点在于table/array的索引都来自入参;
+          跟lua_rawset的相似点在于都不会触发__newindex元方法 
+
+    -- lua_setmetatable(objindex)   :将栈顶的table弹出，然后将其设置为指定索引objindex的值的元表 
+
+
+PS: 以上API笔记基于"Lua 5.1.5"版本，从"Lua 5.2"开始，CAPI有增删变化，后续追加

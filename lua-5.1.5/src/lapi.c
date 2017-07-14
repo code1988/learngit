@@ -596,6 +596,10 @@ LUA_API void lua_pushboolean (lua_State *L, int b) {
 }
 
 /* 将一个C指针压栈
+ *
+ * 备注：lightuserdata表示一个指针，在lua中就是一个整型值;
+ *       lightuserdata没有自己的元表；
+ *       只要指针指向的地址相同，两个lightuserdata就相等
  */
 LUA_API void lua_pushlightuserdata (lua_State *L, void *p) {
   lua_lock(L);
@@ -688,7 +692,7 @@ LUA_API void lua_createtable (lua_State *L, int narray, int nrec) {
   lua_unlock(L);
 }
 
-
+// 获取索引objindex处的值的元表
 LUA_API int lua_getmetatable (lua_State *L, int objindex) {
   const TValue *obj;
   Table *mt = NULL;
@@ -753,7 +757,7 @@ LUA_API void lua_getfenv (lua_State *L, int idx) {
 /* 顾名思义，本函数做了一个等价于"t[k] = v"的操作，本函数可能会触发__newindex元方法
  *
  * 备注：t是指定索引idx处的值，v是栈顶(-1)处的值，k是栈顶之下(-2)那个值
- *       本函数运行中会弹出栈中的v和k值
+ *       本函数执行过程中会弹出栈中的v和k值
  */
 LUA_API void lua_settable (lua_State *L, int idx) {
   StkId t;
@@ -804,9 +808,11 @@ LUA_API void lua_rawset (lua_State *L, int idx) {
   lua_unlock(L);
 }
 
-/* 类似lua_rawset，做了一个等价于"t[n] = v"的操作，区别在于本函数只专门用于操作数组
- *
- * 备注：t是指定索引idx处的值，n是元素在数组中的索引，v是栈顶(-1)处的值
+/* 本函数用于为数组中指定元素赋值，类似"t[n] = v"
+ * 
+ * 备注：t是指定索引idx处的值，n是元素在数组中的索引，v是栈顶(-1)处的值;
+ *       跟lua_setfield的相似点在于table/array的索引都来自入参;
+ *       跟lua_rawset的相似点在于都不会触发__newindex元方法
  */
 LUA_API void lua_rawseti (lua_State *L, int idx, int n) {
   StkId o;
@@ -1159,7 +1165,11 @@ LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud) {
   lua_unlock(L);
 }
 
-/* 分配一块size大小的内存，并将其地址作为userdata压入堆栈，同时返回这个地址
+/* 分配一块size大小的内存，并将其地址作为完整的userdata压入堆栈，同时返回这个地址
+ *
+ * 备注：完整的userdata代表一块内存，在lua中被表示为一个对象(类似table);
+ *       完整的userdata有自己的元表；
+ *       一个完整的userdata只和自己相等
  */
 LUA_API void *lua_newuserdata (lua_State *L, size_t size) {
   Udata *u;
