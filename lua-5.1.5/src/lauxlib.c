@@ -589,7 +589,7 @@ static int errfile (lua_State *L, const char *what, int fnameindex) {
   return LUA_ERRFILE;
 }
 
-/* 加载lua程序文件
+/* 加载程序文件中的lua代码块
  * @filename    - 带路径的lua程序文件名
  */
 LUALIB_API int luaL_loadfile (lua_State *L, const char *filename) {
@@ -648,7 +648,11 @@ static const char *getS (lua_State *L, void *ud, size_t *size) {
   return ls->s;
 }
 
-
+/* 加载缓冲中的lua代码块
+ * @buff    - 指向缓冲
+ * @size    - 缓冲大小
+ * @name    - 作为代码块的名称
+ */
 LUALIB_API int luaL_loadbuffer (lua_State *L, const char *buff, size_t size,
                                 const char *name) {
   LoadS ls;
@@ -657,7 +661,9 @@ LUALIB_API int luaL_loadbuffer (lua_State *L, const char *buff, size_t size,
   return lua_load(L, getS, &ls, name);
 }
 
-
+/* 加载字符串中的lua代码块，显然就是简单封装了luaL_loadbuffer
+ * @s   - 指向字符串，同时也作为代码块的名称
+ */
 LUALIB_API int (luaL_loadstring) (lua_State *L, const char *s) {
   return luaL_loadbuffer(L, s, strlen(s), s);
 }

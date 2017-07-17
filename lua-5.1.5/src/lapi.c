@@ -1000,7 +1000,9 @@ static void f_Ccall (lua_State *L, void *ud) {
   luaD_call(L, L->top - 2, 0);
 }
 
-
+/* 以保护模式调用C函数func
+ * @ud  - C指针，对应lua中的light userdata，作为func的唯一入参
+ */
 LUA_API int lua_cpcall (lua_State *L, lua_CFunction func, void *ud) {
   struct CCallS c;
   int status;
