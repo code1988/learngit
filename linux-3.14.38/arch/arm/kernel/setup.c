@@ -81,12 +81,12 @@ extern void setup_dma_zone(const struct machine_desc *desc);
 
 unsigned int processor_id;
 EXPORT_SYMBOL(processor_id);
-unsigned int __machine_arch_type __read_mostly;
+unsigned int __machine_arch_type __read_mostly; // 保存了machine type ID，由bootloader通过r1寄存器传递给kernel
 EXPORT_SYMBOL(__machine_arch_type);
 unsigned int cacheid __read_mostly;
 EXPORT_SYMBOL(cacheid);
 
-unsigned int __atags_pointer __initdata;
+unsigned int __atags_pointer __initdata;        // 保存了atags或dtb的地址，由bootloader通过r2寄存器传递给kernel
 
 unsigned int system_rev;
 EXPORT_SYMBOL(system_rev);
@@ -465,7 +465,7 @@ void notrace cpu_init(void)
 #endif
 }
 
-u32 __cpu_logical_map[NR_CPUS] = { [0 ... NR_CPUS-1] = MPIDR_INVALID };
+u32 __cpu_logical_map[NR_CPUS] = { [0 ... NR_CPUS-1] = MPIDR_INVALID }; // cpu的映射表，通过设备树中cpus node初始化
 
 void __init smp_setup_processor_id(void)
 {
@@ -875,12 +875,19 @@ void __init hyp_mode_check(void)
 #endif
 }
 
+/* 本函数跟体系结构相关，具体编译哪个体系的setup_arch函数，由顶层Makefile中的ARCH变量决定 
+ *
+ * 备注： 本函数会在在start_kernel中被调用到
+ */
 void __init setup_arch(char **cmdline_p)
 {
 	const struct machine_desc *mdesc;
 
 	setup_processor();
+
+    // 首先尝试使用devict tree的方式来匹配最佳machine描述符
 	mdesc = setup_machine_fdt(__atags_pointer);
+    // 如果失败则用传统的方式来匹配最佳machine描述符
 	if (!mdesc)
 		mdesc = setup_machine_tags(__atags_pointer, __machine_arch_type);
 	machine_desc = mdesc;
@@ -913,8 +920,10 @@ void __init setup_arch(char **cmdline_p)
 	if (mdesc->restart)
 		arm_pm_restart = mdesc->restart;
 
+    // 真正对dtb文件进行解析，将dtb转换成device_node的树状结构
 	unflatten_device_tree();
 
+    // 对设备树中cpus node的处理
 	arm_dt_init_cpu_maps();
 	psci_init();
 #ifdef CONFIG_SMP

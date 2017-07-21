@@ -509,6 +509,7 @@ asmlinkage void __init start_kernel(void)
 	boot_cpu_init();
 	page_address_init();
 	pr_notice("%s", linux_banner);
+    // 板卡总的初始化，主要是解析传入的dtb/atags
 	setup_arch(&command_line);
 	mm_init_owner(&init_mm, &init_task);
 	mm_init_cpumask(&init_mm);
@@ -559,6 +560,7 @@ asmlinkage void __init start_kernel(void)
 	radix_tree_init();
 	/* init some links before init_ISA_irqs() */
 	early_irq_init();
+    // 板卡中断初始化
 	init_IRQ();
 	tick_init();
 	init_timers();

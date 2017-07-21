@@ -67,6 +67,7 @@ void __init arm_dt_memblock_reserve(void)
  * arm_dt_init_cpu_maps - Function retrieves cpu nodes from the device tree
  * and builds the cpu logical map array containing MPIDR values related to
  * logical cpus
+ * 对设备树中cpus node的处理
  *
  * Updates the cpu possible mask with the number of parsed cpu nodes
  */
@@ -84,14 +85,17 @@ void __init arm_dt_init_cpu_maps(void)
 
 	u32 tmp_map[NR_CPUS] = { [0 ... NR_CPUS-1] = MPIDR_INVALID };
 	bool bootcpu_valid = false;
+    // 查找cpus node对应的device_node结构
 	cpus = of_find_node_by_path("/cpus");
 
 	if (!cpus)
 		return;
 
+    // 遍历cpus node下的所有子cpu node
 	for_each_child_of_node(cpus, cpu) {
 		u32 hwid;
 
+        // 过滤掉device_type属性值不是"cpu"的node
 		if (of_node_cmp(cpu->type, "cpu"))
 			continue;
 
@@ -100,6 +104,7 @@ void __init arm_dt_init_cpu_maps(void)
 		 * A device tree containing CPU nodes with missing "reg"
 		 * properties is considered invalid to build the
 		 * cpu_logical_map.
+         * 获取属性reg的值，该属性值必须存在
 		 */
 		if (of_property_read_u32(cpu, "reg", &hwid)) {
 			pr_debug(" * %s missing reg property\n",
@@ -161,6 +166,7 @@ void __init arm_dt_init_cpu_maps(void)
 	 * Since the boot CPU node contains proper data, and all nodes have
 	 * a reg property, the DT CPU list can be considered valid and the
 	 * logical map created in smp_setup_processor_id() can be overridden
+     * 根据reg信息设置每个cpu的映射关系数组
 	 */
 	for (i = 0; i < cpuidx; i++) {
 		set_cpu_possible(i, true);
@@ -174,6 +180,9 @@ bool arch_match_cpu_phys_id(int cpu, u64 phys_id)
 	return phys_id == cpu_logical_map(cpu);
 }
 
+/* 不断从machine描述符列表中获取下一个machine描述符的dt_compat成员
+ * @match - 用来记录下一个machine描述符的dt_compat
+ */
 static const void * __init arch_get_next_mach(const char *const **match)
 {
 	static const struct machine_desc *mdesc = __arch_info_begin;
@@ -189,7 +198,8 @@ static const void * __init arch_get_next_mach(const char *const **match)
 
 /**
  * setup_machine_fdt - Machine setup when an dtb was passed to the kernel
- * @dt_phys: physical address of dt blob
+ * 使用devict tree的方式来匹配最佳machine描述符
+ * @dt_phys: physical address of dt blob		dtb的物理地址
  *
  * If a dtb was passed to the kernel in r2, then use it to choose the
  * correct machine_desc and to setup the system.
@@ -205,9 +215,11 @@ const struct machine_desc * __init setup_machine_fdt(unsigned int dt_phys)
 	mdesc_best = &__mach_desc_GENERIC_DT;
 #endif
 
+    // 对于有效的dtb物理地址，这里首先会对dtb进行初步扫描
 	if (!dt_phys || !early_init_dt_scan(phys_to_virt(dt_phys)))
 		return NULL;
 
+    // 遍历machine描述符列表，找到最合适的那个machine描述符
 	mdesc = of_flat_dt_match_machine(mdesc_best, arch_get_next_mach);
 
 	if (!mdesc) {
@@ -230,7 +242,9 @@ const struct machine_desc * __init setup_machine_fdt(unsigned int dt_phys)
 		dump_machine_table(); /* does not return */
 	}
 
-	/* Change machine number to match the mdesc we're using */
+	/* Change machine number to match the mdesc we're using 
+     * 记录下匹配到的machine type ID
+     * */
 	__machine_arch_type = mdesc->nr;
 
 	return mdesc;

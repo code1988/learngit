@@ -30,7 +30,7 @@
 
 LIST_HEAD(aliases_lookup);
 
-struct device_node *of_allnodes;
+struct device_node *of_allnodes;    // 指向设备树的root node
 EXPORT_SYMBOL(of_allnodes);
 struct device_node *of_chosen;
 struct device_node *of_aliases;
@@ -624,6 +624,7 @@ EXPORT_SYMBOL(of_get_child_by_name);
 
 /**
  *	of_find_node_by_path - Find a node matching a full OF path
+ *	根据完全路径查找对应的device_node
  *	@path:	The full path to match
  *
  *	Returns a node pointer with refcount incremented, use

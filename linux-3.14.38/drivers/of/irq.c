@@ -454,6 +454,7 @@ struct intc_desc {
 
 /**
  * of_irq_init - Scan and init matching interrupt controllers in DT
+ * 遍历设备树，找到匹配的irqchip，然后初始化
  * @matches: 0 terminated array of nodes to match and init function to call
  *
  * This function scans the device tree for matching interrupt controller nodes,
@@ -468,6 +469,7 @@ void __init of_irq_init(const struct of_device_id *matches)
 	INIT_LIST_HEAD(&intc_desc_list);
 	INIT_LIST_HEAD(&intc_parent_list);
 
+    // 遍历所有的device_node，寻找定义了interrupt-controller属性的node
 	for_each_matching_node(np, matches) {
 		if (!of_find_property(np, "interrupt-controller", NULL) ||
 				!of_device_is_available(np))

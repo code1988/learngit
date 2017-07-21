@@ -432,15 +432,16 @@ void of_fdt_unflatten_tree(unsigned long *blob,
 EXPORT_SYMBOL_GPL(of_fdt_unflatten_tree);
 
 /* Everything below here references initial_boot_params directly. */
-int __initdata dt_root_addr_cells;
-int __initdata dt_root_size_cells;
+int __initdata dt_root_addr_cells;  // 保存了root node中#address-cells的值
+int __initdata dt_root_size_cells;  // 保存了root node中#size-cells的值
 
-struct boot_param_header *initial_boot_params;
+struct boot_param_header *initial_boot_params;      // 指向dtb的头
 
 #ifdef CONFIG_OF_EARLY_FLATTREE
 
 /**
  * of_scan_flat_dt - scan flattened tree blob and call callback on each.
+ * 扫描整个设备树，并执行回调函数it
  * @it: callback function
  * @data: context data pointer
  *
@@ -618,6 +619,11 @@ int __init of_scan_flat_dt_by_path(const char *path,
 		return ret;
 }
 
+/* 从dtb中获取板卡的型号名
+ *
+ * 备注：板卡的型号名记录在root节点的"model"属性中
+ *       如果"model"属性不存在，则改从"compatible"属性中获取
+ */
 const char * __init of_flat_dt_get_machine_name(void)
 {
 	const char *name;
@@ -631,6 +637,7 @@ const char * __init of_flat_dt_get_machine_name(void)
 
 /**
  * of_flat_dt_match_machine - Iterate match tables to find matching machine.
+ * 遍历machine描述符列表，找到最合适的那个machine描述符
  *
  * @default_match: A machine specific ptr to return in case of no match.
  * @get_next_compat: callback function to return next compatible match table.
@@ -866,27 +873,40 @@ void * __init __weak early_init_dt_alloc_memory_arch(u64 size, u64 align)
 }
 #endif
 
+/* 对dtb进行了初步的扫描操作
+ * @params - 指向dtb的物理地址
+ */
 bool __init early_init_dt_scan(void *params)
 {
 	if (!params)
 		return false;
 
-	/* Setup flat device-tree pointer */
+	/* Setup flat device-tree pointer 
+     * 记录dtb的头
+     * */
 	initial_boot_params = params;
 
-	/* check device tree validity */
+	/* check device tree validity 
+     * 通过检查该设备树中的魔术字确定设备树是否有效
+     * */
 	if (be32_to_cpu(initial_boot_params->magic) != OF_DT_HEADER) {
 		initial_boot_params = NULL;
 		return false;
 	}
 
-	/* Retrieve various information from the /chosen node */
+	/* Retrieve various information from the /chosen node 
+     * 扫描choosen node，保存运行时参数(bootargs)到boot_command_line
+     * */
 	of_scan_flat_dt(early_init_dt_scan_chosen, boot_command_line);
 
-	/* Initialize {size,address}-cells info */
+	/* Initialize {size,address}-cells info 
+     * 扫描root node，保存#address-cells的值到dt_root_addr_cells，保存#size-cells的值到dt_root_size_cells
+     * */
 	of_scan_flat_dt(early_init_dt_scan_root, NULL);
 
-	/* Setup memory, calling early_init_dt_add_memory_arch */
+	/* Setup memory, calling early_init_dt_add_memory_arch 
+     * 扫描memory node，根据其中的参数对内存进行初始化
+     * */
 	of_scan_flat_dt(early_init_dt_scan_memory, NULL);
 
 	return true;
@@ -894,6 +914,7 @@ bool __init early_init_dt_scan(void *params)
 
 /**
  * unflatten_device_tree - create tree of device_nodes from flat blob
+ * 将dtb转换成由device_node组成的树状结构(同时也会将每个device_node添加到of_allnodes)
  *
  * unflattens the device-tree passed by the firmware, creating the
  * tree of struct device_node. It also fills the "name" and "type"

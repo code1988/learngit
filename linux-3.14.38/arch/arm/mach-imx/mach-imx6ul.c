@@ -82,6 +82,7 @@ static void __init imx6ul_init_machine(void)
 	imx6ul_pm_init();
 }
 
+// imx6ul中断控制器初始化
 static void __init imx6ul_init_irq(void)
 {
 	imx_init_revision_from_anatop();
@@ -90,6 +91,7 @@ static void __init imx6ul_init_irq(void)
 	irqchip_init();
 }
 
+// 定义了imx6ul平台支持的compatible字符串列表，用于跟dtb的root node的compatible字符串列表匹配
 static const char *imx6ul_dt_compat[] __initdata = {
 	"fsl,imx6ul",
 	NULL,
@@ -111,6 +113,7 @@ static void __init imx6ul_map_io(void)
 #endif
 }
 
+// 定义了一个imx6ul平台的machine描述符
 DT_MACHINE_START(IMX6UL, "Freescale i.MX6 UltraLite (Device Tree)")
 	.map_io		= imx6ul_map_io,
 	.init_irq	= imx6ul_init_irq,

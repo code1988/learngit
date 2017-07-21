@@ -43,21 +43,22 @@ struct property {
 struct of_irq_controller;
 #endif
 
+// 描述了设备树的一个节点
 struct device_node {
-	const char *name;
-	const char *type;
+	const char *name;   // 节点名
+	const char *type;   // 对应device_type属性值
 	phandle phandle;
-	const char *full_name;
+	const char *full_name;  // 指向该节点的完整路径
 
-	struct	property *properties;
+	struct	property *properties;   // 指向该节点的属性列表
 	struct	property *deadprops;	/* removed properties */
-	struct	device_node *parent;
+	struct	device_node *parent;    // 通过parent、child、sibling这3个字段，将所有的节点连接起来，组成了一个完整的设备树
 	struct	device_node *child;
 	struct	device_node *sibling;
 	struct	device_node *next;	/* next device of same type */
 	struct	device_node *allnext;	/* next in list of all nodes */
-	struct	proc_dir_entry *pde;	/* this node's proc directory */
-	struct	kref kref;
+	struct	proc_dir_entry *pde;	/* this node's proc directory 反映在proc文件系统中的节点*/
+	struct	kref kref;              // 该节点的引用计数
 	unsigned long _flags;
 	void	*data;
 #if defined(CONFIG_SPARC)

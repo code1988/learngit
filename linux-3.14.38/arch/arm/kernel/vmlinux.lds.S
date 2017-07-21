@@ -173,6 +173,7 @@ SECTIONS
 	.init.proc.info : {
 		ARM_CPU_DISCARD(PROC_INFO)
 	}
+    /* 这个段记录了一张machine描述符列表*/
 	.init.arch.info : {
 		__arch_info_begin = .;
 		*(.arch.info.init)

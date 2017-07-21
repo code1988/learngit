@@ -40,9 +40,11 @@
  * passing it here instead of in the device-tree itself greatly simplifies
  * the job of everybody. It's just a list of u64 pairs (base/size) that
  * ends when size is 0
+ *
+ * 这个结构体定义了dtb的头
  */
 struct boot_param_header {
-	__be32	magic;			/* magic word OF_DT_HEADER */
+	__be32	magic;			/* magic word OF_DT_HEADER  dtb魔术字，kernel用它来识别bootloader传入的是dtb还是tag list*/
 	__be32	totalsize;		/* total size of DT block */
 	__be32	off_dt_struct;		/* offset to structure */
 	__be32	off_dt_strings;		/* offset to strings */
