@@ -693,6 +693,7 @@ static int __init_or_module do_one_initcall_debug(initcall_t fn)
 	return ret;
 }
 
+// 执行一个注册在.initcall段中的函数指针
 int __init_or_module do_one_initcall(initcall_t fn)
 {
 	int count = preempt_count();
@@ -731,6 +732,7 @@ extern initcall_t __initcall6_start[];
 extern initcall_t __initcall7_start[];
 extern initcall_t __initcall_end[];
 
+// 这张总表记录了.initcall段中0~7号优先级所在的地址，并且，每个优先级地址上又是一张元素为initcall_t的表
 static initcall_t *initcall_levels[] __initdata = {
 	__initcall0_start,
 	__initcall1_start,
@@ -743,7 +745,10 @@ static initcall_t *initcall_levels[] __initdata = {
 	__initcall_end,
 };
 
-/* Keep these in sync with initcalls in include/linux/init.h */
+/* Keep these in sync with initcalls in include/linux/init.h 
+ *
+ * 这里的8个名字依次对应.initcall的8个优先级
+ * */
 static char *initcall_level_names[] __initdata = {
 	"early",
 	"core",
@@ -755,6 +760,7 @@ static char *initcall_level_names[] __initdata = {
 	"late",
 };
 
+// 执行.initcall段中优先级为level区域注册的函数指针
 static void __init do_initcall_level(int level)
 {
 	extern const struct kernel_param __start___param[], __stop___param[];
@@ -767,10 +773,12 @@ static void __init do_initcall_level(int level)
 		   level, level,
 		   &repair_env_string);
 
+    // 遍历level优先级区域注册的所有函数指针并执行
 	for (fn = initcall_levels[level]; fn < initcall_levels[level+1]; fn++)
 		do_one_initcall(*fn);
 }
 
+// 按优先级顺序执行.initcall段中注册的函数指针，包含了具体板卡的初始化
 static void __init do_initcalls(void)
 {
 	int level;
@@ -779,10 +787,11 @@ static void __init do_initcalls(void)
 		do_initcall_level(level);
 }
 
-/*
+/* 执行具体的板卡初始化操作
  * Ok, the machine is now initialized. None of the devices
  * have been touched yet, but the CPU subsystem is up and
  * running, and memory and process management works.
+ * 在此之前，CPU、内存、进程调度已经初始化完毕并开始运行，运行板卡具体初始化的环境已经具备
  *
  * Now we can finally start doing some real work..
  */
@@ -795,6 +804,7 @@ static void __init do_basic_setup(void)
 	init_irq_proc();
 	do_ctors();
 	usermodehelper_enable();
+    // 执行.initcall段中注册的函数指针，包含了具体板卡的初始化
 	do_initcalls();
 	random_int_secret_init();
 }
@@ -847,6 +857,7 @@ static int __ref kernel_init(void *unused)
 {
 	int ret;
 
+    // 在创建init进程前做一些准备操作
 	kernel_init_freeable();
 	/* need to finish all async __init code before freeing the memory */
 	async_synchronize_full();
@@ -889,6 +900,7 @@ static int __ref kernel_init(void *unused)
 	      "See Linux Documentation/init.txt for guidance.");
 }
 
+// 在创建init进程前做一些准备操作
 static noinline void __init kernel_init_freeable(void)
 {
 	/*
@@ -918,6 +930,7 @@ static noinline void __init kernel_init_freeable(void)
 	smp_init();
 	sched_init_smp();
 
+    // 执行具体的板卡初始化操作
 	do_basic_setup();
 
 	/* Open the /dev/console on the rootfs, this should never fail */

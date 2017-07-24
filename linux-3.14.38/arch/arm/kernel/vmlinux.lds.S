@@ -196,6 +196,7 @@ SECTIONS
 		*(.pv_table)
 		__pv_table_end = .;
 	}
+    /* 这个段记录了带__initdata的变量*/
 	.init.data : {
 #ifndef CONFIG_XIP_KERNEL
 		INIT_DATA
@@ -207,6 +208,7 @@ SECTIONS
 		INIT_RAM_FS
 	}
 #ifndef CONFIG_XIP_KERNEL
+    /* 这个段记录了带__exitdata的变量*/
 	.exit.data : {
 		ARM_EXIT_KEEP(EXIT_DATA)
 	}

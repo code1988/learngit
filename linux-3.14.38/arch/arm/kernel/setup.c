@@ -141,7 +141,7 @@ EXPORT_SYMBOL(elf_platform);
 static const char *cpu_name;
 static const char *machine_name;
 static char __initdata cmd_line[COMMAND_LINE_SIZE];
-const struct machine_desc *machine_desc __initdata;
+const struct machine_desc *machine_desc __initdata;     // 指向匹配到的machine描述符
 
 static union { char c[4]; unsigned long l; } endian_test __initdata = { { 'l', '?', '?', 'b' } };
 #define ENDIANNESS ((char)endian_test.l)
@@ -776,6 +776,10 @@ struct screen_info screen_info = {
 };
 #endif
 
+/* 执行用户自定义的板卡初始化函数
+ *
+ * 备注：通过arch_initcall接口，本函数会被注册到.initcall段的指定优先级区域
+ */
 static int __init customize_machine(void)
 {
 	/*

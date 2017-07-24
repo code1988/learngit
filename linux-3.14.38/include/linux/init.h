@@ -38,8 +38,14 @@
  */
 
 /* These are for everybody (although not all archs will actually
-   discard it in modules) */
-#define __init		__section(.init.text) __cold notrace
+   discard it in modules) 
+   ".init.text"段是".text"段中的一块细分区域
+   ".init.data"段是".data"段中的一块细分区域
+   ".init.rodata"段是".rodata"段中的一块细分区域
+   ".exit.data"段是".data"段中的一块细分区域
+   ".init"或".exit"前缀的段只会在启动阶段被调用到，当初时候结束后就会释放这部分内存(只是猜测)
+*/
+#define __init		__section(.init.text) __cold notrace    
 #define __initdata	__section(.init.data)
 #define __initconst	__constsection(.init.rodata)
 #define __exitdata	__section(.exit.data)
@@ -159,7 +165,7 @@ extern bool initcall_debug;
 
 #endif
   
-#ifndef MODULE
+#ifndef MODULE  // 以下的内容都是针对非模块(即要编译到内核image中的子系统)的定义
 
 #ifndef __ASSEMBLY__
 
@@ -168,6 +174,9 @@ extern bool initcall_debug;
  * by link order. 
  * For backwards compatibility, initcall() puts the call in 
  * the device init subsection.
+ * 可以看出，.initcall段是.init段的一块细分区域，区域中存放的是函数指;
+ * linux初始化阶段调用do_initcalls会依次执行该段的函数;
+ * .initcall段分为0～7这8个优先级，其中0号优先级最高，7号的最低，初始化时便按照优先级从高到底执行
  *
  * The `id' arg to __define_initcall() is needed so that multiple initcalls
  * can point at the same handler without causing duplicate-symbol build errors.
@@ -177,6 +186,7 @@ extern bool initcall_debug;
 	static initcall_t __initcall_##fn##id __used \
 	__attribute__((__section__(".initcall" #id ".init"))) = fn
 
+// 以下这组宏就是用于在.initcall段中注册函数指针的接口
 /*
  * Early initcalls run before initializing SMP.
  *
@@ -277,7 +287,7 @@ void __init parse_early_options(char *cmdline);
  */
 #define module_exit(x)	__exitcall(x);
 
-#else /* MODULE */
+#else /* MODULE */  // 以下的内容都是针对模块(即不会被编译进内核image中)的定义
 
 /* Don't use these in loadable modules, but some people do... */
 #define early_initcall(fn)		module_init(fn)

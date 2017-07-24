@@ -64,6 +64,7 @@ static inline void imx6ul_enet_init(void)
 	imx6_enet_mac_init("fsl,imx6ul-fec");
 }
 
+// 将设备树中定义的各种platform device加入到系统中
 static void __init imx6ul_init_machine(void)
 {
 	struct device *parent;

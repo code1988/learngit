@@ -448,6 +448,7 @@ EXPORT_SYMBOL(of_platform_bus_probe);
 
 /**
  * of_platform_populate() - Populate platform_devices from device tree data
+ * 从设备树中解析出来每个设备节点信息，填充到结构中
  * @root: parent of the first level to probe or NULL for the root of the tree
  * @matches: match table, NULL to use the default
  * @lookup: auxdata table for matching id and platform_data with device nodes
