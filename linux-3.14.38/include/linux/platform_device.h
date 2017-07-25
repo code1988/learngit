@@ -19,11 +19,12 @@
 
 struct mfd_cell;
 
+// 定义了platform设备模型
 struct platform_device {
 	const char	*name;
 	int		id;
 	bool		id_auto;
-	struct device	dev;
+	struct device	dev;    // 封装的linux基本设备结构
 	u32		num_resources;
 	struct resource	*resource;
 
@@ -170,13 +171,14 @@ extern int platform_device_add(struct platform_device *pdev);
 extern void platform_device_del(struct platform_device *pdev);
 extern void platform_device_put(struct platform_device *pdev);
 
+// 定义了platform驱动模型
 struct platform_driver {
 	int (*probe)(struct platform_device *);
 	int (*remove)(struct platform_device *);
 	void (*shutdown)(struct platform_device *);
 	int (*suspend)(struct platform_device *, pm_message_t state);
 	int (*resume)(struct platform_device *);
-	struct device_driver driver;
+	struct device_driver driver;    // 封装的linux基本设备驱动结构
 	const struct platform_device_id *id_table;
 	bool prevent_deferred_probe;
 };

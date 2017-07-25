@@ -132,7 +132,9 @@ void of_device_make_bus_id(struct device *dev)
 
 /**
  * of_device_alloc - Allocate and initialize an of_device
- * @np: device node to assign to device
+ * 分配platform_device结构的内存，并做了一部分初始化
+ *
+ * @np: device node to assign to device 需要分配platform_device结构的node
  * @bus_id: Name to assign to the device.  May be null to use default name.
  * @parent: Parent device.
  */
@@ -190,8 +192,9 @@ EXPORT_SYMBOL(of_device_alloc);
 
 /**
  * of_platform_device_create_pdata - Alloc, initialize and register an of_device
- * @np: pointer to node to create device for
- * @bus_id: name to assign device
+ * 创建、初始化、注册一个platform设备
+ * @np: pointer to node to create device for 指向需要创建platform设备的节点
+ * @bus_id: name to assign device 总线名
  * @platform_data: pointer to populate platform_data pointer with
  * @parent: Linux device model parent device.
  *
@@ -206,9 +209,11 @@ static struct platform_device *of_platform_device_create_pdata(
 {
 	struct platform_device *dev;
 
+    // 检查"status"属性值，确保是使能的
 	if (!of_device_is_available(np))
 		return NULL;
 
+    // 分配platform_device结构的内存，并做了一部分初始化
 	dev = of_device_alloc(np, bus_id, parent);
 	if (!dev)
 		return NULL;
@@ -227,6 +232,7 @@ static struct platform_device *of_platform_device_create_pdata(
 	 * to do such, possibly using a device notifier
 	 */
 
+    // 往platform总线中添加该设备
 	if (of_device_add(dev) != 0) {
 		platform_device_put(dev);
 		return NULL;
@@ -325,6 +331,7 @@ static struct amba_device *of_amba_device_create(struct device_node *node,
 
 /**
  * of_devname_lookup() - Given a device node, lookup the preferred Linux name
+ * 基于指定的node，在传入的lookup表中查找匹配的项
  */
 static const struct of_dev_auxdata *of_dev_lookup(const struct of_dev_auxdata *lookup,
 				 struct device_node *np)
@@ -349,11 +356,13 @@ static const struct of_dev_auxdata *of_dev_lookup(const struct of_dev_auxdata *l
 
 /**
  * of_platform_bus_create() - Create a device for a node and its children.
- * @bus: device node of the bus to instantiate
- * @matches: match table for bus nodes
- * @lookup: auxdata table for matching id and platform_data with device nodes
+ * 为指定node及其子node递归创建对应的platform_device结构
+ *
+ * @bus: device node of the bus to instantiate 要执行递归操作的起始device_node结构
+ * @matches: match table for bus nodes  要匹配的列表
+ * @lookup: auxdata table for matching id and platform_data with device nodes   附属数据
  * @parent: parent for new device, or NULL for top level.
- * @strict: require compatible property
+ * @strict: require compatible property 是否要求完全匹配
  *
  * Creates a platform_device for the provided device_node, and optionally
  * recursively create devices for all the child nodes.
@@ -370,19 +379,27 @@ static int of_platform_bus_create(struct device_node *bus,
 	void *platform_data = NULL;
 	int rc = 0;
 
-	/* Make sure it has a compatible property */
+	/* Make sure it has a compatible property 
+     * 要求完全匹配时，必须确保该node中存在"compatible"属性
+     * */
 	if (strict && (!of_get_property(bus, "compatible", NULL))) {
 		pr_debug("%s() - skipping %s, no compatible prop\n",
 			 __func__, bus->full_name);
 		return 0;
 	}
 
+    /* 基于该node，在传入的附加数据表中查找匹配的项
+     * 如果找到，那么就用附加数据中的静态定义的内容
+     */
 	auxdata = of_dev_lookup(lookup, bus);
 	if (auxdata) {
 		bus_id = auxdata->name;
 		platform_data = auxdata->platform_data;
 	}
 
+    /* 判断该node的"compatible"属性中是否包含了字符串"arm,primecell"
+     * 如果包含了，则在这里向AMBA总线上增加一个AMBA设备
+     */
 	if (of_device_is_compatible(bus, "arm,primecell")) {
 		/*
 		 * Don't return an error here to keep compatibility with older
@@ -392,10 +409,14 @@ static int of_platform_bus_create(struct device_node *bus,
 		return 0;
 	}
 
+    /* 到这里意味着该node没有包含"arm,primecell"属性值
+     * 以下就是具体往platform总线上增加一个platform设备
+     */
 	dev = of_platform_device_create_pdata(bus, bus_id, platform_data, parent);
 	if (!dev || !of_match_node(matches, bus))
 		return 0;
 
+    // 该node可能是一个桥设备，所以需要执行递归操作
 	for_each_child_of_node(bus, child) {
 		pr_debug("   create child: %s\n", child->full_name);
 		rc = of_platform_bus_create(child, matches, lookup, &dev->dev, strict);
@@ -448,8 +469,8 @@ EXPORT_SYMBOL(of_platform_bus_probe);
 
 /**
  * of_platform_populate() - Populate platform_devices from device tree data
- * 从设备树中解析出来每个设备节点信息，填充到结构中
- * @root: parent of the first level to probe or NULL for the root of the tree
+ * 从指定一级开始遍历设备树device_node结构，创建对应的platform_device结构
+ * @root: parent of the first level to probe or NULL for the root of the tree 指定开始遍历的device_node,NULL表示从root node开始
  * @matches: match table, NULL to use the default
  * @lookup: auxdata table for matching id and platform_data with device nodes
  * @parent: parent to hook devices from, NULL for toplevel
@@ -478,7 +499,9 @@ int of_platform_populate(struct device_node *root,
 	if (!root)
 		return -EINVAL;
 
+    // 从指定的root一级开始遍历所有的device_node
 	for_each_child_of_node(root, child) {
+        // 为每个child node创建对应的platform_device结构
 		rc = of_platform_bus_create(child, matches, lookup, parent, true);
 		if (rc)
 			break;

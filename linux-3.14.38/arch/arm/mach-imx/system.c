@@ -101,6 +101,7 @@ void __init mxc_arch_reset_init(void __iomem *base)
 	clk_prepare(wdog_clk);
 }
 
+// 看门狗初始化
 void __init mxc_arch_reset_init_dt(void)
 {
 	struct device_node *np = NULL;

@@ -68,6 +68,7 @@ extern void bus_remove_file(struct bus_type *, struct bus_attribute *);
 
 /**
  * struct bus_type - The bus type of the device
+ * 定义了linux设备模型中总线的基本结构
  *
  * @name:	The name of the bus.
  * @dev_name:	Used for subsystems to enumerate devices like ("foo%u", dev->id).
@@ -205,6 +206,9 @@ extern struct klist *bus_get_device_klist(struct bus_type *bus);
 
 /**
  * struct device_driver - The basic device driver structure
+ * 定义了linux设备模型中设备驱动的基本结构
+ *
+ * 备注：实际驱动开发中基本不会直接使用该结构，因为内核在之上又封装了一层，如platform_driver等
  * @name:	Name of the device driver.
  * @bus:	The bus which the device of this driver belongs to.
  * @owner:	The module owner.
@@ -664,10 +668,14 @@ struct acpi_dev_node {
 
 /**
  * struct device - The basic device structure
+ * 定义了linux设备模型中设备的基本结构
+ *
+ * 备注：实际驱动开发中基本不会直接使用该结构，因为内核在之上又封装了一层，如platform_device等
  * @parent:	The device's "parent" device, the device to which it is attached.
  * 		In most cases, a parent device is some sort of bus or host
  * 		controller. If parent is NULL, the device, is a top-level device,
  * 		which is not usually what you want.
+ * 		该设备的父设备
  * @p:		Holds the private data of the driver core portions of the device.
  * 		See the comment of the struct device_private for detail.
  * @kobj:	A top-level, abstract class from which other classes are derived.
@@ -851,6 +859,7 @@ static inline void dev_set_uevent_suppress(struct device *dev, int val)
 	dev->kobj.uevent_suppress = val;
 }
 
+// 判断设备是否已经注册
 static inline int device_is_registered(struct device *dev)
 {
 	return dev->kobj.state_in_sysfs;

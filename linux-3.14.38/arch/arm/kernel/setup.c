@@ -787,6 +787,9 @@ static int __init customize_machine(void)
 	 * On DT based machines, we fall back to populating the
 	 * machine from the device tree, if no callback is provided,
 	 * otherwise we would always need an init_machine callback.
+     *
+     * 如果板卡machine描述符中注册了init_machine回调，就在这里执行；
+     * 否则就直接遍历设备树中的node信息，来创建相应的platform设备
 	 */
 	if (machine_desc->init_machine)
 		machine_desc->init_machine();

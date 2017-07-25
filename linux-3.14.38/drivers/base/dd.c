@@ -192,6 +192,10 @@ static int deferred_probe_initcall(void)
 }
 late_initcall(deferred_probe_initcall);
 
+/* 将设备加入到驱动支持的设备链表中
+ *
+ * 备注：一个设备只需要一个驱动，而一个驱动可以支持多个设备
+ */
 static void driver_bound(struct device *dev)
 {
 	if (klist_node_attached(&dev->p->knode_driver)) {
@@ -275,6 +279,7 @@ EXPORT_SYMBOL_GPL(device_bind_driver);
 static atomic_t probe_count = ATOMIC_INIT(0);
 static DECLARE_WAIT_QUEUE_HEAD(probe_waitqueue);
 
+// 对匹配的设备和驱动真正执行绑定操作
 static int really_probe(struct device *dev, struct device_driver *drv)
 {
 	int ret = 0;
@@ -285,7 +290,7 @@ static int really_probe(struct device *dev, struct device_driver *drv)
 		 drv->bus->name, __func__, drv->name, dev_name(dev));
 	WARN_ON(!list_empty(&dev->devres_head));
 
-	dev->driver = drv;
+	dev->driver = drv;  // 将驱动接口跟设备绑定
 
 	/* If using pinctrl, bind pins now before probing */
 	ret = pinctrl_bind_pins(dev);
@@ -298,6 +303,9 @@ static int really_probe(struct device *dev, struct device_driver *drv)
 		goto probe_failed;
 	}
 
+    /* 如果总线注册了probe回调，则调用总线的probe;
+     * 否则就调用驱动的probe回调
+     */
 	if (dev->bus->probe) {
 		ret = dev->bus->probe(dev);
 		if (ret)
@@ -308,6 +316,7 @@ static int really_probe(struct device *dev, struct device_driver *drv)
 			goto probe_failed;
 	}
 
+    // 将设备加入到驱动支持的设备链表中
 	driver_bound(dev);
 	ret = 1;
 	pr_debug("bus: '%s': %s: bound device %s to driver %s\n",
@@ -376,6 +385,7 @@ EXPORT_SYMBOL_GPL(wait_for_device_probe);
 
 /**
  * driver_probe_device - attempt to bind device & driver together
+ * 尝试将设备和驱动绑定
  * @drv: driver to bind a device to
  * @dev: device to try to bind to the driver
  *
@@ -389,6 +399,7 @@ int driver_probe_device(struct device_driver *drv, struct device *dev)
 {
 	int ret = 0;
 
+    // 确保设备已经注册
 	if (!device_is_registered(dev))
 		return -ENODEV;
 
@@ -402,6 +413,7 @@ int driver_probe_device(struct device_driver *drv, struct device *dev)
 	return ret;
 }
 
+// 对总线中的每个driver跟设备进行匹配
 static int __device_attach(struct device_driver *drv, void *data)
 {
 	struct device *dev = data;
@@ -409,11 +421,13 @@ static int __device_attach(struct device_driver *drv, void *data)
 	if (!driver_match_device(drv, dev))
 		return 0;
 
+    // 到这里意味着匹配成功，调用驱动的probe回调
 	return driver_probe_device(drv, dev);
 }
 
 /**
  * device_attach - try to attach device to a driver.
+ * 尝试为新设备查找匹配的驱动
  * @dev: device.
  *
  * Walk the list of drivers that the bus has and call
@@ -431,7 +445,7 @@ int device_attach(struct device *dev)
 	int ret = 0;
 
 	device_lock(dev);
-	if (dev->driver) {
+	if (dev->driver) {  // 如果设备已经有驱动
 		if (klist_node_attached(&dev->p->knode_driver)) {
 			ret = 1;
 			goto out_unlock;
@@ -443,7 +457,8 @@ int device_attach(struct device *dev)
 			dev->driver = NULL;
 			ret = 0;
 		}
-	} else {
+	} else {    // 如果设备还没有驱动
+        // 遍历总线上的driver链表
 		ret = bus_for_each_drv(dev->bus, NULL, dev, __device_attach);
 		pm_request_idle(dev);
 	}

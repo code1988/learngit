@@ -430,6 +430,8 @@ static struct device_driver *next_driver(struct klist_iter *i)
 
 /**
  * bus_for_each_drv - driver iterator
+ * 遍历总线上的driver链表
+ *
  * @bus: bus we're dealing with.
  * @start: driver to start iterating on.
  * @data: data to pass to the callback.
@@ -541,6 +543,7 @@ out_put:
 
 /**
  * bus_probe_device - probe drivers for a new device
+ * 为新设备查找匹配的驱动
  * @dev: device to probe
  *
  * - Automatically probe for a driver if the bus allows it.
@@ -554,6 +557,7 @@ void bus_probe_device(struct device *dev)
 	if (!bus)
 		return;
 
+    // 如果设备所属的总线支持自动probe，则进入这里
 	if (bus->p->drivers_autoprobe) {
 		ret = device_attach(dev);
 		WARN_ON(ret < 0);

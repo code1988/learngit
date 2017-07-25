@@ -64,17 +64,19 @@ static inline void imx6ul_enet_init(void)
 	imx6_enet_mac_init("fsl,imx6ul-fec");
 }
 
-// 将设备树中定义的各种platform device加入到系统中
+// 将imx6ul设备树中定义的各种device node加入到系统中
 static void __init imx6ul_init_machine(void)
 {
 	struct device *parent;
 
+    // 看门狗初始化
 	mxc_arch_reset_init_dt();
 
 	parent = imx_soc_device_init();
 	if (parent == NULL)
 		pr_warn("failed to initialize soc device\n");
 
+    // 从root node开始遍历设备树device_node结构，创建对应的platform设备
 	of_platform_populate(NULL, of_default_bus_match_table,
 					NULL, parent);
 

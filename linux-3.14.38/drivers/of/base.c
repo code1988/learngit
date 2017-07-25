@@ -230,6 +230,8 @@ static const void *__of_get_property(const struct device_node *np,
 /*
  * Find a property with a given name for a given node
  * and return the value.
+ *
+ * 根据给定的属性名，在指定node中查找其对应的属性值
  */
 const void *of_get_property(const struct device_node *np, const char *name,
 			    int *lenp)
@@ -413,6 +415,7 @@ static int __of_device_is_compatible(const struct device_node *device,
 
 /** Checks if the given "compat" string matches one of the strings in
  * the device's "compatible" property
+ * 判断指定node的"compatible"属性中是否包含了字符串compat
  */
 int of_device_is_compatible(const struct device_node *device,
 		const char *compat)
@@ -478,6 +481,7 @@ static int __of_device_is_available(const struct device_node *device)
 
 /**
  *  of_device_is_available - check if a device is available for use
+ *  根据node中的"status"属性值，判断该设备是否是使能的
  *
  *  @device: Node to check for availability
  *

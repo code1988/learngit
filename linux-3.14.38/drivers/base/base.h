@@ -35,7 +35,7 @@ struct subsys_private {
 	struct klist klist_devices;
 	struct klist klist_drivers;
 	struct blocking_notifier_head bus_notifier;
-	unsigned int drivers_autoprobe:1;
+	unsigned int drivers_autoprobe:1;   // 用于控制是否在设备或驱动注册到总线上时，自动probe。默认为1,sysfs中可设
 	struct bus_type *bus;
 
 	struct kset glue_dirs;
