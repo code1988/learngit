@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2015 Freescale Semiconductor, Inc.
+ * 适用于imx6ul平台的GPIO驱动通用部分
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -296,6 +297,7 @@ static int imx6ul_pinctrl_probe(struct platform_device *pdev)
 	return imx_pinctrl_probe(pdev, &imx6ul_pinctrl_info);
 }
 
+// imx6ul平台隶属于platform总线的gpio驱动接口
 static struct platform_driver imx6ul_pinctrl_driver = {
 	.driver = {
 		.name = "imx6ul-pinctrl",

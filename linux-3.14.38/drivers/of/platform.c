@@ -484,6 +484,7 @@ EXPORT_SYMBOL(of_platform_bus_probe);
  *
  * New board support should be using this function instead of
  * of_platform_bus_probe().
+ * 新平台用本函数代替老的of_platform_bus_probe
  *
  * Returns 0 on success, < 0 on failure.
  */
@@ -501,7 +502,7 @@ int of_platform_populate(struct device_node *root,
 
     // 从指定的root一级开始遍历所有的device_node
 	for_each_child_of_node(root, child) {
-        // 为每个child node创建对应的platform_device结构
+        // 为每个child node创建对应的platform_device结构(使用完全匹配)
 		rc = of_platform_bus_create(child, matches, lookup, parent, true);
 		if (rc)
 			break;

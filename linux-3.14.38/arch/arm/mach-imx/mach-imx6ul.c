@@ -69,7 +69,7 @@ static void __init imx6ul_init_machine(void)
 {
 	struct device *parent;
 
-    // 看门狗初始化
+    // 看门狗初始化(imx6ul实际使用1号看门狗)
 	mxc_arch_reset_init_dt();
 
 	parent = imx_soc_device_init();

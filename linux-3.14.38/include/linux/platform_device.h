@@ -21,7 +21,7 @@ struct mfd_cell;
 
 // 定义了platform设备模型
 struct platform_device {
-	const char	*name;
+	const char	*name;      // 设备名
 	int		id;
 	bool		id_auto;
 	struct device	dev;    // 封装的linux基本设备结构
