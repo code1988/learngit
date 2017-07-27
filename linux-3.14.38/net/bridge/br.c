@@ -45,7 +45,7 @@ static const struct stp_proto br_stp_proto = {
 	.rcv	= br_stp_rcv,
 };
 
-// 网桥功能初始化
+// 网桥模块初始化
 static int __init br_init(void)
 {
 	int err;

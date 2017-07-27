@@ -51,7 +51,9 @@ struct net_device *alloc_etherdev_mqs(int sizeof_priv, unsigned int txqs,
 #define alloc_etherdev(sizeof_priv) alloc_etherdev_mq(sizeof_priv, 1)
 #define alloc_etherdev_mq(sizeof_priv, count) alloc_etherdev_mqs(sizeof_priv, count, count)
 
-/* Reserved Ethernet Addresses per IEEE 802.1Q */
+/* Reserved Ethernet Addresses per IEEE 802.1Q 
+ * 堪误：这是生成树的组播地址，ieee 802.1d
+ * */
 static const u8 eth_reserved_addr_base[ETH_ALEN] __aligned(2) =
 { 0x01, 0x80, 0xc2, 0x00, 0x00, 0x00 };
 

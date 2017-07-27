@@ -757,6 +757,7 @@ typedef u16 (*select_queue_fallback_t)(struct net_device *dev,
 
 /*
  * This structure defines the management hooks for network devices.
+ * 定义了管理网络设备的通用操作集合
  * The following hooks can be defined; unless noted otherwise, they are
  * optional and can be filled with a null pointer.
  *
@@ -1213,11 +1214,11 @@ struct net_device {
 	/* currently active device features */
 	netdev_features_t	features;   // 当前在该网络设备上已经使能的功能集合
 	/* user-changeable features */
-	netdev_features_t	hw_features;
+	netdev_features_t	hw_features;    // 用户态可修改的功能集合
 	/* user-requested features */
 	netdev_features_t	wanted_features;
 	/* mask of features inheritable by VLAN devices */
-	netdev_features_t	vlan_features;
+	netdev_features_t	vlan_features;  // 可以被vlan设备继承的功能集合
 	/* mask of features inherited by encapsulating devices
 	 * This field indicates what encapsulation offloads
 	 * the hardware is capable of doing, and drivers will
@@ -1279,7 +1280,7 @@ struct net_device {
 
 	/* Interface address info. */
 	unsigned char		perm_addr[MAX_ADDR_LEN]; /* permanent hw address */
-	unsigned char		addr_assign_type; /* hw address assignment type */
+	unsigned char		addr_assign_type; /* hw address assignment type 记录了该设备的mac地址是如何分配得到的*/
 	unsigned char		addr_len;	/* hardware address length	*/
 	unsigned short		neigh_priv_len;
 	unsigned short          dev_id;		/* Used to differentiate devices
@@ -1447,7 +1448,7 @@ struct net_device {
 	struct mrp_port __rcu	*mrp_port;
 
 	/* class/net/name entry */
-	struct device		dev;
+	struct device		dev;        // sysfs文件系统
 	/* space for optional device, statistics, and wireless sysfs groups */
 	const struct attribute_group *sysfs_groups[4];
 	/* space for optional per-rx queue attributes */
@@ -1628,6 +1629,7 @@ static inline void *netdev_priv(const struct net_device *dev)
 /* Set the sysfs device type for the network logical device to allow
  * fine-grained identification of different network device types. For
  * example Ethernet, Wirelss LAN, Bluetooth, WiMAX etc.
+ * 设置网络设备的细分类型
  */
 #define SET_NETDEV_DEVTYPE(net, devtype)	((net)->dev.type = (devtype))
 
@@ -2918,7 +2920,7 @@ void ether_setup(struct net_device *dev);
 struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
 				    void (*setup)(struct net_device *),
 				    unsigned int txqs, unsigned int rxqs);
-// 创建一个网络设备
+// 创建一个网络设备(各一个收发队列)
 #define alloc_netdev(sizeof_priv, name, setup) \
 	alloc_netdev_mqs(sizeof_priv, name, setup, 1, 1)
 

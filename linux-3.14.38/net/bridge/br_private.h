@@ -33,10 +33,10 @@
 
 /* Control of forwarding link local multicast */
 #define BR_GROUPFWD_DEFAULT	0
-/* Don't allow forwarding control protocols like STP and LLDP */
+/* Don't allow forwarding control protocols like STP and LLDP 不允许转发控制协议报文(比如stp、lldp报文等)*/
 #define BR_GROUPFWD_RESTRICTED	0x4007u
 
-/* Path to usermode spanning tree program */
+/* Path to usermode spanning tree program 用户态生成树(rstp/mstp)程序的路径 */
 #define BR_STP_PROG	"/sbin/bridge-stp"
 
 typedef struct bridge_id bridge_id;
@@ -217,7 +217,7 @@ struct net_bridge
 {
 	spinlock_t			lock;
 	struct list_head		port_list;  // 包含的端口的链表头
-	struct net_device		*dev;       // 指向网桥对应的虚拟网络设备
+	struct net_device		*dev;       // 指向对应的网桥设备
 
 	struct pcpu_sw_netstats		__percpu *stats;
 	spinlock_t			hash_lock;
@@ -232,7 +232,7 @@ struct net_bridge
 
 	/* STP */
 	bridge_id			designated_root;
-	bridge_id			bridge_id;
+	bridge_id			bridge_id;      // 桥ID号
 	u32				root_path_cost;
 	unsigned long			max_age;
 	unsigned long			hello_time;
@@ -242,14 +242,14 @@ struct net_bridge
 	unsigned long			bridge_hello_time;
 	unsigned long			bridge_forward_delay;
 
-	u8				group_addr[ETH_ALEN];
+	u8				group_addr[ETH_ALEN];   // stp组播地址，缺省就是01:80:c2:00:00:00
 	u16				root_port;
 
 	enum {
 		BR_NO_STP, 		/* no spanning tree */
 		BR_KERNEL_STP,		/* old STP in kernel */
 		BR_USER_STP,		/* new RSTP in userspace */
-	} stp_enabled;
+	} stp_enabled;  // stp使能标志位
 
 	unsigned char			topology_change;
 	unsigned char			topology_change_detected;

@@ -234,13 +234,17 @@ static struct net_bridge_port *new_nbp(struct net_bridge *br,
 	return p;
 }
 
-// 创建网桥
+/* 创建一个网桥
+ * @name    - 网桥设备名
+ */
 int br_add_bridge(struct net *net, const char *name)
 {
 	struct net_device *dev;
 	int res;
 
-    // 创建一个网桥设备
+    /* 创建一个网桥设备，附带一个net_bridge结构的私有空间
+     * 创建完毕后会执行br_dev_setup来完成一些基本的初始化
+     */
 	dev = alloc_netdev(sizeof(struct net_bridge), name,
 			   br_dev_setup);
 
@@ -256,6 +260,9 @@ int br_add_bridge(struct net *net, const char *name)
 	return res;
 }
 
+/* 删除一个指定的网桥
+ * @name    - 网桥设备名
+ */
 int br_del_bridge(struct net *net, const char *name)
 {
 	struct net_device *dev;
