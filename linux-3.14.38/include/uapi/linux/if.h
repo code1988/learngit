@@ -34,7 +34,7 @@
 #define	IFF_UP		0x1		/* interface is up		*/
 #define	IFF_BROADCAST	0x2		/* broadcast address valid	*/
 #define	IFF_DEBUG	0x4		/* turn on debugging		*/
-#define	IFF_LOOPBACK	0x8		/* is a loopback net		*/
+#define	IFF_LOOPBACK	0x8		/* is a loopback net		用于标示该网络设备是一个环回设备 */
 #define	IFF_POINTOPOINT	0x10		/* interface is has p-p link	*/
 #define	IFF_NOTRAILERS	0x20		/* avoid use of trailers	*/
 #define	IFF_RUNNING	0x40		/* interface RFC2863 OPER_UP	*/
@@ -75,7 +75,7 @@
 #define IFF_XMIT_DST_RELEASE 0x400	/* dev_hard_start_xmit() is allowed to
 					 * release skb->dst
 					 */
-#define IFF_DONT_BRIDGE 0x800		/* disallow bridging this ether dev */
+#define IFF_DONT_BRIDGE 0x800		/* disallow bridging this ether dev 用于标示该设备不允许桥接到网桥 */
 #define IFF_DISABLE_NETPOLL	0x1000	/* disable netpoll at run-time */
 #define IFF_MACVLAN_PORT	0x2000	/* device used as macvlan port */
 #define IFF_BRIDGE_PORT	0x4000		/* device used as bridge port   用于标示该网络设备是一个bridge端口 */

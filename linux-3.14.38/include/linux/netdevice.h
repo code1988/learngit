@@ -1245,7 +1245,7 @@ struct net_device {
 	struct iw_public_data *	wireless_data;
 #endif
 	/* Management operations */
-	const struct net_device_ops *netdev_ops;    // 对该网络设备进行通用管理操作的回调函数集
+	const struct net_device_ops *netdev_ops;    // 对该网络设备进行通用管理操作的回调函数集(也就是该设备的一套驱动)
 	const struct ethtool_ops *ethtool_ops;      // 使用ethtool工具进行管理操作的回调函数集
 	const struct forwarding_accel_ops *fwd_ops;
 
@@ -1395,7 +1395,7 @@ struct net_device {
 	struct timer_list	watchdog_timer;
 
 	/* Number of references to this device */
-	int __percpu		*pcpu_refcnt;   // 该设备的引用计数
+	int __percpu		*pcpu_refcnt;   // 该设备的引用计数，只有当该值为0时，该设备才能被注销
 
 	/* delayed register/unregister */
 	struct list_head	todo_list;
@@ -1575,9 +1575,10 @@ struct net *dev_net(const struct net_device *dev)
 	return read_pnet(&dev->nd_net);
 }
 
-/* 该函数的执行前提：多网络命名空间
+/* 关联指定网络命名空间和指定设备，同时更新该网络命名空间的关联设备计数值(开启了对应的调试开关)
  *
- * 关联指定网络命名空间和指定设备，同时更新该网络命名空间的关联设备计数值(开启了对应的调试开关)
+ * 备注：创建一个网络设备的标准套路：
+ *              alloc_netdev -> dev_net_set -> register_netdev
  */
 static inline
 void dev_net_set(struct net_device *dev, struct net *net)
@@ -2920,7 +2921,11 @@ void ether_setup(struct net_device *dev);
 struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
 				    void (*setup)(struct net_device *),
 				    unsigned int txqs, unsigned int rxqs);
-// 创建一个网络设备(各一个收发队列)
+/* 创建一个网络设备(各一个收发队列)
+ *
+ * 备注：创建一个网络设备的标准套路：
+ *              alloc_netdev -> dev_net_set -> register_netdev
+ */
 #define alloc_netdev(sizeof_priv, name, setup) \
 	alloc_netdev_mqs(sizeof_priv, name, setup, 1, 1)
 

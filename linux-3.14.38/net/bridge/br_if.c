@@ -30,6 +30,7 @@
 
 /*
  * Determine initial path cost based on speed.
+ * 计算初始的路径成本（跟设备的速率相关）
  * using recommendations from 802.1d standard
  *
  * Since driver might sleep need to not be holding any locks.
@@ -182,7 +183,9 @@ void br_dev_delete(struct net_device *dev, struct list_head *head)
 	unregister_netdevice_queue(br->dev, head);
 }
 
-/* find an available port number */
+/* find an available port number 
+ * 分配一个未占用的桥端口号
+ * */
 static int find_portno(struct net_bridge *br)
 {
 	int index;
@@ -204,13 +207,16 @@ static int find_portno(struct net_bridge *br)
 	return (index >= BR_MAX_PORTS) ? -EXFULL : index;
 }
 
-/* called with RTNL but without bridge lock */
+/* called with RTNL but without bridge lock 
+ * 为加入网桥的设备分配一个net_bridge_port结构，并进行了基本的初始化
+ * */
 static struct net_bridge_port *new_nbp(struct net_bridge *br,
 				       struct net_device *dev)
 {
 	int index;
 	struct net_bridge_port *p;
 
+    // 分配一个未占用的桥端口号
 	index = find_portno(br);
 	if (index < 0)
 		return ERR_PTR(index);
@@ -219,17 +225,17 @@ static struct net_bridge_port *new_nbp(struct net_bridge *br,
 	if (p == NULL)
 		return ERR_PTR(-ENOMEM);
 
-	p->br = br;
-	dev_hold(dev);
-	p->dev = dev;
-	p->path_cost = port_cost(dev);
-	p->priority = 0x8000 >> BR_PORT_BITS;
-	p->port_no = index;
-	p->flags = BR_LEARNING | BR_FLOOD;
-	br_init_port(p);
-	p->state = BR_STATE_DISABLED;
-	br_stp_port_timer_init(p);
-	br_multicast_add_port(p);
+	p->br = br;     // 跟所属的bridge设备关联
+	dev_hold(dev);  // 要加入网桥设备中的引用计数加1
+	p->dev = dev;   // 跟对应的网络设备关联
+	p->path_cost = port_cost(dev);  // 计算桥端口初始的路径成本
+	p->priority = 0x8000 >> BR_PORT_BITS;   // 设置桥端口缺省优先级
+	p->port_no = index;                     // 设置桥端口号
+	p->flags = BR_LEARNING | BR_FLOOD;      // 设置桥端口的缺省属性：支持学习和泛洪
+	br_init_port(p);                        // 桥端口的一部分初始化
+	p->state = BR_STATE_DISABLED;           // 桥端口缺省处于disable状态
+	br_stp_port_timer_init(p);              // 桥端口stp相关定时器初始化
+	br_multicast_add_port(p);               // 初始化桥端口的igmp-snooping功能          
 
 	return p;
 }
@@ -242,7 +248,7 @@ int br_add_bridge(struct net *net, const char *name)
 	struct net_device *dev;
 	int res;
 
-    /* 创建一个网桥设备，附带一个net_bridge结构的私有空间
+    /* 创建一个bridge设备，附带一个net_bridge结构的私有空间
      * 创建完毕后会执行br_dev_setup来完成一些基本的初始化
      */
 	dev = alloc_netdev(sizeof(struct net_bridge), name,
@@ -251,9 +257,12 @@ int br_add_bridge(struct net *net, const char *name)
 	if (!dev)
 		return -ENOMEM;
 
+    // 将新创建的bridge设备关联到当前网络命名空间
 	dev_net_set(dev, net);
+    // 为该bridge设备绑定一组rtnetlink操作集合
 	dev->rtnl_link_ops = &br_link_ops;
 
+    // 注册bridge设备到内核中，注册结果会从通知链中反馈
 	res = register_netdev(dev);
 	if (res)
 		free_netdev(dev);
@@ -332,31 +341,44 @@ netdev_features_t br_features_recompute(struct net_bridge *br,
 	return features;
 }
 
-/* called with RTNL */
+/* called with RTNL 
+ * 网桥中加入端口
+ * @br  - 要加入端口的网桥
+ * @dev - 要加入的端口设备
+ * */
 int br_add_if(struct net_bridge *br, struct net_device *dev)
 {
 	struct net_bridge_port *p;
 	int err = 0;
 	bool changed_addr;
 
-	/* Don't allow bridging non-ethernet like devices */
+	/* Don't allow bridging non-ethernet like devices 
+     * 不能将非以太网设备加入网桥
+     * */
 	if ((dev->flags & IFF_LOOPBACK) ||
 	    dev->type != ARPHRD_ETHER || dev->addr_len != ETH_ALEN ||
 	    !is_valid_ether_addr(dev->dev_addr))
 		return -EINVAL;
 
-	/* No bridging of bridges */
+	/* No bridging of bridges 
+     * 不能将网桥设备作为端口加入一个网桥
+     * */
 	if (dev->netdev_ops->ndo_start_xmit == br_dev_xmit)
 		return -ELOOP;
 
-	/* Device is already being bridged */
+	/* Device is already being bridged 
+     * 不能将已经加入网桥的端口再加入网桥
+     * */
 	if (br_port_exists(dev))
 		return -EBUSY;
 
-	/* No bridging devices that dislike that (e.g. wireless) */
+	/* No bridging devices that dislike that (e.g. wireless) 
+     * 不能将带了IFF_DONT_BRIDGE标志的设备加入网桥
+     * */
 	if (dev->priv_flags & IFF_DONT_BRIDGE)
 		return -EOPNOTSUPP;
 
+    // 为加入网桥的设备分配一个net_bridge_port结构，并进行了基本的初始化
 	p = new_nbp(br, dev);
 	if (IS_ERR(p))
 		return PTR_ERR(p);

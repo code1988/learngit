@@ -1026,6 +1026,7 @@ void dlci_ioctl_set(int (*hook) (unsigned int, void __user *))
 }
 EXPORT_SYMBOL(dlci_ioctl_set);
 
+// 本函数处理了另外一部分ioctl操作
 static long sock_do_ioctl(struct net *net, struct socket *sock,
 				 unsigned int cmd, unsigned long arg)
 {
@@ -1119,6 +1120,7 @@ static long sock_ioctl(struct file *file, unsigned cmd, unsigned long arg)
 			mutex_unlock(&dlci_ioctl_mutex);
 			break;
 		default:
+            // 处理其他的ioctl命令ID
 			err = sock_do_ioctl(net, sock, cmd, arg);
 			break;
 		}

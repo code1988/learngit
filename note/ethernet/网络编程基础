@@ -25,8 +25,18 @@
 
 3. 主机名和IP地址的对应关系
 ---------------------------------------------------------------------------------------------------
-    struct hostent *gethostbyname(const char *name)                     // 根据主机名来获取其IP地址
+    struct hostent *gethostbyname(const char *name)                     // 根据域名或主机名来获取其IP地址
     struct hostent *gethostbyaddr(const void *addr,int len,int type)    // 根据IP地址获取主机名
+
+    这两个函数都返回一个hostent结构指针：
+    struct hostent{
+        char *h_name;                   // 主机的规范名，比如百度的规范名为"www.a.shifen.com"
+        char **h_aliases;               // 主机的别名列表(别名可以有多个)，比如百度的别名只有一个，就是"www.baidu.com"
+        int h_addrtype;                 // 主机IP地址类型，AF_INET/AF_INET6
+        int h_length;                   // 主机IP地址长度
+        char **h_addr_list;             // 主机的IP地址列表,对于AF_INET类型，列表元素其实就是(struct in_addr *)的结构
+        #define h_addr h_addr_list[0]   // 指向主机的首个IP地址
+    };
 
 4. 网络编程使用的相关头文件(适用于linux 3.1以后)
 ---------------------------------------------------------------------------------------------------

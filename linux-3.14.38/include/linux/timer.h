@@ -15,11 +15,11 @@ struct timer_list {
 	 * same cacheline
 	 */
 	struct list_head entry;
-	unsigned long expires;
+	unsigned long expires;  // 定时器超时时间，以jiffies衡量
 	struct tvec_base *base;
 
-	void (*function)(unsigned long);
-	unsigned long data;
+	void (*function)(unsigned long);    // 超时处理函数
+	unsigned long data;     // 传递给超时处理函数的参数
 
 	int slack;
 

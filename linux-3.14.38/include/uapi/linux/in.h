@@ -151,14 +151,14 @@ struct in_addr {
 /* Request struct for multicast socket ops */
 
 struct ip_mreq  {
-	struct in_addr imr_multiaddr;	/* IP multicast address of group */
-	struct in_addr imr_interface;	/* local IP address of interface */
+	struct in_addr imr_multiaddr;	/* IP multicast address of group    IP组播地址*/
+	struct in_addr imr_interface;	/* local IP address of interface    本地IP地址*/
 };
 
 struct ip_mreqn {
-	struct in_addr	imr_multiaddr;		/* IP multicast address of group */
-	struct in_addr	imr_address;		/* local IP address of interface */
-	int		imr_ifindex;		/* Interface index */
+	struct in_addr	imr_multiaddr;		/* IP multicast address of group  IP组播地址*/
+	struct in_addr	imr_address;		/* local IP address of interface  本地IP地址*/
+	int		imr_ifindex;		/* Interface index  对应的接口号*/
 };
 
 struct ip_mreq_source {

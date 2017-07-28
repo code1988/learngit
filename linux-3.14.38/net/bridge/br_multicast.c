@@ -1,5 +1,6 @@
 /*
  * Bridge multicast support.
+ * 本文件生效的前提是CONFIG_BRIDGE_IGMP_SNOOPING开启
  *
  * Copyright (c) 2010 Herbert Xu <herbert@gondor.apana.org.au>
  *
@@ -880,6 +881,7 @@ static void br_ip6_multicast_port_query_expired(unsigned long data)
 }
 #endif
 
+// 初始化桥端口的igmp-snooping功能
 void br_multicast_add_port(struct net_bridge_port *port)
 {
 	port->multicast_router = 1;
@@ -1733,6 +1735,9 @@ static void br_multicast_query_expired(struct net_bridge *br,
 	spin_unlock(&br->multicast_lock);
 }
 
+/* ipv4类型的本地查询器超时处理函数
+ * @data    - 在该定时器初始化时被设置为指向所属网桥的指针
+ */
 static void br_ip4_multicast_query_expired(unsigned long data)
 {
 	struct net_bridge *br = (void *)data;
@@ -1749,6 +1754,7 @@ static void br_ip6_multicast_query_expired(unsigned long data)
 }
 #endif
 
+// 初始化IGMP-SNOOPING
 void br_multicast_init(struct net_bridge *br)
 {
 	br->hash_elasticity = 4;
@@ -1773,10 +1779,13 @@ void br_multicast_init(struct net_bridge *br)
 #endif
 
 	spin_lock_init(&br->multicast_lock);
+    // 初始化multicast_router_timer定时器
 	setup_timer(&br->multicast_router_timer,
 		    br_multicast_local_router_expired, 0);
+    // 初始化ipv4类型的其他查询器的定时器
 	setup_timer(&br->ip4_querier.timer, br_ip4_multicast_querier_expired,
 		    (unsigned long)br);
+    // 初始化ipv4类型的本地查询器的定时器
 	setup_timer(&br->ip4_query.timer, br_ip4_multicast_query_expired,
 		    (unsigned long)br);
 #if IS_ENABLED(CONFIG_IPV6)
@@ -1787,19 +1796,23 @@ void br_multicast_init(struct net_bridge *br)
 #endif
 }
 
+// 开启指定网桥的指定查询器的定时器
 static void __br_multicast_open(struct net_bridge *br,
 				struct bridge_mcast_query *query)
 {
-	query->startup_sent = 0;
+	query->startup_sent = 0;    // 已发送的查询包数量清零
 
+    // 确保所属的网桥已经开启了igmp-snooping
 	if (br->multicast_disabled)
 		return;
 
 	mod_timer(&query->timer, jiffies);
 }
 
+// 开启指定网桥的igmp-snooping功能
 void br_multicast_open(struct net_bridge *br)
 {
+    // 实际就是开启ip4_query的定时器
 	__br_multicast_open(br, &br->ip4_query);
 #if IS_ENABLED(CONFIG_IPV6)
 	__br_multicast_open(br, &br->ip6_query);
@@ -1943,6 +1956,7 @@ static void br_multicast_start_querier(struct net_bridge *br,
 	}
 }
 
+// igmp-snooping功能开关
 int br_multicast_toggle(struct net_bridge *br, unsigned long val)
 {
 	int err = 0;

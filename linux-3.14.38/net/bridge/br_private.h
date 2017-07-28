@@ -67,13 +67,13 @@ struct br_ip
 };
 
 #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
-/* our own querier */
+/* our own querier 本地查询器*/
 struct bridge_mcast_query {
-	struct timer_list	timer;
-	u32			startup_sent;
+	struct timer_list	timer;  // 查询定时器
+	u32			startup_sent;   // 已发送的查询包数量 
 };
 
-/* other querier */
+/* other querier 其他查询器*/
 struct bridge_mcast_querier {
 	struct timer_list		timer;
 	unsigned long			delay_time;
@@ -108,39 +108,45 @@ struct net_bridge_fdb_entry
 	__u16				vlan_id;
 };
 
+/* 定义了加入一个组播组的组播端口，本结构描述了一个组播端口的详细信息
+ */
 struct net_bridge_port_group {
-	struct net_bridge_port		*port;
-	struct net_bridge_port_group __rcu *next;
+	struct net_bridge_port		*port;      // 该组播端口对应的网桥端口
+	struct net_bridge_port_group __rcu *next;   // 指向下一个相同组播组中的组播端口
 	struct hlist_node		mglist;
 	struct rcu_head			rcu;
-	struct timer_list		timer;
-	struct br_ip			addr;
+	struct timer_list		timer;          // 该组播端口老化定时器
+	struct br_ip			addr;           // 所在组播组的地址
 	unsigned char			state;
 };
 
+/* 定义了一个组播组数据库转发表项，本结构描述了一个组播组的详细信息
+ */
 struct net_bridge_mdb_entry
 {
 	struct hlist_node		hlist[2];
-	struct net_bridge		*br;
-	struct net_bridge_port_group __rcu *ports;
+	struct net_bridge		*br;        // 指向所属的网桥
+	struct net_bridge_port_group __rcu *ports;  // 加入了该组播组的组播端口链表
 	struct rcu_head			rcu;
-	struct timer_list		timer;
-	struct br_ip			addr;
+	struct timer_list		timer;      // 该组播组老化定时器
+	struct br_ip			addr;       // 该组播组的地址
 	bool				mglist;
 };
 
+/* 定义了总的组播组数据库转发表
+ */
 struct net_bridge_mdb_htable
 {
-	struct hlist_head		*mhash;
+	struct hlist_head		*mhash; // 指向一张hash表，该hash表存储了所有的net_bridge_mdb_entry结构
 	struct rcu_head			rcu;
 	struct net_bridge_mdb_htable	*old;
-	u32				size;
-	u32				max;
+	u32				size;           // hash表中存储的net_bridge_mdb_entry总数
+	u32				max;            // hash表的最大值
 	u32				secret;
 	u32				ver;
 };
 
-// 网桥端口管理块结构
+// 定义了网桥端口，本结构描述了一个桥端口的详细信息
 struct net_bridge_port
 {
 	struct net_bridge		*br;    // 指向所属网桥
@@ -148,16 +154,16 @@ struct net_bridge_port
 	struct list_head		list;
 
 	/* STP */
-	u8				priority;
-	u8				state;
-	u16				port_no;
+	u8				priority;       // 端口优先级
+	u8				state;          // 桥端口的状态,BR_STATE_*
+	u16				port_no;        // 桥端口号(不同于设备的接口号)
 	unsigned char			topology_change_ack;
 	unsigned char			config_pending;
-	port_id				port_id;
+	port_id				port_id;    // 用于stp的端口ID号（根据优先级和桥端口号计算得到）
 	port_id				designated_port;
 	bridge_id			designated_root;
 	bridge_id			designated_bridge;
-	u32				path_cost;
+	u32				path_cost;  // 端口路径成本
 	u32				designated_cost;
 	unsigned long			designated_age;
 
@@ -167,14 +173,14 @@ struct net_bridge_port
 	struct kobject			kobj;
 	struct rcu_head			rcu;
 
-	unsigned long 			flags;
-#define BR_HAIRPIN_MODE		0x00000001
-#define BR_BPDU_GUARD           0x00000002
-#define BR_ROOT_BLOCK		0x00000004
-#define BR_MULTICAST_FAST_LEAVE	0x00000008
-#define BR_ADMIN_COST		0x00000010
-#define BR_LEARNING		0x00000020
-#define BR_FLOOD		0x00000040
+	unsigned long 			flags;          // 桥端口的标志位集合:
+#define BR_HAIRPIN_MODE		0x00000001      // 
+#define BR_BPDU_GUARD           0x00000002  // 
+#define BR_ROOT_BLOCK		0x00000004      // 
+#define BR_MULTICAST_FAST_LEAVE	0x00000008  //
+#define BR_ADMIN_COST		0x00000010      //
+#define BR_LEARNING		0x00000020          // 学习功能
+#define BR_FLOOD		0x00000040          // 泛洪功能
 
 #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
 	struct bridge_mcast_query	ip4_query;
@@ -257,12 +263,12 @@ struct net_bridge
 #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
 	unsigned char			multicast_router;
 
-	u8				multicast_disabled:1;
+	u8				multicast_disabled:1;       // igmp-snooping使能开关
 	u8				multicast_querier:1;
 	u8				multicast_query_use_ifaddr:1;
 
-	u32				hash_elasticity;
-	u32				hash_max;
+	u32				hash_elasticity;    // 每个组播组中能关联的端口个数
+	u32				hash_max;   // net_bridge_mdb_htable结构中hash数组的最大值
 
 	u32				multicast_last_member_count;
 	u32				multicast_startup_query_count;
@@ -270,17 +276,17 @@ struct net_bridge
 	unsigned long			multicast_last_member_interval;
 	unsigned long			multicast_membership_interval;
 	unsigned long			multicast_querier_interval;
-	unsigned long			multicast_query_interval;
-	unsigned long			multicast_query_response_interval;
+	unsigned long			multicast_query_interval;           // 查询包的发送间隔
+	unsigned long			multicast_query_response_interval;  // 组播查询最大回复时间
 	unsigned long			multicast_startup_query_interval;
 
 	spinlock_t			multicast_lock;
 	struct net_bridge_mdb_htable __rcu *mdb;
 	struct hlist_head		router_list;
 
-	struct timer_list		multicast_router_timer;
-	struct bridge_mcast_querier	ip4_querier;
-	struct bridge_mcast_query	ip4_query;
+	struct timer_list		multicast_router_timer;     // 定时器
+	struct bridge_mcast_querier	ip4_querier;            // ipv4类型的本地查询器
+	struct bridge_mcast_query	ip4_query;              // ipv4类型的其他查询器
 #if IS_ENABLED(CONFIG_IPV6)
 	struct bridge_mcast_querier	ip6_querier;
 	struct bridge_mcast_query	ip6_query;

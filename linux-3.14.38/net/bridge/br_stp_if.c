@@ -21,6 +21,8 @@
 
 
 /* Port id is composed of priority and port number.
+ * 根据优先级和桥端口号计算用于stp的端口ID号
+ *          高6位(优先级) | 低10位(桥端口号)
  * NB: some bits of priority are dropped to
  *     make room for more ports.
  */
@@ -32,9 +34,12 @@ static inline port_id br_make_port_id(__u8 priority, __u16 port_no)
 
 #define BR_MAX_PORT_PRIORITY ((u16)~0 >> BR_PORT_BITS)
 
-/* called under bridge lock */
+/* called under bridge lock 
+ * 桥端口的一部分初始化
+ * */
 void br_init_port(struct net_bridge_port *p)
 {
+    // 根据优先级和桥端口号计算用于stp的端口ID号
 	p->port_id = br_make_port_id(p->priority, p->port_no);
 	br_become_designated_port(p);
 	p->state = BR_STATE_BLOCKING;

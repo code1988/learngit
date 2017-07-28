@@ -154,6 +154,7 @@ void br_stp_timer_init(struct net_bridge *br)
 	setup_timer(&br->gc_timer, br_fdb_cleanup, (unsigned long) br);
 }
 
+// 桥端口stp相关定时器初始化
 void br_stp_port_timer_init(struct net_bridge_port *p)
 {
 	setup_timer(&p->message_age_timer, br_message_age_timer_expired,

@@ -6198,6 +6198,11 @@ EXPORT_SYMBOL_GPL(init_dummy_netdev);
 
 /**
  *	register_netdev	- register a network device
+ *  注册指定网络设备到内核中，注册结果会从通知链中反馈
+ *
+ *  备注：创建一个网络设备的标准套路：
+ *              alloc_netdev -> dev_net_set -> register_netdev
+ *
  *	@dev: device to register
  *
  *	Take a completed network device structure and add it to the kernel

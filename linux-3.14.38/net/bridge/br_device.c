@@ -407,5 +407,6 @@ void br_dev_setup(struct net_device *dev)
 
 	br_netfilter_rtable_init(br);
 	br_stp_timer_init(br);
+    // 初始化IGMP-SNOOPING
 	br_multicast_init(br);
 }
