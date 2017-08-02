@@ -77,6 +77,11 @@ struct rtentry;		/* declarations in <net/if.h> */
  * Return the name of a network interface attached to the system, or NULL
  * if none can be found.  The interface must be configured up; the
  * lowest unit number is preferred; loopback is ignored.
+ * 返回第一个合适的网络接口名
+ * @errbuf - 存放出错信息字符串,需要PCAP_ERRBUF_SIZE长度的空间
+ *
+ * 备注：只扫描up的接口；
+ *       忽略loopback设备接口
  */
 char *
 pcap_lookupdev(errbuf)
@@ -120,6 +125,12 @@ pcap_lookupdev(errbuf)
 	return (ret);
 }
 
+/* 获取指定网络接口的IP和掩码
+ * @device  - 指定的接口名
+ * @netp    - 存放ip地址的指针
+ * @maskp   - 存放mask的指针
+ * @errbuf  - 存放出错信息字符串
+ */
 int
 pcap_lookupnet(device, netp, maskp, errbuf)
 	register const char *device;

@@ -808,6 +808,13 @@ pcap_activate(pcap_t *p)
 	return (status);
 }
 
+/* 打开一个指定的网络接口，用于后续捕获数据
+ * @device  - 指定网络接口名，比如"eth0"
+ * @snaplen - 设置每个数据包的捕捉长度，上限65535
+ * @promisc - 是否打开混杂模式，0-不打开，1-打开
+ * @to_ms   - 设置获取数据包时的超时时间(ms)，0表示一直等待数据包到来
+ * @errbuf  - 存放出错信息字符串
+ */
 pcap_t *
 pcap_open_live(const char *device, int snaplen, int promisc, int to_ms, char *errbuf)
 {
