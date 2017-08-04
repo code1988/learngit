@@ -659,6 +659,13 @@ syntax(compiler_state_t *cstate)
 	bpf_error(cstate, "syntax error in filter expression");
 }
 
+/* 编译BPF过滤规则
+ * @p       - libpcap句柄
+ * @program - 存放编译之后的规则
+ * @buf     - 需要被编译的BPF过滤规则
+ * @optimize- 是否优化规则
+ * @mask    - 指定本地网络的掩码，不需要时可写0
+ */
 int
 pcap_compile(pcap_t *p, struct bpf_program *program,
 	     const char *buf, int optimize, bpf_u_int32 mask)

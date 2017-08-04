@@ -127,7 +127,7 @@ pcap_lookupdev(errbuf)
 
 /* 获取指定网络接口的IP和掩码
  * @device  - 指定的接口名
- * @netp    - 存放ip地址的指针
+ * @netp    - 存放网络号的指针
  * @maskp   - 存放mask的指针
  * @errbuf  - 存放出错信息字符串
  */

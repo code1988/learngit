@@ -147,6 +147,7 @@ typedef void	(*cleanup_op_t)(pcap_t *);
 /*
  * We put all the stuff used in the read code path at the beginning,
  * to try to keep it together in the same cache line or lines.
+ * libpcap库执行所有操作所需的句柄
  */
 struct pcap {
 	/*

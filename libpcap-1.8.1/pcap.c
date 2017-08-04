@@ -231,6 +231,11 @@ pcap_oneshot(u_char *user, const struct pcap_pkthdr *h, const u_char *pkt)
 	*sp->pkt = pkt;
 }
 
+/* 捕获到一个数据包立即返回
+ * @p   - libpcap句柄
+ * @h   - 存放收到的数据包的一些信息
+ * @返回值  - 收到的数据包内容
+ */
 const u_char *
 pcap_next(pcap_t *p, struct pcap_pkthdr *h)
 {
@@ -814,6 +819,8 @@ pcap_activate(pcap_t *p)
  * @promisc - 是否打开混杂模式，0-不打开，1-打开
  * @to_ms   - 设置获取数据包时的超时时间(ms)，0表示一直等待数据包到来
  * @errbuf  - 存放出错信息字符串
+ *
+ * 备注：to_ms值会影响3个捕获函数(pcap_next、pcap_loop、pcap_dispatch)的行为
  */
 pcap_t *
 pcap_open_live(const char *device, int snaplen, int promisc, int to_ms, char *errbuf)
@@ -878,12 +885,21 @@ pcap_open_offline_common(char *ebuf, size_t size)
 	return (p);
 }
 
+/* 类似pcap_loop
+ * 
+ */
 int
 pcap_dispatch(pcap_t *p, int cnt, pcap_handler callback, u_char *user)
 {
 	return (p->read_op(p, cnt, callback, user));
 }
 
+/* 循环捕获数据包，直到遇到错误或满足退出条件
+ * @p       - libpcap句柄
+ * @cnt     - 设置捕获数据包个数，捕获数量超过该值则退出本函数，-1表示一直捕获
+ * @callback- 捕获到数据包后的回调函数
+ * @user    - 传递给回调函数的参数
+ */
 int
 pcap_loop(pcap_t *p, int cnt, pcap_handler callback, u_char *user)
 {
@@ -1644,6 +1660,10 @@ pcap_strerror(int errnum)
 #endif
 }
 
+/* 使BPF过滤规则生效
+ * @p   - libpcap句柄
+ * @fp  - 指向编译后的BPF过滤规则
+ */
 int
 pcap_setfilter(pcap_t *p, struct bpf_program *fp)
 {
@@ -2103,6 +2123,8 @@ pcap_inject(pcap_t *p, const void *buf, size_t size)
 	return (p->inject_op(p, buf, size));
 }
 
+/* 注销之前打开的libpcap句柄
+ */
 void
 pcap_close(pcap_t *p)
 {
