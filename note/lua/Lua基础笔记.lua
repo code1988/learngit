@@ -6,7 +6,7 @@
         or repeat return then true until while 
 
 3. lua的变量有三种：全局变量、局部变量、表中的域
-   lua中的变量默认都是全局变量，除非用local声明(但是测试发现函数入参等是局部变量)
+   lua中的变量默认都是全局变量，除非用local声明(函数入参等是局部变量)
    lua可以对多个变量同时赋值，变量列表和值列表的各个元素用逗号分开
    lua是首先计算右边所有的值，然后再执行赋值操作，所以 x,y = y,x 可以实现交换变量值
    当变量个数和值个数不一致时，lua以变量个数为基础，采取少补nil，多忽略的原则
@@ -37,7 +37,7 @@
                                  - 备注     -   var从exp1变化到exp2,间隔exp3（可选，缺省值1）
                                                 for的3个exp在循环开始前一次性求值，以后不再进行求值
                      泛型for循环 - 语法格式 -   for i,v in ipairs(a) do print(v)    end
-                                 - 备注     -   i是数组索引值，v是对应索引值的数组元素值，ipais是lua提供的一个迭代函数，用来迭代数组
+                                 - 备注     -   i是table索引值，v是对应索引值的table元素值，ipais是lua提供的一个迭代函数，用来迭代table
     repeat...until循环 - 语法格式 - repeat  执行体  while(条件)
                        - 备注     - 类C，略
     

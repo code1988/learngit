@@ -73,12 +73,22 @@
 
     线程的栈属性又包括了栈地址、栈大小以及栈末尾的警戒缓冲区大小
     /* API  : int pthread_attr_getstack(const pthread_attr_t *attr,void **stackaddr,size_t *stacksize)
-     * 描述 : 获取线程属性对象中的栈地址和栈大小属性
+     * 描述 : 获取线程属性对象中的自定义的栈地址和栈大小属性
      * @attr        - 指向线程属性对象
-     * @stackaddr   - 用于存放线程的栈地址
-     * @stacksize   - 用于存放线程的栈大小
+     * @stackaddr   - 用于存放自定义的线程的栈地址
+     * @stacksize   - 用于存放自定义的线程的栈大小
      *
-     * 备注 : 
+     * 备注 : (glibc2.19 + kernel3.16.36环境) 本函数只能获取通过pthread_attr_setstack设置的自定义的线程栈地址和栈大小属性,
+     *        如果没有设置过自定义值，本函数返回空值。
+     *        本函数的这个特性APUE并未阐明，网上的资料大都是相互抄袭，人云亦云
+     */
+    
+    /* API  : int pthread_attr_setstack(pthread_attr_t *attr,void *stackaddr,size_t stacksize)
+     * 描述 : 自定义线程属性对象中的栈地址和栈大小属性
+     * @attr        - 指向线程属性对象
+     * @stackaddr   - 用于设置自定义的线程栈地址
+     * @stacksize   - 用于设置自定义的线程栈大小
+     *
      */
     
 5. 线程创建
