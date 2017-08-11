@@ -22,12 +22,14 @@ static ssize_t soc_info_get(struct device *dev,
 			    struct device_attribute *attr,
 			    char *buf);
 
+// 定义了soc设备模型，顾名思义，是将整个片上系统整体抽象
 struct soc_device {
-	struct device dev;
-	struct soc_device_attribute *attr;
-	int soc_dev_num;
+	struct device dev;  // 封装的linux基本设备结构
+	struct soc_device_attribute *attr;  // 指向对应的soc属性集合
+	int soc_dev_num;    // soc设备的唯一编码
 };
 
+// 定义了一条soc总线
 static struct bus_type soc_bus_type = {
 	.name  = "soc",
 };
@@ -37,6 +39,7 @@ static DEVICE_ATTR(family,   S_IRUGO, soc_info_get,  NULL);
 static DEVICE_ATTR(soc_id,   S_IRUGO, soc_info_get,  NULL);
 static DEVICE_ATTR(revision, S_IRUGO, soc_info_get,  NULL);
 
+// 返回soc设备对应的通用意义上设备对象
 struct device *soc_device_to_device(struct soc_device *soc_dev)
 {
 	return &soc_dev->dev;
@@ -93,16 +96,19 @@ static struct attribute *soc_attr[] = {
 	NULL,
 };
 
+// 定义了一个soc属性组
 static const struct attribute_group soc_attr_group = {
 	.attrs = soc_attr,
 	.is_visible = soc_attribute_mode,
 };
 
+// 定义了一张记录所有soc属性组的表（显然，3.14.38中，只有一个表项）
 static const struct attribute_group *soc_attr_groups[] = {
 	&soc_attr_group,
 	NULL,
 };
 
+// 释放device所在的soc_device结构
 static void soc_release(struct device *dev)
 {
 	struct soc_device *soc_dev = container_of(dev, struct soc_device, dev);
@@ -110,6 +116,9 @@ static void soc_release(struct device *dev)
 	kfree(soc_dev);
 }
 
+/* 注册soc设备(归根到底，还是要执行通用的设备注册流程)
+ * @soc_dev_attr - 用于设置soc设备的属性
+ */
 struct soc_device *soc_device_register(struct soc_device_attribute *soc_dev_attr)
 {
 	struct soc_device *soc_dev;
@@ -121,7 +130,9 @@ struct soc_device *soc_device_register(struct soc_device_attribute *soc_dev_attr
 		goto out1;
 	}
 
-	/* Fetch a unique (reclaimable) SOC ID. */
+	/* Fetch a unique (reclaimable) SOC ID. 
+     * 生成一个唯一的soc ID号
+     * */
 	do {
 		if (!ida_pre_get(&soc_ida, GFP_KERNEL)) {
 			ret = -ENOMEM;
@@ -137,13 +148,16 @@ struct soc_device *soc_device_register(struct soc_device_attribute *soc_dev_attr
 	if (ret)
 	         goto out2;
 
+    // 填充新创建的soc设备结构
 	soc_dev->attr = soc_dev_attr;
 	soc_dev->dev.bus = &soc_bus_type;
 	soc_dev->dev.groups = soc_attr_groups;
 	soc_dev->dev.release = soc_release;
 
+    // 以"soc + soc唯一编码"的形式设置soc设备的设备名
 	dev_set_name(&soc_dev->dev, "soc%d", soc_dev->soc_dev_num);
 
+    // 最后，执行通用的设备注册流程
 	ret = device_register(&soc_dev->dev);
 	if (ret)
 		goto out3;

@@ -145,6 +145,7 @@ static void of_node_release(struct kref *kref)
 
 /**
  *	of_node_put - Decrement refcount of a node
+ *	递减指定device_node的引用计数值
  *	@node:	Node to dec refcount, NULL is supported to
  *		simplify writing of callers
  *
@@ -712,14 +713,17 @@ EXPORT_SYMBOL(of_find_node_by_type);
 /**
  *	of_find_compatible_node - Find a node based on type and one of the
  *                                tokens in its "compatible" property
+ *  遍历指定device_node，根据"device_type"和"compatible"的属性值匹配所在的device_node
  *	@from:		The node to start searching from or NULL, the node
  *			you pass will not be searched, only the next one
  *			will; typically, you pass what the previous call
  *			returned. of_node_put() will be called on it
- *	@type:		The type string to match "device_type" or NULL to ignore
+ *			指定遍历的起点device_node,NULL意味着从root节点开始(实际遍历似乎是从下一级device_node开始的，没空细看)
+ *	@type:		The type string to match "device_type" or NULL to ignore    用于指定需要匹配的"device_type"属性值，NULL表示忽略匹配"device_type"
  *	@compatible:	The string to match to one of the tokens in the device
- *			"compatible" list.
+ *			"compatible" list.      用于指定需要匹配的"compatible"属性值
  *
+ * 备注: 本函数会累加匹配到的device_node的引用计数，所以用完之后要记得调用of_node_put
  *	Returns a node pointer with refcount incremented, use
  *	of_node_put() on it when done.
  */
@@ -736,6 +740,7 @@ struct device_node *of_find_compatible_node(struct device_node *from,
 		    of_node_get(np))
 			break;
 	}
+    // 这里会对from节点尝试递减其引用计数(?)
 	of_node_put(from);
 	raw_spin_unlock_irqrestore(&devtree_lock, flags);
 	return np;
@@ -1094,10 +1099,11 @@ EXPORT_SYMBOL_GPL(of_property_read_u64);
 
 /**
  * of_property_read_string - Find and read a string from a property
+ * 在指定的device_node中查找指定属性的值
  * @np:		device node from which the property value is to be read.
  * @propname:	name of the property to be searched.
  * @out_string:	pointer to null terminated return string, modified only if
- *		return value is 0.
+ *		return value is 0. 用于存放找到的属性值
  *
  * Search for a property in a device tree node and retrieve a null
  * terminated string value (pointer to data, not a copy). Returns 0 on

@@ -57,6 +57,7 @@ static void __init imx6ul_enet_phy_init(void)
 	phy_register_fixup_for_uid(PHY_ID_KSZ8081, 0xffffffff,	ksz8081_phy_fixup);
 }
 
+// imx6ul板卡的以太网控制器初始化
 static inline void imx6ul_enet_init(void)
 {
 	imx6ul_enet_clk_init();
@@ -72,14 +73,16 @@ static void __init imx6ul_init_machine(void)
     // 看门狗初始化(imx6ul实际使用1号看门狗)
 	mxc_arch_reset_init_dt();
 
+    // imx6ul型号的soc层面初始化，初始化成功后返回一个device指针，对应一个soc设备
 	parent = imx_soc_device_init();
 	if (parent == NULL)
 		pr_warn("failed to initialize soc device\n");
 
-    // 从root node开始遍历设备树device_node结构，创建对应的platform设备
+    // 从root node开始遍历设备树device_node结构，创建对应的platform设备，并注册到platform总线上，如果匹配到驱动就要开始probe...
 	of_platform_populate(NULL, of_default_bus_match_table,
 					NULL, parent);
 
+    // 以太网控制器初始化
 	imx6ul_enet_init();
 	imx_anatop_init();
 	imx6ul_pm_init();

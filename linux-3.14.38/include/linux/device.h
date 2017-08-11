@@ -742,7 +742,7 @@ struct device {
 
 	struct device_private	*p;
 
-	struct kobject kobj;
+	struct kobject kobj;        // 抽象了linux设备基本结构中的共性部分
 	const char		*init_name; /* initial name of the device */
 	const struct device_type *type;
 
@@ -750,7 +750,7 @@ struct device {
 					 * its driver.
 					 */
 
-	struct bus_type	*bus;		/* type of bus device is on */
+	struct bus_type	*bus;		/* type of bus device is on 指向所属的总线 */
 	struct device_driver *driver;	/* which driver has allocated this
 					   device */
 	void		*platform_data;	/* Platform specific data, device
@@ -796,9 +796,9 @@ struct device {
 
 	struct klist_node	knode_class;
 	struct class		*class;
-	const struct attribute_group **groups;	/* optional groups */
+	const struct attribute_group **groups;	/* optional groups 指向所属的属性组表头(比如soc_attr_groups) */
 
-	void	(*release)(struct device *dev);
+	void	(*release)(struct device *dev); // 指向释放本device结构的回调函数
 	struct iommu_group	*iommu_group;
 
 	bool			offline_disabled:1;

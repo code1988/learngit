@@ -56,6 +56,7 @@ struct regmap *syscon_regmap_lookup_by_compatible(const char *s)
 	struct device_node *syscon_np;
 	struct regmap *regmap;
 
+    // 从root节点开始遍历，只根据"compatible"的属性值匹配所在的device_node
 	syscon_np = of_find_compatible_node(NULL, NULL, s);
 	if (!syscon_np)
 		return ERR_PTR(-ENODEV);

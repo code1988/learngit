@@ -880,6 +880,7 @@ static void device_remove_class_symlinks(struct device *dev)
 
 /**
  * dev_set_name - set a device name
+ * 通过格式化字符串设置设备名
  * @dev: device
  * @fmt: format string for the device's name
  */

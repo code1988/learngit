@@ -250,6 +250,7 @@ static int kobject_add_internal(struct kobject *kobj)
 
 /**
  * kobject_set_name_vargs - Set the name of an kobject
+ * 设置指定kobject中的对象名
  * @kobj: struct kobject to set the name of
  * @fmt: format string used to build the name
  * @vargs: vargs to format the string.
