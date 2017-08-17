@@ -25,11 +25,14 @@
 #include "common.h"
 #include "cpuidle.h"
 
+// imx6ul板卡的以太网控制器时钟初始化
 static void __init imx6ul_enet_clk_init(void)
 {
 	struct regmap *gpr;
 
+    // 根据"compatible"属性值查找对应的iomuxc-gpr模块的regmap句柄
 	gpr = syscon_regmap_lookup_by_compatible("fsl,imx6ul-iomuxc-gpr");
+    // 这里使能了ENET1和ENET2的输出时钟
 	if (!IS_ERR(gpr))
 		regmap_update_bits(gpr, IOMUXC_GPR1, IMX6UL_GPR1_ENET_CLK_DIR,
 				   IMX6UL_GPR1_ENET_CLK_OUTPUT);
@@ -51,6 +54,7 @@ static int ksz8081_phy_fixup(struct phy_device *dev)
 	return 0;
 }
 
+// imx6ul板卡的以太网控制器phy初始化
 #define PHY_ID_KSZ8081	0x00221560
 static void __init imx6ul_enet_phy_init(void)
 {

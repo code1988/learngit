@@ -539,7 +539,8 @@ static void platform_drv_shutdown(struct device *_dev)
 
 /**
  * __platform_driver_register - register a driver for platform-level devices
- * @drv: platform driver structure
+ * 注册一个用于platform设备的驱动
+ * @drv: platform driver structure 指向需要被注册的驱动
  * @owner: owning module/driver
  */
 int __platform_driver_register(struct platform_driver *drv,

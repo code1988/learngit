@@ -2396,7 +2396,9 @@ static void netlink_cmsg_recv_pktinfo(struct msghdr *msg, struct sk_buff *skb)
 }
 
 /* 用户态对netlink接口的套接字执行系统调用sendmsg()时就会进入到这里
- *
+ * @sock    - 指向用户进程的netlink套接字，也就是发送方的
+ * @msg     - 承载了发送方传递的netlink消息
+ * @len     - netlink消息长度
  */
 static int netlink_sendmsg(struct kiocb *kiocb, struct socket *sock,
 			   struct msghdr *msg, size_t len)

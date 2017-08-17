@@ -61,17 +61,17 @@ enum kobject_action {
 /* 抽象出来的linux基本设备模型device中的共性部分，并且每个kobject在sysfs中都有一个对应的节点
  */
 struct kobject {
-	const char		*name;          // 对象名
+	const char		*name;          // 对象名，同时也是sysfs中所在节点目录名
 	struct list_head	entry;
 	struct kobject		*parent;    // 通过parent指针，内核中所有kobject被联系起来
-	struct kset		*kset;
-	struct kobj_type	*ktype;
+	struct kset		*kset;          // 所属的kset，可以为NULL
+	struct kobj_type	*ktype;     // 所属的kobj_type，不能为NULL
 	struct kernfs_node	*sd;
 	struct kref		kref;           // 引用计数，为0时释放本结构
 #ifdef CONFIG_DEBUG_KOBJECT_RELEASE
 	struct delayed_work	release;
 #endif
-	unsigned int state_initialized:1;
+	unsigned int state_initialized:1;   // 标示该kobject是否完成了初始化
 	unsigned int state_in_sysfs:1;
 	unsigned int state_add_uevent_sent:1;
 	unsigned int state_remove_uevent_sent:1;
@@ -148,6 +148,7 @@ struct sock;
 
 /**
  * struct kset - a set of kobjects of a specific type, belonging to a specific subsystem.
+ * 一系列相似kobject的集合
  *
  * A kset defines a group of kobjects.  They can be individually
  * different "types" but overall these kobjects all want to be grouped

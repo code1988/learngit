@@ -944,6 +944,7 @@ static void device_remove_sys_dev_entry(struct device *dev)
 	}
 }
 
+// 初始化device中私有数据管理块
 int device_private_init(struct device *dev)
 {
 	dev->p = kzalloc(sizeof(*dev->p), GFP_KERNEL);

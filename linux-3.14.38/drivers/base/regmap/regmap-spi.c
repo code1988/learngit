@@ -113,6 +113,7 @@ static struct regmap_bus regmap_spi = {
 
 /**
  * regmap_init_spi(): Initialise register map
+ * regmap衍生API，用于初始化一个SPI设备的regmap
  *
  * @spi: Device that will be interacted with
  * @config: Configuration for register map
@@ -129,6 +130,7 @@ EXPORT_SYMBOL_GPL(regmap_init_spi);
 
 /**
  * devm_regmap_init_spi(): Initialise register map
+ * regmap衍生API，用于初始化一个SPI设备的regmap(带GC版本)
  *
  * @spi: Device that will be interacted with
  * @config: Configuration for register map

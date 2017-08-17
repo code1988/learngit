@@ -1,6 +1,6 @@
 目前为止，netlink协议族支持32种(MAX_LINKS)协议类型，其中已经被预定义的有22种。
 在实际项目中，如果有定制化的需求时，最好不要去占用剩下的暂未定义的协议类型ID号，而是使用预定义的通用netlink协议类型NETLINK_GENERIC来进行扩展。
-LINUX中跟netlink相关的核心代码位于net/netlink目录中，其中核心头文件主要有3个(这些都是所有协议类型的netllink共享的)：
+LINUX中跟netlink相关的核心代码位于net/netlink目录中，其中核心头文件主要有3个(这些都是所有协议类型的netlink共享的)：
         [1]. net/netlink/af_netlink.h   - 这个头文件主要包含了实现netlink的核心数据结构
         [2]. include/linux/netlink.h    - 这个头文件主要包含了netlink套接字相关的内容
         [3]. include/net/netlink.h      - 这个头文件主要包含了netlink消息相关的通用格式

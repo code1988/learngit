@@ -1,5 +1,9 @@
 /*
  * Register map access API
+ * 这套regmap API是内核3.1开始引入的特性
+ * 这套API应用于驱动和硬件寄存器之间,目的是提取出I2C、SPI等慢速I/O驱动上的重复逻辑，提供一种通用的接口来操作底层硬件上的寄存器
+ *
+ * 本文件提供了一套regmap机制的基础API
  *
  * Copyright 2011 Wolfson Microelectronics plc
  *
@@ -382,11 +386,14 @@ static void regmap_range_exit(struct regmap *map)
 
 /**
  * regmap_init(): Initialise register map
+ * 初始化一个指定设备的regmap，成功则返回一个regmap句柄
  *
- * @dev: Device that will be interacted with
+ * 备注：本函数不允许被直接调用，而是应该封装在具体的regmap总线初始化函数中
+ *
+ * @dev: Device that will be interacted with    指向需要关联的设备
  * @bus: Bus-specific callbacks to use with device
  * @bus_context: Data passed to bus-specific callbacks
- * @config: Configuration for register map
+ * @config: Configuration for register map      指向一份具体的寄存器配置信息
  *
  * The return value will be an ERR_PTR() on error or a valid pointer to
  * a struct regmap.  This function should generally not be called
@@ -771,6 +778,9 @@ static void devm_regmap_release(struct device *dev, void *res)
 
 /**
  * devm_regmap_init(): Initialise managed register map
+ * 初始化一个指定设备的regmap(带GC版本)
+ *
+ * 备注：本函数不允许被直接调用，而是应该封装在具体的regmap总线初始化函数中
  *
  * @dev: Device that will be interacted with
  * @bus: Bus-specific callbacks to use with device
@@ -1319,10 +1329,11 @@ int _regmap_write(struct regmap *map, unsigned int reg,
 
 /**
  * regmap_write(): Write a value to a single register
+ * 写一个uint32_t的值到寄存器
  *
- * @map: Register map to write to
- * @reg: Register to write to
- * @val: Value to be written
+ * @map: Register map to write to   regmap句柄
+ * @reg: Register to write to       指定写寄存器的地址
+ * @val: Value to be written        要写入的值
  *
  * A value of zero will be returned on success, a negative errno will
  * be returned in error cases.
@@ -1759,10 +1770,11 @@ static int _regmap_read(struct regmap *map, unsigned int reg,
 
 /**
  * regmap_read(): Read a value from a single register
+ * 从指定寄存器读一个uint32_t的值
  *
- * @map: Register map to read from
- * @reg: Register to be read from
- * @val: Pointer to store read value
+ * @map: Register map to read from      regmap句柄
+ * @reg: Register to be read from       指定读寄存器地址
+ * @val: Pointer to store read value    用于存放读取的值
  *
  * A value of zero will be returned on success, a negative errno will
  * be returned in error cases.
@@ -1955,6 +1967,13 @@ int regmap_bulk_read(struct regmap *map, unsigned int reg, void *val,
 }
 EXPORT_SYMBOL_GPL(regmap_bulk_read);
 
+/* 改变指定寄存器连续某些位上的值
+ * @map     - regmap句柄
+ * @reg     - 寄存器地址(实际这里是个偏移量)
+ * @mask    - 要改变的位掩码
+ * @val     - 要写入的新值
+ * @change  - 用来存放是否改变成功
+ */
 static int _regmap_update_bits(struct regmap *map, unsigned int reg,
 			       unsigned int mask, unsigned int val,
 			       bool *change)
@@ -1981,6 +2000,7 @@ static int _regmap_update_bits(struct regmap *map, unsigned int reg,
 
 /**
  * regmap_update_bits: Perform a read/modify/write cycle on the register map
+ * 改变指定寄存器上某些位的值(显然，本函数就是个封装)
  *
  * @map: Register map to update
  * @reg: Register to update

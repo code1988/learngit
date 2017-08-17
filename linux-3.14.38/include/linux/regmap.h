@@ -3,6 +3,8 @@
 
 /*
  * Register map access API
+ * 这套regmap API是内核3.1开始引入的特性
+ * 这套API应用于驱动和硬件寄存器之间,目的是提取出I2C、SPI等慢速I/O驱动上的重复逻辑，提供一种通用的接口来操作底层硬件上的寄存器
  *
  * Copyright 2011 Wolfson Microelectronics plc
  *
@@ -96,6 +98,7 @@ typedef void (*regmap_unlock)(void *);
 
 /**
  * Configuration for the register map of a device.
+ * 定义了一个设备的通用寄存器配置信息
  *
  * @name: Optional name of the regmap. Useful when a device has multiple
  *        register regions.
@@ -182,10 +185,10 @@ typedef void (*regmap_unlock)(void *);
 struct regmap_config {
 	const char *name;
 
-	int reg_bits;
-	int reg_stride;
-	int pad_bits;
-	int val_bits;
+	int reg_bits;       // 寄存器地址的位数(强制项)
+	int reg_stride;     // 寄存器地址的步长，如果为0,意味着使用缺省值1。对于32位寄存器地址来说，一般这里对应就是4
+	int pad_bits;       
+	int val_bits;       // 寄存器值的位数(强制项)
 
 	bool (*writeable_reg)(struct device *dev, unsigned int reg);
 	bool (*readable_reg)(struct device *dev, unsigned int reg);
@@ -277,6 +280,7 @@ typedef void (*regmap_hw_free_context)(void *context);
 
 /**
  * Description of a hardware bus for the register map infrastructure.
+ * 定义了regmap模块使用的硬件总线模型，使用regmap的设备最终都是通过该总线统一进行I/O操作
  *
  * @fast_io: Register IO is fast. Use a spinlock instead of a mutex
  *	     to perform locking. This field is ignored if custom lock/unlock
@@ -343,6 +347,7 @@ struct regmap *devm_regmap_init_mmio_clk(struct device *dev, const char *clk_id,
 
 /**
  * regmap_init_mmio(): Initialise register map
+ * regmap衍生API，用于初始化一个MMIO设备的regmap(带GC版本)
  *
  * @dev: Device that will be interacted with
  * @regs: Pointer to memory-mapped IO region

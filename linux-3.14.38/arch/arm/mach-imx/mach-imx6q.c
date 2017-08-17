@@ -366,6 +366,7 @@ static void __init imx6q_enet_clk_sel(void)
 		pr_err("failed to find fsl,imx6q-iomux-gpr regmap\n");
 }
 
+// 根据传入的"compatible"属性值初始化匹配的imx6系列板卡以太网MAC控制器
 #define OCOTP_MACn(n)	(0x00000620 + (n) * 0x10)
 void __init imx6_enet_mac_init(const char *compatible)
 {
@@ -379,6 +380,7 @@ void __init imx6_enet_mac_init(const char *compatible)
 	int i;
 
 	for (i = 0; i < 2; i++) {
+        // 根据"compatible"属性值查找匹配的以太网设备device_node
 		enet_np = of_find_compatible_node(from, NULL, compatible);
 		if (!enet_np)
 			return;
@@ -388,6 +390,7 @@ void __init imx6_enet_mac_init(const char *compatible)
 		if (of_get_mac_address(enet_np))
 			goto put_enet_node;
 
+        // 根据"compatible"属性值查找匹配的ocopt设备device_node
 		ocotp_np = of_find_compatible_node(NULL, NULL, "fsl,imx6q-ocotp");
 		if (!ocotp_np) {
 			pr_warn("failed to find ocotp node\n");
@@ -400,6 +403,7 @@ void __init imx6_enet_mac_init(const char *compatible)
 			goto put_ocotp_node;
 		}
 
+        // 获取mac地址
 		macaddr_low = readl_relaxed(base + OCOTP_MACn(1));
 		if (i)
 			macaddr1_high = readl_relaxed(base + OCOTP_MACn(2));

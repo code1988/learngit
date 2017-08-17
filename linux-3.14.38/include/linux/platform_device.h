@@ -188,6 +188,7 @@ struct platform_driver {
 
 /*
  * use a macro to avoid include chaining to get THIS_MODULE
+ * platform驱动注册封装函数
  */
 #define platform_driver_register(drv) \
 	__platform_driver_register(drv, THIS_MODULE)
@@ -206,6 +207,7 @@ static inline void *platform_get_drvdata(const struct platform_device *pdev)
 	return dev_get_drvdata(&pdev->dev);
 }
 
+// 将私有数据data记录到platform设备私有数据块中
 static inline void platform_set_drvdata(struct platform_device *pdev,
 					void *data)
 {

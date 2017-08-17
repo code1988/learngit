@@ -91,6 +91,7 @@ static int regmap_i2c_read(void *context,
 		return -EIO;
 }
 
+// 定义了regmap模块使用的I2C总线模型，驱动操作I2C最终都是通过该总线统一进行I/O操作
 static struct regmap_bus regmap_i2c = {
 	.write = regmap_i2c_write,
 	.gather_write = regmap_i2c_gather_write,
@@ -99,6 +100,7 @@ static struct regmap_bus regmap_i2c = {
 
 /**
  * regmap_init_i2c(): Initialise register map
+ * regmap衍生API，用于初始化一个I2C设备的regmap
  *
  * @i2c: Device that will be interacted with
  * @config: Configuration for register map
@@ -115,6 +117,7 @@ EXPORT_SYMBOL_GPL(regmap_init_i2c);
 
 /**
  * devm_regmap_init_i2c(): Initialise managed register map
+ * regmap衍生API，用于初始化一个I2C设备的regmap(带GC版本)
  *
  * @i2c: Device that will be interacted with
  * @config: Configuration for register map

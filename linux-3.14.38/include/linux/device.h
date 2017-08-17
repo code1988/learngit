@@ -240,8 +240,8 @@ extern struct klist *bus_get_device_klist(struct bus_type *bus);
  * of any specific device.
  */
 struct device_driver {
-	const char		*name;
-	struct bus_type		*bus;
+	const char		*name;      // 驱动名
+	struct bus_type		*bus;   // 所属总线
 
 	struct module		*owner;
 	const char		*mod_name;	/* used for built-in modules */

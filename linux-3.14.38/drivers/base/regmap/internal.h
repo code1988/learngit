@@ -1,5 +1,7 @@
 /*
  * Register map access API internal header
+ * 这套regmap API是内核3.1开始引入的特性
+ * 这套API应用于驱动和硬件寄存器之间,目的是提取出I2C、SPI等慢速I/O驱动上的重复逻辑，提供一种通用的接口来操作底层硬件上的寄存器
  *
  * Copyright 2011 Wolfson Microelectronics plc
  *
@@ -48,6 +50,7 @@ struct regmap_async {
 	void *work_buf;
 };
 
+// regmap的核心结构体，可以理解为regmap操作句柄
 struct regmap {
 	struct mutex mutex;
 	spinlock_t spinlock;
