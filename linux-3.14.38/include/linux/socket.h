@@ -239,7 +239,7 @@ struct ucred {
    以下这些MSG_*都是附加标志位，用于设置send/recv系统调用中的flags参数
  */
  
-#define MSG_OOB		1
+#define MSG_OOB		1       // 带外数据(Out-Of-Band)标记，收发TCP数据时都可以设置，分别表示需要接收和发送带外数据(也称为TCP紧急数据)
 #define MSG_PEEK	2
 #define MSG_DONTROUTE	4
 #define MSG_TRYHARD     4       /* Synonym for MSG_DONTROUTE for DECnet */

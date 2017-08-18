@@ -287,7 +287,7 @@ LINUX中跟netlink相关的核心代码位于net/netlink目录中，其中核心
 4. 绑定netlink套接字
    由于内核netlink套接字在创建时就固定绑在了portid=0的位置，并且内核套接字目前没有反向监听组播的功能，所以以下的绑定操作就是针对用户进程netlink套接字。
     
-    /* 以下就是用户进程对netlink套接字调用bind()系统调用后，内核会执行的一部分操作
+    /* 用户进程对netlink套接字调用bing()系统调用后，内核执行netlink操作的总入口函数
      * @sock    - 要绑定的socket结构，也可以认为是netlink套接字
      * @addr    - 要绑定的套接字地址
      * @addr_len- 套接字地址长度

@@ -2406,7 +2406,7 @@ static int netlink_sendmsg(struct kiocb *kiocb, struct socket *sock,
 	struct sock_iocb *siocb = kiocb_to_siocb(kiocb);
 	struct sock *sk = sock->sk;
 	struct netlink_sock *nlk = nlk_sk(sk);
-	DECLARE_SOCKADDR(struct sockaddr_nl *, addr, msg->msg_name);
+	DECLARE_SOCKADDR(struct sockaddr_nl *, addr, msg->msg_name);    // 显然，这里定义的addr指向netlink消息的目的地址
 	u32 dst_portid;
 	u32 dst_group;
 	struct sk_buff *skb;
@@ -2414,9 +2414,11 @@ static int netlink_sendmsg(struct kiocb *kiocb, struct socket *sock,
 	struct scm_cookie scm;
 	u32 netlink_skb_flags = 0;
 
+    // netlink消息不支持传输带外数据
 	if (msg->msg_flags&MSG_OOB)
 		return -EOPNOTSUPP;
 
+    // 辅助消息处理
 	if (NULL == siocb->scm)
 		siocb->scm = &scm;
 
