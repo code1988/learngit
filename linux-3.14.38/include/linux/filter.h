@@ -22,6 +22,7 @@ struct compat_sock_fprog {
 struct sk_buff;
 struct sock;
 
+// 定义了BPF过滤器结构
 struct sk_filter
 {
 	atomic_t		refcnt;

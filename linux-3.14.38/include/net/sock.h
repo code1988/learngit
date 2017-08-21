@@ -360,7 +360,7 @@ struct sock {
 	atomic_t		sk_drops;
 	int			sk_rcvbuf;
 
-	struct sk_filter __rcu	*sk_filter;
+	struct sk_filter __rcu	*sk_filter;     // 指向一个BPF过滤器
 	struct socket_wq __rcu	*sk_wq;
 
 #ifdef CONFIG_NET_DMA
@@ -382,7 +382,7 @@ struct sock {
 	unsigned int		sk_shutdown  : 2,
 				sk_no_check  : 2,
 				sk_userlocks : 4,
-				sk_protocol  : 8,           // 记录了该sock的具体协议类型
+				sk_protocol  : 8,           // 记录了该sock对应的协议族下的具体协议类型(比如NETLINK_ROUTE)
 				sk_type      : 16;
 	kmemcheck_bitfield_end(flags);
 	int			sk_wmem_queued;
@@ -929,7 +929,7 @@ static inline void sk_prot_clear_nulls(struct sock *sk, int size)
 }
 
 /* Networking protocol blocks we attach to sockets.
- * 定义了一个通用的网络协议块，跟sock结构密切相关
+ * 定义了一个通用的网络协议块，跟sock结构密切相关(一个proto对应一个协议族的操作集合，所有属于该协议族的sock共用对应的proto)
  * 
  * 备注：这是一个socket层到传输层的接口
  * socket layer -> transport layer interface
@@ -2137,13 +2137,13 @@ static inline gfp_t gfp_any(void)
 	return in_softirq() ? GFP_ATOMIC : GFP_KERNEL;
 }
 
-// 计算接收超时时间
+// 计算接收超时时间(如果是非阻塞调用，则返回0)
 static inline long sock_rcvtimeo(const struct sock *sk, bool noblock)
 {
 	return noblock ? 0 : sk->sk_rcvtimeo;
 }
 
-// 计算发送超时时间
+// 计算发送超时时间(如果是非阻塞调用，则返回0)
 static inline long sock_sndtimeo(const struct sock *sk, bool noblock)
 {
 	return noblock ? 0 : sk->sk_sndtimeo;

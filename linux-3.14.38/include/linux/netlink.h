@@ -21,15 +21,15 @@ enum netlink_skb_flags {
 	NETLINK_SKB_MMAPED	= 0x1,	/* Packet data is mmaped */
 	NETLINK_SKB_TX		= 0x2,	/* Packet was sent by userspace */
 	NETLINK_SKB_DELIVERED	= 0x4,	/* Packet was delivered */
-	NETLINK_SKB_DST		= 0x8,	/* Dst set in sendto or sendmsg */
+	NETLINK_SKB_DST		= 0x8,	/* Dst set in sendto or sendmsg 用于标示该netlink消息被设置了自定义的目的地址*/
 };
 
 // skb中针对netlink消息的附加信息
 struct netlink_skb_parms {
 	struct scm_creds	creds;		/* Skb credentials	*/
-	__u32			portid;         // 记录了发送该netlink消息的源netlink套接字绑定的单播地址，
-	__u32			dst_group;      // 记录了发送该netlink消息时指定的目的地址
-	__u32			flags;          // 记录了该netlink消息的附加信息
+	__u32			portid;         // 记录了发送该netlink消息的源netlink套接字绑定的单播地址(注意，不是目的单播地址！)
+	__u32			dst_group;      // 记录了发送该netlink消息时指定的目的组播地址
+	__u32			flags;          // 就是netlink_skb_flags类型的属性集合
 	struct sock		*sk;            // 记录了该netlink消息的源sock结构
 };
 
@@ -42,7 +42,7 @@ extern void netlink_table_grab(void);
 extern void netlink_table_ungrab(void);
 
 #define NL_CFG_F_NONROOT_RECV	(1 << 0)    // 用来限定非超级用户是否可以绑定到多播组
-#define NL_CFG_F_NONROOT_SEND	(1 << 1)    // 用来限定非超级用户是否可以发送组播
+#define NL_CFG_F_NONROOT_SEND	(1 << 1)    // 用来限定非超级用户是否可以发送组播(似乎也限定了非超级用户是否可以发送目的地址不是kernel的单播)
 
 /* optional Netlink kernel configuration parameters */
 // 内核创建具体协议类型的netlink套接字时传入的配置参数控制块
@@ -116,6 +116,7 @@ netlink_skb_clone(struct sk_buff *skb, gfp_t gfp_mask)
  *	But we should limit to 8K so that userspace does not have to
  *	use enormous buffer sizes on recvmsg() calls just to avoid
  *	MSG_TRUNC when PAGE_SIZE is very large.
+ *	skb的数据缓冲区长度上限的合理值跟page大小有关
  */
 #if PAGE_SIZE < 8192UL
 #define NLMSG_GOODSIZE	SKB_WITH_OVERHEAD(PAGE_SIZE)

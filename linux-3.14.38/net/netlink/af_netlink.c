@@ -1459,7 +1459,7 @@ bool netlink_net_capable(const struct sk_buff *skb, int cap)
 }
 EXPORT_SYMBOL(netlink_net_capable);
 
-/* 判断该套接字是否具有flag标识的某项权限
+/* 判断该netlink套接字所属的具体协议类型是否具有flag标识的某项权限
  * 
  * 备注：对于超级用户，flag标识的权限都开放；对于非超级用户，则只有已经被设置为允许的操作才开放
  */
@@ -1705,6 +1705,12 @@ struct sock *netlink_getsockbyfilp(struct file *filp)
 	return sock;
 }
 
+/* 分配一个用于承载netlink消息的skb
+ * @size    - 要分配的skb数据缓冲区大小
+ * @broadcast   - 目的组播地址
+ *
+ * 备注：跟netlink_alloc_skb的区别在于本函数用于分配大尺寸skb数据缓冲区
+ */
 static struct sk_buff *netlink_alloc_large_skb(unsigned int size,
 					       int broadcast)
 {
@@ -1881,8 +1887,14 @@ static int netlink_unicast_kernel(struct sock *sk, struct sk_buff *skb,
 /* 发送netlink单播消息
  *
  * @ssk         - 源sock结构
+ * @skb         - 属于发送方的用于承载netlink消息的skb
  * @portid      - 目的单播地址
  * @nonblock    - 1：非阻塞调用，2：阻塞调用
+ *
+ * 备注: 以下3种情况都会调用到本函数：
+ *          [1]. kernel     --单播--> 用户进程
+ *          [2]. 用户进程   --单播--> kernel
+ *          [3]. 用户进程a  --单播--> 用户进程b
  */
 int netlink_unicast(struct sock *ssk, struct sk_buff *skb,
 		    u32 portid, int nonblock)
@@ -1904,11 +1916,12 @@ retry:
 		return PTR_ERR(sk);
 	}
 
-    // 如果该目的netlink套接字属于内核，则将netlink消息往内核单播
+    // 如果该目的netlink套接字属于内核，则进入第 [2] 种情况下的分支
 	if (netlink_is_kernel(sk))
 		return netlink_unicast_kernel(sk, skb, ssk);
 
-    // 程序运行到这里意味着该目的netlink套接字属于用户进程
+    // 程序运行到这里，意味着以下属于第 [1]/[3] 种情况下的分支
+    // 对于发往用户进程的单播消息都要调用BPF过滤
 	if (sk_filter(sk, skb)) {
 		err = skb->len;
 		kfree_skb(skb);
@@ -1926,11 +1939,13 @@ retry:
 }
 EXPORT_SYMBOL(netlink_unicast);
 
-/* 创建一个用于存储netlink消息的skb结构
+/* 分配一个用于承载netlink消息的skb结构
  *
  * @ssk     - netlink消息的源sock结构
  * @size    - 将要创建的skb数据缓冲区大小
  * @dst_portid  - netlink消息的目的单播地址
+ *
+ * 备注：跟netlink_alloc_large_skb的区别在于本函数用于小尺寸skb数据缓冲区(猜测)
  */
 struct sk_buff *netlink_alloc_skb(struct sock *ssk, unsigned int size,
 				  u32 dst_portid, gfp_t gfp_mask)
@@ -2426,20 +2441,21 @@ static int netlink_sendmsg(struct kiocb *kiocb, struct socket *sock,
 	if (err < 0)
 		return err;
 
-    // 获取该netlink消息的目的单播和组播地址
 	if (msg->msg_namelen) {
 		err = -EINVAL;
+        // 如果用户进程指定了目的地址，则对其进行合法性检测，然后从中获取单播地址和组播地址
 		if (addr->nl_family != AF_NETLINK)
 			goto out;
 		dst_portid = addr->nl_pid;
 		dst_group = ffs(addr->nl_groups);
 		err =  -EPERM;
+        // 如果有设置目的组播地址，或者目的单播地址不是发往kernel，就需要检查具体的netlink协议是否支持
 		if ((dst_group || dst_portid) &&
 		    !netlink_allowed(sock, NL_CFG_F_NONROOT_SEND))
 			goto out;
 		netlink_skb_flags |= NETLINK_SKB_DST;
 	} else {
-        // 如果用户进程没有指定目的地址，则使用该netlink套接字默认的
+        // 如果用户进程没有指定目的地址，则使用该netlink套接字默认的(缺省都是0,可以通过connect系统调用指定)
 		dst_portid = nlk->dst_portid;
 		dst_group = nlk->dst_group;
 	}
@@ -2463,9 +2479,9 @@ static int netlink_sendmsg(struct kiocb *kiocb, struct socket *sock,
 	err = -EMSGSIZE;
 	if (len > sk->sk_sndbuf - 32)
 		goto out;
-	err = -ENOBUFS;
 
     // 分配skb结构空间
+	err = -ENOBUFS;
 	skb = netlink_alloc_large_skb(len, dst_group);
 	if (skb == NULL)
 		goto out;
@@ -2476,8 +2492,8 @@ static int netlink_sendmsg(struct kiocb *kiocb, struct socket *sock,
 	NETLINK_CB(skb).creds	= siocb->scm->creds;
 	NETLINK_CB(skb).flags	= netlink_skb_flags;
 
-	err = -EFAULT;
     // 将数据从msg_iov拷贝到skb中
+	err = -EFAULT;
 	if (memcpy_fromiovec(skb_put(skb, len), msg->msg_iov, len)) {
 		kfree_skb(skb);
 		goto out;
@@ -2490,6 +2506,7 @@ static int netlink_sendmsg(struct kiocb *kiocb, struct socket *sock,
 		goto out;
 	}
 
+    // 至此，netlink消息已经被放入新创建的sbk中，接下来，内核根据单播还是组播消息，执行了不同的发送流程
     // 发送netlink组播消息
 	if (dst_group) {
 		atomic_inc(&skb->users);

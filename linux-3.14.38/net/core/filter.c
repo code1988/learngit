@@ -1,5 +1,6 @@
 /*
  * Linux Socket Filter - Kernel level socket filtering
+ * kernel中的BPF过滤器
  *
  * Author:
  *     Jay Schulist <jschlst@samba.org>
@@ -68,8 +69,9 @@ static inline void *load_pointer(const struct sk_buff *skb, int k,
 
 /**
  *	sk_filter - run a packet through a socket filter
- *	@sk: sock associated with &sk_buff
- *	@skb: buffer to filter
+ *	使传入的skb中的数据包通过相关连的套接字的BPF过滤器
+ *	@sk: sock associated with &sk_buff  指向跟skb关联的套接字
+ *	@skb: buffer to filter              指向承载了数据包的sbk结构
  *
  * Run the filter code and then cut skb->data to correct size returned by
  * sk_run_filter. If pkt_len is 0 we toss packet. If skb->len is smaller
@@ -110,6 +112,7 @@ EXPORT_SYMBOL(sk_filter);
 
 /**
  *	sk_run_filter - run a filter on a socket
+ *	在指定套接字上运行一个指定的过滤器
  *	@skb: buffer to run the filter on
  *	@fentry: filter to apply
  *
