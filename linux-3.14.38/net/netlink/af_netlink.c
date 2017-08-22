@@ -1744,6 +1744,12 @@ static struct sk_buff *netlink_alloc_large_skb(unsigned int size,
  * reference is dropped. The skb is not send to the destination, just all
  * all error checks are performed and memory in the queue is reserved.
  * Return values:
+ *
+ * @sk      - 指向目的sock结构
+ * @skb     - 属于发送方的承载了netlink消息的skb
+ * @timeo   - 超时时间
+ * @ssk     - 指向源sock结构
+ *
  * < 0: error. skb freed, reference to sock dropped.
  * 0: continue
  * 1: repeat lookup - reference dropped while waiting for socket memory.
@@ -1854,7 +1860,7 @@ static struct sk_buff *netlink_trim(struct sk_buff *skb, gfp_t allocation)
 /* 将单播netlink消息发往内核
  *
  * @sk  - 目的sock结构
- * @skb - 存储了netlink消息的skb
+ * @skb - 属于发送方的承载了netlink消息的skb
  * @ssk - 源sock结构
  */
 static int netlink_unicast_kernel(struct sock *sk, struct sk_buff *skb,
@@ -1887,7 +1893,7 @@ static int netlink_unicast_kernel(struct sock *sk, struct sk_buff *skb,
 /* 发送netlink单播消息
  *
  * @ssk         - 源sock结构
- * @skb         - 属于发送方的用于承载netlink消息的skb
+ * @skb         - 属于发送方的承载了netlink消息的skb
  * @portid      - 目的单播地址
  * @nonblock    - 1：非阻塞调用，2：阻塞调用
  *

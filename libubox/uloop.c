@@ -612,7 +612,7 @@ static void uloop_handle_processes(void)
 
 }
 
-// SIGINT信号的回调函数
+// SIGINT/SIGTERM信号的回调函数
 static void uloop_handle_sigint(int signo)
 {
 	uloop_cancelled = true;
