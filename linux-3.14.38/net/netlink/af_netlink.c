@@ -1862,15 +1862,19 @@ static struct sk_buff *netlink_trim(struct sk_buff *skb, gfp_t allocation)
  * @sk  - 目的sock结构
  * @skb - 属于发送方的承载了netlink消息的skb
  * @ssk - 源sock结构
+ *
+ * 备注：本函数只会在一种情况下被调用到：
+ *                  用户进程   --单播--> kernel 
  */
 static int netlink_unicast_kernel(struct sock *sk, struct sk_buff *skb,
 				  struct sock *ssk)
 {
 	int ret;
+    // 获取目的netlink套接字，也就是内核netlink套接字
 	struct netlink_sock *nlk = nlk_sk(sk);
 
 	ret = -ECONNREFUSED;
-    // 检查属于内核的netlink套接字是否注册了netlink_rcv回调(就是各个协议在创建内核netlink套接字时通常会传入的input函数)
+    // 检查内核netlink套接字是否注册了netlink_rcv回调(就是各个协议在创建内核netlink套接字时通常会传入的input函数)
 	if (nlk->netlink_rcv != NULL) {
 		ret = skb->len;
         // 设置该skb的所有者是内核的netlink套接字

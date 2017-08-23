@@ -37,8 +37,8 @@ struct netlink_sock {
 	struct netlink_callback	cb; // 用来记录该netlink套接字当前有效的操作集合
 	struct mutex		*cb_mutex;  // 这把锁在内核netlink套接字创建时传入，相同协议类型的netlink套接字共用一把锁
 	struct mutex		cb_def_mutex;
-	void			(*netlink_rcv)(struct sk_buff *skb);    // 指向所属的某个netlink协议的input回调函数
-	void			(*netlink_bind)(int group);             // 指向某个netlink协议自身特有的bind操作(如果未指定，就采用netlink通用策略)
+	void			(*netlink_rcv)(struct sk_buff *skb);    // 指向具体协议类型特有的input回调函数(只对内核netlink套接字有意义)
+	void			(*netlink_bind)(int group);     // 指向具体协议类型特有的bind操作(只对用户进程netlink套接字有意义，从所属netlink_table中的bind成员继承)
 	struct module		*module;
 #ifdef CONFIG_NETLINK_MMAP
 	struct mutex		pg_vec_lock;

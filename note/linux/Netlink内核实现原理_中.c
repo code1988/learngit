@@ -133,8 +133,21 @@ netlink支持用户进程和内核相互交互（两边都可以主动发起）�
         return netlink_sendskb(sk, skb);
     }
 
-    /* 以下是内核执行netlink单播消息发往内核netlink套接字的流程
-     * 
-     *
+    /* 内核执行netlink单播消息 [2] 号分支：来自用户进程的netlink消息单播发往内核netlink套接字的流程
+     * @sk  - 目的sock结构
+     * @skb - 属于发送方的承载了netlink消息的skb
+     * @ssk - 源sock结构
      */
+    static int netlink_unicast_kernel(struct sock *sk, struct sk_buff *skb,struct sock *ssk)
+    {
+        // 获取目的netlink套接字，也就是内核netlink套接字
+        struct netlink_sock *nlk = nlk_sk(sk);
+
+        // 检查内核netlink套接字是否注册了netlink_rcv回调(就是各个协议在创建内核netlink套接字时通常会传入的input函数)
+        if (nlk->netlink_rcv != NULL) {
+            ret = skb->len;
+            // 设置该skb的所有者是内核的netlink套接字
+            netlink_skb_set_owner_r(skb, sk);
+        }
+    }
     

@@ -1,0 +1,98 @@
+1. 安装
+    大致有3种安装方式：
+    [1] 各大linux发行版基本都有自带，只是版本老一点，以Debian为例
+        sudo apt-get install qemu
+    [2] 从官网源码安装
+        wget http://download.qemu-project.org/qemu-2.10.0-rc3.tar.xz
+        tar xvJf qemu-2.10.0-rc3.tar.xz
+        cd qemu-2.10.0-rc3
+        ./configure
+        make
+        make install
+    [3] 从git版本库源码安装
+        git clone git://git.qemu-project.org/qemu.git
+        cd qemu
+        git submodule init
+        git submodule update --recursive
+        ./configure
+        make
+        make install
+
+    注意点：执行"./configure"时不带参数会编译所有平台(arm、x86、mips等)的qemu，"--target-list="参数可以指定需要编译的平台
+            源码安装过程中可能会提示缺少某些库
+
+2. qemu-system-arm
+    qemu在这种模式下可以模拟一个完全独立的平台，并在这之上运行一个OS，比如可以在PC上模拟出一个运行linux的ARM
+    -machine/-M     :指定要模拟的板卡，可能通过"?"/"help"查看支持的板卡
+    -m              :指定分配给虚拟平台的内存 
+    -kernel         :指定内核映像文件(zImage/bzImage)路径
+    -dtb            :指定dtb文件路径
+    -initrd         :指定initrd文件路径
+    -s              :"-gdb tcp::1234"命令的缩写，如果要用gdb调试内核，就需要加上该选项
+    -S              :加上该选项后，内核会在执行第一条指令时停住，通常用于gdb调试时
+    -nographic      :关闭图形界面输出，并且重定向串口输入输出到控制台
+    -append         :指定传给内核的cmdline
+    -sd             :指定SD卡映像文件，可以将根文件系统放在SD上
+    -smp            :指定分配给虚拟平台的CPU数量
+
+
+3. qemu-arm
+    qemu在这种模式下可以运行跟当前平台指令集不同的可执行文件，比如可以在PC上运行一个通过arm-linux-gnueabihf-gcc编译出来的可执行文件
+
+4. 应用实例：利用qemu模拟arm平台进行内核源码gdb调试
+    要模拟的ARM平台的板卡: vexpress-a9
+    使用的工具链：arm-linux-gnueabihf-
+    配置并编译内核:
+                make CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm vexpress_defconfig
+                make CROSS_COMPILE=arm-linux-gnueabihf- ARCH=arm
+    安装busybox:
+                cd busybox-1.26.2
+                make defconfig
+                make CROSS_COMPILE=arm-linux-gnueabi-
+                make install
+    制作根文件系统的脚本:
+                
+                #!/bin/sh
+
+                sudo rm -rf rootfs
+                sudo rm -rf tmpfs
+                sudo rm -f a9rootfs.ext3
+
+                sudo mkdir rootfs
+                sudo cp busybox-1.26.2/_install/*  rootfs/ -raf
+
+                sudo mkdir -p rootfs/proc/
+                sudo mkdir -p rootfs/sys/
+                sudo mkdir -p rootfs/tmp/
+                sudo mkdir -p rootfs/root/
+                sudo mkdir -p rootfs/var/
+                sudo mkdir -p rootfs/mnt/
+
+                sudo cp etc rootfs/ -arf
+
+                sudo cp -arf /opt/gcc-linaro-arm-linux-gnueabihf-4.9-2014.07_linux/arm-linux-gnueabihf/lib rootfs/
+
+                sudo rm rootfs/lib/*.a
+                sudo /opt/gcc-linaro-arm-linux-gnueabihf-4.9-2014.07_linux/bin/arm-linux-gnueabihf-strip rootfs/lib/*
+
+                sudo mkdir -p rootfs/dev/
+                sudo mknod rootfs/dev/tty1 c 4 1
+                sudo mknod rootfs/dev/tty2 c 4 2
+                sudo mknod rootfs/dev/tty3 c 4 3
+                sudo mknod rootfs/dev/tty4 c 4 4
+                sudo mknod rootfs/dev/console c 5 1
+                sudo mknod rootfs/dev/null c 1 3
+
+                sudo dd if=/dev/zero of=a9rootfs.ext3 bs=1M count=32
+                sudo mkfs.ext3 a9rootfs.ext3
+
+                sudo mkdir -p tmpfs
+                sudo mount -t ext3 a9rootfs.ext3 tmpfs/ -o loop
+                sudo cp -r rootfs/*  tmpfs/
+                sudo umount tmpfs
+
+    完成上述步骤后，就可以启动qemu来模拟vexpress开发板了:
+                qemu-system-arm -M vexpress-a9 -m 512M -nographic -dtb /dtb文件路径/vexpress-v2p-ca9.dtb -kernel /kernel映像文件路径/zImage -append "root=/dev/mmcblk0 rw  console=ttyAMA0" -sd ./a9rootfs.ext3
+
+    注意点：这条启动命令是在当前的terminal上运行虚拟系统。"qemu-system-arm -M vexpress-a9 -m 512M -kernel /kernel映像文件路径/zImage -append "root=/dev/mmcblk0 rw  console=tty0" -sd ./a9rootfs.ext3"运行这条命令就可以创建一个专门的界面运行虚拟系统。
+            

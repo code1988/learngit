@@ -21,6 +21,7 @@
 #define __MTD_ABI_H__
 
 #include <linux/types.h>
+#include <mtd/mtd-abi.h>
 
 struct erase_info_user {
 	__u32 start;
