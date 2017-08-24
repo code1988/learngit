@@ -85,7 +85,7 @@
              @opt   -   WCONTINUED  : 跟作业控制相关，略
                         WNOHANG     : 设置waitpid为非阻塞，意味着指定pid如果还未终止，则返回0
                         WUNTRACED   : 跟作业控制相关，略
-             @返回值- 基本类似waitpid(差别在于-1的原因)
+             @返回值- 基本类似wait(差别在于-1的原因)
         
         [3]. int waitid(idtype_t idtype,id_t id,siginfo_t *infop,int options)
 
