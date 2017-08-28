@@ -2768,7 +2768,7 @@ int wpa_auth_sta_clear_pmksa(struct wpa_state_machine *sm,
 	return 0;
 }
 
-
+// 获取PMK缓存信息
 struct rsn_pmksa_cache_entry *
 wpa_auth_sta_get_pmksa(struct wpa_state_machine *sm)
 {

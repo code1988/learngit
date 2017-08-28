@@ -975,6 +975,7 @@ void ieee802_1x_new_station(struct hostapd_data *hapd, struct sta_info *sta)
 	}
 #endif /* CONFIG_IEEE80211R */
 
+    // 有线应用用不到PMKSA
 	pmksa = wpa_auth_sta_get_pmksa(sta->wpa_sm);
 	if (pmksa) {
 		int old_vlanid;
@@ -1392,17 +1393,22 @@ ieee802_1x_receive_auth(struct radius_msg *msg, struct radius_msg *req,
 			sta->vlan_id = 0;
 #ifndef CONFIG_NO_VLAN
 		else {
+            // 如果该sta支持动态vlan，则尝试从radius解析得到下发vlan
 			old_vlanid = sta->vlan_id;
 			sta->vlan_id = radius_msg_get_vlanid(msg);
 		}
+
 		if (sta->vlan_id > 0 &&
 		    hostapd_get_vlan_id_ifname(hapd->conf->vlan,
 					       sta->vlan_id)) {
+            // 如果获取到下发vlan，并且当前bss有支持该下发的vlan，这里啥都没干...
 			hostapd_logger(hapd, sta->addr,
 				       HOSTAPD_MODULE_RADIUS,
 				       HOSTAPD_LEVEL_INFO,
 				       "VLAN ID %d", sta->vlan_id);
 		} else if (sta->ssid->dynamic_vlan == DYNAMIC_VLAN_REQUIRED) {
+            // 如果上个判断中有任何一个条件不成立，并且该sta设置了DYNAMIC_VLAN_REQUIRED，则认证失败
+            // 因为设置了该标识的sta必须要收到一个合法的下发vlan
 			sta->eapol_sm->authFail = TRUE;
 			hostapd_logger(hapd, sta->addr,
 				       HOSTAPD_MODULE_IEEE8021X,

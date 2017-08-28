@@ -547,7 +547,10 @@ int hostapd_rate_found(int *list, int rate)
 	return 0;
 }
 
-
+/* 从指定vlan链表中查找vlan_id对应的vlan名
+ * @vlan    - vlan链表
+ * @vlan_id - 查找的vlan id
+ */
 const char * hostapd_get_vlan_id_ifname(struct hostapd_vlan *vlan, int vlan_id)
 {
 	struct hostapd_vlan *v = vlan;

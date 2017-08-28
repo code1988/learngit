@@ -1237,7 +1237,7 @@ int radius_msg_count_attr(struct radius_msg *msg, u8 type, int min_len)
 	return count;
 }
 
-
+// radius隧道属性
 struct radius_tunnel_attrs {
 	int tag_used;
 	int type; /* Tunnel-Type */
@@ -1248,6 +1248,7 @@ struct radius_tunnel_attrs {
 
 /**
  * radius_msg_get_vlanid - Parse RADIUS attributes for VLAN tunnel information
+ * 从radius报文中解析的到vlan信息
  * @msg: RADIUS message
  * Returns: VLAN ID for the first tunnel configuration of -1 if none is found
  */

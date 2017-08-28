@@ -624,6 +624,7 @@ int ap_sta_bind_vlan(struct hostapd_data *hapd, struct sta_info *sta,
 	/*
 	 * During 1x reauth, if the vlan id changes, then remove the old id and
 	 * proceed furthur to add the new one.
+     * 动态删除当前bss中记录的old_vlanid
 	 */
 	if (old_vlanid > 0)
 		vlan_remove_dynamic(hapd, old_vlanid);

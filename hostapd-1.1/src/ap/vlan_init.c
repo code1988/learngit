@@ -777,7 +777,7 @@ static int vlan_dynamic_add(struct hostapd_data *hapd,
 	return 0;
 }
 
-
+// 删除指定的整张vlan链表中的虚拟vlan接口
 static void vlan_dynamic_remove(struct hostapd_data *hapd,
 				struct hostapd_vlan *vlan)
 {
@@ -801,7 +801,7 @@ static void vlan_dynamic_remove(struct hostapd_data *hapd,
 	}
 }
 
-
+// vlan模块初始化
 int vlan_init(struct hostapd_data *hapd)
 {
 #ifdef CONFIG_FULL_DYNAMIC_VLAN
@@ -824,7 +824,10 @@ void vlan_deinit(struct hostapd_data *hapd)
 #endif /* CONFIG_FULL_DYNAMIC_VLAN */
 }
 
-
+/* 在指定hostapd_data中动态添加指定的vlan
+ * @vlan        - vlan链表
+ * @vlan_id     - 要动态添加的vlan
+ */
 struct hostapd_vlan * vlan_add_dynamic(struct hostapd_data *hapd,
 				       struct hostapd_vlan *vlan,
 				       int vlan_id)
@@ -876,7 +879,9 @@ struct hostapd_vlan * vlan_add_dynamic(struct hostapd_data *hapd,
 	return n;
 }
 
-
+/* 在指定hostapd_data中动态删除指定的vlan
+ * @vlan_id     - 要动态删除的vlan
+ */
 int vlan_remove_dynamic(struct hostapd_data *hapd, int vlan_id)
 {
 	struct hostapd_vlan *vlan;
@@ -886,6 +891,7 @@ int vlan_remove_dynamic(struct hostapd_data *hapd, int vlan_id)
 
 	wpa_printf(MSG_DEBUG, "VLAN: %s(vlan_id=%d)", __func__, vlan_id);
 
+    // 遍历该hostapd_data支持的vlan链表，查找匹配的动态vlan
 	vlan = hapd->conf->vlan;
 	while (vlan) {
 		if (vlan->vlan_id == vlan_id && vlan->dynamic_vlan > 0) {
@@ -895,9 +901,12 @@ int vlan_remove_dynamic(struct hostapd_data *hapd, int vlan_id)
 		vlan = vlan->next;
 	}
 
+    // 没找到则直接退出
 	if (vlan == NULL)
 		return 1;
 
+    // 程序运行到这里意味着匹配成功
+    // 如果该动态vlan的引用计数为0,就将该vlan虚拟接口彻底删除
 	if (vlan->dynamic_vlan == 0)
 		hostapd_vlan_if_remove(hapd, vlan->ifname);
 

@@ -84,12 +84,12 @@ enum { RADIUS_ATTR_USER_NAME = 1,
        RADIUS_ATTR_ACCT_OUTPUT_GIGAWORDS = 53,
        RADIUS_ATTR_EVENT_TIMESTAMP = 55,
        RADIUS_ATTR_NAS_PORT_TYPE = 61,
-       RADIUS_ATTR_TUNNEL_TYPE = 64,
-       RADIUS_ATTR_TUNNEL_MEDIUM_TYPE = 65,
+       RADIUS_ATTR_TUNNEL_TYPE = 64,                // 隧道传递的消息类型，取RADIUS_TUNNEL_TYPE_*
+       RADIUS_ATTR_TUNNEL_MEDIUM_TYPE = 65,         // 隧道承载媒介类型，取RADIUS_TUNNEL_MEDIUM_TYPE_*
        RADIUS_ATTR_CONNECT_INFO = 77,
        RADIUS_ATTR_EAP_MESSAGE = 79,
        RADIUS_ATTR_MESSAGE_AUTHENTICATOR = 80,
-       RADIUS_ATTR_TUNNEL_PRIVATE_GROUP_ID = 81,
+       RADIUS_ATTR_TUNNEL_PRIVATE_GROUP_ID = 81,    // 隧道私有组标识，通过该属性可以下发用户vlan
        RADIUS_ATTR_ACCT_INTERIM_INTERVAL = 85,      // 对于某个确定的会话，中间更新流量信息的时间间隔（s）,本属性只能出现在Access-Accept报文中
        RADIUS_ATTR_CHARGEABLE_USER_IDENTITY = 89,
        RADIUS_ATTR_NAS_IPV6_ADDRESS = 95
@@ -137,17 +137,17 @@ enum { RADIUS_ATTR_USER_NAME = 1,
 
 #define RADIUS_TUNNEL_TAGS 32
 
-/* Tunnel-Type */
+/* Tunnel-Type      radius隧道支持的消息类型*/
 #define RADIUS_TUNNEL_TYPE_PPTP 1
 #define RADIUS_TUNNEL_TYPE_L2TP 3
 #define RADIUS_TUNNEL_TYPE_IPIP 7
 #define RADIUS_TUNNEL_TYPE_GRE 10
-#define RADIUS_TUNNEL_TYPE_VLAN 13
+#define RADIUS_TUNNEL_TYPE_VLAN 13      // 传递vlan信息的隧道
 
-/* Tunnel-Medium-Type */
+/* Tunnel-Medium-Type   隧道支持的承载媒介类型*/
 #define RADIUS_TUNNEL_MEDIUM_TYPE_IPV4 1
 #define RADIUS_TUNNEL_MEDIUM_TYPE_IPV6 2
-#define RADIUS_TUNNEL_MEDIUM_TYPE_802 6
+#define RADIUS_TUNNEL_MEDIUM_TYPE_802 6     // 以太网类型，通常对应vlan信息
 
 
 struct radius_attr_vendor {

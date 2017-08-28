@@ -68,12 +68,12 @@ struct hostapd_ssid {
 
 	struct hostapd_wep_keys wep;
 
-#define DYNAMIC_VLAN_DISABLED 0
-#define DYNAMIC_VLAN_OPTIONAL 1
-#define DYNAMIC_VLAN_REQUIRED 2
-	int dynamic_vlan;       // 动态vlan功能是否开启的标志位
+#define DYNAMIC_VLAN_DISABLED 0 // 动态vlan功能禁止
+#define DYNAMIC_VLAN_OPTIONAL 1 // 动态vlan功能可选
+#define DYNAMIC_VLAN_REQUIRED 2 // 动态vlan功能必须
+	int dynamic_vlan;       // 动态vlan功能的标志位，取DYNAMIC_VLAN_*
 #ifdef CONFIG_FULL_DYNAMIC_VLAN
-	char *vlan_tagged_interface;
+	char *vlan_tagged_interface;    // 指定了vlan的宿主设备
 #endif /* CONFIG_FULL_DYNAMIC_VLAN */
 	struct hostapd_wep_keys **dyn_vlan_keys;
 	size_t max_dyn_vlan_keys;
@@ -81,12 +81,12 @@ struct hostapd_ssid {
 
 
 #define VLAN_ID_WILDCARD -1
-
+// 单向vlan链表节点
 struct hostapd_vlan {
 	struct hostapd_vlan *next;
 	int vlan_id; /* VLAN ID or -1 (VLAN_ID_WILDCARD) for wildcard entry */
 	char ifname[IFNAMSIZ + 1];
-	int dynamic_vlan;
+	int dynamic_vlan;       // 该动态vlan的引用计数
 #ifdef CONFIG_FULL_DYNAMIC_VLAN
 
 #define DVLAN_CLEAN_BR 	0x1

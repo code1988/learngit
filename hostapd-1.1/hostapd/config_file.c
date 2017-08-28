@@ -1310,7 +1310,7 @@ struct hostapd_config * hostapd_config_read(const char *fname)
 					   "macaddr_acl %d",
 					   line, bss->macaddr_acl);
 			}
-		} else if (os_strcmp(buf, "accept_mac_file") == 0) {
+		} else if (os_strcmp(buf, "accept_mac_file") == 0) {    // 用来指定允许进行802.1x认证的MAC白名单所在配置文件
 			if (hostapd_config_read_maclist(pos, &bss->accept_mac,
 							&bss->num_accept_mac))
 			{
@@ -1319,7 +1319,7 @@ struct hostapd_config * hostapd_config_read(const char *fname)
 					   line, pos);
 				errors++;
 			}
-		} else if (os_strcmp(buf, "deny_mac_file") == 0) {
+		} else if (os_strcmp(buf, "deny_mac_file") == 0) {      // 用来指定允许进行802.1x认证的MAC黑名单所在配置文件
 			if (hostapd_config_read_maclist(pos, &bss->deny_mac,
 							&bss->num_deny_mac)) {
 				wpa_printf(MSG_ERROR, "Line %d: Failed to "
@@ -1866,14 +1866,14 @@ struct hostapd_config * hostapd_config_read(const char *fname)
 #ifndef CONFIG_NO_VLAN
 		} else if (os_strcmp(buf, "dynamic_vlan") == 0) {       // 用来配置是否开启动态vlan功能
 			bss->ssid.dynamic_vlan = atoi(pos);
-		} else if (os_strcmp(buf, "vlan_file") == 0) {          // 用来指定vlan配置文件
+		} else if (os_strcmp(buf, "vlan_file") == 0) {          // 用来指定动态vlan配置文件
 			if (hostapd_config_read_vlan_file(bss, pos)) {
 				wpa_printf(MSG_ERROR, "Line %d: failed to "
 					   "read VLAN file '%s'", line, pos);
 				errors++;
 			}
 #ifdef CONFIG_FULL_DYNAMIC_VLAN
-		} else if (os_strcmp(buf, "vlan_tagged_interface") == 0) {
+		} else if (os_strcmp(buf, "vlan_tagged_interface") == 0) {  // 用来指定虚拟vlan接口的宿主接口
 			bss->ssid.vlan_tagged_interface = os_strdup(pos);
 #endif /* CONFIG_FULL_DYNAMIC_VLAN */
 #endif /* CONFIG_NO_VLAN */
