@@ -636,6 +636,7 @@ int ap_sta_bind_vlan(struct hostapd_data *hapd, struct sta_info *sta,
 	if (sta->ssid->dynamic_vlan == DYNAMIC_VLAN_DISABLED)
 		sta->vlan_id = 0;
 	else if (sta->vlan_id > 0) {
+        // 如果新的vlan_id有效，则遍历该bss的vlan链表，查找vlan id相同或者通配符类型的节点
 		vlan = hapd->conf->vlan;
 		while (vlan) {
 			if (vlan->vlan_id == sta->vlan_id ||
@@ -648,12 +649,15 @@ int ap_sta_bind_vlan(struct hostapd_data *hapd, struct sta_info *sta,
 	}
 
 	if (sta->vlan_id > 0 && vlan == NULL) {
+        // 如果新的vlan_id有效，但是没有找到匹配的vlan节点，则返回失败
 		hostapd_logger(hapd, sta->addr, HOSTAPD_MODULE_IEEE80211,
 			       HOSTAPD_LEVEL_DEBUG, "could not find VLAN for "
 			       "binding station to (vlan_id=%d)",
 			       sta->vlan_id);
 		return -1;
 	} else if (sta->vlan_id > 0 && vlan->vlan_id == VLAN_ID_WILDCARD) {
+        // 如果新的vlan_id有效，并且匹配到的vlan节点是通配符类型
+        // 在指定bss中动态添加指定的vlan
 		vlan = vlan_add_dynamic(hapd, vlan, sta->vlan_id);
 		if (vlan == NULL) {
 			hostapd_logger(hapd, sta->addr,
@@ -678,7 +682,9 @@ int ap_sta_bind_vlan(struct hostapd_data *hapd, struct sta_info *sta,
 			       HOSTAPD_LEVEL_DEBUG, "added new dynamic VLAN "
 			       "interface '%s'", iface);
 	} else if (vlan && vlan->vlan_id == sta->vlan_id) {
+        // 如果匹配到的vlan节点和新的vlan有相同的vlan id
 		if (sta->vlan_id > 0) {
+            // 如果新的vlan又是有效的，意味着有多个sta加入到同一个vlan中
 			vlan->dynamic_vlan++;
 			hostapd_logger(hapd, sta->addr,
 				       HOSTAPD_MODULE_IEEE80211,
@@ -709,6 +715,7 @@ int ap_sta_bind_vlan(struct hostapd_data *hapd, struct sta_info *sta,
 	if (wpa_auth_sta_set_vlan(sta->wpa_sm, sta->vlan_id) < 0)
 		wpa_printf(MSG_INFO, "Failed to update VLAN-ID for WPA");
 
+    // 将该sta绑定到对应接口的对应vlan上
 	ret = hostapd_drv_set_sta_vlan(iface, hapd, sta->addr, sta->vlan_id);
 	if (ret < 0) {
 		hostapd_logger(hapd, sta->addr, HOSTAPD_MODULE_IEEE80211,

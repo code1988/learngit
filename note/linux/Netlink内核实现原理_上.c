@@ -170,6 +170,8 @@ LINUX中跟netlink相关的核心代码位于net/netlink目录中，其中核心
         // 分配linsters的空间
         listeners = kzalloc(sizeof(*listeners) + NLGRPSZ(groups), GFP_KERNEL);
 
+        // 从2.6.24版本开始，这个函数似乎是被作废了
+        sk->sk_data_ready = netlink_data_ready; 
         // 如果某个netlink协议配置了私有的消息处理函数，就将其注册到netlink套接字的对应位置
         if (cfg && cfg->input)
             nlk_sk(sk)->netlink_rcv = cfg->input;

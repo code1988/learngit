@@ -671,7 +671,7 @@ static void vlan_event_receive(int sock, void *eloop_ctx, void *sock_ctx)
 	}
 }
 
-
+// 全动态vlan功能初始化，实际就是创建一个netlink套接字，并监听RTMGRP_LINK组播消息，从中提取vlan接口创建/删除信息
 static struct full_dynamic_vlan *
 full_dynamic_vlan_init(struct hostapd_data *hapd)
 {
@@ -751,7 +751,7 @@ int vlan_setup_encryption_dyn(struct hostapd_data *hapd,
 	return 0;
 }
 
-
+// 创建指定的整张vlan链表中的所有虚拟vlan接口
 static int vlan_dynamic_add(struct hostapd_data *hapd,
 			    struct hostapd_vlan *vlan)
 {
@@ -777,7 +777,7 @@ static int vlan_dynamic_add(struct hostapd_data *hapd,
 	return 0;
 }
 
-// 删除指定的整张vlan链表中的虚拟vlan接口
+// 删除指定的整张vlan链表中的所有虚拟vlan接口
 static void vlan_dynamic_remove(struct hostapd_data *hapd,
 				struct hostapd_vlan *vlan)
 {
@@ -805,6 +805,7 @@ static void vlan_dynamic_remove(struct hostapd_data *hapd,
 int vlan_init(struct hostapd_data *hapd)
 {
 #ifdef CONFIG_FULL_DYNAMIC_VLAN
+    // 全动态vlan功能初始化
 	hapd->full_dynamic_vlan = full_dynamic_vlan_init(hapd);
 #endif /* CONFIG_FULL_DYNAMIC_VLAN */
 
@@ -824,9 +825,11 @@ void vlan_deinit(struct hostapd_data *hapd)
 #endif /* CONFIG_FULL_DYNAMIC_VLAN */
 }
 
-/* 在指定hostapd_data中动态添加指定的vlan
- * @vlan        - vlan链表
+/* 在指定bss中动态添加指定的vlan
+ * @vlan        - vlan链表中的某个节点
  * @vlan_id     - 要动态添加的vlan
+ *
+ * 备注：新增一个动态vlan的前提是该bss包含了通配符vlan节点
  */
 struct hostapd_vlan * vlan_add_dynamic(struct hostapd_data *hapd,
 				       struct hostapd_vlan *vlan,
@@ -835,6 +838,7 @@ struct hostapd_vlan * vlan_add_dynamic(struct hostapd_data *hapd,
 	struct hostapd_vlan *n;
 	char *ifname, *pos;
 
+    // 显然传入的vlan节点必须是一个通配符类型
 	if (vlan == NULL || vlan_id <= 0 || vlan_id > MAX_VLAN_ID ||
 	    vlan->vlan_id != VLAN_ID_WILDCARD)
 		return NULL;
@@ -851,6 +855,7 @@ struct hostapd_vlan * vlan_add_dynamic(struct hostapd_data *hapd,
 	}
 	*pos++ = '\0';
 
+    // 创建一个新的vlan节点并填充
 	n = os_zalloc(sizeof(*n));
 	if (n == NULL) {
 		os_free(ifname);
@@ -864,15 +869,18 @@ struct hostapd_vlan * vlan_add_dynamic(struct hostapd_data *hapd,
 		    pos);
 	os_free(ifname);
 
+    // 使新的vlan生效
 	if (hostapd_vlan_if_add(hapd, n->ifname)) {
 		os_free(n);
 		return NULL;
 	}
 
+    // 将新的节点插入通配符节点前
 	n->next = hapd->conf->vlan;
 	hapd->conf->vlan = n;
 
 #ifdef CONFIG_FULL_DYNAMIC_VLAN
+    // 使新的vlan接口up
 	ifconfig_up(n->ifname);
 #endif /* CONFIG_FULL_DYNAMIC_VLAN */
 

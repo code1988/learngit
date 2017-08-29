@@ -117,6 +117,7 @@ netlink支持用户进程和内核相互交互（两边都可以主动发起）�
             return netlink_unicast_kernel(sk, skb, ssk);
 
         // 程序运行到这里，意味着以下属于第 [1]/[3] 种情况下的分支
+        // 对于发往用户进程的单播消息都要调用BPF过滤
         if (sk_filter(sk, skb)){
             err = skb->len;
             kfree_skb(skb);
@@ -137,6 +138,8 @@ netlink支持用户进程和内核相互交互（两边都可以主动发起）�
      * @sk  - 目的sock结构
      * @skb - 属于发送方的承载了netlink消息的skb
      * @ssk - 源sock结构
+     *
+     * 备注：skb的所有者在本函数中发生了变化
      */
     static int netlink_unicast_kernel(struct sock *sk, struct sk_buff *skb,struct sock *ssk)
     {
@@ -148,6 +151,16 @@ netlink支持用户进程和内核相互交互（两边都可以主动发起）�
             ret = skb->len;
             // 设置该skb的所有者是内核的netlink套接字
             netlink_skb_set_owner_r(skb, sk);
+            // 保存该netlink消息的源sock结构
+            NETLINK_CB(skb).sk = ssk;
+            // netlink tap机制暂略
+            netlink_deliver_tap_kernel(sk, ssk, skb);
+            // 调用内核netlink套接字的协议类型相关的netlink_rcv回调
+            nlk->netlink_rcv(skb);
+        } else {
+            // 如果指定的内核netlink套接字没有注册netlink_rcv回调，就直接丢弃所有收到的netlink消息
+            kfree_skb(skb);
         }
+        sock_put(sk);
     }
     

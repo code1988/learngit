@@ -86,7 +86,7 @@ struct hostapd_vlan {
 	struct hostapd_vlan *next;
 	int vlan_id; /* VLAN ID or -1 (VLAN_ID_WILDCARD) for wildcard entry */
 	char ifname[IFNAMSIZ + 1];
-	int dynamic_vlan;       // 该动态vlan的引用计数
+	int dynamic_vlan;       // 该动态vlan的引用计数，每增加一个sta加入到该vlan，引用计数加1
 #ifdef CONFIG_FULL_DYNAMIC_VLAN
 
 #define DVLAN_CLEAN_BR 	0x1
@@ -287,7 +287,7 @@ struct hostapd_bss_config {
 	int wmm_enabled;
 	int wmm_uapsd;
 
-	struct hostapd_vlan *vlan, *vlan_tail;
+	struct hostapd_vlan *vlan, *vlan_tail;  // @vlan:指向该bss支持的vlan集合 @vlan_tail:指向vlan集合的尾节点
 
 	macaddr bssid;
 
@@ -372,8 +372,9 @@ struct hostapd_bss_config {
  * 每个接口的配置参数控制块
  */
 struct hostapd_config {
-	struct hostapd_bss_config *bss, *last_bss;
-	size_t num_bss;     // 当前接口下bss的数量，同时也代表了有多少个网桥
+    // 每个接口包含的bss配置项通常就只有1个，实际分析时也暂时不考虑多bss的情况
+	struct hostapd_bss_config *bss, *last_bss;  // @bss:指向该接口包含的bss配置表(默认就1个表项) @last_bss:指向bss配置表最后一个表项
+	size_t num_bss;     // 当前接口下bss的数量，同时也代表了有多少个网桥，默认就是1
 
 	u16 beacon_int;
 	int rts_threshold;

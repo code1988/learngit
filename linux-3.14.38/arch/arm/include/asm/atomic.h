@@ -27,15 +27,16 @@
  * strex/ldrex monitor on some implementations. The reason we can use it for
  * atomic_set() is the clrex or dummy strex done on every exception return.
  */
-#define atomic_read(v)	(*(volatile int *)&(v)->counter)
-#define atomic_set(v,i)	(((v)->counter) = (i))
+#define atomic_read(v)	(*(volatile int *)&(v)->counter)    // 返回原子变量的值
+#define atomic_set(v,i)	(((v)->counter) = (i))              // 设置原子变量的值
 
-#if __LINUX_ARM_ARCH__ >= 6
+#if __LINUX_ARM_ARCH__ >= 6     // ARMv6以上架构使用以下这部分定义
 
 /*
  * ARMv6 UP and SMP safe atomic ops.  We use load exclusive and
  * store exclusive to ensure that these are atomic.  We may loop
  * to ensure that the update happens.
+ * 原子的递增指定原子变量的值
  */
 static inline void atomic_add(int i, atomic_t *v)
 {
@@ -138,7 +139,7 @@ static inline int atomic_cmpxchg(atomic_t *ptr, int old, int new)
 	return oldval;
 }
 
-#else /* ARM_ARCH_6 */
+#else /* ARM_ARCH_6 */  // ARMv6架构以下使用这部分定义
 
 #ifdef CONFIG_SMP
 #error SMP not supported on pre-ARMv6 CPUs

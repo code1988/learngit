@@ -341,15 +341,16 @@ struct sock {
 	 * Note : rmem_alloc is in this structure to fill a hole
 	 * on 64bit arches, not because its logically part of
 	 * backlog.
+     * 定义了该套接字的接收队列中尚未被真正接收的数据信息
 	 */
 	struct {
-		atomic_t	rmem_alloc;
+		atomic_t	rmem_alloc; // 接收队列中已用的空间大小
 		int		len;
 		struct sk_buff	*head;
 		struct sk_buff	*tail;
 	} sk_backlog;
 #define sk_rmem_alloc sk_backlog.rmem_alloc
-	int			sk_forward_alloc;
+	int			sk_forward_alloc;   // 发送队列中尚存的可用空间大小
 #ifdef CONFIG_RPS
 	__u32			sk_rxhash;
 #endif
@@ -1464,6 +1465,10 @@ static inline void sk_mem_reclaim_partial(struct sock *sk)
 		__sk_mem_reclaim(sk);
 }
 
+/* 减少sock结构中发送队列剩余可用空间大小
+ * @sk  - 指向sock结构
+ * @size    - 发送队列要减少的长度
+ */
 static inline void sk_mem_charge(struct sock *sk, int size)
 {
 	if (!sk_has_account(sk))

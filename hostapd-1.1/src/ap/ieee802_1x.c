@@ -1393,7 +1393,7 @@ ieee802_1x_receive_auth(struct radius_msg *msg, struct radius_msg *req,
 			sta->vlan_id = 0;
 #ifndef CONFIG_NO_VLAN
 		else {
-            // 如果该sta支持动态vlan，则尝试从radius解析得到下发vlan
+            // 如果该sta支持动态vlan，则获取该sta的原有vlan，并且尝试从radius解析得到下发vlan
 			old_vlanid = sta->vlan_id;
 			sta->vlan_id = radius_msg_get_vlanid(msg);
 		}

@@ -871,14 +871,17 @@ static void netlink_skb_destructor(struct sk_buff *skb)
 		sock_rfree(skb);
 }
 
-// 设置该携带了netlink消息的skb为哪个netlink套接字所拥有
+/* 设置该携带了netlink消息的skb为哪个netlink套接字所拥有
+ * @skb - 指向一个skb结构
+ * @sk  - 指向将会拥有该skb的sock结构，也就是netlink套接字
+ */
 static void netlink_skb_set_owner_r(struct sk_buff *skb, struct sock *sk)
 {
 	WARN_ON(skb->sk != NULL);
 	skb->sk = sk;                                   // 设置该skb属于指定的netlink套接字
 	skb->destructor = netlink_skb_destructor;       // 为该skb注册特定的析构函数
-	atomic_add(skb->truesize, &sk->sk_rmem_alloc);
-	sk_mem_charge(sk, skb->truesize);
+	atomic_add(skb->truesize, &sk->sk_rmem_alloc);  // 该netlink套接字绑定了一个skb后，势必要增加其接收队列中的已使用空间大小
+	sk_mem_charge(sk, skb->truesize);               // 以及减少发送队列剩余可用空间大小
 }
 
 // netlink sock结构的析构函数
@@ -1740,15 +1743,16 @@ static struct sk_buff *netlink_alloc_large_skb(unsigned int size,
 
 /*
  * Attach a skb to a netlink socket.
- * The caller must hold a reference to the destination socket. On error, the
- * reference is dropped. The skb is not send to the destination, just all
- * all error checks are performed and memory in the queue is reserved.
- * Return values:
- *
+ * 将一个指定skb绑定到一个指定的属于用户进程的netlink套接字上
  * @sk      - 指向目的sock结构
  * @skb     - 属于发送方的承载了netlink消息的skb
  * @timeo   - 超时时间
  * @ssk     - 指向源sock结构
+ *
+ * The caller must hold a reference to the destination socket. On error, the
+ * reference is dropped. The skb is not send to the destination, just all
+ * all error checks are performed and memory in the queue is reserved.
+ * Return values:
  *
  * < 0: error. skb freed, reference to sock dropped.
  * 0: continue
@@ -1759,6 +1763,7 @@ int netlink_attachskb(struct sock *sk, struct sk_buff *skb,
 {
 	struct netlink_sock *nlk;
 
+    // 获取目的netlink套接字，也就是目的用户进程netlink套接字
 	nlk = nlk_sk(sk);
 
 	if ((atomic_read(&sk->sk_rmem_alloc) > sk->sk_rcvbuf ||
@@ -1791,6 +1796,8 @@ int netlink_attachskb(struct sock *sk, struct sk_buff *skb,
 		}
 		return 1;
 	}
+    
+    // 设置该skb的所有者是目的用户进程netlink套接字，这里才是真正的绑定操作，上面都是前奏
 	netlink_skb_set_owner_r(skb, sk);
 	return 0;
 }
@@ -1813,6 +1820,9 @@ static int __netlink_sendskb(struct sock *sk, struct sk_buff *skb)
 	return len;
 }
 
+/* 将指定skb发送到目的用户进程netlink套接字，换句话说，实际也就是将该skb放入了该套接字的接收队列中
+ *
+ */
 int netlink_sendskb(struct sock *sk, struct sk_buff *skb)
 {
 	int len = __netlink_sendskb(sk, skb);
@@ -1865,6 +1875,7 @@ static struct sk_buff *netlink_trim(struct sk_buff *skb, gfp_t allocation)
  *
  * 备注：本函数只会在一种情况下被调用到：
  *                  用户进程   --单播--> kernel 
+ *       skb的所有者在本函数中发生了变化
  */
 static int netlink_unicast_kernel(struct sock *sk, struct sk_buff *skb,
 				  struct sock *ssk)
@@ -1881,13 +1892,13 @@ static int netlink_unicast_kernel(struct sock *sk, struct sk_buff *skb,
 		netlink_skb_set_owner_r(skb, sk);
         // 保存该netlink消息的源sock结构
 		NETLINK_CB(skb).sk = ssk;
-        // 暂略
+        // netlink tap机制暂略
 		netlink_deliver_tap_kernel(sk, ssk, skb);
-        // 调用已经注册了的netlink_rcv回调
+        // 调用内核netlink套接字的协议类型相关的netlink_rcv回调
 		nlk->netlink_rcv(skb);
 		consume_skb(skb);
 	} else {
-        // 没有注册该回调就直接丢弃
+        // 如果指定的内核netlink套接字没有注册netlink_rcv回调，就直接丢弃所有收到的netlink消息
 		kfree_skb(skb);
 	}
 	sock_put(sk);
@@ -1939,12 +1950,14 @@ retry:
 		return err;
 	}
 
+    // 将该skb绑定到用户进程netlink套接字上
 	err = netlink_attachskb(sk, skb, &timeo, ssk);
 	if (err == 1)
 		goto retry;
 	if (err)
 		return err;
 
+    // 将该skb发送到目的用户进程netlink套接字
 	return netlink_sendskb(sk, skb);
 }
 EXPORT_SYMBOL(netlink_unicast);
@@ -2617,6 +2630,7 @@ out:
 	return err ? : copied;
 }
 
+// 从2.6.24版本开始，这个函数似乎是被作废了
 static void netlink_data_ready(struct sock *sk, int len)
 {
 	BUG();
@@ -2676,7 +2690,7 @@ __netlink_kernel_create(struct net *net, int unit, struct module *module,
 	if (!listeners)
 		goto out_sock_release;
 
-    // 这里 V3.14.38 实际没有注册
+    // 从2.6.24版本开始，这个函数似乎是被作废了
 	sk->sk_data_ready = netlink_data_ready;
     // 如果某个具体的netlink协议配置了消息处理函数，就将其注册到netlink套接字的对应位置
 	if (cfg && cfg->input)

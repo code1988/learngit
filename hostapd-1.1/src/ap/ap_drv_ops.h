@@ -115,6 +115,11 @@ static inline int hostapd_drv_set_countermeasures(struct hostapd_data *hapd,
 	return hapd->driver->hapd_set_countermeasures(hapd->drv_priv, enabled);
 }
 
+/* 将指定MAC地址绑定到对应接口的对应vlan上
+ * @ifname  - 指定的接口名
+ * @addr    - 要绑定的MAC地址，对应一个sta
+ * @vlan_id - 指定的vlan
+ */
 static inline int hostapd_drv_set_sta_vlan(const char *ifname,
 					   struct hostapd_data *hapd,
 					   const u8 *addr, int vlan_id)

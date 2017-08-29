@@ -32,7 +32,7 @@ extern struct wpa_driver_ops *wpa_drivers[];
 
 
 #ifndef CONFIG_NO_VLAN
-// 读取指定的vlan配置文件
+// 读取指定的vlan配置文件，从中导入指定bss支持的vlan集合
 static int hostapd_config_read_vlan_file(struct hostapd_bss_config *bss,
 					 const char *fname)
 {
