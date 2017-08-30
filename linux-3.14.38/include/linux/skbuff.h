@@ -907,6 +907,7 @@ static inline struct sk_buff *skb_queue_prev(const struct sk_buff_head *list,
 
 /**
  *	skb_get - reference buffer
+ *	将指定skb引用计数递增，然后返回该skb
  *	@skb: buffer to reference
  *
  *	Makes another reference to a socket buffer and returns a pointer

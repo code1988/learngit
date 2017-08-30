@@ -31,7 +31,7 @@ struct netlink_sock {
 	u32			subscriptions;  // 记录该netlink套接字当前阅订的组播数量
 	u32			ngroups;        // 记录该netlink套接字支持的最大组播数量
 	unsigned long		*groups;// 指向该netlink套接字的组播空间
-	unsigned long		state;
+	unsigned long		state;  // 3.14.38版本中只用来设置拥挤标志
 	wait_queue_head_t	wait;
 	bool			cb_running; // 用来标志该netlink套接字是否处于dump操作中
 	struct netlink_callback	cb; // 用来记录该netlink套接字当前有效的操作集合

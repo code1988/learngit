@@ -703,7 +703,8 @@ static inline void hlist_move_list(struct hlist_head *old,
 
 /**
  * hlist_for_each_entry	- iterate over list of given type
- * @pos:	the type * to use as a loop cursor.
+ * 遍历头节点head所在的hash桶
+ * @pos:	the type * to use as a loop cursor. 指向遍历到的每个节点
  * @head:	the head for your list.
  * @member:	the name of the hlist_node within the struct.
  */

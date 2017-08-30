@@ -36,7 +36,7 @@
  * ARMv6 UP and SMP safe atomic ops.  We use load exclusive and
  * store exclusive to ensure that these are atomic.  We may loop
  * to ensure that the update happens.
- * 原子的递增指定原子变量的值
+ * 原子的增加指定原子变量的值
  */
 static inline void atomic_add(int i, atomic_t *v)
 {
@@ -77,6 +77,7 @@ static inline int atomic_add_return(int i, atomic_t *v)
 	return result;
 }
 
+// 原子的减少指定原子变量的值
 static inline void atomic_sub(int i, atomic_t *v)
 {
 	unsigned long tmp;
@@ -201,8 +202,8 @@ static inline int __atomic_add_unless(atomic_t *v, int a, int u)
 	return c;
 }
 
-#define atomic_inc(v)		atomic_add(1, v)
-#define atomic_dec(v)		atomic_sub(1, v)
+#define atomic_inc(v)		atomic_add(1, v)    // 原子的递增原子变量
+#define atomic_dec(v)		atomic_sub(1, v)    // 原子的递减原子变量
 
 #define atomic_inc_and_test(v)	(atomic_add_return(1, v) == 0)
 #define atomic_dec_and_test(v)	(atomic_sub_return(1, v) == 0)

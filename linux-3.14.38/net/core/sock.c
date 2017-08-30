@@ -2250,6 +2250,9 @@ static void sock_def_error_report(struct sock *sk)
 	rcu_read_unlock();
 }
 
+/* 这是个缺省的sk_data_ready回调函数，用于通知指定sock有数据接收到
+ * @sk  - 指向一个sock结构
+ */
 static void sock_def_readable(struct sock *sk, int len)
 {
 	struct socket_wq *wq;
@@ -2350,7 +2353,7 @@ void sock_init_data(struct socket *sock, struct sock *sk)
 			af_family_clock_key_strings[sk->sk_family]);
 
 	sk->sk_state_change	=	sock_def_wakeup;
-	sk->sk_data_ready	=	sock_def_readable;
+	sk->sk_data_ready	=	sock_def_readable;  // 这里注册了一个缺省的sk_data_ready钩子，实际具体套接字可以覆盖自己的钩子
 	sk->sk_write_space	=	sock_def_write_space;
 	sk->sk_error_report	=	sock_def_error_report;
 	sk->sk_destruct		=	sock_def_destruct;

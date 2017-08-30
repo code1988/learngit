@@ -2,6 +2,7 @@
 #define _LINUX_WAIT_H
 /*
  * Linux wait queue related types and methods
+ * linux等待队列相关的定义
  */
 #include <linux/list.h>
 #include <linux/stddef.h>

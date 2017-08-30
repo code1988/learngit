@@ -170,7 +170,11 @@ LINUX中跟netlink相关的核心代码位于net/netlink目录中，其中核心
         // 分配linsters的空间
         listeners = kzalloc(sizeof(*listeners) + NLGRPSZ(groups), GFP_KERNEL);
 
-        // 从2.6.24版本开始，这个函数似乎是被作废了
+        /* 从2.6.24版本开始，netlink_data_ready这个函数被作废了
+         * 意味着内核netlink套接字屏蔽了sk_data_ready回调，
+         * 通观整个netlink模块可知，netlink组播消息传递过程中会调用到该回调，
+         * 这也就是说，内核netlink套接字不可能会收到组播消息
+         */
         sk->sk_data_ready = netlink_data_ready; 
         // 如果某个netlink协议配置了私有的消息处理函数，就将其注册到netlink套接字的对应位置
         if (cfg && cfg->input)

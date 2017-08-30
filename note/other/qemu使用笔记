@@ -92,12 +92,12 @@
                 sudo umount tmpfs
 
     完成上述步骤后，就可以启动qemu来模拟vexpress开发板了:
-                qemu-system-arm -M vexpress-a9 -m 512M -nographic -dtb /dtb文件路径/vexpress-v2p-ca9.dtb -kernel /kernel映像文件路径/zImage -append "root=/dev/mmcblk0 rw  console=ttyAMA0" -sd ./a9rootfs.ext3
+                qemu-system-arm -M vexpress-a9 -m 512M -nographic -dtb ./dtb文件路径/vexpress-v2p-ca9.dtb -kernel ./kernel映像文件路径/zImage -append "root=/dev/mmcblk0 rw  console=ttyAMA0" -sd ./a9rootfs.ext3
 
-    注意点：这条启动命令是在当前的terminal上运行虚拟系统。"qemu-system-arm -M vexpress-a9 -m 512M -kernel /kernel映像文件路径/zImage -append "root=/dev/mmcblk0 rw  console=tty0" -sd ./a9rootfs.ext3"运行这条命令就可以创建一个专门的界面运行虚拟系统。
+    注意点：这条启动命令是在当前的terminal上运行虚拟系统。"qemu-system-arm -M vexpress-a9 -m 512M -kernel ./kernel映像文件路径/zImage -append "root=/dev/mmcblk0 rw  console=tty0" -sd ./a9rootfs.ext3"运行这条命令就可以创建一个专门的界面运行虚拟系统。
             
     gdb调试:
-            qemu-system-arm -M vexpress-a9 -s -S -m 512M -nographic -dtb /dtb文件路径/vexpress-v2p-ca9.dtb -kernel /kernel映像文件路径/zImage -append "root=/dev/mmcblk0 rw  console=ttyAMA0" -sd ./a9rootfs.ext3
+            qemu-system-arm -M vexpress-a9 -s -S -m 512M -nographic -dtb ./dtb文件路径/vexpress-v2p-ca9.dtb -kernel ./kernel映像文件路径/zImage -append "root=/dev/mmcblk0 rw  console=ttyAMA0" -sd ./a9rootfs.ext3
             arm-linux-gnueabihf-gdb ./vmlinux映像文件路径/vmlinux
 
             (gdb) target remote localhost:1234

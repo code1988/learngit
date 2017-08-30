@@ -655,6 +655,7 @@ EXPORT_SYMBOL(skb_tx_error);
 
 /**
  *	consume_skb - free an skbuff
+ *	释放skb结构
  *	@skb: buffer to free
  *
  *	Drop a ref to the buffer and free it if the usage count has hit zero

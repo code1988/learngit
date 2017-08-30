@@ -333,7 +333,7 @@ struct sock {
 #define sk_v6_rcv_saddr	__sk_common.skc_v6_rcv_saddr
 
 	socket_lock_t		sk_lock;
-	struct sk_buff_head	sk_receive_queue;
+	struct sk_buff_head	sk_receive_queue;   // 该套接字的接收队列
 	/*
 	 * The backlog queue is special, it is always used with
 	 * the per-socket spinlock held and requires low latency
@@ -341,10 +341,10 @@ struct sock {
 	 * Note : rmem_alloc is in this structure to fill a hole
 	 * on 64bit arches, not because its logically part of
 	 * backlog.
-     * 定义了该套接字的接收队列中尚未被真正接收的数据信息
+     * 定义了该套接字的接收队列中已经接收尚未处理的数据信息
 	 */
 	struct {
-		atomic_t	rmem_alloc; // 接收队列中已用的空间大小
+		atomic_t	rmem_alloc; // 已经接收尚未处理的数据大小
 		int		len;
 		struct sk_buff	*head;
 		struct sk_buff	*tail;
@@ -358,8 +358,8 @@ struct sock {
 	unsigned int		sk_napi_id;
 	unsigned int		sk_ll_usec;
 #endif
-	atomic_t		sk_drops;
-	int			sk_rcvbuf;
+	atomic_t		sk_drops;       // 记录了该套接字丢弃的消息数量
+	int			sk_rcvbuf;          // 接收缓冲区大小
 
 	struct sk_filter __rcu	*sk_filter;     // 指向一个BPF过滤器
 	struct socket_wq __rcu	*sk_wq;
@@ -375,9 +375,9 @@ struct sock {
 	struct dst_entry	*sk_rx_dst;
 	struct dst_entry __rcu	*sk_dst_cache;
 	spinlock_t		sk_dst_lock;
-	atomic_t		sk_wmem_alloc;
+	atomic_t		sk_wmem_alloc;  // 已经申请尚未发送的数据大小
 	atomic_t		sk_omem_alloc;
-	int			sk_sndbuf;
+	int			sk_sndbuf;          // 发送缓冲区大小
 	struct sk_buff_head	sk_write_queue;
 	kmemcheck_bitfield_begin(flags);
 	unsigned int		sk_shutdown  : 2,
@@ -400,7 +400,7 @@ struct sock {
 	struct sk_buff_head	sk_error_queue;
 	struct proto		*sk_prot_creator;   // 指向该跟sock绑定的协议块
 	rwlock_t		sk_callback_lock;
-	int			sk_err,
+	int			sk_err,                     // 记录了该套接字的出错ID
 				sk_err_soft;
 	unsigned short		sk_ack_backlog;
 	unsigned short		sk_max_ack_backlog;
@@ -428,7 +428,7 @@ struct sock {
 	u32			sk_classid;
 	struct cg_proto		*sk_cgrp;
 	void			(*sk_state_change)(struct sock *sk);
-	void			(*sk_data_ready)(struct sock *sk, int bytes);
+	void			(*sk_data_ready)(struct sock *sk, int bytes);   // 这个钩子函数用于告知套接字有数据收到，缺省都被注册为sock_def_readable
 	void			(*sk_write_space)(struct sock *sk);
 	void			(*sk_error_report)(struct sock *sk);
 	int			(*sk_backlog_rcv)(struct sock *sk,
@@ -664,7 +664,7 @@ static inline void sk_add_bind_node(struct sock *sk,
 #define sk_for_each_safe(__sk, tmp, list) \
 	hlist_for_each_entry_safe(__sk, tmp, list, sk_node)
 #define sk_for_each_bound(__sk, list) \
-	hlist_for_each_entry(__sk, list, sk_bind_node)
+	hlist_for_each_entry(__sk, list, sk_bind_node)  // 遍历头节点list对应的hash链表中的每个节点所在的父结构，也就是sock结构
 
 static inline struct user_namespace *sk_user_ns(struct sock *sk)
 {
