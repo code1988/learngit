@@ -333,7 +333,7 @@ struct sock {
 #define sk_v6_rcv_saddr	__sk_common.skc_v6_rcv_saddr
 
 	socket_lock_t		sk_lock;
-	struct sk_buff_head	sk_receive_queue;   // 该套接字的接收队列
+	struct sk_buff_head	sk_receive_queue;   // 该套接字的接收队列头，队列的成员就是skb
 	/*
 	 * The backlog queue is special, it is always used with
 	 * the per-socket spinlock held and requires low latency
@@ -362,7 +362,7 @@ struct sock {
 	int			sk_rcvbuf;          // 接收缓冲区大小
 
 	struct sk_filter __rcu	*sk_filter;     // 指向一个BPF过滤器
-	struct socket_wq __rcu	*sk_wq;
+	struct socket_wq __rcu	*sk_wq; // 指向该sock的等待队列和异步通知队列集合
 
 #ifdef CONFIG_NET_DMA
 	struct sk_buff_head	sk_async_wait_queue;
@@ -428,7 +428,7 @@ struct sock {
 	u32			sk_classid;
 	struct cg_proto		*sk_cgrp;
 	void			(*sk_state_change)(struct sock *sk);
-	void			(*sk_data_ready)(struct sock *sk, int bytes);   // 这个钩子函数用于告知套接字有数据收到，缺省都被注册为sock_def_readable
+	void			(*sk_data_ready)(struct sock *sk, int bytes);   // 该sock上有数据收到时调用，用于告知套接字，缺省都被注册为sock_def_readable
 	void			(*sk_write_space)(struct sock *sk);
 	void			(*sk_error_report)(struct sock *sk);
 	int			(*sk_backlog_rcv)(struct sock *sk,
@@ -2086,6 +2086,11 @@ static inline unsigned long sock_wspace(struct sock *sk)
 	return amt;
 }
 
+/* 指定套接字进行异步I/O通知处理
+ * @sk  - 指向sock结构
+ * @how - 
+ * @band    - 
+ */
 static inline void sk_wake_async(struct sock *sk, int how, int band)
 {
 	if (sock_flag(sk, SOCK_FASYNC))

@@ -1828,6 +1828,9 @@ int netlink_attachskb(struct sock *sk, struct sk_buff *skb,
  * @skb - 指向一个承载了netlink消息的skb
  *
  * 备注：该skb调用本函数前已经绑定到该用户进程netlink套接字
+ *       之所以说组播消息不支持发往内核的根本原因就在本函数中：
+ *              本函数最后通过调用sk_data_ready钩子函数来通知所在套接字接收组播消息，
+ *              而内核netlink套接字实际屏蔽了这个钩子函数，也就意味着永远无法接收到组播消息
  */
 static int __netlink_sendskb(struct sock *sk, struct sk_buff *skb)
 {
@@ -2095,7 +2098,9 @@ EXPORT_SYMBOL_GPL(netlink_has_listeners);
  * @返回值      -1  :套接字接收条件不满足
  *              0   :netlink组播消息发送成功，套接字已经接收但尚未处理数据长度小于等于其接收缓冲的1/2 
  *              1   :netlink组播消息发送成功，套接字已经接收但尚未处理数据长度大于其接收缓冲的1/2(这种情况似乎意味着套接字处于拥挤状态)
- * 备注：netlink组播消息不支持阻塞
+ *
+ * 备注：到本函数这里，已经确定了传入的netlink套接字跟组播消息匹配正确；
+ *       netlink组播消息不支持阻塞
  */
 static int netlink_broadcast_deliver(struct sock *sk, struct sk_buff *skb)
 {
@@ -2106,7 +2111,7 @@ static int netlink_broadcast_deliver(struct sock *sk, struct sk_buff *skb)
 	    !test_bit(NETLINK_CONGESTED, &nlk->state)) {
         // 如果满足接收条件，则设置skb的所有者是该netlink套接字
 		netlink_skb_set_owner_r(skb, sk);
-        // 将skb发送到该netlink套接字
+        // 将skb发送到该netlink套接字,实际也就是将该skb放入了该套接字的接收队列中
 		__netlink_sendskb(sk, skb);
         
         // 这里最后判断该netlink套接字的已经接收尚未处理数据长度是否大于其接收缓冲的1/2
@@ -2136,6 +2141,8 @@ struct netlink_broadcast_data {
 /* 尝试向指定用户进程netlink套接字发送组播消息
  * @sk  - 指向一个sock结构，对应一个用户进程netlink套接字
  * @p   - 指向一个netlink组播消息的管理块
+ *
+ * 备注：传入的这个netlink套接字跟组播消息属于同一种netlink协议类型，并且这个套接字开启了组播阅订，除了这些，其他信息(比如阅订了具体哪些组播)都是不确定的
  */
 static int do_one_broadcast(struct sock *sk,
 				   struct netlink_broadcast_data *p)
@@ -2277,10 +2284,14 @@ int netlink_broadcast_filtered(struct sock *ssk, struct sk_buff *skb, u32 portid
 EXPORT_SYMBOL(netlink_broadcast_filtered);
 
 /* 发送netlink组播消息(显然这只是个封装)
- * @ssk         - 源sock结构
+ * @ssk         - 指向源sock结构
  * @skb         - 属于发送方的承载了netlink消息的skb
  * @portid      - 目的单播地址
  * @group       - 目的组播地址
+ *
+ * 备注: 以下2种情况都会调用到本函数：
+ *          [1]. 用户进程   --组播--> 用户进程
+ *          [2]. kernel     --组播--> 用户进程
  */
 int netlink_broadcast(struct sock *ssk, struct sk_buff *skb, u32 portid,
 		      u32 group, gfp_t allocation)
@@ -2628,6 +2639,12 @@ out:
 	return err;
 }
 
+/* 用户态对netlink接口的套接字执行系统调用recvmsg()时就会进入到这里
+ * @sock    - 指向用户进程的netlink套接字，也就是接收方的
+ * @msg     - 用于存放接收到的netlink消息
+ * @len     - 用户空间支持的netlink消息接收长度上限
+ * @flags   - 跟本次接收操作有关的标志位集合(主要来源于用户空间)
+ */
 static int netlink_recvmsg(struct kiocb *kiocb, struct socket *sock,
 			   struct msghdr *msg, size_t len,
 			   int flags)
@@ -2641,15 +2658,18 @@ static int netlink_recvmsg(struct kiocb *kiocb, struct socket *sock,
 	struct sk_buff *skb, *data_skb;
 	int err, ret;
 
+    // netlink消息不支持接收带外数据
 	if (flags&MSG_OOB)
 		return -EOPNOTSUPP;
 
 	copied = 0;
 
+    // 从套接字的接收队列中接收数据
 	skb = skb_recv_datagram(sk, flags, noblock, &err);
 	if (skb == NULL)
 		goto out;
 
+    // 程序运行到这里意味着已经接收到数据
 	data_skb = skb;
 
 #ifdef CONFIG_COMPAT_NETLINK_MESSAGES
@@ -3363,7 +3383,7 @@ int netlink_unregister_notifier(struct notifier_block *nb)
 }
 EXPORT_SYMBOL(netlink_unregister_notifier);
 
-// 定义了socket层netlink协议族的通用操作集合
+// 定义了socket层netlink协议族共用的操作集合
 static const struct proto_ops netlink_ops = {
 	.family =	PF_NETLINK,
 	.owner =	THIS_MODULE,

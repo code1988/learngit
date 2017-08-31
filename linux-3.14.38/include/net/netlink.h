@@ -562,10 +562,12 @@ static inline void nlmsg_free(struct sk_buff *skb)
 
 /**
  * nlmsg_multicast - multicast a netlink message
- * @sk: netlink socket to spread messages to
- * @skb: netlink message as socket buffer
- * @portid: own netlink portid to avoid sending to yourself
- * @group: multicast group id
+ * 内核netlink API，供各个netlink协议调用，来向用户进程发送netlink组播消息(显然，这只是个封装)
+ *
+ * @sk: netlink socket to spread messages to    指向源sock结构
+ * @skb: netlink message as socket buffer       指向一个承载了组播netlink消息的skb
+ * @portid: own netlink portid to avoid sending to yourself 目的单播地址(英文有问题) 
+ * @group: multicast group id   目的组播地址
  * @flags: allocation flags
  */
 static inline int nlmsg_multicast(struct sock *sk, struct sk_buff *skb,
@@ -584,9 +586,13 @@ static inline int nlmsg_multicast(struct sock *sk, struct sk_buff *skb,
 
 /**
  * nlmsg_unicast - unicast a netlink message
- * @sk: netlink socket to spread message to
- * @skb: netlink message as socket buffer
- * @portid: netlink portid of the destination socket
+ * 内核netlink API，供各个netlink协议调用，来向用户进程发送netlink单播消息(显然，这只是个封装)
+ *
+ * @sk: netlink socket to spread message to     指向源sock结构，也就是内核netlink套接字(英文有问题)
+ * @skb: netlink message as socket buffer       指向一个承载了单播netlink消息的skb
+ * @portid: netlink portid of the destination socket 目的单播地址
+ *
+ * 备注：可以看出，内核只会以非阻塞的形式往用户进程发送netlink单播消息
  */
 static inline int nlmsg_unicast(struct sock *sk, struct sk_buff *skb, u32 portid)
 {

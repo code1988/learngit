@@ -132,8 +132,9 @@ out_noerr:
 
 /**
  *	__skb_recv_datagram - Receive a datagram skbuff
- *	@sk: socket
- *	@flags: MSG_ flags
+ *	接收一个datagram类型的skb
+ *	@sk: socket         指向一个sock结构，也就是要接收数据的套接字
+ *	@flags: MSG_ flags  跟本次接收操作有关的标志位集合(主要来源于用户空间)
  *	@peeked: returns non-zero if this packet has been seen before
  *	@off: an offset in bytes to peek skb from. Returns an offset
  *	      within an skb where data actually starts
@@ -174,7 +175,9 @@ struct sk_buff *__skb_recv_datagram(struct sock *sk, unsigned int flags,
 	if (error)
 		goto no_packet;
 
+    // 计算接收超时时间
 	timeo = sock_rcvtimeo(sk, flags & MSG_DONTWAIT);
+
 
 	do {
 		/* Again only user level code calls this function, so nothing
@@ -188,10 +191,13 @@ struct sk_buff *__skb_recv_datagram(struct sock *sk, unsigned int flags,
 		int _off = *off;
 
 		last = (struct sk_buff *)queue;
+        // 在尝试从接收队列中获取数据前首先需要上锁
 		spin_lock_irqsave(&queue->lock, cpu_flags);
+        // 遍历整个接收队列中的skb
 		skb_queue_walk(queue, skb) {
 			last = skb;
 			*peeked = skb->peeked;
+            // 如果用户进程设置了MSG_PEEK标志
 			if (flags & MSG_PEEK) {
 				if (_off >= skb->len && (skb->len || _off ||
 							 skb->peeked)) {
@@ -228,6 +234,11 @@ no_packet:
 }
 EXPORT_SYMBOL(__skb_recv_datagram);
 
+/* 从套接字的接收队列中接收数据(显然，这只是个封装)
+ * @sk      - 指向一个sock结构，也就是要接收数据的套接字
+ * @flags   - 跟本次接收操作有关的标志位集合(主要来源于用户空间)
+ * @noblock - 1：非阻塞，0：阻塞
+ */
 struct sk_buff *skb_recv_datagram(struct sock *sk, unsigned int flags,
 				  int noblock, int *err)
 {

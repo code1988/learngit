@@ -240,7 +240,7 @@ struct ucred {
  */
  
 #define MSG_OOB		1       // 带外数据(Out-Of-Band)标记，收发TCP数据时都可以设置，分别表示需要接收和发送带外数据(也称为TCP紧急数据)
-#define MSG_PEEK	2
+#define MSG_PEEK	2       // 预读标记，显然，接收数据时(不局限于TCP)可以设置，表示仅获取数据但不从套接字的接收队列中删除
 #define MSG_DONTROUTE	4
 #define MSG_TRYHARD     4       /* Synonym for MSG_DONTROUTE for DECnet */
 #define MSG_CTRUNC	8

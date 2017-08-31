@@ -87,10 +87,11 @@ enum sock_shutdown_cmd {
 	SHUT_RDWR,
 };
 
+// 等待队列和异步通知队列的集合
 struct socket_wq {
 	/* Note: wait MUST be first field of socket_wq */
-	wait_queue_head_t	wait;
-	struct fasync_struct	*fasync_list;
+	wait_queue_head_t	wait;   // 等待队列
+	struct fasync_struct	*fasync_list;   // 异步通知队列
 	struct rcu_head		rcu;
 } ____cacheline_aligned_in_smp;
 

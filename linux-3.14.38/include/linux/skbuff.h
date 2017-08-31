@@ -145,12 +145,13 @@ struct nf_bridge_info {
 };
 #endif
 
+// 定义了套接字的接收队列头
 struct sk_buff_head {
 	/* These two members must be first. */
 	struct sk_buff	*next;
 	struct sk_buff	*prev;
 
-	__u32		qlen;
+	__u32		qlen;   // 队列成员数量
 	spinlock_t	lock;
 };
 
@@ -2396,6 +2397,7 @@ static inline int pskb_trim_rcsum(struct sk_buff *skb, unsigned int len)
 	return __pskb_trim(skb, len);
 }
 
+// 遍历整个skb队列
 #define skb_queue_walk(queue, skb) \
 		for (skb = (queue)->next;					\
 		     skb != (struct sk_buff *)(queue);				\

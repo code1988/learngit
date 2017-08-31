@@ -177,6 +177,7 @@ wait_queue_head_t *bit_waitqueue(void *, int);
 	__wake_up_locked_key((x), TASK_NORMAL, (void *) (m))
 #define wake_up_interruptible_poll(x, m)				\
 	__wake_up(x, TASK_INTERRUPTIBLE, 1, (void *) (m))
+// 唤醒等待进程
 #define wake_up_interruptible_sync_poll(x, m)				\
 	__wake_up_sync_key((x), TASK_INTERRUPTIBLE, 1, (void *) (m))
 

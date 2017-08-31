@@ -69,7 +69,7 @@ static inline void *load_pointer(const struct sk_buff *skb, int k,
 
 /**
  *	sk_filter - run a packet through a socket filter
- *	使传入的skb中的数据包通过相关连的套接字的BPF过滤器
+ *	使传入的skb中的数据包通过相关连的套接字的BPF过滤器，相当于一个防火墙
  *	@sk: sock associated with &sk_buff  指向跟skb关联的套接字
  *	@skb: buffer to filter              指向承载了数据包的sbk结构
  *
@@ -79,6 +79,7 @@ static inline void *load_pointer(const struct sk_buff *skb, int k,
  * wrapper to sk_run_filter. It returns 0 if the packet should
  * be accepted or -EPERM if the packet should be tossed.
  *
+ * 备注：只有发往用户进程的消息才需要调用本函数，也就是说传入的套接字必然是属于用户进程的
  */
 int sk_filter(struct sock *sk, struct sk_buff *skb)
 {

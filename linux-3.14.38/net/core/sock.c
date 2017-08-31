@@ -2259,9 +2259,13 @@ static void sock_def_readable(struct sock *sk, int len)
 
 	rcu_read_lock();
 	wq = rcu_dereference(sk->sk_wq);
+    // 判断该sock的等待队列上是否有进程在等待
 	if (wq_has_sleeper(wq))
+        // 如果有，那么将该进程唤醒
 		wake_up_interruptible_sync_poll(&wq->wait, POLLIN | POLLPRI |
 						POLLRDNORM | POLLRDBAND);
+
+    // 该sock进行异步I/O通知处理
 	sk_wake_async(sk, SOCK_WAKE_WAITD, POLL_IN);
 	rcu_read_unlock();
 }

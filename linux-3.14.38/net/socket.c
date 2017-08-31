@@ -808,6 +808,7 @@ static inline int __sock_recvmsg(struct kiocb *iocb, struct socket *sock,
 	return err ?: __sock_recvmsg_nosec(iocb, sock, msg, size, flags);
 }
 
+// 套接字层的接收数据流程分支[1](带安全检查)
 int sock_recvmsg(struct socket *sock, struct msghdr *msg,
 		 size_t size, int flags)
 {
@@ -824,6 +825,7 @@ int sock_recvmsg(struct socket *sock, struct msghdr *msg,
 }
 EXPORT_SYMBOL(sock_recvmsg);
 
+// 套接字层的接收数据流程分支[2](不带安全检查)
 static int sock_recvmsg_nosec(struct socket *sock, struct msghdr *msg,
 			      size_t size, int flags)
 {
@@ -2278,6 +2280,13 @@ SYSCALL_DEFINE4(sendmmsg, int, fd, struct mmsghdr __user *, mmsg,
 	return __sys_sendmmsg(fd, mmsg, vlen, flags);
 }
 
+/* 用户态recvmsg/recvmmsg陷入到内核中的接口
+ * @sock    - 指向当前操作的socket结构
+ * @msg     - 用户空间的msghdr
+ * @msg_sys - 内核空间的msghdr
+ * @flags   - 用户空间recvmsg/recvmmsg调用传入的flag
+ * @nosec   - recvmsg调用传入0；recvmmsg调用传入具体的数量
+ */
 static int ___sys_recvmsg(struct socket *sock, struct msghdr __user *msg,
 			 struct msghdr *msg_sys, unsigned int flags, int nosec)
 {
@@ -2295,15 +2304,20 @@ static int ___sys_recvmsg(struct socket *sock, struct msghdr __user *msg,
 	struct sockaddr __user *uaddr;
 	int __user *uaddr_len;
 
+    // 通常应该不会设置MSG_CMSG_COMPAT标志
 	if (MSG_CMSG_COMPAT & flags) {
 		if (get_compat_msghdr(msg_sys, msg_compat))
 			return -EFAULT;
 	} else {
+        /* 所以这里一般就是将消息从用户空间拷贝到内核
+         * 跟__sys_sendmsg中存在区别的是，这里是为了接收内核的消息，用户空间并没有数据，所以这里最主要的目的是确定用户空间传入的接收缓冲区大小
+         */
 		err = copy_msghdr_from_user(msg_sys, msg);
 		if (err)
 			return err;
 	}
 
+    // 如果消息的iovec结构的数量超过了UIO_FASTIOV并且小于UIO_MAXIOV，意味着事先申请的数组放不下，需要通过kmalloc动态分配
 	if (msg_sys->msg_iovlen > UIO_FASTIOV) {
 		err = -EMSGSIZE;
 		if (msg_sys->msg_iovlen > UIO_MAXIOV)
@@ -2320,6 +2334,8 @@ static int ___sys_recvmsg(struct socket *sock, struct msghdr __user *msg,
 	 */
 	uaddr = (__force void __user *)msg_sys->msg_name;
 	uaddr_len = COMPAT_NAMELEN(msg);
+    // 通常应该不会设置MSG_CMSG_COMPAT标志
+    // 这里就是得到用户空间传入的数据缓冲区长度
 	if (MSG_CMSG_COMPAT & flags)
 		err = verify_compat_iovec(msg_sys, iov, &addr, VERIFY_WRITE);
 	else
@@ -2328,14 +2344,20 @@ static int ___sys_recvmsg(struct socket *sock, struct msghdr __user *msg,
 		goto out_freeiov;
 	total_len = err;
 
+    // 获取用户空间传入的辅助消息相关信息
 	cmsg_ptr = (unsigned long)msg_sys->msg_control;
 	msg_sys->msg_flags = flags & (MSG_CMSG_CLOEXEC|MSG_CMSG_COMPAT);
 
 	/* We assume all kernel code knows the size of sockaddr_storage */
 	msg_sys->msg_namelen = 0;
 
+    // 如果套接字本身带了非阻塞标志，则在这里自动添加上
 	if (sock->file->f_flags & O_NONBLOCK)
 		flags |= MSG_DONTWAIT;
+    
+    /* 显然，对于recvmsg调用这里执行sock_recvmsg，对于recvmmsg调用这里执行sock_recvmsg_nosec
+     * 实际上，最后都是调用了该socket所在协议的recvmsg钩子函数
+     */
 	err = (nosec ? sock_recvmsg_nosec : sock_recvmsg)(sock, msg_sys,
 							  total_len, flags);
 	if (err < 0)
@@ -2372,6 +2394,7 @@ out:
 
 /*
  *	BSD recvmsg interface
+ *	用户态recvmsg陷入到内核中的接口
  */
 
 long __sys_recvmsg(int fd, struct msghdr __user *msg, unsigned flags)
@@ -2380,6 +2403,7 @@ long __sys_recvmsg(int fd, struct msghdr __user *msg, unsigned flags)
 	struct msghdr msg_sys;
 	struct socket *sock;
 
+    // 通过fd查找对应的socket结构
 	sock = sockfd_lookup_light(fd, &err, &fput_needed);
 	if (!sock)
 		goto out;
@@ -2391,6 +2415,7 @@ out:
 	return err;
 }
 
+// 对应用户态的recvmsg()系统调用
 SYSCALL_DEFINE3(recvmsg, int, fd, struct msghdr __user *, msg,
 		unsigned int, flags)
 {
