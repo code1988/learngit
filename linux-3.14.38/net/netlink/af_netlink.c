@@ -2666,12 +2666,12 @@ static int netlink_recvmsg(struct kiocb *kiocb, struct socket *sock,
 
 	copied = 0;
 
-    // 从套接字的接收队列中接收数据
+    // 从套接字的接收队列中获取一个skb
 	skb = skb_recv_datagram(sk, flags, noblock, &err);
 	if (skb == NULL)
 		goto out;
 
-    // 程序运行到这里意味着已经接收到数据
+    // 程序运行到这里意味着已经获取到一个skb
 	data_skb = skb;
 
 #ifdef CONFIG_COMPAT_NETLINK_MESSAGES
@@ -2691,6 +2691,7 @@ static int netlink_recvmsg(struct kiocb *kiocb, struct socket *sock,
 	}
 #endif
 
+    // 如果收到的skb中承载的netlink消息长度大于用户空间接收缓存的最大长度，则设置MSG_TRUNC标志，并将实际接收长度改为接收缓存的长度
 	copied = data_skb->len;
 	if (len < copied) {
 		msg->msg_flags |= MSG_TRUNC;

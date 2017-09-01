@@ -839,14 +839,15 @@ EXPORT_SYMBOL_GPL(skb_copy_ubufs);
 
 /**
  *	skb_clone	-	duplicate an sk_buff
- *	@skb: buffer to clone
+ *	本函数仅仅复制了sk_buff结构本身，至于组成整个"网络数据包元"的另外2个部分：sk_buff承载的数据区和分片结构体、分片结构体指向的数据区，都是共享的
+ *	@skb: buffer to clone 指向需要被克隆的父skb
  *	@gfp_mask: allocation priority
+ *	@返回值：新克隆出来的子skb
  *
  *	Duplicate an &sk_buff. The new one is not owned by a socket. Both
  *	copies share the same packet data but not structure. The new
  *	buffer has a reference count of 1. If the allocation fails the
  *	function returns %NULL otherwise the new buffer is returned.
- *	clone相当于进行了一次半拷贝，只生成一个新的skb_buff，不会生成新的缓冲区，也就是说，新skb->buff的skb->head指向旧head内存区
  *
  *	If this function is called from an interrupt gfp_mask() must be
  *	%GFP_ATOMIC.
@@ -859,7 +860,9 @@ struct sk_buff *skb_clone(struct sk_buff *skb, gfp_t gfp_mask)
 	if (skb_orphan_frags(skb, gfp_mask))
 		return NULL;
 
+    // 指向紧挨在父skb后的可能子skb位置
 	n = skb + 1;
+    // 如果父skb是在skbuff_fclone_cache缓存池上分配的（意味着返回了两个skb），并且子skb没有被克隆过
 	if (skb->fclone == SKB_FCLONE_ORIG &&
 	    n->fclone == SKB_FCLONE_UNAVAILABLE) {
 		atomic_t *fclone_ref = (atomic_t *) (n + 1);
@@ -915,6 +918,8 @@ static inline int skb_alloc_rx_flag(const struct sk_buff *skb)
 
 /**
  *	skb_copy	-	create private copy of an sk_buff
+ *	本函数完整的复制了整个"网络数据包元"
+ *
  *	@skb: buffer to copy
  *	@gfp_mask: allocation priority
  *

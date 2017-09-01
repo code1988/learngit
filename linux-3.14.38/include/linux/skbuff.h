@@ -316,9 +316,10 @@ struct skb_shared_info {
 #define SKB_DATAREF_MASK ((1 << SKB_DATAREF_SHIFT) - 1)
 
 
+// 枚举了申请skb内存空间时使用的方式
 enum {
-	SKB_FCLONE_UNAVAILABLE,
-	SKB_FCLONE_ORIG,
+	SKB_FCLONE_UNAVAILABLE,     // 表示该skb没有被克隆过
+	SKB_FCLONE_ORIG,            // 表示从skbuff_fclone_cache缓存池中申请skb，这种方式实际会申请一对空间连续的skb + 末尾1字节
 	SKB_FCLONE_CLONE,
 };
 
@@ -361,6 +362,10 @@ typedef unsigned char *sk_buff_data_t;
  *	struct sk_buff - socket buffer
  *	本结构体是linux网络协议栈核心中的核心，几乎所有操作都是围绕该结构体进行的
  *	本结构体就是 [网络数据包本身 + 针对它的操作集合]，本人称作"网络数据包元"
+ *	这个"网路数据包元"实际由3块独立分配的内存组成：
+ *	        [1]. sk_buff结构体自身
+ *	        [2]. sk_buff承载的数据区和分片结构体(这两个是一起分配出来的)
+ *	        [3]. 分片结构体指向的数据区
  *
  *	@next: Next buffer in list
  *	@prev: Previous buffer in list
@@ -464,14 +469,14 @@ struct sk_buff {
 	__u32			priority;   // 记录了该skb的数据包优先级
 	kmemcheck_bitfield_begin(flags1);
 	__u8			local_df:1,
-				cloned:1,       // 标识该skb是否是clone的 
+				cloned:1,       // 标识该skb是否被克隆，或者标识该skb是克隆出来的，也就意味着克隆时，自身skb和克隆skb的该标志位都要置1 
 				ip_summed:2,
 				nohdr:1,
 				nfctinfo:3;
 	__u8			pkt_type:3,
-				fclone:2,
+				fclone:2,       // 标识该skb克隆相关的信息，取值 SKB_FCLONE_*
 				ipvs_property:1,
-				peeked:1,
+				peeked:1,       // 标识该skb是否有被预读过(MSG_PEEK)
 				nf_trace:1;
 	kmemcheck_bitfield_end(flags1);
 	__be16			protocol;       // 记录了以太网帧协议ID(如vlan ID: 0x8100)
@@ -544,10 +549,10 @@ struct sk_buff {
 	/* These elements must be at the end, see alloc_skb() for details.  */
 	sk_buff_data_t		tail;       // 根据sk_buff_data_t类型不同，指向该skb当前处理的数据尾地址 / 记录了相对data的偏移量
 	sk_buff_data_t		end;        // 根据sk_buff_data_t类型不同，指向缓冲区尾部 / 记录了相对head的偏移量，由alloc_skb分配之后不再变化
-	unsigned char		*head,      // 指向缓冲区头部，由alloc_skb分配之后不再变化
+	unsigned char		*head,      // 指向数据缓冲区头部，由alloc_skb分配之后不再变化
 				*data;              // 指向该skb当前处理的数据首地址。这是一个活动指针，在封装中作为写指针使用，而在解封装中作为读指针使用
 	unsigned int		truesize;   // 记录了[ sk_buff结构 + 缓冲区 ] 的总长
-	atomic_t		users;          // 记录了该skb的数据包缓冲区的被其他skb引用计数
+	atomic_t		users;          // 记录了该skb被引用计数
 };
 
 #ifdef __KERNEL__
@@ -2192,6 +2197,8 @@ static inline dma_addr_t skb_frag_dma_map(struct device *dev,
 			    frag->page_offset + offset, size, dir);
 }
 
+/* 本函数复制了组成整个"网络数据包元"的其中2个部分：sk_buff结构本身、sk_buff承载的数据区和分片结构体，剩下的分片结构体指向的数据区是共享的
+ */
 static inline struct sk_buff *pskb_copy(struct sk_buff *skb,
 					gfp_t gfp_mask)
 {

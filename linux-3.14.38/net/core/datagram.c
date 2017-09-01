@@ -81,6 +81,9 @@ static int receiver_wake_function(wait_queue_t *wait, unsigned int mode, int syn
 }
 /*
  * Wait for the last received packet to be different from skb
+ * 等待指定sock的接收通道中有数据包到来
+ * @sk  - 指向sock结构
+ * @timeo_p - 超时时间
  */
 static int wait_for_more_packets(struct sock *sk, int *err, long *timeo_p,
 				 const struct sk_buff *skb)
@@ -196,8 +199,15 @@ struct sk_buff *__skb_recv_datagram(struct sock *sk, unsigned int flags,
         // 遍历整个接收队列中的skb
 		skb_queue_walk(queue, skb) {
 			last = skb;
+            // 首先记录该skb是否有被预读过
 			*peeked = skb->peeked;
-            // 如果用户进程设置了MSG_PEEK标志
+            /* 判断用户进程是否设置了MSG_PEEK预读标志
+             * 如果设置了预读标志，则调用skb_set_peeked来将合适的skb的peeked标志置位，最后返回这个合适的skb
+             * 如果没有设置预读标志，则调用__skb_unlink将本次取出的skb从接收队列中移除，最后返回这个skb
+             *
+             * 注意：当前分析的3.14.38在这里存在一个bug（git:738ac1ebb96d02e0d23bc320302a6ea94c612dec中修复）
+             *       大致的原因就是如果取出的这个skb处于shared状态，就需要在设置peeked标志前先skb_clone一个出来
+             */
 			if (flags & MSG_PEEK) {
 				if (_off >= skb->len && (skb->len || _off ||
 							 skb->peeked)) {
@@ -211,20 +221,24 @@ struct sk_buff *__skb_recv_datagram(struct sock *sk, unsigned int flags,
 
 			spin_unlock_irqrestore(&queue->lock, cpu_flags);
 			*off = _off;
+            // 显然，本函数每次只从接收队列中获取一个有效的skb
 			return skb;
 		}
 		spin_unlock_irqrestore(&queue->lock, cpu_flags);
 
+        // 当内核配置了CONFIG_NET_RX_BUSY_POLL选项时，这里会尝试采用忙等方式，从而避免因睡眠而退出，加速接收速度
 		if (sk_can_busy_loop(sk) &&
 		    sk_busy_loop(sk, flags & MSG_DONTWAIT))
 			continue;
 
-		/* User doesn't want to wait */
+		/* User doesn't want to wait 
+         * timeo为0意味着接收超时或者本身是非阻塞调用，返回EAGAIN
+         * */
 		error = -EAGAIN;
 		if (!timeo)
 			goto no_packet;
 
-	} while (!wait_for_more_packets(sk, err, &timeo, last));
+	} while (!wait_for_more_packets(sk, err, &timeo, last));    // 传统方式：让进程睡眠等待数据包的到来
 
 	return NULL;
 

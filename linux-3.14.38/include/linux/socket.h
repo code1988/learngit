@@ -236,7 +236,13 @@ struct ucred {
 /* Flags we can use with send/ and recv. 
    Added those for 1003.1g not all are supported yet
 
-   以下这些MSG_*都是附加标志位，用于设置send/recv系统调用中的flags参数
+   以下这些MSG_*都是附加标志位，有以下3种应用场景：
+            用于设置send系列系统调用中的flags参数
+            用于设置recv系列系统调用中的flags参数
+            用于标识返回数据的属性
+
+   注意点：并不是所有这些标志都可以适应3种场景;
+           相同一个标志在每种场景中表示的含义通常不同
  */
  
 #define MSG_OOB		1       // 带外数据(Out-Of-Band)标记，收发TCP数据时都可以设置，分别表示需要接收和发送带外数据(也称为TCP紧急数据)
@@ -245,7 +251,7 @@ struct ucred {
 #define MSG_TRYHARD     4       /* Synonym for MSG_DONTROUTE for DECnet */
 #define MSG_CTRUNC	8
 #define MSG_PROBE	0x10	/* Do not send. Only probe path f.e. for MTU */
-#define MSG_TRUNC	0x20
+#define MSG_TRUNC	0x20    // 设置到recv系列系统调用中时表示返回实际包的长度，即使指定的缓冲区太小;返回数据的属性中设置了该标志表示数据包由于长度超限而被截断了
 #define MSG_DONTWAIT	0x40	/* Nonblocking io		 */
 #define MSG_EOR         0x80	/* End of record */
 #define MSG_WAITALL	0x100	/* Wait for a full request */

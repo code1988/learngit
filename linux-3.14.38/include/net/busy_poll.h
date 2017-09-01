@@ -27,7 +27,7 @@
 #include <linux/netdevice.h>
 #include <net/ip.h>
 
-#ifdef CONFIG_NET_RX_BUSY_POLL
+#ifdef CONFIG_NET_RX_BUSY_POLL  // 以下是当内核配置了CONFIG_NET_RX_BUSY_POLL选项时，定义的内容
 
 struct napi_struct;
 extern unsigned int sysctl_net_busy_read __read_mostly;
@@ -130,7 +130,7 @@ static inline void sk_mark_napi_id(struct sock *sk, struct sk_buff *skb)
 	sk->sk_napi_id = skb->napi_id;
 }
 
-#else /* CONFIG_NET_RX_BUSY_POLL */
+#else /* CONFIG_NET_RX_BUSY_POLL */     // 以下是内核没有配置CONFIG_NET_RX_BUSY_POLL选项时，显然都是空函数
 static inline unsigned long net_busy_loop_on(void)
 {
 	return 0;
