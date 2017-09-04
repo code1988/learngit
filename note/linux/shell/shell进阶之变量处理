@@ -1,3 +1,4 @@
+#!/bin/sh
 1. ${parameter=default},${parameter:=default}详解
 	${parameter=default}	- 如果parameter没有被声明，那么返回的结果就是default，同时parameter的值设为default
 	${parameter:=default}	- 如果parameter没有被设置，那么返回的结果就是default，同时parameter的值设为default
