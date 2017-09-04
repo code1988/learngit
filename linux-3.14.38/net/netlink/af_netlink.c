@@ -2734,7 +2734,7 @@ static int netlink_recvmsg(struct kiocb *kiocb, struct socket *sock,
     // 释放承载了该netlink消息的skb
 	skb_free_datagram(sk, skb);
 
-    // 如果有需要还要执行dump操作
+    // 如果有需要还要执行dump操作(执行dump操作的通常是内核，用户进程执行dump操作需要进行确认)
 	if (nlk->cb_running &&
 	    atomic_read(&sk->sk_rmem_alloc) <= sk->sk_rcvbuf / 2) {
 		ret = netlink_dump(sk);
@@ -2752,7 +2752,7 @@ out:
 	return err ? : copied;
 }
 
-// 从2.6.24版本开始，这个函数似乎是被作废了
+// 从2.6.24版本开始，这个函数被作废了，意味着内核不支持组播消息接收
 static void netlink_data_ready(struct sock *sk, int len)
 {
 	BUG();

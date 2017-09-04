@@ -532,7 +532,7 @@ netlink支持用户进程和内核相互交互（两边都可以主动发起）�
         // 释放承载了该netlink消息的skb
         skb_free_datagram(sk, skb);
 
-        // 如果有需要还要执行dump操作(这步操作需要再确认)
+        // 如果有需要还要执行dump操作(执行dump操作的通常是内核，用户进程执行dump操作需要进行确认)
         if (nlk->cb_running && atomic_read(&sk->sk_rmem_alloc) <= sk->sk_rcvbuf / 2)
             ret = netlink_dump(sk);
 
@@ -540,7 +540,11 @@ netlink支持用户进程和内核相互交互（两边都可以主动发起）�
 
 out:
         // 正常情况下，程序运行到这里意味着一个承载了netlink消息的skb已经处理完毕
-        // 条件合适的情况下唤醒该netlink套接字的等待队列中的用户进程
+        // 最后在条件合适的情况下将会唤醒该netlink套接字的等待队列中的用户进程
         netlink_rcv_wake(sk); 
         return err ? : copied;
     }
+
+
+至此，netlink通信原理全部分析完毕，当然本文只是针对通用的通信流程进行了展开。
+具体协议类型的netlink还拥有自己私有的消息处理方式，针对几个重要的具体协议类型(NETLINK_ROUTE、NETLINK_GENERIC)，将会另写文章分别进行分析
