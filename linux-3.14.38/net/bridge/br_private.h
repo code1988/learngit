@@ -93,19 +93,20 @@ struct net_port_vlans {
 	u16				num_vlans;
 };
 
+// 定义了转发表表项结构
 struct net_bridge_fdb_entry
 {
-	struct hlist_node		hlist;
-	struct net_bridge_port		*dst;
+	struct hlist_node		hlist;      // 用来链接同一个hash桶中的其他net_bridge_fdb_entry结构
+	struct net_bridge_port		*dst;   // 指向学习到该mac对应的桥端口
 
 	struct rcu_head			rcu;
 	unsigned long			updated;
 	unsigned long			used;
-	mac_addr			addr;
-	unsigned char			is_local;
-	unsigned char			is_static;
+	mac_addr			addr;           // 记录了一个学习到的mac
+	unsigned char			is_local;   // 标识该mac是否是自身mac
+	unsigned char			is_static;  // 标识该mac是否是静态添加的
 	unsigned char			added_by_user;
-	__u16				vlan_id;
+	__u16				vlan_id;        // 记录了学习到该mac所在的vlan
 };
 
 /* 定义了加入一个组播组的组播端口，本结构描述了一个组播端口的详细信息
@@ -120,7 +121,7 @@ struct net_bridge_port_group {
 	unsigned char			state;
 };
 
-/* 定义了一个组播组数据库转发表项，本结构描述了一个组播组的详细信息
+/* 定义了组播组数据库转发表项，本结构描述了一个组播组的详细信息
  */
 struct net_bridge_mdb_entry
 {
@@ -151,7 +152,7 @@ struct net_bridge_port
 {
 	struct net_bridge		*br;    // 指向所属网桥
 	struct net_device		*dev;   // 指向对应的网络设备
-	struct list_head		list;
+	struct list_head		list;   // 用来链接所属网桥的其他桥端口
 
 	/* STP */
 	u8				priority;       // 端口优先级
@@ -207,27 +208,29 @@ struct net_bridge_port
 
 #define br_port_exists(dev) (dev->priv_flags & IFF_BRIDGE_PORT)
 
+// 基于桥端口设备获取关联的net_bridge_port
 static inline struct net_bridge_port *br_port_get_rcu(const struct net_device *dev)
 {
 	return rcu_dereference(dev->rx_handler_data);
 }
 
+// 基于桥端口设备获取关联的net_bridge_port
 static inline struct net_bridge_port *br_port_get_rtnl(const struct net_device *dev)
 {
 	return br_port_exists(dev) ?
 		rtnl_dereference(dev->rx_handler_data) : NULL;
 }
 
-// 网桥管理块结构
+// 定义了网桥结构，本结构描述了一个网桥的详细信息
 struct net_bridge
 {
 	spinlock_t			lock;
-	struct list_head		port_list;  // 包含的端口的链表头
+	struct list_head		port_list;  // 桥端口的链表头，每个节点就是一个net_bridge_port结构
 	struct net_device		*dev;       // 指向对应的网桥设备
 
 	struct pcpu_sw_netstats		__percpu *stats;
 	spinlock_t			hash_lock;
-	struct hlist_head		hash[BR_HASH_SIZE];
+	struct hlist_head		hash[BR_HASH_SIZE]; // 该网桥基于hash结构的转发表，散列桶中的每个节点就是一个net_bridge_fdb_entry结构
 #ifdef CONFIG_BRIDGE_NETFILTER
 	struct rtable 			fake_rtable;
 	bool				nf_call_iptables;

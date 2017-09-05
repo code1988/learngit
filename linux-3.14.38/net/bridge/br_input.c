@@ -1,6 +1,7 @@
 /*
  *	Handle incoming frames
  *	Linux ethernet bridge
+ *	linux网桥处理收到的数据包
  *
  *	Authors:
  *	Lennert Buytenhek		<buytenh@gnu.org>

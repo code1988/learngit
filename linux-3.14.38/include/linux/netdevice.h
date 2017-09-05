@@ -1350,7 +1350,7 @@ struct net_device {
 #endif
 
 	rx_handler_func_t __rcu	*rx_handler;    // 指向一个额外的数据包接收处理函数(普通设备不会注册该回调，一般就是作为bridge端口的设备才会有)
-	void __rcu		*rx_handler_data;
+	void __rcu		*rx_handler_data;       // 指向一个具体设备类型相关数据结构(目前知道的是，作为bridge端口的设备这里指向对应的net_bridge_port结构)
 
 	struct netdev_queue __rcu *ingress_queue;
 	unsigned char		broadcast[MAX_ADDR_LEN];	/* hw bcast add	硬件广播地址(mac)*/
