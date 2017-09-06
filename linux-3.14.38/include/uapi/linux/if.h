@@ -39,7 +39,7 @@
 #define	IFF_NOTRAILERS	0x20		/* avoid use of trailers	*/
 #define	IFF_RUNNING	0x40		/* interface RFC2863 OPER_UP	*/
 #define	IFF_NOARP	0x80		/* no ARP protocol		*/
-#define	IFF_PROMISC	0x100		/* receive all packets		*/
+#define	IFF_PROMISC	0x100		/* receive all packets		用于标示该网络设备开启了混杂模式 */
 #define	IFF_ALLMULTI	0x200		/* receive all multicast packets*/
 
 #define IFF_MASTER	0x400		/* master of a load balancer 	*/

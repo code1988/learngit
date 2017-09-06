@@ -310,7 +310,7 @@ static const struct ethtool_ops br_ethtool_ops = {
 	.get_link	= ethtool_op_get_link,
 };
 
-// 定义了网桥设备的管理操作集合
+// 定义了网桥设备的管理操作集合(也就是网桥设备的驱动)
 static const struct net_device_ops br_netdev_ops = {
 	.ndo_open		 = br_dev_open,
 	.ndo_stop		 = br_dev_stop,
@@ -361,7 +361,7 @@ void br_dev_setup(struct net_device *dev)
     // 为网桥设备的链路层参数设置一些缺省值
 	ether_setup(dev);
 
-    // 为网桥设备注册一个设备操作回调函数统一管理块
+    // 为网桥设备注册一套设备驱动
 	dev->netdev_ops = &br_netdev_ops;
     // 为网桥设备注册一个设备销毁回调函数
 	dev->destructor = br_dev_free;

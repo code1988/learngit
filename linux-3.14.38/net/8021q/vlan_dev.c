@@ -378,6 +378,9 @@ out:
 	return 0;
 }
 
+/* vlan设备驱动net_device_ops->ndo_do_ioctl钩子函数
+ *
+ */
 static int vlan_dev_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 {
 	struct net_device *real_dev = vlan_dev_priv(dev)->real_dev;
@@ -770,7 +773,7 @@ static const struct ethtool_ops vlan_ethtool_ops = {
 	.get_link		= ethtool_op_get_link,
 };
 
-// 定义了一个vlan设备管理操作回调函数集
+// 定义了vlan设备管理操作回调函数集(也就是vlan设备的驱动)
 static const struct net_device_ops vlan_netdev_ops = {
 	.ndo_change_mtu		= vlan_dev_change_mtu,
 	.ndo_init		= vlan_dev_init,
@@ -821,7 +824,7 @@ void vlan_setup(struct net_device *dev)
 	dev->priv_flags		&= ~(IFF_XMIT_DST_RELEASE | IFF_TX_SKB_SHARING);
 	dev->tx_queue_len	= 0;
 
-	dev->netdev_ops		= &vlan_netdev_ops;     // 注册vlan设备管理操作回调函数集
+	dev->netdev_ops		= &vlan_netdev_ops;     // 为vlan设备注册一套驱动
 	dev->destructor		= vlan_dev_free;        // 注册vlan设备注销回调函数
 	dev->ethtool_ops	= &vlan_ethtool_ops;    // 注册使用ethtool工具操作vlan设备的回调函数集
 

@@ -1,5 +1,6 @@
 /*
  * 	NET3	Protocol independent device support routines.
+ * 	协议无关的设备操作集合
  *
  *		This program is free software; you can redistribute it and/or
  *		modify it under the terms of the GNU General Public License
@@ -347,7 +348,7 @@ static inline void netdev_set_addr_lockdep_class(struct net_device *dev)
 
 		Protocol management and registration routines
 
-以下是内核中的以太网协议(ETH_P_*)管理和注册程序
+以下是通用的协议管理和注册程序
 *******************************************************************************/
 
 /*
@@ -533,6 +534,7 @@ EXPORT_SYMBOL(dev_remove_offload);
 
 		      Device Boot-time Settings Routines
 
+以下是设备启动时的设置程序
 *******************************************************************************/
 
 /* Boot time configuration table */
@@ -658,6 +660,7 @@ __setup("netdev=", netdev_boot_setup);
 
 			    Device Interface Subroutines
 
+以下是设备接口子程序
 *******************************************************************************/
 
 /**
@@ -1600,6 +1603,7 @@ static int call_netdevice_notifiers_info(unsigned long val,
 
 /**
  *	call_netdevice_notifiers - call all network notifier blocks
+ *	调用指定设备关联的所有网络通知块
  *      @val: value passed unmodified to notifier function
  *      @dev: net_device pointer passed unmodified to notifier function
  *
@@ -5225,6 +5229,10 @@ static void dev_change_rx_flags(struct net_device *dev, int flags)
 		ops->ndo_change_rx_flags(dev, flags);
 }
 
+/* 更新指定网络设备中的混杂模式计数器值
+ * @dev     - 指向一个网络设备
+ * @inc     - 请求进入混杂模式则传入+1,请求退出混杂模式则传入-1 
+ */
 static int __dev_set_promiscuity(struct net_device *dev, int inc, bool notify)
 {
 	unsigned int old_flags = dev->flags;
@@ -5235,6 +5243,7 @@ static int __dev_set_promiscuity(struct net_device *dev, int inc, bool notify)
 
 	dev->flags |= IFF_PROMISC;
 	dev->promiscuity += inc;
+    // 如果更新之后的混杂模式计数器为0,意味着要退出混杂模式
 	if (dev->promiscuity == 0) {
 		/*
 		 * Avoid overflow.
@@ -5275,14 +5284,18 @@ static int __dev_set_promiscuity(struct net_device *dev, int inc, bool notify)
 
 /**
  *	dev_set_promiscuity	- update promiscuity count on a device
+ *	更新指定网络设备中的混杂模式计数器值
  *	@dev: device
- *	@inc: modifier
+ *	@inc: modifier 请求进入混杂模式则传入+1,请求退出混杂模式则传入-1
  *
  *	Add or remove promiscuity from a device. While the count in the device
  *	remains above zero the interface remains promiscuous. Once it hits zero
  *	the device reverts back to normal filtering operation. A negative inc
  *	value is used to drop promiscuity on the device.
  *	Return 0 if successful or a negative errno code on error.
+ *
+ *	备注：除非该网络设备的混杂模式计数器为0,否则该设备不会退出混杂模式;
+ *	      进入混杂模式的网络设备会设置net_device->flags |= IFF_PROMISC
  */
 int dev_set_promiscuity(struct net_device *dev, int inc)
 {

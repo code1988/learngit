@@ -25,7 +25,9 @@
 
 #include <linux/netdevice.h>
 
-/* ARP protocol HARDWARE identifiers. */
+/* ARP protocol HARDWARE identifiers. 
+ * 可以用来设置net_device->type (猜测)
+ * */
 #define ARPHRD_NETROM	0		/* from KA9Q: NET/ROM pseudo	*/
 #define ARPHRD_ETHER 	1		/* Ethernet 10Mbps		*/
 #define	ARPHRD_EETHER	2		/* Experimental Ethernet	*/

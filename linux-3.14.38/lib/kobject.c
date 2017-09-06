@@ -1,5 +1,6 @@
 /*
  * kobject.c - library routines for handling generic kernel objects
+ * 通用内核对象kobject的核心文件
  *
  * Copyright (c) 2002-2003 Patrick Mochel <mochel@osdl.org>
  * Copyright (c) 2006-2007 Greg Kroah-Hartman <greg@kroah.com>
@@ -302,6 +303,7 @@ EXPORT_SYMBOL(kobject_set_name);
 
 /**
  * kobject_init - initialize a kobject structure
+ * 初始化一个kobject结构
  * @kobj: pointer to the kobject to initialize
  * @ktype: pointer to the ktype for this kobject.
  *
@@ -406,10 +408,11 @@ EXPORT_SYMBOL(kobject_add);
 
 /**
  * kobject_init_and_add - initialize a kobject structure and add it to the kobject hierarchy
- * @kobj: pointer to the kobject to initialize
- * @ktype: pointer to the ktype for this kobject.
- * @parent: pointer to the parent of this kobject.
- * @fmt: the name of the kobject.
+ * 初始化一个kobject结构，并将其加入到kobject的层次结构中
+ * @kobj: pointer to the kobject to initialize      指向一个要被初始化的kobject
+ * @ktype: pointer to the ktype for this kobject.   指向所属的kobj_type
+ * @parent: pointer to the parent of this kobject.  指向该kobject的父kobject
+ * @fmt: the name of the kobject.                   指向该kobject的名字
  *
  * This function combines the call to kobject_init() and
  * kobject_add().  The same type of error handling after a call to
@@ -421,9 +424,11 @@ int kobject_init_and_add(struct kobject *kobj, struct kobj_type *ktype,
 	va_list args;
 	int retval;
 
+    // 对kobject进行初始化
 	kobject_init(kobj, ktype);
 
 	va_start(args, fmt);
+    // 将kobject加入到kobject层次结构中
 	retval = kobject_add_varg(kobj, parent, fmt, args);
 	va_end(args);
 

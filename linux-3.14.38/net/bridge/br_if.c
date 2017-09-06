@@ -209,6 +209,8 @@ static int find_portno(struct net_bridge *br)
 
 /* called with RTNL but without bridge lock 
  * 为加入网桥的设备分配一个net_bridge_port结构，并进行了基本的初始化
+ * @br  - 指向要加入的网桥
+ * @dev - 指向要加入网桥的设备
  * */
 static struct net_bridge_port *new_nbp(struct net_bridge *br,
 				       struct net_device *dev)
@@ -259,7 +261,7 @@ int br_add_bridge(struct net *net, const char *name)
 
     // 将新创建的bridge设备关联到当前网络命名空间
 	dev_net_set(dev, net);
-    // 为该bridge设备绑定一组rtnetlink操作集合
+    // 为该bridge设备绑定一组用于处理link事件的rtnetlink操作集合
 	dev->rtnl_link_ops = &br_link_ops;
 
     // 注册bridge设备到内核中，注册结果会从通知链中反馈
@@ -342,9 +344,9 @@ netdev_features_t br_features_recompute(struct net_bridge *br,
 }
 
 /* called with RTNL 
- * 网桥中加入端口
- * @br  - 要加入端口的网桥
- * @dev - 要加入的端口设备
+ * 将指定设备作为桥端口加入指定网桥
+ * @br  - 指向一个网桥
+ * @dev - 指向要加入网桥的设备
  * */
 int br_add_if(struct net_bridge *br, struct net_device *dev)
 {
@@ -367,7 +369,7 @@ int br_add_if(struct net_bridge *br, struct net_device *dev)
 		return -ELOOP;
 
 	/* Device is already being bridged 
-     * 不能将已经加入网桥的端口再加入网桥
+     * 不能将已经加入网桥的设备再加入网桥
      * */
 	if (br_port_exists(dev))
 		return -EBUSY;
@@ -378,30 +380,36 @@ int br_add_if(struct net_bridge *br, struct net_device *dev)
 	if (dev->priv_flags & IFF_DONT_BRIDGE)
 		return -EOPNOTSUPP;
 
-    // 为加入网桥的设备分配一个net_bridge_port结构，并进行了基本的初始化
+    // 为加入网桥的设备分配一个网桥端口对象net_bridge_port，并进行了基本的初始化
 	p = new_nbp(br, dev);
 	if (IS_ERR(p))
 		return PTR_ERR(p);
 
+    // 调用桥端口设备关联的所有网络通知块
 	call_netdevice_notifiers(NETDEV_JOIN, dev);
 
+    // 桥端口设备请求进入混杂模式
 	err = dev_set_promiscuity(dev, 1);
 	if (err)
 		goto put_back;
 
+    // 初始化桥端口中的kobject结构，并将其加入到kobject的层次结构中
 	err = kobject_init_and_add(&p->kobj, &brport_ktype, &(dev->dev.kobj),
 				   SYSFS_BRIDGE_PORT_ATTR);
 	if (err)
 		goto err1;
 
+    // 桥端口加入sysfs中，暂略
 	err = br_sysfs_addif(p);
 	if (err)
 		goto err2;
 
+    // 暂略
 	err = br_netpoll_enable(p, GFP_KERNEL);
 	if (err)
 		goto err3;
 
+    // 
 	err = netdev_master_upper_dev_link(dev, br->dev);
 	if (err)
 		goto err4;

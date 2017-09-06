@@ -303,7 +303,10 @@ static int register_vlan_device(struct net_device *real_dev, u16 vlan_id)
 	vlan->dent = NULL;                      // 暂且先清除在proc文件系统中的入口
 	vlan->flags = VLAN_FLAG_REORDER_HDR;    // 每个新创建的VLAN默认都设置了REORDER_HDR标志
 
-	new_dev->rtnl_link_ops = &vlan_link_ops;// 注册netlink接口操作集合用于管理该vlan设备(这组集合其实在模块层面的初始化中已经被注册进netlink)
+    /* 为该vlan设备绑定一组用于处理link事件的rtnetlink操作集合
+     * 这组集合其实在vlan模块层面的初始化中已经通过vlan_netlink_init被注册进netlink
+     */
+	new_dev->rtnl_link_ops = &vlan_link_ops;
     
     // 进一步注册一个新的vlan设备
 	err = register_vlan_dev(new_dev);
@@ -517,7 +520,7 @@ static struct notifier_block vlan_notifier_block __read_mostly = {
 
 /*
  *	VLAN IOCTL handler.
- *	用于ioctl的vlan操作钩子函数 
+ *	整个vlan模块的ioctl操作钩子函数 
  *	o execute requested action or pass command to the device driver
  *   arg is really a struct vlan_ioctl_args __user *.
  */

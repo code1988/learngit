@@ -1245,7 +1245,7 @@ struct net_device {
 	struct iw_public_data *	wireless_data;
 #endif
 	/* Management operations */
-	const struct net_device_ops *netdev_ops;    // 对该网络设备进行通用管理操作的回调函数集(也就是该设备的一套驱动)
+	const struct net_device_ops *netdev_ops;    // 对该网络设备进行通用管理操作的回调函数集(也就是该设备的一套驱动，具体设备类型相关)
 	const struct ethtool_ops *ethtool_ops;      // 使用ethtool工具进行管理操作的回调函数集
 	const struct forwarding_accel_ops *fwd_ops;
 
@@ -1268,7 +1268,7 @@ struct net_device {
 	unsigned char		dma;		/* DMA channel		*/
 
 	unsigned int		mtu;	/* interface MTU value		*/
-	unsigned short		type;	/* interface hardware type	*/
+	unsigned short		type;	/* interface hardware type	设备接口的硬件类型，取值ARPHRD_*(猜测) */
 	unsigned short		hard_header_len;	/* hardware hdr length	*/
 
 	/* extra head- and tailroom the hardware may need, but not in all cases
@@ -1281,7 +1281,7 @@ struct net_device {
 	/* Interface address info. */
 	unsigned char		perm_addr[MAX_ADDR_LEN]; /* permanent hw address */
 	unsigned char		addr_assign_type; /* hw address assignment type 记录了该设备的mac地址是如何分配得到的*/
-	unsigned char		addr_len;	/* hardware address length	*/
+	unsigned char		addr_len;	/* hardware address length	设备的硬件地址长度(对于以太网设备就是MAC地址长度6) */
 	unsigned short		neigh_priv_len;
 	unsigned short          dev_id;		/* Used to differentiate devices
 						 * that share the same link
@@ -1298,7 +1298,7 @@ struct net_device {
 #endif
 
 	bool			uc_promisc;
-	unsigned int		promiscuity;
+	unsigned int		promiscuity;    // 进入混杂模式的计数器，除非计数器为0,否则该设备不会退出混杂模式
 	unsigned int		allmulti;
 
 
@@ -1455,7 +1455,7 @@ struct net_device {
 	const struct attribute_group *sysfs_rx_queue_group;
 
 	/* rtnetlink link ops */
-	const struct rtnl_link_ops *rtnl_link_ops;  // 通过rtnetlink接口管理该网络设备的回调函数集
+	const struct rtnl_link_ops *rtnl_link_ops;  // 指向一个具体设备类型相关的rtnetlink接口的link操作集合(vlan设备、bridge设备等都用它来管理link事件)
 
 	/* for setting kernel sock attribute on TCP connection setup */
 #define GSO_MAX_SIZE		65536

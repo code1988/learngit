@@ -356,7 +356,7 @@ static int old_deviceless(struct net *net, void __user *uarg)
 	return -EOPNOTSUPP;
 }
 
-/* 网桥的ioctl操作钩子函数(显然，跟下面那个ioctl操作的层次不一样)
+/* 整个网桥模块的ioctl操作钩子函数(显然，跟下面那个ioctl操作的层次不一样)
  * @net     指向当前的网络命名空间
  * @cmd     用户层调用ioctl的命令ID号
  * @uarg    用户层调用ioctl时传入的参数
@@ -391,7 +391,7 @@ int br_ioctl_deviceless_stub(struct net *net, unsigned int cmd, void __user *uar
 	return -EOPNOTSUPP;
 }
 
-/* 网桥设备下的ioctl操作钩子函数(显然，跟上面那个ioct操作的层次不一样)
+/* 网桥设备驱动net_device_ops->ndo_do_ioctl的钩子函数(显然，跟上面那个ioctl操作的层次不一样)
  * @dev     - 要操作的网桥设备
  * @rq      - 用户层调用ioctl时传入的ifreq结构
  * @cmd     - 用户层调用ioctl的命令ID号 
