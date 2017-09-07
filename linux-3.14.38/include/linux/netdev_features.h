@@ -1,6 +1,6 @@
 /*
  * Network device features.
- * 定义了网络设备支持的功能列表(用来设置 net_device->*features 成员)
+ * 定义了网络设备支持的功能列表(用来设置 net_device->features 成员)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License

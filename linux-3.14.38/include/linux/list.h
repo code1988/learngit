@@ -352,6 +352,7 @@ static inline void list_splice_tail_init(struct list_head *list,
 
 /**
  * list_first_entry - get the first element from a list
+ * 返回链表的首节点
  * @ptr:	the list head to take the element from.
  * @type:	the type of the struct this is embedded in.
  * @member:	the name of the list_struct within the struct.
@@ -363,6 +364,7 @@ static inline void list_splice_tail_init(struct list_head *list,
 
 /**
  * list_last_entry - get the last element from a list
+ * 返回链表的尾节点
  * @ptr:	the list head to take the element from.
  * @type:	the type of the struct this is embedded in.
  * @member:	the name of the list_struct within the struct.
@@ -385,7 +387,8 @@ static inline void list_splice_tail_init(struct list_head *list,
 
 /**
  * list_next_entry - get the next element in list
- * @pos:	the type * to cursor
+ * 返回指定节点的后一个节点
+ * @pos:	the type * to cursor    已知的节点结构首地址
  * @member:	the name of the list_struct within the struct.
  */
 #define list_next_entry(pos, member) \
@@ -393,7 +396,8 @@ static inline void list_splice_tail_init(struct list_head *list,
 
 /**
  * list_prev_entry - get the prev element in list
- * @pos:	the type * to cursor
+ * 返回指定节点的前一个节点
+ * @pos:	the type * to cursor    已知的节点结构首地址
  * @member:	the name of the list_struct within the struct.
  */
 #define list_prev_entry(pos, member) \
@@ -401,14 +405,16 @@ static inline void list_splice_tail_init(struct list_head *list,
 
 /**
  * list_for_each	-	iterate over a list
+ * 从前往后遍历整张链表的list_head结构
  * @pos:	the &struct list_head to use as a loop cursor.
- * @head:	the head for your list.
+ * @head:	the head for your list.     指向要遍历的链表头
  */
 #define list_for_each(pos, head) \
 	for (pos = (head)->next; pos != (head); pos = pos->next)
 
 /**
  * list_for_each_prev	-	iterate over a list backwards
+ * 从后往前遍历整张链表的list_head结构
  * @pos:	the &struct list_head to use as a loop cursor.
  * @head:	the head for your list.
  */
@@ -438,6 +444,7 @@ static inline void list_splice_tail_init(struct list_head *list,
 
 /**
  * list_for_each_entry	-	iterate over list of given type
+ * 从前往后遍历整张链表的节点，也就是list_head成员所在的父结构
  * @pos:	the type * to use as a loop cursor.
  * @head:	the head for your list.
  * @member:	the name of the list_struct within the struct.
@@ -449,6 +456,7 @@ static inline void list_splice_tail_init(struct list_head *list,
 
 /**
  * list_for_each_entry_reverse - iterate backwards over list of given type.
+ * 从后往前遍历整张链表的节点，也就是list_head成员所在的父结构
  * @pos:	the type * to use as a loop cursor.
  * @head:	the head for your list.
  * @member:	the name of the list_struct within the struct.

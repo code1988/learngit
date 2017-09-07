@@ -25,6 +25,7 @@
 
 typedef u8 macaddr[ETH_ALEN];
 
+// 黑/白名单条目
 struct mac_acl_entry {
 	macaddr addr;
 	int vlan_id;
@@ -204,10 +205,10 @@ struct hostapd_bss_config {
 		DENY_UNLESS_ACCEPTED = 1,
 		USE_EXTERNAL_RADIUS_AUTH = 2
 	} macaddr_acl;
-	struct mac_acl_entry *accept_mac;
-	int num_accept_mac;
-	struct mac_acl_entry *deny_mac;
-	int num_deny_mac;
+	struct mac_acl_entry *accept_mac;       // 该bss的mac白名单首地址
+	int num_accept_mac;                     // 白名单条目数量
+	struct mac_acl_entry *deny_mac;         // 该bss的mac黑名单首地址
+	int num_deny_mac;                       // 黑名单条目数量
 	int wds_sta;
 	int isolate;
 

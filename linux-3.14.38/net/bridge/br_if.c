@@ -409,26 +409,33 @@ int br_add_if(struct net_bridge *br, struct net_device *dev)
 	if (err)
 		goto err3;
 
-    // 
+    // 将桥设备作为master节点加入到桥端口设备的直接上级设备中
 	err = netdev_master_upper_dev_link(dev, br->dev);
 	if (err)
 		goto err4;
 
+    // 将br_handle_frame注册到桥端口设备的rx_handler
 	err = netdev_rx_handler_register(dev, br_handle_frame, p);
 	if (err)
 		goto err5;
 
+    // 桥端口设备都会有IFF_BRIDGE_PORT标志
 	dev->priv_flags |= IFF_BRIDGE_PORT;
 
+    // 禁用桥端口设备的LRO功能(因为桥端口可能会对收到的报文进行转发)
 	dev_disable_lro(dev);
 
+    // 将该桥端口加入桥的端口链表
 	list_add_rcu(&p->list, &br->port_list);
 
+    // 重新计算桥端口设备的features字段，如果有变化还将发送通知
 	netdev_update_features(br->dev);
 
+    // 确保桥设备的needed_headroom不小于桥端口的needed_headroom
 	if (br->dev->needed_headroom < dev->needed_headroom)
 		br->dev->needed_headroom = dev->needed_headroom;
 
+    // 将桥端口设备的mac地址加入到转发表中
 	if (br_fdb_insert(br, p, dev->dev_addr, 0))
 		netdev_err(dev, "failed insert local address bridge forwarding table\n");
 

@@ -346,6 +346,7 @@ typedef enum gro_result gro_result_t;
 
 /*
  * enum rx_handler_result - Possible return values for rx_handlers.
+ * 枚举了net_device->rx_handler回调函数的返回值
  * @RX_HANDLER_CONSUMED: skb was consumed by rx_handler, do not process it
  * further.
  * @RX_HANDLER_ANOTHER: Do another round in receive path. This is indicated in
@@ -386,8 +387,8 @@ typedef enum gro_result gro_result_t;
  */
 
 enum rx_handler_result {
-	RX_HANDLER_CONSUMED,
-	RX_HANDLER_ANOTHER,
+	RX_HANDLER_CONSUMED,    // 表示skb已经在执行rx_handler过程中被释放，不要再对它做进一步处理
+	RX_HANDLER_ANOTHER,     // 表示skb关联的设备在执行rx_handler过程中已经发送变化，所以设备接收流程需要再跑一遍
 	RX_HANDLER_EXACT,
 	RX_HANDLER_PASS,
 };
@@ -1200,19 +1201,19 @@ struct net_device {
 
 	/* directly linked devices, like slaves for bonding */
 	struct {
-		struct list_head upper;
-		struct list_head lower;
+		struct list_head upper; // upper链表中包含了该网络设备的直接上级设备，其中只会有一个master设备，并且通常位于首节点
+		struct list_head lower; // lower链表中包含了该网络设备的直接下级设备
 	} adj_list;         // 定义了upper和lower两条邻接链表头节点(只包含直连设备)
 
 	/* all linked devices, *including* neighbours */
 	struct {
-		struct list_head upper;
-		struct list_head lower;
+		struct list_head upper; // upper链表中包含了该网络设备的所有上级设备
+		struct list_head lower; // lower链表中包含了该网络设备的所有下级设备
 	} all_adj_list;     // 定义了upper和lower两条邻接链表头节点(包含全部设备)
 
 
 	/* currently active device features */
-	netdev_features_t	features;   // 当前在该网络设备上已经使能的功能集合
+	netdev_features_t	features;   // 当前在该网络设备上已经使能的功能集合(定义在include/linux/netdevice_features.h中，取值NETIF_F_*)
 	/* user-changeable features */
 	netdev_features_t	hw_features;    // 用户态可修改的功能集合
 	/* user-requested features */
@@ -1349,8 +1350,8 @@ struct net_device {
 
 #endif
 
-	rx_handler_func_t __rcu	*rx_handler;    // 指向一个额外的数据包接收处理函数(普通设备不会注册该回调，一般就是作为bridge端口的设备才会有)
-	void __rcu		*rx_handler_data;       // 指向一个具体设备类型相关数据结构(目前知道的是，作为bridge端口的设备这里指向对应的net_bridge_port结构)
+	rx_handler_func_t __rcu	*rx_handler;    // 指向一个设备类型相关(比如桥端口设备)的数据包接收处理函数(可能会将skb关联的设备重定向)
+	void __rcu		*rx_handler_data;       // 指向用于rx_handler钩子的附加数据(目前知道的是，作为桥端口的设备这里指向对应的net_bridge_port结构)
 
 	struct netdev_queue __rcu *ingress_queue;
 	unsigned char		broadcast[MAX_ADDR_LEN];	/* hw bcast add	硬件广播地址(mac)*/

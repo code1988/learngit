@@ -1431,11 +1431,14 @@ EXPORT_SYMBOL(dev_close);
 
 /**
  *	dev_disable_lro - disable Large Receive Offload on a device
+ *	禁用指定设备的LRO功能
  *	@dev: device
  *
  *	Disable Large Receive Offload (LRO) on a net device.  Must be
  *	called under RTNL.  This is needed if received packets may be
  *	forwarded to another interface.
+ *	
+ *	备注：如果该设备上接收到的包会可能会转发到其他设备，那么就需要禁用该设备的LRO功能
  */
 void dev_disable_lro(struct net_device *dev)
 {
@@ -3480,9 +3483,10 @@ out:
 
 /**
  *	netdev_rx_handler_register - register receive handler
- *	@dev: device to register a handler for
- *	@rx_handler: receive handler to register
- *	@rx_handler_data: data pointer that is used by rx handler
+ *	注册设备的rx_handler钩子函数，用于处理具体设备类型相关的数据包接收事项
+ *	@dev: device to register a handler for      指向需要注册rx_handler钩子的设备
+ *	@rx_handler: receive handler to register    指向需要注册的rx_handler钩子函数
+ *	@rx_handler_data: data pointer that is used by rx handler   指向需要注册的用于rx_handler钩子函数的附加数据
  *
  *	Register a receive hander for a device. This handler will then be
  *	called from __netif_receive_skb. A negative errno code is returned
@@ -3498,6 +3502,7 @@ int netdev_rx_handler_register(struct net_device *dev,
 {
 	ASSERT_RTNL();
 
+    // 确保该设备之前没有注册过rx_handler钩子
 	if (dev->rx_handler)
 		return -EBUSY;
 
@@ -3511,6 +3516,7 @@ EXPORT_SYMBOL_GPL(netdev_rx_handler_register);
 
 /**
  *	netdev_rx_handler_unregister - unregister receive handler
+ *	注销设备的rx_handler钩子函数
  *	@dev: device to unregister a handler from
  *
  *	Unregister a receive handler from a device.
@@ -3627,7 +3633,10 @@ ncls:
 			ret = deliver_skb(skb, pt_prev, orig_dev);
 			pt_prev = NULL;
 		}
-        // 这里就进入了vlan模块的vlan接收信息处理函数
+        /* 执行vlan模块特有的接收处理，实际就是将该skb重新关联到对应的vlan设备，并重新执行设备接收流程，
+         * 显然，这跟下面执行rx_handler上注册的bridge模块特有的接收处理的目的基本一样，
+         * 所以，理论上将vlan_do_receive注册到rx_handler中，做成统一的接口，才是最合理的
+         */
 		if (vlan_do_receive(&skb))
 			goto another_round;
 		else if (unlikely(!skb))
@@ -3635,7 +3644,7 @@ ncls:
 	}
 
     // 程序运行到这里，该skb已经是一个彻底的普通的以太网数据包了
-    // 这里尝试获取该skb所属设备的dev->rx_handler，如果注册，则在这里执行该回调(通常只有bridge端口设备会注册)
+    // 这里尝试获取该skb关联的设备rx_handler钩子
 	rx_handler = rcu_dereference(skb->dev->rx_handler);
 	if (rx_handler) {
         // 如果之前有遗留下来尚未被上层处理的普通数据包，则先将它传递给上层处理掉
@@ -3643,12 +3652,12 @@ ncls:
 			ret = deliver_skb(skb, pt_prev, orig_dev);
 			pt_prev = NULL;
 		}
-        // 执行该设备(通常就是bridge端口设备)的额外的接收处理函数，并对返回值做相应处理
+        // 执行该设备特有的接收处理函数，并对返回值做相应处理
 		switch (rx_handler(&skb)) {
-		case RX_HANDLER_CONSUMED:   // 这种情况意味着skb->dev在处理过程中已经被重定向，剩下的工作都由重定向后的设备完成了，所以处理完后直接返回了
+		case RX_HANDLER_CONSUMED:   // 这种情况意味着skb->dev在处理过程中已经被重定向，剩下的工作都由重定向后的设备完成了，所以处理完后直接返回了?
 			ret = NET_RX_SUCCESS;
 			goto unlock;
-		case RX_HANDLER_ANOTHER:
+		case RX_HANDLER_ANOTHER:    // 这种情况意味着该skb关联的设备在处理过程中发生变化，需要重新跑一遍设备接收流程
 			goto another_round;
 		case RX_HANDLER_EXACT:
 			deliver_exact = true;
@@ -4477,12 +4486,12 @@ softnet_break:
 	goto out;
 }
 
-// 定义网络设备的邻接表节点
+// 定义网络设备关联的邻接表节点
 struct netdev_adjacent {
 	struct net_device *dev; // 指向该节点对应的网络设备
 
 	/* upper master flag, there can only be one master device per list */
-	bool master;            // 每个顶点链表中只允许存在一个master设备(通常就是net_device中每条邻接链表头节点后的那个节点)
+	bool master;            // 每个upper链表中只允许存在一个master设备(通常就是首节点)
 
 	/* counter for the number of times this device was added to us */
 	u16 ref_nr;
@@ -4490,16 +4499,22 @@ struct netdev_adjacent {
 	/* private field for the users */
 	void *private;
 
-	struct list_head list;
+	struct list_head list;  // 用于链接所在链表的其他netdev_adjacent节点
 	struct rcu_head rcu;
 };
 
+/* 从指定链表中查找匹配的节点
+ * @dev     - 毛都没用
+ * @adj_dev - 指向一个要匹配的通用网络设备结构net_device
+ * @adj_list    - 指向一个需要遍历的链表头
+ */
 static struct netdev_adjacent *__netdev_find_adj(struct net_device *dev,
 						 struct net_device *adj_dev,
 						 struct list_head *adj_list)
 {
 	struct netdev_adjacent *adj;
 
+    // 遍历链表节点netdev_adjacent结构，根据节点对应的net_device进行匹配，返回匹配到的节点
 	list_for_each_entry(adj, adj_list, list) {
 		if (adj->dev == adj_dev)
 			return adj;
@@ -4509,6 +4524,7 @@ static struct netdev_adjacent *__netdev_find_adj(struct net_device *dev,
 
 /**
  * netdev_has_upper_dev - Check if device is linked to an upper device
+ * 检查dev的所有上级设备链表中是否存在upper_dev，存在则返回true，不存在则返回false
  * @dev: device
  * @upper_dev: upper device to check
  *
@@ -4527,6 +4543,7 @@ EXPORT_SYMBOL(netdev_has_upper_dev);
 
 /**
  * netdev_has_any_upper_dev - Check if device is linked to some device
+ * 检查指定dev的上级设备链表是否为空，非空返回true，空返回false
  * @dev: device
  *
  * Find out if a device is linked to an upper device and return true in case
@@ -4541,10 +4558,10 @@ static bool netdev_has_any_upper_dev(struct net_device *dev)
 
 /**
  * netdev_master_upper_dev_get - Get master upper device
- * 从该网络设备的upper设备邻接链表中获取master节点
+ * 从该dev的直接上级设备链表中获取其master节点关联的net_device
  * @dev: device
  *
- * 备注：一个例子就是根据端口设备获取它所属的upper设备---bridge设备
+ * 备注：一个例子就是根据桥端口设备获取它所属的upper设备---桥设备
  * Find a master upper device and return pointer to it or NULL in case
  * it's not there. The caller must hold the RTNL lock.
  */
@@ -4554,11 +4571,14 @@ struct net_device *netdev_master_upper_dev_get(struct net_device *dev)
 
 	ASSERT_RTNL();
 
+    // 如果该dev的直接上级设备链表为空，则直接返回NULL
 	if (list_empty(&dev->adj_list.upper))
 		return NULL;
 
+    // 获取该dev的直接上级设备链表的首节点
 	upper = list_first_entry(&dev->adj_list.upper,
 				 struct netdev_adjacent, list);
+    // 通常就是首节点就是master节点
 	if (likely(upper->master))
 		return upper->dev;
 	return NULL;
@@ -4924,6 +4944,9 @@ static void __netdev_adjacent_dev_unlink_neighbour(struct net_device *dev,
 					   &upper_dev->adj_list.lower);
 }
 
+/* 将upper_dev加入到dev的直接上级设备中(实际加入adj_list和all_adj_list两张表)
+ * @master  - 是否作为master节点加入
+ */
 static int __netdev_upper_dev_link(struct net_device *dev,
 				   struct net_device *upper_dev, bool master,
 				   void *private)
@@ -4937,13 +4960,15 @@ static int __netdev_upper_dev_link(struct net_device *dev,
 		return -EBUSY;
 
 	/* To prevent loops, check if dev is not upper device to upper_dev. 
-     * 为了避免陷入循环，这里检查的目的是确保upper_dev和dev各自的upper邻接链表中不存在彼此;
+     * 确保upper_dev的所有上级设备中不存在dev，并且dev的所有上级设备中不存在upper_dev
+     * 这么做的目的是为了避免陷入死循环
      * */
 	if (__netdev_find_adj(upper_dev, dev, &upper_dev->all_adj_list.upper))
 		return -EBUSY;
 	if (__netdev_find_adj(dev, upper_dev, &dev->all_adj_list.upper))
 		return -EEXIST;
 
+    // 如果upper_dev将作为master节点加入，则必须确保dev当前的直接上级设备中不存在master节点
 	if (master && netdev_master_upper_dev_get(dev))
 		return -EBUSY;
 
@@ -5046,6 +5071,7 @@ EXPORT_SYMBOL(netdev_upper_dev_link);
 
 /**
  * netdev_master_upper_dev_link - Add a master link to the upper device
+ * 将upper_dev作为master节点加入到dev的直接上级设备中(实际加入adj_list和all_adj_list两张表)
  * @dev: device
  * @upper_dev: new upper device
  *
@@ -5855,6 +5881,7 @@ static netdev_features_t netdev_fix_features(struct net_device *dev,
 	return features;
 }
 
+// 重新计算指定设备的features字段
 int __netdev_update_features(struct net_device *dev)
 {
 	netdev_features_t features;
@@ -5894,11 +5921,14 @@ int __netdev_update_features(struct net_device *dev)
 
 /**
  *	netdev_update_features - recalculate device features
+ *	重新计算指定设备的features字段，如果有变化还将发送通知
  *	@dev: the device to check
  *
  *	Recalculate dev->features set and send notifications if it
  *	has changed. Should be called after driver or hardware dependent
  *	conditions might have changed that influence the features.
+ *
+ *	备注：当该设备的那些会影响features字段的驱动或者硬件发生变化之后，需要调用本接口
  */
 void netdev_update_features(struct net_device *dev)
 {
