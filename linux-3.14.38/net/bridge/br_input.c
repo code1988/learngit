@@ -154,9 +154,11 @@ static int br_handle_local_finish(struct sk_buff *skb)
 	return 0;	 /* process further */
 }
 
-/*
+/* 桥端口设备接收数据包处理入口，
  * Return NULL if skb is handled
  * note: already called with rcu_read_lock
+ *
+ * 备注：本函数作为钩子注册在桥端口设备的net_device->rx_handler，在__netif_receive_skb_core中被执行
  */
 rx_handler_result_t br_handle_frame(struct sk_buff **pskb)
 {
@@ -165,9 +167,11 @@ rx_handler_result_t br_handle_frame(struct sk_buff **pskb)
 	const unsigned char *dest = eth_hdr(skb)->h_dest;
 	br_should_route_hook_t *rhook;
 
+    // 如果是个loopback包不做任何处理直接返回RX_HANDLER_PASS
 	if (unlikely(skb->pkt_type == PACKET_LOOPBACK))
 		return RX_HANDLER_PASS;
 
+    // 如果报文中的源地址不是一个合法的以太网地址，则直接丢弃并返回RX_HANDLER_CONSUMED
 	if (!is_valid_ether_addr(eth_hdr(skb)->h_source))
 		goto drop;
 

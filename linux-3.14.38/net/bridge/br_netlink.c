@@ -168,6 +168,7 @@ nla_put_failure:
 
 /*
  * Notify listeners of a change in port information
+ * 将端口信息变化的事件通知用户空间相关的监听者
  */
 void br_ifinfo_notify(int event, struct net_bridge_port *port)
 {

@@ -5586,6 +5586,7 @@ static int __dev_set_mtu(struct net_device *dev, int new_mtu)
 
 /**
  *	dev_set_mtu - Change maximum transfer unit
+ *	设置指定网络设备的MTU
  *	@dev: device
  *	@new_mtu: new transfer unit
  *
@@ -5595,6 +5596,7 @@ int dev_set_mtu(struct net_device *dev, int new_mtu)
 {
 	int err, orig_mtu;
 
+    // 如果新值跟旧值相同就直接返回了
 	if (new_mtu == dev->mtu)
 		return 0;
 
@@ -5641,6 +5643,7 @@ EXPORT_SYMBOL(dev_set_group);
 
 /**
  *	dev_set_mac_address - Change Media Access Control Address
+ *	修改设备MAC地址
  *	@dev: device
  *	@sa: new address
  *

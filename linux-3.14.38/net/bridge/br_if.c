@@ -301,7 +301,9 @@ int br_del_bridge(struct net *net, const char *name)
 	return ret;
 }
 
-/* MTU of the bridge pseudo-device: ETH_DATA_LEN or the minimum of the ports */
+/* MTU of the bridge pseudo-device: ETH_DATA_LEN or the minimum of the ports 
+ * 返回指定网桥的MTU
+ * */
 int br_min_mtu(const struct net_bridge *br)
 {
 	const struct net_bridge_port *p;
@@ -309,9 +311,11 @@ int br_min_mtu(const struct net_bridge *br)
 
 	ASSERT_RTNL();
 
+    // 如果不存在桥端口，那么就是缺省值
 	if (list_empty(&br->port_list))
 		mtu = ETH_DATA_LEN;
 	else {
+        // 如果存在桥端口，那么就是最小的桥端口设备MTU
 		list_for_each_entry(p, &br->port_list, list) {
 			if (!mtu  || p->dev->mtu < mtu)
 				mtu = p->dev->mtu;
@@ -435,25 +439,35 @@ int br_add_if(struct net_bridge *br, struct net_device *dev)
 	if (br->dev->needed_headroom < dev->needed_headroom)
 		br->dev->needed_headroom = dev->needed_headroom;
 
-    // 将桥端口设备的mac地址加入到转发表中
+    // 将桥端口设备的mac地址作为本地地址加入到转发表中
 	if (br_fdb_insert(br, p, dev->dev_addr, 0))
 		netdev_err(dev, "failed insert local address bridge forwarding table\n");
 
 	spin_lock_bh(&br->lock);
+    // 重新计算网桥ID
 	changed_addr = br_stp_recalculate_bridge_id(br);
 
+    /* 如果同时满足以下3个条件，则执行该网桥端口的stp功能
+     *      [1]. 该桥端口设备处于启用状态
+     *      [2]. 该桥端口设备处于可操作状态
+     *      [3]. 该网桥设备处于UP状态
+     */
 	if (netif_running(dev) && netif_oper_up(dev) &&
 	    (br->dev->flags & IFF_UP))
 		br_stp_enable_port(p);
 	spin_unlock_bh(&br->lock);
 
+    // 将"新端口加入桥"事件通过调用rtnetlink接口通知相关的用户进程
 	br_ifinfo_notify(RTM_NEWLINK, p);
 
+    // 如果网桥ID有变化，则调用网桥的设备通知链
 	if (changed_addr)
 		call_netdevice_notifiers(NETDEV_CHANGEADDR, br->dev);
 
+    // 更新网桥的mtu
 	dev_set_mtu(br->dev, br_min_mtu(br));
 
+    // 通知用户空间有一个新的kobject加入，显然该kobject关联了一个网桥的新端口
 	kobject_uevent(&p->kobj, KOBJ_ADD);
 
 	return 0;

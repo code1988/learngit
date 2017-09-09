@@ -118,15 +118,17 @@
 #define IF_PROTO_FR_ETH_PVC 0x200B
 #define IF_PROTO_RAW    0x200C          /* RAW Socket                   */
 
-/* RFC 2863 operational status */
+/* RFC 2863 operational status 
+ * 以下枚举用来设置net_device->operate字段
+ * */
 enum {
-	IF_OPER_UNKNOWN,
+	IF_OPER_UNKNOWN,        // 表示设备的操作状态未知
 	IF_OPER_NOTPRESENT,
 	IF_OPER_DOWN,
 	IF_OPER_LOWERLAYERDOWN,
 	IF_OPER_TESTING,
 	IF_OPER_DORMANT,
-	IF_OPER_UP,
+	IF_OPER_UP,             // 表示设备可操作
 };
 
 /* link modes */

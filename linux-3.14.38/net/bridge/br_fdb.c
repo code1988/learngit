@@ -481,7 +481,9 @@ static int fdb_insert(struct net_bridge *br, struct net_bridge_port *source,
 	return 0;
 }
 
-/* Add entry for local address of interface */
+/* Add entry for local address of interface 
+ * 将桥端口设备的mac地址作为本地地址加入到转发表中
+ * */
 int br_fdb_insert(struct net_bridge *br, struct net_bridge_port *source,
 		  const unsigned char *addr, u16 vid)
 {

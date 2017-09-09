@@ -63,12 +63,12 @@ struct wireless_dev;
 void netdev_set_default_ethtool_ops(struct net_device *dev,
 				    const struct ethtool_ops *ops);
 
-/* hardware address assignment types */
+/* hardware address assignment types 定义了MAC的来源，用于设置net_device->addr_assign_type */
 #define NET_ADDR_PERM		0	/* address is permanent (default) */
-#define NET_ADDR_RANDOM		1	/* address is generated randomly */
+#define NET_ADDR_RANDOM		1	/* address is generated randomly 意味着MAC地址随机生成*/
 #define NET_ADDR_STOLEN		2	/* address is stolen from other device */
 #define NET_ADDR_SET		3	/* address is set using
-					 * dev_set_mac_address() */
+					 * dev_set_mac_address() 意味着MAC地址来自手动修改*/
 
 /* Backlog congestion levels */
 #define NET_RX_SUCCESS		0	/* keep 'em coming, baby 通常意味着没有发生拥塞 */
@@ -277,8 +277,8 @@ struct header_ops {
 /* These flag bits are private to the generic network queueing
  * layer, they may not be explicitly referenced by any other
  * code.
+ * 显然，以下枚举用于设置net_device->state字段
  */
-
 enum netdev_state_t {
 	__LINK_STATE_START,         // 标识网络设备是否启用，该标志可被netif_running检测
 	__LINK_STATE_PRESENT,       // 标识网络设备是否可用？ 该标志可被netif_device_present检测
@@ -390,7 +390,8 @@ enum rx_handler_result {
 	RX_HANDLER_CONSUMED,    // 表示skb已经在执行rx_handler过程中被释放，不要再对它做进一步处理
 	RX_HANDLER_ANOTHER,     // 表示skb关联的设备在执行rx_handler过程中已经发送变化，所以设备接收流程需要再跑一遍
 	RX_HANDLER_EXACT,
-	RX_HANDLER_PASS,
+	RX_HANDLER_PASS,        // 表示skb关联的设备在执行rx_handler过程中没变化，接下来需要继续往后走正常的接收流程
+                            // (正常的接收流程就是设备没有注册rx_handler钩子时的接收流程)
 };
 typedef enum rx_handler_result rx_handler_result_t;
 typedef rx_handler_result_t rx_handler_func_t(struct sk_buff **pskb);
@@ -1192,7 +1193,7 @@ struct net_device {
 	 *	part of the usual set specified in Space.c.
 	 */
 
-	unsigned long		state;          // 通常是由netdev_state_t定义
+	unsigned long		state;          // 通常是由netdev_state_t定义，主要用来标识该网络设备当前的状态
 
 	struct list_head	dev_list;
 	struct list_head	napi_list;
@@ -2679,6 +2680,7 @@ static inline bool netif_dormant(const struct net_device *dev)
 
 /**
  *	netif_oper_up - test if device is operational
+ *	检查设备是否处于可操作状态
  *	@dev: network device
  *
  * Check if carrier is operational

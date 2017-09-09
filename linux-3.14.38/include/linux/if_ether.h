@@ -23,7 +23,7 @@
 #include <linux/skbuff.h>
 #include <uapi/linux/if_ether.h>
 
-// 从skb中获取mac头
+// 从skb的数据中获取mac头
 static inline struct ethhdr *eth_hdr(const struct sk_buff *skb)
 {
 	return (struct ethhdr *)skb_mac_header(skb);

@@ -327,6 +327,7 @@ EXPORT_SYMBOL_GPL(kobject_uevent_env);
 
 /**
  * kobject_uevent - notify userspace by sending an uevent
+ * 通过uevent机制将kobject相关事件通知用户空间
  *
  * @action: action that is happening
  * @kobj: struct kobject that the action is happening to

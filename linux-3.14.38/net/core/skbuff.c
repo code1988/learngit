@@ -180,6 +180,7 @@ out:
 
 /**
  *	__alloc_skb	-	allocate a network buffer
+ *	最终执行分配一个skb结构的地方
  *	@size: size to allocate
  *	@gfp_mask: allocation mask
  *	@flags: If SKB_ALLOC_FCLONE is set, allocate from fclone cache
@@ -1265,13 +1266,15 @@ EXPORT_SYMBOL_GPL(pskb_put);
 
 /**
  *	skb_put - add data to a buffer
- *	找到已经封装的数据尾部，目的是将在尾部增加len个字节数据
+ *	使tail指针后移len长度，为接下来在尾部增加len个字节数据做准备
  *	@skb: buffer to use
  *	@len: amount of data to add
  *
  *	This function extends the used data area of the buffer. If this would
  *	exceed the total buffer size the kernel will panic. A pointer to the
  *	first byte of the extra data is returned.
+ *
+ *	备注：本函数已经改变了tail指针，但是返回的仍旧是改变前的值
  */
 unsigned char *skb_put(struct sk_buff *skb, unsigned int len)
 {

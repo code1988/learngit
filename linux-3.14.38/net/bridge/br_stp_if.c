@@ -188,7 +188,11 @@ void br_stp_set_enabled(struct net_bridge *br, unsigned long val)
 	}
 }
 
-/* called under bridge lock */
+/* called under bridge lock 
+ * 修改网桥ID，这里实际就是修改网桥MAC
+ * @br  - 指向一个网桥
+ * @addr    - 指向一个MAC
+ * */
 void br_stp_change_bridge_id(struct net_bridge *br, const unsigned char *addr)
 {
 	/* should be aligned on 2 bytes for ether_addr_equal() */
@@ -197,6 +201,7 @@ void br_stp_change_bridge_id(struct net_bridge *br, const unsigned char *addr)
 	struct net_bridge_port *p;
 	int wasroot;
 
+    // 判断该桥是否为根桥
 	wasroot = br_is_root_bridge(br);
 
 	br_fdb_change_mac_address(br, addr);
@@ -219,10 +224,14 @@ void br_stp_change_bridge_id(struct net_bridge *br, const unsigned char *addr)
 		br_become_root_bridge(br);
 }
 
-/* should be aligned on 2 bytes for ether_addr_equal() */
+/* should be aligned on 2 bytes for ether_addr_equal() 
+ * 这个常量数组定义了一个全0的MAC地址
+ * */
 static const unsigned short br_mac_zero_aligned[ETH_ALEN >> 1];
 
-/* called under bridge lock */
+/* called under bridge lock 
+ * 重新计算网桥ID，如果有变化则返回true，否则返回false
+ * */
 bool br_stp_recalculate_bridge_id(struct net_bridge *br)
 {
 	const unsigned char *br_mac_zero =
@@ -230,10 +239,13 @@ bool br_stp_recalculate_bridge_id(struct net_bridge *br)
 	const unsigned char *addr = br_mac_zero;
 	struct net_bridge_port *p;
 
-	/* user has chosen a value so keep it */
+	/* user has chosen a value so keep it 
+     * 如果该桥设备的MAC地址是手动分配而来的，则无需重新计算，直接返回
+     * */
 	if (br->dev->addr_assign_type == NET_ADDR_SET)
 		return false;
 
+    // 遍历桥的每个桥端口，查找端口设备的最小MAC
 	list_for_each_entry(p, &br->port_list, list) {
 		if (addr == br_mac_zero ||
 		    memcmp(p->dev->dev_addr, addr, ETH_ALEN) < 0)
@@ -241,9 +253,12 @@ bool br_stp_recalculate_bridge_id(struct net_bridge *br)
 
 	}
 
+    // 比较桥MAC和最小的桥端口MAC是否相同，相同则无需重新计算，直接返回
 	if (ether_addr_equal(br->bridge_id.addr, addr))
 		return false;	/* no change */
 
+    // 程序运行到这里意味着当前最小的桥端口MAC已经小于桥MAC
+    // 所以需要修改桥MAC
 	br_stp_change_bridge_id(br, addr);
 	return true;
 }

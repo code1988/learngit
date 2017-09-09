@@ -276,6 +276,7 @@ struct ubuf_info {
 
 /* This data is invariant across clones and lives at
  * the end of the header data, ie. at skb->end.
+ * 定义了skb共享信息结构(后面也称做分片结构体)，该结构紧跟在skb->end后面
  */
 struct skb_shared_info {
 	unsigned char	nr_frags;
@@ -316,11 +317,11 @@ struct skb_shared_info {
 #define SKB_DATAREF_MASK ((1 << SKB_DATAREF_SHIFT) - 1)
 
 
-// 枚举了申请skb内存空间时使用的方式
+// 枚举了skb克隆状态标志
 enum {
 	SKB_FCLONE_UNAVAILABLE,     // 表示该skb没有被克隆过
-	SKB_FCLONE_ORIG,            // 表示从skbuff_fclone_cache缓存池中申请skb，这种方式实际会申请一对空间连续的skb + 末尾1字节
-	SKB_FCLONE_CLONE,
+	SKB_FCLONE_ORIG,            // 表示该skb是从skbuff_fclone_cache缓存池中分配的父skb，可以被克隆
+	SKB_FCLONE_CLONE,           // 表示该skb是从skbuff_fclone_cache缓存池中分配的子skb，从父skb克隆得到
 };
 
 enum {
@@ -473,7 +474,7 @@ struct sk_buff {
 				ip_summed:2,
 				nohdr:1,
 				nfctinfo:3;
-	__u8			pkt_type:3,
+	__u8			pkt_type:3, // 标识该skb中承载的数据包类型(比如PACKET_MULTICAST)，取值 PACKET_*
 				fclone:2,       // 标识该skb克隆相关的信息，取值 SKB_FCLONE_*
 				ipvs_property:1,
 				peeked:1,       // 标识该skb是否有被预读过(MSG_PEEK)
@@ -552,7 +553,7 @@ struct sk_buff {
 	unsigned char		*head,      // 指向数据缓冲区头部，由alloc_skb分配之后不再变化
 				*data;              // 指向该skb当前处理的数据首地址。这是一个活动指针，在封装中作为写指针使用，而在解封装中作为读指针使用
 	unsigned int		truesize;   // 记录了[ sk_buff结构 + 缓冲区 ] 的总长
-	atomic_t		users;          // 记录了该skb被引用计数
+	atomic_t		users;          // 记录了该skb被引用的计数值，只有当该值为0时，该skb才能真正被销毁
 };
 
 #ifdef __KERNEL__
@@ -831,7 +832,7 @@ static inline unsigned int skb_end_offset(const struct sk_buff *skb)
 #endif
 
 /* Internal */
-#define skb_shinfo(SKB)	((struct skb_shared_info *)(skb_end_pointer(SKB)))
+#define skb_shinfo(SKB)	((struct skb_shared_info *)(skb_end_pointer(SKB)))  // 返回skb的分片结构体
 
 static inline struct skb_shared_hwtstamps *skb_hwtstamps(struct sk_buff *skb)
 {
@@ -1472,7 +1473,7 @@ void skb_coalesce_rx_frag(struct sk_buff *skb, int i, int size,
 #define SKB_FRAG_ASSERT(skb) 	BUG_ON(skb_has_frag_list(skb))
 #define SKB_LINEAR_ASSERT(skb)  BUG_ON(skb_is_nonlinear(skb))
 
-#ifdef NET_SKBUFF_DATA_USES_OFFSET
+#ifdef NET_SKBUFF_DATA_USES_OFFSET  // 以下使用偏移量方式
 // 找到当前操作数据的尾部
 static inline unsigned char *skb_tail_pointer(const struct sk_buff *skb)
 {
@@ -1490,7 +1491,7 @@ static inline void skb_set_tail_pointer(struct sk_buff *skb, const int offset)
 	skb->tail += offset;
 }
 
-#else /* NET_SKBUFF_DATA_USES_OFFSET */
+#else /* NET_SKBUFF_DATA_USES_OFFSET */ // 以下使用指针方式
 // 找到当前操作数据的尾部
 static inline unsigned char *skb_tail_pointer(const struct sk_buff *skb)
 {
@@ -1609,13 +1610,14 @@ static inline int skb_availroom(const struct sk_buff *skb)
 
 /**
  *	skb_reserve - adjust headroom
- *	通过减小tailroom从而增大headroom(在整个数据包缓冲区为空的状态下，只由headroom + tailroom组成)
+ *	通过减小tailroom从而增大headroom
  *	@skb: buffer to alter
  *	@len: bytes to move
  *
  *	Increase the headroom of an empty &sk_buff by reducing the tail
  *	room. This is only allowed for an empty buffer.
- *	备注： 本函数只允许对一个空的数据包缓冲区进行操作
+ *	备注： 本函数只允许对一个空的数据包缓冲区进行操作，在空状态下，缓冲区只由headroom + tailroom组成
+ *	       经过本函数操作之后，形成的headroom将用于存储各层的协议头，而tailroom将用于存储数据信息
  */
 static inline void skb_reserve(struct sk_buff *skb, int len)
 {

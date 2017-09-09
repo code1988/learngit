@@ -82,6 +82,7 @@ static inline bool is_link_local_ether_addr(const u8 *addr)
 
 /**
  * is_zero_ether_addr - Determine if give Ethernet address is all zeros.
+ * 检查是否是一个全0的MAC地址，是则返回1,不是则返回0
  * @addr: Pointer to a six-byte array containing the Ethernet address
  *
  * Return true if the address is all zeroes.
@@ -101,6 +102,7 @@ static inline bool is_zero_ether_addr(const u8 *addr)
 
 /**
  * is_multicast_ether_addr - Determine if the Ethernet address is a multicast.
+ * 检查是否是一个多播地址，是多播地址返回1，不是则返回0
  * @addr: Pointer to a six-byte array containing the Ethernet address
  *
  * Return true if the address is a multicast address.
@@ -150,10 +152,13 @@ static inline bool is_unicast_ether_addr(const u8 *addr)
 
 /**
  * is_valid_ether_addr - Determine if the given Ethernet address is valid
+ * 检查是否是一个有效的以太网地址，是则返回true，不是则返回false
  * @addr: Pointer to a six-byte array containing the Ethernet address
  *
  * Check that the Ethernet address (MAC) is not 00:00:00:00:00:00, is not
  * a multicast address, and is not FF:FF:FF:FF:FF:FF.
+ *
+ * 备注：显然，这里是将广播、多播、全0地址都认为是无效的以太网地址
  *
  * Return true if the address is valid.
  *
@@ -260,10 +265,12 @@ static inline void eth_hw_addr_inherit(struct net_device *dst,
 
 /**
  * ether_addr_equal - Compare two Ethernet addresses
+ * 比较2个MAC是否相同
  * @addr1: Pointer to a six-byte array containing the Ethernet address
  * @addr2: Pointer other six-byte array containing the Ethernet address
  *
  * Compare two Ethernet addresses, returns true if equal
+ * 相同则返回true，不同则返回false
  *
  * Please note: addr1 & addr2 must both be aligned to u16.
  */

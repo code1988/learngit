@@ -29,7 +29,7 @@ struct sockaddr_ll {
 #define PACKET_MULTICAST	2		/* To group		标示物理层组播包 */
 #define PACKET_OTHERHOST	3		/* To someone else 	标示目标地址是其他主机的数据包 */
 #define PACKET_OUTGOING		4		/* Outgoing of any type */
-#define PACKET_LOOPBACK		5		/* MC/BRD frame looped back */
+#define PACKET_LOOPBACK		5		/* MC/BRD frame looped back 标示这是个loopback包 */
 #define PACKET_USER		6		/* To user space	*/
 #define PACKET_KERNEL		7		/* To kernel space	*/
 /* Unused, PACKET_FASTROUTE and PACKET_LOOPBACK are invisible to user space */

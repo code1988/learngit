@@ -43,10 +43,11 @@ typedef struct bridge_id bridge_id;
 typedef struct mac_addr mac_addr;
 typedef __u16 port_id;
 
+// 网桥ID结构
 struct bridge_id
 {
-	unsigned char	prio[2];
-	unsigned char	addr[6];
+	unsigned char	prio[2];    // 优先级
+	unsigned char	addr[6];    // 网桥设备MAC，来自最小的桥端口MAC
 };
 
 struct mac_addr
@@ -229,7 +230,7 @@ struct net_bridge
 	struct net_device		*dev;       // 指向对应的网桥设备
 
 	struct pcpu_sw_netstats		__percpu *stats;
-	spinlock_t			hash_lock;
+	spinlock_t			hash_lock;      // 用于下面这张转发表的自旋锁
 	struct hlist_head		hash[BR_HASH_SIZE]; // 该网桥基于hash结构的转发表，散列桶中的每个节点就是一个net_bridge_fdb_entry结构
 #ifdef CONFIG_BRIDGE_NETFILTER
 	struct rtable 			fake_rtable;
@@ -240,8 +241,8 @@ struct net_bridge
 	u16				group_fwd_mask;
 
 	/* STP */
-	bridge_id			designated_root;
-	bridge_id			bridge_id;      // 桥ID号
+	bridge_id			designated_root;// 根桥ID号
+	bridge_id			bridge_id;      // 该网桥ID号
 	u32				root_path_cost;
 	unsigned long			max_age;
 	unsigned long			hello_time;
@@ -343,7 +344,9 @@ struct br_input_skb_cb {
 
 extern struct notifier_block br_device_notifier;
 
-/* called under bridge lock */
+/* called under bridge lock 
+ * 判断指定桥是否为根桥，是根桥则返回1,不是根桥则返回0
+ * */
 static inline int br_is_root_bridge(const struct net_bridge *br)
 {
 	return !memcmp(&br->bridge_id, &br->designated_root, 8);
