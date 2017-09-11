@@ -10,7 +10,9 @@
 #ifndef _ASMARM_PAGE_H
 #define _ASMARM_PAGE_H
 
-/* PAGE_SHIFT determines the page size */
+/* PAGE_SHIFT determines the page size 
+ * 显然，ARM32架构的CPU的页大小固定为4096字节
+ * */
 #define PAGE_SHIFT		12
 #define PAGE_SIZE		(_AC(1,UL) << PAGE_SHIFT)
 #define PAGE_MASK		(~((1 << PAGE_SHIFT) - 1))

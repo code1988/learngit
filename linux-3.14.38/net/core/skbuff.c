@@ -75,8 +75,8 @@
 #include <trace/events/skb.h>
 #include <linux/highmem.h>
 
-struct kmem_cache *skbuff_head_cache __read_mostly;
-static struct kmem_cache *skbuff_fclone_cache __read_mostly;
+struct kmem_cache *skbuff_head_cache __read_mostly;     
+static struct kmem_cache *skbuff_fclone_cache __read_mostly;    // 从这个缓冲池中分配skb时，每次都会分配 父skb内存+子skb内存+1字节fclone_ref
 
 /**
  *	skb_panic - private function for out-of-line support
@@ -180,8 +180,8 @@ out:
 
 /**
  *	__alloc_skb	-	allocate a network buffer
- *	最终执行分配一个skb结构的地方
- *	@size: size to allocate
+ *	最终执行分配 skb结构 + 对应的数据区
+ *	@size: size to allocate     需要分配的skb数据区的大小(这是个原始值)
  *	@gfp_mask: allocation mask
  *	@flags: If SKB_ALLOC_FCLONE is set, allocate from fclone cache
  *		instead of head cache and allocate a cloned (child) skb.
@@ -205,6 +205,7 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
 	u8 *data;
 	bool pfmemalloc;
 
+    // 根据是否设置了SKB_ALLOC_FCLONE标志来决定将从哪个缓冲池中分配skb结构体
 	cache = (flags & SKB_ALLOC_FCLONE)
 		? skbuff_fclone_cache : skbuff_head_cache;
 
@@ -221,6 +222,7 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
 	 * line. It usually works because kmalloc(X > SMP_CACHE_BYTES) gives
 	 * aligned memory blocks, unless SLUB/SLAB debug is enabled.
 	 * Both skb->head and skb_shared_info are cache line aligned.
+     * 这里首先通过ALIGN操作重新确定size大小，然后又加上了AILGN之后的分片结构体大小，得到了skb数据区的最终大小
 	 */
 	size = SKB_DATA_ALIGN(size);
 	size += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
@@ -863,13 +865,18 @@ struct sk_buff *skb_clone(struct sk_buff *skb, gfp_t gfp_mask)
 
     // 指向紧挨在父skb后的可能子skb位置
 	n = skb + 1;
-    // 如果父skb是在skbuff_fclone_cache缓存池上分配的（意味着返回了两个skb），并且子skb没有被克隆过
 	if (skb->fclone == SKB_FCLONE_ORIG &&
 	    n->fclone == SKB_FCLONE_UNAVAILABLE) {
+        /* 如果该skb是在skbuff_fclone_cache缓存池上分配的父skb，并且子skb没有被克隆过
+         * 则将子skb标记为SKB_FCLONE_CLONE，意味着已经由父skb克隆过来，同时递增紧跟子skb后的fclone_ref标志位
+         */
 		atomic_t *fclone_ref = (atomic_t *) (n + 1);
 		n->fclone = SKB_FCLONE_CLONE;
 		atomic_inc(fclone_ref);
 	} else {
+        /* 其他情况下该
+         * 
+         */
 		if (skb_pfmemalloc(skb))
 			gfp_mask |= __GFP_MEMALLOC;
 

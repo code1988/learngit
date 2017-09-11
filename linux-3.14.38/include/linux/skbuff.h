@@ -163,18 +163,19 @@ struct sk_buff;
  *
  * Since GRO uses frags we allocate at least 16 regardless of page
  * size.
+ * 支持的最大分片数量，对于页大小为4096的ARM/X86 CPU，其值就是17
  */
 #if (65536/PAGE_SIZE + 1) < 16
 #define MAX_SKB_FRAGS 16UL
 #else
-#define MAX_SKB_FRAGS (65536/PAGE_SIZE + 1)
+#define MAX_SKB_FRAGS (65536/PAGE_SIZE + 1) 
 #endif
 
 typedef struct skb_frag_struct skb_frag_t;
-
+// 定义了每个分片的相关信息
 struct skb_frag_struct {
 	struct {
-		struct page *p;
+		struct page *p;     // 指向对应分片的数据区
 	} page;
 #if (BITS_PER_LONG > 32) || (PAGE_SIZE >= 65536)
 	__u32 page_offset;
@@ -279,7 +280,7 @@ struct ubuf_info {
  * 定义了skb共享信息结构(后面也称做分片结构体)，该结构紧跟在skb->end后面
  */
 struct skb_shared_info {
-	unsigned char	nr_frags;
+	unsigned char	nr_frags;   // 分片数量
 	__u8		tx_flags;
 	unsigned short	gso_size;
 	/* Warning: this field is not always filled in (UFO)! */
@@ -299,7 +300,7 @@ struct skb_shared_info {
 	void *		destructor_arg;
 
 	/* must be last field, see pskb_expand_head() */
-	skb_frag_t	frags[MAX_SKB_FRAGS];
+	skb_frag_t	frags[MAX_SKB_FRAGS];   // 这张表记录了每个分片的信息
 };
 
 /* We divide dataref into two halves.  The higher 16 bits hold references
@@ -321,7 +322,7 @@ struct skb_shared_info {
 enum {
 	SKB_FCLONE_UNAVAILABLE,     // 表示该skb没有被克隆过
 	SKB_FCLONE_ORIG,            // 表示该skb是从skbuff_fclone_cache缓存池中分配的父skb，可以被克隆
-	SKB_FCLONE_CLONE,           // 表示该skb是从skbuff_fclone_cache缓存池中分配的子skb，从父skb克隆得到
+	SKB_FCLONE_CLONE,           // 表示该skb是从skbuff_fclone_cache缓存池中分配的子skb，并且已经从父skb克隆得到
 };
 
 enum {
@@ -562,8 +563,8 @@ struct sk_buff {
  */
 #include <linux/slab.h>
 
-
-#define SKB_ALLOC_FCLONE	0x01
+// 以下2个标志用于设置__alloc_skb的入参flags
+#define SKB_ALLOC_FCLONE	0x01        // 该标志决定了从skbuff_fclone_cache还是skbuff_head_cache中分配skb
 #define SKB_ALLOC_RX		0x02
 
 /* Returns true if the skb was allocated from PFMEMALLOC reserves */

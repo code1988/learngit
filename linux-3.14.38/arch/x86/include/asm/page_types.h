@@ -4,7 +4,9 @@
 #include <linux/const.h>
 #include <linux/types.h>
 
-/* PAGE_SHIFT determines the page size */
+/* PAGE_SHIFT determines the page size 
+ * 显然，X86架构的CPU页大小固定为4096字节
+ * */
 #define PAGE_SHIFT	12
 #define PAGE_SIZE	(_AC(1,UL) << PAGE_SHIFT)
 #define PAGE_MASK	(~(PAGE_SIZE-1))
