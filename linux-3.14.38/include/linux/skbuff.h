@@ -111,8 +111,10 @@
 #define CHECKSUM_COMPLETE	2
 #define CHECKSUM_PARTIAL	3
 
+// 对skb的数据区进行对齐操作
 #define SKB_DATA_ALIGN(X)	(((X) + (SMP_CACHE_BYTES - 1)) & \
 				 ~(SMP_CACHE_BYTES - 1))
+// 根据数据区+分片结构体总长计算得到skb数据区长度
 #define SKB_WITH_OVERHEAD(X)	\
 	((X) - SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
 #define SKB_MAX_ORDER(X, ORDER) \
@@ -120,7 +122,9 @@
 #define SKB_MAX_HEAD(X)		(SKB_MAX_ORDER((X), 0))
 #define SKB_MAX_ALLOC		(SKB_MAX_ORDER(0, 2))
 
-/* return minimum truesize of one skb containing X bytes of data */
+/* return minimum truesize of one skb containing X bytes of data 
+ * 计算skb->truesize字段的长度
+ * */
 #define SKB_TRUESIZE(X) ((X) +						\
 			 SKB_DATA_ALIGN(sizeof(struct sk_buff)) +	\
 			 SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
@@ -293,7 +297,7 @@ struct skb_shared_info {
 	/*
 	 * Warning : all fields before dataref are cleared in __alloc_skb()
 	 */
-	atomic_t	dataref;
+	atomic_t	dataref;    // 记录了所在skb的数据区被引用(也成为被共享)的次数，显然，被克隆时，该值递增
 
 	/* Intermediate layers must ensure that destructor_arg
 	 * remains valid until skb destructor */
@@ -457,8 +461,8 @@ struct sk_buff {
 #ifdef CONFIG_XFRM
 	struct	sec_path	*sp;
 #endif
-	unsigned int		len,    // 记录了该skb->data指针控制的数据长度
-				data_len;
+	unsigned int		len,    // 记录了该skb->data指针控制的数据长度 + 分片结构体数据区长度(显然，该值在每一层中是变化的)
+				data_len;       // 记录了分片结构体数据区的长度
 	__u16			mac_len,    // 记录了network layer相对mac地址的偏移量，也就是链路层长度
 				hdr_len;
 	union {
@@ -516,7 +520,7 @@ struct sk_buff {
 	__u8			wifi_acked_valid:1;
 	__u8			wifi_acked:1;
 	__u8			no_fcs:1;
-	__u8			head_frag:1;
+	__u8			head_frag:1;    // 标识是否指定了数据区大小(该标志通常是在build_skb中设置)
 	/* Encapsulation protocol and NIC drivers should use
 	 * this flag to indicate to each other if the skb contains
 	 * encapsulated packet or not and maybe use the inner packet
@@ -553,8 +557,8 @@ struct sk_buff {
 	sk_buff_data_t		end;        // 根据sk_buff_data_t类型不同，指向缓冲区尾部 / 记录了相对head的偏移量，由alloc_skb分配之后不再变化
 	unsigned char		*head,      // 指向数据缓冲区头部，由alloc_skb分配之后不再变化
 				*data;              // 指向该skb当前处理的数据首地址。这是一个活动指针，在封装中作为写指针使用，而在解封装中作为读指针使用
-	unsigned int		truesize;   // 记录了[ sk_buff结构 + 缓冲区 ] 的总长
-	atomic_t		users;          // 记录了该skb被引用的计数值，只有当该值为0时，该skb才能真正被销毁
+	unsigned int		truesize;   // 记录了[ 数据区 + sk_buff结构 + skb_shared_info结构 ] 的总长
+	atomic_t		users;          // 记录了该skb结构本身被引用的计数值，只有当该值为0时，该skb结构才能真正被销毁
 };
 
 #ifdef __KERNEL__
@@ -673,8 +677,8 @@ bool skb_try_coalesce(struct sk_buff *to, struct sk_buff *from,
 struct sk_buff *__alloc_skb(unsigned int size, gfp_t priority, int flags,
 			    int node);
 struct sk_buff *build_skb(void *data, unsigned int frag_size);
-/* 分配一个完整的skb数据包元
- * @size - skb的数据包缓冲区大小
+/* 分配一个缺省类型(也就是来自skbuff_head_cache缓冲池)的skb数据包元
+ * @size - skb的数据区大小
  * 
  * 备注：如果该函数成功返回，意味着已经有了一个size大小的空数据包缓冲区以及操作该缓冲区的skb_buff结构体
  */
@@ -684,6 +688,11 @@ static inline struct sk_buff *alloc_skb(unsigned int size,
 	return __alloc_skb(size, priority, 0, NUMA_NO_NODE);
 }
 
+/* 分配一个带克隆结构的(也就是来自skbuff_fclone_cache缓冲池)的skb数据包元
+ * @size - skb的数据区大小
+ * 
+ * 备注：显然，如果预见到后面会克隆该skb，就调用这个API
+ */
 static inline struct sk_buff *alloc_skb_fclone(unsigned int size,
 					       gfp_t priority)
 {
@@ -711,7 +720,7 @@ int skb_to_sgvec(struct sk_buff *skb, struct scatterlist *sg, int offset,
 		 int len);
 int skb_cow_data(struct sk_buff *skb, int tailbits, struct sk_buff **trailer);
 int skb_pad(struct sk_buff *skb, int pad);
-#define dev_kfree_skb(a)	consume_skb(a)
+#define dev_kfree_skb(a)	consume_skb(a)      // 释放skb，跟dev_alloc_skb对应，通常用于驱动中
 
 int skb_append_datato_frags(struct sock *sk, struct sk_buff *skb,
 			    int getfrag(void *from, char *to, int offset,
@@ -1481,6 +1490,7 @@ static inline unsigned char *skb_tail_pointer(const struct sk_buff *skb)
 	return skb->head + skb->tail;
 }
 
+// 复位tail偏移量
 static inline void skb_reset_tail_pointer(struct sk_buff *skb)
 {
 	skb->tail = skb->data - skb->head;
@@ -1499,6 +1509,7 @@ static inline unsigned char *skb_tail_pointer(const struct sk_buff *skb)
 	return skb->tail;
 }
 
+// 复位tail指针，也就是跟data指针指向同一处
 static inline void skb_reset_tail_pointer(struct sk_buff *skb)
 {
 	skb->tail = skb->data;
@@ -1861,7 +1872,7 @@ static inline int pskb_network_may_pull(struct sk_buff *skb, unsigned int len)
  * NET_IP_ALIGN(2) + ethernet_header(14) + IP_header(20/40) + ports(8)
  */
 #ifndef NET_SKB_PAD
-#define NET_SKB_PAD	max(32, L1_CACHE_BYTES)
+#define NET_SKB_PAD	max(32, L1_CACHE_BYTES)     // 定义了在skb数据区中headroom大小，用于避免出现重新分配skb的情况，显然这个值最小是32
 #endif
 
 int ___pskb_trim(struct sk_buff *skb, unsigned int len);
@@ -1968,6 +1979,8 @@ struct sk_buff *__netdev_alloc_skb(struct net_device *dev, unsigned int length,
 
 /**
  *	netdev_alloc_skb - allocate an skbuff for rx on a specific device
+ *	给指定网络设备(也可以不指定，意味着无主的)分配一个接收数据包用的skb
+ *
  *	@dev: network device to receive on
  *	@length: length to allocate
  *
@@ -1978,6 +1991,8 @@ struct sk_buff *__netdev_alloc_skb(struct net_device *dev, unsigned int length,
  *
  *	%NULL is returned if there is no free memory. Although this function
  *	allocates memory it can be called from an interrupt.
+ *
+ *	备注：显然，本函数可以在中断中被调用
  */
 static inline struct sk_buff *netdev_alloc_skb(struct net_device *dev,
 					       unsigned int length)
@@ -1992,7 +2007,9 @@ static inline struct sk_buff *__dev_alloc_skb(unsigned int length,
 	return __netdev_alloc_skb(NULL, length, gfp_mask);
 }
 
-/* legacy helper around netdev_alloc_skb() */
+/* legacy helper around netdev_alloc_skb() 
+ * 分配一个无主的skb
+ * */
 static inline struct sk_buff *dev_alloc_skb(unsigned int length)
 {
 	return netdev_alloc_skb(NULL, length);

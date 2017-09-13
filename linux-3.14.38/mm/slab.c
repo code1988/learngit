@@ -4383,6 +4383,7 @@ module_init(slab_proc_init);
 
 /**
  * ksize - get the actual amount of memory allocated for a given object
+ * 返回指定对象占用的缓存大小
  * @objp: Pointer to the object
  *
  * kmalloc may internally round up allocations and return more memory
@@ -4392,6 +4393,8 @@ module_init(slab_proc_init);
  * The caller must guarantee that objp points to a valid object previously
  * allocated with either kmalloc() or kmem_cache_alloc(). The object
  * must not be freed during the duration of the call.
+ *
+ * 备注：本函数只能计算由kmalloc或kmem_cache_alloc分配的对象
  */
 size_t ksize(const void *objp)
 {

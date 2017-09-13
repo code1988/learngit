@@ -75,8 +75,11 @@
 #include <trace/events/skb.h>
 #include <linux/highmem.h>
 
+// 缺省的skb缓冲池
 struct kmem_cache *skbuff_head_cache __read_mostly;     
-static struct kmem_cache *skbuff_fclone_cache __read_mostly;    // 从这个缓冲池中分配skb时，每次都会分配 父skb内存+子skb内存+1字节fclone_ref
+
+// 从这个缓冲池中分配skb时，每次都会分配 父skb内存+子skb内存+atomic_t类型的数据区引用计数(fclone_ref)
+static struct kmem_cache *skbuff_fclone_cache __read_mostly;    
 
 /**
  *	skb_panic - private function for out-of-line support
@@ -195,6 +198,11 @@ out:
  *
  *	Buffers may only be allocated from interrupts using a @gfp_mask of
  *	%GFP_ATOMIC.
+ *
+ *	备注：由本函数衍生出来以下几个封装API：
+ *	        alloc_skb           - 缺省的skb分配函数，skb来自skbuff_head_cache缓冲池
+ *	        alloc_skb_fclone    - 带克隆结构的的skb分配函数，skb来自skbuff_fclone_cache缓冲池
+ *          dev_alloc_skb       - 分配一个接收数据包用的无主的skb，并且分配过程是原子的，通常用于驱动的中断中(该API中还封装了另一条平行分支build_skb)
  */
 struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
 			    int flags, int node)
@@ -212,7 +220,9 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
 	if (sk_memalloc_socks() && (flags & SKB_ALLOC_RX))
 		gfp_mask |= __GFP_MEMALLOC;
 
-	/* Get the HEAD */
+	/* Get the HEAD 
+     * 从指定缓冲池中分配skb结构本身，并且注明了不从DMA中分配
+     * */
 	skb = kmem_cache_alloc_node(cache, gfp_mask & ~__GFP_DMA, node);
 	if (!skb)
 		goto out;
@@ -222,7 +232,8 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
 	 * line. It usually works because kmalloc(X > SMP_CACHE_BYTES) gives
 	 * aligned memory blocks, unless SLUB/SLAB debug is enabled.
 	 * Both skb->head and skb_shared_info are cache line aligned.
-     * 这里首先通过ALIGN操作重新确定size大小，然后又加上了AILGN之后的分片结构体大小，得到了skb数据区的最终大小
+     * 这里首先通过ALIGN操作重新调整size大小，然后又加上了AILGN之后的分片结构体大小，得到了要分配的缓冲区的最终大小
+     * 这里将skb数据区和分片结构体作为一块整体区域一起分配了
 	 */
 	size = SKB_DATA_ALIGN(size);
 	size += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
@@ -241,11 +252,12 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
 	 * actually initialise below. Hence, don't put any more fields after
 	 * the tail pointer in struct sk_buff!
 	 */
+    // 以下是skb结构部分字段的初始化
 	memset(skb, 0, offsetof(struct sk_buff, tail));
 	/* Account for allocated memory : skb + skb->head */
 	skb->truesize = SKB_TRUESIZE(size);
 	skb->pfmemalloc = pfmemalloc;
-	atomic_set(&skb->users, 1);
+	atomic_set(&skb->users, 1);     
 	skb->head = data;
 	skb->data = data;
 	skb_reset_tail_pointer(skb);
@@ -253,19 +265,24 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
 	skb->mac_header = (typeof(skb->mac_header))~0U;
 	skb->transport_header = (typeof(skb->transport_header))~0U;
 
-	/* make sure we initialize shinfo sequentially */
+	/* make sure we initialize shinfo sequentially 
+     * 以下是分片结构体部分字段初始化
+     * */
 	shinfo = skb_shinfo(skb);
 	memset(shinfo, 0, offsetof(struct skb_shared_info, dataref));
 	atomic_set(&shinfo->dataref, 1);
 	kmemcheck_annotate_variable(shinfo->destructor_arg);
 
+    /* 如果是从skbuff_fclone_cache缓冲池中分配的skb，意味着实际分配了 父skb+子skb+atomic_t类型的数据区引用计数fclone_ref
+     * 所以这里就需要额外初始化克隆相关信息的字段
+     */
 	if (flags & SKB_ALLOC_FCLONE) {
 		struct sk_buff *child = skb + 1;
 		atomic_t *fclone_ref = (atomic_t *) (child + 1);
 
 		kmemcheck_annotate_bitfield(child, flags1);
 		kmemcheck_annotate_bitfield(child, flags2);
-		skb->fclone = SKB_FCLONE_ORIG;
+		skb->fclone = SKB_FCLONE_ORIG;  
 		atomic_set(fclone_ref, 1);
 
 		child->fclone = SKB_FCLONE_UNAVAILABLE;
@@ -282,12 +299,17 @@ EXPORT_SYMBOL(__alloc_skb);
 
 /**
  * build_skb - build a network buffer
- * @data: data buffer provided by caller
- * @frag_size: size of fragment, or 0 if head was kmalloced
+ * 分配一个用于网络设备的skb结构
+ * @data: data buffer provided by caller    指向由调用者提供的缓冲区
+ * @frag_size: size of fragment, or 0 if head was kmalloced     由缓冲区长度，为0意味着可以从data中计算得到(也意味着该data是由kmalloc分配得到)
  *
  * Allocate a new &sk_buff. Caller provides space holding head and
  * skb_shared_info. @data must have been allocated by kmalloc() only if
  * @frag_size is 0, otherwise data should come from the page allocator.
+ * 以上这段解释： 
+ *              当flag_size=0时，data必须指向一个由kmalloc分配的对象；
+ *              当flag_size非0时，其值就是data指向的缓冲区大小，并且该缓冲区可以是从页缓冲池(netdev_alloc_cache)中从分配得到
+ *              
  * The return is the new skb buffer.
  * On a failure the return is %NULL, and @data is not freed.
  * Notes :
@@ -297,6 +319,8 @@ EXPORT_SYMBOL(__alloc_skb);
  *  After IO, driver calls build_skb(), to allocate sk_buff and populate it
  *  before giving packet to stack.
  *  RX rings only contains data buffers, not full skbs.
+ *
+ *  备注：显然本函数仅仅分配了skb结构，而skb的数据区+分片结构体的缓冲区来自调用者
  */
 struct sk_buff *build_skb(void *data, unsigned int frag_size)
 {
@@ -304,12 +328,15 @@ struct sk_buff *build_skb(void *data, unsigned int frag_size)
 	struct sk_buff *skb;
 	unsigned int size = frag_size ? : ksize(data);
 
+    // 从skbuff_head_cache缓冲池中分配skb结构，并且分配过程是原子操作，不可中断
 	skb = kmem_cache_alloc(skbuff_head_cache, GFP_ATOMIC);
 	if (!skb)
 		return NULL;
 
+    // 计算得到数据区长度
 	size -= SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
 
+    // 以下是skb结构部分字段的初始化
 	memset(skb, 0, offsetof(struct sk_buff, tail));
 	skb->truesize = SKB_TRUESIZE(size);
 	skb->head_frag = frag_size != 0;
@@ -321,7 +348,9 @@ struct sk_buff *build_skb(void *data, unsigned int frag_size)
 	skb->mac_header = (typeof(skb->mac_header))~0U;
 	skb->transport_header = (typeof(skb->transport_header))~0U;
 
-	/* make sure we initialize shinfo sequentially */
+	/* make sure we initialize shinfo sequentially 
+     * 以下是分片结构部分字段的初始化
+     * */
 	shinfo = skb_shinfo(skb);
 	memset(shinfo, 0, offsetof(struct skb_shared_info, dataref));
 	atomic_set(&shinfo->dataref, 1);
@@ -338,8 +367,12 @@ struct netdev_alloc_cache {
 	 */
 	unsigned int		pagecnt_bias;
 };
-static DEFINE_PER_CPU(struct netdev_alloc_cache, netdev_alloc_cache);
+static DEFINE_PER_CPU(struct netdev_alloc_cache, netdev_alloc_cache);   // 定义了一个页缓冲池，专门用于分配skb的数据区
 
+/* 从页缓冲池netdev_alloc_cache中分配内存
+ * 
+ * 备注：调用本函数前通常需要确保fragsz小于页大小
+ */
 static void *__netdev_alloc_frag(unsigned int fragsz, gfp_t gfp_mask)
 {
 	struct netdev_alloc_cache *nc;
@@ -348,6 +381,7 @@ static void *__netdev_alloc_frag(unsigned int fragsz, gfp_t gfp_mask)
 	unsigned long flags;
 
 	local_irq_save(flags);
+    // 获取页缓冲池
 	nc = &__get_cpu_var(netdev_alloc_cache);
 	if (unlikely(!nc->frag.page)) {
 refill:
@@ -377,6 +411,7 @@ recycle:
 		goto refill;
 	}
 
+    // 从页缓冲池中分配flagsz大小的空间
 	data = page_address(nc->frag.page) + nc->frag.offset;
 	nc->frag.offset += fragsz;
 	nc->pagecnt_bias--;
@@ -400,8 +435,9 @@ EXPORT_SYMBOL(netdev_alloc_frag);
 
 /**
  *	__netdev_alloc_skb - allocate an skbuff for rx on a specific device
- *	@dev: network device to receive on
- *	@length: length to allocate
+ *	给指定网络设备分配一个接收数据包用的skb
+ *	@dev: network device to receive on  指向该skb所属的网络设备，可以为NULL，意味着无主
+ *	@length: length to allocate         需要分配的数据长度
  *	@gfp_mask: get_free_pages mask, passed to alloc_skb
  *
  *	Allocate a new &sk_buff and assign it a usage count of one. The
@@ -415,26 +451,39 @@ struct sk_buff *__netdev_alloc_skb(struct net_device *dev,
 				   unsigned int length, gfp_t gfp_mask)
 {
 	struct sk_buff *skb = NULL;
+    // 重新调整需要分配的长度，包括加入了NET_SKB_PAD长度的headroom和分片结构体
 	unsigned int fragsz = SKB_DATA_ALIGN(length + NET_SKB_PAD) +
 			      SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
 
 	if (fragsz <= PAGE_SIZE && !(gfp_mask & (__GFP_WAIT | GFP_DMA))) {
+        /* 如果需要分配的长度小于页大小，并且没有传入__GFP_WAIT和GFP_DMA标志
+         * 则会从页缓冲池netdev_alloc_cache中分配
+         */
 		void *data;
 
 		if (sk_memalloc_socks())
 			gfp_mask |= __GFP_MEMALLOC;
 
+        // 分配skb的数据区所在缓冲
 		data = __netdev_alloc_frag(fragsz, gfp_mask);
 
+        // 分配skb结构
 		if (likely(data)) {
 			skb = build_skb(data, fragsz);
 			if (unlikely(!skb))
 				put_page(virt_to_head_page(data));
 		}
 	} else {
+        /* 其他情况下直接走正常的skb分配流程__alloc_skb
+         * 
+         * 备注：需要分配的数据长度增加了NET_SKB_PAD长度的headroom；
+         *       设置了SKB_ALLOC_RX标志
+         */
 		skb = __alloc_skb(length + NET_SKB_PAD, gfp_mask,
 				  SKB_ALLOC_RX, NUMA_NO_NODE);
 	}
+
+    // 至此，一个包含空数据区的skb已经创建完毕，接下来是在空数据区划分出NET_SKB_PAD大小的headroom
 	if (likely(skb)) {
 		skb_reserve(skb, NET_SKB_PAD);
 		skb->dev = dev;
@@ -607,6 +656,7 @@ EXPORT_SYMBOL(__kfree_skb);
 
 /**
  *	kfree_skb - free an sk_buff
+ *	释放skb结构(本函数跟consume_skb内容一样，只有使用环境的差别)
  *	@skb: buffer to free
  *
  *	Drop a reference to the buffer and free it if the usage count has
@@ -658,7 +708,7 @@ EXPORT_SYMBOL(skb_tx_error);
 
 /**
  *	consume_skb - free an skbuff
- *	释放skb结构
+ *	释放skb结构(本函数跟kfree_skb内容一样，只有使用环境的差别)
  *	@skb: buffer to free
  *
  *	Drop a ref to the buffer and free it if the usage count has hit zero
@@ -669,6 +719,7 @@ void consume_skb(struct sk_buff *skb)
 {
 	if (unlikely(!skb))
 		return;
+    // 当users为1时真正释放，否则就是简单的递减该值
 	if (likely(atomic_read(&skb->users) == 1))
 		smp_rmb();
 	else if (likely(!atomic_dec_and_test(&skb->users)))
@@ -874,8 +925,7 @@ struct sk_buff *skb_clone(struct sk_buff *skb, gfp_t gfp_mask)
 		n->fclone = SKB_FCLONE_CLONE;
 		atomic_inc(fclone_ref);
 	} else {
-        /* 其他情况下该
-         * 
+        /* 其他情况下该skb都是在skbuff_head_cache缓存池上分配
          */
 		if (skb_pfmemalloc(skb))
 			gfp_mask |= __GFP_MEMALLOC;
