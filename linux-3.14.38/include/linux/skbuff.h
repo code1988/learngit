@@ -1004,7 +1004,7 @@ static inline void skb_header_release(struct sk_buff *skb)
 
 /**
  *	skb_shared - is the buffer shared
- *	检查该skb的数据包缓冲区是否被其他skb共用
+ *	检查该skb结构是否被超过1个用户使用中
  *	@skb: buffer to check
  *
  *	Returns true if more than one person has a reference to this
@@ -1017,7 +1017,7 @@ static inline int skb_shared(const struct sk_buff *skb)
 
 /**
  *	skb_share_check - check if buffer is shared and if so clone it
- *	检查该skb的数据包缓冲区是否被其他skb共用，如果是则clone一份出来
+ *	检查该skb结构是否被超过1个用户使用中，如果是则clone一份出来，否则直接返回该skb
  *	@skb: buffer to check
  *	@pri: priority for memory allocation
  *
