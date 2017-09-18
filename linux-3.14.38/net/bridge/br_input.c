@@ -145,6 +145,7 @@ drop:
 /* note: already called with rcu_read_lock */
 static int br_handle_local_finish(struct sk_buff *skb)
 {
+    // 从该skb关联的设备上进而获取关联的桥端口结构net_bridge_port
 	struct net_bridge_port *p = br_port_get_rcu(skb->dev);
 	u16 vid = 0;
 
@@ -175,12 +176,15 @@ rx_handler_result_t br_handle_frame(struct sk_buff **pskb)
 	if (!is_valid_ether_addr(eth_hdr(skb)->h_source))
 		goto drop;
 
+    // 这一步确保了当前处理的skb没有被其他用户操作中
 	skb = skb_share_check(skb, GFP_ATOMIC);
 	if (!skb)
 		return RX_HANDLER_CONSUMED;
 
+    // 从该skb关联的设备上进而获取关联的桥端口结构net_bridge_port
 	p = br_port_get_rcu(skb->dev);
 
+    // 如果目的地址属于01:80:c2:00:00:0x系列，这些都是保留组播地址，通常承载了特定的协议，则这里进行额外的相关处理
 	if (unlikely(is_link_local_ether_addr(dest))) {
 		/*
 		 * See IEEE 802.1D Table 7-10 Reserved addresses
@@ -196,9 +200,11 @@ rx_handler_result_t br_handle_frame(struct sk_buff **pskb)
 		 * Others reserved for future standardization
 		 */
 		switch (dest[5]) {
-		case 0x00:	/* Bridge Group Address */
+		case 0x00:	/* Bridge Group Address 末字节为0x00表示stp协议报文 */
 			/* If STP is turned off,
-			   then must forward to keep loop detection */
+			   then must forward to keep loop detection 
+               当该桥端口所在网桥的stp功能处于关闭状态时，无条件转发收到的stp协议报文
+               */
 			if (p->br->stp_enabled == BR_NO_STP)
 				goto forward;
 			break;
@@ -207,7 +213,9 @@ rx_handler_result_t br_handle_frame(struct sk_buff **pskb)
 			goto drop;
 
 		default:
-			/* Allow selective forwarding for most other protocols */
+			/* Allow selective forwarding for most other protocols 
+             * 有选择性的对其他协议类型的报文进行转发
+             * */
 			if (p->br->group_fwd_mask & (1u << dest[5]))
 				goto forward;
 		}

@@ -10,7 +10,7 @@
 #include <linux/wait.h>
 #include <linux/list.h>
 #include <uapi/linux/netfilter.h>
-#ifdef CONFIG_NETFILTER
+#ifdef CONFIG_NETFILTER     // 以下是配置了CONFIG_NETFILTER的内容
 static inline int NF_DROP_GETERR(int verdict)
 {
 	return -(verdict >> NF_VERDICT_QBITS);
@@ -291,7 +291,7 @@ nf_nat_decode_session(struct sk_buff *skb, struct flowi *fl, u_int8_t family)
 #endif
 }
 
-#else /* !CONFIG_NETFILTER */
+#else /* !CONFIG_NETFILTER */   // 以下是没有配置CONFIG_NETFILTER
 #define NF_HOOK(pf, hook, skb, indev, outdev, okfn) (okfn)(skb)
 #define NF_HOOK_COND(pf, hook, skb, indev, outdev, okfn, cond) (okfn)(skb)
 static inline int nf_hook_thresh(u_int8_t pf, unsigned int hook,

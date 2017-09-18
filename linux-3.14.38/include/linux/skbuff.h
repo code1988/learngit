@@ -499,8 +499,8 @@ struct sk_buff {
 
 	__u32			rxhash;
 
-	__be16			vlan_proto;     // 如果该skb是802.1q/802.1ad协议的，则这里记录了vlan帧的协议ID
-	__u16			vlan_tci;       // 如果该skb是802.1q/802.1ad协议的，则这里记录了vlan帧的TCI字段
+	__be16			vlan_proto;     // 如果该skb是802.1q/802.1ad协议的，则这里记录了vlan帧的协议ID(也就是0x8100)
+	__u16			vlan_tci;       // 如果该skb是802.1q/802.1ad协议的，则这里记录了vlan帧的TCI字段(802.1p优先级 + CFI + VLAN ID)
 
 #ifdef CONFIG_NET_SCHED
 	__u16			tc_index;	/* traffic control index */
@@ -1028,6 +1028,8 @@ static inline int skb_shared(const struct sk_buff *skb)
  *	be GFP_ATOMIC.
  *
  *	NULL is returned on a memory allocation failure.
+ *
+ *	备注：克隆成功后会将原skb的users计数递减(直至释放skb)；而克隆失败则是彻底释放原skb了
  */
 static inline struct sk_buff *skb_share_check(struct sk_buff *skb, gfp_t pri)
 {
@@ -1035,6 +1037,7 @@ static inline struct sk_buff *skb_share_check(struct sk_buff *skb, gfp_t pri)
 	if (skb_shared(skb)) {
 		struct sk_buff *nskb = skb_clone(skb, pri);
 
+        // 如果克隆成功，则需要将原skb的users计数递减
 		if (likely(nskb))
 			consume_skb(skb);
 		else

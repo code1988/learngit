@@ -27,7 +27,7 @@
 
 #define BR_PORT_BITS	10
 #define BR_MAX_PORTS	(1<<BR_PORT_BITS)
-#define BR_VLAN_BITMAP_LEN	BITS_TO_LONGS(VLAN_N_VID)
+#define BR_VLAN_BITMAP_LEN	BITS_TO_LONGS(VLAN_N_VID)   // 32位平台:(4096 + 31)/32
 
 #define BR_VERSION	"2.3"
 
@@ -81,17 +81,18 @@ struct bridge_mcast_querier {
 };
 #endif
 
+// 本结构记录了 网桥/桥端口 的vlan相关信息
 struct net_port_vlans {
-	u16				port_idx;
+	u16				port_idx;       
 	u16				pvid;
 	union {
 		struct net_bridge_port		*port;
 		struct net_bridge		*br;
-	}				parent;
+	}				parent;     // 指向该vlan结构关联的网桥或桥端口
 	struct rcu_head			rcu;
-	unsigned long			vlan_bitmap[BR_VLAN_BITMAP_LEN];
+	unsigned long			vlan_bitmap[BR_VLAN_BITMAP_LEN];        // vlan id集合，每位代表一个vlan id
 	unsigned long			untagged_bitmap[BR_VLAN_BITMAP_LEN];
-	u16				num_vlans;
+	u16				num_vlans;  // 该vlan结构记录的vlan数量
 };
 
 // 定义了转发表表项结构
@@ -203,7 +204,7 @@ struct net_bridge_port
 	struct netpoll			*np;
 #endif
 #ifdef CONFIG_BRIDGE_VLAN_FILTERING
-	struct net_port_vlans __rcu	*vlan_info;
+	struct net_port_vlans __rcu	*vlan_info; // 指向该桥端口vlan相关信息
 #endif
 };
 
@@ -259,7 +260,7 @@ struct net_bridge
 		BR_NO_STP, 		/* no spanning tree */
 		BR_KERNEL_STP,		/* old STP in kernel */
 		BR_USER_STP,		/* new RSTP in userspace */
-	} stp_enabled;  // stp使能标志位
+	} stp_enabled;  // 网桥的stp功能开关枚举
 
 	unsigned char			topology_change;
 	unsigned char			topology_change_detected;
@@ -303,8 +304,8 @@ struct net_bridge
 	struct timer_list		gc_timer;
 	struct kobject			*ifobj;
 #ifdef CONFIG_BRIDGE_VLAN_FILTERING
-	u8				vlan_enabled;
-	struct net_port_vlans __rcu	*vlan_info;
+	u8				vlan_enabled;               // 标示该网桥是否使能了vlan过滤功能
+	struct net_port_vlans __rcu	*vlan_info;     // 指向该网桥vlan相关信息
 #endif
 };
 
@@ -593,7 +594,7 @@ static inline void br_mdb_uninit(void)
 #endif
 
 /* br_vlan.c */
-#ifdef CONFIG_BRIDGE_VLAN_FILTERING
+#ifdef CONFIG_BRIDGE_VLAN_FILTERING     // 以下是配置了CONFIG_BRIDGE_VLAN_FILTERING的相关内容
 bool br_allowed_ingress(struct net_bridge *br, struct net_port_vlans *v,
 			struct sk_buff *skb, u16 *vid);
 bool br_allowed_egress(struct net_bridge *br, const struct net_port_vlans *v,
@@ -626,11 +627,13 @@ static inline struct net_port_vlans *nbp_get_vlan_info(
 
 /* Since bridge now depends on 8021Q module, but the time bridge sees the
  * skb, the vlan tag will always be present if the frame was tagged.
+ * 从skb中获取vlan id  
  */
 static inline int br_vlan_get_tag(const struct sk_buff *skb, u16 *vid)
 {
 	int err = 0;
 
+    // 如果存在vlan id则返回相应值，如果不存在则返回vlan id = 0
 	if (vlan_tx_tag_present(skb))
 		*vid = vlan_tx_tag_get(skb) & VLAN_VID_MASK;
 	else {
@@ -641,6 +644,7 @@ static inline int br_vlan_get_tag(const struct sk_buff *skb, u16 *vid)
 	return err;
 }
 
+// 获取指定桥端口的pvid，存在则返回相应值，不存在则返回VLAN_N_VID
 static inline u16 br_get_pvid(const struct net_port_vlans *v)
 {
 	/* Return just the VID if it is set, or VLAN_N_VID (invalid vid) if
@@ -650,7 +654,7 @@ static inline u16 br_get_pvid(const struct net_port_vlans *v)
 	return v->pvid ?: VLAN_N_VID;
 }
 
-#else
+#else           // 以下是没有配置CONFIG_BRIDGE_VLAN_FILTERING时，显然相关函数都为空
 static inline bool br_allowed_ingress(struct net_bridge *br,
 				      struct net_port_vlans *v,
 				      struct sk_buff *skb,

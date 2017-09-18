@@ -247,21 +247,30 @@ bool br_allowed_egress(struct net_bridge *br,
 	return false;
 }
 
-/* Called under RCU */
+/* Called under RCU 
+ * 检查指定桥端口是否允许学习
+ *
+ * 备注：本函数运行前提是配置了CONFIG_BRIDGE_VLAN_FILTERING
+ * */
 bool br_should_learn(struct net_bridge_port *p, struct sk_buff *skb, u16 *vid)
 {
 	struct net_bridge *br = p->br;
 	struct net_port_vlans *v;
 
-	/* If filtering was disabled at input, let it pass. */
+	/* If filtering was disabled at input, let it pass. 
+     * 如果该网桥没有开启vlan过滤功能，则直接通过
+     * */
 	if (!br->vlan_enabled)
 		return true;
 
+    // 获取该桥端口的vlan信息
 	v = rcu_dereference(p->vlan_info);
 	if (!v)
 		return false;
 
+    // 从skb中获取vlan id
 	br_vlan_get_tag(skb, vid);
+    // 如果该skb中没有携带vlan id，则尝试获取该桥端口的pvid
 	if (!*vid) {
 		*vid = br_get_pvid(v);
 		if (*vid == VLAN_N_VID)

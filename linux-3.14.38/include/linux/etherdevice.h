@@ -59,6 +59,7 @@ static const u8 eth_reserved_addr_base[ETH_ALEN] __aligned(2) =
 
 /**
  * is_link_local_ether_addr - Determine if given Ethernet address is link-local
+ * 判断指定的以太网地址是否属于01:80:c2:00:00:0x系列
  * @addr: Pointer to a six-byte array containing the Ethernet address
  *
  * Return true if address is link local reserved addr (01:80:c2:00:00:0X) per

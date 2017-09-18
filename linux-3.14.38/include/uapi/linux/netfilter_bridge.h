@@ -9,7 +9,7 @@
 #include <linux/if_vlan.h>
 #include <linux/if_pppox.h>
 
-/* Bridge Hooks */
+/* Bridge Hooks 以下都是netfilter模块中用于网桥相关的钩子*/
 /* After promisc drops, checksum checks. */
 #define NF_BR_PRE_ROUTING	0
 /* If the packet is destined for this box. */

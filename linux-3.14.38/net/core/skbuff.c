@@ -782,6 +782,12 @@ static void __copy_skb_header(struct sk_buff *new, const struct sk_buff *old)
 /*
  * You should not add any new code to this function.  Add it to
  * __copy_skb_header above instead.
+ * 对克隆父skb和子skb参数进行设置
+ *
+ * 备注：需要特别关注的是
+ *          父、子skb的cloned标志位都置1
+ *          分片结构体中的dataref标志为递增
+ *          子skb的users标志置1(通常调用者会在skb_clone再调用consume_skb将父skb的users标志作相应的递减)
  */
 static struct sk_buff *__skb_clone(struct sk_buff *n, struct sk_buff *skb)
 {
@@ -939,6 +945,7 @@ struct sk_buff *skb_clone(struct sk_buff *skb, gfp_t gfp_mask)
 		n->fclone = SKB_FCLONE_UNAVAILABLE;
 	}
 
+    // 对克隆父skb和子skb参数进行设置
 	return __skb_clone(n, skb);
 }
 EXPORT_SYMBOL(skb_clone);
