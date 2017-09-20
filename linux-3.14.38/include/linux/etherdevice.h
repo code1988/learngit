@@ -127,6 +127,7 @@ static inline bool is_local_ether_addr(const u8 *addr)
 
 /**
  * is_broadcast_ether_addr - Determine if the Ethernet address is broadcast
+ * 检查是否是一个广播地址
  * @addr: Pointer to a six-byte array containing the Ethernet address
  *
  * Return true if the address is the broadcast address.

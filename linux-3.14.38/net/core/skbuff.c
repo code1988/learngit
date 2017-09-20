@@ -4085,7 +4085,7 @@ struct sk_buff *skb_vlan_untag(struct sk_buff *skb)
 		return skb;
 	}
 
-    // 检查该skb是否是共享的
+    // 检查该skb结构是否被超过1个用户使用中，如果是则clone一份出来
 	skb = skb_share_check(skb, GFP_ATOMIC);
 	if (unlikely(!skb))
 		goto err_free;

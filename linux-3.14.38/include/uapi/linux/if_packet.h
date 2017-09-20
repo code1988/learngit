@@ -20,7 +20,7 @@ struct sockaddr_ll {
 };
 
 /* Packet types 
- * 包类型
+ * 包类型(可以用来设置skb->pkt_type字段)
  *
  * 备注： 只对接收到的数据包有意义
  * */

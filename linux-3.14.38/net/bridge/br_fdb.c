@@ -309,7 +309,9 @@ void br_fdb_delete_by_port(struct net_bridge *br,
 	spin_unlock_bh(&br->hash_lock);
 }
 
-/* No locking or refcounting, assumes caller has rcu_read_lock */
+/* No locking or refcounting, assumes caller has rcu_read_lock 
+ * 根据 mac地址+vid 查找对应的转发表表项
+ * */
 struct net_bridge_fdb_entry *__br_fdb_get(struct net_bridge *br,
 					  const unsigned char *addr,
 					  __u16 vid)

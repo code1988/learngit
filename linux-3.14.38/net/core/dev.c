@@ -3555,6 +3555,7 @@ static bool skb_pfmemalloc_protocol(struct sk_buff *skb)
 	}
 }
 
+// 网络设备真正执行数据接收流程的地方
 static int __netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc)
 {
 	struct packet_type *ptype, *pt_prev;
@@ -3714,6 +3715,7 @@ out:
 	return ret;
 }
 
+// 网络设备执行数据接收流程(主要就是额外封装了对skb分配方式的判断处理)
 static int __netif_receive_skb(struct sk_buff *skb)
 {
 	int ret;
@@ -3739,6 +3741,7 @@ static int __netif_receive_skb(struct sk_buff *skb)
 	return ret;
 }
 
+// 网络设备执行数据接收流程(主要就是额外封装了数据包RPS处理)
 static int netif_receive_skb_internal(struct sk_buff *skb)
 {
 	net_timestamp_check(netdev_tstamp_prequeue, skb);
@@ -3746,7 +3749,8 @@ static int netif_receive_skb_internal(struct sk_buff *skb)
 	if (skb_defer_rx_timestamp(skb))
 		return NET_RX_SUCCESS;
 
-#ifdef CONFIG_RPS
+#ifdef CONFIG_RPS   
+    // 如果内核配置了RPS机制，则在这里对数据包进行RPS处理，也就是将报文分散到各个CPU的接收队列中进行负载均衡处理
 	if (static_key_false(&rps_needed)) {
 		struct rps_dev_flow voidflow, *rflow = &voidflow;
 		int cpu, ret;
@@ -3768,15 +3772,18 @@ static int netif_receive_skb_internal(struct sk_buff *skb)
 
 /**
  *	netif_receive_skb - process receive buffer from network
- *	网络设备接收数据时L2->L3的接口函数，主要是根据skb->protocol向注册的三层函数做分发
+ *	网络设备接收数据的总入口函数(显然只是个封装)
  *	@skb: buffer to process
  *
  *	netif_receive_skb() is the main receive data processing function.
  *	It always succeeds. The buffer may be dropped during processing
  *	for congestion control or by the protocol layers.
+ *	本函数在处理过程中可能会丢弃该skb，主要是因为发生了拥塞或者协议层自己的行为。
+ *	但是通常不会对本函数的返回值做处理
  *
  *	This function may only be called from softirq context and interrupts
  *	should be enabled.
+ *	本函数只能在软中断上下文中被调用，并且中断必须被开启
  *
  *	Return values (usually ignored):
  *	NET_RX_SUCCESS: no congestion

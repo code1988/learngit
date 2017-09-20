@@ -455,7 +455,9 @@ struct sk_buff {
 	 * want to keep them across layers you have to do a skb_clone()
 	 * first. This is owned by whoever has the skb queued ATM.
 	 */
-	char			cb[48] __aligned(8);    // 通用控制字段，可被各层网络模块自定义，比如netlink用它存储参数控制块netlink_skb_parms
+	char			cb[48] __aligned(8);    // 通用控制字段，可被各层网络模块自定义，比如：
+                                            // netlink用它存储参数控制块netlink_skb_parms
+                                            // bridge用它存储入口参数控制块br_input_skb_cb
 
 	unsigned long		_skb_refdst;
 #ifdef CONFIG_XFRM
@@ -485,7 +487,7 @@ struct sk_buff {
 				peeked:1,       // 标识该skb是否有被预读过(MSG_PEEK)
 				nf_trace:1;
 	kmemcheck_bitfield_end(flags1);
-	__be16			protocol;       // 记录了以太网帧协议ID(如vlan ID: 0x8100)
+	__be16			protocol;       // 记录了该skb中承载的以太网帧协议ID(如vlan ID: 0x8100)
 
 	void			(*destructor)(struct sk_buff *skb);
 #if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
@@ -571,7 +573,9 @@ struct sk_buff {
 #define SKB_ALLOC_FCLONE	0x01        // 该标志决定了从skbuff_fclone_cache还是skbuff_head_cache中分配skb
 #define SKB_ALLOC_RX		0x02
 
-/* Returns true if the skb was allocated from PFMEMALLOC reserves */
+/* Returns true if the skb was allocated from PFMEMALLOC reserves 
+ * 判断指定skb是否是由PFMEMALLOC方式分配
+ * */
 static inline bool skb_pfmemalloc(const struct sk_buff *skb)
 {
 	return unlikely(skb->pfmemalloc);

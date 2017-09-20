@@ -135,12 +135,18 @@ static struct net_bridge_mdb_entry *br_mdb_ip6_get(
 }
 #endif
 
+/* 返回指定skb所在的组播组
+ * @br  - 指向当前网桥
+ * @skb - 指向承载了组播报文的skb
+ * @vid - 该skb所属的vlan
+ */
 struct net_bridge_mdb_entry *br_mdb_get(struct net_bridge *br,
 					struct sk_buff *skb, u16 vid)
 {
 	struct net_bridge_mdb_htable *mdb = rcu_dereference(br->mdb);
 	struct br_ip ip;
 
+    // 确保该网桥的igmp-snooping功能处于使能状态
 	if (br->multicast_disabled)
 		return NULL;
 
@@ -1703,6 +1709,14 @@ out:
 }
 #endif
 
+/* 网桥的以太网多播帧接收入口
+ * @br      - 指向当前网桥
+ * @port    - 指向接收到该多播帧的桥端口
+ * @skb     - 承载了多播帧的skb
+ * @vid     - 该skb所属vlan
+ *
+ * 备注： 显然这里只会处理ipv4和ipv6的报文
+ */
 int br_multicast_rcv(struct net_bridge *br, struct net_bridge_port *port,
 		     struct sk_buff *skb, u16 vid)
 {

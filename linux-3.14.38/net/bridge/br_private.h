@@ -90,7 +90,7 @@ struct net_port_vlans {
 		struct net_bridge		*br;
 	}				parent;     // 指向该vlan结构关联的网桥或桥端口
 	struct rcu_head			rcu;
-	unsigned long			vlan_bitmap[BR_VLAN_BITMAP_LEN];        // vlan id集合，每位代表一个vlan id
+	unsigned long			vlan_bitmap[BR_VLAN_BITMAP_LEN];        // vlan id集合，每位代表一个vlan id，置1表示对应的vlan有效
 	unsigned long			untagged_bitmap[BR_VLAN_BITMAP_LEN];
 	u16				num_vlans;  // 该vlan结构记录的vlan数量
 };
@@ -182,8 +182,8 @@ struct net_bridge_port
 #define BR_ROOT_BLOCK		0x00000004      // 
 #define BR_MULTICAST_FAST_LEAVE	0x00000008  //
 #define BR_ADMIN_COST		0x00000010      //
-#define BR_LEARNING		0x00000020          // 学习功能
-#define BR_FLOOD		0x00000040          // 泛洪功能
+#define BR_LEARNING		0x00000020          // 表示具备学习功能
+#define BR_FLOOD		0x00000040          // 表示具备泛洪功能
 
 #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
 	struct bridge_mcast_query	ip4_query;
@@ -309,17 +309,19 @@ struct net_bridge
 #endif
 };
 
+// skb中针对bridge模块报文的附加信息
 struct br_input_skb_cb {
-	struct net_device *brdev;
+	struct net_device *brdev;       // 指向对应的skb所属的网桥设备
 #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
 	int igmp;
 	int mrouters_only;
 #endif
 #ifdef CONFIG_BRIDGE_VLAN_FILTERING
-	bool vlan_filtered;
+	bool vlan_filtered;     // 用于标识对应的skb是否经过了网桥的vlan过滤
 #endif
 };
 
+// 将skb结构中的cb字段自定义用于保存bridge参数控制块
 #define BR_INPUT_SKB_CB(__skb)	((struct br_input_skb_cb *)(__skb)->cb)
 
 #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
@@ -454,7 +456,7 @@ int br_ioctl_deviceless_stub(struct net *net, unsigned int cmd,
 			     void __user *arg);
 
 /* br_multicast.c */
-#ifdef CONFIG_BRIDGE_IGMP_SNOOPING
+#ifdef CONFIG_BRIDGE_IGMP_SNOOPING      // 以下是配置了CONFIG_BRIDGE_IGMP_SNOOPING的相关内容
 extern unsigned int br_mdb_rehash_seq;
 int br_multicast_rcv(struct net_bridge *br, struct net_bridge_port *port,
 		     struct sk_buff *skb, u16 vid);
@@ -523,7 +525,7 @@ static inline bool br_multicast_querier_exists(struct net_bridge *br,
 		return false;
 	}
 }
-#else
+#else       // 以下是没有配置CONFIG_BRIDGE_IGMP_SNOOPING的相关内容
 static inline int br_multicast_rcv(struct net_bridge *br,
 				   struct net_bridge_port *port,
 				   struct sk_buff *skb,
@@ -619,6 +621,7 @@ static inline struct net_port_vlans *br_get_vlan_info(
 	return rcu_dereference_rtnl(br->vlan_info);
 }
 
+// 获取指定桥端口的vlan信息
 static inline struct net_port_vlans *nbp_get_vlan_info(
 						const struct net_bridge_port *p)
 {
