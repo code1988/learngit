@@ -124,7 +124,7 @@ netlink_skb_clone(struct sk_buff *skb, gfp_t gfp_mask)
 #define NLMSG_GOODSIZE	SKB_WITH_OVERHEAD(8192UL)
 #endif
 
-#define NLMSG_DEFAULT_SIZE (NLMSG_GOODSIZE - NLMSG_HDRLEN)
+#define NLMSG_DEFAULT_SIZE (NLMSG_GOODSIZE - NLMSG_HDRLEN)  // 缺省的netlink消息payload长度
 
 // 定义了当前某条netlink消息期间有效的操作集合
 struct netlink_callback {

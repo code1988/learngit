@@ -21,7 +21,7 @@
 #include <linux/if_vlan.h>
 
 #define BR_HASH_BITS 8
-#define BR_HASH_SIZE (1 << BR_HASH_BITS)
+#define BR_HASH_SIZE (1 << BR_HASH_BITS)    // 转发表的桶数量，这里就是256
 
 #define BR_HOLD_TIME (1*HZ)
 
@@ -99,16 +99,16 @@ struct net_port_vlans {
 struct net_bridge_fdb_entry
 {
 	struct hlist_node		hlist;      // 用来链接同一个hash桶中的其他net_bridge_fdb_entry结构
-	struct net_bridge_port		*dst;   // 指向学习到该mac对应的桥端口
+	struct net_bridge_port		*dst;   // 指向学习到该mac的桥端口
 
 	struct rcu_head			rcu;
-	unsigned long			updated;
+	unsigned long			updated;    // 记录了该表项被刷新时的jiffies
 	unsigned long			used;
 	mac_addr			addr;           // 记录了一个学习到的mac
 	unsigned char			is_local;   // 标识该mac是否是自身mac
 	unsigned char			is_static;  // 标识该mac是否是静态添加的
-	unsigned char			added_by_user;
-	__u16				vlan_id;        // 记录了学习到该mac所在的vlan
+	unsigned char			added_by_user;  // 标识该mac是否是用户手动添加
+	__u16				vlan_id;        // 记录了该mac所在的vlan
 };
 
 /* 定义了加入一个组播组的组播端口，本结构描述了一个组播端口的详细信息
@@ -247,9 +247,9 @@ struct net_bridge
 	u32				root_path_cost;
 	unsigned long			max_age;
 	unsigned long			hello_time;
-	unsigned long			forward_delay;
+	unsigned long			forward_delay;  // 桥转发延迟时间，缺省15s
 	unsigned long			bridge_max_age;
-	unsigned long			ageing_time;
+	unsigned long			ageing_time;    // 桥老化时间，缺省5min
 	unsigned long			bridge_hello_time;
 	unsigned long			bridge_forward_delay;
 
@@ -262,7 +262,7 @@ struct net_bridge
 		BR_USER_STP,		/* new RSTP in userspace */
 	} stp_enabled;  // 网桥的stp功能开关枚举
 
-	unsigned char			topology_change;
+	unsigned char			topology_change;            // 用于标识链路拓扑是否发生了变化
 	unsigned char			topology_change_detected;
 
 #ifdef CONFIG_BRIDGE_IGMP_SNOOPING

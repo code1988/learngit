@@ -248,7 +248,7 @@ bool br_allowed_egress(struct net_bridge *br,
 }
 
 /* Called under RCU 
- * 检查指定桥端口是否允许学习
+ * 检查指定桥端口是否允许学习指定skb，实质就是检查指定skb对应的vlan是否包含在指定vlan信息结构中
  *
  * 备注：本函数运行前提是配置了CONFIG_BRIDGE_VLAN_FILTERING
  * */
@@ -279,6 +279,7 @@ bool br_should_learn(struct net_bridge_port *p, struct sk_buff *skb, u16 *vid)
 		return true;
 	}
 
+    // 检查获取到的vlan id是否包含在该
 	if (test_bit(*vid, v->vlan_bitmap))
 		return true;
 

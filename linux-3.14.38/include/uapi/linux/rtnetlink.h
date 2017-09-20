@@ -52,7 +52,7 @@ enum {
 	RTM_GETROUTE,
 #define RTM_GETROUTE	RTM_GETROUTE
 
-	RTM_NEWNEIGH	= 28,
+	RTM_NEWNEIGH	= 28,           // 邻居信息相关(比如bridge学到一个新的mac地址就会触发该消息通知)
 #define RTM_NEWNEIGH	RTM_NEWNEIGH
 	RTM_DELNEIGH,
 #define RTM_DELNEIGH	RTM_DELNEIGH

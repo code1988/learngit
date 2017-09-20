@@ -49,8 +49,6 @@
     /* API  : int pthread_mutex_unlock(pthread_mutex_t *mutex)
      * 描述 : 对互斥量进行解锁
      * @mutex   - 指向一个要解锁的互斥量
-     *
-     * 备注 : 如果互斥量已经被其他线程上锁，直接返回 EBUSY
      */
 
     互斥量是最常用的线程同步方式，在避免死锁的前提下，需要注意把控好锁的粒度：
@@ -85,7 +83,7 @@
      *        不需要销毁使用PTHREAD_RWLOCK_INITIALIZER初始化的静态分配的读写锁
      */
 
-    读写锁POSIX标准中只定义了1个进程共享属性(类似于互斥量的进程共享属性)，
+    读写锁POSIX标准中只定义了1个进程共享属性(类似于互斥量的进程共享属性)
 
     /* API  : int pthread_rwlock_rdlock(pthread_rwlock_t *rwlock)
      * 描述 : 读模式下进行加锁
@@ -160,3 +158,78 @@
      * 描述 : 通知所有等待该条件的线程条件已经满足(即条件变量作用的具体数据结构已经可用)
      * @cond    - 指向一个要广播通知的条件变量
      */
+
+4. 自旋锁(pthread_spin_t)
+    和互斥量的区别:
+            互斥量采用sleep-waiting机制，而自旋锁采用busy-waiting机制。
+    显然，因为自旋锁不会引起调用进程睡眠，所以通常使用在临界区很小，并且不希望在线程调度上花费太多时间的SMP系统。
+    实际使用中，用户态自旋锁基本很少用，主要是因为互斥量的实现已经非常高效。即便使用也通常是作为实现其他类型锁的底层原语。
+
+    使用自旋锁之前，必须先对它进行初始化，但自旋锁只能通过动态方式初始化，并且自旋锁只有1个属性，就是进程共享属性。
+
+    /* API  : int pthread_spin_init(pthread_spin_t *lock,int pshared)
+     * 描述 : 初始自旋锁
+     * @lock    - 指向一个要初始化的自旋锁
+     * @pshared - 用于设置自旋锁是否支持进程共享属性
+     */
+
+    /* API  : int pthread_spin_destroy(pthread_spin_t *lock)
+     * 描述 : 销毁自旋锁
+     * @lock    - 指向一个要销毁的自旋锁
+     */
+
+    /* API  : int pthread_spin_lock(pthread_spin_t *lock)
+     * 描述 : 对自旋锁进行加锁，如果该自旋锁已经被其他线程上锁，调用线程将会忙等直到得到该锁为止
+     * @lock    - 指向一个要加锁的自旋锁
+     *
+     * 备注 : 不允许调用线程对自旋锁进行重复加锁，否则其结果是未定义的
+     */
+
+    /* API  : int pthread_spin_trylock(pthread_spin_t *lock)
+     * 描述 : 对自旋锁进行加锁(非阻塞方式)
+     * @lock    - 指向一个要加锁的自旋锁
+     *
+     * 备注 : 如果该自旋锁已经被其他线程上锁，不自旋，直接返回 EBUSY
+     */
+
+    /* API  : int pthread_spin_unlock(pthread_spin_t *lock)
+     * 描述 : 对自旋锁进行解锁
+     * @lock    - 指向一个要解锁的自旋锁
+     *
+     * 备注 : 不允许对没有加锁的自旋锁进行解锁，否则其结果是未定义的
+     */
+
+    不应该在持有自旋锁的情况下调用可能会进入休眠状态的函数。
+
+5. 屏障(pthread_barrier_t)
+    不同于以上那些同步机制，屏障通常用于同步多个线程之间的并行工作，其工作机制如下：
+            每个合作线程都会阻塞在屏障设置的等待点，直到所有的合作线程都到达各自所在的等待点，然后才都会从该点继续往后执行
+
+    使用屏障之前，必须先对它进行初始化，但屏障只能通过动态方式初始化。
+
+    /* API  : int pthread_barrier_init(pthread_barrier_t *barrier,const pthread_barrierattr_t *attr,unsigned int count)
+     * 描述 : 初始化屏障
+     * @barrier     - 指向一个要初始化的屏障
+     * @attr        - 用于设置屏障的属性，NULL表示设置默认属性
+     * @count       - 屏障计数值，用于指定该屏障管理的合作线程数量
+     */
+
+    /* API  : int pthread_barrier_destroy(pthread_barrier_t *barrier)
+     * 描述 : 销毁屏障
+     * @barrier     - 指向一个要销毁的屏障
+     */
+
+    目前屏障只定义了1个进程共享属性(类似于互斥量的进程共享属性)
+
+    /* API  : int pthread_barrier_wait(pthread_barrier_t *barrier)
+     * 描述 : 等待其他合作线程都到达各自的屏障点，调用线程在所有合作线程没有全部到达屏障点之前会进入休眠状态
+     *        如果该线程是最后一个到达屏障点的合作线程，则所有的合作线程都被唤醒
+     * @barrier     - 指向一个要进行等待的屏障
+     *
+     * 备注 : 所有合作线程中只会有1个线程调用本函数会返回PTHREAD_BARRIER_SERIAL_THREAD(其余线程返回值都为0)，
+     *        所以该线程可以作为主合作线程，用于对其他线程完成的工作结果进行相关汇总处理.
+     *        当然，实际使用中也可以手动指定一个特定合作线程作为主合作线程
+     */
+
+    当阻塞在屏障点的所有合作线程被唤醒后，屏障就可以被重用。
+

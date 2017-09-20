@@ -270,7 +270,7 @@ static inline int nlmsg_msg_size(int payload)
 /**
  * nlmsg_total_size - length of netlink message including padding
  * 计算netlink消息占用的总空间（netlink消息头 + pading + netlink消息payload + padding）
- * @payload: length of message payload
+ * @payload: length of message payload      netlink消息payload长度
  */
 static inline int nlmsg_total_size(int payload)
 {
@@ -484,8 +484,8 @@ static inline struct nlmsghdr *nlmsg_put_answer(struct sk_buff *skb,
 
 /**
  * nlmsg_new - Allocate a new netlink message
- * 申请一个新的netlink消息空间
- * @payload: size of the message payload
+ * 申请一个缺省类型的skb数据包元，其中包含一个用于承载netlink消息的数据空间
+ * @payload: size of the message payload    netlink消息的payload长度
  * @flags: the type of memory to allocate.
  *
  * Use NLMSG_DEFAULT_SIZE if the size of the payload isn't known

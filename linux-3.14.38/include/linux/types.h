@@ -186,10 +186,12 @@ struct list_head {
 	struct list_head *next, *prev;
 };
 
+// hash桶头结构
 struct hlist_head {
 	struct hlist_node *first;
 };
 
+// hash桶普通节点结构
 struct hlist_node {
 	struct hlist_node *next, **pprev;
 };

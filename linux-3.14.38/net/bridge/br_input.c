@@ -149,7 +149,9 @@ static int br_handle_local_finish(struct sk_buff *skb)
 	struct net_bridge_port *p = br_port_get_rcu(skb->dev);
 	u16 vid = 0;
 
-	/* check if vlan is allowed, to avoid spoofing */
+	/* check if vlan is allowed, to avoid spoofing 
+     * 如果该桥端口处于learning状态，并且该桥端口允许对该skb携带的报文进行学习，则从中学习源mac地址到转发表
+     * */
 	if (p->flags & BR_LEARNING && br_should_learn(p, skb, &vid))
 		br_fdb_update(p->br, p, eth_hdr(skb)->h_source, vid, false);
 	return 0;	 /* process further */
