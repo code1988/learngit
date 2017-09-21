@@ -1353,7 +1353,7 @@ struct hostapd_config * hostapd_config_read(const char *fname)
 				wpa_printf(MSG_DEBUG, "eapol_version=%d",
 					   bss->eapol_version);
 #ifdef EAP_SERVER
-		} else if (os_strcmp(buf, "eap_authenticator") == 0) {
+		} else if (os_strcmp(buf, "eap_authenticator") == 0) {  // 显然，这个是已经作废的参数，被"eap_server"替代
 			bss->eap_server = atoi(pos);
 			wpa_printf(MSG_ERROR, "Line %d: obsolete "
 				   "eap_authenticator used; this has been "
