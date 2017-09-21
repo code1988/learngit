@@ -96,7 +96,7 @@ static int eap_copy_data(u8 **dst, size_t *dst_len,
  * @identity_len: Length of identity in bytes
  * @phase2: 0 = EAP phase1 user, 1 = EAP phase2 (tunneled) user
  * Returns: 0 on success, or -1 on failure
- * 从数据库中取出用户信息填充eap_user
+ * 根据指定的用户名索引数据库，从中取出对应的用户信息填充eap_user
  *
  * This function is used to fetch user information for EAP. The user will be
  * selected based on the specified identity. sm->user and
@@ -154,6 +154,12 @@ SM_STATE(EAP, INITIALIZE)
 {
 	SM_ENTRY(EAP, INITIALIZE);
 
+    // 如果同时满足以下3个条件：
+    //          EAPOL->EAP交互标志eapRestart被置位
+    //          没有使用集成EAP服务器
+    //          EAP层当前存在有效用户名信息
+    // 以上意味着EAP SM进入重认证开始阶段(使用外部radius服务器)，需要在这里清除之前认证成功的用户名信息
+    // 显然，如果使用本地集成EAP服务器则不需要这步清除操作
 	if (sm->eap_if.eapRestart && !sm->eap_server && sm->identity) {
 		/*
 		 * Need to allow internal Identity method to be used instead

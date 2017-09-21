@@ -101,7 +101,7 @@ static Boolean eap_identity_check(struct eap_sm *sm, void *priv,
 	return FALSE;
 }
 
-
+// EAP-IDENTIFY-RESP处理，主要就是记录下用户名信息
 static void eap_identity_process(struct eap_sm *sm, void *priv,
 				 struct wpabuf *respData)
 {
@@ -125,6 +125,7 @@ static void eap_identity_process(struct eap_sm *sm, void *priv,
 		return; /* Should not happen - frame already validated */
 
 	wpa_hexdump_ascii(MSG_DEBUG, "EAP-Identity: Peer identity", pos, len);
+    // 如果已经存在了用户名信息，则意味着需要更新
 	if (sm->identity)
 		sm->update_user = TRUE;
 	os_free(sm->identity);

@@ -53,7 +53,7 @@
 /**
  * This element is a member of a avl-tree. It must be contained in all
  * larger structs that should be put into a tree.
- * 真正的avl树模块，它通常是作为一个模块嵌入在父结构中
+ * avl树节点，它通常是作为一个模块嵌入在父结构中
  */
 struct avl_node {
   /**
@@ -67,21 +67,25 @@ struct avl_node {
 
   /**
    * Pointer to parent node in tree, NULL if root node
+   * 指向父节点
    */
   struct avl_node *parent;
 
   /**
    * Pointer to left child
+   * 指向左子节点
    */
   struct avl_node *left;
 
   /**
    * Pointer to right child
+   * 指向右子节点
    */
   struct avl_node *right;
 
   /**
    * pointer to key of node
+   * 指向该节点的索引键值
    */
   const void *key;
 
@@ -98,6 +102,7 @@ struct avl_node {
 
 /**
  * Prototype for avl comparators
+ * 定义了avl树比较器的格式
  * @param k1 first key
  * @param k2 second key
  * @param ptr custom data for tree comparator
@@ -108,7 +113,7 @@ typedef int (*avl_tree_comp) (const void *k1, const void *k2, void *ptr);
 /**
  * This struct is the central management part of an avl tree.
  * One of them is necessary for each avl_tree.
- * avl树控制块
+ * 整棵avl树的核心控制块
  */
 struct avl_tree {
   /**
@@ -130,6 +135,7 @@ struct avl_tree {
   /**
    * true if multiple nodes with the same key are
    * allowed in the tree, false otherwise
+   * 标识该avl树是否支持相同键值的节点
    */
   bool allow_dups;
 

@@ -137,6 +137,7 @@ void __hidden ubus_process_obj_msg(struct ubus_context *ctx, struct ubus_msghdr_
 	}
 }
 
+// ubus客户端将ubus对象添加到ubusd成功后执行的回调函数
 static void ubus_add_object_cb(struct ubus_request *req, int type, struct blob_attr *msg)
 {
 	struct ubus_object *obj = req->priv;
@@ -151,6 +152,7 @@ static void ubus_add_object_cb(struct ubus_request *req, int type, struct blob_a
 		obj->type->id = blob_get_u32(attrbuf[UBUS_ATTR_OBJTYPE]);
 
 	obj->avl.key = &obj->id;
+    // 将该ubus对象插入ubus客户端关联的avl树
 	avl_insert(&req->ctx->objects, &obj->avl);
 }
 

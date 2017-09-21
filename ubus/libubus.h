@@ -111,12 +111,12 @@ struct ubus_object_type {
 	int n_methods;                      // 记录方法控制块数组的元素数量
 };
 
-// avl树的链表节点，构成ubus对象
+// ubus对象
 struct ubus_object {
-	struct avl_node avl;            // avl树
+	struct avl_node avl;            // avl树，所有ubus对象都通过它管理
 
 	const char *name;               // 对象名
-	uint32_t id;
+	uint32_t id;                    // 每个ubus对象都分配有一个唯一ID，avl树就是基于这个ID对所有ubus对象进行管理
 
 	const char *path;
 	struct ubus_object_type *type;      // 对象类型

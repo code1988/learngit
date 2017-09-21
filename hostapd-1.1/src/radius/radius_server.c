@@ -1215,6 +1215,7 @@ radius_server_read_clients(const char *client_file, int ipv6)
 
 /**
  * radius_server_init - Initialize RADIUS server
+ * 初始化radius服务器
  * @conf: Configuration for the RADIUS server
  * Returns: Pointer to private RADIUS server context or %NULL on failure
  *

@@ -582,6 +582,7 @@ const u8 * hostapd_get_psk(const struct hostapd_bss_config *conf,
 }
 
 
+// 根据用户名从用户数据库中搜索对应的表项
 const struct hostapd_eap_user *
 hostapd_get_eap_user(const struct hostapd_bss_config *conf, const u8 *identity,
 		     size_t identity_len, int phase2)

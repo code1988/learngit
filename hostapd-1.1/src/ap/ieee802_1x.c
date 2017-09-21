@@ -1671,7 +1671,7 @@ static void _ieee802_1x_finished(void *ctx, void *sta_ctx, int success,
 		ieee802_1x_finished(hapd, sta, success);
 }
 
-// 基于802.1x协议的eap层用户信息获取(这是本机使能了EAP认证服务器时会用到的函数) 
+// 基于802.1x协议的eap层用户信息获取(这是使能了本地EAP认证服务器时会用到的函数) 
 static int ieee802_1x_get_eap_user(void *ctx, const u8 *identity,
 				   size_t identity_len, int phase2,
 				   struct eap_user *user)
@@ -1680,6 +1680,7 @@ static int ieee802_1x_get_eap_user(void *ctx, const u8 *identity,
 	const struct hostapd_eap_user *eap_user;
 	int i, count;
 
+    // 根据用户名索引对应用户信息表项
 	eap_user = hostapd_get_eap_user(hapd->conf, identity,
 					identity_len, phase2);
 	if (eap_user == NULL)

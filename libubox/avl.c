@@ -105,8 +105,9 @@ static inline struct avl_node *avl_next(struct avl_node *node)
 
 /**
  * Finds a node in an avl-tree with a certain key
- * @param tree pointer to avl-tree
- * @param key pointer to key
+ * 根据指定key值从avl树根节点开始查找对应的节点
+ * @param tree pointer to avl-tree      指向要查找的avl树
+ * @param key pointer to key            指向要被查找的key
  * @return pointer to avl-node with key, NULL if no node with
  *    this key exists.
  */
@@ -116,11 +117,14 @@ avl_find(const struct avl_tree *tree, const void *key)
   struct avl_node *node;
   int diff;
 
+  // 如果是一颗空avl树直接返回
   if (tree->root == NULL)
     return NULL;
 
+  // 从根节点开始查找
   node = avl_find_rec(tree->root, key, tree->comp, tree->cmp_ptr, &diff);
 
+  // 找到则返回对应的节点，找不到则返回NULL
   return diff == 0 ? node : NULL;
 }
 
@@ -137,9 +141,11 @@ avl_find_lessequal(const struct avl_tree *tree, const void *key) {
   struct avl_node *node, *next;
   int diff;
 
+  // 如果是一颗空avl树直接返回
   if (tree->root == NULL)
     return NULL;
 
+  // 从根节点开始查找
   node = avl_find_rec(tree->root, key, tree->comp, tree->cmp_ptr, &diff);
 
   /* go left as long as key<node.key */
@@ -210,8 +216,9 @@ avl_find_greaterequal(const struct avl_tree *tree, const void *key) {
 
 /**
  * Inserts an avl_node into a tree
- * @param tree pointer to tree
- * @param new pointer to node
+ * 将指定的avl树节点插入avl树中
+ * @param tree pointer to tree  指向要插入的avl树
+ * @param new pointer to node   指向要被插入的avl树节点
  * @return 0 if node was inserted successfully, -1 if it was not inserted
  *   because of a key collision
  */
@@ -229,13 +236,15 @@ avl_insert(struct avl_tree *tree, struct avl_node *new)
   new->balance = 0;
   new->leader = true;
 
+  // 如果还是一颗空avl树，意味着要插入的是第一个节点
   if (tree->root == NULL) {
     list_add(&new->list, &tree->list_head);
-    tree->root = new;
+    tree->root = new;   // 第一个节点也就作为根节点
     tree->count = 1;
     return 0;
   }
 
+  // 程序运行到这里意味着已经不是一颗空avl树
   node = avl_find_rec(tree->root, new->key, tree->comp, tree->cmp_ptr, &diff);
 
   last = node;
@@ -349,28 +358,45 @@ avl_delete(struct avl_tree *tree, struct avl_node *node)
   avl_remove(tree, node);
 }
 
+/* 从avl树的指定节点开始往下查找指定key对应的节点
+ * @node    - 指向当前被查找的节点
+ * @key     - 指向要查找的key
+ * @comp    - 指向使用的比较器
+ * @cmp_ptr - 指向传递给比较器的自定义参数
+ * @cmp_result  - 用于存放比较结果
+ *
+ * 备注：这里使用了尾递归机制
+ *       当找到匹配节点时，返回该匹配节点，同时cmp_result = 0
+ *       当查找到avl树末梢节点都为找到匹配节点时，返回该匹配节点，同时cmp_result存放了跟末梢节点的比较结果
+ */
 static struct avl_node *
 avl_find_rec(struct avl_node *node, const void *key, avl_tree_comp comp, void *cmp_ptr, int *cmp_result)
 {
   int diff;
 
+  // 执行比较器
   diff = (*comp) (key, node->key, cmp_ptr);
   *cmp_result = diff;
 
+  // 以下是要查找的key小于当前节点key时的流程
   if (diff < 0) {
+    // 如果左子节点存在，则进入左子节点继续递归查找，否则意味着当前节点已经是avl树末梢节点，直接返回该末梢节点
     if (node->left != NULL)
       return avl_find_rec(node->left, key, comp, cmp_ptr, cmp_result);
 
     return node;
   }
 
+  // 以下是要查找的key大于当前节点key时的流程
   if (diff > 0) {
+    // 如果右子节点存在，则进入右子节点继续递归查找，否则意味着当前节点已经是avl树末梢节点，直接返回该末梢节点
     if (node->right != NULL)
       return avl_find_rec(node->right, key, comp, cmp_ptr, cmp_result);
 
     return node;
   }
 
+  // 程序运行到这里意味着两个key值相等，也就是成功匹配，返回匹配到的节点
   return node;
 }
 

@@ -42,6 +42,7 @@ const struct eap_method * eap_server_get_eap_method(int vendor, EapType method)
 
 /**
  * eap_server_get_type - Get EAP type for the given EAP method name
+ * 根据指定的EAP方法名映射得到对应的type字段号
  * @name: EAP method name, e.g., TLS
  * @vendor: Buffer for returning EAP Vendor-Id
  * Returns: EAP method type or %EAP_TYPE_NONE if not found

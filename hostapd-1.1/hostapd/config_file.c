@@ -293,6 +293,7 @@ static int hostapd_config_read_eap_user(const char *fname,
 			*pos = '\0';
 			pos++;
 		}
+        // 解析method参数
 		num_methods = 0;
 		while (*start) {
 			char *pos3 = os_strchr(start, ',');
@@ -1358,7 +1359,7 @@ struct hostapd_config * hostapd_config_read(const char *fname)
 			wpa_printf(MSG_ERROR, "Line %d: obsolete "
 				   "eap_authenticator used; this has been "
 				   "renamed to eap_server", line);
-		} else if (os_strcmp(buf, "eap_server") == 0) {
+		} else if (os_strcmp(buf, "eap_server") == 0) {         // 是否使能集成EAP认证服务器
 			bss->eap_server = atoi(pos);
 		} else if (os_strcmp(buf, "eap_user_file") == 0) {      // 当使能了EAP认证服务器功能时， "eap_user_file"用于配置用户数据库文件
 			if (hostapd_config_read_eap_user(pos, bss))

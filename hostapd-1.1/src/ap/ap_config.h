@@ -106,18 +106,18 @@ struct hostapd_wpa_psk {
 	u8 addr[ETH_ALEN];
 };
 
-#define EAP_USER_MAX_METHODS 8
-// 使能EAP认证服务器功能时使用，用户信息控制块，通常用于读取/存储用户数据库信息
+#define EAP_USER_MAX_METHODS 8      // 每个用户最多支持的认证方式数量
+// 使能EAP认证服务器功能时使用，用户信息表项
 struct hostapd_eap_user {
-	struct hostapd_eap_user *next;
-	u8 *identity;
-	size_t identity_len;
+	struct hostapd_eap_user *next;  // 指向下一条用户信息
+	u8 *identity;                   // 用户名信息
+	size_t identity_len;            // 用户名长度
 	struct {
 		int vendor;
 		u32 method;
 	} methods[EAP_USER_MAX_METHODS];
-	u8 *password;
-	size_t password_len;
+	u8 *password;                   // 用户密码
+	size_t password_len;            // 密码长度
 	int phase2;
 	int force_version;
 	unsigned int wildcard_prefix:1;
@@ -175,8 +175,8 @@ struct hostapd_bss_config {
 	int ieee802_1x; /* use IEEE 802.1X */
 	int eapol_version;
 	int eap_server; /* Use internal EAP server instead of external
-			 * RADIUS server 是否使用内部eap认证服务器标志位*/
-	struct hostapd_eap_user *eap_user;
+			 * RADIUS server 是否使用本地eap认证服务器标志位*/
+	struct hostapd_eap_user *eap_user;      // 当使能了本地EAP服务器时，这里指向一张有效用户信息表
 	char *eap_sim_db;
 	struct hostapd_ip_addr own_ip_addr;
 	char *nas_identifier;
