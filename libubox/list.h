@@ -158,14 +158,22 @@ list_del_init(struct list_head *entry)
 #define	list_for_each_prev(p, h) for (p = (h)->prev; p != (h); p = p->prev)
 #define	list_for_each_prev_safe(p, n, h) for (p = (h)->prev, n = p->prev; p != (h); p = n, n = p->prev)
 
-// 从前插入节点
+/* 将_new节点插入到head节点的后一个节点位置
+ *
+ * 备注：如果head节点是链表的头结构，则实际是插入到链表首部
+ *       如果head节点是一个普通节点，则实际是插入到后一个节点位置
+ */
 static inline void
 list_add(struct list_head *_new, struct list_head *head)
 {
 	_list_add(_new, head, head->next);
 }
 
-// 从后插入节点
+/* 将_new节点插入到head节点的前一个节点位置
+ *
+ * 备注：如果head节点是链表的头结构，则实际是插入到链表尾部
+ *       如果head节点是一个普通节点，则实际是插入到前一个节点位置
+ */
 static inline void
 list_add_tail(struct list_head *_new, struct list_head *head)
 {

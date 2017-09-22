@@ -98,6 +98,7 @@ void avl_init(struct avl_tree *tree, avl_tree_comp comp, bool allow_dups, void *
   tree->cmp_ptr = ptr;
 }
 
+// 基于链表返回指定avl树节点的下一个节点
 static inline struct avl_node *avl_next(struct avl_node *node)
 {
     return list_entry(node->list.next, struct avl_node, list);
@@ -233,8 +234,8 @@ avl_insert(struct avl_tree *tree, struct avl_node *new)
   new->left = NULL;
   new->right = NULL;
 
-  new->balance = 0;
-  new->leader = true;
+  new->balance = 0;     // 每个节点在插入前因为不存在子节点所以都是平衡的
+  new->leader = true;   // 每个节点在插入前都认为自己是领袖节点
 
   // 如果还是一颗空avl树，意味着要插入的是第一个节点
   if (tree->root == NULL) {
@@ -249,6 +250,9 @@ avl_insert(struct avl_tree *tree, struct avl_node *new)
 
   last = node;
 
+  /* 从avl_find_rec返回的节点往后遍历链表，直到到达链表尾节点或者下一个节点是领袖节点时跳出遍历
+   * last最终指向跳出遍历时的最后一个节点
+   */
   while (!list_is_last(&last->list, &tree->list_head)) {
     next = avl_next(last);
     if (next->leader) {
@@ -257,39 +261,76 @@ avl_insert(struct avl_tree *tree, struct avl_node *new)
     last = next;
   }
 
+  // 再次比较avl_find_rec返回的节点和要插入的节点(这步似乎是多余的)
   diff = (*tree->comp) (new->key, node->key, tree->cmp_ptr);
 
+  // 如果相等意味着要插入的节点的key已经存在，也就是发生了冲突
   if (diff == 0) {
+    // 如果该avl树不允许存在超过1个相同的key，则返回-1,意味着插入失败
     if (!tree->allow_dups)
       return -1;
 
+    // 如果允许，则新插入的节点必然不是领袖节点
     new->leader = 0;
 
+    // 该相同key的节点实际不会插入avl树中，而是只会插入链表，位置就是last节点的后一个节点
     avl_insert_after(tree, last, new);
     return 0;
   }
 
+  // 程序运行到这里意味着该avl树中不存在跟要插入节点key值相同的节点
+  // 那么以下4个插入操作的分支流程中，avl_find_rec返回节点都将作为新节点的父节点
+  
+  /* 以下是父节点右平衡状态下的插入流程
+   *                父
+   *               /  \
+   *                  右子
+   * 当avl树中不存在指定key值的节点时，父节点处于右平衡意味着：
+   *                返回的diff值必定同时为-1
+   *                指定key值必定 < 父节点的key值 
+   */
   if (node->balance == 1) {
+    // 将该节点插入链表，位置就是父节点的前一个节点
     avl_insert_before(tree, node, new);
 
+    // 将新节点插入到父节点的左子节点，就能直接恢复整棵avl树平衡
     node->balance = 0;
     new->parent = node;
     node->left = new;
     return 0;
   }
 
+  /* 以下是父节点左平衡状态下的插入流程
+   *                父
+   *               /  \
+   *            左子
+   * 当avl树中不存在指定key值的节点时，父节点处于左平衡意味着：
+   *                返回的diff值必定同时为1
+   *                指定key值必定 > 父节点的key值 
+   */
   if (node->balance == -1) {
+    // 将该节点插入链表，位置就是last节点的后一个节点
     avl_insert_after(tree, last, new);
 
+    // 将新节点插入到父节点的右子节点，就能直接恢复整棵avl树平衡
     node->balance = 0;
     new->parent = node;
     node->right = new;
     return 0;
   }
 
+  // 程序运行到这里意味着父节点是一个没有子节点的末梢节点，显然它是全平衡的
+  // 往末梢节点插入新节点后都需要往上进行自平衡
+  
+  /* 以下是末梢节点的左子节点插入流程
+   *                父
+   *               /  
+   */
   if (diff < 0) {
+    // 将该节点插入链表，位置就是末梢节点的前一个节点
     avl_insert_before(tree, node, new);
 
+    // 将新节点插入到末梢节点的左子节点，意味着末梢节点进入左平衡状态，需要往上继续进行自平衡
     node->balance = -1;
     new->parent = node;
     node->left = new;
@@ -297,8 +338,14 @@ avl_insert(struct avl_tree *tree, struct avl_node *new)
     return 0;
   }
 
+  /* 以下是末梢节点的右子节点插入流程
+   *                父
+   *                  \  
+   */
+  // 将该节点插入链表，位置就是last节点的后一个节点
   avl_insert_after(tree, last, new);
 
+  // 将新节点插入到末梢节点的右子节点，意味着末梢节点进入右平衡状态，需要往上继续进行自平衡
   node->balance = 1;
   new->parent = node;
   node->right = new;
@@ -363,11 +410,14 @@ avl_delete(struct avl_tree *tree, struct avl_node *node)
  * @key     - 指向要查找的key
  * @comp    - 指向使用的比较器
  * @cmp_ptr - 指向传递给比较器的自定义参数
- * @cmp_result  - 用于存放比较结果
+ * @cmp_result  - 用于存放比较结果:
+ *                                  0   - 找到匹配节点
+ *                                  -1  - 未找到匹配节点，要查找的key < 返回节点的key
+ *                                  1   - 未找到匹配节点，要查找的key > 返回节点的key
  *
  * 备注：这里使用了尾递归机制
  *       当找到匹配节点时，返回该匹配节点，同时cmp_result = 0
- *       当查找到avl树末梢节点都为找到匹配节点时，返回该匹配节点，同时cmp_result存放了跟末梢节点的比较结果
+ *       当查找到avl树末梢节点都未找到匹配节点时，返回该匹配节点，同时cmp_result存放了跟末梢节点的比较结果
  */
 static struct avl_node *
 avl_find_rec(struct avl_node *node, const void *key, avl_tree_comp comp, void *cmp_ptr, int *cmp_result)
@@ -400,6 +450,13 @@ avl_find_rec(struct avl_node *node, const void *key, avl_tree_comp comp, void *c
   return node;
 }
 
+/* 指定节点右旋:
+ *                  4           2
+ *                 /           / \
+ *                2     -->   1   4
+ *               /
+ *              1
+ */
 static void
 avl_rotate_right(struct avl_tree *tree, struct avl_node *node)
 {
@@ -411,9 +468,9 @@ avl_rotate_right(struct avl_tree *tree, struct avl_node *node)
   left->parent = parent;
   node->parent = left;
 
+  // 如果该节点的父节点不存在，意味着该节点是avl树的根节点，右旋后根节点变化
   if (parent == NULL)
     tree->root = left;
-
   else {
     if (parent->left == node)
       parent->left = left;
@@ -432,6 +489,13 @@ avl_rotate_right(struct avl_tree *tree, struct avl_node *node)
   left->balance += 1 + avl_max(node->balance, 0);
 }
 
+/* 指定节点左旋:
+ *                  1                   2
+ *                   \                 / \
+ *                    2     -->       1   4
+ *                     \
+ *                      4
+ */
 static void
 avl_rotate_left(struct avl_tree *tree, struct avl_node *node)
 {
@@ -464,35 +528,50 @@ avl_rotate_left(struct avl_tree *tree, struct avl_node *node)
   right->balance -= 1 - avl_min(node->balance, 0);
 }
 
+// avl树执行自平衡，从平衡发生变化的节点依次往上递归，直到整棵树恢复平衡
 static void
 post_insert(struct avl_tree *tree, struct avl_node *node)
 {
   struct avl_node *parent = node->parent;
 
+  // 当到达根节点时，意味着整棵avl树已经完成自平衡，直接返回
   if (parent == NULL)
     return;
 
+  /* 以下是当前节点为父节点的左子节点时的平衡流程
+   * 
+   */
   if (node == parent->left) {
-    parent->balance--;
+    // 插入的节点位于父节点的左子节点下必然导致父节点左重递增
+    parent->balance--;           
 
+    // 左重递增后的父节点如果达到全平衡，则自平衡结束
     if (parent->balance == 0)
       return;
 
+    // 左重递增后的父节点如果进入左平衡，则需要从父节点往上继续进行递归平衡
     if (parent->balance == -1) {
       post_insert(tree, parent);
       return;
     }
 
+    // 程序运行到这里意味着左重递增后的父节点左重2，则需要进行旋转操作
+
+    // 如果当前节点左平衡，就是LL失衡，则需要对父节点右旋恢复
     if (node->balance == -1) {
       avl_rotate_right(tree, parent);
       return;
     }
 
+    // 程序运行到这里意味着父节点左重2,当前节点右平衡，就是LR失衡，则需要先左旋再右旋恢复
     avl_rotate_left(tree, node);
     avl_rotate_right(tree, node->parent->parent);
     return;
   }
 
+  /* 以下是当前节点为父节点的右子节点时的平衡流程
+   * 跟上面的正好相反，略
+   */
   parent->balance++;
 
   if (parent->balance == 0)
@@ -512,6 +591,7 @@ post_insert(struct avl_tree *tree, struct avl_node *node)
   avl_rotate_left(tree, node->parent->parent);
 }
 
+// 将node节点插入到pos_node节点的前一个节点位置，这是一个链表上的操作，但是会更新avl树的节点数量
 static void
 avl_insert_before(struct avl_tree *tree, struct avl_node *pos_node, struct avl_node *node)
 {
@@ -519,6 +599,7 @@ avl_insert_before(struct avl_tree *tree, struct avl_node *pos_node, struct avl_n
   tree->count++;
 }
 
+// 将node节点插入到pos_node节点的后一个节点位置，这是一个链表上的操作，但是会更新avl树的节点数量
 static void
 avl_insert_after(struct avl_tree *tree, struct avl_node *pos_node, struct avl_node *node)
 {

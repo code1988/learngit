@@ -91,11 +91,14 @@ struct avl_node {
 
   /**
    * balance state of AVL tree (0,-1,+1)
+   * 记录了该节点的平衡状态，0：平衡 -1：左边重 +1：右边重
    */
   signed char balance;
 
   /**
    * true if first of a series of nodes with same key
+   * 标识该节点是否是一组相同key值的节点的领袖节点
+   * 如果所在的avl树不允许存在相同key值的节点，则意味着每个节点都是领袖节点
    */
   bool leader;
 };
