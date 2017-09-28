@@ -98,7 +98,7 @@ struct avl_node {
   /**
    * true if first of a series of nodes with same key
    * 标识该节点是否是一组相同key值的节点的领袖节点
-   * 如果所在的avl树不允许存在相同key值的节点，则意味着每个节点都是领袖节点
+   * 如果所在的avl树不允许存在相同key值的节点(即没有开启allow_dups功能时)，则意味着每个节点都是领袖节点
    */
   bool leader;
 };

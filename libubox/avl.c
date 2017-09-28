@@ -281,7 +281,7 @@ avl_insert(struct avl_tree *tree, struct avl_node *new)
   // 程序运行到这里意味着该avl树中不存在跟要插入节点key值相同的节点
   // 那么以下4个插入操作的分支流程中，avl_find_rec返回节点都将作为新节点的父节点
   
-  /* 以下是父节点右平衡状态下的插入流程
+  /* 以下是父节点右平衡状态下的左子节点插入流程
    *                父
    *               /  \
    *                  右子
@@ -300,7 +300,7 @@ avl_insert(struct avl_tree *tree, struct avl_node *new)
     return 0;
   }
 
-  /* 以下是父节点左平衡状态下的插入流程
+  /* 以下是父节点左平衡状态下的右子节点插入流程
    *                父
    *               /  \
    *            左子
@@ -355,6 +355,7 @@ avl_insert(struct avl_tree *tree, struct avl_node *new)
 
 /**
  * Remove a node from an avl tree
+ * 从avl树中删除指定的avl树节点
  * @param tree pointer to tree
  * @param node pointer to node
  */
@@ -365,10 +366,22 @@ avl_delete(struct avl_tree *tree, struct avl_node *node)
   struct avl_node *parent;
   struct avl_node *left;
   struct avl_node *right;
+
+  // 只有删除一个领袖节点时才会真正去操作avl树结构
   if (node->leader) {
+      /* 如果同时满足以下3个条件：
+       *        avl树allow_dups功能开启
+       *        该领袖节点不是链表尾节点
+       *        该领袖节点的下一个节点不是领袖节点
+       *
+       * 这意味着该领袖节点存在至少1个key相同的副节点，那么删除该领袖节点不会引起avl树的变化
+       */
     if (tree->allow_dups
         && !list_is_last(&node->list, &tree->list_head)
         && !(next = avl_next(node))->leader) {
+        /* 原领袖节点删除后，下一个副节点将作为新的领袖节点，
+         * 同时继承原领袖节点的平衡状态、父节点、左子节点、右子节点
+         */
       next->leader = true;
       next->balance = node->balance;
 
@@ -380,9 +393,12 @@ avl_delete(struct avl_tree *tree, struct avl_node *node)
       next->left = left;
       next->right = right;
 
+      // 如果原领袖节点是根节点，还会继承其根节点属性
       if (parent == NULL)
         tree->root = next;
 
+      /* 以这种替换方式删除原领袖节点后，与原领袖节点相连的节点都需要重新连到新的领袖节点
+       */
       else {
         if (node == parent->left)
           parent->left = next;
@@ -399,9 +415,12 @@ avl_delete(struct avl_tree *tree, struct avl_node *node)
     }
 
     else
+        /* 其他情况下的该领袖节点由于不存在key相同的副节点，所以其删除操作会引起avl树的变化
+         */
       avl_delete_worker(tree, node);
   }
 
+  // 最后将该节点从链表中删除
   avl_remove(tree, node);
 }
 
@@ -450,12 +469,20 @@ avl_find_rec(struct avl_node *node, const void *key, avl_tree_comp comp, void *c
   return node;
 }
 
-/* 指定节点右旋:
- *                  4           2
- *                 /           / \
- *                2     -->   1   4
- *               /
- *              1
+/* 指定节点node(对应图中的节点"5")右旋，右旋后，node节点的左子节点将位于node节点原本的位置:
+ *      图1:        5           3       | 图2：     2             2
+ *                 /           / \      |            \             \
+ *                3     -->   2   5     |             5    -->      3 
+ *               /                      |            /               \
+ *              2                       |           3                 5
+ *
+ *  衍生图：        5                  3
+ *                 / \                / \
+ *                3   6              2   5
+ *               / \       -->      /   / \
+ *              2   4              1   4   6
+ *             /
+ *            1
  */
 static void
 avl_rotate_right(struct avl_tree *tree, struct avl_node *node)
@@ -468,7 +495,9 @@ avl_rotate_right(struct avl_tree *tree, struct avl_node *node)
   left->parent = parent;
   node->parent = left;
 
-  // 如果该节点的父节点不存在，意味着该节点是avl树的根节点，右旋后根节点变化
+  /* 如果node节点的父节点不存在，意味着node节点是avl树的根节点，右旋后根节点变成left节点
+   * 如果node节点的父节点存在，那么右旋后，父节点的相应的子节点变成left节点
+   */
   if (parent == NULL)
     tree->root = left;
   else {
@@ -479,22 +508,37 @@ avl_rotate_right(struct avl_tree *tree, struct avl_node *node)
       parent->right = left;
   }
 
+  /* node节点右旋后，左节点的右子节点将连接node节点
+   * 那么如果左节点原本存在右子节点，该右子节点将作为node节点的左子节点
+   */
   node->left = left->right;
   left->right = node;
 
   if (node->left != NULL)
     node->left->parent = node;
 
-  node->balance += 1 - avl_min(left->balance, 0);
-  left->balance += 1 + avl_max(node->balance, 0);
+  /* node节点右旋后，node节点和left节点应该必然都是右重增加(至少加1)，其中
+   * node节点应该会是必然恢复到全平衡;
+   * left节点则会是全平衡或者右平衡
+   */
+  node->balance += 1 - avl_min(left->balance, 0);   // "+1"是因为node节点的左子节点至少去掉了left节点所在的那层
+  left->balance += 1 + avl_max(node->balance, 0);   // "+1"是因为left节点的右子节点至少增加了node节点所在的那层
 }
 
-/* 指定节点左旋:
- *                  1                   2
- *                   \                 / \
- *                    2     -->       1   4
- *                     \
- *                      4
+/* 指定节点node(对应图中的节点"2")左旋:
+ *      图1：       2                   3       | 图2：         5             5
+ *                   \                 / \      |              /             /
+ *                    3     -->       2   5     |             2    -->      3 
+ *                     \                        |              \           /
+ *                      5                       |               3         2       
+ *
+ *  衍生图：        2                   4
+ *                 / \                 / \
+ *                1   4               2   5
+ *                   / \    -->      / \   \
+ *                  3   5           1   3   6
+ *                       \ 
+ *                        6
  */
 static void
 avl_rotate_left(struct avl_tree *tree, struct avl_node *node)
@@ -528,7 +572,7 @@ avl_rotate_left(struct avl_tree *tree, struct avl_node *node)
   right->balance -= 1 - avl_min(node->balance, 0);
 }
 
-// avl树执行自平衡，从平衡发生变化的节点依次往上递归，直到整棵树恢复平衡
+// avl树执行插入自平衡，从平衡发生变化的节点依次往上递归，直到整棵树恢复平衡
 static void
 post_insert(struct avl_tree *tree, struct avl_node *node)
 {
@@ -563,7 +607,9 @@ post_insert(struct avl_tree *tree, struct avl_node *node)
       return;
     }
 
-    // 程序运行到这里意味着父节点左重2,当前节点右平衡，就是LR失衡，则需要先左旋再右旋恢复
+    /* 程序运行到这里意味着父节点左重2,当前节点右平衡，就是LR失衡
+     * 则需要先对当前节点左旋，左旋之后的avl树变成LL失衡，然后再对父节点右旋最终恢复平衡
+     */
     avl_rotate_left(tree, node);
     avl_rotate_right(tree, node->parent->parent);
     return;
@@ -607,6 +653,7 @@ avl_insert_after(struct avl_tree *tree, struct avl_node *pos_node, struct avl_no
   tree->count++;
 }
 
+// 将node节点从链表中删除，这是一个链表上的操作，但是会更新avl树的节点数量
 static void
 avl_remove(struct avl_tree *tree, struct avl_node *node)
 {
@@ -676,6 +723,7 @@ avl_post_delete(struct avl_tree *tree, struct avl_node *node)
   avl_post_delete(tree, parent->parent);
 }
 
+// 从node节点开始往下遍历，返回一个最小的node
 static struct avl_node *
 avl_local_min(struct avl_node *node)
 {
@@ -696,6 +744,7 @@ avl_local_max(struct avl_node *node)
 }
 #endif
 
+// 本函数才是通常意义上的avl树节点删除接口(也就是必然会引发avl树结构的变化)
 static void
 avl_delete_worker(struct avl_tree *tree, struct avl_node *node)
 {
@@ -703,41 +752,72 @@ avl_delete_worker(struct avl_tree *tree, struct avl_node *node)
 
   parent = node->parent;
 
+  // 以下是删除一个没有子节点的末梢节点的流程
   if (node->left == NULL && node->right == NULL) {
+    // 如果该末梢节点同时也就是根节点，那么删除后就变成一颗空avl树，直接返回
     if (parent == NULL) {
       tree->root = NULL;
       return;
     }
 
+    /* 以下是当该末梢节点是父节点的左子节点时的删除流程
+     * 删除该末梢节点意味着父节右重递增
+     */
     if (parent->left == node) {
       parent->left = NULL;
       parent->balance++;
 
+      // 如果右重递增后的父节点处于右平衡，意味着右重递增前父节点处于全平衡，删除操作不会影响avl树的平衡，所以直接返回
       if (parent->balance == 1)
         return;
 
+      // 如果右重递增后的父节点处于全平衡，意味着右重递增前父节点处于左平衡，删除操作可能打破avl树的平衡，需要往上进行avl树自平衡
       if (parent->balance == 0) {
         avl_post_delete(tree, parent);
         return;
       }
 
+      // 程序运行到这里意味着右重递增后的父节点右重2，需要进行旋转操作
+
+      /* 如果父节点的右子节点全平衡，则需要对父节点左旋恢复，旋转后由于层数不变(比如下图中旋转前后都是3层)，直接返回
+       *        父
+       *       /  \
+       *           右子
+       *           /  \
+       *        左子  右子
+       */
       if (parent->right->balance == 0) {
         avl_rotate_left(tree, parent);
         return;
       }
 
+      /* 如果父节点的右子节点右平衡，则需要对父节点左旋，旋转后由于层数变化(比如下图中旋转前3层，旋转后2层)，需要往上进行avl树自平衡
+       *        父
+       *       /  \
+       *           右子
+       *              \
+       *              右子
+       */
       if (parent->right->balance == 1) {
         avl_rotate_left(tree, parent);
         avl_post_delete(tree, parent->parent);
         return;
       }
 
+      /* 如果父节点的右子节点左平衡，则需要对右子节点右旋，在对父节点左旋，旋转后由于层数变化(比如下图中旋转前3层，旋转后2层)，需要往上进行avl树自平衡
+       *        父
+       *       /  \
+       *           右子
+       *           /
+       *        左子
+       */
       avl_rotate_right(tree, parent->right);
       avl_rotate_left(tree, parent);
       avl_post_delete(tree, parent->parent);
       return;
     }
 
+    // 以下是当该末梢节点是父节点的右子节点时的删除流程，基本同上，略
     if (parent->right == node) {
       parent->right = NULL;
       parent->balance--;
@@ -768,13 +848,18 @@ avl_delete_worker(struct avl_tree *tree, struct avl_node *node)
     }
   }
 
+  // 程序运行到这里意味着要删除一个存在子节点的节点
+
+  // 以下是删除一个只存在右子节点的节点的流程
   if (node->left == NULL) {
+    // 当删除一个只存在右子节点的根节点时，右子节点将变成根节点，完后直接返回
     if (parent == NULL) {
       tree->root = node->right;
       node->right->parent = NULL;
       return;
     }
 
+    // 其他情况下，右子节点将会继承删除节点的父节点，同时右子节点将会继承删除节点在父节点中的位置
     node->right->parent = parent;
 
     if (parent->left == node)
@@ -783,10 +868,12 @@ avl_delete_worker(struct avl_tree *tree, struct avl_node *node)
     else
       parent->right = node->right;
 
+    // 由于删除节点后层数发生变化，所以需要进行avl树自平衡 
     avl_post_delete(tree, node->right);
     return;
   }
 
+  // 以下是删除一个只存在左子节点的节点的流程，基本同上，略
   if (node->right == NULL) {
     if (parent == NULL) {
       tree->root = node->left;
@@ -806,6 +893,12 @@ avl_delete_worker(struct avl_tree *tree, struct avl_node *node)
     return;
   }
 
+  // 程序运行到这里意味着删除一个左、右子节点都存在的节点
+
+  /* 获取要删除节点的右子节点下(包含右子节点)的最小节点，
+   * 然后将该最小节点从avl树中移除，
+   * 最后用该最小节点替换掉要删除的节点
+   */
   min = avl_local_min(node->right);
   avl_delete_worker(tree, min);
   parent = node->parent;

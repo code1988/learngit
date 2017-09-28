@@ -409,7 +409,7 @@ int main(int argc, char **argv)
 	umask(0177);
     
     // 创建服务器
-	server_fd.fd = usock(USOCK_UNIX | USOCK_SERVER | USOCK_NONBLOCK, ubus_socket, NULL);
+	server_fd.fd = usock(USOCK_UNIX | USOCK_SERVER | USOCK_NONBLOCK | USOCK_UDP, ubus_socket, NULL);
 	if (server_fd.fd < 0) {
 		perror("usock");
 		ret = -1;

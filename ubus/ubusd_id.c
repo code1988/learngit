@@ -32,12 +32,13 @@ static int ubus_cmp_id(const void *k1, const void *k2, void *ptr)
 		return *id1 > *id2;
 }
 
+// 初始化一棵avl树，以字符串作为key
 void ubus_init_string_tree(struct avl_tree *tree, bool dup)
 {
 	avl_init(tree, avl_strcmp, dup, NULL);
 }
 
-// 初始化一棵avl树
+// 初始化一棵avl树，以ID作为key
 void ubus_init_id_tree(struct avl_tree *tree)
 {
     // 打开随机数生成文件
