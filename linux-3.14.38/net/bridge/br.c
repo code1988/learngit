@@ -50,7 +50,7 @@ static int __init br_init(void)
 {
 	int err;
 
-    // 注册生成树协议(stp/rstp/mstp，内核默认是stp)
+    // 注册生成树协议(stp/rstp/mstp，内核默认是stp)到LLC层，当收到BPDU时就会调用注册的br_stp_rcv接收钩子
 	err = stp_proto_register(&br_stp_proto);
 	if (err < 0) {
 		pr_err("bridge: can't register sap for STP\n");

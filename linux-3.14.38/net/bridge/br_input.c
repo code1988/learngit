@@ -25,6 +25,10 @@
 br_should_route_hook_t __rcu *br_should_route_hook __read_mostly;
 EXPORT_SYMBOL(br_should_route_hook);
 
+/* 将指定报文由桥端口传递给网桥，实际就是将该skb关联到网桥设备
+ *
+ * 备注：该报文可能是发往本机的单播、组播、广播，甚至是开启混杂模式后的所有收到的报文
+ */
 static int br_pass_frame_up(struct sk_buff *skb)
 {
 	struct net_device *indev, *brdev = BR_INPUT_SKB_CB(skb)->brdev;
@@ -49,11 +53,15 @@ static int br_pass_frame_up(struct sk_buff *skb)
 	}
 
 	indev = skb->dev;
-	skb->dev = brdev;
+	skb->dev = brdev;       // 在这里，skb关联的设备由桥端口设备变成了网桥设备!
 	skb = br_handle_vlan(br, pv, skb);
 	if (!skb)
 		return NET_RX_DROP;
 
+    /* 在交由后面的接收流程作进一步处理之前，本函数这里对该skb进行了netfilter过滤(前提是开启了netfilter过滤功能，否则就是直接放行)
+     * 被netfilter拦截掉的skb已经被释放;
+     * 被netfilter放行的skb会再次调用netif_receive_skb，只是这次skb关联的设备发生了变化
+     */
 	return NF_HOOK(NFPROTO_BRIDGE, NF_BR_LOCAL_IN, skb, indev, NULL,
 		       netif_receive_skb);
 }
@@ -117,6 +125,14 @@ int br_handle_frame_finish(struct sk_buff *skb)
 		skb2 = skb;
 		unicast = false;
 	} else if (is_multicast_ether_addr(dest)) {
+        // 对于多播帧需要作进一步判断
+
+        /* 当内核配置了CONFIG_BRIDGE_IGMP_SNOOPING选项时，如果还同时满足以下2个条件：
+         *      该多播帧对应的组播组存在或者mrouters_only标志置位
+         *      该多播帧对应的IGMP查询器存在
+         * 则交由IGMP模块处理。
+         * 其他情况下，多播帧都会被泛洪处理
+         */
 		mdst = br_mdb_get(br, skb, vid);
 		if ((mdst || BR_INPUT_SKB_CB_MROUTERS_ONLY(skb)) &&
 		    br_multicast_querier_exists(br, eth_hdr(skb))) {
@@ -134,7 +150,7 @@ int br_handle_frame_finish(struct sk_buff *skb)
 		br->dev->stats.multicast++;
 	} else if ((dst = __br_fdb_get(br, dest, vid)) &&
 			dst->is_local) {
-        // 显然这里是直接发往本地mac的单播
+        // 显然这里是直接发往本地的单播
 		skb2 = skb;
 		/* Do not forward the packet since it's local.  发往本地的单播意味着无须再转发 */
 		skb = NULL;
@@ -142,6 +158,9 @@ int br_handle_frame_finish(struct sk_buff *skb)
 
     // skb有效意味着需要往其他桥端口转发
 	if (skb) {
+        /* 如果存在目的地址对应的转发表项(已知单播)，则转发到对应的桥端口
+         * 否则泛洪到除了入口之外的所有桥端口(未知单播、组播、广播)
+         */
 		if (dst) {
 			dst->used = jiffies;
 			br_forward(dst->dst, skb, skb2);

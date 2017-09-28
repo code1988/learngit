@@ -22,7 +22,7 @@
 #include <net/net_namespace.h>
 #include <net/llc.h>
 
-LIST_HEAD(llc_sap_list);
+LIST_HEAD(llc_sap_list);    // 定义了一张已经注册的LLC接口链表
 static DEFINE_SPINLOCK(llc_sap_list_lock);
 
 /**
@@ -81,8 +81,9 @@ struct llc_sap *llc_sap_find(unsigned char sap_value)
 
 /**
  *	llc_sap_open - open interface to the upper layers.
- *	@lsap: SAP number.
- *	@func: rcv func for datalink protos
+ *	为指定的上层协议打开一个对应的LLC接口
+ *	@lsap: SAP number.  用来指定上层协议
+ *	@func: rcv func for datalink protos  指向该上层协议关联的接收回调
  *
  *	Interface function to upper layer. Each one who wants to get a SAP
  *	(for example NetBEUI) should call this function. Returns the opened
@@ -97,8 +98,10 @@ struct llc_sap *llc_sap_open(unsigned char lsap,
 	struct llc_sap *sap = NULL;
 
 	spin_lock_bh(&llc_sap_list_lock);
+    // 确保该SAP协议类型尚未被注册过
 	if (__llc_sap_find(lsap)) /* SAP already exists */
 		goto out;
+    // 为该SAP协议创建一个LLC接口，并初始化，最后插入全局的llc_sap_list链表
 	sap = llc_sap_alloc();
 	if (!sap)
 		goto out;

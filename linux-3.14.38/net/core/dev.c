@@ -3788,6 +3788,8 @@ static int netif_receive_skb_internal(struct sk_buff *skb)
  *	Return values (usually ignored):
  *	NET_RX_SUCCESS: no congestion
  *	NET_RX_DROP: packet was dropped
+ *
+ *	备注：当调用过程中skb关联的设备发生了变化，本函数可能被递归调用到
  */
 int netif_receive_skb(struct sk_buff *skb)
 {

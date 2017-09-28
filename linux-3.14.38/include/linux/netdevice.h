@@ -1707,10 +1707,10 @@ struct napi_gro_cb {
 
 #define NAPI_GRO_CB(skb) ((struct napi_gro_cb *)(skb)->cb)
 
-// 定义了报文协议在设备层面的操作集合
+// 定义了协议类型相关的设备层面的操作集合
 struct packet_type {
 	__be16			type;	/* This is really htons(ether_type).协议类型，比如ETH_P_DSA*/
-	struct net_device	*dev;	/* NULL is wildcarded here	     非NULL时表示本协议只处理来自该dev设备的数据，为NULL时表示本协议处理来自所有设备的数据*/
+	struct net_device	*dev;	/* NULL is wildcarded here	非NULL:只处理来自指定设备的该协议类型的数据;NULL:处理来自所有设备的该协议类型的数据*/
 	int			(*func) (struct sk_buff *,
 					 struct net_device *,
 					 struct packet_type *,

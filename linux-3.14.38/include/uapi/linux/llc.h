@@ -52,7 +52,9 @@ enum llc_sockopts {
 #define LLC_OPT_MAX_REJ_TMR_EXP	  60
 #define LLC_OPT_MAX_BUSY_TMR_EXP  60
 
-/* LLC SAP types. */
+/* LLC SAP types. 
+ * LLC的SSAP/DSAP字段用来标识上层协议类型
+ * */
 #define LLC_SAP_NULL	0x00		/* NULL SAP. 			*/
 #define LLC_SAP_LLC	0x02		/* LLC Sublayer Management. 	*/
 #define LLC_SAP_SNA	0x04		/* SNA Path Control. 		*/

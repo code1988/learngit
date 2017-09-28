@@ -134,7 +134,7 @@ void br_send_tcn_bpdu(struct net_bridge_port *p)
 
 /*
  * Called from llc.
- *
+ * BPDU报文接收的入口函数
  * NO locks, but rcu_read_lock
  */
 void br_stp_rcv(const struct stp_proto *proto, struct sk_buff *skb,

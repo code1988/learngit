@@ -81,7 +81,7 @@ struct bridge_mcast_querier {
 };
 #endif
 
-// 本结构记录了 网桥/桥端口 的vlan相关信息
+// 本结构记录了 网桥/桥端口 的vlan相关信息(网桥在这里其实被看做一个特殊的桥端口)
 struct net_port_vlans {
 	u16				port_idx;       
 	u16				pvid;
@@ -511,6 +511,10 @@ __br_multicast_querier_exists(struct net_bridge *br,
 	       (br->multicast_querier || timer_pending(&querier->timer));
 }
 
+/* 检查对应的IGMP查询器是否存在
+ *
+ * 备注：显然本函数运行前提是配置了CONFIG_BRIDGE_IGMP_SNOOPING
+ */
 static inline bool br_multicast_querier_exists(struct net_bridge *br,
 					       struct ethhdr *eth)
 {
@@ -615,6 +619,7 @@ int nbp_vlan_delete(struct net_bridge_port *port, u16 vid);
 void nbp_vlan_flush(struct net_bridge_port *port);
 bool nbp_vlan_find(struct net_bridge_port *port, u16 vid);
 
+// 获取指定网桥的vlan信息(网桥其实被看做一个特殊的桥端口)
 static inline struct net_port_vlans *br_get_vlan_info(
 						const struct net_bridge *br)
 {

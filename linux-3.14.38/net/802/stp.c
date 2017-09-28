@@ -22,26 +22,33 @@
 #define GARP_ADDR_MAX	0x2F
 #define GARP_ADDR_RANGE	(GARP_ADDR_MAX - GARP_ADDR_MIN)
 
-static const struct stp_proto __rcu *garp_protos[GARP_ADDR_RANGE + 1] __read_mostly;
-static const struct stp_proto __rcu *stp_proto __read_mostly;
+static const struct stp_proto __rcu *garp_protos[GARP_ADDR_RANGE + 1] __read_mostly;    // 这个生成树表记录了末字节为0x20~0x2f的生成树协议
+static const struct stp_proto __rcu *stp_proto __read_mostly;                           // 指向一个末字节为0x00的生成树协议
 
 static struct llc_sap *sap __read_mostly;
-static unsigned int sap_registered;
-static DEFINE_MUTEX(stp_proto_mutex);
+static unsigned int sap_registered;         // 用来记录当前已经注册的生成树协议数量
+static DEFINE_MUTEX(stp_proto_mutex);       // 专门用于增删生成树协议时的互斥锁
 
-/* Called under rcu_read_lock from LLC */
+/* Called under rcu_read_lock from LLC 
+ * 所有生成树协议共用的LLC层BPDU接收函数
+ * @skb     - 成在了BPDU的skb
+ * @dev     - 收到该BPDU的设备
+ * @pt      - 
+ * */
 static int stp_pdu_rcv(struct sk_buff *skb, struct net_device *dev,
 		       struct packet_type *pt, struct net_device *orig_dev)
 {
-	const struct ethhdr *eh = eth_hdr(skb);
-	const struct llc_pdu_un *pdu = llc_pdu_un_hdr(skb);
+	const struct ethhdr *eh = eth_hdr(skb);                 // 获取BPDU中的以太网头字段
+	const struct llc_pdu_un *pdu = llc_pdu_un_hdr(skb);     // 获取BPDU中的LLC字段
 	const struct stp_proto *proto;
 
+    // LLC字段合法性检测
 	if (pdu->ssap != LLC_SAP_BSPAN ||
 	    pdu->dsap != LLC_SAP_BSPAN ||
 	    pdu->ctrl_1 != LLC_PDU_TYPE_U)
 		goto err;
 
+    // 根据末字节决定调用哪个生成树协议(缺省就是stp_proto指向的那个)
 	if (eh->h_dest[5] >= GARP_ADDR_MIN && eh->h_dest[5] <= GARP_ADDR_MAX) {
 		proto = rcu_dereference(garp_protos[eh->h_dest[5] -
 						    GARP_ADDR_MIN]);
@@ -54,6 +61,7 @@ static int stp_pdu_rcv(struct sk_buff *skb, struct net_device *dev,
 	if (!proto)
 		goto err;
 
+    // 执行该生成树协议关联的接收钩子
 	proto->rcv(proto, skb, dev);
 	return 0;
 
@@ -62,11 +70,13 @@ err:
 	return 0;
 }
 
+// 注册指定的生成树协议到LLC模块
 int stp_proto_register(const struct stp_proto *proto)
 {
 	int err = 0;
 
 	mutex_lock(&stp_proto_mutex);
+    // 注册第一个生成树协议时，需要创建对应的LLC接口(同时注册了一个接收函数stp_pdu_rcv)，后续注册的生成树协议共用该LLC接口
 	if (sap_registered++ == 0) {
 		sap = llc_sap_open(LLC_SAP_BSPAN, stp_pdu_rcv);
 		if (!sap) {
@@ -85,6 +95,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(stp_proto_register);
 
+// 从LLC模块中注销指定的生成树协议
 void stp_proto_unregister(const struct stp_proto *proto)
 {
 	mutex_lock(&stp_proto_mutex);

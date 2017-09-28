@@ -42,6 +42,7 @@ struct llc_addr {
 
 /**
  * struct llc_sap - Defines the SAP component
+ * 定义了LLC接口结构，用来描述一个上层协议
  *
  * @station - station this sap belongs to
  * @state - sap state
@@ -59,8 +60,8 @@ struct llc_sap {
 	int		 (*rcv_func)(struct sk_buff *skb,
 				     struct net_device *dev,
 				     struct packet_type *pt,
-				     struct net_device *orig_dev);
-	struct llc_addr	 laddr;
+				     struct net_device *orig_dev);  // 指向该协议关联的报文接收函数
+	struct llc_addr	 laddr;     // 记录了该协议的LLC地址，主要包括协议的SAP号和协议的以太网地址
 	struct list_head node;
 	spinlock_t sk_lock;
 	int sk_count;

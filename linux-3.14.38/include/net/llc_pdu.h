@@ -205,13 +205,16 @@ static inline struct llc_pdu_sn *llc_pdu_sn_hdr(struct sk_buff *skb)
 	return (struct llc_pdu_sn *)skb_network_header(skb);
 }
 
-/* Un-numbered PDU format (3 bytes in length) */
+/* Un-numbered PDU format (3 bytes in length) 
+ * LLC字段结构
+ * */
 struct llc_pdu_un {
 	u8 dsap;
 	u8 ssap;
 	u8 ctrl_1;
 } __packed;
 
+// 获取报文中的LLC字段
 static inline struct llc_pdu_un *llc_pdu_un_hdr(struct sk_buff *skb)
 {
 	return (struct llc_pdu_un *)skb_network_header(skb);

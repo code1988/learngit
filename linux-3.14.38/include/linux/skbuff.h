@@ -552,7 +552,7 @@ struct sk_buff {
 	__u16			inner_network_header;
 	__u16			inner_mac_header;
 	__u16			transport_header;   // 记录了协议栈的transport layer相对缓冲区头部的偏移量
-	__u16			network_header;     // 记录了协议栈的network layer相对缓冲区头部的偏移量
+	__u16			network_header;     // 记录了协议栈的network layer(如果存在LLC则指向LLC首地址)相对缓冲区头部的偏移量
 	__u16			mac_header;         // 记录了mac地址相对缓冲区头部的偏移量
 	/* These elements must be at the end, see alloc_skb() for details.  */
 	sk_buff_data_t		tail;       // 根据sk_buff_data_t类型不同，指向该skb当前处理的数据尾地址 / 记录了相对data的偏移量
@@ -1731,6 +1731,7 @@ static inline void skb_set_transport_header(struct sk_buff *skb,
 	skb->transport_header += offset;
 }
 
+// 获取缓冲区中network layer字段的位置(如果存在LLC字段则返回LLC的位置)
 static inline unsigned char *skb_network_header(const struct sk_buff *skb)
 {
 	return skb->head + skb->network_header;
