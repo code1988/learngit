@@ -38,8 +38,12 @@
                     - 相关的参数定义
 
 #include <sys/socket.h> - 该头文件用于socket编程，定义了所有socket编程相关的API接口
+
 #include <sys/ioctl.h>  - 顾名思义，该头文件用于ioctl接口，凡是需要调用ioctl的地方都需要该头文件
+
 #include <sys/epoll.h>  - 顾名思义，该头文件用于epoll接口，凡是需要调用epoll相关API的地方都需要该头文件
+
+#include <linux/if_vlan.h>  - 该头文件定义了通过ioctl接口操作内核vlan模块的结构和参数
 
 备注：对于存在冲突的头文件，本人的偏好是尽量使用第一类头文件，只有当涉及第一类头文件中没有支持的API时，才使用其他两类的头文件
 
