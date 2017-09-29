@@ -242,25 +242,25 @@ struct net_bridge
 	u16				group_fwd_mask;
 
 	/* STP */
-	bridge_id			designated_root;// 根桥ID号
-	bridge_id			bridge_id;      // 该网桥ID号
-	u32				root_path_cost;
-	unsigned long			max_age;
-	unsigned long			hello_time;
-	unsigned long			forward_delay;  // 桥转发延迟时间，缺省15s
+	bridge_id			designated_root;    // 根桥ID号
+	bridge_id			bridge_id;          // 该网桥ID号
+	u32				root_path_cost;         // 从非根桥到根桥的总路径开销(显然对于根桥来说就是0)
+	unsigned long			max_age;        // 配置信息老化时间
+	unsigned long			hello_time;     // 网桥发送配置BPDU信息的间隔
+	unsigned long			forward_delay;  // 桥端口从listening->learning或者从learning->forwarding转换时间，缺省15s
 	unsigned long			bridge_max_age;
 	unsigned long			ageing_time;    // 桥老化时间，缺省5min
-	unsigned long			bridge_hello_time;
+	unsigned long			bridge_hello_time;      // 非根桥向根桥发送TCN BPDU信息的间隔
 	unsigned long			bridge_forward_delay;
 
 	u8				group_addr[ETH_ALEN];   // stp组播地址，缺省就是01:80:c2:00:00:00
-	u16				root_port;
+	u16				root_port;              // 根端口(显然对于根桥来说根端口不存在)
 
 	enum {
 		BR_NO_STP, 		/* no spanning tree */
 		BR_KERNEL_STP,		/* old STP in kernel */
 		BR_USER_STP,		/* new RSTP in userspace */
-	} stp_enabled;  // 网桥的stp功能开关枚举
+	} stp_enabled;  // 网桥的stp功能开关
 
 	unsigned char			topology_change;            // 用于标识链路拓扑是否发生了变化
 	unsigned char			topology_change_detected;
@@ -298,8 +298,8 @@ struct net_bridge
 #endif /* IS_ENABLED(CONFIG_IPV6) */
 #endif
 
-	struct timer_list		hello_timer;
-	struct timer_list		tcn_timer;
+	struct timer_list		hello_timer;        // 根桥定时发送配置BPDU信息的定时器(显然只对根桥有用)
+	struct timer_list		tcn_timer;          // 定时发送TCN BPDU信息的定时器
 	struct timer_list		topology_change_timer;
 	struct timer_list		gc_timer;
 	struct kobject			*ifobj;
@@ -440,11 +440,13 @@ netdev_features_t br_features_recompute(struct net_bridge *br,
 int br_handle_frame_finish(struct sk_buff *skb);
 rx_handler_result_t br_handle_frame(struct sk_buff **pskb);
 
+// 检查指定设备是否是一个桥端口设备
 static inline bool br_rx_handler_check_rcu(const struct net_device *dev)
 {
 	return rcu_dereference(dev->rx_handler) == br_handle_frame;
 }
 
+// 如果指定设备是桥端口设备则返回对应的桥端口结构，否则返回NULL
 static inline struct net_bridge_port *br_port_get_check_rcu(const struct net_device *dev)
 {
 	return br_rx_handler_check_rcu(dev) ? br_port_get_rcu(dev) : NULL;

@@ -119,13 +119,22 @@ static void __vlan_flush(struct net_port_vlans *v)
 	kfree_rcu(v, rcu);
 }
 
+/* 网桥对报文进行检测，功能基本类似与br_allowed_egress
+ * @br  - 指向进行检测的网桥
+ * @v   - 指向一个允许通过的vlan集合(通常就是对应的桥端口配置的vlan集合)
+ * @skb - 指向一个需要被检测的skb
+ * 
+ * 备注：本函数运行前提是配置了CONFIG_BRIDGE_VLAN_FILTERING
+ */
 struct sk_buff *br_handle_vlan(struct net_bridge *br,
 			       const struct net_port_vlans *pv,
 			       struct sk_buff *skb)
 {
 	u16 vid;
 
-	/* If this packet was not filtered at input, let it pass */
+	/* If this packet was not filtered at input, let it pass 
+     * 如果该skb在入口处已经经过了vlan过滤，这里直接放行
+     * */
 	if (!BR_INPUT_SKB_CB(skb)->vlan_filtered)
 		goto out;
 
@@ -165,6 +174,7 @@ out:
  * 备注：本函数运行前提是配置了CONFIG_BRIDGE_VLAN_FILTERING
  *       本函数会将进入网桥的普通包也标上vlan，意味着桥上的所有数据包都是带vlan了的
  *       对于检测不通过的skb，本函数会直接释放
+ *       网桥被作为一个特殊的桥端口，所以v可能来自网桥
  * */
 bool br_allowed_ingress(struct net_bridge *br, struct net_port_vlans *v,
 			struct sk_buff *skb, u16 *vid)
@@ -253,20 +263,33 @@ drop:
 	return false;
 }
 
-/* Called under RCU. */
+/* Called under RCU. 
+ * 网桥对出口报文进行检测，实质就是检查指定skb所属的vlan是否包含在指定的vlan集合中
+ * @br  - 指向进行检测的网桥
+ * @v   - 指向一个允许通过的vlan集合(桥端口/网桥配置的vlan集合)
+ * @skb - 指向一个需要被检测的skb
+ * @vid - 用于存放该skb关联的vlan
+ *
+ * 备注：本函数运行前提是配置了CONFIG_BRIDGE_VLAN_FILTERING
+ *       网桥被作为一个特殊的桥端口，所以v可能来自网桥
+ * */
 bool br_allowed_egress(struct net_bridge *br,
 		       const struct net_port_vlans *v,
 		       const struct sk_buff *skb)
 {
 	u16 vid;
 
-	/* If this packet was not filtered at input, let it pass */
+	/* If this packet was not filtered at input, let it pass 
+     * 如果该skb在入口处已经经过了vlan过滤，这里直接放行
+     * */
 	if (!BR_INPUT_SKB_CB(skb)->vlan_filtered)
 		return true;
 
+    // 在使能了vlan过滤功能的前提下，如果传入的允许通过vlan集合为空，意味着拒绝任何报文
 	if (!v)
 		return false;
 
+    // 从skb中获取vlan id，看是否包含在允许通过的vlan集合中
 	br_vlan_get_tag(skb, &vid);
 	if (test_bit(vid, v->vlan_bitmap))
 		return true;

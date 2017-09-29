@@ -44,6 +44,7 @@ static int br_pass_frame_up(struct sk_buff *skb)
 	/* Bridge is just like any other port.  Make sure the
 	 * packet is allowed except in promisc modue when someone
 	 * may be running packet capture.
+     * 网桥作为一个特殊的桥端口，在接收来自其他桥端口的skb前，需要确认是否允许接收
 	 */
 	pv = br_get_vlan_info(br);
 	if (!(brdev->flags & IFF_PROMISC) &&
@@ -54,11 +55,13 @@ static int br_pass_frame_up(struct sk_buff *skb)
 
 	indev = skb->dev;
 	skb->dev = brdev;       // 在这里，skb关联的设备由桥端口设备变成了网桥设备!
+
+    // 再次对报文进行检测，在内核配置了CONFIG_BRIDGE_VLAN_FILTERING时会进行vlan检测
 	skb = br_handle_vlan(br, pv, skb);
 	if (!skb)
 		return NET_RX_DROP;
 
-    /* 在交由后面的接收流程作进一步处理之前，本函数这里对该skb进行了netfilter过滤(前提是开启了netfilter过滤功能，否则就是直接放行)
+    /* 在进入网桥设备的接收流程之前，本函数这里对该skb进行了netfilter过滤(前提是开启了netfilter过滤功能，否则就是直接放行)
      * 被netfilter拦截掉的skb已经被释放;
      * 被netfilter放行的skb会再次调用netif_receive_skb，只是这次skb关联的设备发生了变化
      */
@@ -267,7 +270,7 @@ rx_handler_result_t br_handle_frame(struct sk_buff **pskb)
 		/* Deliver packet to local host only 
          * 在交由后面的接收流程作进一步处理之前，本函数这里对该skb进行了netfilter过滤(前提是开启了netfilter过滤功能，否则就是直接放行)
          * 被netfilter拦截掉的skb已经被释放，所以直接返回RX_HANDLER_CONSUMED;
-         * 被netfilter放行的skb最后会尝试更新转发表，然后直接返回RX_HANDLER_PASS，意味着系统将继续对该skb执行接收流程
+         * 被netfilter放行的skb最后会尝试更新转发表，然后直接返回RX_HANDLER_PASS，意味着系统将继续对该skb执行接收流程(上协议栈)
          * */
 		if (NF_HOOK(NFPROTO_BRIDGE, NF_BR_LOCAL_IN, skb, skb->dev,
 			    NULL, br_handle_local_finish)) {

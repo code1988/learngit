@@ -1497,6 +1497,7 @@ EXPORT_SYMBOL(___pskb_trim);
 
 /**
  *	__pskb_pull_tail - advance tail of skb header
+ *	将指定长度的分片数据拷贝到线性数据区尾部
  *	@skb: buffer to reallocate
  *	@delta: number of bytes to advance tail
  *
@@ -1519,6 +1520,8 @@ EXPORT_SYMBOL(___pskb_trim);
  * 2. It may change skb pointers.
  *
  * It is pretty complicated. Luckily, it is called only in exceptional cases.
+ *
+ * 备注：本函数很复杂，所幸只会在极少数异常情况下调用到
  */
 unsigned char *__pskb_pull_tail(struct sk_buff *skb, int delta)
 {

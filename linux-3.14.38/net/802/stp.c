@@ -33,7 +33,8 @@ static DEFINE_MUTEX(stp_proto_mutex);       // 专门用于增删生成树协议
  * 所有生成树协议共用的LLC层BPDU接收函数
  * @skb     - 成在了BPDU的skb
  * @dev     - 收到该BPDU的设备
- * @pt      - 
+ *
+ * 备注：进入本函数时，skb->data指针已经掠过了LLC字段，指向了BPDU字段首地址
  * */
 static int stp_pdu_rcv(struct sk_buff *skb, struct net_device *dev,
 		       struct packet_type *pt, struct net_device *orig_dev)

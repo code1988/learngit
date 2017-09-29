@@ -134,7 +134,12 @@ void br_send_tcn_bpdu(struct net_bridge_port *p)
 
 /*
  * Called from llc.
- * BPDU报文接收的入口函数
+ * BPDU报文接收的入口函数，初始化生成树时被注册到LLC层
+ * @proto   - 指向该BPDU所属的生成树协议
+ * @skb     - 指向承载了该BPDU的数据包元
+ * @dev     - 收到该BPDU的设备
+ *
+ * 备注：进入本函数时，skb->data指针已经指向BPDU字段首地址
  * NO locks, but rcu_read_lock
  */
 void br_stp_rcv(const struct stp_proto *proto, struct sk_buff *skb,
@@ -145,30 +150,38 @@ void br_stp_rcv(const struct stp_proto *proto, struct sk_buff *skb,
 	struct net_bridge *br;
 	const unsigned char *buf;
 
+    // 确保skb->data指针控制的数据长度不小于4
 	if (!pskb_may_pull(skb, 4))
 		goto err;
 
 	/* compare of protocol id and version */
 	buf = skb->data;
+    // 内核默认只支持stp，stp的协议ID字段为0x0000,协议版本ID字段为0x00
 	if (buf[0] != 0 || buf[1] != 0 || buf[2] != 0)
 		goto err;
 
+    // 返回该设备的桥端口结构
 	p = br_port_get_check_rcu(dev);
 	if (!p)
 		goto err;
 
+    // 进而获取桥端口所属的网桥结构
 	br = p->br;
 	spin_lock(&br->lock);
 
+    // 确保该网桥使能了stp
 	if (br->stp_enabled != BR_KERNEL_STP)
 		goto out;
 
+    // 确保该网桥设备处于UP状态
 	if (!(br->dev->flags & IFF_UP))
 		goto out;
 
+    // 确保该桥端口没有处于disabled状态
 	if (p->state == BR_STATE_DISABLED)
 		goto out;
 
+    // 确保该BPDU的目的地址跟网桥设置的stp地址匹配
 	if (!ether_addr_equal(dest, br->group_addr))
 		goto out;
 

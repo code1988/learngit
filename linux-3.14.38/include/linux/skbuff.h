@@ -1409,6 +1409,7 @@ static inline bool skb_is_nonlinear(const struct sk_buff *skb)
 	return skb->data_len;
 }
 
+// 返回data指针控制的数据长度
 static inline unsigned int skb_headlen(const struct sk_buff *skb)
 {
 	return skb->len - skb->data_len;
@@ -1580,12 +1581,17 @@ static inline unsigned char *pskb_pull(struct sk_buff *skb, unsigned int len)
 	return unlikely(len > skb->len) ? NULL : __pskb_pull(skb, len);
 }
 
+// 确保skb->data指针控制的数据长度不小于len
 static inline int pskb_may_pull(struct sk_buff *skb, unsigned int len)
 {
+    // 显然这是最理想的情况，直接返回1
 	if (likely(len <= skb_headlen(skb)))
 		return 1;
+    // 显然这肯定是哪里出错了，直接返回0
 	if (unlikely(len > skb->len))
 		return 0;
+
+    // 这是不理想的情况，就是skb->data指针控制的数据长度小于len，那么缺失的部分需要从分片结构体的数据分片中拷贝出来
 	return __pskb_pull_tail(skb, len - skb_headlen(skb)) != NULL;
 }
 
