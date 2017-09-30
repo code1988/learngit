@@ -187,18 +187,18 @@ extern int _find_next_bit_be(const unsigned long *p, int size, int offset);
 /*
  * Native endian atomic definitions.
  */
-#define set_bit(nr,p)			ATOMIC_BITOP(set_bit,nr,p)
-#define clear_bit(nr,p)			ATOMIC_BITOP(clear_bit,nr,p)
+#define set_bit(nr,p)			ATOMIC_BITOP(set_bit,nr,p)                  // p所指地址处开始数，第nr位设置为1
+#define clear_bit(nr,p)			ATOMIC_BITOP(clear_bit,nr,p)                // p所指地址处开始数，第nr位设置为0
 #define change_bit(nr,p)		ATOMIC_BITOP(change_bit,nr,p)
-#define test_and_set_bit(nr,p)		ATOMIC_BITOP(test_and_set_bit,nr,p)     // 将变量*p的第nr位设置为1，并返回原来这一位的值
-#define test_and_clear_bit(nr,p)	ATOMIC_BITOP(test_and_clear_bit,nr,p)   // 将变量*p的第nr位设置为0，并返回原来这一位的值
+#define test_and_set_bit(nr,p)		ATOMIC_BITOP(test_and_set_bit,nr,p)     // p所指地址处开始数，第nr位设置为1，并返回原来这一位的值
+#define test_and_clear_bit(nr,p)	ATOMIC_BITOP(test_and_clear_bit,nr,p)   // p所指地址处开始数，第nr位设置为0，并返回原来这一位的值
 #define test_and_change_bit(nr,p)	ATOMIC_BITOP(test_and_change_bit,nr,p)
 
 #ifndef __ARMEB__
 /*
  * These are the little endian, atomic definitions.
  */
-#define find_first_zero_bit(p,sz)	_find_first_zero_bit_le(p,sz)
+#define find_first_zero_bit(p,sz)	_find_first_zero_bit_le(p,sz)           // p所指地址处开始逐位查找，返回第一个0所在的序号
 #define find_next_zero_bit(p,sz,off)	_find_next_zero_bit_le(p,sz,off)
 #define find_first_bit(p,sz)		_find_first_bit_le(p,sz)
 #define find_next_bit(p,sz,off)		_find_next_bit_le(p,sz,off)

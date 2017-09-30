@@ -26,7 +26,7 @@
 #define BR_HOLD_TIME (1*HZ)
 
 #define BR_PORT_BITS	10
-#define BR_MAX_PORTS	(1<<BR_PORT_BITS)
+#define BR_MAX_PORTS	(1<<BR_PORT_BITS)   // 网桥支持的最大端口数量，这里是1024个
 #define BR_VLAN_BITMAP_LEN	BITS_TO_LONGS(VLAN_N_VID)   // 32位平台:(4096 + 31)/32
 
 #define BR_VERSION	"2.3"
@@ -41,7 +41,7 @@
 
 typedef struct bridge_id bridge_id;
 typedef struct mac_addr mac_addr;
-typedef __u16 port_id;
+typedef __u16 port_id;      // 端口ID，由优先级和端口号组成
 
 // 网桥ID结构
 struct bridge_id
@@ -159,10 +159,10 @@ struct net_bridge_port
 	/* STP */
 	u8				priority;       // 端口优先级
 	u8				state;          // 桥端口的状态,BR_STATE_*
-	u16				port_no;        // 桥端口号(不同于设备的接口号)
+	u16				port_no;        // 桥端口号(不同于设备的接口号，但实际使用时通常会保持一致)
 	unsigned char			topology_change_ack;
 	unsigned char			config_pending;
-	port_id				port_id;    // 用于stp的端口ID号（根据优先级和桥端口号计算得到）
+	port_id				port_id;            // 该桥端口用于stp的端口ID号(优先级+桥端口号)
 	port_id				designated_port;
 	bridge_id			designated_root;
 	bridge_id			designated_bridge;
