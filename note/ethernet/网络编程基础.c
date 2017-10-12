@@ -8,20 +8,36 @@
     unsigned short htons(unsigned short host)   // 主机short转网络short
     unsigned short ntohs(unsigned short net)    // 网络short转主机short
 
-2. 点分十进制字符串IP和32位整型IP
+2. 字符串IP和整型IP转换
 ---------------------------------------------------------------------------------------------------
-    int inet_aton(const char *cp,struct in_addr *inp)   // 点分十进制字符串IP转32位整型IP,成功返回非0,失败返回0
-    char *inet_ntoa(struct in_addr in)                  // 32位整型IP转点分十进制字符串IP
-    
-    更新的程序用inet_pton和inet_ntop来代替上面两个函数，因为新函数支持ipv4和ipv6
-    int inet_pton(int af,const char *src,void *dst)                         // 点分十进制字符串IP转32位整型IP
-    const char *inet_ntop(int af,const void *src,char *dst,socklen_t size)  // 32位整型IP转点分十进制字符串IP
-
-    上面转换函数都用到的一个结构
-        typedef uint32_t in_addt_t;
+    IPV4的整形IP通常以网络字节序的形式存储在以下结构中
+        typedef uint32_t in_addr_t;
         struct in_addr{
-            in_addr_t s_addr;                           // 网络字节序       
+            in_addr_t s_addr;                                  
         }; 
+
+    以下是字符串IP转整形IP的几个API：
+        in_addr_t inet_addr(const char *cp)                 // 点分十进制字符串IP转32位整型IP(网络字节序)，失败返回-1
+        in_addr_t inet_network(const char *cp)              // 点分十进制字符串IP转32位整型IP(主机字节序)，失败返回-1
+        以上2个函数只能用于IPV4，并且都无法转换"255.255.255.255"，所以都不推荐使用。
+
+        int inet_aton(const char *cp,struct in_addr *inp)   // 点分十进制字符串IP转32位整型IP(网络字节序)，成功返回1，失败返回0
+        inet_aton只支持IPV4，并且失败时不会设置errno。
+
+        int inet_pton(int af,const char *src,void *dst)     // 字符串IP转整型IP(网络字节序)，成功返回1，失败返回0或-1
+        inet_pton同时支持IPV4和IPV6，通过af进行区分：
+                当af = AF_INET时，dst就是指向struct in_addr结构
+                当af = AF_INET6时，dst就是指向struct in6_addr结构
+
+    以下是整形IP转字符串IP的几个API：
+        char *inet_ntoa(struct in_addr in)                                      // 32位整型IP(网络字节序)转点分十进制字符串IP
+        inet_ntoa只支持IPV4，返回的字符串IP存放在内部的静态缓冲区中，所以再次调用时就被覆盖
+    
+        const char *inet_ntop(int af,const void *src,char *dst,socklen_t size)  // 整型IP(网络字节序)转字符串IP，成功返回dst地址，失败返回NULL
+        inet_ntop同时支持IPV4和IPV6，通过af进行区分：
+                当af = AF_INET时，src就是指向struct in_addr结构，dst指向的空间长度size至少是INET_ADDRSTRLEN
+                当af = AF_INET6时，src就是指向struct in6_addr结构，dst指向的空间长度size至少是INET6_ADDRSTRLEN
+
 
 3. 主机信息获取
 ---------------------------------------------------------------------------------------------------

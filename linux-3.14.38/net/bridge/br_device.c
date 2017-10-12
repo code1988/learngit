@@ -399,7 +399,8 @@ void br_dev_setup(struct net_device *dev)
 	br->stp_enabled = BR_NO_STP;
 	br->group_fwd_mask = BR_GROUPFWD_DEFAULT;
 
-	br->designated_root = br->bridge_id;
+    // 网桥初始时总认为自己是根桥
+	br->designated_root = br->bridge_id;    
 	br->bridge_max_age = br->max_age = 20 * HZ;
 	br->bridge_hello_time = br->hello_time = 2 * HZ;
 	br->bridge_forward_delay = br->forward_delay = 15 * HZ;

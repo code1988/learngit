@@ -244,14 +244,14 @@ struct net_bridge
 	/* STP */
 	bridge_id			designated_root;    // 根桥ID号
 	bridge_id			bridge_id;          // 该网桥ID号
-	u32				root_path_cost;         // 从非根桥到根桥的总路径开销(显然对于根桥来说就是0)
-	unsigned long			max_age;        // 配置信息老化时间
-	unsigned long			hello_time;     // 网桥发送配置BPDU信息的间隔
-	unsigned long			forward_delay;  // 桥端口从listening->learning或者从learning->forwarding转换时间，缺省15s
-	unsigned long			bridge_max_age;
+	u32				root_path_cost;         // 从该网桥到根桥的总路径开销(显然对于根桥来说就是0)
+	unsigned long			max_age;        // (该网桥自己的)配置信息老化时间
+	unsigned long			hello_time;     // (该网桥自己的)发送配置BPDU信息的间隔
+	unsigned long			forward_delay;  // (该网桥自己的)桥端口从listening->learning或者从learning->forwarding转换时间，缺省15s
+	unsigned long			bridge_max_age; // (来自根桥的)配置信息老化时间
 	unsigned long			ageing_time;    // 桥老化时间，缺省5min
-	unsigned long			bridge_hello_time;      // 非根桥向根桥发送TCN BPDU信息的间隔
-	unsigned long			bridge_forward_delay;
+	unsigned long			bridge_hello_time;      // (来自根桥的)发送配置BPDU信息的间隔
+	unsigned long			bridge_forward_delay;   // (来自根桥的)桥端口从listening->learning或者从learning->forwarding转换时间
 
 	u8				group_addr[ETH_ALEN];   // stp组播地址，缺省就是01:80:c2:00:00:00
 	u16				root_port;              // 根端口(显然对于根桥来说根端口不存在)

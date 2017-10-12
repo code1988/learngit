@@ -148,13 +148,19 @@ struct in_addr {
 #define IP_DEFAULT_MULTICAST_TTL        1
 #define IP_DEFAULT_MULTICAST_LOOP       1
 
-/* Request struct for multicast socket ops */
+/* Request struct for multicast socket ops  以下内容用于设置IP多播套接字的选项 */
 
+/* 用于设置IP_ADD_MEMBERSHIP/IP_DROP_MEMBERSHIP这2条选项
+ * ip_mreq属于老式结构，被ip_mreqn替代
+ */
 struct ip_mreq  {
 	struct in_addr imr_multiaddr;	/* IP multicast address of group    IP组播地址*/
 	struct in_addr imr_interface;	/* local IP address of interface    本地IP地址*/
 };
 
+/* 用于设置IP_ADD_MEMBERSHIP/IP_DROP_MEMBERSHIP这2条选项
+ * linux 2.2开始支持ip_mreqn结构，用于替代老式的ip_mreq
+ */
 struct ip_mreqn {
 	struct in_addr	imr_multiaddr;		/* IP multicast address of group  IP组播地址*/
 	struct in_addr	imr_address;		/* local IP address of interface  本地IP地址*/
