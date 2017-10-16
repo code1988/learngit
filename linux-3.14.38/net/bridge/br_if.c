@@ -30,7 +30,7 @@
 
 /*
  * Determine initial path cost based on speed.
- * 计算初始的路径成本（跟设备的速率相关）
+ * 计算桥端口的路径成本（跟设备的速率相关）
  * using recommendations from 802.1d standard
  *
  * Since driver might sleep need to not be holding any locks.
@@ -230,7 +230,7 @@ static struct net_bridge_port *new_nbp(struct net_bridge *br,
 	p->br = br;     // 跟所属的bridge设备关联
 	dev_hold(dev);  // 要加入网桥设备中的引用计数加1
 	p->dev = dev;   // 跟对应的网络设备关联
-	p->path_cost = port_cost(dev);  // 计算桥端口初始的路径成本
+	p->path_cost = port_cost(dev);  // 计算该桥端口的路径成本
 	p->priority = 0x8000 >> BR_PORT_BITS;   // 设置桥端口缺省优先级
 	p->port_no = index;                     // 设置桥端口号
 	p->flags = BR_LEARNING | BR_FLOOD;      // 设置桥端口的缺省属性：支持学习和泛洪

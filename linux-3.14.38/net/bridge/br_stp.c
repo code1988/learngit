@@ -143,7 +143,9 @@ static void br_root_selection(struct net_bridge *br)
 	}
 }
 
-/* called under bridge lock */
+/* called under bridge lock 
+ * 指定的网桥变成根桥
+ * */
 void br_become_root_bridge(struct net_bridge *br)
 {
 	br->max_age = br->bridge_max_age;
@@ -158,7 +160,9 @@ void br_become_root_bridge(struct net_bridge *br)
 	}
 }
 
-/* called under bridge lock */
+/* called under bridge lock 
+ * 当前端口发送配置BPDU
+ * */
 void br_transmit_config(struct net_bridge_port *p)
 {
 	struct br_config_bpdu bpdu;
@@ -278,12 +282,20 @@ static void br_designated_port_selection(struct net_bridge *br)
 	}
 }
 
-/* called under bridge lock */
+/* called under bridge lock 
+ * 通过比较BPDU中携带的STP信息和当前桥端口记录的STP信息，来决定是否需要更新配置
+ * 整个比较过程按照
+ *      根桥ID -> 根路径开销 -> 指定桥ID -> 指定端口ID
+ * 的优先级顺序进行
+ *
+ * @返回值： 1-需要更新 0-不需要更新
+ * */
 static int br_supersedes_port_info(const struct net_bridge_port *p,
 				   const struct br_config_bpdu *bpdu)
 {
 	int t;
 
+    // 首先比较BPDU中携带的"根桥"和当前桥端口记录的"根桥"
 	t = memcmp(&bpdu->root, &p->designated_root, 8);
 	if (t < 0)
 		return 1;
@@ -301,6 +313,7 @@ static int br_supersedes_port_info(const struct net_bridge_port *p,
 	else if (t > 0)
 		return 0;
 
+    // "指定桥"不需要比大小，只要不一样就意味着需要更新
 	if (memcmp(&bpdu->bridge_id, &p->br->bridge_id, 8))
 		return 1;
 
@@ -340,12 +353,15 @@ void br_topology_change_detection(struct net_bridge *br)
 	br->topology_change_detected = 1;
 }
 
-/* called under bridge lock */
+/* called under bridge lock 
+ * "根桥"生成并发送配置BPDU
+ * */
 void br_config_bpdu_generation(struct net_bridge *br)
 {
 	struct net_bridge_port *p;
 
 	list_for_each_entry(p, &br->port_list, list) {
+        // 只有不处于BR_STATE_DISABLED状态的"指定端口"才能发送配置BPDU
 		if (p->state != BR_STATE_DISABLED &&
 		    br_is_designated_port(p))
 			br_transmit_config(p);
@@ -365,7 +381,9 @@ void br_configuration_update(struct net_bridge *br)
 	br_designated_port_selection(br);
 }
 
-/* called under bridge lock */
+/* called under bridge lock 
+ * 将该桥端口设置为"指定端口"
+ * */
 void br_become_designated_port(struct net_bridge_port *p)
 {
 	struct net_bridge *br;
@@ -463,7 +481,9 @@ static void br_topology_change_acknowledge(struct net_bridge_port *p)
 	br_transmit_config(p);
 }
 
-/* called under bridge lock */
+/* called under bridge lock 
+ * 处理配置BPDU的入口函数
+ * */
 void br_received_config_bpdu(struct net_bridge_port *p,
 			     const struct br_config_bpdu *bpdu)
 {
@@ -471,6 +491,7 @@ void br_received_config_bpdu(struct net_bridge_port *p,
 	int was_root;
 
 	br = p->br;
+    // 首先判断当前网桥是否是"根桥"
 	was_root = br_is_root_bridge(br);
 
 	if (br_supersedes_port_info(p, bpdu)) {

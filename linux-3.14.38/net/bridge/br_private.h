@@ -160,13 +160,13 @@ struct net_bridge_port
 	u8				priority;       // 端口优先级
 	u8				state;          // 桥端口的状态,BR_STATE_*
 	u16				port_no;        // 桥端口号(不同于设备的接口号，但实际使用时通常会保持一致)
-	unsigned char			topology_change_ack;
+	unsigned char			topology_change_ack;    // 标示该桥端口是否需要回复一个TCA(收到TCN-BPDU时置1，回复了携带TCA的配置BPDU后清0)
 	unsigned char			config_pending;
 	port_id				port_id;            // 该桥端口用于stp的端口ID号(优先级+桥端口号)
 	port_id				designated_port;
-	bridge_id			designated_root;
-	bridge_id			designated_bridge;
-	u32				path_cost;  // 端口路径成本
+	bridge_id			designated_root;    // "根桥ID"
+	bridge_id			designated_bridge;  // "指定桥ID"
+	u32				path_cost;  // 该桥端口的路径成本
 	u32				designated_cost;
 	unsigned long			designated_age;
 
@@ -246,10 +246,10 @@ struct net_bridge
 	bridge_id			bridge_id;          // 该网桥ID号
 	u32				root_path_cost;         // 从该网桥到根桥的总路径开销(显然对于根桥来说就是0)
 	unsigned long			max_age;        // (该网桥自己的)配置信息老化时间
-	unsigned long			hello_time;     // (该网桥自己的)发送配置BPDU信息的间隔
+	unsigned long			hello_time;     // (该网桥自己的)定时发送配置BPDU信息的间隔
 	unsigned long			forward_delay;  // (该网桥自己的)桥端口从listening->learning或者从learning->forwarding转换时间，缺省15s
 	unsigned long			bridge_max_age; // (来自根桥的)配置信息老化时间
-	unsigned long			ageing_time;    // 桥老化时间，缺省5min
+	unsigned long			ageing_time;    // 桥转发表老化时间，缺省5min
 	unsigned long			bridge_hello_time;      // (来自根桥的)发送配置BPDU信息的间隔
 	unsigned long			bridge_forward_delay;   // (来自根桥的)桥端口从listening->learning或者从learning->forwarding转换时间
 
@@ -298,9 +298,9 @@ struct net_bridge
 #endif /* IS_ENABLED(CONFIG_IPV6) */
 #endif
 
-	struct timer_list		hello_timer;        // 根桥定时发送配置BPDU信息的定时器(显然只对根桥有用)
-	struct timer_list		tcn_timer;          // 定时发送TCN BPDU信息的定时器
-	struct timer_list		topology_change_timer;
+	struct timer_list		hello_timer;        // "根桥"定时发送配置BPDU信息的定时器(显然只对"根桥"有用，当发现自己不是"根桥"时会关闭该定时器)
+	struct timer_list		tcn_timer;          // "非根桥"发送TCN-BPDU信息的定时器(显然只对"非根桥"有用，当收到回复的TCA时会关闭该定时器)
+	struct timer_list		topology_change_timer;  // "根桥"发送TC置1的配置BPDU信息的定时器(显然只对"根桥"有用)
 	struct timer_list		gc_timer;
 	struct kobject			*ifobj;
 #ifdef CONFIG_BRIDGE_VLAN_FILTERING
@@ -348,7 +348,7 @@ struct br_input_skb_cb {
 extern struct notifier_block br_device_notifier;
 
 /* called under bridge lock 
- * 判断指定桥是否为根桥，是根桥则返回1,不是根桥则返回0
+ * 判断该网桥桥是否为根桥，是根桥则返回1,不是根桥则返回0
  * */
 static inline int br_is_root_bridge(const struct net_bridge *br)
 {

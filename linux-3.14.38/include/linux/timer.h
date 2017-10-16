@@ -9,13 +9,14 @@
 
 struct tvec_base;
 
+// 定义了内核定时器结构
 struct timer_list {
 	/*
 	 * All fields that change during normal runtime grouped to the
 	 * same cacheline
 	 */
-	struct list_head entry;
-	unsigned long expires;  // 定时器超时时间，以jiffies衡量
+	struct list_head entry;  
+	unsigned long expires;  // 定时器超时时间，以jiffies衡量的绝对时间
 	struct tvec_base *base;
 
 	void (*function)(unsigned long);    // 超时处理函数
@@ -109,7 +110,7 @@ static inline void init_timer_on_stack_key(struct timer_list *timer,
 }
 #endif
 
-#ifdef CONFIG_LOCKDEP
+#ifdef CONFIG_LOCKDEP       // 以下是内核配置了死锁检测功能的定义
 #define __init_timer(_timer, _flags)					\
 	do {								\
 		static struct lock_class_key __key;			\
@@ -121,13 +122,14 @@ static inline void init_timer_on_stack_key(struct timer_list *timer,
 		static struct lock_class_key __key;			\
 		init_timer_on_stack_key((_timer), (_flags), #_timer, &__key); \
 	} while (0)
-#else
+#else                       // 以下是内核没有配置死锁检测功能的定义
 #define __init_timer(_timer, _flags)					\
 	init_timer_key((_timer), (_flags), NULL, NULL)
 #define __init_timer_on_stack(_timer, _flags)				\
 	init_timer_on_stack_key((_timer), (_flags), NULL, NULL)
 #endif
 
+// API: 初始化一个指定的定时器(不带超时函数设置)
 #define init_timer(timer)						\
 	__init_timer((timer), 0)
 #define init_timer_deferrable(timer)					\
@@ -149,6 +151,7 @@ static inline void init_timer_on_stack_key(struct timer_list *timer,
 		(_timer)->data = (_data);				\
 	} while (0)
 
+// API: 初始化一个指定的定时器(带超时函数设置)
 #define setup_timer(timer, fn, data)					\
 	__setup_timer((timer), (fn), (data), 0)
 #define setup_timer_on_stack(timer, fn, data)				\

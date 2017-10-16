@@ -831,8 +831,9 @@ unsigned long apply_slack(struct timer_list *timer, unsigned long expires)
 
 /**
  * mod_timer - modify a timer's timeout
+ * API: 设置指定定时器的超时时间
  * @timer: the timer to be modified
- * @expires: new timeout in jiffies
+ * @expires: new timeout in jiffies     超时时间(以jiffies计量的绝对时间)
  *
  * mod_timer() is a more efficient way to update the expire field of an
  * active timer (if the timer is inactive it will be activated)
@@ -840,6 +841,11 @@ unsigned long apply_slack(struct timer_list *timer, unsigned long expires)
  * mod_timer(timer, expires) is equivalent to:
  *
  *     del_timer(timer); timer->expires = expires; add_timer(timer);
+ *
+ * 备注：本API实际完成了以下3步操作(整个是一个原子操作)
+ *              关闭指定定时器；
+ *              给该定时器设置新的超时时间；
+ *              再开启该定时器
  *
  * Note that if there are multiple unserialized concurrent users of the
  * same timer, then mod_timer() is the only safe way to modify the timeout,
@@ -895,6 +901,7 @@ EXPORT_SYMBOL(mod_timer_pinned);
 
 /**
  * add_timer - start a timer
+ * API: 开启指定定时器
  * @timer: the timer to be added
  *
  * The kernel will do a ->function(->data) callback from the
@@ -947,6 +954,7 @@ EXPORT_SYMBOL_GPL(add_timer_on);
 
 /**
  * del_timer - deactive a timer.
+ * API: 关闭指定定时器
  * @timer: the timer to be deactivated
  *
  * del_timer() deactivates a timer - this works on both active and inactive
@@ -1638,7 +1646,7 @@ static struct notifier_block timers_nb = {
 	.notifier_call	= timer_cpu_notify,
 };
 
-
+// 初始化整个内核定时器模块
 void __init init_timers(void)
 {
 	int err;

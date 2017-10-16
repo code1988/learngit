@@ -31,12 +31,16 @@ static int br_is_designated_for_some_port(const struct net_bridge *br)
 	return 0;
 }
 
+/* "根桥"的hello定时器超时函数，主要是定时发送配置BPDU信息
+ * @arg - 指向struct net_bridge结构
+ */
 static void br_hello_timer_expired(unsigned long arg)
 {
 	struct net_bridge *br = (struct net_bridge *)arg;
 
 	br_debug(br, "hello timer expired\n");
 	spin_lock(&br->lock);
+    // 确保该桥端口设备处于up状态，才能发送BPDU
 	if (br->dev->flags & IFF_UP) {
 		br_config_bpdu_generation(br);
 
@@ -139,6 +143,7 @@ static void br_hold_timer_expired(unsigned long arg)
 	spin_unlock(&p->br->lock);
 }
 
+// 网桥stp相关定时器初始化
 void br_stp_timer_init(struct net_bridge *br)
 {
 	setup_timer(&br->hello_timer, br_hello_timer_expired,

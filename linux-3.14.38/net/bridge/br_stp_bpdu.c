@@ -192,11 +192,15 @@ void br_stp_rcv(const struct stp_proto *proto, struct sk_buff *skb,
 		goto out;
 	}
 
+    // data指针后移3个字节，指向BPDU-TYPE字段
 	buf = skb_pull(skb, 3);
 
+    // 对不同的BPDU TYPE做相应处理
 	if (buf[0] == BPDU_TYPE_CONFIG) {
+        // 以下是对普通配置BPDU报文进行处理
 		struct br_config_bpdu bpdu;
 
+        // 确保data指针控制的数据长度不小于32
 		if (!pskb_may_pull(skb, 32))
 			goto out;
 
@@ -232,6 +236,7 @@ void br_stp_rcv(const struct stp_proto *proto, struct sk_buff *skb,
 		bpdu.hello_time = br_get_ticks(buf+28);
 		bpdu.forward_delay = br_get_ticks(buf+30);
 
+        // 如果该BPDU的消息年龄超过了最大年龄，则丢弃
 		if (bpdu.message_age > bpdu.max_age) {
 			if (net_ratelimit())
 				br_notice(p->br,
@@ -243,8 +248,10 @@ void br_stp_rcv(const struct stp_proto *proto, struct sk_buff *skb,
 			goto out;
 		}
 
+        // 对合法的配置BPDU真正进行处理
 		br_received_config_bpdu(p, &bpdu);
 	} else if (buf[0] == BPDU_TYPE_TCN) {
+        // 以下是对TCN-BPDU报文进行处理
 		br_received_tcn_bpdu(p);
 	}
  out:

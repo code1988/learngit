@@ -13,36 +13,44 @@
 #ifndef _BR_PRIVATE_STP_H
 #define _BR_PRIVATE_STP_H
 
-#define BPDU_TYPE_CONFIG 0
-#define BPDU_TYPE_TCN 0x80
+// BPDU报文类型
+#define BPDU_TYPE_CONFIG 0      // 普通的配置报文，只能从"指定端口"发出去，并且只能从"根端口"被接收到
+#define BPDU_TYPE_TCN 0x80      // 拓扑更改通知报文，只能从"根端口"发出去，并且只能从"指定端口"被接收到
 
 /* IEEE 802.1D-1998 timer values */
+// hello定时器的有效范围1s~10s
 #define BR_MIN_HELLO_TIME	(1*HZ)
 #define BR_MAX_HELLO_TIME	(10*HZ)
 
+// forward delay定时器的有效范围2s~30s
 #define BR_MIN_FORWARD_DELAY	(2*HZ)
 #define BR_MAX_FORWARD_DELAY	(30*HZ)
 
+// max age定时器的有效范围6s~40s
 #define BR_MIN_MAX_AGE		(6*HZ)
 #define BR_MAX_MAX_AGE		(40*HZ)
 
+// 路径开销的有效范围1~65535
 #define BR_MIN_PATH_COST	1
 #define BR_MAX_PATH_COST	65535
 
+// 定义了普通的配置BPDU包含的主要内容集合
 struct br_config_bpdu {
-	unsigned int	topology_change:1;
-	unsigned int	topology_change_ack:1;
-	bridge_id	root;
-	int		root_path_cost;
-	bridge_id	bridge_id;
-	port_id		port_id;
-	int		message_age;
-	int		max_age;
-	int		hello_time;
-	int		forward_delay;
+	unsigned int	topology_change:1;      // 拓扑发生变化标志位，由"根桥"置1，然后传播到整个生成树网络
+	unsigned int	topology_change_ack:1;  // TCN-BPDU应答标志位，"指定端口"收到TCN-BPDU时，置1作为回复
+	bridge_id	root;       // "根桥ID"
+	int		root_path_cost; // 到根桥的路径开销
+	bridge_id	bridge_id;  // "指定桥ID"
+	port_id		port_id;    // "指定端口ID"
+	int		message_age;    // 消息年龄，每经过一个网桥+1
+	int		max_age;        // 最大消息生存时间(只由"根桥"设置)，当message_age > max_age时，该BPDU被丢弃
+	int		hello_time;     // 保活时间(只由"根桥"设置)
+	int		forward_delay;  // 转发延迟(只由"根桥"设置)
 };
 
-/* called under bridge lock */
+/* called under bridge lock 
+ * 判断当前端口是否是"指定端口"
+ * */
 static inline int br_is_designated_port(const struct net_bridge_port *p)
 {
 	return !memcmp(&p->designated_bridge, &p->br->bridge_id, 8) &&

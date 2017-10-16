@@ -44,11 +44,12 @@
 #define BRCTL_SET_PATH_COST 17
 #define BRCTL_GET_FDB_ENTRIES 18
 
-#define BR_STATE_DISABLED 0
-#define BR_STATE_LISTENING 1
-#define BR_STATE_LEARNING 2
-#define BR_STATE_FORWARDING 3
-#define BR_STATE_BLOCKING 4
+// 以下是端口STP状态集合
+#define BR_STATE_DISABLED 0         // 此状态下不收发任何报文
+#define BR_STATE_LISTENING 1        // 此状态下不收发数据，可以收发BPDU，不进行地址学习 
+#define BR_STATE_LEARNING 2         // 此状态下不收发数据，可以收发BPDU，开始地址学习
+#define BR_STATE_FORWARDING 3       // 此状态下可以收发数据和BPDU，同时进行地址学习
+#define BR_STATE_BLOCKING 4         // 此状态下不收发数据，接收但不发送BPDU，不进行地址学习 
 
 struct __bridge_info {
 	__u64 designated_root;
