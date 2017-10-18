@@ -234,8 +234,8 @@ static struct net_bridge_port *new_nbp(struct net_bridge *br,
 	p->priority = 0x8000 >> BR_PORT_BITS;   // 设置桥端口缺省优先级
 	p->port_no = index;                     // 设置桥端口号
 	p->flags = BR_LEARNING | BR_FLOOD;      // 设置桥端口的缺省属性：支持学习和泛洪
-	br_init_port(p);                        // 桥端口的一部分初始化
-	p->state = BR_STATE_DISABLED;           // 桥端口缺省处于disable状态
+	br_init_port(p);                        // 桥端口的一部分STP功能初始化(这里是站在STP的角度所以端口初始化为blocking)
+	p->state = BR_STATE_DISABLED;           // 这里是站在普通桥端口的角度所以初始化为disable，最终的状态还要看所在网桥是否开启了STP功能
 	br_stp_port_timer_init(p);              // 桥端口stp相关定时器初始化
 	br_multicast_add_port(p);               // 初始化桥端口的igmp-snooping功能          
 

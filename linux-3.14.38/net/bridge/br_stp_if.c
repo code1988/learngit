@@ -35,7 +35,7 @@ static inline port_id br_make_port_id(__u8 priority, __u16 port_no)
 #define BR_MAX_PORT_PRIORITY ((u16)~0 >> BR_PORT_BITS)
 
 /* called under bridge lock 
- * 桥端口的一部分初始化
+ * 桥端口的一部分STP功能初始化，包括计算端口ID、设置该桥端口为"指定端口"、端口设置BLOCKING等
  * */
 void br_init_port(struct net_bridge_port *p)
 {

@@ -330,11 +330,14 @@ static void br_topology_change_acknowledged(struct net_bridge *br)
 	del_timer(&br->tcn_timer);
 }
 
-/* called under bridge lock */
+/* called under bridge lock 
+ * 探测到拓扑变化后网桥的处理流程
+ * */
 void br_topology_change_detection(struct net_bridge *br)
 {
 	int isroot = br_is_root_bridge(br);
 
+    // 确保开启了内核STP
 	if (br->stp_enabled != BR_KERNEL_STP)
 		return;
 
@@ -342,10 +345,12 @@ void br_topology_change_detection(struct net_bridge *br)
 		isroot ? "propagating" : "sending tcn bpdu");
 
 	if (isroot) {
+        // 对于"根桥"，就会开启topology_change定时器，定时往"指定端口"发送TC置1的配置BPDU信息?
 		br->topology_change = 1;
 		mod_timer(&br->topology_change_timer, jiffies
 			  + br->bridge_forward_delay + br->bridge_max_age);
 	} else if (!br->topology_change_detected) {
+        // 对于"非根桥"，就会开启tcn定时器，定时往"根端口"发送TCN-BPDU信息
 		br_transmit_tcn(br);
 		mod_timer(&br->tcn_timer, jiffies + br->bridge_hello_time);
 	}

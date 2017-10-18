@@ -17,7 +17,10 @@
 #include "br_private.h"
 #include "br_private_stp.h"
 
-/* called under bridge lock */
+/* called under bridge lock 
+ * 检查该网桥是否存在"指定端口"
+ * @返回值： 1-存在， 0-不存在
+ * */
 static int br_is_designated_for_some_port(const struct net_bridge *br)
 {
 	struct net_bridge_port *p;
@@ -82,6 +85,9 @@ static void br_message_age_timer_expired(unsigned long arg)
 	spin_unlock(&br->lock);
 }
 
+/* STP端口的状态转换延时定时器
+ * STP端口从listening->learning以及从learning->forwarding状态转换需要等待该定时器超时
+ */
 static void br_forward_delay_timer_expired(unsigned long arg)
 {
 	struct net_bridge_port *p = (struct net_bridge_port *) arg;
@@ -91,11 +97,14 @@ static void br_forward_delay_timer_expired(unsigned long arg)
 		 (unsigned int) p->port_no, p->dev->name);
 	spin_lock(&br->lock);
 	if (p->state == BR_STATE_LISTENING) {
+        // listening->learning，并刷新该定时器
 		p->state = BR_STATE_LEARNING;
 		mod_timer(&p->forward_delay_timer,
 			  jiffies + br->forward_delay);
 	} else if (p->state == BR_STATE_LEARNING) {
+        // learning->forwarding的流程
 		p->state = BR_STATE_FORWARDING;
+        // 如果所在网桥存在"指定端口"，就进入拓扑变化流程
 		if (br_is_designated_for_some_port(br))
 			br_topology_change_detection(br);
 		netif_carrier_on(br->dev);
@@ -105,20 +114,31 @@ static void br_forward_delay_timer_expired(unsigned long arg)
 	spin_unlock(&br->lock);
 }
 
+/* "非根桥"的tcn定时器超时函数，
+ * 当"非根桥"自身拓扑发生变化或者从"指定端口"收到TCN-BPDU时，就会定时往"根端口"发送TCN-BPDU信息，
+ * 直到收到TCA回复
+ */
 static void br_tcn_timer_expired(unsigned long arg)
 {
 	struct net_bridge *br = (struct net_bridge *) arg;
 
 	br_debug(br, "tcn timer expired\n");
 	spin_lock(&br->lock);
+    // 只有处于up状态的"非根桥"设备才会发TCN-BPDU信息
 	if (!br_is_root_bridge(br) && (br->dev->flags & IFF_UP)) {
 		br_transmit_tcn(br);
 
+        // 发完刷新该定时器
 		mod_timer(&br->tcn_timer, jiffies + br->bridge_hello_time);
 	}
 	spin_unlock(&br->lock);
 }
 
+/* "根桥"的topology_change定时器,
+ * 当"根桥"自身拓扑发生变化或者从"指定端口"收到TCN-BPDU时，就会往"指定端口"发送TC置1的配置BPDU信息 
+ * 
+ * 备注："根桥"只会发送一次该BPDU信息
+ */
 static void br_topology_change_timer_expired(unsigned long arg)
 {
 	struct net_bridge *br = (struct net_bridge *) arg;
@@ -143,7 +163,12 @@ static void br_hold_timer_expired(unsigned long arg)
 	spin_unlock(&p->br->lock);
 }
 
-// 网桥stp相关定时器初始化
+/* 网桥stp相关定时器初始化，主要包括:
+ *          "根桥"定时发送配置BPDU信息的hello定时器;
+ *          "非根桥"发送TCN-BPDU信息的tcn定时器;
+ *          "根桥"发送TC置1的配置BPDU信息的topology_change定时器;
+ *          gc定时器
+ */
 void br_stp_timer_init(struct net_bridge *br)
 {
 	setup_timer(&br->hello_timer, br_hello_timer_expired,
@@ -159,7 +184,11 @@ void br_stp_timer_init(struct net_bridge *br)
 	setup_timer(&br->gc_timer, br_fdb_cleanup, (unsigned long) br);
 }
 
-// 桥端口stp相关定时器初始化
+/* 桥端口stp相关定时器初始化，主要包括：
+ *          message_age定时器；
+ *          用于控制STP端口listening->learning或learning->forwarding转换时延的forward_delay定时器；
+ *          hold定时器
+ */
 void br_stp_port_timer_init(struct net_bridge_port *p)
 {
 	setup_timer(&p->message_age_timer, br_message_age_timer_expired,

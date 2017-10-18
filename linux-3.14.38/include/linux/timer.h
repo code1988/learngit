@@ -129,7 +129,7 @@ static inline void init_timer_on_stack_key(struct timer_list *timer,
 	init_timer_on_stack_key((_timer), (_flags), NULL, NULL)
 #endif
 
-// API: 初始化一个指定的定时器(不带超时函数设置)
+// API: 初始化一个指定的定时器(不带超时函数设置)，实际就是初始化定时器结构timer_list
 #define init_timer(timer)						\
 	__init_timer((timer), 0)
 #define init_timer_deferrable(timer)					\
