@@ -163,9 +163,9 @@ struct net_bridge_port
 	unsigned char			topology_change_ack;    // 标示该桥端口是否需要回复一个TCA(收到TCN-BPDU时置1，回复了携带TCA的配置BPDU后清0)
 	unsigned char			config_pending;
 	port_id				port_id;            // 该STP端口ID号(优先级+桥端口号)
-	port_id				designated_port;    // 对于"指定端口"就是该桥端口ID
+	port_id				designated_port;    // 对于"指定端口"就是该桥端口ID，对于"根端口"就是链路对端STP端口ID
 	bridge_id			designated_root;    // 对于"指定端口"就是"根桥ID"
-	bridge_id			designated_bridge;  // 对于"指定端口"就是所在网桥ID
+	bridge_id			designated_bridge;  // 对于"指定端口"就是所在网桥ID，对于"根端口"就是链路对端STP网桥ID
 	u32				path_cost;  // 该桥端口的路径成本
 	u32				designated_cost;        // 对于"指定端口"就是所在网桥到"根桥"的路径开销
 	unsigned long			designated_age;
@@ -178,7 +178,7 @@ struct net_bridge_port
 
 	unsigned long 			flags;          // 桥端口的标志位集合:
 #define BR_HAIRPIN_MODE		0x00000001      // 
-#define BR_BPDU_GUARD           0x00000002  // 
+#define BR_BPDU_GUARD           0x00000002  // 表示不会从该端口收到BPDU(一旦收到将会报错并disable该端口)
 #define BR_ROOT_BLOCK		0x00000004      // 
 #define BR_MULTICAST_FAST_LEAVE	0x00000008  //
 #define BR_ADMIN_COST		0x00000010      //
@@ -231,7 +231,7 @@ struct net_bridge
 	struct net_device		*dev;       // 指向对应的网桥设备
 
 	struct pcpu_sw_netstats		__percpu *stats;
-	spinlock_t			hash_lock;      // 用于下面这张转发表的自旋锁
+	spinlock_t			hash_lock;              // 用于下面这张转发表的自旋锁
 	struct hlist_head		hash[BR_HASH_SIZE]; // 该网桥基于hash结构的转发表，散列桶中的每个节点就是一个net_bridge_fdb_entry结构
 #ifdef CONFIG_BRIDGE_NETFILTER
 	struct rtable 			fake_rtable;
@@ -245,11 +245,14 @@ struct net_bridge
 	bridge_id			designated_root;    // "根桥ID"
 	bridge_id			bridge_id;          // 该网桥ID号
 	u32				root_path_cost;         // 从该网桥到根桥的总路径开销(显然对于根桥来说就是0)
-	unsigned long			max_age;        // (该网桥自己的)配置信息老化时间
-	unsigned long			hello_time;     // (该网桥自己的)定时发送配置BPDU信息的间隔
+
+	unsigned long			max_age;        // (该网桥自己的)配置信息老化时间，缺省20s
+	unsigned long			hello_time;     // (该网桥自己的)定时发送配置BPDU信息的间隔，缺省2s
 	unsigned long			forward_delay;  // (该网桥自己的)桥端口从listening->learning或者从learning->forwarding转换时间，缺省15s
-	unsigned long			bridge_max_age; // (来自根桥的)配置信息老化时间
-	unsigned long			ageing_time;    // 桥转发表老化时间，缺省5min
+
+	unsigned long			ageing_time;    // 桥fdb老化时间，缺省5min
+
+	unsigned long			bridge_max_age;         // (来自根桥的)配置信息老化时间
 	unsigned long			bridge_hello_time;      // (来自根桥的)发送配置BPDU信息的间隔
 	unsigned long			bridge_forward_delay;   // (来自根桥的)桥端口从listening->learning或者从learning->forwarding转换时间
 

@@ -36,6 +36,8 @@ static inline port_id br_make_port_id(__u8 priority, __u16 port_no)
 
 /* called under bridge lock 
  * 桥端口的一部分STP功能初始化，包括计算端口ID、设置该桥端口为"指定端口"、端口设置BLOCKING等
+ *
+ * 备注：STP网桥初始都默认自己的是"根桥"，STP端口初始都默认自己是"指定端口"
  * */
 void br_init_port(struct net_bridge_port *p)
 {
@@ -88,16 +90,26 @@ void br_stp_disable_bridge(struct net_bridge *br)
 	del_timer_sync(&br->gc_timer);
 }
 
-/* called under bridge lock */
+/* called under bridge lock 
+ * 使能端口
+ *
+ * 备注：调用本函数的不一定是内核stp的端口，也可以是没开启stp功能的普通桥端口或开启了用户态stp的端口
+ * */
 void br_stp_enable_port(struct net_bridge_port *p)
 {
+    // 桥端口的一部分STP功能初始化
 	br_init_port(p);
+    // 桥端口状态更新
 	br_port_state_selection(p->br);
+
+    // 将STP端口状态切换的事件通知用户空间相关的监听者(log && netlink标记第4次)
 	br_log_state(p);
 	br_ifinfo_notify(RTM_NEWLINK, p);
 }
 
-/* called under bridge lock */
+/* called under bridge lock 
+ * 禁用端口
+ * */
 void br_stp_disable_port(struct net_bridge_port *p)
 {
 	struct net_bridge *br = p->br;
@@ -109,6 +121,7 @@ void br_stp_disable_port(struct net_bridge_port *p)
 	p->topology_change_ack = 0;
 	p->config_pending = 0;
 
+    // 将STP端口状态切换的事件通知用户空间相关的监听者(log && netlink标记第5次)
 	br_log_state(p);
 	br_ifinfo_notify(RTM_NEWLINK, p);
 

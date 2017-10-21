@@ -387,7 +387,7 @@ void br_dev_setup(struct net_device *dev)
 	INIT_LIST_HEAD(&br->port_list);
 	spin_lock_init(&br->hash_lock);
 
-    /**<    以下都是一些生成树参数设置 */
+    /**<    以下都是一些STP参数设置 */
     // 网桥id中的优先级设缺省值0x8000
 	br->bridge_id.prio[0] = 0x80;
 	br->bridge_id.prio[1] = 0x00;
@@ -399,7 +399,7 @@ void br_dev_setup(struct net_device *dev)
 	br->stp_enabled = BR_NO_STP;
 	br->group_fwd_mask = BR_GROUPFWD_DEFAULT;
 
-    // 网桥初始时总认为自己是"根桥"，所以将"根桥"的参数和自身保持一致
+    // STP网桥初始时默认自己是"根桥"，所以将"根桥"的参数和自身保持一致
 	br->designated_root = br->bridge_id;    
 	br->bridge_max_age = br->max_age = 20 * HZ;
 	br->bridge_hello_time = br->hello_time = 2 * HZ;
@@ -407,6 +407,7 @@ void br_dev_setup(struct net_device *dev)
 	br->ageing_time = 300 * HZ;
 
 	br_netfilter_rtable_init(br);
+    // 初始化网桥stp相关定时器
 	br_stp_timer_init(br);
     // 初始化IGMP-SNOOPING
 	br_multicast_init(br);

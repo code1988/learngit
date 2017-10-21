@@ -208,7 +208,7 @@ static int find_portno(struct net_bridge *br)
 }
 
 /* called with RTNL but without bridge lock 
- * 为加入网桥的设备分配一个net_bridge_port结构，并进行了基本的初始化
+ * 为加入网桥的设备分配一个net_bridge_port结构，并进行了基本的初始化(包括STP和IGMP初始化)
  * @br  - 指向要加入的网桥
  * @dev - 指向要加入网桥的设备
  * */
@@ -384,7 +384,7 @@ int br_add_if(struct net_bridge *br, struct net_device *dev)
 	if (dev->priv_flags & IFF_DONT_BRIDGE)
 		return -EOPNOTSUPP;
 
-    // 为加入网桥的设备分配一个网桥端口对象net_bridge_port，并进行了基本的初始化
+    // 为加入网桥的设备分配一个网桥端口对象net_bridge_port，并进行了基本的初始化(包括STP和IGMP初始化)
 	p = new_nbp(br, dev);
 	if (IS_ERR(p))
 		return PTR_ERR(p);

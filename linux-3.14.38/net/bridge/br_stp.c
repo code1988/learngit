@@ -108,6 +108,7 @@ static void br_root_port_block(const struct net_bridge *br,
 		  (unsigned int) p->port_no, p->dev->name);
 
 	p->state = BR_STATE_LISTENING;
+    // 将STP端口状态切换的事件通知用户空间相关的监听者(log && netlink标记第1次)
 	br_log_state(p);
 	br_ifinfo_notify(RTM_NEWLINK, p);
 
@@ -401,78 +402,107 @@ void br_become_designated_port(struct net_bridge_port *p)
 }
 
 
-/* called under bridge lock */
+/* called under bridge lock 
+ * 尝试将该端口切换到blocking状态(前提是当前不处于disable或blocking)
+ * */
 static void br_make_blocking(struct net_bridge_port *p)
 {
 	if (p->state != BR_STATE_DISABLED &&
 	    p->state != BR_STATE_BLOCKING) {
+        // 如果当前处于forwarding或learning，需要首先进行拓扑变化处理
 		if (p->state == BR_STATE_FORWARDING ||
 		    p->state == BR_STATE_LEARNING)
 			br_topology_change_detection(p->br);
 
 		p->state = BR_STATE_BLOCKING;
+        // 将STP端口状态切换的事件通知用户空间相关的监听者(log && netlink标记第2次)
 		br_log_state(p);
 		br_ifinfo_notify(RTM_NEWLINK, p);
 
+        // 关闭该端口的forward_delay定时器
 		del_timer(&p->forward_delay_timer);
 	}
 }
 
-/* called under bridge lock */
+/* called under bridge lock 
+ * 尝试将该端口从blocking切换到forwarding状态
+ * */
 static void br_make_forwarding(struct net_bridge_port *p)
 {
 	struct net_bridge *br = p->br;
 
+    // 忽略对非blocking状态的端口的操作
 	if (p->state != BR_STATE_BLOCKING)
 		return;
 
 	if (br->stp_enabled == BR_NO_STP || br->forward_delay == 0) {
+        /* 如果所在网桥没有开启STP功能，或者开了但是forward_delay为0，则
+         *      该端口直接从blocking一步到位进入forwarding状态;
+         *      进行拓扑变化处理(前提是网桥开了STP);
+         *      关闭该端口的forward_delay定时器
+         */
 		p->state = BR_STATE_FORWARDING;
 		br_topology_change_detection(br);
 		del_timer(&p->forward_delay_timer);
 	} else if (br->stp_enabled == BR_KERNEL_STP)
+        // 如果所在网桥开启了内核STP功能，则该端口进入listening状态
 		p->state = BR_STATE_LISTENING;
 	else
+        // 如果所在网桥开启了用户态STP功能，则该端口进入learning状态
 		p->state = BR_STATE_LEARNING;
 
+    // 使能端口的IGMP功能
 	br_multicast_enable_port(p);
+
+    // 将STP端口状态切换的事件通知用户空间相关的监听者(log && netlink标记第3次)
 	br_log_state(p);
 	br_ifinfo_notify(RTM_NEWLINK, p);
 
+    // 只有网桥开启了STP功能并且forward_delay非0的情况下，由于端口无法从blocking一步到位进入forwarding，所以需要开启forward_delay定时器
 	if (br->forward_delay != 0)
 		mod_timer(&p->forward_delay_timer, jiffies + br->forward_delay);
 }
 
-/* called under bridge lock */
+/* called under bridge lock 
+ * 端口状态选择
+ * */
 void br_port_state_selection(struct net_bridge *br)
 {
 	struct net_bridge_port *p;
 	unsigned int liveports = 0;
 
 	list_for_each_entry(p, &br->port_list, list) {
+        // 忽略disable状态的端口
 		if (p->state == BR_STATE_DISABLED)
 			continue;
 
-		/* Don't change port states if userspace is handling STP */
+		/* Don't change port states if userspace is handling STP 
+         * 使能了用户态STP的网桥忽略以下这部分操作
+         * */
 		if (br->stp_enabled != BR_USER_STP) {
 			if (p->port_no == br->root_port) {
+                // "根端口"清零config_pending、topology_change_ack标志，然后尝试从blocking切换到forwarding状态
 				p->config_pending = 0;
 				p->topology_change_ack = 0;
 				br_make_forwarding(p);
 			} else if (br_is_designated_port(p)) {
+                // "指定端口"关闭message_age定时器，然后尝试从blocking切换到forwarding状态
 				del_timer(&p->message_age_timer);
 				br_make_forwarding(p);
 			} else {
+                // 其他类型端口清零config_pending、topology_change_ack标志，然后尝试将该端口切换到blocking状态
 				p->config_pending = 0;
 				p->topology_change_ack = 0;
 				br_make_blocking(p);
 			}
 		}
 
+        // 统计forwarding状态的端口
 		if (p->state == BR_STATE_FORWARDING)
 			++liveports;
 	}
 
+    // 如果该网桥不存在forwarding端口，则通知内核该网桥设备链路断开，否则通知内核该网桥设备链路正常
 	if (liveports == 0)
 		netif_carrier_off(br->dev);
 	else

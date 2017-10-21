@@ -134,10 +134,9 @@ static void br_tcn_timer_expired(unsigned long arg)
 	spin_unlock(&br->lock);
 }
 
-/* "根桥"的topology_change定时器,
- * 当"根桥"自身拓扑发生变化或者从"指定端口"收到TCN-BPDU时，就会往"指定端口"发送TC置1的配置BPDU信息 
- * 
- * 备注："根桥"只会发送一次该BPDU信息
+/* "根桥"的topology_change定时器超时处理函数，主要就是清除拓扑变化标志
+ * 当"根桥"自身拓扑发生变化或者从"指定端口"收到TCN-BPDU时，就会往"指定端口"发送TC置1的配置BPDU信息，
+ * 直到topology_change定时器超时才结束发送 
  */
 static void br_topology_change_timer_expired(unsigned long arg)
 {
