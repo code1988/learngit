@@ -1,8 +1,6 @@
 1. 信号的本质
     信号是在软件层次上对中断机制的一种模拟，是IPC机制中唯一的异步通信机制.
 
-    linux支持1～31号非实时信号，以及SIGRTMIN(通常就是32)～SIGRTMAX(通常就是64)的实时信号，需要注意的是，不存在编号为0的信号
-
     进程本身是无法直接处理信号的，只能通过告诉内核对指定信号的处理方式，由内核代为处理，处理方式可以分为三种：
         [1]. 忽略此信号(一定要注意，是进程忽略指定信号，这种情况下内核可能会执行一些额外的处理!)。
         [2]. 捕捉信号。这种方式需要用户提供一个相应的信号处理函数
@@ -28,17 +26,38 @@
     [4]. SIGTERM
         这是kill命令缺省发送的系统默认的进程终止信号，用户进程通常会捕获该信号，完成结束之前的清理工作
 
-3. 函数signal分析
+3. 可靠信号和不可靠信号
+    linux支持1～31号非实时信号(也就是不可靠信号)，以及SIGRTMIN(通常就是32)～SIGRTMAX(通常就是64)的实时信号(也就是可靠信号)，需要注意的是，不存在编号为0的信号
+
+    linux对不可靠信号的机制做了一点改进：在调用完信号的处理函数后，不会将该信号重置成默认动作。
+    所以在linux上，不可靠信号存在的问题主要就是信号可能会丢失。
+
+    由于早期定义的不可靠信号不好再做改动，所以只好新增加了SIGRTMIN~SIGRTMAX数量的信号，这些可靠信号支持排队，因而不会丢失
+
+4. 信号安装和检查 
+    有2个函数可以实现信号的安装，分别是signal和sigaction(新的linux平台上signal实际就是通过sigaction函数实现的).
+
     以下是signal函数相关定义：
         typedef void (*sighandler_t)(int);
         sighandler_t signal(int signo,sighandler_t handler);
-        @signo      信号ID
+        @signo      信号ID(除了SIGSTOP和SIGKILL)
         @handler    SIG_IGN/SIG_DFL/自定义的信号捕捉函数地址
         @返回值     返回该信号旧的处理函数的地址
-
     signal函数的缺陷:
         signal函数的语义跟实现有关，即便同是在linux上，各个版本之间也存在差异;
-        无法在不改变一个信号的处理方式的情况下获取该信号当前的处理方式(获取方式详见APUE-P325);
-    所以最好使用sigaction来代替signal.
+        无法通过signal函数在不改变一个信号的处理方式的情况下获取该信号当前的处理方式(获取方式详见APUE-P325);
 
-
+    所以最好使用sigaction来代替signal，以下是sigaction函数相关定义:
+        int sigaction(int signo,const struct sigaction *act,struct sigaction *oact);
+        @signo      信号ID(除了SIGSTOP和SIGKILL)
+        @act        非NULL时表示为指定信号安装新的处理动作
+        @oact       非NULL时用来存放指定信号旧的处理动作(如果传入的act同时为NULL，就实现了查询该信号当前的处理方式的功能)；如果不关心旧状态就设为NULL
+        该函数用到了struct sigaction结构(具体格式跟平台相关)：
+        struct sigaction {
+            union {
+                void (*sa_handler)(int);                        // SIG_IGN/SIG_DFL/自定义的信号捕捉函数地址 
+                void (*sa_sigaction)(int,siginfo_t *,void *);
+            }_u;
+	        sigset_t sa_mask;
+            int sa_flags;
+        }
