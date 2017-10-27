@@ -62,12 +62,16 @@ static struct evthread_condition_callbacks _original_cond_fns = {
 	0, NULL, NULL, NULL, NULL
 };
 
+/* 如果不使用POSIX线程库，则通过该函数设置libevent线程ID相关的API
+ */
 void
 evthread_set_id_callback(unsigned long (*id_fn)(void))
 {
 	_evthread_id_fn = id_fn;
 }
 
+/* 如果不使用POSIX线程库，则通过该函数设置libevent线程同步相关的API
+ */
 int
 evthread_set_lock_callbacks(const struct evthread_lock_callbacks *cbs)
 {
@@ -263,6 +267,13 @@ debug_cond_wait(void *_cond, void *_lock, const struct timeval *tv)
 	return r;
 }
 
+/* 开启锁的调试功能，开启该功能后，当检测到以下2个典型的锁错误：
+ *          解锁并未持有的锁；
+ *          重复对已经持有的锁上锁.
+ * libevent将给出断言失败并退出
+ *
+ * 备注：必须在创建任何锁之前调用该函数，建议是在选择线程库后立即调用
+ */
 void
 evthread_enable_lock_debuging(void)
 {

@@ -158,6 +158,7 @@ evthread_posix_cond_wait(void *_cond, void *_lock, const struct timeval *tv)
 	}
 }
 
+// 设置libevent使用POSIX线程库
 int
 evthread_use_pthreads(void)
 {

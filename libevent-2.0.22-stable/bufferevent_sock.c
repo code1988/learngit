@@ -313,7 +313,10 @@ bufferevent_writecb(evutil_socket_t fd, short event, void *arg)
 	_bufferevent_decref_and_unlock(bufev);
 }
 
-// 创建基于套接字的bufferevent 
+/* 在指定event_base上创建基于套接字的bufferevent 
+ * @fd      只能是流式套接字,-1表示后续再设置套接字
+ * @options 用来设置bufferevent行为的选项集合 BEV_OPT_*
+ */
 struct bufferevent *bufferevent_socket_new(struct event_base *base, evutil_socket_t fd,
     int options)
 {
@@ -349,6 +352,13 @@ struct bufferevent *bufferevent_socket_new(struct event_base *base, evutil_socke
 	return bufev;
 }
 
+/* 指定bufferevent尝试进行connect操作(如果该bufferevent还没有设置套接字，这里还会创建一个非阻塞的流式套接字)
+ * @bev     - 指向要进行connect的bufferevent
+ * @sa      - 传递给connect的服务端套接字地址(通常不会是NULL)
+ * @socklen - 传递给connect的服务端套接字地址长度
+ *
+ * 备注：如果connect成功，会触发BEV_EVENT_CONNECTED事件回调
+ */
 int
 bufferevent_socket_connect(struct bufferevent *bev,
     struct sockaddr *sa, int socklen)
@@ -464,6 +474,13 @@ bufferevent_connect_getaddrinfo_cb(int result, struct evutil_addrinfo *ai,
 	evutil_freeaddrinfo(ai);
 }
 
+/* 指定bufferevent尝试connect指定主机(通过解析hostname得到)
+ * @bev         - 指向要进行connect的bufferevent
+ * @evdns_base  - 为NULL时等待解析主机信息期间调用线程将会阻塞；非NULL时异步解析主机信息
+ * @family      - 解析hostname时期望的地址族，支持AF_INET、AF_INET6、AF_UNSPEC
+ * @hostname    - 支持主机名/域名/地址串
+ * @port        - 指定要connect的端口
+ */
 int
 bufferevent_socket_connect_hostname(struct bufferevent *bev,
     struct evdns_base *evdns_base, int family, const char *hostname, int port)

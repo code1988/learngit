@@ -63,6 +63,10 @@ static void event_exit(int errcode) EV_NORETURN;
 
 static event_fatal_cb fatal_fn = NULL;
 
+/* 设置自定义的出错退出函数
+ * 检测到不可恢复的内部错误时的默认行为是调用exit或abort退出进程
+ * 在自定义的出错退出函数中调用libevent函数目前是不安全的，同时函数运行完毕后不应该将控制返还给libevent
+ */
 void
 event_set_fatal_callback(event_fatal_cb cb)
 {
@@ -189,7 +193,7 @@ _warn_helper(int severity, const char *errstr, const char *fmt, va_list ap)
 
 static event_log_cb log_fn = NULL;
 
-/* 设置自定义的log回调函数
+/* 设置自定义的libevent内部log回调函数
  * log默认输出到stderr
  * 传入NULL可以恢复默认行为
  * 在自定义的log回调函数中调用libevent函数目前是不安全的

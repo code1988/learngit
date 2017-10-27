@@ -38,6 +38,7 @@ struct evconnlistener;
 
 /**
    A callback that we invoke when a listener has a new connection.
+   定义了TCP连接监听器收到一个新连接后的回调函数格式
 
    @param listener The evconnlistener
    @param fd The new file descriptor
@@ -49,6 +50,7 @@ typedef void (*evconnlistener_cb)(struct evconnlistener *, evutil_socket_t, stru
 
 /**
    A callback that we invoke when a listener encounters a non-retriable error.
+   定义了TCP连接监听器运行中遇到出错时的回调函数格式 
 
    @param listener The evconnlistener
    @param user_arg the pointer passed to evconnlistener_new()
@@ -56,18 +58,29 @@ typedef void (*evconnlistener_cb)(struct evconnlistener *, evutil_socket_t, stru
 typedef void (*evconnlistener_errorcb)(struct evconnlistener *, void *);
 
 /** Flag: Indicates that we should not make incoming sockets nonblocking
- * before passing them to the callback. */
+ * before passing them to the callback. 
+ * 缺省情况下，连接监听器接收新连接套接字后，会将其设置为非阻塞。
+ * 该标志可以修改连接监听器的这种行为，使接收的新连接套接字设置为阻塞
+ * */
 #define LEV_OPT_LEAVE_SOCKETS_BLOCKING	(1u<<0)
 /** Flag: Indicates that freeing the listener should close the underlying
- * socket. */
+ * socket. 
+ * 表示当释放连接监听器时会进一步关闭其底层套接字
+ * */
 #define LEV_OPT_CLOSE_ON_FREE		(1u<<1)
-/** Flag: Indicates that we should set the close-on-exec flag, if possible */
+/** Flag: Indicates that we should set the close-on-exec flag, if possible 
+ * 表示为连接监听器的底层套接字设置close-on-exec特性
+ * */
 #define LEV_OPT_CLOSE_ON_EXEC		(1u<<2)
 /** Flag: Indicates that we should disable the timeout (if any) between when
- * this socket is closed and when we can listen again on the same port. */
+ * this socket is closed and when we can listen again on the same port. 
+ * 表示为连接监听器的底层套接字设置SO_REUSEPORT特性
+ * */
 #define LEV_OPT_REUSEABLE		(1u<<3)
 /** Flag: Indicates that the listener should be locked so it's safe to use
- * from multiple threadcs at once. */
+ * from multiple threadcs at once. 
+ * 表示为连接监听器配置锁，这样该监听器就是线程安全了
+ * */
 #define LEV_OPT_THREADSAFE		(1u<<4)
 
 /**

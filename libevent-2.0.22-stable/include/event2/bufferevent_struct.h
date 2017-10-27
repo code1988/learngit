@@ -98,7 +98,7 @@ struct bufferevent {
 	bufferevent_data_cb writecb;
 	/* This should be called 'eventcb', but renaming it would break
 	 * backward compatibility */
-	bufferevent_event_cb errorcb;
+	bufferevent_event_cb errorcb;       // bufferevent的 BEV_EVENT_* 事件回调
 	void *cbarg;
 
 	struct timeval timeout_read;

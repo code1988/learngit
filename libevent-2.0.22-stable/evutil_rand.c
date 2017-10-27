@@ -165,6 +165,7 @@ ev_arc4random_buf(void *buf, size_t n)
 
 #endif /* } !_EVENT_HAVE_ARC4RANDOM */
 
+// 用随机数填充长度为n的buf
 void
 evutil_secure_rng_get_bytes(void *buf, size_t n)
 {
