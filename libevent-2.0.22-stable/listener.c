@@ -155,7 +155,7 @@ static void listener_read_cb(evutil_socket_t, short, void *);
  * @base    指向新建的监听器将要关联的event_base
  * @cb      收到新连接时的回调函数
  * @ptr     传递给回调函数的参数
- * @flags   用于控制回调函数行为的标志集合 LEV_OPT_*
+ * @flags   用于控制回调函数行为的标志集合 LEV_OPT_*(本API似乎不处理LEV_OPT_CLOSE_ON_EXEC，该特性只能要么用户自己设置，要么直接改用evconnlistener_new_bind中设置该标志)
  * @backlog 传递给listen系统调用的允许接受连接的数量，-1表示由libevent设置一个合适值，0表示传入的套接字已经处于listen状态
  * @fd      需要监听的套接字，必须确保是非阻塞的，并且已经bind
  *
@@ -212,7 +212,7 @@ evconnlistener_new(struct event_base *base,
  * @sa      指向套接字要绑定的地址
  * @socklen 地址长度
  *
- * 备注：本函数跟evconnlistener_new的区别在于，本函数包括了创建 + 设置nonblocking + 设置close-on-exec + 设置keepalive + bind套接字的过程
+ * 备注：本函数跟evconnlistener_new的区别在于，本函数包括了创建 + 设置nonblocking + 设置close-on-extc(根据flags) + 设置keepalive + bind套接字的过程
  */
 struct evconnlistener *
 evconnlistener_new_bind(struct event_base *base, evconnlistener_cb cb,

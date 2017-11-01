@@ -454,7 +454,7 @@ struct ifinfomsg {
 	unsigned char	ifi_family;     // 协议族
 	unsigned char	__ifi_pad;      // 1字节填充，用于对齐，无含义
 	unsigned short	ifi_type;		/* ARPHRD_* */
-	int		ifi_index;		/* Link index	*/
+	int		ifi_index;		/* Link index	接口序号 */
 	unsigned	ifi_flags;		/* IFF_* flags	BSD风格的标准网络接口标志*/
 	unsigned	ifi_change;		/* IFF_* change mask */
 };

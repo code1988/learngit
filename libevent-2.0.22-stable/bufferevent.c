@@ -374,12 +374,17 @@ bufferevent_get_output(struct bufferevent *bufev)
 	return bufev->output;
 }
 
+// 返回指定bufferevent的event_base
 struct event_base *
 bufferevent_get_base(struct bufferevent *bufev)
 {
 	return bufev->ev_base;
 }
 
+/* 写数据到指定bufferevent的输出缓冲区(数据来自普通的用户缓冲区)
+ * @data    指向要写入的数据
+ * @size    要写入的数据长度
+ */
 int
 bufferevent_write(struct bufferevent *bufev, const void *data, size_t size)
 {
@@ -389,6 +394,9 @@ bufferevent_write(struct bufferevent *bufev, const void *data, size_t size)
 	return 0;
 }
 
+/* 写数据到指定bufferevent的输出缓冲区(数据来自evbuffer结构)
+ * @buf     指向一个要抽取数据的evbuffer(其数据将被全部抽取)
+ */
 int
 bufferevent_write_buffer(struct bufferevent *bufev, struct evbuffer *buf)
 {
@@ -398,12 +406,22 @@ bufferevent_write_buffer(struct bufferevent *bufev, struct evbuffer *buf)
 	return 0;
 }
 
+/* 从指定bufferevent的输入缓冲区中抽取数据(数据存放到普通的用户缓冲区)
+ * @data    指向用来存放读取数据的缓冲区
+ * @size    可存放读取数据的缓冲区长度
+ * @返回值  实际抽取的数据长度
+ */
 size_t
 bufferevent_read(struct bufferevent *bufev, void *data, size_t size)
 {
 	return (evbuffer_remove(bufev->input, data, size));
 }
 
+/* 从指定bufferevent的输入缓冲区中抽取 全部 数据(数据存放到evbuffer结构)
+ * @buf     指向用来存放读取数据的evbuffer
+ *
+ * 备注：这种方式不存在数据拷贝
+ */
 int
 bufferevent_read_buffer(struct bufferevent *bufev, struct evbuffer *buf)
 {
@@ -438,6 +456,10 @@ bufferevent_enable(struct bufferevent *bufev, short event)
 	return r;
 }
 
+/* 设置指定bufferevent的读写超时时间
+ * @tv_read     读超时时间
+ * @tv_write    写超时时间
+ */
 int
 bufferevent_set_timeouts(struct bufferevent *bufev,
 			 const struct timeval *tv_read,
@@ -463,7 +485,7 @@ bufferevent_set_timeouts(struct bufferevent *bufev,
 	return r;
 }
 
-
+#if 0 // 作废
 /* Obsolete; use bufferevent_set_timeouts */
 void
 bufferevent_settimeout(struct bufferevent *bufev,
@@ -486,7 +508,7 @@ bufferevent_settimeout(struct bufferevent *bufev,
 
 	bufferevent_set_timeouts(bufev, ptv_read, ptv_write);
 }
-
+#endif
 
 int
 bufferevent_disable_hard(struct bufferevent *bufev, short event)
@@ -581,6 +603,12 @@ bufferevent_setwatermark(struct bufferevent *bufev, short events,
 	BEV_UNLOCK(bufev);
 }
 
+/* 对制定bufferevent执行强制flush操作
+ * @iotype  指明要flush的I/O，可以是EV_READ、EV_WRITE、EV_READ|EV_WRITE
+ * @mode    设置flush操作的模式
+ *
+ * 备注：目前版本套接字bufferevent似乎不支持本函数
+ */
 int
 bufferevent_flush(struct bufferevent *bufev,
     short iotype,
@@ -751,6 +779,10 @@ bufferevent_enable_locking(struct bufferevent *bufev, void *lock)
 #endif
 }
 
+/* 设置指定bufferevent的文件描述符
+ * 
+ * 备注：本函数目前只支持设置基于套接字的bufferevent，也就是只支持设置套接字
+ */
 int
 bufferevent_setfd(struct bufferevent *bev, evutil_socket_t fd)
 {
@@ -764,6 +796,7 @@ bufferevent_setfd(struct bufferevent *bev, evutil_socket_t fd)
 	return res;
 }
 
+// 获取指定bufferevent的文件描述符
 evutil_socket_t
 bufferevent_getfd(struct bufferevent *bev)
 {
@@ -799,6 +832,11 @@ bufferevent_get_enabled(struct bufferevent *bufev)
 	return r;
 }
 
+/* 获取作为指定bufferevent底层传输端口的bufferevent
+ * @返回值  如果该bufferevent的底层传输端口不是一个bufferevent，则返回NULL
+ * 
+ * 备注：显然本函数应用于过滤型bufferevent
+ */
 struct bufferevent *
 bufferevent_get_underlying(struct bufferevent *bev)
 {
@@ -885,13 +923,18 @@ _bufferevent_add_event(struct event *ev, const struct timeval *tv)
 }
 
 /* For use by user programs only; internally, we should be calling
-   either _bufferevent_incref_and_lock(), or BEV_LOCK. */
+   either _bufferevent_incref_and_lock(), or BEV_LOCK. 
+   对指定bufferevent手动上锁
+
+   备注：本函数运行的前提是libevent开启了多线程支持，并且该bufferevent设置了BEV_OPT_THREADSAFE
+   */
 void
 bufferevent_lock(struct bufferevent *bev)
 {
 	_bufferevent_incref_and_lock(bev);
 }
 
+// 对指定bufferevent手动解锁
 void
 bufferevent_unlock(struct bufferevent *bev)
 {

@@ -214,7 +214,9 @@ struct in_pktinfo {
 	struct in_addr	ipi_addr;
 };
 
-/* Structure describing an Internet (IP) socket address. */
+/* Structure describing an Internet (IP) socket address. 
+ * 该结构用于描述IP层套接字地址信息
+ * */
 #define __SOCK_SIZE__	16		/* sizeof(struct sockaddr)	*/
 struct sockaddr_in {
   __kernel_sa_family_t	sin_family;	/* Address family		*/

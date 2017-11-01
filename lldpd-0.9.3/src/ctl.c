@@ -31,6 +31,7 @@
 
 /**
  * Create a new listening Unix socket for control protocol.
+ * 创建unix本地流式套接字，作为lldp本地通信的服务端，通信需要建立连接
  *
  * @param name The name of the Unix socket.
  * @return The socket when successful, -1 otherwise.

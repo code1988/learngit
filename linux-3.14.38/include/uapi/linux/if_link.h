@@ -108,18 +108,18 @@ struct rtnl_link_ifmap {
  */
 enum {
 	IFLA_UNSPEC,
-	IFLA_ADDRESS,
+	IFLA_ADDRESS,       // 对应的属性payload字段携带了接口的MAC地址
 	IFLA_BROADCAST,
 	IFLA_IFNAME,        // 对应的属性payload字段携带了接口名(.e "Fex-1")
 	IFLA_MTU,           // 对应的属性payload字段携带了mtu值
-	IFLA_LINK,          // 对应的属性payload字段携带了实际设备接口序号
+	IFLA_LINK,          // 对应的属性payload字段携带了下级设备接口序号(.e "Fex-1"设备的下级设备"eth0")
 	IFLA_QDISC,
 	IFLA_STATS,
 	IFLA_COST,
 #define IFLA_COST IFLA_COST
 	IFLA_PRIORITY,
 #define IFLA_PRIORITY IFLA_PRIORITY
-	IFLA_MASTER,
+	IFLA_MASTER,        // 对应的属性payload字段携带了上级设备接口序号(.e "Fex-1"设备的上级设备"br-lan")
 #define IFLA_MASTER IFLA_MASTER
 	IFLA_WIRELESS,		/* Wireless Extension event - see wireless.h */
 #define IFLA_WIRELESS IFLA_WIRELESS
@@ -136,7 +136,7 @@ enum {
 	IFLA_LINKINFO,
 #define IFLA_LINKINFO IFLA_LINKINFO
 	IFLA_NET_NS_PID,
-	IFLA_IFALIAS,
+	IFLA_IFALIAS,       // 对应的属性payload字段携带了接口别名
 	IFLA_NUM_VF,		/* Number of VFs if device is SR-IOV PF */
 	IFLA_VFINFO_LIST,
 	IFLA_STATS64,

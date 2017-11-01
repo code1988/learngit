@@ -102,6 +102,7 @@ levent_snmp_read(evutil_socket_t fd, short what, void *arg)
 
 /*
  * Callback function for a SNMP timeout.
+ * snmp超时时间回调函数
  *
  * A SNMP timeout has occurred. Call `snmp_timeout()` to handle it.
  */
@@ -371,7 +372,7 @@ levent_ctl_event(struct bufferevent *bev, short events, void *ptr)
 	}
 }
 
-// lldpd cli服务端在这里处理一个新的连接请求
+// lldpd cli服务端读事件回调函数，lldp在这里处理一个新的连接请求
 static void levent_ctl_accept(evutil_socket_t fd, short what, void *arg)
 {
 	struct lldpd *cfg = arg;
@@ -448,6 +449,7 @@ static void levent_priv(evutil_socket_t fd, short what, void *arg)
 	event_base_loopbreak(base);
 }
 
+// SIGUSR1信号事件回调
 static void
 levent_dump(evutil_socket_t fd, short what, void *arg)
 {
@@ -456,6 +458,8 @@ levent_dump(evutil_socket_t fd, short what, void *arg)
 	log_debug("event", "dumping all events");
 	event_base_dump_events(base, stderr);
 }
+
+// SIGTERM、SIGINT信号事件回调
 static void
 levent_stop(evutil_socket_t fd, short what, void *arg)
 {
@@ -464,6 +468,7 @@ levent_stop(evutil_socket_t fd, short what, void *arg)
 	event_base_loopbreak(base);
 }
 
+// main loop手动触发事件回调函数
 static void levent_update_and_send(evutil_socket_t fd, short what, void *arg)
 {
 	struct lldpd *cfg = arg;
@@ -495,7 +500,14 @@ levent_send_now(struct lldpd *cfg)
 	}
 }
 
-// 基于libevent的事件初始化
+/* 基于libevent的事件初始化
+ * 主要创建里以下这些event事件:
+ *          snmp超时事件；
+ *          main loop纯手动触发事件；
+ *          lldpd本地通信服务端监听事件;
+ *          和父进程通信事件;
+ *          SIGUSR1、SIGINT、SIGTERM信号事件
+ */
 static void levent_init(struct lldpd *cfg)
 {
 	/* Setup libevent */
@@ -513,7 +525,7 @@ static void levent_init(struct lldpd *cfg)
 #ifdef USE_SNMP
 	if (cfg->g_snmp) 
     {
-        // 子代理初始化
+        // snmp子代理初始化，主要包括创建和snmp通信的unix本地客户端
 		agent_init(cfg, cfg->g_snmp_agentx);
         // 创建snmp超时事件
 		cfg->g_snmp_timeout = evtimer_new(cfg->g_base,levent_snmp_timeout,cfg);
@@ -529,10 +541,10 @@ static void levent_init(struct lldpd *cfg)
 
 	/* Setup loop that will run every X seconds. */
 	log_debug("event", "register loop timer");
-    // 创建main loop纯超时事件
+    // 创建main loop纯手动触发事件
 	if (!(cfg->g_main_loop = event_new(cfg->g_base, -1, 0,levent_update_and_send,cfg)))
 		fatalx("event", "unable to setup main timer");
-    // 手动激活main loop事件
+    // 手动激活main loop事件，触发原因：超时
 	event_active(cfg->g_main_loop, EV_TIMEOUT, 1);
 
 	/* Setup unix socket */
@@ -542,7 +554,7 @@ static void levent_init(struct lldpd *cfg)
 	TAILQ_INIT(&lldpd_clients);
     // 设置lldpd cli 本地服务器fd为非阻塞
 	levent_make_socket_nonblocking(cfg->g_ctl);
-    // 创建lldpd cli通信事件
+    // 创建并添加lldpd本地通信服务端监听事件(持久的读触发)
 	if ((ctl_event = event_new(cfg->g_base, cfg->g_ctl,EV_READ|EV_PERSIST, levent_ctl_accept, cfg)) == NULL)
 		fatalx("event", "unable to setup control socket event");
 	event_add(ctl_event, NULL);
@@ -550,7 +562,7 @@ static void levent_init(struct lldpd *cfg)
 	/* Somehow monitor the monitor process */
 	struct event *monitor_event;
 	log_debug("event", "monitor the monitor process");
-    // 创建和父进程通信事件
+    // 创建并添加和父进程通信事件(持久的读触发)
 	if ((monitor_event = event_new(cfg->g_base, priv_fd(PRIV_UNPRIVILEGED),
 		    EV_READ|EV_PERSIST, levent_priv, cfg->g_base)) == NULL)
 		fatalx("event", "unable to monitor monitor process");
@@ -558,7 +570,7 @@ static void levent_init(struct lldpd *cfg)
 
 	/* Signals */
 	log_debug("event", "register signals");
-    // 创建信号事件
+    // 创建并添加信号事件
 	evsignal_add(evsignal_new(cfg->g_base, SIGUSR1,
 		levent_dump, cfg->g_base),
 	    NULL);
@@ -681,6 +693,7 @@ levent_hardware_release(struct lldpd_hardware *hardware)
 	free(levent_hardware_fds(hardware));
 }
 
+// 接口变化后设置的接口超时事件回调函数，主要就是刷新所有本地端口
 static void
 levent_iface_trigger(evutil_socket_t fd, short what, void *arg)
 {
@@ -690,6 +703,7 @@ levent_iface_trigger(evutil_socket_t fd, short what, void *arg)
 	lldpd_update_localports(cfg);
 }
 
+// 接口变化事件的回调函数，实际就是封装了用户层接收内核netlink通知回调函数
 static void
 levent_iface_recv(evutil_socket_t fd, short what, void *arg)
 {
@@ -721,7 +735,7 @@ levent_iface_recv(evutil_socket_t fd, short what, void *arg)
 	} 
     else 
     {
-        // 已经注册了的执行回调函数
+        // 已经注册了的执行回调函数(实际就是netlink_change_cb)
 		cfg->g_iface_cb(cfg);
 	}
 
@@ -731,6 +745,7 @@ levent_iface_recv(evutil_socket_t fd, short what, void *arg)
 	TRACE(LLDPD_INTERFACES_NOTIFICATION());
 	log_debug("event",
 	    "received notification change, schedule an update of all interfaces in one second");
+    // 创建并添加一个接口超时事件，1s后触发
 	if (cfg->g_iface_timer_event == NULL) {
 		if ((cfg->g_iface_timer_event = evtimer_new(cfg->g_base,
 			    levent_iface_trigger, cfg)) == NULL) {
@@ -753,7 +768,7 @@ int levent_iface_subscribe(struct lldpd *cfg, int socket)
 	    socket);
 	if (cfg->g_iface_cb == NULL)
 		levent_make_socket_nonblocking(socket);
-    // 创建接口变化事件
+    // 创建并添加接口变化事件(持续的读触发)
 	cfg->g_iface_event = event_new(cfg->g_base, socket,EV_READ | EV_PERSIST, levent_iface_recv, cfg);
 	if (cfg->g_iface_event == NULL) {
 		log_warnx("event",

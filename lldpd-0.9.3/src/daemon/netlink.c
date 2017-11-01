@@ -182,6 +182,7 @@ netlink_parse_linkinfo(struct interfaces_device *iff, struct rtattr *rta, int le
 
 /**
  * Parse a `link` netlink message.
+ * 解析来自rtnetlink接口的RTM_DELLINK/RTM_NEWLINK消息
  *
  * @param msg  message to be parsed
  * @param iff  where to put the result
@@ -194,6 +195,7 @@ netlink_parse_link(struct nlmsghdr *msg,
 	struct ifinfomsg *ifi;
 	struct rtattr *attribute;
 	int len;
+    // 获取netlink消息payload首地址，这里是一个ifinfomsg结构的族头
 	ifi = NLMSG_DATA(msg);
 	len = msg->nlmsg_len - NLMSG_LENGTH(sizeof(struct ifinfomsg));
 
@@ -268,6 +270,7 @@ netlink_parse_link(struct nlmsghdr *msg,
 
 /**
  * Parse a `address` netlink message.
+ * 解析来自rtnetlink接口的RTM_DELADDR/RTM_NEWADDR消息
  *
  * @param msg  message to be parsed
  * @param ifa  where to put the result
@@ -280,6 +283,8 @@ netlink_parse_address(struct nlmsghdr *msg,
 	struct ifaddrmsg *ifi;
 	struct rtattr *attribute;
 	int len;
+    
+    // 获取netlink消息payload首地址，这里是一个ifaddrmsg结构的族头
 	ifi = NLMSG_DATA(msg);
 	len = msg->nlmsg_len - NLMSG_LENGTH(sizeof(struct ifaddrmsg));
 
@@ -460,6 +465,7 @@ retry:
                 case RTM_DELLINK:
                     if (!ifs) break;
                     log_debug("netlink", "received link information");
+                    // 收到接口设备信息，创建接口设备尾队列元素节点
                     ifdnew = calloc(1, sizeof(struct interfaces_device));
                     if (ifdnew == NULL) {
                         log_warn("netlink", "not enough memory for another interface, give up what we have");
@@ -513,17 +519,20 @@ retry:
                 case RTM_DELADDR:
                     if (!ifas) break;
                     log_debug("netlink", "received address information");
+                    // 收到接口地址信息，创建接口地址尾队列元素节点
                     ifanew = calloc(1, sizeof(struct interfaces_address));
                     if (ifanew == NULL) {
                         log_warn("netlink", "not enough memory for another address, give what we have");
                         goto end;
                     }
+                    // 解析RTM_DELADDR/RTM_NEWADDR消息得到接口地址信息
                     if (netlink_parse_address(msg, ifanew) == 0) {
                         TAILQ_FOREACH(ifaold, ifas, next) {
                             if ((ifaold->index == ifanew->index) &&
                                 !memcmp(&ifaold->address, &ifanew->address,
                                 sizeof(ifaold->address))) continue;
                         }
+                        // 解析套接字地址得到对应的主机名/域名/IP地址字符串(这里是IP地址字符串)
                         if (getnameinfo((struct sockaddr *)&ifanew->address,
                             sizeof(ifanew->address),
                             addr, sizeof(addr),
@@ -532,6 +541,7 @@ retry:
                         }
 
                         if (msg->nlmsg_type == RTM_NEWADDR) {
+                            // 如果是RTM_NEWADDR消息则将地址加入接口地址尾队列中
                             if (ifaold == NULL) {
                                 log_debug("netlink", "new address %s%%%d",
                                     addr, ifanew->index);
@@ -651,7 +661,9 @@ int netlink_subscribe_changes()
 }
 
 /**
- * Receive changes from netlink */
+ * Receive changes from netlink 
+ * 通过netlink获取到接口信息变化后，执行该回调函数
+ * */
 static void
 netlink_change_cb(struct lldpd *cfg)
 {
