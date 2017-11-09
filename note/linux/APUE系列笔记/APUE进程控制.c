@@ -110,7 +110,7 @@
     经过组合得到的exec系列函数如下：
             [1]. int execl(const char *pathname,const char *arg0,.../*(char *)0*/)                      - "+l"
             [2]. int execlp(const char *filename,const char *arg0,.../*(char *)0*/)                     - "+l +e"
-            [3]. int execle(const char *pathname,const char *arg0,.../*(char *)0*,char *const envp[]/)  - "+l +e"
+            [3]. int execle(const char *pathname,const char *arg0,.../*(char *)0*/,char *const envp[]/)  - "+l +e"
 
             [4]. int execv(const char *pathname,char *const argv[])                         - "+v"
             [5]. int execvp(const char *filename,char *const argv[])                        - "+v +p"
