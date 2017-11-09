@@ -54,19 +54,19 @@
 /* #undef HAVE_LIBDLPI */
 
 /* if libnl exists */
-/* #undef HAVE_LIBNL */
+#define HAVE_LIBNL 1
 
 /* if libnl exists and is version 2.x */
 /* #undef HAVE_LIBNL_2_x */
 
 /* if libnl exists and is version 3.x */
-/* #undef HAVE_LIBNL_3_x */
+#define HAVE_LIBNL_3_x 1
 
 /* libnl has NLE_FAILURE */
-/* #undef HAVE_LIBNL_NLE */
+#define HAVE_LIBNL_NLE 1
 
 /* libnl has new-style socket api */
-/* #undef HAVE_LIBNL_SOCKETS */
+#define HAVE_LIBNL_SOCKETS 1
 
 /* Define to 1 if you have the <limits.h> header file. */
 #define HAVE_LIMITS_H 1
@@ -267,7 +267,7 @@
 /* #undef PCAP_SUPPORT_BT_MONITOR */
 
 /* support D-Bus sniffing */
-/* #undef PCAP_SUPPORT_DBUS */
+#define PCAP_SUPPORT_DBUS 1
 
 /* target host supports netfilter sniffing */
 #define PCAP_SUPPORT_NETFILTER 1

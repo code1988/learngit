@@ -48,11 +48,11 @@ AR = ar
 LN_S = ln -s
 MKDEP = 
 CCOPT =  -fvisibility=hidden -fpic
-INCLS = -I. 
+INCLS = -I.  -I/usr/include/libnl3 -I/usr/include/dbus-1.0 -I/usr/lib/i386-linux-gnu/dbus-1.0/include 
 DEFS = -DBUILDING_PCAP -DHAVE_CONFIG_H  -D_U_="__attribute__((unused))"
 ADDLOBJS = 
 ADDLARCHIVEOBJS = 
-LIBS = 
+LIBS =  -lnl-genl-3 -lnl-3  -ldbus-1 
 CROSSFLAGS=
 CFLAGS = -g -O2   ${CROSSFLAGS}
 LDFLAGS =  ${CROSSFLAGS}
@@ -79,7 +79,7 @@ YACC = bison -y
 	@rm -f $@
 	$(CC) $(FULL_CFLAGS) -c $(srcdir)/$*.c
 
-PSRC =	pcap-linux.c pcap-usb-linux.c   pcap-netfilter-linux.c 
+PSRC =	pcap-linux.c pcap-usb-linux.c   pcap-netfilter-linux.c pcap-dbus.c
 FSRC =  fad-getad.c
 SSRC =  
 CSRC =	pcap.c inet.c fad-helpers.c gencode.c optimize.c nametoaddr.c \

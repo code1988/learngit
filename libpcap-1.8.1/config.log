@@ -1349,8 +1349,8 @@ configure:4937: $? = 0
 configure:4937: result: yes
 configure:4937: checking for strlcpy
 configure:4937: gcc -o conftest -g -O2   conftest.c  >&5
-/tmp/cctTM8WM.o: In function `main':
-/home/code5/Downloads/libpcap-1.8.1/conftest.c:68: undefined reference to `strlcpy'
+/tmp/cckRpyiK.o: In function `main':
+/home/code5/git/learngit/libpcap-1.8.1/conftest.c:68: undefined reference to `strlcpy'
 collect2: error: ld returned 1 exit status
 configure:4937: $? = 1
 configure: failed program was:
@@ -1556,195 +1556,8 @@ configure:5718: $? = 0
 configure:5718: result: yes
 configure:5757: checking for nl_socket_alloc in -lnl-3
 configure:5782: gcc -o conftest -g -O2   conftest.c -lnl-3 -I/usr/include/libnl3  -lnl-genl-3 -lnl-3   >&5
-/usr/bin/ld: cannot find -lnl-3
-/usr/bin/ld: cannot find -lnl-genl-3
-/usr/bin/ld: cannot find -lnl-3
-collect2: error: ld returned 1 exit status
-configure:5782: $? = 1
-configure: failed program was:
-| /* confdefs.h */
-| #define PACKAGE_NAME ""
-| #define PACKAGE_TARNAME ""
-| #define PACKAGE_VERSION ""
-| #define PACKAGE_STRING ""
-| #define PACKAGE_BUGREPORT ""
-| #define PACKAGE_URL ""
-| #define inline inline
-| #define HAVE___ATTRIBUTE__ 1
-| #define __ATTRIBUTE___FORMAT_OK 1
-| #define STDC_HEADERS 1
-| #define HAVE_SYS_TYPES_H 1
-| #define HAVE_SYS_STAT_H 1
-| #define HAVE_STDLIB_H 1
-| #define HAVE_STRING_H 1
-| #define HAVE_MEMORY_H 1
-| #define HAVE_STRINGS_H 1
-| #define HAVE_INTTYPES_H 1
-| #define HAVE_STDINT_H 1
-| #define HAVE_UNISTD_H 1
-| #define HAVE_SYS_BITYPES_H 1
-| #define _FILE_OFFSET_BITS 64
-| #define HAVE_FSEEKO 1
-| #define HAVE_SYS_SELECT_H 1
-| #define HAVE_LIMITS_H 1
-| #define HAVE_LINUX_TYPES_H 1
-| #define HAVE_LINUX_IF_PACKET_H 1
-| #define HAVE_NETPACKET_PACKET_H 1
-| #define HAVE_NETINET_IF_ETHER_H 1
-| #define HAVE_LINUX_SOCKIOS_H 1
-| #define HAVE_LINUX_IF_BONDING_H 1
-| #define HAVE_STRERROR 1
-| #define HAVE_VSNPRINTF 1
-| #define HAVE_SNPRINTF 1
-| #define HAVE_STRTOK_R 1
-| #define HAVE_ETHER_HOSTTON 1
-| #define HAVE_NETINET_ETHER_H 1
-| #define NETINET_ETHER_H_DECLARES_ETHER_HOSTTON /**/
-| #define HAVE_DECL_ETHER_HOSTTON 1
-| #define HAVE_LINUX_WIRELESS_H 1
-| /* end confdefs.h.  */
-| 
-| /* Override any GCC internal prototype to avoid an error.
-|    Use char because int might match the return type of a GCC
-|    builtin and then its argument prototype would still apply.  */
-| #ifdef __cplusplus
-| extern "C"
-| #endif
-| char nl_socket_alloc ();
-| int
-| main ()
-| {
-| return nl_socket_alloc ();
-|   ;
-|   return 0;
-| }
-configure:5791: result: no
-configure:5821: checking for nl_socket_alloc in -lnl
-configure:5846: gcc -o conftest -g -O2   conftest.c -lnl   >&5
-/usr/bin/ld: cannot find -lnl
-collect2: error: ld returned 1 exit status
-configure:5846: $? = 1
-configure: failed program was:
-| /* confdefs.h */
-| #define PACKAGE_NAME ""
-| #define PACKAGE_TARNAME ""
-| #define PACKAGE_VERSION ""
-| #define PACKAGE_STRING ""
-| #define PACKAGE_BUGREPORT ""
-| #define PACKAGE_URL ""
-| #define inline inline
-| #define HAVE___ATTRIBUTE__ 1
-| #define __ATTRIBUTE___FORMAT_OK 1
-| #define STDC_HEADERS 1
-| #define HAVE_SYS_TYPES_H 1
-| #define HAVE_SYS_STAT_H 1
-| #define HAVE_STDLIB_H 1
-| #define HAVE_STRING_H 1
-| #define HAVE_MEMORY_H 1
-| #define HAVE_STRINGS_H 1
-| #define HAVE_INTTYPES_H 1
-| #define HAVE_STDINT_H 1
-| #define HAVE_UNISTD_H 1
-| #define HAVE_SYS_BITYPES_H 1
-| #define _FILE_OFFSET_BITS 64
-| #define HAVE_FSEEKO 1
-| #define HAVE_SYS_SELECT_H 1
-| #define HAVE_LIMITS_H 1
-| #define HAVE_LINUX_TYPES_H 1
-| #define HAVE_LINUX_IF_PACKET_H 1
-| #define HAVE_NETPACKET_PACKET_H 1
-| #define HAVE_NETINET_IF_ETHER_H 1
-| #define HAVE_LINUX_SOCKIOS_H 1
-| #define HAVE_LINUX_IF_BONDING_H 1
-| #define HAVE_STRERROR 1
-| #define HAVE_VSNPRINTF 1
-| #define HAVE_SNPRINTF 1
-| #define HAVE_STRTOK_R 1
-| #define HAVE_ETHER_HOSTTON 1
-| #define HAVE_NETINET_ETHER_H 1
-| #define NETINET_ETHER_H_DECLARES_ETHER_HOSTTON /**/
-| #define HAVE_DECL_ETHER_HOSTTON 1
-| #define HAVE_LINUX_WIRELESS_H 1
-| /* end confdefs.h.  */
-| 
-| /* Override any GCC internal prototype to avoid an error.
-|    Use char because int might match the return type of a GCC
-|    builtin and then its argument prototype would still apply.  */
-| #ifdef __cplusplus
-| extern "C"
-| #endif
-| char nl_socket_alloc ();
-| int
-| main ()
-| {
-| return nl_socket_alloc ();
-|   ;
-|   return 0;
-| }
-configure:5855: result: no
-configure:5885: checking for nl_handle_alloc in -lnl
-configure:5910: gcc -o conftest -g -O2   conftest.c -lnl   >&5
-/usr/bin/ld: cannot find -lnl
-collect2: error: ld returned 1 exit status
-configure:5910: $? = 1
-configure: failed program was:
-| /* confdefs.h */
-| #define PACKAGE_NAME ""
-| #define PACKAGE_TARNAME ""
-| #define PACKAGE_VERSION ""
-| #define PACKAGE_STRING ""
-| #define PACKAGE_BUGREPORT ""
-| #define PACKAGE_URL ""
-| #define inline inline
-| #define HAVE___ATTRIBUTE__ 1
-| #define __ATTRIBUTE___FORMAT_OK 1
-| #define STDC_HEADERS 1
-| #define HAVE_SYS_TYPES_H 1
-| #define HAVE_SYS_STAT_H 1
-| #define HAVE_STDLIB_H 1
-| #define HAVE_STRING_H 1
-| #define HAVE_MEMORY_H 1
-| #define HAVE_STRINGS_H 1
-| #define HAVE_INTTYPES_H 1
-| #define HAVE_STDINT_H 1
-| #define HAVE_UNISTD_H 1
-| #define HAVE_SYS_BITYPES_H 1
-| #define _FILE_OFFSET_BITS 64
-| #define HAVE_FSEEKO 1
-| #define HAVE_SYS_SELECT_H 1
-| #define HAVE_LIMITS_H 1
-| #define HAVE_LINUX_TYPES_H 1
-| #define HAVE_LINUX_IF_PACKET_H 1
-| #define HAVE_NETPACKET_PACKET_H 1
-| #define HAVE_NETINET_IF_ETHER_H 1
-| #define HAVE_LINUX_SOCKIOS_H 1
-| #define HAVE_LINUX_IF_BONDING_H 1
-| #define HAVE_STRERROR 1
-| #define HAVE_VSNPRINTF 1
-| #define HAVE_SNPRINTF 1
-| #define HAVE_STRTOK_R 1
-| #define HAVE_ETHER_HOSTTON 1
-| #define HAVE_NETINET_ETHER_H 1
-| #define NETINET_ETHER_H_DECLARES_ETHER_HOSTTON /**/
-| #define HAVE_DECL_ETHER_HOSTTON 1
-| #define HAVE_LINUX_WIRELESS_H 1
-| /* end confdefs.h.  */
-| 
-| /* Override any GCC internal prototype to avoid an error.
-|    Use char because int might match the return type of a GCC
-|    builtin and then its argument prototype would still apply.  */
-| #ifdef __cplusplus
-| extern "C"
-| #endif
-| char nl_handle_alloc ();
-| int
-| main ()
-| {
-| return nl_handle_alloc ();
-|   ;
-|   return 0;
-| }
-configure:5919: result: no
+configure:5782: $? = 0
+configure:5791: result: yes
 configure:5948: checking for linux/ethtool.h
 configure:5948: gcc -c -g -O2  conftest.c >&5
 configure:5948: $? = 0
@@ -1758,7 +1571,7 @@ configure:6012: gcc -c -g -O2  conftest.c >&5
 configure:6012: $? = 0
 configure:6020: result: yes
 configure:6138: checking for getifaddrs
-configure:6138: gcc -o conftest -g -O2   conftest.c  >&5
+configure:6138: gcc -o conftest -g -O2   conftest.c  -lnl-genl-3 -lnl-3  >&5
 configure:6138: $? = 0
 configure:6138: result: yes
 configure:6145: checking ifaddrs.h usability
@@ -1776,7 +1589,7 @@ configure:6259: gcc -c -g -O2  conftest.c >&5
 configure:6259: $? = 0
 configure:6270: result: yes
 configure:6281: checking for getaddrinfo
-configure:6281: gcc -o conftest -g -O2   conftest.c  >&5
+configure:6281: gcc -o conftest -g -O2   conftest.c  -lnl-genl-3 -lnl-3  >&5
 configure:6281: $? = 0
 configure:6281: result: yes
 configure:6301: checking whether to build optimizer debugging code
@@ -1791,7 +1604,7 @@ configure:6792: checking whether we have Myricom Sniffer API
 configure:6874: result: no
 configure:6927: checking whether TurboCap is supported
 configure:6955: gcc -c -g -O2  conftest.c >&5
-conftest.c:48:24: fatal error: TcApi.h: No such file or directory
+conftest.c:52:24: fatal error: TcApi.h: No such file or directory
       #include <TcApi.h>
                         ^
 compilation terminated.
@@ -1837,6 +1650,10 @@ configure: failed program was:
 | #define NETINET_ETHER_H_DECLARES_ETHER_HOSTTON /**/
 | #define HAVE_DECL_ETHER_HOSTTON 1
 | #define HAVE_LINUX_WIRELESS_H 1
+| #define HAVE_LIBNL 1
+| #define HAVE_LIBNL_3_x 1
+| #define HAVE_LIBNL_NLE 1
+| #define HAVE_LIBNL_SOCKETS 1
 | #define HAVE_LINUX_ETHTOOL_H 1
 | #define HAVE_TPACKET_STATS 1
 | #define HAVE_LINUX_TPACKET_AUXDATA_TP_VLAN_TCI 1
@@ -1866,13 +1683,13 @@ configure:7059: $? = 0
 configure:7061: checking lex output file root
 configure:7075: result: lex.yy
 configure:7080: checking lex library
-configure:7094: gcc -o conftest -g -O2   conftest.c   >&5
-/tmp/ccQBdcMw.o: In function `input':
-/home/code5/Downloads/libpcap-1.8.1/lex.yy.c:1186: undefined reference to `yywrap'
-/tmp/ccQBdcMw.o: In function `yylex':
-/home/code5/Downloads/libpcap-1.8.1/lex.yy.c:884: undefined reference to `yywrap'
-/tmp/ccQBdcMw.o: In function `main':
-/home/code5/Downloads/libpcap-1.8.1/conftest.l:17: undefined reference to `yywrap'
+configure:7094: gcc -o conftest -g -O2   conftest.c   -lnl-genl-3 -lnl-3  >&5
+/tmp/ccN1bKQv.o: In function `input':
+/home/code5/git/learngit/libpcap-1.8.1/lex.yy.c:1186: undefined reference to `yywrap'
+/tmp/ccN1bKQv.o: In function `yylex':
+/home/code5/git/learngit/libpcap-1.8.1/lex.yy.c:884: undefined reference to `yywrap'
+/tmp/ccN1bKQv.o: In function `main':
+/home/code5/git/learngit/libpcap-1.8.1/conftest.l:17: undefined reference to `yywrap'
 collect2: error: ld returned 1 exit status
 configure:7094: $? = 1
 configure: failed program was:
@@ -1916,6 +1733,10 @@ configure: failed program was:
 | #define NETINET_ETHER_H_DECLARES_ETHER_HOSTTON /**/
 | #define HAVE_DECL_ETHER_HOSTTON 1
 | #define HAVE_LINUX_WIRELESS_H 1
+| #define HAVE_LIBNL 1
+| #define HAVE_LIBNL_3_x 1
+| #define HAVE_LIBNL_NLE 1
+| #define HAVE_LIBNL_SOCKETS 1
 | #define HAVE_LINUX_ETHTOOL_H 1
 | #define HAVE_TPACKET_STATS 1
 | #define HAVE_LINUX_TPACKET_AUXDATA_TP_VLAN_TCI 1
@@ -3707,11 +3528,11 @@ configure: failed program was:
 | {
 |   return ! yylex () + ! yywrap ();
 | }
-configure:7094: gcc -o conftest -g -O2   conftest.c -lfl  >&5
+configure:7094: gcc -o conftest -g -O2   conftest.c -lfl  -lnl-genl-3 -lnl-3  >&5
 configure:7094: $? = 0
 configure:7104: result: -lfl
 configure:7110: checking whether yytext is a pointer
-configure:7127: gcc -o conftest -g -O2   conftest.c -lfl  >&5
+configure:7127: gcc -o conftest -g -O2   conftest.c -lfl  -lnl-genl-3 -lnl-3  >&5
 configure:7127: $? = 0
 configure:7135: result: yes
 configure:7153: checking for capable lex
@@ -3732,7 +3553,7 @@ configure:7711: result: yes
 configure:8187: checking if sockaddr struct has the sa_len member
 configure:8205: gcc -c -g -O2  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:54:40: error: 'struct sockaddr' has no member named 'sa_len'
+conftest.c:58:40: error: 'struct sockaddr' has no member named 'sa_len'
  u_int i = sizeof(((struct sockaddr *)0)->sa_len)
                                         ^
 configure:8205: $? = 1
@@ -3777,6 +3598,10 @@ configure: failed program was:
 | #define NETINET_ETHER_H_DECLARES_ETHER_HOSTTON /**/
 | #define HAVE_DECL_ETHER_HOSTTON 1
 | #define HAVE_LINUX_WIRELESS_H 1
+| #define HAVE_LIBNL 1
+| #define HAVE_LIBNL_3_x 1
+| #define HAVE_LIBNL_NLE 1
+| #define HAVE_LIBNL_SOCKETS 1
 | #define HAVE_LINUX_ETHTOOL_H 1
 | #define HAVE_TPACKET_STATS 1
 | #define HAVE_LINUX_TPACKET_AUXDATA_TP_VLAN_TCI 1
@@ -3801,7 +3626,7 @@ configure:8239: $? = 0
 configure:8247: result: yes
 configure:8255: checking if dl_hp_ppa_info_t struct has dl_module_id_1 member
 configure:8274: gcc -c -g -O2  conftest.c >&5
-conftest.c:51:23: fatal error: sys/dlpi.h: No such file or directory
+conftest.c:55:23: fatal error: sys/dlpi.h: No such file or directory
  # include <sys/dlpi.h>
                        ^
 compilation terminated.
@@ -3847,6 +3672,10 @@ configure: failed program was:
 | #define NETINET_ETHER_H_DECLARES_ETHER_HOSTTON /**/
 | #define HAVE_DECL_ETHER_HOSTTON 1
 | #define HAVE_LINUX_WIRELESS_H 1
+| #define HAVE_LIBNL 1
+| #define HAVE_LIBNL_3_x 1
+| #define HAVE_LIBNL_NLE 1
+| #define HAVE_LIBNL_SOCKETS 1
 | #define HAVE_LINUX_ETHTOOL_H 1
 | #define HAVE_TPACKET_STATS 1
 | #define HAVE_LINUX_TPACKET_AUXDATA_TP_VLAN_TCI 1
@@ -3874,7 +3703,7 @@ configure:8429: result: yes
 configure:8440: Device for USB sniffing is /dev/usbmon
 configure:8448: checking linux/compiler.h usability
 configure:8448: gcc -c -g -O2  conftest.c >&5
-conftest.c:84:28: fatal error: linux/compiler.h: No such file or directory
+conftest.c:88:28: fatal error: linux/compiler.h: No such file or directory
  #include <linux/compiler.h>
                             ^
 compilation terminated.
@@ -3920,6 +3749,10 @@ configure: failed program was:
 | #define NETINET_ETHER_H_DECLARES_ETHER_HOSTTON /**/
 | #define HAVE_DECL_ETHER_HOSTTON 1
 | #define HAVE_LINUX_WIRELESS_H 1
+| #define HAVE_LIBNL 1
+| #define HAVE_LIBNL_3_x 1
+| #define HAVE_LIBNL_NLE 1
+| #define HAVE_LIBNL_SOCKETS 1
 | #define HAVE_LINUX_ETHTOOL_H 1
 | #define HAVE_TPACKET_STATS 1
 | #define HAVE_LINUX_TPACKET_AUXDATA_TP_VLAN_TCI 1
@@ -3967,7 +3800,7 @@ configure: failed program was:
 configure:8448: result: no
 configure:8448: checking linux/compiler.h presence
 configure:8448: gcc -E  conftest.c
-conftest.c:51:28: fatal error: linux/compiler.h: No such file or directory
+conftest.c:55:28: fatal error: linux/compiler.h: No such file or directory
  #include <linux/compiler.h>
                             ^
 compilation terminated.
@@ -4013,6 +3846,10 @@ configure: failed program was:
 | #define NETINET_ETHER_H_DECLARES_ETHER_HOSTTON /**/
 | #define HAVE_DECL_ETHER_HOSTTON 1
 | #define HAVE_LINUX_WIRELESS_H 1
+| #define HAVE_LIBNL 1
+| #define HAVE_LIBNL_3_x 1
+| #define HAVE_LIBNL_NLE 1
+| #define HAVE_LIBNL_SOCKETS 1
 | #define HAVE_LINUX_ETHTOOL_H 1
 | #define HAVE_TPACKET_STATS 1
 | #define HAVE_LINUX_TPACKET_AUXDATA_TP_VLAN_TCI 1
@@ -4049,7 +3886,7 @@ configure:8596: $? = 0
 configure:8604: result: yes
 configure:8639: checking bluetooth/bluetooth.h usability
 configure:8639: gcc -c -g -O2  conftest.c >&5
-conftest.c:87:33: fatal error: bluetooth/bluetooth.h: No such file or directory
+conftest.c:91:33: fatal error: bluetooth/bluetooth.h: No such file or directory
  #include <bluetooth/bluetooth.h>
                                  ^
 compilation terminated.
@@ -4095,6 +3932,10 @@ configure: failed program was:
 | #define NETINET_ETHER_H_DECLARES_ETHER_HOSTTON /**/
 | #define HAVE_DECL_ETHER_HOSTTON 1
 | #define HAVE_LINUX_WIRELESS_H 1
+| #define HAVE_LIBNL 1
+| #define HAVE_LIBNL_3_x 1
+| #define HAVE_LIBNL_NLE 1
+| #define HAVE_LIBNL_SOCKETS 1
 | #define HAVE_LINUX_ETHTOOL_H 1
 | #define HAVE_TPACKET_STATS 1
 | #define HAVE_LINUX_TPACKET_AUXDATA_TP_VLAN_TCI 1
@@ -4145,7 +3986,7 @@ configure: failed program was:
 configure:8639: result: no
 configure:8639: checking bluetooth/bluetooth.h presence
 configure:8639: gcc -E  conftest.c
-conftest.c:54:33: fatal error: bluetooth/bluetooth.h: No such file or directory
+conftest.c:58:33: fatal error: bluetooth/bluetooth.h: No such file or directory
  #include <bluetooth/bluetooth.h>
                                  ^
 compilation terminated.
@@ -4191,6 +4032,10 @@ configure: failed program was:
 | #define NETINET_ETHER_H_DECLARES_ETHER_HOSTTON /**/
 | #define HAVE_DECL_ETHER_HOSTTON 1
 | #define HAVE_LINUX_WIRELESS_H 1
+| #define HAVE_LIBNL 1
+| #define HAVE_LIBNL_3_x 1
+| #define HAVE_LIBNL_NLE 1
+| #define HAVE_LIBNL_SOCKETS 1
 | #define HAVE_LINUX_ETHTOOL_H 1
 | #define HAVE_TPACKET_STATS 1
 | #define HAVE_LINUX_TPACKET_AUXDATA_TP_VLAN_TCI 1
@@ -4213,7 +4058,11 @@ configure:8806: checking for pkg-config
 configure:8822: found /usr/bin/pkg-config
 configure:8834: result: pkg-config
 configure:8843: checking for D-Bus
-configure:8896: result: no
+configure:8846: result: yes
+configure:8854: checking whether the D-Bus library defines dbus_connection_read_write
+configure:8872: gcc -o conftest -g -O2 -I/usr/include/dbus-1.0 -I/usr/lib/i386-linux-gnu/dbus-1.0/include    conftest.c  -lnl-genl-3 -lnl-3  -ldbus-1  >&5
+configure:8872: $? = 0
+configure:8874: result: yes
 configure:8911: checking linux/net_tstamp.h usability
 configure:8911: gcc -c -g -O2  conftest.c >&5
 configure:8911: $? = 0
@@ -4243,24 +4092,24 @@ generated by GNU Autoconf 2.69.  Invocation command line was
 
 on code
 
-config.status:917: creating Makefile
-config.status:917: creating pcap-filter.manmisc
-config.status:917: creating pcap-linktype.manmisc
-config.status:917: creating pcap-tstamp.manmisc
-config.status:917: creating pcap-savefile.manfile
-config.status:917: creating pcap.3pcap
-config.status:917: creating pcap_compile.3pcap
-config.status:917: creating pcap_datalink.3pcap
-config.status:917: creating pcap_dump_open.3pcap
-config.status:917: creating pcap_get_tstamp_precision.3pcap
-config.status:917: creating pcap_list_datalinks.3pcap
-config.status:917: creating pcap_list_tstamp_types.3pcap
-config.status:917: creating pcap_open_dead.3pcap
-config.status:917: creating pcap_open_offline.3pcap
-config.status:917: creating pcap_set_tstamp_precision.3pcap
-config.status:917: creating pcap_set_tstamp_type.3pcap
-config.status:917: creating config.h
-config.status:1106: executing default-1 commands
+config.status:922: creating Makefile
+config.status:922: creating pcap-filter.manmisc
+config.status:922: creating pcap-linktype.manmisc
+config.status:922: creating pcap-tstamp.manmisc
+config.status:922: creating pcap-savefile.manfile
+config.status:922: creating pcap.3pcap
+config.status:922: creating pcap_compile.3pcap
+config.status:922: creating pcap_datalink.3pcap
+config.status:922: creating pcap_dump_open.3pcap
+config.status:922: creating pcap_get_tstamp_precision.3pcap
+config.status:922: creating pcap_list_datalinks.3pcap
+config.status:922: creating pcap_list_tstamp_types.3pcap
+config.status:922: creating pcap_open_dead.3pcap
+config.status:922: creating pcap_open_offline.3pcap
+config.status:922: creating pcap_set_tstamp_precision.3pcap
+config.status:922: creating pcap_set_tstamp_type.3pcap
+config.status:922: creating config.h
+config.status:1111: executing default-1 commands
 
 ## ---------------- ##
 ## Cache variables. ##
@@ -4347,9 +4196,7 @@ ac_cv_lbl_tpacket_stats=yes
 ac_cv_lbl_turbocap_api=no
 ac_cv_lbl_unaligned_fail=no
 ac_cv_lib_lex=-lfl
-ac_cv_lib_nl_3_nl_socket_alloc=no
-ac_cv_lib_nl_nl_handle_alloc=no
-ac_cv_lib_nl_nl_socket_alloc=no
+ac_cv_lib_nl_3_nl_socket_alloc=yes
 ac_cv_netfilter_can_compile=yes
 ac_cv_objext=o
 ac_cv_path_EGREP='/bin/grep -E'
@@ -4398,7 +4245,7 @@ CC='gcc'
 CFLAGS='-g -O2'
 CPP='gcc -E'
 CPPFLAGS=''
-DBUS_SRC=''
+DBUS_SRC='pcap-dbus.c'
 DEFS='-DHAVE_CONFIG_H'
 DEPENDENCY_CFLAG=''
 DYEXT='so'
@@ -4417,7 +4264,7 @@ LEX='flex'
 LEXLIB='-lfl'
 LEX_OUTPUT_ROOT='lex.yy'
 LIBOBJS=''
-LIBS=''
+LIBS=' -lnl-genl-3 -lnl-3  -ldbus-1 '
 LN_S='ln -s'
 LTLIBOBJS=''
 MAN_FILE_FORMATS='5'
@@ -4447,7 +4294,7 @@ VALGRINDTEST='valgrindtest'
 V_CCOPT=' -fvisibility=hidden -fpic'
 V_DEFS=' -D_U_="__attribute__((unused))"'
 V_FINDALLDEVS='fad-getad.c'
-V_INCLS=''
+V_INCLS=' -I/usr/include/libnl3 -I/usr/include/dbus-1.0 -I/usr/lib/i386-linux-gnu/dbus-1.0/include '
 V_LEX=''
 V_PCAP='linux'
 V_RPATH_OPT='-Wl,-rpath,'
@@ -4540,6 +4387,10 @@ target_vendor='pc'
 #define NETINET_ETHER_H_DECLARES_ETHER_HOSTTON /**/
 #define HAVE_DECL_ETHER_HOSTTON 1
 #define HAVE_LINUX_WIRELESS_H 1
+#define HAVE_LIBNL 1
+#define HAVE_LIBNL_3_x 1
+#define HAVE_LIBNL_NLE 1
+#define HAVE_LIBNL_SOCKETS 1
 #define HAVE_LINUX_ETHTOOL_H 1
 #define HAVE_TPACKET_STATS 1
 #define HAVE_LINUX_TPACKET_AUXDATA_TP_VLAN_TCI 1
@@ -4552,6 +4403,7 @@ target_vendor='pc'
 #define HAVE_LINUX_USBDEVICE_FS_H 1
 #define HAVE_USBDEVFS_CTRLTRANSFER_BREQUESTTYPE 1
 #define PCAP_SUPPORT_NETFILTER 1
+#define PCAP_SUPPORT_DBUS 1
 #define HAVE_LINUX_NET_TSTAMP_H 1
 #define PCAP_SUPPORT_PACKET_RING 1
 
@@ -4572,4 +4424,38 @@ generated by GNU Autoconf 2.69.  Invocation command line was
 
 on code
 
-config.status:917: creating pcap-config.tmp
+config.status:922: creating pcap-config.tmp
+
+## ---------------------- ##
+## Running config.status. ##
+## ---------------------- ##
+
+This file was extended by config.status, which was
+generated by GNU Autoconf 2.69.  Invocation command line was
+
+  CONFIG_FILES    = 
+  CONFIG_HEADERS  = 
+  CONFIG_LINKS    = 
+  CONFIG_COMMANDS = 
+  $ ./config.status --file=pcap-config.tmp:./pcap-config.in
+
+on code
+
+config.status:922: creating pcap-config.tmp
+
+## ---------------------- ##
+## Running config.status. ##
+## ---------------------- ##
+
+This file was extended by config.status, which was
+generated by GNU Autoconf 2.69.  Invocation command line was
+
+  CONFIG_FILES    = 
+  CONFIG_HEADERS  = 
+  CONFIG_LINKS    = 
+  CONFIG_COMMANDS = 
+  $ ./config.status --file=pcap-config.tmp:./pcap-config.in
+
+on code
+
+config.status:922: creating pcap-config.tmp
