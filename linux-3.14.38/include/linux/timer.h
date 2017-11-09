@@ -161,6 +161,7 @@ static inline void init_timer_on_stack_key(struct timer_list *timer,
 
 /**
  * timer_pending - is a timer pending?
+ * 判断指定定时器是否已经被加入内核定时器调度链表，add_timer/mod_timer后到执行定时器回调前返回1,其他时候返回0
  * @timer: the timer in question
  *
  * timer_pending will tell whether a given timer is currently pending,

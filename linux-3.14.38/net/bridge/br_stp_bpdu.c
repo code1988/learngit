@@ -30,34 +30,49 @@
 
 #define LLC_RESERVE sizeof(struct llc_pdu_un)
 
+/* 发BPDU包
+ * @p       指向要发包的桥端口
+ * @data    指向要发送的BPDU数据
+ * @length  要发送的BPDU数据长度，对于STP就是35
+ */
 static void br_send_bpdu(struct net_bridge_port *p,
 			 const unsigned char *data, int length)
 {
 	struct sk_buff *skb;
 
+    // 为BPDU包分配一个无主的skb
 	skb = dev_alloc_skb(length+LLC_RESERVE);
 	if (!skb)
 		return;
 
+    // 将新创建的skb跟桥端口设备关联
 	skb->dev = p->dev;
 	skb->protocol = htons(ETH_P_802_2);
 	skb->priority = TC_PRIO_CONTROL;
 
+    // 从skb的线性缓冲区中划出LLC_RESERVE长度headroom
 	skb_reserve(skb, LLC_RESERVE);
+    // 往skb中写入BPDU数据
 	memcpy(__skb_put(skb, length), data, length);
 
+    // 往skb中填充LLC头
 	llc_pdu_header_init(skb, LLC_PDU_TYPE_U, LLC_SAP_BSPAN,
 			    LLC_SAP_BSPAN, LLC_PDU_CMD);
 	llc_pdu_init_as_ui_cmd(skb);
 
+    // 往skb中填充MAC头
 	llc_mac_hdr_init(skb, p->dev->dev_addr, p->br->group_addr);
 
 	skb_reset_mac_header(skb);
 
+    /* 最后在调用设备的发送数据入口函数前会执行netfilter的NF_BR_LOCAL_OUT钩子(如果存在)
+     * 没有通过netfilter的报文就会被拦截而不会执行dev_queue_xmit
+     */
 	NF_HOOK(NFPROTO_BRIDGE, NF_BR_LOCAL_OUT, skb, NULL, skb->dev,
 		dev_queue_xmit);
 }
 
+// 设置STP定时器时间
 static inline void br_set_ticks(unsigned char *dest, int j)
 {
 	unsigned long ticks = (STP_HZ * j)/ HZ;
@@ -65,6 +80,7 @@ static inline void br_set_ticks(unsigned char *dest, int j)
 	put_unaligned_be16(ticks, dest);
 }
 
+// 获取STP定时器时间
 static inline int br_get_ticks(const unsigned char *src)
 {
 	unsigned long ticks = get_unaligned_be16(src);
@@ -72,14 +88,18 @@ static inline int br_get_ticks(const unsigned char *src)
 	return DIV_ROUND_UP(ticks * HZ, STP_HZ);
 }
 
-/* called under bridge lock */
+/* called under bridge lock 
+ * 生成配置BPDU并发送
+ * */
 void br_send_config_bpdu(struct net_bridge_port *p, struct br_config_bpdu *bpdu)
 {
 	unsigned char buf[35];
 
+    // 确保所在网桥使能了内核STP
 	if (p->br->stp_enabled != BR_KERNEL_STP)
 		return;
 
+    // 组包
 	buf[0] = 0;
 	buf[1] = 0;
 	buf[2] = 0;
@@ -114,6 +134,7 @@ void br_send_config_bpdu(struct net_bridge_port *p, struct br_config_bpdu *bpdu)
 	br_set_ticks(buf+31, bpdu->hello_time);
 	br_set_ticks(buf+33, bpdu->forward_delay);
 
+    // 发BPDU
 	br_send_bpdu(p, buf, 35);
 }
 

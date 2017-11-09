@@ -52,6 +52,9 @@ static void br_hello_timer_expired(unsigned long arg)
 	spin_unlock(&br->lock);
 }
 
+/* "根端口"的message_age定时器超时处理函数，触发意味着丢失了邻居
+ * 
+ */
 static void br_message_age_timer_expired(unsigned long arg)
 {
 	struct net_bridge_port *p = (struct net_bridge_port *) arg;
@@ -70,15 +73,20 @@ static void br_message_age_timer_expired(unsigned long arg)
 	 * According to the spec, the message age timer cannot be
 	 * running when we are the root bridge. So..  this was_root
 	 * check is redundant. I'm leaving it in for now, though.
+     * 注释也说了，本定时器不可能运行在"根桥"中，所以下面判断"根桥"是多余的
 	 */
 	spin_lock(&br->lock);
 	if (p->state == BR_STATE_DISABLED)
 		goto unlock;
 	was_root = br_is_root_bridge(br);
 
+    // 丢失邻居后的"根端口"将变成"指定端口"
 	br_become_designated_port(p);
+    // 更新该网桥的STP配置信息
 	br_configuration_update(br);
+    // 执行端口状态更新流程
 	br_port_state_selection(br);
+    // 如果该网桥从"非根桥"变成"根桥"，需要执行相关流程
 	if (br_is_root_bridge(br) && !was_root)
 		br_become_root_bridge(br);
  unlock:
@@ -134,7 +142,7 @@ static void br_tcn_timer_expired(unsigned long arg)
 	spin_unlock(&br->lock);
 }
 
-/* "根桥"的topology_change定时器超时处理函数，主要就是清除拓扑变化标志
+/* "根桥"的topology_change定时器超时处理函数，主要就是清除拓扑变化标志(即意味着结束发送TC置1的配置BPDU信息)
  * 当"根桥"自身拓扑发生变化或者从"指定端口"收到TCN-BPDU时，就会往"指定端口"发送TC置1的配置BPDU信息，
  * 直到topology_change定时器超时才结束发送 
  */
@@ -149,6 +157,9 @@ static void br_topology_change_timer_expired(unsigned long arg)
 	spin_unlock(&br->lock);
 }
 
+/* STP桥端口的hold定时器超时处理函数，主要就是处理可能存在的下一个配置发送请求
+ * 如果存在下一个配置BPDU发送请求，就在这里发送
+ */
 static void br_hold_timer_expired(unsigned long arg)
 {
 	struct net_bridge_port *p = (struct net_bridge_port *) arg;

@@ -14,6 +14,7 @@
    Note: TC_PRIO_BESTEFFORT does not mean that it is the most unhappy
    class, actually, as rule it will be handled with more care than
    filler or even bulk.
+   以下是用于流控的优先级定义
  */
 
 #define TC_PRIO_BESTEFFORT		0

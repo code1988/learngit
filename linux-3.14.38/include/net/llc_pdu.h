@@ -222,6 +222,7 @@ static inline struct llc_pdu_un *llc_pdu_un_hdr(struct sk_buff *skb)
 
 /**
  *	llc_pdu_header_init - initializes pdu header
+ *	初始化承载在指定skb线性数据区中的llc头
  *	@skb: input skb that header must be set into it.
  *	@type: type of PDU (U, I or S).
  *	@ssap: source sap.

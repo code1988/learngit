@@ -262,10 +262,11 @@ struct hh_cache {
 #define LL_RESERVED_SPACE_EXTRA(dev,extra) \
 	((((dev)->hard_header_len+(dev)->needed_headroom+(extra))&~(HH_DATA_MOD - 1)) + HH_DATA_MOD)
 
+// 以下是设备硬件地址操作集合结构
 struct header_ops {
 	int	(*create) (struct sk_buff *skb, struct net_device *dev,
 			   unsigned short type, const void *daddr,
-			   const void *saddr, unsigned int len);
+			   const void *saddr, unsigned int len);        // 填充skb中报文的MAC字段的回调
 	int	(*parse)(const struct sk_buff *skb, unsigned char *haddr);
 	int	(*rebuild)(struct sk_buff *skb);
 	int	(*cache)(const struct neighbour *neigh, struct hh_cache *hh, __be16 type);
@@ -1252,7 +1253,7 @@ struct net_device {
 	const struct forwarding_accel_ops *fwd_ops;
 
 	/* Hardware header description */
-	const struct header_ops *header_ops;
+	const struct header_ops *header_ops;        // 该设备的硬件地址操作集合
 
     /**<    以下二个flags都用来记录标准BSD风格的接口标志  IFF_*  */
 	unsigned int		flags;	/* interface flags (a la BSD)	这部分标志集合对用户空间可见 */
@@ -1966,6 +1967,14 @@ static inline void skb_gro_postpull_rcsum(struct sk_buff *skb,
 						  csum_partial(start, len, 0));
 }
 
+/* 填充skb中报文的以太网地址字段
+ * @skb     承载了报文的skb
+ * @dev     该报文所属的设备
+ * @type    以太网协议类型ETH_P_802_2
+ * @daddr   目的地址
+ * @saddr   源地址
+ * @len     已经存在的数据长度
+ */
 static inline int dev_hard_header(struct sk_buff *skb, struct net_device *dev,
 				  unsigned short type,
 				  const void *daddr, const void *saddr,

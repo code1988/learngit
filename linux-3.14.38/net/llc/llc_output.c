@@ -22,6 +22,7 @@
 
 /**
  *	llc_mac_hdr_init - fills MAC header fields
+ *	填充skb中的报文的MAC字段
  *	@skb: Address of the frame to initialize its MAC header
  *	@sa: The MAC source address
  *	@da: The MAC destination address
@@ -34,6 +35,7 @@ int llc_mac_hdr_init(struct sk_buff *skb,
 {
 	int rc = -EINVAL;
 
+    // 必须是以太网设备或环回设备
 	switch (skb->dev->type) {
 	case ARPHRD_ETHER:
 	case ARPHRD_LOOPBACK:

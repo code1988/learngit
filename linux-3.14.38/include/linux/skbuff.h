@@ -487,7 +487,7 @@ struct sk_buff {
 				peeked:1,       // 标识该skb是否有被预读过(MSG_PEEK)
 				nf_trace:1;
 	kmemcheck_bitfield_end(flags1);
-	__be16			protocol;       // 记录了该skb中承载的以太网帧协议ID(如vlan ID: 0x8100)
+	__be16			protocol;       // 记录了该skb中承载的以太网帧协议ID(如ETH_P_8021Q、ETH_P_802_2等)
 
 	void			(*destructor)(struct sk_buff *skb);
 #if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
@@ -1535,6 +1535,10 @@ static inline void skb_set_tail_pointer(struct sk_buff *skb, const int offset)
  */
 unsigned char *pskb_put(struct sk_buff *skb, struct sk_buff *tail, int len);
 unsigned char *skb_put(struct sk_buff *skb, unsigned int len);
+/* 写指针往后移len长度，返回移动前的写指针位置
+ *
+ * 备注：通常调用本函数后就会紧接着写入len长度的数据
+ */
 static inline unsigned char *__skb_put(struct sk_buff *skb, unsigned int len)
 {
 	unsigned char *tmp = skb_tail_pointer(skb);
@@ -1993,7 +1997,7 @@ struct sk_buff *__netdev_alloc_skb(struct net_device *dev, unsigned int length,
 
 /**
  *	netdev_alloc_skb - allocate an skbuff for rx on a specific device
- *	给指定网络设备(也可以不指定，意味着无主的)分配一个接收数据包用的skb
+ *	给指定网络设备(也可以不指定，意味着无主的)分配一个收发数据包用的skb
  *
  *	@dev: network device to receive on
  *	@length: length to allocate

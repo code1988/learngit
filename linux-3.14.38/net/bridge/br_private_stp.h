@@ -40,8 +40,8 @@ struct br_config_bpdu {
 	unsigned int	topology_change_ack:1;  // TCN-BPDU应答标志位，"指定端口"收到TCN-BPDU时，置1作为回复
 	bridge_id	root;       // "根桥ID"
 	int		root_path_cost; // 到根桥的路径开销
-	bridge_id	bridge_id;  // "指定桥ID"
-	port_id		port_id;    // "指定端口ID"
+	bridge_id	bridge_id;  // 发送该BPDU的网桥ID(由于只有"指定端口"才会发配置BPDU，所以该字段也代表了发送端口的"指定桥ID")
+	port_id		port_id;    // 发送该BPDU的端口ID(由于只有"指定端口"才会发配置BPDU，所以该字段也代表了"指定端口ID")
 	int		message_age;    // 消息年龄，每经过一个网桥+1
 	int		max_age;        // 最大消息生存时间(只由"根桥"设置)，当message_age > max_age时，该BPDU被丢弃
 	int		hello_time;     // 保活时间(只由"根桥"设置)

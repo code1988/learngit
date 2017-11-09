@@ -2932,7 +2932,7 @@ out:
 	return rc;
 }
 
-// 网络设备发送数据时L3->L2层总接口
+//	网络设备发送数据的总入口函数(显然只是个封装)
 int dev_queue_xmit(struct sk_buff *skb)
 {
 	return __dev_queue_xmit(skb, NULL);

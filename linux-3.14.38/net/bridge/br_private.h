@@ -161,25 +161,25 @@ struct net_bridge_port
 	u8				state;          // 桥端口的状态,BR_STATE_*
 	u16				port_no;        // 桥端口号(不同于设备的接口号，但实际使用时通常会保持一致)
 	unsigned char			topology_change_ack;    // 标示该桥端口是否需要回复一个TCA(收到TCN-BPDU时置1，回复了携带TCA的配置BPDU后清0)
-	unsigned char			config_pending;
-	port_id				port_id;            // 该STP端口ID号(优先级+桥端口号)
-	port_id				designated_port;    // 对于"指定端口"就是该桥端口ID，对于"根端口"就是链路对端STP端口ID
-	bridge_id			designated_root;    // 对于"指定端口"就是"根桥ID"
-	bridge_id			designated_bridge;  // 对于"指定端口"就是所在网桥ID，对于"根端口"就是链路对端STP网桥ID
-	u32				path_cost;  // 该桥端口的路径成本
-	u32				designated_cost;        // 对于"指定端口"就是所在网桥到"根桥"的路径开销
-	unsigned long			designated_age;
+	unsigned char			config_pending; // 发送配置BPDU时如果hold定时器处于开启状态时置1,用于控制配置BPDU发送频率
+	port_id			    port_id;            // 该STP端口ID号(优先级+桥端口号)
+	u32				    path_cost;          // 该桥端口的路径成本
+	port_id			designated_port;    // 所在链路的指定端口: 对于"指定端口"就是本身，对于"根端口"就是链路对端STP端口
+	bridge_id		designated_bridge;  // 所在链路的指定桥: 对于"指定端口"就是所在网桥，对于"根端口"就是链路对端STP网桥
+	bridge_id		designated_root;    // 指定根桥: 对于"指定端口"就是所在网桥的"根桥"，对于"根端口"就是其"指定桥"的"根桥"
+	u32				designated_cost;    // 指定根路径开销: 对于"指定端口"就是所在网桥的根路径开销，对于"根端口"就是其"指定桥"的根路径开销
+	unsigned long	designated_age;     // 指定年龄(只对"根端口有效")：jiffies - bpdu->message_age
 
 	struct timer_list		forward_delay_timer;    // 该STP端口控制listening->learning和learning->forwarding状态切换时延的定时器，间隔forward_delay
-	struct timer_list		hold_timer;
-	struct timer_list		message_age_timer;
+	struct timer_list		hold_timer;             // 用于控制配置BPDU发送频率的定时器，间隔BR_HOLD_TIME
+	struct timer_list		message_age_timer;      // 只用于"根端口"的message_age定时器，每次收到配置BPDU时刷新，超时时间为剩余的消息年龄
 	struct kobject			kobj;
 	struct rcu_head			rcu;
 
 	unsigned long 			flags;          // 桥端口的标志位集合:
 #define BR_HAIRPIN_MODE		0x00000001      // 
 #define BR_BPDU_GUARD           0x00000002  // 表示不会从该端口收到BPDU(一旦收到将会报错并disable该端口)
-#define BR_ROOT_BLOCK		0x00000004      // 
+#define BR_ROOT_BLOCK		0x00000004      // 表示该端口被block
 #define BR_MULTICAST_FAST_LEAVE	0x00000008  //
 #define BR_ADMIN_COST		0x00000010      //
 #define BR_LEARNING		0x00000020          // 表示具备学习功能
@@ -244,20 +244,20 @@ struct net_bridge
 	/* STP */
 	bridge_id			designated_root;    // "根桥ID"
 	bridge_id			bridge_id;          // 该网桥ID号
-	u32				root_path_cost;         // 从该网桥到根桥的总路径开销(显然对于根桥来说就是0)
+	u32				root_path_cost;         // 从该网桥的根路径开销(显然对于根桥来说为0；对于非根桥就是"根端口"的"指定根路径开销" + "根端口"的路径开销)
 
-	unsigned long			max_age;        // (该网桥自己的)配置信息老化时间，缺省20s
-	unsigned long			hello_time;     // (该网桥自己的)定时发送配置BPDU信息的间隔，缺省2s
-	unsigned long			forward_delay;  // (该网桥自己的)桥端口从listening->learning或者从learning->forwarding转换时间，缺省15s
+	unsigned long			max_age;        // (来自根桥的)最大消息生存时间(配置信息老化时间)，缺省20s
+	unsigned long			hello_time;     // (来自根桥的)定时发送配置BPDU信息的间隔，缺省2s
+	unsigned long			forward_delay;  // (来自根桥的)桥端口从listening->learning或者从learning->forwarding转换时间，缺省15s
 
 	unsigned long			ageing_time;    // 桥fdb老化时间，缺省5min
 
-	unsigned long			bridge_max_age;         // (来自根桥的)配置信息老化时间
-	unsigned long			bridge_hello_time;      // (来自根桥的)发送配置BPDU信息的间隔
-	unsigned long			bridge_forward_delay;   // (来自根桥的)桥端口从listening->learning或者从learning->forwarding转换时间
+	unsigned long			bridge_max_age;         // (网桥自身的)配置信息老化时间
+	unsigned long			bridge_hello_time;      // (网桥自身的)发送配置BPDU信息的间隔
+	unsigned long			bridge_forward_delay;   // (网桥自身的)桥端口从listening->learning或者从learning->forwarding转换时间
 
 	u8				group_addr[ETH_ALEN];   // stp组播地址，缺省就是01:80:c2:00:00:00
-	u16				root_port;              // 根端口(显然对于根桥来说根端口不存在)
+	u16				root_port;              // 根端口(显然对于根桥来说根端口不存在，该字段为0)
 
 	enum {
 		BR_NO_STP, 		/* no spanning tree */
@@ -265,7 +265,7 @@ struct net_bridge
 		BR_USER_STP,		/* new RSTP in userspace */
 	} stp_enabled;  // 网桥的stp功能开关
 
-	unsigned char			topology_change;            // 用于标识网络拓扑改变(只对"根桥"有用)
+	unsigned char			topology_change;            // 用于标识网络拓扑改变(只能被"根桥"发来的TC置1的配置BPDU设置)
 	unsigned char			topology_change_detected;   // 用于标识探测到网络拓扑改变(用于所有网桥)
 
 #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
@@ -303,7 +303,7 @@ struct net_bridge
 
 	struct timer_list		hello_timer;        // "根桥"定时发送配置BPDU信息的定时器，间隔hello_time(只对"根桥"有用，当发现自己不是"根桥"时关闭)
 	struct timer_list		tcn_timer;          // "非根桥"发送TCN-BPDU信息的定时器，间隔bridge_hello_time(只对"非根桥"有用，当收到回复的TCA时关闭)
-	struct timer_list		topology_change_timer;  // "根桥"发送TC置1的配置BPDU信息的定时器，间隔bridge_max_age + bridge_forward_delay(显然只对"根桥"有用)
+	struct timer_list		topology_change_timer;  // "根桥"结束发送TC置1的配置BPDU信息的定时器，超时bridge_max_age + bridge_forward_delay(只对"根桥"有用)
 	struct timer_list		gc_timer;
 	struct kobject			*ifobj;
 #ifdef CONFIG_BRIDGE_VLAN_FILTERING
