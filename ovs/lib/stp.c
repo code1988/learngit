@@ -159,7 +159,6 @@ static struct ovs_list *const all_stps OVS_GUARDED_BY(mutex) = &all_stps__;
          (PORT) = stp_next_enabled_port((STP), (PORT) + 1))
 static struct stp_port *
 stp_next_enabled_port(const struct stp *stp, const struct stp_port *port)
-    OVS_REQUIRES(mutex)
 {
     for (; port < &stp->ports[ARRAY_SIZE(stp->ports)]; port++) {
         if (port->state != STP_DISABLED) {
@@ -401,7 +400,6 @@ out:
 
 static void
 set_bridge_id(struct stp *stp, stp_identifier new_bridge_id)
-    OVS_REQUIRES(mutex)
 {
     if (new_bridge_id != stp->bridge_id) {
         bool root;
@@ -873,7 +871,7 @@ stp_port_get_state(const struct stp_port *p)
 
 /* Returns the role of port 'p'. */
 static enum stp_role
-stp_port_get_role(const struct stp_port *p) OVS_REQUIRES(mutex)
+stp_port_get_role(const struct stp_port *p) 
 {
     struct stp_port *root_port;
     enum stp_role role;
@@ -1032,7 +1030,7 @@ stp_port_disable_change_detection(struct stp_port *p)
 }
 
 static void
-stp_transmit_config(struct stp_port *p) OVS_REQUIRES(mutex)
+stp_transmit_config(struct stp_port *p) 
 {
     struct stp *stp = p->stp;
     bool root = stp_is_root_bridge(stp);
@@ -1083,7 +1081,6 @@ stp_transmit_config(struct stp_port *p) OVS_REQUIRES(mutex)
 static bool
 stp_supersedes_port_info(const struct stp_port *p,
                          const struct stp_config_bpdu *config)
-     OVS_REQUIRES(mutex)
 {
     if (ntohll(config->root_id) != p->designated_root) {
         return ntohll(config->root_id) < p->designated_root;
@@ -1100,7 +1097,6 @@ stp_supersedes_port_info(const struct stp_port *p,
 static void
 stp_record_config_information(struct stp_port *p,
                               const struct stp_config_bpdu *config)
-     OVS_REQUIRES(mutex)
 {
     p->designated_root = ntohll(config->root_id);
     p->designated_cost = ntohl(config->root_path_cost);
@@ -1112,7 +1108,6 @@ stp_record_config_information(struct stp_port *p,
 static void
 stp_record_config_timeout_values(struct stp *stp,
                                  const struct stp_config_bpdu  *config)
-     OVS_REQUIRES(mutex)
 {
     stp->max_age = ntohs(config->max_age);
     stp->hello_time = ntohs(config->hello_time);
@@ -1121,14 +1116,14 @@ stp_record_config_timeout_values(struct stp *stp,
 }
 
 static bool
-stp_is_designated_port(const struct stp_port *p) OVS_REQUIRES(mutex)
+stp_is_designated_port(const struct stp_port *p) 
 {
     return (p->designated_bridge == p->stp->bridge_id
             && p->designated_port == p->port_id);
 }
 
 static void
-stp_config_bpdu_generation(struct stp *stp) OVS_REQUIRES(mutex)
+stp_config_bpdu_generation(struct stp *stp) 
 {
     struct stp_port *p;
 
@@ -1140,7 +1135,7 @@ stp_config_bpdu_generation(struct stp *stp) OVS_REQUIRES(mutex)
 }
 
 static void
-stp_transmit_tcn(struct stp *stp) OVS_REQUIRES(mutex)
+stp_transmit_tcn(struct stp *stp) 
 {
     struct stp_port *p = stp->root_port;
     struct stp_tcn_bpdu tcn_bpdu;
@@ -1157,7 +1152,7 @@ stp_transmit_tcn(struct stp *stp) OVS_REQUIRES(mutex)
 }
 
 static void
-stp_configuration_update(struct stp *stp) OVS_REQUIRES(mutex)
+stp_configuration_update(struct stp *stp) 
 {
     stp_root_selection(stp);
     stp_designated_port_selection(stp);
@@ -1166,7 +1161,6 @@ stp_configuration_update(struct stp *stp) OVS_REQUIRES(mutex)
 
 static bool
 stp_supersedes_root(const struct stp_port *root, const struct stp_port *p)
-    OVS_REQUIRES(mutex)
 {
     int p_cost = p->designated_cost + p->path_cost;
     int root_cost = root->designated_cost + root->path_cost;
@@ -1185,7 +1179,7 @@ stp_supersedes_root(const struct stp_port *root, const struct stp_port *p)
 }
 
 static void
-stp_root_selection(struct stp *stp) OVS_REQUIRES(mutex)
+stp_root_selection(struct stp *stp) 
 {
     struct stp_port *p, *root;
 
@@ -1211,7 +1205,7 @@ stp_root_selection(struct stp *stp) OVS_REQUIRES(mutex)
 }
 
 static void
-stp_designated_port_selection(struct stp *stp) OVS_REQUIRES(mutex)
+stp_designated_port_selection(struct stp *stp) 
 {
     struct stp_port *p;
 
@@ -1230,7 +1224,7 @@ stp_designated_port_selection(struct stp *stp) OVS_REQUIRES(mutex)
 }
 
 static void
-stp_become_designated_port(struct stp_port *p) OVS_REQUIRES(mutex)
+stp_become_designated_port(struct stp_port *p) 
 {
     struct stp *stp = p->stp;
     p->designated_root = stp->designated_root;
@@ -1240,7 +1234,7 @@ stp_become_designated_port(struct stp_port *p) OVS_REQUIRES(mutex)
 }
 
 static void
-stp_port_state_selection(struct stp *stp) OVS_REQUIRES(mutex)
+stp_port_state_selection(struct stp *stp) 
 {
     struct stp_port *p;
 
@@ -1261,7 +1255,7 @@ stp_port_state_selection(struct stp *stp) OVS_REQUIRES(mutex)
 }
 
 static void
-stp_make_forwarding(struct stp_port *p) OVS_REQUIRES(mutex)
+stp_make_forwarding(struct stp_port *p) 
 {
     if (p->state == STP_BLOCKING) {
         stp_set_port_state(p, STP_LISTENING);
@@ -1270,7 +1264,7 @@ stp_make_forwarding(struct stp_port *p) OVS_REQUIRES(mutex)
 }
 
 static void
-stp_make_blocking(struct stp_port *p) OVS_REQUIRES(mutex)
+stp_make_blocking(struct stp_port *p) 
 {
     if (!(p->state & (STP_DISABLED | STP_BLOCKING))) {
         if (p->state & (STP_FORWARDING | STP_LEARNING)) {
@@ -1285,7 +1279,6 @@ stp_make_blocking(struct stp_port *p) OVS_REQUIRES(mutex)
 
 static void
 stp_set_port_state(struct stp_port *p, enum stp_state state)
-    OVS_REQUIRES(mutex)
 {
     if (state != p->state && !p->state_changed) {
         p->state_changed = true;
@@ -1298,7 +1291,7 @@ stp_set_port_state(struct stp_port *p, enum stp_state state)
 }
 
 static void
-stp_topology_change_detection(struct stp *stp) OVS_REQUIRES(mutex)
+stp_topology_change_detection(struct stp *stp) 
 {
     static struct vlog_rate_limit rl = VLOG_RATE_LIMIT_INIT(1, 5);
 
@@ -1316,14 +1309,14 @@ stp_topology_change_detection(struct stp *stp) OVS_REQUIRES(mutex)
 }
 
 static void
-stp_topology_change_acknowledged(struct stp *stp) OVS_REQUIRES(mutex)
+stp_topology_change_acknowledged(struct stp *stp) 
 {
     stp->topology_change_detected = false;
     stp_stop_timer(&stp->tcn_timer);
 }
 
 static void
-stp_acknowledge_topology_change(struct stp_port *p) OVS_REQUIRES(mutex)
+stp_acknowledge_topology_change(struct stp_port *p) 
 {
     p->topology_change_ack = true;
     stp_transmit_config(p);
@@ -1332,7 +1325,6 @@ stp_acknowledge_topology_change(struct stp_port *p) OVS_REQUIRES(mutex)
 static void
 stp_received_config_bpdu(struct stp *stp, struct stp_port *p,
                          const struct stp_config_bpdu *config)
-    OVS_REQUIRES(mutex)
 {
     if (ntohs(config->message_age) >= ntohs(config->max_age)) {
         VLOG_WARN("%s: received config BPDU with message age (%u) greater "
@@ -1373,7 +1365,6 @@ stp_received_config_bpdu(struct stp *stp, struct stp_port *p,
 
 static void
 stp_received_tcn_bpdu(struct stp *stp, struct stp_port *p)
-    OVS_REQUIRES(mutex)
 {
     if (p->state != STP_DISABLED) {
         if (stp_is_designated_port(p)) {
@@ -1384,14 +1375,14 @@ stp_received_tcn_bpdu(struct stp *stp, struct stp_port *p)
 }
 
 static void
-stp_hello_timer_expiry(struct stp *stp) OVS_REQUIRES(mutex)
+stp_hello_timer_expiry(struct stp *stp) 
 {
     stp_config_bpdu_generation(stp);
     stp_start_timer(&stp->hello_timer, 0);
 }
 
 static void
-stp_message_age_timer_expiry(struct stp_port *p) OVS_REQUIRES(mutex)
+stp_message_age_timer_expiry(struct stp_port *p) 
 {
     struct stp *stp = p->stp;
     bool root = stp_is_root_bridge(stp);
@@ -1413,7 +1404,7 @@ stp_message_age_timer_expiry(struct stp_port *p) OVS_REQUIRES(mutex)
 }
 
 static bool
-stp_is_designated_for_some_port(const struct stp *stp) OVS_REQUIRES(mutex)
+stp_is_designated_for_some_port(const struct stp *stp) 
 {
     const struct stp_port *p;
 
@@ -1426,7 +1417,7 @@ stp_is_designated_for_some_port(const struct stp *stp) OVS_REQUIRES(mutex)
 }
 
 static void
-stp_forward_delay_timer_expiry(struct stp_port *p) OVS_REQUIRES(mutex)
+stp_forward_delay_timer_expiry(struct stp_port *p) 
 {
     if (p->state == STP_LISTENING) {
         stp_set_port_state(p, STP_LEARNING);
@@ -1442,21 +1433,21 @@ stp_forward_delay_timer_expiry(struct stp_port *p) OVS_REQUIRES(mutex)
 }
 
 static void
-stp_tcn_timer_expiry(struct stp *stp) OVS_REQUIRES(mutex)
+stp_tcn_timer_expiry(struct stp *stp) 
 {
     stp_transmit_tcn(stp);
     stp_start_timer(&stp->tcn_timer, 0);
 }
 
 static void
-stp_topology_change_timer_expiry(struct stp *stp) OVS_REQUIRES(mutex)
+stp_topology_change_timer_expiry(struct stp *stp) 
 {
     stp->topology_change_detected = false;
     stp->topology_change = false;
 }
 
 static void
-stp_hold_timer_expiry(struct stp_port *p) OVS_REQUIRES(mutex)
+stp_hold_timer_expiry(struct stp_port *p) 
 {
     if (p->config_pending) {
         stp_transmit_config(p);
@@ -1465,7 +1456,6 @@ stp_hold_timer_expiry(struct stp_port *p) OVS_REQUIRES(mutex)
 
 static void
 stp_initialize_port(struct stp_port *p, enum stp_state state)
-    OVS_REQUIRES(mutex)
 {
     ovs_assert(state & (STP_DISABLED | STP_BLOCKING));
     stp_become_designated_port(p);
@@ -1486,7 +1476,7 @@ stp_initialize_port(struct stp_port *p, enum stp_state state)
 }
 
 static void
-stp_become_root_bridge(struct stp *stp) OVS_REQUIRES(mutex)
+stp_become_root_bridge(struct stp *stp) 
 {
     stp->max_age = stp->bridge_max_age;
     stp->hello_time = stp->bridge_hello_time;
@@ -1498,21 +1488,20 @@ stp_become_root_bridge(struct stp *stp) OVS_REQUIRES(mutex)
 }
 
 static void
-stp_start_timer(struct stp_timer *timer, int value) OVS_REQUIRES(mutex)
+stp_start_timer(struct stp_timer *timer, int value) 
 {
     timer->value = value;
     timer->active = true;
 }
 
 static void
-stp_stop_timer(struct stp_timer *timer) OVS_REQUIRES(mutex)
+stp_stop_timer(struct stp_timer *timer) 
 {
     timer->active = false;
 }
 
 static bool
 stp_timer_expired(struct stp_timer *timer, int elapsed, int timeout)
-    OVS_REQUIRES(mutex)
 {
     if (timer->active) {
         timer->value += elapsed;
@@ -1547,7 +1536,7 @@ clamp(int x, int min, int max)
 }
 
 static void
-stp_update_bridge_timers(struct stp *stp) OVS_REQUIRES(mutex)
+stp_update_bridge_timers(struct stp *stp) 
 {
     int ht, ma, fd;
 
@@ -1568,7 +1557,6 @@ stp_update_bridge_timers(struct stp *stp) OVS_REQUIRES(mutex)
 
 static void
 stp_send_bpdu(struct stp_port *p, const void *bpdu, size_t bpdu_size)
-    OVS_REQUIRES(mutex)
 {
     struct eth_header *eth;
     struct llc_header *llc;
@@ -1598,7 +1586,7 @@ stp_send_bpdu(struct stp_port *p, const void *bpdu, size_t bpdu_size)
 /* Unixctl. */
 
 static struct stp *
-stp_find(const char *name) OVS_REQUIRES(mutex)
+stp_find(const char *name) 
 {
     struct stp *stp;
 
@@ -1641,7 +1629,6 @@ static void
 stp_bridge_id_details(struct ds *ds, const stp_identifier bridge_id,
                       const int hello_time, const int max_age,
                       const int forward_delay)
-    OVS_REQUIRES(mutex)
 {
     uint16_t priority = bridge_id >> 48;
     ds_put_format(ds, "\tstp-priority\t%"PRIu16"\n", priority);
@@ -1659,7 +1646,6 @@ stp_bridge_id_details(struct ds *ds, const stp_identifier bridge_id,
 
 static void
 stp_print_details(struct ds *ds, const struct stp *stp)
-    OVS_REQUIRES(mutex)
 {
     const uint16_t port_no_bits = (UINT16_C(1) << 8) - 1;
 

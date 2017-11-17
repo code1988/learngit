@@ -89,6 +89,8 @@ struct dp_packet;
 /* RSTP Bridge identifier [9.2.5].  Top four most significant bits are a
  * priority value. The next most significant twelve bits are a locally
  * assigned system ID extension. Bottom 48 bits are MAC address of bridge.
+ *
+ * 定义了RSTP的桥ID类型，最高的4bits表示优先级，紧接着的12bits表示本地分配的系统扩展ID，剩下48bits表示网桥的MAC
  */
 typedef uint64_t rstp_identifier;
 

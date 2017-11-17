@@ -173,7 +173,9 @@ enum topology_change_state_machine {
 };
 
 
-/* [17.18.4, 17.13, Table 17-1]. */
+/* [17.18.4, 17.13, Table 17-1]. 
+ * 定义了网桥的定时器参数值集合
+ * */
 struct rstp_times {
     /* [17.13.5 - Bridge Forward Delay] The delay (expressed in seconds) used
      * by STP Bridges (17.4) to transition Root and Designated Ports to
@@ -198,7 +200,9 @@ struct rstp_times {
     uint16_t message_age;
 };
 
-/* Priority vector [17.6] */
+/* Priority vector [17.6] 
+ * 定义了网桥的优先级向量，每个成员的优先级依次下降
+ * */
 struct rstp_priority_vector {
     rstp_identifier root_bridge_id;
     uint32_t root_path_cost;
@@ -224,6 +228,7 @@ enum rstp_bpdu_flag {
 
 /* Rapid Spanning Tree BPDU [9.3.3] */
 OVS_PACKED(
+// 定义了rstp BPDU结构
 struct rstp_bpdu {
     ovs_be16 protocol_identifier;
     uint8_t protocol_version_identifier;
@@ -256,14 +261,15 @@ enum rstp_rcvd_info {
     OTHER_INFO
 };
 
+// 定义了rstp端口信息结构
 struct rstp_port {
-    struct ovs_refcount ref_cnt;
+    struct ovs_refcount ref_cnt;        // 该rstp端口的引用计数
 
-    struct rstp *rstp OVS_GUARDED_BY(rstp_mutex);
+    struct rstp *rstp OVS_GUARDED_BY(rstp_mutex);   // 指向所属的rstp实例
     struct hmap_node node OVS_GUARDED_BY(rstp_mutex); /* In rstp->ports. */
     void *aux OVS_GUARDED_BY(rstp_mutex);
-    char *port_name;
-    struct rstp_bpdu received_bpdu_buffer OVS_GUARDED_BY(rstp_mutex);
+    char *port_name;                    // 端口名
+    struct rstp_bpdu received_bpdu_buffer OVS_GUARDED_BY(rstp_mutex);   // BPDU缓冲区
     /*************************************************************************
      * MAC status parameters
      ************************************************************************/
@@ -271,10 +277,13 @@ struct rstp_port {
      * The value of this parameter is TRUE if [...] the MAC entity can be used
      * to transmit and/or receive frames, and its use is permitted by
      * management.
+     * 标识对应的MAC是否可以用来发送/接收报文
      */
     bool mac_operational OVS_GUARDED_BY(rstp_mutex);
 
-    /* [14.8.2.2] Administrative Bridge Port State */
+    /* [14.8.2.2] Administrative Bridge Port State 
+     * 标识该桥端口是否可被管理
+     * */
     bool is_administrative_bridge_port OVS_GUARDED_BY(rstp_mutex);
 
     /* [6.4.3 - operPointToPointMAC]
@@ -286,6 +295,7 @@ struct rstp_port {
      *  If adminPointToPointMAC is set to ForceTrue, then operPointToPointMAC
      *  shall be set True. If adminPointToPointMAC is set to ForceFalse, then
      *  operPointToPointMAC shall be set False.
+     *  标识该桥端口是否连接的是点对点链路(取值跟下面的admin_point_to_point_mac有关)
      */
     bool oper_point_to_point_mac OVS_GUARDED_BY(rstp_mutex);
 
@@ -299,6 +309,7 @@ struct rstp_port {
      *  c) Auto. The administrator requires the point-to-point status of the
      *     MAC to be determined in accordance with the specific MAC procedures
      *     defined in 6.5.
+     *  该桥端口的链路类型：强制点对点、强制非点对点、自动
      */
     enum rstp_admin_point_to_point_mac_state admin_point_to_point_mac OVS_GUARDED_BY(rstp_mutex);
 
@@ -325,17 +336,22 @@ struct rstp_port {
 
     /* Port number and priority
      * >=1 (max 12 bits [9.2.7])
+     * 端口号(标准STP端口号占用8位，RSTP端口号扩展到12位)
      */
     uint16_t port_number OVS_GUARDED_BY(rstp_mutex);
 
     /* Port priority
      * Range: 0-240 in steps of 16 (table 17-2)
+     * 端口优先级
+     *
+     * 备注：标准STP端口优先级占用8位，RSTP端口优先级实际只使用高4位(也就是拥有16个间隔0x10的优先级)，剩下低4位用于端口号
      */
     uint8_t priority OVS_GUARDED_BY(rstp_mutex);
 
     /* [17.13.11 - PortPathCost]
      * The Port's contribution, when it is the Root Port, to the Root Path Cost
      * (17.3.1, 17.5, 17.6) for the Bridge.
+     * 端口路径成本
      */
     uint32_t port_path_cost OVS_GUARDED_BY(rstp_mutex);
 
@@ -345,18 +361,21 @@ struct rstp_port {
     /* [17.17.1 - edgeDelayWhile]
      * The Edge Delay timer. The time remaining, in the absence of a received
      * BPDU, before this port is identified as an operEdgePort.
+     * edge dealy定时器超时值
      */
     uint16_t edge_delay_while OVS_GUARDED_BY(rstp_mutex);
 
     /* [17.17.2 - fdWhile]
      * The Forward Delay timer. Used to delay Port State transitions until
      * other Bridges have received spanning tree information.
+     * forward delay 定时器超时值
      */
     uint16_t fd_while OVS_GUARDED_BY(rstp_mutex);
 
     /* [17.17.3 - helloWhen]
      * The Hello timer. Used to ensure that at least one BPDU is transmitted by
      * a Designated Port in each HelloTime period.
+     * hello定时器超时值
      */
     uint16_t hello_when OVS_GUARDED_BY(rstp_mutex);
 
@@ -366,12 +385,14 @@ struct rstp_port {
      * synchronize its migration state with this Port before the receipt of a
      * BPDU can cause this Port to change the BPDU types it transmits.
      * Initialized to MigrateTime (17.13.9).
+     * Migration Delay定时器超时值 
      */
     uint16_t mdelay_while OVS_GUARDED_BY(rstp_mutex);
 
     /* [17.17.5 - rbWhile]
      * The Recent Backup timer. Maintained at its initial value, twice
      * HelloTime, while the Port is a Backup Port.
+     * Recent Backup定时器超时值，用于备份端口，2倍的hellotime 
      */
     uint16_t rb_while OVS_GUARDED_BY(rstp_mutex);
 
@@ -380,17 +401,20 @@ struct rstp_port {
      * information received by this Port [portPriority (17.19.21) and portTimes
      * (17.19.22)] is aged out if not refreshed by the receipt of a further
      * Configuration Message.
+     * Received Info定时器超时值，端口每收到一个BPDU报文时刷新该定时器 
      */
     uint16_t rcvd_info_while OVS_GUARDED_BY(rstp_mutex);
 
     /* [17.17.7 - rrWhile]
      * The Recent Root timer.
+     * Recent Root定时器超时值 
      */
     uint16_t rr_while OVS_GUARDED_BY(rstp_mutex);
 
     /* [17.17.8 - tcWhile]
      * The Topology Change timer. TCN Messages are sent while this timer is
      * running.
+     * Topology Change定时器超时值 
      */
     uint16_t tc_while OVS_GUARDED_BY(rstp_mutex);
 
@@ -706,9 +730,10 @@ struct rstp_port {
     enum topology_change_state_machine topology_change_sm_state OVS_GUARDED_BY(rstp_mutex);
 };
 
+// 定义了rstp实例
 struct rstp {
-    struct ovs_list node OVS_GUARDED_BY(rstp_mutex);   /* In rstp instances list */
-    char *name;     /* Bridge name. */
+    struct ovs_list node OVS_GUARDED_BY(rstp_mutex);   /* In rstp instances list  RSTP实例的链表节点 */
+    char *name;     /* Bridge name. 网桥名 */
 
     /* Changes in last SM execution. */
     bool changes OVS_GUARDED_BY(rstp_mutex);
@@ -718,10 +743,15 @@ struct rstp {
 
     /* Bridge MAC address
      * (stored in the least significant 48 bits of rstp_identifier).
+     * 桥ID
      */
     rstp_identifier address OVS_GUARDED_BY(rstp_mutex); /* [7.12.5] */
 
-    /* Bridge priority */
+    /* Bridge priority  
+     * 桥优先级
+     *
+     * 备注：标准STP桥优先级占用16位，而RSTP桥优先级实际只使用高4位(也就是拥有16个间隔0x1000的优先级) 
+     * */
     uint16_t priority OVS_GUARDED_BY(rstp_mutex);      /* Valid values: 0-61440 in steps of 4096 */
 
     /*************************************************************************
@@ -753,6 +783,7 @@ struct rstp {
 
     /* [17.13.2 - Ageing Time]
      * The Ageing Time parameter for the Bridge (7.9.2, Table 7-5).
+     * 网桥fdb老化时间，缺省5min
      */
     uint32_t ageing_time OVS_GUARDED_BY(rstp_mutex);
 
@@ -760,24 +791,28 @@ struct rstp {
      * The Force Protocol Version parameter for the Bridge (17.4, 14.8.1).
      * This can take the value 0 (STP Compatibility mode) or 2 (the default,
      * normal operation).
+     * 缺省2,表示rstp
      */
     enum rstp_force_protocol_version force_protocol_version OVS_GUARDED_BY(rstp_mutex);
 
     /* [17.13.5 - Bridge Forward Delay]
      *  The delay used by STP Bridges (17.4) to transition Root and Designated
      * Ports to Forwarding (Table 17-1).
+     * 缺省15s
      */
     uint16_t bridge_forward_delay OVS_GUARDED_BY(rstp_mutex);
 
     /* [17.13.6 - Bridge Hello Time]
      *  The interval between periodic transmissions of Configuration Messages
      * by Designated Ports (Table 17-1).
+     * 指定端口发送配置BPDU的间隔，缺省2s
      */
     uint16_t bridge_hello_time OVS_GUARDED_BY(rstp_mutex);
 
     /* [17.13.8 - Bridge Max Age]
      * The maximum age of the information transmitted by the Bridge when it is
      * the Root Bridge (Table 17-1).
+     * 当作为根桥时，配置BPDU的老化时间
      */
     uint16_t bridge_max_age OVS_GUARDED_BY(rstp_mutex);
 
@@ -785,12 +820,14 @@ struct rstp {
      * The initial value of the mdelayWhile and edgeDelayWhile timers (17.17.4,
      * 17.17.1), fixed for all RSTP implementations conforming to this
      * specification (Table 17-1).
+     * mdelayWhile(rstp<-->stp切换最小间隔)和edgeDelayWhile(生成树端口->edge端口切换间隔)这两个定时器的超时时间 
      */
     uint16_t migrate_time OVS_GUARDED_BY(rstp_mutex);
 
     /* [17.13.12 - Transmit Hold Count]
      * The Transmit Hold Count (Table 17-1) used by the Port Transmit state
      * machine to limit transmission rate.
+     * BPDU发送间隔
      */
     uint16_t transmit_hold_count OVS_GUARDED_BY(rstp_mutex);
 
@@ -803,6 +840,7 @@ struct rstp {
      * A Boolean controlled by the system initialization (17.16). If TRUE
      * causes all state machines, including per Port state machines, to
      * continuously execute their initial state.
+     * 控制该rstp实例初始化的标志，true会引起该rstp实例中的所有状态机(包括每个端口状态机)执行各自的初始化
      */
     bool begin OVS_GUARDED_BY(rstp_mutex);
 
@@ -813,6 +851,7 @@ struct rstp {
      * Bridge Identifiers are compared, and a component derived from the Bridge
      * Address (7.12.5), which guarantees uniqueness of the Bridge Identifiers
      * of different Bridges.
+     * 该网桥ID
      */
     rstp_identifier bridge_identifier OVS_GUARDED_BY(rstp_mutex);
 
@@ -820,6 +859,7 @@ struct rstp {
      * The bridge priority vector, as defined in 17.6. The first (RootBridgeID)
      * and third (DesignatedBridgeID) components are both equal to the value
      * of the Bridge Identifier (17.18.2). The other components are zero.
+     * 该网桥的优先级向量(只用到了root_bridge_id、designated_bridge_id两个字段，并且这两个字段值都等于自身的桥ID)
      */
     struct rstp_priority_vector bridge_priority OVS_GUARDED_BY(rstp_mutex);
 
@@ -827,18 +867,21 @@ struct rstp {
      * BridgeTimes comprises four components: the current values of Bridge
      * Forward Delay, Bridge Hello Time, Bridge Max Age (17.13, Table 17-1),
      * and a Message Age of zero.
+     * 该网桥当前使用中的4个定时器参数值集合
      */
     struct rstp_times bridge_times OVS_GUARDED_BY(rstp_mutex);
 
     /* [17.18.6 - rootPriority]
      * The first four components of the Bridge's root priority vector, as
      * defined in 17.6.
+     * 该网桥的根优先级向量
      */
     struct rstp_priority_vector root_priority OVS_GUARDED_BY(rstp_mutex);
 
     /* [17.18.5 - rootPortId]
      * The Port Identifier of the Root Port. This is the fifth component of
      * the root priority vector, as defined in 17.6.
+     * 该网桥的根端口ID
      */
     uint16_t root_port_id OVS_GUARDED_BY(rstp_mutex);
 
@@ -847,6 +890,7 @@ struct rstp {
      * parameter values (Message Age, Max Age, Forward Delay, and Hello Time),
      * derived from the values stored in portTimes (17.19.22) for the Root Port
      * or from BridgeTimes (17.18.4).
+     * 该网桥的根定时器参数值集合(定义待考证)
      */
     struct rstp_times root_times OVS_GUARDED_BY(rstp_mutex);
 
@@ -854,20 +898,25 @@ struct rstp {
 
     /* [17.20.11] rstpVersion
      * TRUE if Force Protocol Version (17.13.4) is greater than or equal to 2.
+     * 如果rstp_force_protocol_version >= 2，则该字段为true
      */
     bool rstp_version OVS_GUARDED_BY(rstp_mutex);
 
     /* [17.20.12] stpVersion
      * TRUE if Force Protocol Version (17.13.4) is less than 2.
+     * 如果rstp_force_protocol_version < 2，则该字段为true
      */
     bool stp_version OVS_GUARDED_BY(rstp_mutex);
 
     /* Ports */
     struct hmap ports OVS_GUARDED_BY(rstp_mutex);
 
+    // 该rstp实例的引用计数
     struct ovs_refcount ref_cnt;
 
-    /* Interface to client. */
+    /* Interface to client. 
+     * 指向该rstp实例的BPDU发送钩子函数
+     * */
     void (*send_bpdu)(struct dp_packet *bpdu, void *port_aux, void *rstp_aux);
     void *aux;
 

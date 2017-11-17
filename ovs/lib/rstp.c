@@ -173,7 +173,6 @@ rstp_port_role_name(enum rstp_port_role role)
  * while taking a new reference. */
 struct rstp *
 rstp_ref(struct rstp *rstp)
-    OVS_EXCLUDED(rstp_mutex)
 {
     if (rstp) {
         ovs_refcount_ref(&rstp->ref_cnt);
@@ -184,7 +183,6 @@ rstp_ref(struct rstp *rstp)
 /* Frees RSTP struct when reference count reaches zero. */
 void
 rstp_unref(struct rstp *rstp)
-    OVS_EXCLUDED(rstp_mutex)
 {
     if (rstp && ovs_refcount_unref_relaxed(&rstp->ref_cnt) == 1) {
         ovs_mutex_lock(&rstp_mutex);
@@ -209,7 +207,6 @@ rstp_unref(struct rstp *rstp)
  * port_number). */
 int
 rstp_port_get_number(const struct rstp_port *p)
-    OVS_EXCLUDED(rstp_mutex)
 {
     int number;
 
@@ -223,7 +220,6 @@ rstp_port_get_number(const struct rstp_port *p)
 /* Decrements the State Machines' timers. */
 void
 rstp_tick_timers(struct rstp *rstp)
-    OVS_EXCLUDED(rstp_mutex)
 {
     ovs_mutex_lock(&rstp_mutex);
     decrease_rstp_port_timers__(rstp);
@@ -234,7 +230,6 @@ rstp_tick_timers(struct rstp *rstp)
 void
 rstp_port_received_bpdu(struct rstp_port *rp, const void *bpdu,
                         size_t bpdu_size)
-    OVS_EXCLUDED(rstp_mutex)
 {
     ovs_mutex_lock(&rstp_mutex);
     /* Only process packets on ports that have RSTP enabled. */
@@ -246,7 +241,6 @@ rstp_port_received_bpdu(struct rstp_port *rp, const void *bpdu,
 
 void
 rstp_init(void)
-    OVS_EXCLUDED(rstp_mutex)
 {
     unixctl_command_register("rstp/tcn", "[bridge]", 0, 1, rstp_unixctl_tcn,
                              NULL);
@@ -260,7 +254,6 @@ rstp_create(const char *name, rstp_identifier bridge_address,
             void (*send_bpdu)(struct dp_packet *bpdu, void *port_aux,
                               void *rstp_aux),
             void *aux)
-    OVS_EXCLUDED(rstp_mutex)
 {
     struct rstp *rstp;
 
@@ -311,7 +304,6 @@ rstp_create(const char *name, rstp_identifier bridge_address,
  */
 static void
 set_bridge_priority__(struct rstp *rstp)
-    OVS_REQUIRES(rstp_mutex)
 {
     struct rstp_port *p;
 
@@ -334,7 +326,6 @@ set_bridge_priority__(struct rstp *rstp)
 /* Sets the bridge address. */
 static void
 rstp_set_bridge_address__(struct rstp *rstp, rstp_identifier bridge_address)
-    OVS_REQUIRES(rstp_mutex)
 {
     VLOG_DBG("%s: set bridge address to: "RSTP_ID_FMT"", rstp->name,
              RSTP_ID_ARGS(bridge_address));
@@ -349,7 +340,6 @@ rstp_set_bridge_address__(struct rstp *rstp, rstp_identifier bridge_address)
 /* Sets the bridge address. */
 void
 rstp_set_bridge_address(struct rstp *rstp, rstp_identifier bridge_address)
-    OVS_EXCLUDED(rstp_mutex)
 {
     ovs_mutex_lock(&rstp_mutex);
     rstp_set_bridge_address__(rstp, bridge_address);
@@ -358,7 +348,6 @@ rstp_set_bridge_address(struct rstp *rstp, rstp_identifier bridge_address)
 
 const char *
 rstp_get_name(const struct rstp *rstp)
-    OVS_EXCLUDED(rstp_mutex)
 {
     char *name;
 
@@ -370,7 +359,6 @@ rstp_get_name(const struct rstp *rstp)
 
 rstp_identifier
 rstp_get_bridge_id(const struct rstp *rstp)
-    OVS_EXCLUDED(rstp_mutex)
 {
     rstp_identifier bridge_id;
 
@@ -384,7 +372,6 @@ rstp_get_bridge_id(const struct rstp *rstp)
 /* Sets the bridge priority. */
 static void
 rstp_set_bridge_priority__(struct rstp *rstp, int new_priority)
-    OVS_REQUIRES(rstp_mutex)
 {
     new_priority = ROUND_DOWN(new_priority, RSTP_PRIORITY_STEP);
 
@@ -402,7 +389,6 @@ rstp_set_bridge_priority__(struct rstp *rstp, int new_priority)
 
 void
 rstp_set_bridge_priority(struct rstp *rstp, int new_priority)
-    OVS_EXCLUDED(rstp_mutex)
 {
     ovs_mutex_lock(&rstp_mutex);
     rstp_set_bridge_priority__(rstp, new_priority);
@@ -412,7 +398,6 @@ rstp_set_bridge_priority(struct rstp *rstp, int new_priority)
 /* Sets the bridge ageing time. */
 static void
 rstp_set_bridge_ageing_time__(struct rstp *rstp, int new_ageing_time)
-    OVS_REQUIRES(rstp_mutex)
 {
     if (new_ageing_time >= RSTP_MIN_AGEING_TIME
         && new_ageing_time <= RSTP_MAX_AGEING_TIME) {
@@ -424,7 +409,6 @@ rstp_set_bridge_ageing_time__(struct rstp *rstp, int new_ageing_time)
 
 void
 rstp_set_bridge_ageing_time(struct rstp *rstp, int new_ageing_time)
-    OVS_EXCLUDED(rstp_mutex)
 {
     ovs_mutex_lock(&rstp_mutex);
     rstp_set_bridge_ageing_time__(rstp, new_ageing_time);
@@ -436,7 +420,6 @@ rstp_set_bridge_ageing_time(struct rstp *rstp, int new_ageing_time)
  */
 static void
 reinitialize_rstp__(struct rstp *rstp)
-    OVS_REQUIRES(rstp_mutex)
 {
     struct rstp temp;
     static struct hmap ports;
@@ -491,7 +474,6 @@ reinitialize_rstp__(struct rstp *rstp)
 static void
 rstp_set_bridge_force_protocol_version__(struct rstp *rstp,
                 enum rstp_force_protocol_version new_force_protocol_version)
-    OVS_REQUIRES(rstp_mutex)
 {
     if (new_force_protocol_version != rstp->force_protocol_version &&
             (new_force_protocol_version == FPV_STP_COMPATIBILITY ||
@@ -520,7 +502,6 @@ rstp_set_bridge_force_protocol_version__(struct rstp *rstp,
 void
 rstp_set_bridge_force_protocol_version(struct rstp *rstp,
                 enum rstp_force_protocol_version new_force_protocol_version)
-    OVS_EXCLUDED(rstp_mutex)
 {
     ovs_mutex_lock(&rstp_mutex);
     rstp_set_bridge_force_protocol_version__(rstp, new_force_protocol_version);
@@ -530,7 +511,6 @@ rstp_set_bridge_force_protocol_version(struct rstp *rstp,
 /* Sets the bridge Hello Time parameter. */
 static void
 rstp_set_bridge_hello_time__(struct rstp *rstp)
-    OVS_REQUIRES(rstp_mutex)
 {
     VLOG_DBG("%s: set RSTP Hello Time to %d", rstp->name,
              RSTP_BRIDGE_HELLO_TIME);
@@ -541,7 +521,6 @@ rstp_set_bridge_hello_time__(struct rstp *rstp)
 /* Sets the bridge max age parameter. */
 static void
 rstp_set_bridge_max_age__(struct rstp *rstp, int new_max_age)
-    OVS_REQUIRES(rstp_mutex)
 {
     if (rstp->bridge_max_age != new_max_age
         && new_max_age >= RSTP_MIN_BRIDGE_MAX_AGE
@@ -562,7 +541,6 @@ rstp_set_bridge_max_age__(struct rstp *rstp, int new_max_age)
 
 void
 rstp_set_bridge_max_age(struct rstp *rstp, int new_max_age)
-    OVS_EXCLUDED(rstp_mutex)
 {
     ovs_mutex_lock(&rstp_mutex);
     rstp_set_bridge_max_age__(rstp, new_max_age);
@@ -572,7 +550,6 @@ rstp_set_bridge_max_age(struct rstp *rstp, int new_max_age)
 /* Sets the bridge forward delay parameter. */
 static void
 rstp_set_bridge_forward_delay__(struct rstp *rstp, int new_forward_delay)
-    OVS_REQUIRES(rstp_mutex)
 {
     if (rstp->bridge_forward_delay != new_forward_delay
             && new_forward_delay >= RSTP_MIN_BRIDGE_FORWARD_DELAY
@@ -590,7 +567,6 @@ rstp_set_bridge_forward_delay__(struct rstp *rstp, int new_forward_delay)
 
 void
 rstp_set_bridge_forward_delay(struct rstp *rstp, int new_forward_delay)
-    OVS_EXCLUDED(rstp_mutex)
 {
     ovs_mutex_lock(&rstp_mutex);
     rstp_set_bridge_forward_delay__(rstp, new_forward_delay);
@@ -601,7 +577,6 @@ rstp_set_bridge_forward_delay(struct rstp *rstp, int new_forward_delay)
 static void
 rstp_set_bridge_transmit_hold_count__(struct rstp *rstp,
                                       int new_transmit_hold_count)
-    OVS_REQUIRES(rstp_mutex)
 {
     if (rstp->transmit_hold_count != new_transmit_hold_count
         && new_transmit_hold_count >= RSTP_MIN_TRANSMIT_HOLD_COUNT
@@ -622,7 +597,6 @@ rstp_set_bridge_transmit_hold_count__(struct rstp *rstp,
 void
 rstp_set_bridge_transmit_hold_count(struct rstp *rstp,
                                     int new_transmit_hold_count)
-    OVS_EXCLUDED(rstp_mutex)
 {
     ovs_mutex_lock(&rstp_mutex);
     rstp_set_bridge_transmit_hold_count__(rstp, new_transmit_hold_count);
@@ -632,7 +606,6 @@ rstp_set_bridge_transmit_hold_count(struct rstp *rstp,
 /* Sets the bridge migrate time parameter. */
 static void
 rstp_set_bridge_migrate_time__(struct rstp *rstp)
-    OVS_REQUIRES(rstp_mutex)
 {
     VLOG_DBG("%s: set RSTP Migrate Time to %d", rstp->name,
              RSTP_MIGRATE_TIME);
@@ -645,7 +618,6 @@ static void
 rstp_set_bridge_times__(struct rstp *rstp, int new_forward_delay,
                         int new_hello_time, int new_max_age,
                         int new_message_age)
-    OVS_REQUIRES(rstp_mutex)
 {
     VLOG_DBG("%s: set RSTP times to (%d, %d, %d, %d)", rstp->name,
              new_forward_delay, new_hello_time, new_max_age, new_message_age);
@@ -668,7 +640,6 @@ rstp_set_bridge_times__(struct rstp *rstp, int new_forward_delay,
  */
 static void
 set_port_id__(struct rstp_port *p)
-    OVS_REQUIRES(rstp_mutex)
 {
     struct rstp *rstp;
 
@@ -682,7 +653,6 @@ set_port_id__(struct rstp_port *p)
 /* Sets the port priority. */
 static void
 rstp_port_set_priority__(struct rstp_port *port, int priority)
-    OVS_REQUIRES(rstp_mutex)
 {
     if (port->priority != priority
         && priority >= RSTP_MIN_PORT_PRIORITY
@@ -701,7 +671,6 @@ rstp_port_set_priority__(struct rstp_port *port, int priority)
 /* Checks if a port number is available. */
 static bool
 is_port_number_available__(struct rstp *rstp, int n, struct rstp_port *port)
-    OVS_REQUIRES(rstp_mutex)
 {
     if (n >= 1 && n <= RSTP_MAX_PORTS) {
         struct rstp_port *p = rstp_get_port__(rstp, n);
@@ -713,7 +682,6 @@ is_port_number_available__(struct rstp *rstp, int n, struct rstp_port *port)
 
 static uint16_t
 rstp_first_free_number__(struct rstp *rstp, struct rstp_port *rstp_port)
-    OVS_REQUIRES(rstp_mutex)
 {
     int free_number = 1;
 
@@ -730,7 +698,6 @@ rstp_first_free_number__(struct rstp *rstp, struct rstp_port *rstp_port)
 /* Sets the port number. */
 static void
 rstp_port_set_port_number__(struct rstp_port *port, uint16_t port_number)
-    OVS_REQUIRES(rstp_mutex)
 {
     int old_port_number = port->port_number;
 
@@ -764,7 +731,6 @@ rstp_port_set_port_number__(struct rstp_port *port, uint16_t port_number)
 
 static void
 rstp_port_set_port_name__(struct rstp_port *port, const char *name)
-    OVS_REQUIRES(rstp_mutex)
 {
     free(port->port_name);
     port->port_name = xstrdup(name);
@@ -792,7 +758,6 @@ rstp_convert_speed_to_cost(unsigned int speed)
 /* Sets the port path cost. */
 static void
 rstp_port_set_path_cost__(struct rstp_port *port, uint32_t path_cost)
-    OVS_REQUIRES(rstp_mutex)
 {
     if (port->port_path_cost != path_cost
         && path_cost >= RSTP_MIN_PORT_PATH_COST
@@ -809,14 +774,12 @@ rstp_port_set_path_cost__(struct rstp_port *port, uint32_t path_cost)
 /* Gets the root path cost. */
 static uint32_t
 rstp_get_root_path_cost__(const struct rstp *rstp)
-    OVS_REQUIRES(rstp_mutex)
 {
     return rstp->root_priority.root_path_cost;
 }
 
 uint32_t
 rstp_get_root_path_cost(const struct rstp *rstp)
-    OVS_EXCLUDED(rstp_mutex)
 {
     uint32_t cost;
 
@@ -837,7 +800,6 @@ rstp_get_root_path_cost(const struct rstp *rstp)
  * '*port' could become stale before it is used in the next invocation. */
 void *
 rstp_check_and_reset_fdb_flush(struct rstp *rstp, struct rstp_port **port)
-    OVS_EXCLUDED(rstp_mutex)
 {
     void *aux = NULL;
 
@@ -974,7 +936,6 @@ rstp_reset_root_changed(struct rstp *rstp)
  * XXX: May only be called while concurrent deletion of ports is excluded. */
 static struct rstp_port *
 rstp_get_port__(struct rstp *rstp, uint16_t port_number)
-    OVS_REQUIRES(rstp_mutex)
 {
     struct rstp_port *port;
 
@@ -991,7 +952,6 @@ rstp_get_port__(struct rstp *rstp, uint16_t port_number)
 
 struct rstp_port *
 rstp_get_port(struct rstp *rstp, uint16_t port_number)
-    OVS_EXCLUDED(rstp_mutex)
 {
     struct rstp_port *p;
 
@@ -1003,7 +963,6 @@ rstp_get_port(struct rstp *rstp, uint16_t port_number)
 
 void *
 rstp_get_port_aux__(struct rstp *rstp, uint16_t port_number)
-    OVS_REQUIRES(rstp_mutex)
 {
     struct rstp_port *p;
     p = rstp_get_port__(rstp, port_number);
@@ -1016,7 +975,6 @@ rstp_get_port_aux__(struct rstp *rstp, uint16_t port_number)
 /* Updates the port_enabled parameter. */
 static void
 update_port_enabled__(struct rstp_port *p)
-    OVS_REQUIRES(rstp_mutex)
 {
     if (p->mac_operational && p->is_administrative_bridge_port
         == RSTP_ADMIN_BRIDGE_PORT_STATE_ENABLED) {
@@ -1029,7 +987,6 @@ update_port_enabled__(struct rstp_port *p)
 /* Sets the port MAC_Operational parameter [6.4.2]. */
 void
 rstp_port_set_mac_operational(struct rstp_port *p, bool new_mac_operational)
-    OVS_EXCLUDED(rstp_mutex)
 {
     struct rstp *rstp;
 
@@ -1049,7 +1006,6 @@ static void
 rstp_port_set_administrative_bridge_port__(struct rstp_port *p,
                                            uint8_t admin_port_state,
                                            bool initializing)
-    OVS_REQUIRES(rstp_mutex)
 {
     VLOG_DBG("%s, port %u: set RSTP port admin-port-state to %d",
              p->rstp->name, p->port_number, admin_port_state);
@@ -1073,7 +1029,6 @@ rstp_port_set_administrative_bridge_port__(struct rstp_port *p,
 static void
 rstp_port_set_oper_point_to_point_mac__(struct rstp_port *p,
                                         uint8_t new_oper_p2p_mac)
-    OVS_REQUIRES(rstp_mutex)
 {
     if (p->oper_point_to_point_mac != new_oper_p2p_mac
         && (new_oper_p2p_mac == RSTP_OPER_P2P_MAC_STATE_DISABLED
@@ -1087,7 +1042,6 @@ rstp_port_set_oper_point_to_point_mac__(struct rstp_port *p,
 /* Initializes a port with the defaults values for its parameters. */
 static void
 rstp_initialize_port_defaults__(struct rstp_port *p)
-    OVS_REQUIRES(rstp_mutex)
 {
     rstp_port_set_administrative_bridge_port__(p,
                                                RSTP_ADMIN_BRIDGE_PORT_STATE_ENABLED,
@@ -1114,7 +1068,6 @@ rstp_initialize_port_defaults__(struct rstp_port *p)
 
 static void
 reinitialize_port__(struct rstp_port *p)
-    OVS_REQUIRES(rstp_mutex)
 {
     struct rstp_port temp_port;
     struct rstp *rstp;
@@ -1140,7 +1093,6 @@ reinitialize_port__(struct rstp_port *p)
 
 void
 reinitialize_port(struct rstp_port *p)
-    OVS_EXCLUDED(rstp_mutex)
 {
     ovs_mutex_lock(&rstp_mutex);
     reinitialize_port__(p);
@@ -1150,7 +1102,6 @@ reinitialize_port(struct rstp_port *p)
 /* Sets the port state. */
 void
 rstp_port_set_state__(struct rstp_port *p, enum rstp_state state)
-    OVS_REQUIRES(rstp_mutex)
 {
     struct rstp *rstp;
 
@@ -1168,7 +1119,6 @@ rstp_port_set_state__(struct rstp_port *p, enum rstp_state state)
 
 void
 rstp_port_set_state(struct rstp_port *p, enum rstp_state state)
-    OVS_EXCLUDED(rstp_mutex)
 {
     ovs_mutex_lock(&rstp_mutex);
     rstp_port_set_state__(p, state);
@@ -1178,7 +1128,6 @@ rstp_port_set_state(struct rstp_port *p, enum rstp_state state)
 /* Adds a RSTP port. */
 struct rstp_port *
 rstp_add_port(struct rstp *rstp)
-    OVS_EXCLUDED(rstp_mutex)
 {
     struct rstp_port *p = xzalloc(sizeof *p);
 
@@ -1207,7 +1156,6 @@ rstp_add_port(struct rstp *rstp)
  * while taking a new reference. */
 struct rstp_port *
 rstp_port_ref(const struct rstp_port *rp_)
-    OVS_EXCLUDED(rstp_mutex)
 {
     struct rstp_port *rp = CONST_CAST(struct rstp_port *, rp_);
 
@@ -1220,7 +1168,6 @@ rstp_port_ref(const struct rstp_port *rp_)
 /* Frees RSTP struct.  This can be caller by any thread. */
 void
 rstp_port_unref(struct rstp_port *rp)
-    OVS_EXCLUDED(rstp_mutex)
 {
     if (rp && ovs_refcount_unref_relaxed(&rp->ref_cnt) == 1) {
         struct rstp *rstp;
@@ -1240,7 +1187,6 @@ rstp_port_unref(struct rstp_port *rp)
 /* Sets the port Admin Edge parameter. */
 static void
 rstp_port_set_admin_edge__(struct rstp_port *port, bool admin_edge)
-     OVS_REQUIRES(rstp_mutex)
 {
     if (port->admin_edge != admin_edge) {
         VLOG_DBG("%s, port %u: set RSTP Admin Edge to %d", port->rstp->name,
@@ -1253,7 +1199,6 @@ rstp_port_set_admin_edge__(struct rstp_port *port, bool admin_edge)
 /* Sets the port Auto Edge parameter. */
 static void
 rstp_port_set_auto_edge__(struct rstp_port *port, bool auto_edge)
-    OVS_REQUIRES(rstp_mutex)
 {
     if (port->auto_edge != auto_edge) {
         VLOG_DBG("%s, port %u: set RSTP Auto Edge to %d", port->rstp->name,
@@ -1266,7 +1211,6 @@ rstp_port_set_auto_edge__(struct rstp_port *port, bool auto_edge)
 /* Sets the port admin_point_to_point_mac parameter. */
 static void rstp_port_set_admin_point_to_point_mac__(struct rstp_port *port,
         enum rstp_admin_point_to_point_mac_state admin_p2p_mac_state)
-    OVS_REQUIRES(rstp_mutex)
 {
     VLOG_DBG("%s, port %u: set RSTP port admin-point-to-point-mac to %d",
             port->rstp->name, port->port_number, admin_p2p_mac_state);
@@ -1306,7 +1250,6 @@ static void rstp_port_set_admin_point_to_point_mac__(struct rstp_port *port,
  */
 static void
 rstp_port_set_mcheck__(struct rstp_port *port, bool mcheck)
-    OVS_REQUIRES(rstp_mutex)
 {
     if (mcheck == true && port->rstp->force_protocol_version >= 2) {
         port->mcheck = true;
@@ -1319,7 +1262,6 @@ rstp_port_set_mcheck__(struct rstp_port *port, bool mcheck)
 /* Returns the designated bridge id. */
 rstp_identifier
 rstp_get_designated_id(const struct rstp *rstp)
-    OVS_EXCLUDED(rstp_mutex)
 {
     rstp_identifier designated_id;
 
@@ -1333,14 +1275,12 @@ rstp_get_designated_id(const struct rstp *rstp)
 /* Returns the root bridge id. */
 static rstp_identifier
 rstp_get_root_id__(const struct rstp *rstp)
-    OVS_REQUIRES(rstp_mutex)
 {
     return rstp->root_priority.root_bridge_id;
 }
 
 rstp_identifier
 rstp_get_root_id(const struct rstp *rstp)
-    OVS_EXCLUDED(rstp_mutex)
 {
     rstp_identifier root_id;
 
@@ -1354,7 +1294,6 @@ rstp_get_root_id(const struct rstp *rstp)
 /* Returns the designated port id. */
 uint16_t
 rstp_get_designated_port_id(const struct rstp *rstp)
-    OVS_EXCLUDED(rstp_mutex)
 {
     uint16_t designated_port_id;
 
@@ -1368,7 +1307,6 @@ rstp_get_designated_port_id(const struct rstp *rstp)
 /* Return the bridge port id. */
 uint16_t
 rstp_get_bridge_port_id(const struct rstp *rstp)
-    OVS_EXCLUDED(rstp_mutex)
 {
     uint16_t bridge_port_id;
 
@@ -1384,7 +1322,6 @@ rstp_get_bridge_port_id(const struct rstp *rstp)
  */
 static bool
 rstp_is_root_bridge__(const struct rstp *rstp)
-    OVS_REQUIRES(rstp_mutex)
 {
     return rstp->bridge_identifier ==
         rstp->root_priority.designated_bridge_id;
@@ -1392,7 +1329,6 @@ rstp_is_root_bridge__(const struct rstp *rstp)
 
 bool
 rstp_is_root_bridge(const struct rstp *rstp)
-    OVS_EXCLUDED(rstp_mutex)
 {
     bool is_root;
 
@@ -1406,7 +1342,6 @@ rstp_is_root_bridge(const struct rstp *rstp)
 /* Returns the bridge ID of the bridge currently believed to be the root. */
 rstp_identifier
 rstp_get_designated_root(const struct rstp *rstp)
-    OVS_EXCLUDED(rstp_mutex)
 {
     rstp_identifier designated_root;
 
@@ -1422,7 +1357,6 @@ rstp_get_designated_root(const struct rstp *rstp)
  */
 static struct rstp_port *
 rstp_get_root_port__(const struct rstp *rstp)
-    OVS_REQUIRES(rstp_mutex)
 {
     struct rstp_port *p;
 
@@ -1436,7 +1370,6 @@ rstp_get_root_port__(const struct rstp *rstp)
 
 struct rstp_port *
 rstp_get_root_port(const struct rstp *rstp)
-    OVS_EXCLUDED(rstp_mutex)
 {
     ovs_mutex_lock(&rstp_mutex);
     struct rstp_port *p = rstp_get_root_port__(rstp);
@@ -1447,7 +1380,6 @@ rstp_get_root_port(const struct rstp *rstp)
 /* Returns the state of port 'p'. */
 enum rstp_state
 rstp_port_get_state(const struct rstp_port *p)
-    OVS_EXCLUDED(rstp_mutex)
 {
     enum rstp_state state;
 
@@ -1466,7 +1398,6 @@ rstp_port_get_status(const struct rstp_port *p, uint16_t *id,
                      uint16_t *designated_port_id,
                      uint32_t *designated_path_cost, int *tx_count,
                      int *rx_count, int *error_count, int *uptime)
-    OVS_EXCLUDED(rstp_mutex)
 {
     ovs_mutex_lock(&rstp_mutex);
     *id = p->port_id;
@@ -1490,7 +1421,6 @@ rstp_port_set(struct rstp_port *port, uint16_t port_num, int priority,
               enum rstp_admin_point_to_point_mac_state admin_p2p_mac_state,
               bool admin_port_state, bool do_mcheck, void *aux,
               const char *name)
-    OVS_EXCLUDED(rstp_mutex)
 {
     ovs_mutex_lock(&rstp_mutex);
     port->aux = aux;
@@ -1509,7 +1439,6 @@ rstp_port_set(struct rstp_port *port, uint16_t port_num, int priority,
 /* Individual setters only used by test-rstp.c. */
 void
 rstp_port_set_priority(struct rstp_port *port, int priority)
-    OVS_EXCLUDED(rstp_mutex)
 {
     ovs_mutex_lock(&rstp_mutex);
     rstp_port_set_priority__(port, priority);
@@ -1518,7 +1447,6 @@ rstp_port_set_priority(struct rstp_port *port, int priority)
 
 void
 rstp_port_set_path_cost(struct rstp_port *port, uint32_t path_cost)
-    OVS_EXCLUDED(rstp_mutex)
 {
     ovs_mutex_lock(&rstp_mutex);
     rstp_port_set_path_cost__(port, path_cost);
@@ -1527,7 +1455,6 @@ rstp_port_set_path_cost(struct rstp_port *port, uint32_t path_cost)
 
 void
 rstp_port_set_aux(struct rstp_port *port, void *aux)
-    OVS_EXCLUDED(rstp_mutex)
 {
     ovs_mutex_lock(&rstp_mutex);
     port->aux = aux;
@@ -1537,7 +1464,6 @@ rstp_port_set_aux(struct rstp_port *port, void *aux)
 /* Unixctl. */
 static struct rstp *
 rstp_find(const char *name)
-    OVS_REQUIRES(rstp_mutex)
 {
     struct rstp *rstp;
 
@@ -1552,7 +1478,6 @@ rstp_find(const char *name)
 static void
 rstp_unixctl_tcn(struct unixctl_conn *conn, int argc,
                  const char *argv[], void *aux OVS_UNUSED)
-    OVS_EXCLUDED(rstp_mutex)
 {
     ovs_mutex_lock(&rstp_mutex);
     if (argc > 1) {
@@ -1580,7 +1505,6 @@ static void
 rstp_bridge_id_details(struct ds *ds, const rstp_identifier bridge_id,
                        uint16_t hello_time, uint16_t max_age,
                        uint16_t forward_delay)
-    OVS_REQUIRES(rstp_mutex)
 {
     uint16_t priority = bridge_id >> 48;
     ds_put_format(ds, "\tstp-priority\t%"PRIu16"\n", priority);
@@ -1596,7 +1520,6 @@ rstp_bridge_id_details(struct ds *ds, const rstp_identifier bridge_id,
 
 static void
 rstp_print_details(struct ds *ds, const struct rstp *rstp)
-    OVS_REQUIRES(rstp_mutex)
 {
     ds_put_format(ds, "---- %s ----\n", rstp->name);
 
@@ -1653,7 +1576,6 @@ rstp_print_details(struct ds *ds, const struct rstp *rstp)
 static void
 rstp_unixctl_show(struct unixctl_conn *conn, int argc,
                   const char *argv[], void *aux OVS_UNUSED)
-    OVS_EXCLUDED(rstp_mutex)
 {
     struct ds ds = DS_EMPTY_INITIALIZER;
 
