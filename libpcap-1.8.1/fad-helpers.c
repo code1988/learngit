@@ -811,6 +811,7 @@ add_addr_to_dev(pcap_if_t *curdev,
 
 /*
  * Look for a given device in the specified list of devices.
+ * 在指定的接口链表中查找指定接口名的接口节点，如果没找到，可能会尝试将其添加进链表
  *
  * If we find it, return 0.
  *
@@ -839,6 +840,7 @@ pcap_add_if(pcap_if_t **devlist, const char *name, u_int flags,
 
 /*
  * Free a list of interfaces.
+ * 释放整张接口链表
  */
 void
 pcap_freealldevs(pcap_if_t *alldevs)

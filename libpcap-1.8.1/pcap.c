@@ -336,6 +336,7 @@ static struct capture_source_type {
 
 /*
  * Get a list of all capture sources that are up and that we can open.
+ * 获取所有处于up状态并且被允许打开的设备接口
  * Returns -1 on error, 0 otherwise.
  * The list, as returned through "alldevsp", may be null if no interfaces
  * were up and could be opened.
@@ -814,7 +815,7 @@ pcap_activate(pcap_t *p)
 }
 
 /* 打开一个指定的网络接口，用于后续捕获数据
- * @device  - 指定网络接口名，比如"eth0"
+ * @device  - 指定网络接口名，比如"eth0"。如果传入NULL或"any"，则意味着对所有接口进行捕获
  * @snaplen - 设置每个数据包的捕捉长度，上限65535
  * @promisc - 是否打开混杂模式，0-不打开，1-打开
  * @to_ms   - 设置获取数据包时的超时时间(ms)，0表示一直等待数据包到来

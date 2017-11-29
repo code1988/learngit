@@ -167,12 +167,15 @@ pcap_findalldevs_interfaces(pcap_if_t **alldevsp, char *errbuf,
 	 * addresses; I don't know whether all implementations
 	 * of "getifaddrs()" now, or in the future, will return
 	 * those.
+     *
+     * 首先通过getifaddrs获取所有设备接口地址
 	 */
 	if (getifaddrs(&ifap) != 0) {
 		(void)pcap_snprintf(errbuf, PCAP_ERRBUF_SIZE,
 		    "getifaddrs: %s", pcap_strerror(errno));
 		return (-1);
 	}
+
 	for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
 		/*
 		 * If this entry has a colon followed by a number at
@@ -184,6 +187,8 @@ pcap_findalldevs_interfaces(pcap_if_t **alldevsp, char *errbuf,
 		 * and the number.
 		 *
 		 * XXX - should we do this only on Linux?
+         *
+         * 将那些带":" + "数字"的逻辑接口名改成其真实接口
 		 */
 		p = strchr(ifa->ifa_name, ':');
 		if (p != NULL) {
@@ -205,6 +210,7 @@ pcap_findalldevs_interfaces(pcap_if_t **alldevsp, char *errbuf,
 
 		/*
 		 * Can we capture on this device?
+         * 这里实际被写死为必定可以捕捉
 		 */
 		if (!(*check_usable)(ifa->ifa_name)) {
 			/*
@@ -264,6 +270,7 @@ pcap_findalldevs_interfaces(pcap_if_t **alldevsp, char *errbuf,
 
 		/*
 		 * Add information for this address to the list.
+         * 为获取的每个地址信息创建一个pcap_if_t节点，插入链表
 		 */
 		if (add_addr_to_iflist(&devlist, ifa->ifa_name,
 		    if_flags_to_pcap_flags(ifa->ifa_name, ifa->ifa_flags),

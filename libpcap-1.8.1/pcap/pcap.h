@@ -214,11 +214,12 @@ struct pcap_stat_ex {
 
 /*
  * Item in a list of interfaces.
+ * pcap中定义的设备接口信息节点
  */
 struct pcap_if {
 	struct pcap_if *next;
-	char *name;		/* name to hand to "pcap_open_live()" */
-	char *description;	/* textual description of interface, or NULL */
+	char *name;		/* name to hand to "pcap_open_live()"  接口名 */
+	char *description;	/* textual description of interface, or NULL  接口描述 */
 	struct pcap_addr *addresses;
 	bpf_u_int32 flags;	/* PCAP_IF_ interface flags */
 };

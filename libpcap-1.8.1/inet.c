@@ -87,7 +87,7 @@ char *
 pcap_lookupdev(errbuf)
 	register char *errbuf;
 {
-	pcap_if_t *alldevs;
+	pcap_if_t *alldevs; // 指向设备接口单向链表首节点
 /* for old BSD systems, including bsdi3 */
 #ifndef IF_NAMESIZE
 #define IF_NAMESIZE IFNAMSIZ
@@ -95,9 +95,11 @@ pcap_lookupdev(errbuf)
 	static char device[IF_NAMESIZE + 1];
 	char *ret;
 
+    // 获取所有处于up状态并且被允许打开的设备接口
 	if (pcap_findalldevs(&alldevs, errbuf) == -1)
 		return (NULL);
 
+    // 如果接口链表为空或者第一个就是环回接口，意味着没有合适的接口可以用来捕捉；否则返回第一个接口名
 	if (alldevs == NULL || (alldevs->flags & PCAP_IF_LOOPBACK)) {
 		/*
 		 * There are no devices on the list, or the first device
@@ -127,7 +129,7 @@ pcap_lookupdev(errbuf)
 
 /* 获取指定网络接口的IP和掩码
  * @device  - 指定的接口名
- * @netp    - 存放网络号的指针
+ * @netp    - 存放网络号的指针(网络号不是IP，例如当IP为192.168.9.11并且mask为255.255.255.0时，对应的网络号就是192.168.9.0)
  * @maskp   - 存放mask的指针
  * @errbuf  - 存放出错信息字符串
  */

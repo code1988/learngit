@@ -2531,6 +2531,7 @@ can_be_bound(const char *name _U_)
 	return (1);
 }
 
+// 获取所有设备接口(linux平台)
 int
 pcap_platform_finddevs(pcap_if_t **alldevsp, char *errbuf)
 {
@@ -2538,6 +2539,8 @@ pcap_platform_finddevs(pcap_if_t **alldevsp, char *errbuf)
 
 	/*
 	 * Get the list of regular interfaces first.
+     *
+     * 首先获取所有普通设备接口(通常是通过调用getifaddrs得到)
 	 */
 	if (pcap_findalldevs_interfaces(alldevsp, errbuf, can_be_bound) == -1)
 		return (-1);	/* failure */
@@ -2549,6 +2552,8 @@ pcap_platform_finddevs(pcap_if_t **alldevsp, char *errbuf)
 	 * and even getifaddrs() won't return information about
 	 * interfaces with no addresses, so you need to read "/sys/class/net"
 	 * to get the names of the rest of the interfaces.
+     *
+     * 然后在通过/sys/class/net或/proc/net/dev获取一些比较特殊的设备接口
 	 */
 	ret = scan_sys_class_net(alldevsp, errbuf);
 	if (ret == -1)
@@ -2563,6 +2568,8 @@ pcap_platform_finddevs(pcap_if_t **alldevsp, char *errbuf)
 
 	/*
 	 * Add the "any" device.
+     *
+     * 添加"any"伪接口，表示捕获所有接口的报文
 	 */
 	if (pcap_add_if(alldevsp, "any", PCAP_IF_UP|PCAP_IF_RUNNING,
 	    any_descr, errbuf) < 0)
