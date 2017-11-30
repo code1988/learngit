@@ -374,6 +374,7 @@ pcap_findalldevs(pcap_if_t **alldevsp, char *errbuf)
 	return (0);
 }
 
+// 基于指定的设备接口创建一个pcap句柄，传入NULL等同于"any"
 pcap_t *
 pcap_create(const char *device, char *errbuf)
 {
@@ -427,6 +428,8 @@ pcap_create(const char *device, char *errbuf)
 	 * Try each of the non-local-network-interface capture
 	 * source types until we find one that works for this
 	 * device or run out of types.
+     *
+     * 首先从非本地网络接口列表中匹配指定的接口名
 	 */
 	for (i = 0; capture_source_types[i].create_op != NULL; i++) {
 		is_theirs = 0;
@@ -456,6 +459,8 @@ pcap_create(const char *device, char *errbuf)
 
 	/*
 	 * OK, try it as a regular network interface.
+     *
+     * 如果上面没有匹配成功，再从普通网络接口中匹配指定的接口名(通常都是进入这里)
 	 */
 	p = pcap_create_interface(device_str, errbuf);
 	if (p == NULL) {
@@ -514,6 +519,7 @@ initialize_ops(pcap_t *p)
 	p->oneshot_callback = pcap_oneshot;
 }
 
+// 申请一片缓冲区作为pcap句柄空间，传入的size表示私有空间大小
 static pcap_t *
 pcap_alloc_pcap_t(char *ebuf, size_t size)
 {
@@ -558,6 +564,7 @@ pcap_alloc_pcap_t(char *ebuf, size_t size)
 	return (p);
 }
 
+// 创建并初始化一个平台无关的pcap句柄，传入的size表示私有空间大小(该长度跟平台相关)
 pcap_t *
 pcap_create_common(char *ebuf, size_t size)
 {
@@ -606,6 +613,7 @@ pcap_check_activated(pcap_t *p)
 	return (0);
 }
 
+// 设置最大捕获包的长度，对于以太网数据包，最大长度为1518字节，如果需要捕获其他类型数据包，可以设置最大值65535
 int
 pcap_set_snaplen(pcap_t *p, int snaplen)
 {
@@ -829,15 +837,19 @@ pcap_open_live(const char *device, int snaplen, int promisc, int to_ms, char *er
 	pcap_t *p;
 	int status;
 
+    // 基于指定的设备接口创建一个pcap句柄
 	p = pcap_create(device, errbuf);
 	if (p == NULL)
 		return (NULL);
+    // 设置最大捕获包的长度
 	status = pcap_set_snaplen(p, snaplen);
 	if (status < 0)
 		goto fail;
+    // 设置数据包的捕获模式
 	status = pcap_set_promisc(p, promisc);
 	if (status < 0)
 		goto fail;
+    // 设置超时时间
 	status = pcap_set_timeout(p, to_ms);
 	if (status < 0)
 		goto fail;

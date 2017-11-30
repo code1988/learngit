@@ -296,6 +296,7 @@ typedef int		socklen_t;
 
 /*
  * Private data for capturing on Linux SOCK_PACKET or PF_PACKET sockets.
+ * 跟pcap句柄关联的linux平台私有空间
  */
 struct pcap_linux {
 	u_int	packets_read;	/* count of packets read with recvfrom() */
@@ -454,6 +455,7 @@ static struct sock_fprog	total_fcode
 	= { 1, &total_insn };
 #endif /* SO_ATTACH_FILTER */
 
+// 从普通网络接口中匹配指定的接口，匹配成功将会创建对应的pcap句柄
 pcap_t *
 pcap_create_interface(const char *device, char *ebuf)
 {

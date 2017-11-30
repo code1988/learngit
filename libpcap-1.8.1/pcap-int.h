@@ -177,7 +177,7 @@ struct pcap {
 
 	int break_loop;		/* flag set to force break from packet-reading loop */
 
-	void *priv;		/* private data for methods */
+	void *priv;		/* private data for methods  指向该pcap句柄的私有空间 */
 
 	int swapped;
 	FILE *rfile;		/* null if live capture, non-null if savefile */
