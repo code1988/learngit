@@ -300,25 +300,25 @@ typedef int		socklen_t;
  */
 struct pcap_linux {
 	u_int	packets_read;	/* count of packets read with recvfrom() */
-	long	proc_dropped;	/* packets reported dropped by /proc/net/dev */
+	long	proc_dropped;	/* packets reported dropped by /proc/net/dev  记录该接口droped报文数量 */
 	struct pcap_stat stat;
 
-	char	*device;	/* device name */
+	char	*device;	/* device name  设备接口名 */
 	int	filter_in_userland; /* must filter in userland */
 	int	blocks_to_filter_in_userland;
 	int	must_do_on_close; /* stuff we must do when we close */
-	int	timeout;	/* timeout for buffering */
-	int	sock_packet;	/* using Linux 2.0 compatible interface */
-	int	cooked;		/* using SOCK_DGRAM rather than SOCK_RAW */
+	int	timeout;	/* timeout for buffering  进行捕获时的超时时间，从pcap->opt.timeout同步过来  */
+	int	sock_packet;	/* using Linux 2.0 compatible interface  标识是否使用的是老式接口 */
+	int	cooked;		/* using SOCK_DGRAM rather than SOCK_RAW 标识是否使用加工模式 */
 	int	ifindex;	/* interface index of device we're bound to */
-	int	lo_ifindex;	/* interface index of the loopback device */
+	int	lo_ifindex;	/* interface index of the loopback device  环回接口序号 */
 	bpf_u_int32 oldmode;	/* mode to restore when turning monitor mode off */
 	char	*mondevice;	/* mac80211 monitor device we created */
 	u_char	*mmapbuf;	/* memory-mapped region pointer */
 	size_t	mmapbuflen;	/* size of region */
-	int	vlan_offset;	/* offset at which to insert vlan tags; if -1, don't insert */
-	u_int	tp_version;	/* version of tpacket_hdr for mmaped ring */
-	u_int	tp_hdrlen;	/* hdrlen of tpacket_hdr for mmaped ring */
+	int	vlan_offset;	/* offset at which to insert vlan tags; if -1, don't insert  VLAN标签距离报文头部的偏移量，通常为12 */
+	u_int	tp_version;	/* version of tpacket_hdr for mmaped ring  环形缓冲区的版本号 */
+	u_int	tp_hdrlen;	/* hdrlen of tpacket_hdr for mmaped ring  环形缓冲区的帧头长(跟环形缓冲区版本有关) */
 	u_char	*oneshot_buffer; /* buffer for copy of packet */
 	int	poll_timeout;	/* timeout to use in poll() */
 #ifdef HAVE_TPACKET3
@@ -455,12 +455,13 @@ static struct sock_fprog	total_fcode
 	= { 1, &total_insn };
 #endif /* SO_ATTACH_FILTER */
 
-// 从普通网络接口中匹配指定的接口，匹配成功将会创建对应的pcap句柄
+// 从普通网络接口中匹配指定的接口，匹配成功将会创建对应的linux平台pcap句柄
 pcap_t *
 pcap_create_interface(const char *device, char *ebuf)
 {
 	pcap_t *handle;
 
+    // 创建并初始化一个linux平台的pcap句柄 
 	handle = pcap_create_common(ebuf, sizeof (struct pcap_linux));
 	if (handle == NULL)
 		return NULL;
@@ -1105,6 +1106,8 @@ pcap_can_set_rfmon_linux(pcap_t *handle)
  * individual devices giving, in ASCII, various rx_ and tx_ statistics.
  *
  * Or can we get them in binary form from netlink?
+ *
+ * 获取指定接口droped报文数量
  */
 static long int
 linux_if_drops(const char * if_name)
@@ -1420,6 +1423,8 @@ set_poll_timeout(struct pcap_linux *handlep)
  *  will be set to promiscous mode (XXX: I think this usage should
  *  be deprecated and functions be added to select that later allow
  *  modification of that values -- Torsten).
+ *
+ *  使指定的linux上的pcap句柄进入运作状态，其间会创建用于捕获的套接字
  */
 static int
 pcap_activate_linux(pcap_t *handle)
@@ -1448,6 +1453,7 @@ pcap_activate_linux(pcap_t *handle)
 		goto fail;
 	}
 
+    // 注册pcap句柄中linux平台相关的回调函数
 	handle->inject_op = pcap_inject_linux;
 	handle->setfilter_op = pcap_setfilter_linux;
 	handle->setdirection_op = pcap_setdirection_linux;
@@ -1462,6 +1468,8 @@ pcap_activate_linux(pcap_t *handle)
 	 * The "any" device is a special device which causes us not
 	 * to bind to a particular device and thus to look at all
 	 * devices.
+     *
+     * "any"设备将清除混杂模式标识
 	 */
 	if (strcmp(device, "any") == 0) {
 		if (handle->opt.promisc) {
@@ -1499,6 +1507,8 @@ pcap_activate_linux(pcap_t *handle)
 	 * While this old implementation is kind of obsolete we need
 	 * to be compatible with older kernels for a while so we are
 	 * trying both methods with the newer method preferred.
+     *
+     * 首先尝试使用新式的PF_PACKET创建捕获套接字
 	 */
 	ret = activate_new(handle);
 	if (ret < 0) {
@@ -1514,6 +1524,9 @@ pcap_activate_linux(pcap_t *handle)
 		/*
 		 * Success.
 		 * Try to use memory-mapped access.
+         *
+         * 程序进入这里意味着成功通过新式的PF_PACKET建立套接字
+         * 这里对套接字使用mmap
 		 */
 		switch (activate_mmap(handle, &status)) {
 
@@ -1551,6 +1564,7 @@ pcap_activate_linux(pcap_t *handle)
 	}
 	else if (ret == 0) {
 		/* Non-fatal error; try old way */
+        // 如果通过新式的PF_PACKET建立套接字失败，则使用老式的SOCKET_PACKET来建立套接字
 		if ((ret = activate_old(handle)) != 1) {
 			/*
 			 * Both methods to open the packet socket failed.
@@ -2821,6 +2835,7 @@ map_packet_type_to_sll_type(short int sll_pkttype)
 }
 #endif
 
+// 判断指定设备是否是一个无线设备，是返回1，不是返回0
 static int
 is_wifi(int sock_fd
 #ifndef IW_MODE_MONITOR
@@ -2883,6 +2898,9 @@ _U_
  *  to pick some type that works in raw mode, or fail.
  *
  *  Sets the link type to -1 if unable to map the type.
+ *
+ *  linux使用ARPHRD_*来标识设备接口，而pcap中使用DLT_*来标识设备接口，
+ *  所以本函数就是将ARPHRD_*映射成对应的DLT_*
  */
 static void map_arphrd_to_dlt(pcap_t *handle, int sock_fd, int arptype,
 			      const char *device, int cooked_ok)
@@ -3318,6 +3336,9 @@ static void map_arphrd_to_dlt(pcap_t *handle, int sock_fd, int arptype,
  * present (so the old SOCK_PACKET interface should be tried), and a
  * PCAP_ERROR_ value on an error that means that the old mechanism won't
  * work either (so it shouldn't be tried).
+ *
+ * 新式的采用PF_PACKET创建捕获套接字的函数
+ * @返回值  : 1表示创建成功；0表示不支持新式创建，后续可以尝试使用老式方法；<0表示完全失败
  */
 static int
 activate_new(pcap_t *handle)
@@ -3342,6 +3363,8 @@ activate_new(pcap_t *handle)
 	 * "any" device was specified, we open a SOCK_DGRAM
 	 * socket for the cooked interface, otherwise we first
 	 * try a SOCK_RAW socket for the raw interface.
+     *
+     * 如果是"any"设备，则创建SOCK_DGRAM类型的套接字;通常情况下都是创建SOCK_RAW类型的套接字
 	 */
 	sock_fd = is_any_device ?
 		socket(PF_PACKET, SOCK_DGRAM, htons(ETH_P_ALL)) :
@@ -3403,6 +3426,7 @@ activate_new(pcap_t *handle)
 		/* Assume for now we don't need cooked mode. */
 		handlep->cooked = 0;
 
+        // 对于有线网卡，不会设置rfmon标志
 		if (handle->opt.rfmon) {
 			/*
 			 * We were asked to turn on monitor mode.
@@ -3434,11 +3458,14 @@ activate_new(pcap_t *handle)
 			if (handlep->mondevice != NULL)
 				device = handlep->mondevice;
 		}
+
+        // 获取该设备的硬件类型
 		arptype	= iface_get_arptype(sock_fd, device, handle->errbuf);
 		if (arptype < 0) {
 			close(sock_fd);
 			return arptype;
 		}
+        //  将ARPHRD_*映射成对应的DLT_*，然后将有些类型的设备重新改创建一个SOCK_DGRAM类型的套接字
 		map_arphrd_to_dlt(handle, sock_fd, arptype, device, 1);
 		if (handle->linktype == -1 ||
 		    handle->linktype == DLT_LINUX_SLL ||
@@ -3486,6 +3513,8 @@ activate_new(pcap_t *handle)
 			 * Get rid of any link-layer type list
 			 * we allocated - this only supports cooked
 			 * capture.
+             *
+             * 使用加工模式时将注销该设备对应的DLT_*列表
 			 */
 			if (handle->dlt_list != NULL) {
 				free(handle->dlt_list);
@@ -3519,6 +3548,7 @@ activate_new(pcap_t *handle)
 				handle->linktype = DLT_LINUX_SLL;
 		}
 
+        // 获取该设备的接口序号
 		handlep->ifindex = iface_get_id(sock_fd, device,
 		    handle->errbuf);
 		if (handlep->ifindex == -1) {
@@ -3526,6 +3556,7 @@ activate_new(pcap_t *handle)
 			return PCAP_ERROR;
 		}
 
+        //  将创建的套接字绑定到该设备接口上
 		if ((err = iface_bind(sock_fd, handlep->ifindex,
 		    handle->errbuf)) != 1) {
 		    	close(sock_fd);
@@ -3537,6 +3568,8 @@ activate_new(pcap_t *handle)
 	} else {
 		/*
 		 * The "any" device.
+         *
+         * "any"设备不支持rfmon模式
 		 */
 		if (handle->opt.rfmon) {
 			/*
@@ -3582,6 +3615,8 @@ activate_new(pcap_t *handle)
 	 * silently ignore attempts to turn promiscuous mode on
 	 * for the "any" device (so you don't have to explicitly
 	 * disable it in programs such as tcpdump).
+     *
+     * 在普通设备接口上开启混杂模式
 	 */
 
 	if (!is_any_device && handle->opt.promisc) {
@@ -3624,6 +3659,8 @@ activate_new(pcap_t *handle)
 	 * large enough to hold a "cooked mode" header plus
 	 * 1 byte of packet data (so we don't pass a byte
 	 * count of 0 to "recvfrom()").
+     *
+     * 加工模式下必须确保最大捕获包的长度不小于 SLL_HDR_LEN + 1
 	 */
 	if (handlep->cooked) {
 		if (handle->snapshot < SLL_HDR_LEN + 1)
@@ -3634,6 +3671,8 @@ activate_new(pcap_t *handle)
 	/*
 	 * Set the offset at which to insert VLAN tags.
 	 * That should be the offset of the type field.
+     *
+     * 设置vlan标签的偏移量
 	 */
 	switch (handle->linktype) {
 
@@ -3641,6 +3680,8 @@ activate_new(pcap_t *handle)
 		/*
 		 * The type field is after the destination and source
 		 * MAC address.
+         *
+         * 普通以太网设备VLAN标签位于距离头部12字节位置
 		 */
 		handlep->vlan_offset = 2 * ETH_ALEN;
 		break;
@@ -3649,6 +3690,8 @@ activate_new(pcap_t *handle)
 		/*
 		 * The type field is in the last 2 bytes of the
 		 * DLT_LINUX_SLL header.
+         *
+         * 加工模式下的设备VLAN标签记录在sll_header->sll_protocol字段
 		 */
 		handlep->vlan_offset = SLL_HDR_LEN - 2;
 		break;
@@ -3733,16 +3776,19 @@ activate_mmap(pcap_t *handle, int *status)
 		return -1;
 	}
 
+    // 环形缓冲区默认长度2M
 	if (handle->opt.buffer_size == 0) {
 		/* by default request 2M for the ring buffer */
 		handle->opt.buffer_size = 2*1024*1024;
 	}
+    // 为该捕获套接字设置合适的环形缓冲区版本，优先考虑设置TPACKET_V3
 	ret = prepare_tpacket_socket(handle);
 	if (ret == -1) {
 		free(handlep->oneshot_buffer);
 		*status = PCAP_ERROR;
 		return ret;
 	}
+    // 创建环形缓冲区
 	ret = create_ring(handle, status);
 	if (ret == 0) {
 		/*
@@ -3814,6 +3860,8 @@ activate_mmap(pcap_t *handle _U_, int *status _U_)
  *
  * Return 0 if we succeed; return 1 if we fail because that version isn't
  * supported; return -1 on any other error, and set handle->errbuf.
+ *
+ * 设置指定版本的环形缓冲区
  */
 static int
 init_tpacket(pcap_t *handle, int version, const char *version_str)
@@ -3825,6 +3873,8 @@ init_tpacket(pcap_t *handle, int version, const char *version_str)
 	/*
 	 * Probe whether kernel supports the specified TPACKET version;
 	 * this also gets the length of the header for that version.
+     *
+     * 首先探测内核是否支持该版本的环形缓冲区
 	 */
 	if (getsockopt(handle->fd, SOL_PACKET, PACKET_HDRLEN, &val, &len) < 0) {
 		if (errno == ENOPROTOOPT || errno == EINVAL)
@@ -3840,6 +3890,7 @@ init_tpacket(pcap_t *handle, int version, const char *version_str)
 	handlep->tp_hdrlen = val;
 
 	val = version;
+    // 如果内核支持，则将该捕获套接字设置为该版本的环形缓冲区
 	if (setsockopt(handle->fd, SOL_PACKET, PACKET_VERSION, &val,
 			   sizeof(val)) < 0) {
 		pcap_snprintf(handle->errbuf, PCAP_ERRBUF_SIZE,
@@ -3850,7 +3901,10 @@ init_tpacket(pcap_t *handle, int version, const char *version_str)
 	}
 	handlep->tp_version = version;
 
-	/* Reserve space for VLAN tag reconstruction */
+	/* Reserve space for VLAN tag reconstruction 
+     *
+     * 为VLAN tag重组预留4字节空间
+     * */
 	val = VLAN_TAG_LEN;
 	if (setsockopt(handle->fd, SOL_PACKET, PACKET_RESERVE, &val,
 			   sizeof(val)) < 0) {
@@ -3902,6 +3956,8 @@ init_tpacket(pcap_t *handle, int version, const char *version_str)
  *
  * Return 1 if we succeed or if we fail because neither version 2 nor 3 is
  * supported; return -1 on any other error, and set handle->errbuf.
+ *
+ * 为指定的捕获套接字设置合适的环形缓冲区版本，优先考虑设置TPACKET_V3
  */
 static int
 prepare_tpacket_socket(pcap_t *handle)
@@ -3922,6 +3978,8 @@ prepare_tpacket_socket(pcap_t *handle)
 	 * The buffering cannot be disabled in that mode, so
 	 * if the user has requested immediate mode, we don't
 	 * use TPACKET_V3.
+     *
+     * 如果该pcap句柄没有设置immediate标识，则首先尝试将环形缓冲区版本设置为TPACKET_V3
 	 */
 	if (!handle->opt.immediate) {
 		ret = init_tpacket(handle, TPACKET_V3, "TPACKET_V3");
@@ -3944,6 +4002,8 @@ prepare_tpacket_socket(pcap_t *handle)
 #ifdef HAVE_TPACKET2
 	/*
 	 * Try setting the version to TPACKET_V2.
+     *
+     * 如果内核不支持TPACKET_V3，则继续尝试将环形缓冲区版本设置为TPACKET_V2
 	 */
 	ret = init_tpacket(handle, TPACKET_V2, "TPACKET_V2");
 	if (ret == 0) {
@@ -3963,6 +4023,8 @@ prepare_tpacket_socket(pcap_t *handle)
 
 	/*
 	 * OK, we're using TPACKET_V1, as that's all the kernel supports.
+     *
+     * 如果内核不支持TPACKET_V2，则最后将环形缓冲区版本设置为TPACKET_V1，该版本是所有内核都支持的
 	 */
 	handlep->tp_version = TPACKET_V1;
 	handlep->tp_hdrlen = sizeof(struct tpacket_hdr);
@@ -5256,6 +5318,8 @@ pcap_setfilter_linux_mmap(pcap_t *handle, struct bpf_program *filter)
 /*
  *  Return the index of the given device name. Fill ebuf and return
  *  -1 on failure.
+ *
+ *  获取指定设备的接口序号
  */
 static int
 iface_get_id(int fd, const char *device, char *ebuf)
@@ -5278,6 +5342,8 @@ iface_get_id(int fd, const char *device, char *ebuf)
  *  Bind the socket associated with FD to the given device.
  *  Return 1 on success, 0 if we should try a SOCK_PACKET socket,
  *  or a PCAP_ERROR_ value on a hard error.
+ *
+ *  将指定套接字绑定到指定的设备接口上
  */
 static int
 iface_bind(int fd, int ifindex, char *ebuf)
@@ -6580,6 +6646,7 @@ iface_get_mtu(int fd, const char *device, char *ebuf)
 
 /*
  *  Get the hardware type of the given interface as ARPHRD_xxx constant.
+ *  获取指定接口的硬件类型
  */
 static int
 iface_get_arptype(int fd, const char *device, char *ebuf)

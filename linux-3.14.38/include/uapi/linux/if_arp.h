@@ -26,10 +26,10 @@
 #include <linux/netdevice.h>
 
 /* ARP protocol HARDWARE identifiers. 
- * 可以用来设置net_device->type ，表示设备类型
+ * linux中专门用ARPHRD_*来标识设备接口类型，可以用来设置net_device->type、ifreq->ifr_hwaddr.sa_family等
  * */
 #define ARPHRD_NETROM	0		/* from KA9Q: NET/ROM pseudo	*/
-#define ARPHRD_ETHER 	1		/* Ethernet 10Mbps		*/
+#define ARPHRD_ETHER 	1		/* Ethernet 10Mbps	标识以太网设备	*/
 #define	ARPHRD_EETHER	2		/* Experimental Ethernet	*/
 #define	ARPHRD_AX25	3		/* AX.25 Level 2		*/
 #define	ARPHRD_PRONET	4		/* PROnet token ring		*/
@@ -44,7 +44,7 @@
 #define ARPHRD_EUI64	27		/* EUI-64                       */
 #define ARPHRD_INFINIBAND 32		/* InfiniBand			*/
 
-/* Dummy types for non ARP hardware */
+/* Dummy types for non ARP hardware 以下ARPHRD_*用来标识虚拟设备接口类型 */
 #define ARPHRD_SLIP	256
 #define ARPHRD_CSLIP	257
 #define ARPHRD_SLIP6	258
@@ -66,7 +66,7 @@
 #define ARPHRD_TUNNEL6	769		/* IP6IP6 tunnel       		*/
 #define ARPHRD_FRAD	770             /* Frame Relay Access Device    */
 #define ARPHRD_SKIP	771		/* SKIP vif			*/
-#define ARPHRD_LOOPBACK	772		/* Loopback device		*/
+#define ARPHRD_LOOPBACK	772		/* Loopback device	环回接口	*/
 #define ARPHRD_LOCALTLK 773		/* Localtalk device		*/
 #define ARPHRD_FDDI	774		/* Fiber Distributed Data Interface */
 #define ARPHRD_BIF      775             /* AP1000 BIF                   */

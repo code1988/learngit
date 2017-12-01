@@ -46,8 +46,7 @@
     c). 链路层setsockopt用法归纳：
             setsockopt在SOL_PACKET层的主要作用是 开启/禁止 多播和混杂模式(当然链路层原始套接字设置并不局限于在SOL_PACKET层，
             比如BPF就是通过在SOL_SOCKET层配合SO_ATTACH_FILTER选项来设置具体的过滤规则实现的)。
-            optname 取PACKET_ADD_MEMBERSHIP表示加入，取PACKET_DROP_MEMBERSHIP表示禁止，PACKET_FANOUT
-            optval 则承载了具体的设置参数，这里是一个struct packet_mreq结构：
+            optname 取PACKET_ADD_MEMBERSHIP表示加入，取PACKET_DROP_MEMBERSHIP表示禁止，对应的optval 则承载了具体的设置参数，这里是一个struct packet_mreq结构：
                     struct packet_mreq {
                         int             mr_ifindex;     // 接口索引号
                         unsigned short  mr_type;        // PACKET_MR_PROMISC    - 表示设置混杂模式；

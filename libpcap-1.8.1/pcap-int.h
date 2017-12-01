@@ -107,13 +107,14 @@ extern "C" {
  */
 #define MAXIMUM_SNAPLEN		262144
 
+// pcap句柄中包含的子结构
 struct pcap_opt {
-	char	*device;
-	int	timeout;	/* timeout for buffering */
-	u_int	buffer_size;
-	int	promisc;
-	int	rfmon;		/* monitor mode */
-	int	immediate;	/* immediate mode - deliver packets as soon as they arrive */
+	char	*device;    // 设备接口名
+	int	timeout;	/* timeout for buffering  该pcap句柄进行捕获操作的超时时间(ms) */
+	u_int	buffer_size;    // 环形缓冲区长度，缺省就是2M
+	int	promisc;    // 标识该pcap句柄是否开启混杂模式，需要注意的是，"any"设备不允许开启混杂模式
+	int	rfmon;		/* monitor mode  表示该pcap句柄是否开启监听模式，该模式只用于无线网卡 */
+	int	immediate;	/* immediate mode - deliver packets as soon as they arrive  标识收到报文时是否立即传递给用户 */
 	int	tstamp_type;
 	int	tstamp_precision;
 };
@@ -193,12 +194,12 @@ struct pcap {
 	int version_major;
 	int version_minor;
 
-	int snapshot;
-	int linktype;		/* Network linktype */
+	int snapshot;   // 该pcap句柄支持的最大捕获包的长度
+	int linktype;		/* Network linktype 网络链路类型，对于以太网设备/环回设备，通常就是DLT_EN10MB */
 	int linktype_ext;       /* Extended information stored in the linktype field of a file */
 	int tzoff;		/* timezone offset */
 	int offset;		/* offset for proper alignment */
-	int activated;		/* true if the capture is really started */
+	int activated;		/* true if the capture is really started  标识该pcap句柄是否处于运作状态，处于运作状态的pcap句柄将不允许进行修改 */
 	int oldstyle;		/* if we're opening with pcap_open_live() */
 
 	struct pcap_opt opt;
@@ -226,8 +227,8 @@ struct pcap {
 	struct bpf_program fcode;
 
 	char errbuf[PCAP_ERRBUF_SIZE + 1];
-	int dlt_count;
-	u_int *dlt_list;
+	int dlt_count;          // 该设备对应的dlt_list中元素数量，通常为2
+	u_int *dlt_list;        // 指向该设备对应的DLT_*列表
 	int tstamp_type_count;
 	u_int *tstamp_type_list;
 	int tstamp_precision_count;
@@ -237,16 +238,17 @@ struct pcap {
 
 	/*
 	 * More methods.
+     * 以下这部分回调函数都是跟平台相关的
 	 */
-	activate_op_t activate_op;
-	can_set_rfmon_op_t can_set_rfmon_op;
-	inject_op_t inject_op;
-	setfilter_op_t setfilter_op;
-	setdirection_op_t setdirection_op;
-	set_datalink_op_t set_datalink_op;
-	getnonblock_op_t getnonblock_op;
-	setnonblock_op_t setnonblock_op;
-	stats_op_t stats_op;
+	activate_op_t activate_op;              // 对应回调函数：pcap_activate_linux
+	can_set_rfmon_op_t can_set_rfmon_op;    // 对应回调函数：pcap_can_set_rfmon_linux
+	inject_op_t inject_op;                  // 对应回调函数：pcap_inject_linux
+	setfilter_op_t setfilter_op;            // 对应回调函数：pcap_setfilter_linux
+	setdirection_op_t setdirection_op;      // 对应回调函数：pcap_setdirection_linux
+	set_datalink_op_t set_datalink_op;      // 对应回调函数：pcap_set_datalink_linux
+	getnonblock_op_t getnonblock_op;        // 对应回调函数：pcap_getnonblock_fd
+	setnonblock_op_t setnonblock_op;        // 对应回调函数：pcap_setnonblock_fd
+	stats_op_t stats_op;                    // 对应回调函数：pcap_stats_linux
 
 	/*
 	 * Routine to use as callback for pcap_next()/pcap_next_ex().

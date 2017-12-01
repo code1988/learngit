@@ -68,7 +68,7 @@
 #define	ESOCKTNOSUPPORT	94	/* Socket type not supported */
 #define	EOPNOTSUPP	95	/* Operation not supported on transport endpoint 通常就是kernel端不支持该操作 */
 #define	EPFNOSUPPORT	96	/* Protocol family not supported */
-#define	EAFNOSUPPORT	97	/* Address family not supported by protocol */
+#define	EAFNOSUPPORT	97	/* Address family not supported by protocol 传入的协议地址不支持 */
 #define	EADDRINUSE	98	/* Address already in use */
 #define	EADDRNOTAVAIL	99	/* Cannot assign requested address */
 #define	ENETDOWN	100	/* Network is down */

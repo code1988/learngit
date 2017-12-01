@@ -60,12 +60,12 @@ struct net;
  */
 enum sock_type {
 	SOCK_STREAM	= 1,
-	SOCK_DGRAM	= 2,
+	SOCK_DGRAM	= 2,        // 这种套接字类型意味着收到的是数据包(不带链路层头)
 	SOCK_RAW	= 3,
 	SOCK_RDM	= 4,
 	SOCK_SEQPACKET	= 5,
 	SOCK_DCCP	= 6,
-	SOCK_PACKET	= 10,
+	SOCK_PACKET	= 10,       // 这种套接字类型基本已经弃用
 };
 
 #define SOCK_MAX (SOCK_PACKET + 1)  // 套接字类型上限

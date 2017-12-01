@@ -160,6 +160,7 @@ pcap_can_set_rfmon(pcap_t *p)
 
 /*
  * For systems where rfmon mode is never supported.
+ * 缺省不设置rfmon模式
  */
 static int
 pcap_cant_set_rfmon(pcap_t *p _U_)
@@ -474,6 +475,7 @@ pcap_create(const char *device, char *errbuf)
 	return (p);
 }
 
+// 设置pcap句柄中平台无关的一系列回调函数
 static void
 initialize_ops(pcap_t *p)
 {
@@ -602,6 +604,7 @@ pcap_create_common(char *ebuf, size_t size)
 	return (p);
 }
 
+// 检查指定的pcap句柄是否处于运作状态(运作状态表示随时可以进行捕捉，此时不允许对pcap句柄参数再进行修改)
 int
 pcap_check_activated(pcap_t *p)
 {
@@ -613,7 +616,7 @@ pcap_check_activated(pcap_t *p)
 	return (0);
 }
 
-// 设置最大捕获包的长度，对于以太网数据包，最大长度为1518字节，如果需要捕获其他类型数据包，可以设置最大值65535
+// 设置最大捕获包的长度，对于以太网数据包，最大长度为1518字节，如果需要捕获其他类型数据包，可以设置最大值MAXIMUM_SNAPLEN
 int
 pcap_set_snaplen(pcap_t *p, int snaplen)
 {
@@ -633,6 +636,7 @@ pcap_set_snaplen(pcap_t *p, int snaplen)
 	return (0);
 }
 
+// 设置数据包的捕获模式
 int
 pcap_set_promisc(pcap_t *p, int promisc)
 {
@@ -651,6 +655,7 @@ pcap_set_rfmon(pcap_t *p, int rfmon)
 	return (0);
 }
 
+// 设置超时时间
 int
 pcap_set_timeout(pcap_t *p, int timeout_ms)
 {
@@ -784,6 +789,7 @@ pcap_get_tstamp_precision(pcap_t *p)
         return (p->opt.tstamp_precision);
 }
 
+// 使指定pcap句柄进入运作状态
 int
 pcap_activate(pcap_t *p)
 {
@@ -798,6 +804,7 @@ pcap_activate(pcap_t *p)
 	 */
 	if (pcap_check_activated(p))
 		return (PCAP_ERROR_ACTIVATED);
+    // 调用事先注册的平台相关的activate_op回调，linux平台上就是pcap_activate_linux
 	status = p->activate_op(p);
 	if (status >= 0)
 		p->activated = 1;
@@ -824,7 +831,7 @@ pcap_activate(pcap_t *p)
 
 /* 打开一个指定的网络接口，用于后续捕获数据
  * @device  - 指定网络接口名，比如"eth0"。如果传入NULL或"any"，则意味着对所有接口进行捕获
- * @snaplen - 设置每个数据包的捕捉长度，上限65535
+ * @snaplen - 设置每个数据包的捕捉长度，上限MAXIMUM_SNAPLEN
  * @promisc - 是否打开混杂模式，0-不打开，1-打开
  * @to_ms   - 设置获取数据包时的超时时间(ms)，0表示一直等待数据包到来
  * @errbuf  - 存放出错信息字符串
