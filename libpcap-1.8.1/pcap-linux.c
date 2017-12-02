@@ -304,23 +304,23 @@ struct pcap_linux {
 	struct pcap_stat stat;
 
 	char	*device;	/* device name  设备接口名 */
-	int	filter_in_userland; /* must filter in userland */
+	int	filter_in_userland; /* must filter in userland 标识用户空间是否需要过滤包 */
 	int	blocks_to_filter_in_userland;
 	int	must_do_on_close; /* stuff we must do when we close */
-	int	timeout;	/* timeout for buffering  进行捕获时的超时时间，从pcap->opt.timeout同步过来  */
+	int	timeout;	/* timeout for buffering  进行捕获时的超时时间，从pcap->opt.timeout同步过来,0意味着不超时 */
 	int	sock_packet;	/* using Linux 2.0 compatible interface  标识是否使用的是老式接口 */
 	int	cooked;		/* using SOCK_DGRAM rather than SOCK_RAW 标识是否使用加工模式 */
 	int	ifindex;	/* interface index of device we're bound to */
 	int	lo_ifindex;	/* interface index of the loopback device  环回接口序号 */
 	bpf_u_int32 oldmode;	/* mode to restore when turning monitor mode off */
 	char	*mondevice;	/* mac80211 monitor device we created */
-	u_char	*mmapbuf;	/* memory-mapped region pointer */
-	size_t	mmapbuflen;	/* size of region */
+	u_char	*mmapbuf;	/* memory-mapped region pointer  接收环形缓冲区在用户进程中的映射地址 */
+	size_t	mmapbuflen;	/* size of region  mmap实际映射的接收环形缓冲区长度 */
 	int	vlan_offset;	/* offset at which to insert vlan tags; if -1, don't insert  VLAN标签距离报文头部的偏移量，通常为12 */
 	u_int	tp_version;	/* version of tpacket_hdr for mmaped ring  环形缓冲区的版本号 */
 	u_int	tp_hdrlen;	/* hdrlen of tpacket_hdr for mmaped ring  环形缓冲区的帧头长(跟环形缓冲区版本有关) */
 	u_char	*oneshot_buffer; /* buffer for copy of packet */
-	int	poll_timeout;	/* timeout to use in poll() */
+	int	poll_timeout;	/* timeout to use in poll()  poll系统调用传入的超时参数，默认来自上面的timeout，但TPACKET_V3在3.19版本之前不允许不超时 */
 #ifdef HAVE_TPACKET3
 	unsigned char *current_packet; /* Current packet within the TPACKET_V3 block. Move to next block if NULL. */
 	int packets_left; /* Unhandled packets left within the block from previous call to pcap_read_linux_mmap_v3 in case of TPACKET_V3. */
@@ -452,7 +452,7 @@ static int	reset_kernel_filter(pcap_t *handle);
 static struct sock_filter	total_insn
 	= BPF_STMT(BPF_RET | BPF_K, 0);
 static struct sock_fprog	total_fcode
-	= { 1, &total_insn };
+	= { 1, &total_insn };       // 这个预定义的BPF过滤规则用来拒绝接收所有包
 #endif /* SO_ATTACH_FILTER */
 
 // 从普通网络接口中匹配指定的接口，匹配成功将会创建对应的linux平台pcap句柄
@@ -1330,6 +1330,8 @@ static void	pcap_cleanup_linux( pcap_t *handle )
 
 /*
  * Set the timeout to be used in poll() with memory-mapped packet capture.
+ *
+ * 设置poll传入的超时时间，该值跟TPACKET_V3以及内核版本有关
  */
 static void
 set_poll_timeout(struct pcap_linux *handlep)
@@ -1344,6 +1346,8 @@ set_poll_timeout(struct pcap_linux *handlep)
 	 * Some versions of TPACKET_V3 have annoying bugs/misfeatures
 	 * around which we have to work.  Determine if we have those
 	 * problems or not.
+     *
+     * 首先获取当前内核版本，3.19版本之前的TPACKET_V3存在一些bug，所以这里要进行区分
 	 */
 	if (uname(&utsname) == 0) {
 		/*
@@ -1388,6 +1392,8 @@ set_poll_timeout(struct pcap_linux *handlep)
 		 * The workaround is to have poll() time out very quickly,
 		 * so we grab the frames handed to us, and return them to
 		 * the kernel, ASAP.
+         *
+         * 3.19版本之前的TPACKET_V3不允许将poll设置为永远阻塞，所以当用户配置为永远阻塞时，实际会改为1s超时
 		 */
 		if (handlep->tp_version == TPACKET_V3 && broken_tpacket_v3)
 			handlep->poll_timeout = 1;	/* don't block for very long */
@@ -1400,6 +1406,8 @@ set_poll_timeout(struct pcap_linux *handlep)
 		 * For TPACKET_V3, the timeout is handled by the kernel,
 		 * so block forever; that way, we don't get extra timeouts.
 		 * Don't do that if we have a broken TPACKET_V3, though.
+         *
+         * 3.19版本之后的TPACKET_V3的超时时间由内核的环形缓冲区自己控制，所以poll这里直接设置为永远阻塞即可
 		 */
 		if (handlep->tp_version == TPACKET_V3 && !broken_tpacket_v3)
 			handlep->poll_timeout = -1;	/* block forever, let TPACKET_V3 wake us up */
@@ -1424,7 +1432,7 @@ set_poll_timeout(struct pcap_linux *handlep)
  *  be deprecated and functions be added to select that later allow
  *  modification of that values -- Torsten).
  *
- *  使指定的linux上的pcap句柄进入运作状态，其间会创建用于捕获的套接字
+ *  使指定的linux上的pcap句柄进入运作状态，其间会创建用于捕获的套接字，以及尝试开启PACKET_MMAP机制
  */
 static int
 pcap_activate_linux(pcap_t *handle)
@@ -1526,7 +1534,7 @@ pcap_activate_linux(pcap_t *handle)
 		 * Try to use memory-mapped access.
          *
          * 程序进入这里意味着成功通过新式的PF_PACKET建立套接字
-         * 这里对套接字使用mmap
+         * 这里尝试对指定捕获套接字开启PACKET_MMAP功能
 		 */
 		switch (activate_mmap(handle, &status)) {
 
@@ -1539,6 +1547,8 @@ pcap_activate_linux(pcap_t *handle)
 			 *
 			 * Set the timeout to use in poll() before
 			 * returning.
+             *
+             * 返回1意味着成功开启PACKET_MMAP功能，这里是为poll选择一个合适的超时时间
 			 */
 			set_poll_timeout(handlep);
 			return status;
@@ -1578,10 +1588,15 @@ pcap_activate_linux(pcap_t *handle)
 
 	/*
 	 * We set up the socket, but not with memory-mapped access.
+     *
+     * 程序运行到这里组要因为2种可能：
+     *      通过老式的SOCKET_PACKET创建了套接字之后；
+     *      通过新式的PF_PACKET创建了套接字，但不支持PACKET_MMAP特性时
 	 */
 	if (handle->opt.buffer_size != 0) {
 		/*
 		 * Set the socket buffer size to the specified value.
+         * 修改套接字的接收缓冲区长度
 		 */
 		if (setsockopt(handle->fd, SOL_SOCKET, SO_RCVBUF,
 		    &handle->opt.buffer_size,
@@ -2596,6 +2611,7 @@ pcap_platform_finddevs(pcap_if_t **alldevsp, char *errbuf)
 
 /*
  *  Attach the given BPF code to the packet capture device.
+ *  应用传入的BPF过滤规则到指定的捕获设备(通过is_mmapped区分是否使用PACKET_MMAP机制)
  */
 static int
 pcap_setfilter_linux_common(pcap_t *handle, struct bpf_program *filter,
@@ -2620,6 +2636,7 @@ pcap_setfilter_linux_common(pcap_t *handle, struct bpf_program *filter,
 
 	/* Make our private copy of the filter */
 
+    // 将编译得到的BPF过滤器信息拷贝到pcap的fcode字段中
 	if (install_bpf_program(handle, filter) < 0)
 		/* install_bpf_program() filled in errbuf */
 		return -1;
@@ -2627,10 +2644,15 @@ pcap_setfilter_linux_common(pcap_t *handle, struct bpf_program *filter,
 	/*
 	 * Run user level packet filter by default. Will be overriden if
 	 * installing a kernel filter succeeds.
+     *
+     * 默认首先都会开启用户级别的过滤器
 	 */
 	handlep->filter_in_userland = 1;
 
-	/* Install kernel level filter if possible */
+	/* Install kernel level filter if possible 
+     *
+     * kernel级别的过滤器只支持导入长度小于USHRT_MAX的BPF过滤代码
+     * */
 
 #ifdef SO_ATTACH_FILTER
 #ifdef USHRT_MAX
@@ -2661,6 +2683,8 @@ pcap_setfilter_linux_common(pcap_t *handle, struct bpf_program *filter,
 		 * references to the link-layer header and assume that the
 		 * link-layer payload begins at 0; "fix_program()" will do
 		 * that.
+         *
+         * 尝试修复内核BPF过滤器
 		 */
 		switch (fix_program(handle, &fcode, is_mmapped)) {
 
@@ -2713,6 +2737,8 @@ pcap_setfilter_linux_common(pcap_t *handle, struct bpf_program *filter,
 	 *	uninitialized data to the kernel, then the tool
 	 *	is buggy and needs to understand that it's just
 	 *	padding.
+     *
+     *	如果支持使用内核BPF过滤器，则在这里进行配置过滤规则
 	 */
 	if (can_filter_in_kernel) {
 		if ((err = set_kernel_filter(handle, &fcode)) == 0)
@@ -2745,6 +2771,8 @@ pcap_setfilter_linux_common(pcap_t *handle, struct bpf_program *filter,
 	 * code attached a filter to the socket by some means other than
 	 * calling "pcap_setfilter()".  Otherwise, the kernel filter may
 	 * filter out packets that would pass the new userland filter.
+     *
+     * 如果不支持内和BPF过滤器，则使用用户级别的过滤器
 	 */
 	if (handlep->filter_in_userland) {
 		if (reset_kernel_filter(handle) == -1) {
@@ -2769,6 +2797,7 @@ pcap_setfilter_linux_common(pcap_t *handle, struct bpf_program *filter,
 	return 0;
 }
 
+// 应用BPF过滤规则(非PACKET_MMAP方式)
 static int
 pcap_setfilter_linux(pcap_t *handle, struct bpf_program *filter)
 {
@@ -3747,6 +3776,8 @@ activate_new(pcap_t *handle)
 #ifdef HAVE_PACKET_RING
 /*
  * Attempt to activate with memory-mapped access.
+ * 尝试对指定捕获套接字开启PACKET_MMAP功能
+ * 返回值： 1表示成功开启；0表示系统不支持PACKET_MMAP功能；-1表示出错
  *
  * On success, returns 1, and sets *status to 0 if there are no warnings
  * or to a PCAP_WARNING_ code if there is a warning.
@@ -3776,7 +3807,7 @@ activate_mmap(pcap_t *handle, int *status)
 		return -1;
 	}
 
-    // 环形缓冲区默认长度2M
+    // 缓冲区默认长度2M
 	if (handle->opt.buffer_size == 0) {
 		/* by default request 2M for the ring buffer */
 		handle->opt.buffer_size = 2*1024*1024;
@@ -3788,7 +3819,7 @@ activate_mmap(pcap_t *handle, int *status)
 		*status = PCAP_ERROR;
 		return ret;
 	}
-    // 创建环形缓冲区
+    // 创建环形缓冲区，并将其映射到用户空间
 	ret = create_ring(handle, status);
 	if (ret == 0) {
 		/*
@@ -3817,6 +3848,7 @@ activate_mmap(pcap_t *handle, int *status)
 	 * handle->cc is used to store the ring size.
 	 */
 
+    // 根据环形缓冲区版本注册对应的读操作回调函数
 	switch (handlep->tp_version) {
 	case TPACKET_V1:
 		handle->read_op = pcap_read_linux_mmap_v1;
@@ -3835,6 +3867,8 @@ activate_mmap(pcap_t *handle, int *status)
 		break;
 #endif
 	}
+
+    // 最后注册一系列linux上相关通用回调函数
 	handle->cleanup_op = pcap_cleanup_linux_mmap;
 	handle->setfilter_op = pcap_setfilter_linux_mmap;
 	handle->setnonblock_op = pcap_setnonblock_mmap;
@@ -4072,6 +4106,7 @@ prepare_tpacket_socket(pcap_t *handle)
 
 /*
  * Attempt to set up memory-mapped access.
+ * 为指定的捕获套接字创建接收环形缓冲区，并将其映射到用户空间
  *
  * On success, returns 1, and sets *status to 0 if there are no warnings
  * or to a PCAP_WARNING_ code if there is a warning.
@@ -4142,18 +4177,23 @@ create_ring(pcap_t *handle, int *status)
 		 *
 		 * We don't do that if segmentation/fragmentation or receive
 		 * offload are enabled, so we don't get rudely surprised by
-		 * "packets" bigger than the MTU. */
+		 * "packets" bigger than the MTU. 
+         *
+         * 设置一个合适的环形缓冲区帧长
+         * */
 		frame_size = handle->snapshot;
 		if (handle->linktype == DLT_EN10MB) {
 			int mtu;
 			int offload;
 
+            // 检查该网络设备是否支持offload机制
 			offload = iface_get_offload(handle);
 			if (offload == -1) {
 				*status = PCAP_ERROR;
 				return -1;
 			}
 			if (!offload) {
+                // 对于不支持offload机制的接口，则查询MTU值，并将其作为环形缓冲区的帧长上限
 				mtu = iface_get_mtu(handle->fd, handle->opt.device,
 				    handle->errbuf);
 				if (mtu == -1) {
@@ -4225,7 +4265,7 @@ create_ring(pcap_t *handle, int *status)
 			 *  when accessing unaligned memory locations"
 			 */
 		macoff = netoff - maclen;
-		req.tp_frame_size = TPACKET_ALIGN(macoff + frame_size);
+		req.tp_frame_size = TPACKET_ALIGN(macoff + frame_size);     // 区别于V3,V1/V2的帧长基于用户设置的snapshot再计算得到
 		req.tp_frame_nr = handle->opt.buffer_size/req.tp_frame_size;
 		break;
 
@@ -4237,7 +4277,7 @@ create_ring(pcap_t *handle, int *status)
 		 * We pick a "frame" size of 128K to leave enough
 		 * room for at least one reasonably-sized packet
 		 * in the "frame". */
-		req.tp_frame_size = MAXIMUM_SNAPLEN;
+		req.tp_frame_size = MAXIMUM_SNAPLEN;                        // 区别于V1/V2，V3的帧长这里取了一个比较大的固定值MAXIMUM_SNAPLEN
 		req.tp_frame_nr = handle->opt.buffer_size/req.tp_frame_size;
 		break;
 #endif
@@ -4252,7 +4292,10 @@ create_ring(pcap_t *handle, int *status)
 	/* compute the minumum block size that will handle this frame.
 	 * The block has to be page size aligned.
 	 * The max block size allowed by the kernel is arch-dependent and
-	 * it's not explicitly checked here. */
+	 * it's not explicitly checked here. 
+     *
+     * V1/V2/V3的内存块长度显然不到帧长的2倍，意味着pcap使每个内存块中只存放一个帧
+     * */
 	req.tp_block_size = getpagesize();
 	while (req.tp_block_size < req.tp_frame_size)
 		req.tp_block_size <<= 1;
@@ -4372,6 +4415,7 @@ create_ring(pcap_t *handle, int *status)
 
 	/* ask the kernel to create the ring */
 retry:
+    // 创建接收环形缓冲区
 	req.tp_block_nr = req.tp_frame_nr / frames_per_block;
 
 	/* req.tp_frame_nr is requested to match frames_per_block*req.tp_block_nr */
@@ -4417,7 +4461,9 @@ retry:
 		return -1;
 	}
 
-	/* memory map the rx ring */
+	/* memory map the rx ring 
+     * 将接收环形缓冲区映射到用户空间
+     * */
 	handlep->mmapbuflen = req.tp_block_nr * req.tp_block_size;
 	handlep->mmapbuf = mmap(0, handlep->mmapbuflen,
 	    PROT_READ|PROT_WRITE, MAP_SHARED, handle->fd, 0);
@@ -4431,7 +4477,9 @@ retry:
 		return -1;
 	}
 
-	/* allocate a ring for each frame header pointer*/
+	/* allocate a ring for each frame header pointer
+     * 创建一个pcap内部用于管理接收环形缓冲区每个帧头的结构
+     * */
 	handle->cc = req.tp_frame_nr;
 	handle->buffer = malloc(handle->cc * sizeof(union thdr *));
 	if (!handle->buffer) {
@@ -5235,6 +5283,7 @@ again:
 }
 #endif /* HAVE_TPACKET3 */
 
+// 应用BPF过滤规则(PACKET_MMAP方式)
 static int
 pcap_setfilter_linux_mmap(pcap_t *handle, struct bpf_program *filter)
 {
@@ -6280,6 +6329,7 @@ iface_ethtool_get_ts_info(const char *device, pcap_t *handle, char *ebuf _U_)
  * we just say "no, we don't".
  */
 #if defined(SIOCETHTOOL) && (defined(ETHTOOL_GTSO) || defined(ETHTOOL_GUFO) || defined(ETHTOOL_GGSO) || defined(ETHTOOL_GFLAGS) || defined(ETHTOOL_GGRO))
+// ethool调用接口
 static int
 iface_ethtool_flag_ioctl(pcap_t *handle, int cmd, const char *cmdname)
 {
@@ -6309,12 +6359,14 @@ iface_ethtool_flag_ioctl(pcap_t *handle, int cmd, const char *cmdname)
 	return eval.data;
 }
 
+// 检查指定网络设备是否支持offload机制
 static int
 iface_get_offload(pcap_t *handle)
 {
 	int ret;
 
 #ifdef ETHTOOL_GTSO
+    // 判断该网络设备的TSO是否开启
 	ret = iface_ethtool_flag_ioctl(handle, ETHTOOL_GTSO, "ETHTOOL_GTSO");
 	if (ret == -1)
 		return -1;
@@ -6323,6 +6375,7 @@ iface_get_offload(pcap_t *handle)
 #endif
 
 #ifdef ETHTOOL_GUFO
+    // 判断该网络设备的UFO是否开启
 	ret = iface_ethtool_flag_ioctl(handle, ETHTOOL_GUFO, "ETHTOOL_GUFO");
 	if (ret == -1)
 		return -1;
@@ -6335,6 +6388,8 @@ iface_get_offload(pcap_t *handle)
 	 * XXX - will this cause large unsegmented packets to be
 	 * handed to PF_PACKET sockets on transmission?  If not,
 	 * this need not be checked.
+     *
+     * 判断该网络设备的GSO是否开启
 	 */
 	ret = iface_ethtool_flag_ioctl(handle, ETHTOOL_GGSO, "ETHTOOL_GGSO");
 	if (ret == -1)
@@ -6344,6 +6399,7 @@ iface_get_offload(pcap_t *handle)
 #endif
 
 #ifdef ETHTOOL_GFLAGS
+    //  判断该网络设备的LRO是否开启
 	ret = iface_ethtool_flag_ioctl(handle, ETHTOOL_GFLAGS, "ETHTOOL_GFLAGS");
 	if (ret == -1)
 		return -1;
@@ -6356,6 +6412,8 @@ iface_get_offload(pcap_t *handle)
 	 * XXX - will this cause large reassembled packets to be
 	 * handed to PF_PACKET sockets on receipt?  If not,
 	 * this need not be checked.
+     *
+     * 判断该网络设备的GRO是否开启
 	 */
 	ret = iface_ethtool_flag_ioctl(handle, ETHTOOL_GGRO, "ETHTOOL_GGRO");
 	if (ret == -1)
@@ -6623,6 +6681,7 @@ iface_bind_old(int fd, const char *device, char *ebuf)
 
 /*
  *  Query the kernel for the MTU of the given interface.
+ *  查询给定接口的MTU值
  */
 static int
 iface_get_mtu(int fd, const char *device, char *ebuf)
@@ -6811,6 +6870,7 @@ fix_offset(struct bpf_insn *p)
 	return 0;
 }
 
+// 使用指定的BPF过滤规则设置内核BPF过滤器
 static int
 set_kernel_filter(pcap_t *handle, struct sock_fprog *fcode)
 {
@@ -6849,7 +6909,11 @@ set_kernel_filter(pcap_t *handle, struct sock_fprog *fcode)
 	 * get bogus packets if an error occurs, rather than having
 	 * the filtering done in userland even if it could have been
 	 * done in the kernel.
+     *
+     * 在设置新的过滤规则之前到达套接字接收缓冲区的包，该过滤规则对这部分包无效
+     * 解决的方法是首先抽干接收缓冲区中的所有包，再应用新的过滤规则
 	 */
+    // [1]. 下拒绝接收所有包的BPF过滤规则
 	if (setsockopt(handle->fd, SOL_SOCKET, SO_ATTACH_FILTER,
 		       &total_fcode, sizeof(total_fcode)) == 0) {
 		char drain[1];
@@ -6864,6 +6928,8 @@ set_kernel_filter(pcap_t *handle, struct sock_fprog *fcode)
 		 * non-blocking mode; we drain it by reading packets
 		 * until we get an error (which is normally a
 		 * "nothing more to be read" error).
+         *
+         * [2]. 将捕获套接字暂时改为非阻塞属性
 		 */
 		save_mode = fcntl(handle->fd, F_GETFL, 0);
 		if (save_mode == -1) {
@@ -6878,6 +6944,7 @@ set_kernel_filter(pcap_t *handle, struct sock_fprog *fcode)
 			    pcap_strerror(errno));
 			return -2;
 		}
+        // [3]. 抽干接收缓冲区中的数据
 		while (recv(handle->fd, &drain, sizeof drain, MSG_TRUNC) >= 0)
 			;
 		save_errno = errno;
@@ -6895,6 +6962,8 @@ set_kernel_filter(pcap_t *handle, struct sock_fprog *fcode)
 			    pcap_strerror(save_errno));
 			return -2;
 		}
+        
+        // [4]. 恢复套接字原本的属性
 		if (fcntl(handle->fd, F_SETFL, save_mode) == -1) {
 			pcap_snprintf(handle->errbuf, PCAP_ERRBUF_SIZE,
 			    "can't restore FD flags when changing filter: %s",
@@ -6905,6 +6974,8 @@ set_kernel_filter(pcap_t *handle, struct sock_fprog *fcode)
 
 	/*
 	 * Now attach the new filter.
+     *
+     * [5]. 绑定指定的BPF过滤规则到内核BPF过滤器
 	 */
 	ret = setsockopt(handle->fd, SOL_SOCKET, SO_ATTACH_FILTER,
 			 fcode, sizeof(*fcode));

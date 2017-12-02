@@ -111,7 +111,8 @@ extern "C" {
 struct pcap_opt {
 	char	*device;    // 设备接口名
 	int	timeout;	/* timeout for buffering  该pcap句柄进行捕获操作的超时时间(ms) */
-	u_int	buffer_size;    // 环形缓冲区长度，缺省就是2M
+	u_int	buffer_size;    // 缓冲区长度，缺省就是2M(该配置值不一定就是实际创建的环形缓冲区大小)，
+                            // 当PACKET_MMAP开启时，该值用来配置接收环形缓冲区;当不支持PACKET_MMAP时，该值用来配置套接字的接收缓冲区
 	int	promisc;    // 标识该pcap句柄是否开启混杂模式，需要注意的是，"any"设备不允许开启混杂模式
 	int	rfmon;		/* monitor mode  表示该pcap句柄是否开启监听模式，该模式只用于无线网卡 */
 	int	immediate;	/* immediate mode - deliver packets as soon as they arrive  标识收到报文时是否立即传递给用户 */
@@ -154,7 +155,7 @@ struct pcap {
 	/*
 	 * Method to call to read packets on a live capture.
 	 */
-	read_op_t read_op;
+	read_op_t read_op;      // 在该捕获接口上进行读操作的回调函数(linux上目前缺省就是pcap_read_linux_mmap_v3)
 
 	/*
 	 * Method to call to read packets from a savefile.
@@ -164,17 +165,17 @@ struct pcap {
 #ifdef _WIN32
 	ADAPTER *adapter;
 #else
-	int fd;
-	int selectable_fd;
+	int fd;             // 记录了捕获套接字
+	int selectable_fd;  // 通常就是fd
 #endif /* _WIN32 */
 
 	/*
 	 * Read buffer.
 	 */
-	u_int bufsize;
-	void *buffer;
+	u_int bufsize;  // 该值初始时来自用户配置的snapshot，当开启PACKET_MMAP时，跟配置的接收环形缓冲区tp_frame_size值同步
+	void *buffer;   // 当开启PACKET_MMAP时，指向一个成员为union thdr结构的数组，记录了接收环形缓冲区中每个帧的帧头;当不支持PACKET_MMAP时，暂略
 	u_char *bp;
-	int cc;
+	int cc;         // 跟配置的接收环形缓冲区tp_frame_nr值同步
 
 	int break_loop;		/* flag set to force break from packet-reading loop */
 
@@ -224,7 +225,7 @@ struct pcap {
 	/*
 	 * Placeholder for filter code if bpf not in kernel.
 	 */
-	struct bpf_program fcode;
+	struct bpf_program fcode;       // BPF过滤模块
 
 	char errbuf[PCAP_ERRBUF_SIZE + 1];
 	int dlt_count;          // 该设备对应的dlt_list中元素数量，通常为2
@@ -243,17 +244,17 @@ struct pcap {
 	activate_op_t activate_op;              // 对应回调函数：pcap_activate_linux
 	can_set_rfmon_op_t can_set_rfmon_op;    // 对应回调函数：pcap_can_set_rfmon_linux
 	inject_op_t inject_op;                  // 对应回调函数：pcap_inject_linux
-	setfilter_op_t setfilter_op;            // 对应回调函数：pcap_setfilter_linux
+	setfilter_op_t setfilter_op;            // 对应回调函数：pcap_setfilter_linux       | pcap_setfilter_linux_mmap
 	setdirection_op_t setdirection_op;      // 对应回调函数：pcap_setdirection_linux
 	set_datalink_op_t set_datalink_op;      // 对应回调函数：pcap_set_datalink_linux
-	getnonblock_op_t getnonblock_op;        // 对应回调函数：pcap_getnonblock_fd
-	setnonblock_op_t setnonblock_op;        // 对应回调函数：pcap_setnonblock_fd
+	getnonblock_op_t getnonblock_op;        // 对应回调函数：pcap_getnonblock_fd        | pcap_getnonblock_mmap
+	setnonblock_op_t setnonblock_op;        // 对应回调函数：pcap_setnonblock_fd        | pcap_setnonblock_mmap
 	stats_op_t stats_op;                    // 对应回调函数：pcap_stats_linux
 
 	/*
 	 * Routine to use as callback for pcap_next()/pcap_next_ex().
 	 */
-	pcap_handler oneshot_callback;
+	pcap_handler oneshot_callback;          // 对应回调函数：pcap_oneshot_mmap
 
 #ifdef _WIN32
 	/*
@@ -273,7 +274,7 @@ struct pcap {
 	live_dump_ended_op_t live_dump_ended_op;
 	get_airpcap_handle_op_t get_airpcap_handle_op;
 #endif
-	cleanup_op_t cleanup_op;
+	cleanup_op_t cleanup_op;            // 对应回调函数：pcap_cleanup_linux_mmap
 };
 
 /*

@@ -27,6 +27,7 @@ struct sock_filter {	/* Filter block */
 	__u32	k;      /* Generic multiuse field */
 };
 
+// kernel的套接字过滤器配置参数，配合SO_ATTACH_FILTER选项使用
 struct sock_fprog {	/* Required for SO_ATTACH_FILTER. */
 	unsigned short		len;	/* Number of filter blocks */
 	struct sock_filter __user *filter;

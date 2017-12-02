@@ -8,7 +8,7 @@
 
 #define SO_DEBUG	1
 #define SO_REUSEADDR	2
-#define SO_TYPE		3
+#define SO_TYPE		3           // 获取指定套接字类型，定义在enum sock_type
 #define SO_ERROR	4
 #define SO_DONTROUTE	5
 #define SO_BROADCAST	6
@@ -28,8 +28,8 @@
 #define SO_PEERCRED	17
 #define SO_RCVLOWAT	18
 #define SO_SNDLOWAT	19
-#define SO_RCVTIMEO	20
-#define SO_SNDTIMEO	21
+#define SO_RCVTIMEO	20      // 设置/获取接收超时
+#define SO_SNDTIMEO	21      // 设置/获取发送超时
 #endif
 
 /* Security levels - as per NRL IPv6 - don't actually do anything */
@@ -40,8 +40,8 @@
 #define SO_BINDTODEVICE	25
 
 /* Socket filtering */
-#define SO_ATTACH_FILTER	26
-#define SO_DETACH_FILTER	27
+#define SO_ATTACH_FILTER	26      // 绑定套接字过滤器
+#define SO_DETACH_FILTER	27      // 分离套接字过滤器
 #define SO_GET_FILTER		SO_ATTACH_FILTER
 
 #define SO_PEERNAME		28

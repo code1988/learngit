@@ -789,7 +789,7 @@ pcap_get_tstamp_precision(pcap_t *p)
         return (p->opt.tstamp_precision);
 }
 
-// 使指定pcap句柄进入运作状态
+// 使指定pcap句柄进入运作状态，这里实际包含了创建捕获套接字的动作
 int
 pcap_activate(pcap_t *p)
 {
@@ -829,11 +829,11 @@ pcap_activate(pcap_t *p)
 	return (status);
 }
 
-/* 打开一个指定的网络接口，用于后续捕获数据
+/* 针对指定的网络接口创建一个捕获句柄，用于后续捕获数据
  * @device  - 指定网络接口名，比如"eth0"。如果传入NULL或"any"，则意味着对所有接口进行捕获
  * @snaplen - 设置每个数据包的捕捉长度，上限MAXIMUM_SNAPLEN
  * @promisc - 是否打开混杂模式，0-不打开，1-打开
- * @to_ms   - 设置获取数据包时的超时时间(ms)，0表示一直等待数据包到来
+ * @to_ms   - 设置获取数据包时的超时时间(ms)，0表示一直等待数据包到来，小于0表示非阻塞
  * @errbuf  - 存放出错信息字符串
  *
  * 备注：to_ms值会影响3个捕获函数(pcap_next、pcap_loop、pcap_dispatch)的行为
@@ -871,6 +871,7 @@ pcap_open_live(const char *device, int snaplen, int promisc, int to_ms, char *er
 	 * the adapter is in monitor mode or not.
 	 */
 	p->oldstyle = 1;
+    // 使指定pcap句柄进入运作状态，这里实际包含了创建捕获套接字的动作
 	status = pcap_activate(p);
 	if (status < 0)
 		goto fail;
@@ -1404,6 +1405,7 @@ pcap_tstamp_type_val_to_description(int tstamp_type)
 	return (NULL);
 }
 
+// 获取指定pcap句柄配置的最大捕获包的长度
 int
 pcap_snapshot(pcap_t *p)
 {

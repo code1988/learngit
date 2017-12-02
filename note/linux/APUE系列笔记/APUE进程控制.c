@@ -12,7 +12,7 @@
     
 2. 非局部跳转
     不同于普通C语言的goto语句在一个函数内进行跳转，非局部跳转可以在栈上进行跨函数跳转，从而返回到当前函数调用路径上的某个函数中。通过2个函数来实现：
-            int setjmp(jmp_buf env);            // 直接调用时返回0；从longjmp调用时返回非0值
+            int setjmp(jmp_buf env);            // 直接调用时返回0；从longjmp调用时返回longjmp传入的val
             void longjmp(jmp_buf env,int val);  // 调用该函数可以返回到上次执行setjmp的位置
     参数env包含了恢复栈状态的所有信息，由setjmp生成导出，由longjmp导入恢复，所以参数env必须是全局性质的;
     根据返回值的不同，一个setjmp可以对应多一个longjmp，因为setjmp的返回值对应了longjmp传入的val.

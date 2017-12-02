@@ -75,7 +75,7 @@
 /* SIOCGIFDIVERT was:	0x8944		Frame diversion support */
 /* SIOCSIFDIVERT was:	0x8945		Set frame diversion options */
 
-#define SIOCETHTOOL	0x8946		/* Ethtool interface		*/
+#define SIOCETHTOOL	0x8946		/* Ethtool interface		IOCTL的ethool命令接口 */
 
 #define SIOCGMIIPHY	0x8947		/* Get address of MII PHY in use. */
 #define SIOCGMIIREG	0x8948		/* Read MII PHY register.	*/

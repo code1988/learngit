@@ -290,7 +290,7 @@ enum tpacket_versions {
 struct tpacket_req {
 	unsigned int	tp_block_size;	/* Minimal size of contiguous block  每个连续内存块的最小尺寸(必须是 PAGE_SIZE * 2^n ) */
 	unsigned int	tp_block_nr;	/* Number of blocks  内存块的数量 */
-	unsigned int	tp_frame_size;	/* Size of frame  每个帧的大小(必须大于TPACKET_HDRLEN，并且TPACKET_ALIGNMENT对齐) */
+	unsigned int	tp_frame_size;	/* Size of frame  每个帧的大小(必须大于TPACKET_HDRLEN，并且TPACKET_ALIGNMENT对齐，并且最好保证tp_block_size能够整除tp_frame_size) */
 	unsigned int	tp_frame_nr;	/* Total number of frames  帧的总个数(必须等于 每个内存块中的帧数量*内存块数量) */
 };
 
@@ -301,10 +301,10 @@ struct tpacket_req {
 struct tpacket_req3 {
 	unsigned int	tp_block_size;	/* Minimal size of contiguous block   */
 	unsigned int	tp_block_nr;	/* Number of blocks   */
-	unsigned int	tp_frame_size;	/* Size of frame  (TPACKET_V3会忽略该字段(待确认)，因为V3中的帧长是可变的) */
-	unsigned int	tp_frame_nr;	/* Total number of frames  (TPACKET_V3会忽略该字段，原因同上) */
-	unsigned int	tp_retire_blk_tov; /* timeout in msecs  超时时间(ms)，超时后即使内存块没有被数据填满也会被内核停用 */
-	unsigned int	tp_sizeof_priv; /* offset to private data area  每个内存块中私有空间大小 */
+	unsigned int	tp_frame_size;	/* Size of frame  (虽然V3中的帧长是可变的，但创建时还是会传入一个最大的允许值) */
+	unsigned int	tp_frame_nr;	/* Total number of frames  */
+	unsigned int	tp_retire_blk_tov; /* timeout in msecs  超时时间(ms)，超时后即使内存块没有被数据填入也会被内核停用，0意味着不设超时 */
+	unsigned int	tp_sizeof_priv; /* offset to private data area  每个内存块中私有空间大小，0意味着不设私有空间 */
 	unsigned int	tp_feature_req_word;    // 标志位集合(目前就1个标志 TP_FT_REQ_FILL_RXHASH)
 };
 

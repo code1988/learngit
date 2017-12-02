@@ -200,7 +200,7 @@ struct ifreq {
 		struct  ifmap ifru_map;
 		char	ifru_slave[IFNAMSIZ];	/* Just fits the size */
 		char	ifru_newname[IFNAMSIZ];
-		void __user *	ifru_data;
+		void __user *	ifru_data;      // 指向通用的用户参数结构，比如用于ethool的struct ethtool_value
 		struct	if_settings ifru_settings;
 	} ifr_ifru;
 };

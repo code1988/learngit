@@ -2234,6 +2234,8 @@ icode_to_fcode(compiler_state_t *cstate, struct icode *ic,
  * If we fail to allocate memory for the copy, fill in the "errbuf"
  * member of the "pcap_t" with an error message, and return -1;
  * otherwise, return 0.
+ *
+ * 将编译得到的BPF过滤器信息拷贝到pcap的fcode字段中
  */
 int
 install_bpf_program(pcap_t *p, struct bpf_program *fp)

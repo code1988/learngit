@@ -253,7 +253,10 @@ struct chunk {
 	void *m;
 };
 
-/* Code generator state */
+/* Code generator state 
+ *
+ * 代码生成器状态  
+ * */
 
 struct _compiler_state {
 	jmp_buf top_ctx;
@@ -261,7 +264,7 @@ struct _compiler_state {
 
 	struct icode ic;
 
-	int snaplen;
+	int snaplen;    // 同步自pcap.snapshot
 
 	int linktype;
 	int prevlinktype;
@@ -688,6 +691,8 @@ pcap_compile(pcap_t *p, struct bpf_program *program,
 	/*
 	 * If this pcap_t hasn't been activated, it doesn't have a
 	 * link-layer type, so we can't use it.
+     *
+     * 只有已经激活的pcap句柄上才可以编译BPF规则
 	 */
 	if (!p->activated) {
 		pcap_snprintf(p->errbuf, PCAP_ERRBUF_SIZE,
@@ -703,6 +708,7 @@ pcap_compile(pcap_t *p, struct bpf_program *program,
 	cstate.bpf_pcap = p;
 	init_regs(&cstate);
 
+    // 保存当前栈的上下文
 	if (setjmp(cstate.top_ctx)) {
 #ifdef INET6
 		if (cstate.ai != NULL)

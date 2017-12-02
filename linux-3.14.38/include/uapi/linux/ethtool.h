@@ -203,7 +203,9 @@ struct ethtool_wolinfo {
 	__u8	sopass[SOPASS_MAX];
 };
 
-/* for passing single values */
+/* for passing single values 
+ * ethool命令在IOCTL调用中的参数结构
+ * */
 struct ethtool_value {
 	__u32	cmd;
 	__u32	data;
@@ -1133,8 +1135,8 @@ enum ethtool_sfeatures_retval_bits {
 #define ETHTOOL_GSTRINGS	0x0000001b /* get specified string set */
 #define ETHTOOL_PHYS_ID		0x0000001c /* identify the NIC */
 #define ETHTOOL_GSTATS		0x0000001d /* get NIC-specific statistics */
-#define ETHTOOL_GTSO		0x0000001e /* Get TSO enable (ethtool_value) */
-#define ETHTOOL_STSO		0x0000001f /* Set TSO enable (ethtool_value) */
+#define ETHTOOL_GTSO		0x0000001e /* Get TSO enable (ethtool_value) 获取网卡的TSO状态 */
+#define ETHTOOL_STSO		0x0000001f /* Set TSO enable (ethtool_value) 设置网卡的TSO */
 #define ETHTOOL_GPERMADDR	0x00000020 /* Get permanent hardware address */
 #define ETHTOOL_GUFO		0x00000021 /* Get UFO enable (ethtool_value) */
 #define ETHTOOL_SUFO		0x00000022 /* Set UFO enable (ethtool_value) */
