@@ -906,7 +906,7 @@ pcap_open_offline_common(char *ebuf, size_t size)
 	return (p);
 }
 
-/* 类似pcap_loop
+/* 类似pcap_loop，区别在于本函数会因为超时退出
  * 
  */
 int
@@ -916,10 +916,11 @@ pcap_dispatch(pcap_t *p, int cnt, pcap_handler callback, u_char *user)
 }
 
 /* 循环捕获数据包，直到遇到错误或满足退出条件
- * @p       - libpcap句柄
+ * @p       - pcap句柄
  * @cnt     - 设置捕获数据包个数，捕获数量超过该值则退出本函数，-1表示一直捕获
  * @callback- 捕获到数据包后的回调函数
  * @user    - 传递给回调函数的参数
+ * @返回值： <=0意味着遇到结束符或者出错；>0表示剩余未捕获的包数量
  */
 int
 pcap_loop(pcap_t *p, int cnt, pcap_handler callback, u_char *user)
@@ -953,6 +954,7 @@ pcap_loop(pcap_t *p, int cnt, pcap_handler callback, u_char *user)
 
 /*
  * Force the loop in "pcap_read()" or "pcap_read_offline()" to terminate.
+ * 强制终止循环捕获操作
  */
 void
 pcap_breakloop(pcap_t *p)

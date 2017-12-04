@@ -312,6 +312,7 @@ pcap_open_offline_with_tstamp_precision(const char *fname, u_int precision,
 	return (p);
 }
 
+// 打开指定的pcap文件
 pcap_t *
 pcap_open_offline(const char *fname, char *errbuf)
 {

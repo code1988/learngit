@@ -17,7 +17,7 @@ ADDLOBJS	Makefile	/^ADDLOBJS = $/;"	m
 ADD_PARTY	atmuni31.h	54;"	d
 ADD_PARTY_ACK	atmuni31.h	55;"	d
 ADD_PARTY_REJ	atmuni31.h	56;"	d
-AIRPCAP_HANDLE__EAE405F5_0171_9592_B3C2_C19EC426AD34__DEFINED_	pcap/pcap.h	473;"	d
+AIRPCAP_HANDLE__EAE405F5_0171_9592_B3C2_C19EC426AD34__DEFINED_	pcap/pcap.h	474;"	d
 ANCILLARY	bpf/net/bpf_filter.c	307;"	d	file:
 AR	Makefile	/^AR = ar$/;"	m
 ARCTYPE_ARP	arcnet.h	42;"	d
@@ -32,27 +32,27 @@ ARCTYPE_IP_OLD	arcnet.h	37;"	d
 ARCTYPE_REVARP	arcnet.h	43;"	d
 AREAMASK	nametoaddr.c	422;"	d	file:
 AREASHIFT	nametoaddr.c	421;"	d	file:
-ARPHRD_ATM	pcap-linux.c	3036;"	d	file:
-ARPHRD_CAN	pcap-linux.c	3001;"	d	file:
-ARPHRD_CISCO	pcap-linux.c	3146;"	d	file:
-ARPHRD_DLCI	pcap-linux.c	3169;"	d	file:
-ARPHRD_FCAL	pcap-linux.c	3214;"	d	file:
-ARPHRD_FCFABRIC	pcap-linux.c	3222;"	d	file:
-ARPHRD_FCPL	pcap-linux.c	3218;"	d	file:
-ARPHRD_FCPP	pcap-linux.c	3210;"	d	file:
-ARPHRD_FDDI	pcap-linux.c	3028;"	d	file:
-ARPHRD_FRAD	pcap-linux.c	3180;"	d	file:
-ARPHRD_IEEE80211	pcap-linux.c	3082;"	d	file:
-ARPHRD_IEEE80211_PRISM	pcap-linux.c	3089;"	d	file:
-ARPHRD_IEEE80211_RADIOTAP	pcap-linux.c	3096;"	d	file:
-ARPHRD_IEEE802154	pcap-linux.c	3319;"	d	file:
-ARPHRD_IEEE802_TR	pcap-linux.c	3015;"	d	file:
-ARPHRD_IRDA	pcap-linux.c	3285;"	d	file:
-ARPHRD_LAPD	pcap-linux.c	3300;"	d	file:
-ARPHRD_NETLINK	pcap-linux.c	3326;"	d	file:
-ARPHRD_NONE	pcap-linux.c	3308;"	d	file:
-ARPHRD_RAWHDLC	pcap-linux.c	3165;"	d	file:
-ARPHRD_SIT	pcap-linux.c	3156;"	d	file:
+ARPHRD_ATM	pcap-linux.c	3080;"	d	file:
+ARPHRD_CAN	pcap-linux.c	3045;"	d	file:
+ARPHRD_CISCO	pcap-linux.c	3190;"	d	file:
+ARPHRD_DLCI	pcap-linux.c	3213;"	d	file:
+ARPHRD_FCAL	pcap-linux.c	3258;"	d	file:
+ARPHRD_FCFABRIC	pcap-linux.c	3266;"	d	file:
+ARPHRD_FCPL	pcap-linux.c	3262;"	d	file:
+ARPHRD_FCPP	pcap-linux.c	3254;"	d	file:
+ARPHRD_FDDI	pcap-linux.c	3072;"	d	file:
+ARPHRD_FRAD	pcap-linux.c	3224;"	d	file:
+ARPHRD_IEEE80211	pcap-linux.c	3126;"	d	file:
+ARPHRD_IEEE80211_PRISM	pcap-linux.c	3133;"	d	file:
+ARPHRD_IEEE80211_RADIOTAP	pcap-linux.c	3140;"	d	file:
+ARPHRD_IEEE802154	pcap-linux.c	3363;"	d	file:
+ARPHRD_IEEE802_TR	pcap-linux.c	3059;"	d	file:
+ARPHRD_IRDA	pcap-linux.c	3329;"	d	file:
+ARPHRD_LAPD	pcap-linux.c	3344;"	d	file:
+ARPHRD_NETLINK	pcap-linux.c	3370;"	d	file:
+ARPHRD_NONE	pcap-linux.c	3352;"	d	file:
+ARPHRD_RAWHDLC	pcap-linux.c	3209;"	d	file:
+ARPHRD_SIT	pcap-linux.c	3200;"	d	file:
 ASM	msdos/makefile	/^ASM    = tasm.exe -t -l -mx -m2 -DDEBUG$/;"	m
 ATOMELEM	gencode.h	225;"	d
 ATOMMASK	gencode.h	224;"	d
@@ -133,7 +133,7 @@ BPF_RET	pcap/bpf.h	136;"	d
 BPF_RSH	pcap/bpf.h	164;"	d
 BPF_RVAL	pcap/bpf.h	195;"	d
 BPF_SIZE	pcap/bpf.h	140;"	d
-BPF_SPECIAL_VLAN_HANDLING	pcap-int.h	283;"	d
+BPF_SPECIAL_VLAN_HANDLING	pcap-int.h	285;"	d
 BPF_SRC	pcap/bpf.h	190;"	d
 BPF_ST	pcap/bpf.h	132;"	d
 BPF_STMT	pcap/bpf.h	258;"	d
@@ -233,8 +233,8 @@ DLT_CAN20B	pcap/dlt.h	714;"	d
 DLT_CAN_SOCKETCAN	pcap/dlt.h	1003;"	d
 DLT_CHAOS	pcap/dlt.h	71;"	d
 DLT_CHDLC	pcap/dlt.h	202;"	d
-DLT_CHOICE	pcap.c	1185;"	d	file:
-DLT_CHOICE_SENTINEL	pcap.c	1186;"	d	file:
+DLT_CHOICE	pcap.c	1187;"	d	file:
+DLT_CHOICE_SENTINEL	pcap.c	1188;"	d	file:
 DLT_CISCO_IOS	pcap/dlt.h	280;"	d
 DLT_CLASS	pcap/dlt.h	1326;"	d
 DLT_CLASS_NETBSD_RAWAF	pcap/dlt.h	1335;"	d
@@ -729,12 +729,12 @@ IPPROTO_ROUTING	gencode.c	160;"	d	file:
 IPPROTO_SCTP	gencode.c	169;"	d	file:
 IPPROTO_VRRP	gencode.c	5044;"	d	file:
 IPTOSBUFFERS	tests/findalldevstest.c	150;"	d	file:
-ISA_64_BIT	pcap-linux.c	3958;"	d	file:
-ISA_64_BIT	pcap-linux.c	3960;"	d	file:
-ISA_64_BIT	pcap-linux.c	3962;"	d	file:
-ISA_64_BIT	pcap-linux.c	3964;"	d	file:
-ISA_64_BIT	pcap-linux.c	3966;"	d	file:
-ISA_64_BIT	pcap-linux.c	3968;"	d	file:
+ISA_64_BIT	pcap-linux.c	4002;"	d	file:
+ISA_64_BIT	pcap-linux.c	4004;"	d	file:
+ISA_64_BIT	pcap-linux.c	4006;"	d	file:
+ISA_64_BIT	pcap-linux.c	4008;"	d	file:
+ISA_64_BIT	pcap-linux.c	4010;"	d	file:
+ISA_64_BIT	pcap-linux.c	4012;"	d	file:
 ISIS_L1_CSNP	nlpid.h	46;"	d
 ISIS_L1_LAN_IIH	nlpid.h	41;"	d
 ISIS_L1_LSP	nlpid.h	44;"	d
@@ -964,15 +964,15 @@ LINKTYPE_X2E_SERIAL	pcap-common.c	605;"	d	file:
 LINKTYPE_X2E_XORAYA	pcap-common.c	611;"	d	file:
 LINKTYPE_ZWAVE_R1_R2	pcap-common.c	1011;"	d	file:
 LINKTYPE_ZWAVE_R3	pcap-common.c	1012;"	d	file:
-LINUX_SLL_BROADCAST	pcap/sll.h	98;"	d
-LINUX_SLL_HOST	pcap/sll.h	97;"	d
-LINUX_SLL_MULTICAST	pcap/sll.h	99;"	d
-LINUX_SLL_OTHERHOST	pcap/sll.h	100;"	d
-LINUX_SLL_OUTGOING	pcap/sll.h	101;"	d
-LINUX_SLL_P_802_2	pcap/sll.h	125;"	d
-LINUX_SLL_P_802_3	pcap/sll.h	124;"	d
-LINUX_SLL_P_CAN	pcap/sll.h	126;"	d
-LINUX_SLL_P_CANFD	pcap/sll.h	127;"	d
+LINUX_SLL_BROADCAST	pcap/sll.h	99;"	d
+LINUX_SLL_HOST	pcap/sll.h	98;"	d
+LINUX_SLL_MULTICAST	pcap/sll.h	100;"	d
+LINUX_SLL_OTHERHOST	pcap/sll.h	101;"	d
+LINUX_SLL_OUTGOING	pcap/sll.h	102;"	d
+LINUX_SLL_P_802_2	pcap/sll.h	126;"	d
+LINUX_SLL_P_802_3	pcap/sll.h	125;"	d
+LINUX_SLL_P_CAN	pcap/sll.h	127;"	d
+LINUX_SLL_P_CANFD	pcap/sll.h	128;"	d
 LINUX_USB_MON_DEV	config.h	231;"	d
 LLCSAP_8021B_G	llc.h	67;"	d
 LLCSAP_8021B_I	llc.h	64;"	d
@@ -1056,9 +1056,9 @@ MINDEX	bpf/net/bpf_filter.c	124;"	d	file:
 MKDEP	Makefile	/^MKDEP = $/;"	m
 MLEN	bpf/net/bpf_filter.c	70;"	d	file:
 MLEN	bpf/net/bpf_filter.c	73;"	d	file:
-MODE_CAPT	pcap/pcap.h	506;"	d
-MODE_MON	pcap/pcap.h	508;"	d
-MODE_STAT	pcap/pcap.h	507;"	d
+MODE_CAPT	pcap/pcap.h	507;"	d
+MODE_MON	pcap/pcap.h	509;"	d
+MODE_STAT	pcap/pcap.h	508;"	d
 MODULUS	optimize.c	205;"	d	file:
 MONITOR_ACX100	pcap-linux.c	/^	MONITOR_ACX100,$/;"	e	enum:__anon7	file:
 MONITOR_HOSTAP	pcap-linux.c	/^	MONITOR_HOSTAP,$/;"	e	enum:__anon7	file:
@@ -1133,7 +1133,7 @@ NUM_RX_BUF	msdos/pkt_rx0.asm	/^  NUM_RX_BUF = 10$/;"	d
 NUM_RX_BUF	msdos/pkt_rx0.asm	/^  NUM_RX_BUF = 32       ; # of RX element buffers$/;"	d
 NUM_RX_BUF	msdos/pktdrvr.c	29;"	d	file:
 NUM_RX_BUF	msdos/pktdrvr.c	31;"	d	file:
-NUM_SOF_TIMESTAMPING_TYPES	pcap-linux.c	6150;"	d	file:
+NUM_SOF_TIMESTAMPING_TYPES	pcap-linux.c	6217;"	d	file:
 N_ATOMS	gencode.h	236;"	d
 N_FILE_TYPES	savefile.c	359;"	d	file:
 N_RULES	pcap-dbus.c	160;"	d	file:
@@ -1196,7 +1196,7 @@ PACKAGE_STRING	config.h	249;"	d
 PACKAGE_TARNAME	config.h	252;"	d
 PACKAGE_URL	config.h	255;"	d
 PACKAGE_VERSION	config.h	258;"	d
-PACKET_COUNT_IS_UNLIMITED	pcap-int.h	379;"	d
+PACKET_COUNT_IS_UNLIMITED	pcap-int.h	381;"	d
 PAGE	msdos/ndis_0.asm	/^PAGE 60,132$/;"	l
 PAGE	msdos/pkt_rx0.asm	/^PAGE 60,132$/;"	l
 PARSE_INT_FORMAT	missing/snprintf.c	268;"	d	file:
@@ -1221,18 +1221,18 @@ PCAP_D_IN	pcap/pcap.h	/^       PCAP_D_IN,$/;"	e	enum:__anon33
 PCAP_D_INOUT	pcap/pcap.h	/^       PCAP_D_INOUT = 0,$/;"	e	enum:__anon33
 PCAP_D_OUT	pcap/pcap.h	/^       PCAP_D_OUT$/;"	e	enum:__anon33
 PCAP_ERRBUF_SIZE	pcap/pcap.h	70;"	d
-PCAP_ERROR	pcap/pcap.h	251;"	d
-PCAP_ERROR_ACTIVATED	pcap/pcap.h	254;"	d
-PCAP_ERROR_BREAK	pcap/pcap.h	252;"	d
-PCAP_ERROR_CANTSET_TSTAMP_TYPE	pcap/pcap.h	260;"	d
-PCAP_ERROR_IFACE_NOT_UP	pcap/pcap.h	259;"	d
-PCAP_ERROR_NOT_ACTIVATED	pcap/pcap.h	253;"	d
-PCAP_ERROR_NOT_RFMON	pcap/pcap.h	257;"	d
-PCAP_ERROR_NO_SUCH_DEVICE	pcap/pcap.h	255;"	d
-PCAP_ERROR_PERM_DENIED	pcap/pcap.h	258;"	d
-PCAP_ERROR_PROMISC_PERM_DENIED	pcap/pcap.h	261;"	d
-PCAP_ERROR_RFMON_NOTSUP	pcap/pcap.h	256;"	d
-PCAP_ERROR_TSTAMP_PRECISION_NOTSUP	pcap/pcap.h	262;"	d
+PCAP_ERROR	pcap/pcap.h	252;"	d
+PCAP_ERROR_ACTIVATED	pcap/pcap.h	255;"	d
+PCAP_ERROR_BREAK	pcap/pcap.h	253;"	d
+PCAP_ERROR_CANTSET_TSTAMP_TYPE	pcap/pcap.h	261;"	d
+PCAP_ERROR_IFACE_NOT_UP	pcap/pcap.h	260;"	d
+PCAP_ERROR_NOT_ACTIVATED	pcap/pcap.h	254;"	d
+PCAP_ERROR_NOT_RFMON	pcap/pcap.h	258;"	d
+PCAP_ERROR_NO_SUCH_DEVICE	pcap/pcap.h	256;"	d
+PCAP_ERROR_PERM_DENIED	pcap/pcap.h	259;"	d
+PCAP_ERROR_PROMISC_PERM_DENIED	pcap/pcap.h	262;"	d
+PCAP_ERROR_RFMON_NOTSUP	pcap/pcap.h	257;"	d
+PCAP_ERROR_TSTAMP_PRECISION_NOTSUP	pcap/pcap.h	263;"	d
 PCAP_ERR_AUTH	pcap-rpcap.h	427;"	d
 PCAP_ERR_ENDCAPTURE	pcap-rpcap.h	437;"	d
 PCAP_ERR_FINDALLIF	pcap-rpcap.h	428;"	d
@@ -1251,10 +1251,10 @@ PCAP_ERR_UPDATEFILTER	pcap-rpcap.h	431;"	d
 PCAP_ERR_WRONGMSG	pcap-rpcap.h	440;"	d
 PCAP_ERR_WRONGVER	pcap-rpcap.h	441;"	d
 PCAP_ETHERS_FILE	pcap/namedb.h	56;"	d
-PCAP_IF_LOOPBACK	pcap/pcap.h	227;"	d
-PCAP_IF_RUNNING	pcap/pcap.h	229;"	d
-PCAP_IF_UP	pcap/pcap.h	228;"	d
-PCAP_NETMASK_UNKNOWN	pcap/pcap.h	277;"	d
+PCAP_IF_LOOPBACK	pcap/pcap.h	228;"	d
+PCAP_IF_RUNNING	pcap/pcap.h	230;"	d
+PCAP_IF_UP	pcap/pcap.h	229;"	d
+PCAP_NETMASK_UNKNOWN	pcap/pcap.h	278;"	d
 PCAP_NG_VERSION_MAJOR	sf-pcap-ng.c	123;"	d	file:
 PCAP_NG_VERSION_MINOR	sf-pcap-ng.c	124;"	d	file:
 PCAP_NORETURN	tests/capturetest.c	73;"	d	file:
@@ -1305,18 +1305,18 @@ PCAP_TEXT_SOURCE_ADAPTER	pcap-new.c	61;"	d	file:
 PCAP_TEXT_SOURCE_FILE	pcap-new.c	59;"	d	file:
 PCAP_TEXT_SOURCE_ON_LOCAL_HOST	pcap-new.c	64;"	d	file:
 PCAP_TEXT_SOURCE_ON_REMOTE_HOST	pcap-new.c	66;"	d	file:
-PCAP_TSTAMP_ADAPTER	pcap/pcap.h	342;"	d
-PCAP_TSTAMP_ADAPTER_UNSYNCED	pcap/pcap.h	343;"	d
-PCAP_TSTAMP_HOST	pcap/pcap.h	339;"	d
-PCAP_TSTAMP_HOST_HIPREC	pcap/pcap.h	341;"	d
-PCAP_TSTAMP_HOST_LOWPREC	pcap/pcap.h	340;"	d
-PCAP_TSTAMP_PRECISION_MICRO	pcap/pcap.h	351;"	d
-PCAP_TSTAMP_PRECISION_NANO	pcap/pcap.h	352;"	d
+PCAP_TSTAMP_ADAPTER	pcap/pcap.h	343;"	d
+PCAP_TSTAMP_ADAPTER_UNSYNCED	pcap/pcap.h	344;"	d
+PCAP_TSTAMP_HOST	pcap/pcap.h	340;"	d
+PCAP_TSTAMP_HOST_HIPREC	pcap/pcap.h	342;"	d
+PCAP_TSTAMP_HOST_LOWPREC	pcap/pcap.h	341;"	d
+PCAP_TSTAMP_PRECISION_MICRO	pcap/pcap.h	352;"	d
+PCAP_TSTAMP_PRECISION_NANO	pcap/pcap.h	353;"	d
 PCAP_VERSION_MAJOR	pcap/pcap.h	67;"	d
 PCAP_VERSION_MINOR	pcap/pcap.h	68;"	d
-PCAP_WARNING	pcap/pcap.h	269;"	d
-PCAP_WARNING_PROMISC_NOTSUP	pcap/pcap.h	270;"	d
-PCAP_WARNING_TSTAMP_TYPE_NOTSUP	pcap/pcap.h	271;"	d
+PCAP_WARNING	pcap/pcap.h	270;"	d
+PCAP_WARNING_PROMISC_NOTSUP	pcap/pcap.h	271;"	d
+PCAP_WARNING_TSTAMP_TYPE_NOTSUP	pcap/pcap.h	272;"	d
 PDRX_ALL_PACKETS	msdos/pktdrvr.h	/^        PDRX_ALL_PACKETS,   \/* receive all packets on network *\/$/;"	e	enum:__anon14
 PDRX_BROADCAST	msdos/pktdrvr.h	/^        PDRX_BROADCAST,     \/* DIRECT + broadcast packets     *\/$/;"	e	enum:__anon14
 PDRX_DIRECT	msdos/pktdrvr.h	/^        PDRX_DIRECT,        \/* receive only to this interface *\/$/;"	e	enum:__anon14
@@ -1357,7 +1357,7 @@ PM_REGISTER_MODULE	msdos/ndis2.h	/^        PM_REGISTER_MODULE                = 2
 PM_REGISTER_PROTOCOL_MANAGER_INFO	msdos/ndis2.h	/^        PM_REGISTER_PROTOCOL_MANAGER_INFO = 6,$/;"	e	enum:__anon29
 PM_REGISTER_STATUS	msdos/ndis2.h	/^        PM_REGISTER_STATUS                = 10$/;"	e	enum:__anon29
 PM_UNBIND_AND_STOP	msdos/ndis2.h	/^        PM_UNBIND_AND_STOP                = 8,$/;"	e	enum:__anon29
-POLLRDHUP	pcap-linux.c	4637;"	d	file:
+POLLRDHUP	pcap-linux.c	4682;"	d	file:
 POPREGS	msdos/ndis_0.asm	/^  POPREGS  equ <popa>$/;"	d
 POPREGS	msdos/ndis_0.asm	/^  POPREGS  equ <popad>$/;"	d
 PPH_PH_FLAG_PADDING	pcap-tc.c	204;"	d	file:
@@ -1578,8 +1578,8 @@ REQ_UPDATE_STATISTICS	msdos/ndis2.h	/^        REQ_UPDATE_STATISTICS        = 10,
 RESTART	atmuni31.h	50;"	d
 RESTART_ACK	atmuni31.h	51;"	d
 RETF	msdos/ndis_0.asm	/^RETF$/;"	l
-RING_GET_CURRENT_FRAME	pcap-linux.c	393;"	d	file:
-RING_GET_FRAME_AT	pcap-linux.c	392;"	d	file:
+RING_GET_CURRENT_FRAME	pcap-linux.c	394;"	d	file:
+RING_GET_FRAME_AT	pcap-linux.c	393;"	d	file:
 RPCAP_ACTIVE_WAIT	pcap-rpcap.h	93;"	d
 RPCAP_DEFAULT_NETADDR	pcap-rpcap.h	89;"	d
 RPCAP_DEFAULT_NETPORT	pcap-rpcap.h	86;"	d
@@ -1823,8 +1823,8 @@ VCI_OAMF4SC	atmuni31.h	38;"	d
 VCI_PPC	atmuni31.h	36;"	d
 VER	Makefile	/^	VER=`cat $(srcdir)\/VERSION`; \\$/;"	m
 VLAN_TAG_LEN	pcap/vlan.h	42;"	d
-VLAN_TPID	pcap-linux.c	415;"	d	file:
-VLAN_TPID	pcap-linux.c	417;"	d	file:
+VLAN_TPID	pcap-linux.c	416;"	d	file:
+VLAN_TPID	pcap-linux.c	418;"	d	file:
 V_RPATH_OPT	Makefile	/^V_RPATH_OPT = -Wl,-rpath,$/;"	m
 WATT_INC	msdos/makefile	/^WATT_INC = $(WATT_ROOT)\\inc$/;"	m
 WINSOCK_MAJOR_VERSION	sockutils.c	72;"	d	file:
@@ -2032,7 +2032,7 @@ bpf_u_int32	pcap/bpf.h	/^typedef	u_int bpf_u_int32;$/;"	t
 bpf_u_int32	pcap/bpf.h	/^typedef unsigned long bpf_u_int32;$/;"	t
 bpf_u_int32	pcap/pcap.h	/^typedef	u_int bpf_u_int32;$/;"	t
 bpf_validate	bpf/net/bpf_filter.c	/^bpf_validate(f, len)$/;"	f
-break_loop	pcap-int.h	/^	int break_loop;		\/* flag set to force break from packet-reading loop *\/$/;"	m	struct:pcap
+break_loop	pcap-int.h	/^	int break_loop;		\/* flag set to force break from packet-reading loop 标识是否强制退出循环捕获 *\/$/;"	m	struct:pcap
 broadaddr	pcap-rpcap.h	/^	struct sockaddr_storage broadaddr;	\/* Broadcast address for that address *\/$/;"	m	struct:rpcap_findalldevs_ifaddr	typeref:struct:rpcap_findalldevs_ifaddr::sockaddr_storage
 broadaddr	pcap/pcap.h	/^	struct sockaddr *broadaddr;	\/* broadcast address for that address *\/$/;"	m	struct:pcap_addr	typeref:struct:pcap_addr::sockaddr
 buffer	msdos/ndis2.h	/^        BYTE  *buffer;$/;"	m	struct:_PktBuf
@@ -2055,12 +2055,12 @@ can_set_rfmon_op_t	pcap-int.h	/^typedef int	(*can_set_rfmon_op_t)(pcap_t *);$/;"
 caplen	pcap-int.h	/^    bpf_u_int32 caplen;		\/* length of portion present *\/$/;"	m	struct:pcap_sf_patched_pkthdr
 caplen	pcap-int.h	/^    bpf_u_int32 caplen;		\/* length of portion present *\/$/;"	m	struct:pcap_sf_pkthdr
 caplen	pcap-rpcap.h	/^	uint32 caplen;			\/* Length of portion present in the capture *\/$/;"	m	struct:rpcap_pkthdr
-caplen	pcap/pcap.h	/^	bpf_u_int32 caplen;	\/* length of portion present *\/$/;"	m	struct:pcap_pkthdr
+caplen	pcap/pcap.h	/^	bpf_u_int32 caplen;	\/* length of portion present  包当前捕获到的长度 *\/$/;"	m	struct:pcap_pkthdr
 caplen	sf-pcap-ng.c	/^	bpf_u_int32	caplen;$/;"	m	struct:enhanced_packet_block	file:
 caplen	sf-pcap-ng.c	/^	bpf_u_int32	caplen;$/;"	m	struct:packet_block	file:
 capture_source_type	pcap.c	/^static struct capture_source_type {$/;"	s	file:
 capture_source_types	pcap.c	/^} capture_source_types[] = {$/;"	v	typeref:struct:capture_source_type	file:
-cc	pcap-int.h	/^	int cc;         \/\/ 跟配置的接收环形缓冲区tp_frame_nr值同步$/;"	m	struct:pcap
+cc	pcap-int.h	/^	int cc;         \/\/ 跟配置的接收环形缓冲区tp_frame_nr值同步(由于pcap中内存块数量和帧数量相等，所以本字段也就是内存块数量)$/;"	m	struct:pcap
 charmap	pcap.c	/^static const u_char charmap[] = {$/;"	v	file:
 check_headers	savefile.c	/^static pcap_t *(*check_headers[])(bpf_u_int32, FILE *, u_int, char *, int *) = {$/;"	v	file:
 chunk	gencode.c	/^struct chunk {$/;"	s	file:
@@ -2102,7 +2102,7 @@ cur_mark	gencode.h	/^	int cur_mark;$/;"	m	struct:icode
 curreg	gencode.c	/^	int curreg;$/;"	m	struct:_compiler_state	file:
 currentAddress	msdos/ndis2.h	/^        BYTE   currentAddress[16];$/;"	m	struct:_MacChars
 currentFunctionalAddress	msdos/ndis2.h	/^        DWORD  currentFunctionalAddress;$/;"	m	struct:_MacChars
-current_packet	pcap-linux.c	/^	unsigned char *current_packet; \/* Current packet within the TPACKET_V3 block. Move to next block if NULL. *\/$/;"	m	struct:pcap_linux	file:
+current_packet	pcap-linux.c	/^	unsigned char *current_packet; \/* Current packet within the TPACKET_V3 block. Move to next block if NULL. 指向当前待处理的帧 *\/$/;"	m	struct:pcap_linux	file:
 currentfilter	pcap-rpcap.h	/^	char *currentfilter;		\/\/!< Pointer to a buffer (allocated at run-time) that stores the current filter. Needed when flag PCAP_OPENFLAG_NOCAPTURE_RPCAP is turned on.$/;"	m	struct:pcap_md
 curval	optimize.c	/^	int curval;$/;"	m	struct:_opt_state	file:
 dag_fcs_bits	pcap-new.c	/^	int	dag_fcs_bits;		\/* Number of checksum bits from link layer *\/$/;"	m	struct:pcap_win	file:
@@ -2245,12 +2245,12 @@ fanChars	msdos/pkt_rx0.asm	/^ fanChars      db  '-\\|\/'$/;"	d
 fanChars	msdos/pkt_rx1.s	/^fanChars    db  '-\\|\/'$/;"	d
 fanIndex	msdos/pkt_rx0.asm	/^ fanIndex      dw  0$/;"	d
 fanIndex	msdos/pkt_rx1.s	/^fanIndex    dw  0$/;"	d
-fcode	pcap-int.h	/^	struct bpf_program fcode;$/;"	m	struct:pcap	typeref:struct:pcap::bpf_program
+fcode	pcap-int.h	/^	struct bpf_program fcode;       \/\/ BPF过滤模块$/;"	m	struct:pcap	typeref:struct:pcap::bpf_program
 fd	pcap-int.h	/^	int fd;             \/\/ 记录了捕获套接字$/;"	m	struct:pcap
 fddipad	pcap-int.h	/^	u_int fddipad;$/;"	m	struct:pcap
 ffs	optimize.c	/^ffs(int mask)$/;"	f	file:
 ffs	optimize.c	63;"	d	file:
-filter_in_userland	pcap-linux.c	/^	int	filter_in_userland; \/* must filter in userland *\/$/;"	m	struct:pcap_linux	file:
+filter_in_userland	pcap-linux.c	/^	int	filter_in_userland; \/* must filter in userland 标识用户空间是否需要过滤包 *\/$/;"	m	struct:pcap_linux	file:
 filtering_in_kernel	pcap-new.c	/^	int filtering_in_kernel;	\/* using kernel filter *\/$/;"	m	struct:pcap_win	file:
 filtering_in_kernel	pcap-rpcap.c	/^	int filtering_in_kernel;	\/* using kernel filter *\/$/;"	m	struct:pcap_win	file:
 filtertype	pcap-rpcap.h	/^	uint16 filtertype;		\/* type of the filter transferred (BPF instructions, ...) *\/$/;"	m	struct:rpcap_filter
@@ -2403,21 +2403,21 @@ gen_vlan	gencode.c	/^gen_vlan(compiler_state_t *cstate, int vlan_num)$/;"	f
 gen_vlan_bpf_extensions	gencode.c	/^gen_vlan_bpf_extensions(compiler_state_t *cstate, int vlan_num)$/;"	f	file:
 gen_vlan_no_bpf_extensions	gencode.c	/^gen_vlan_no_bpf_extensions(compiler_state_t *cstate, int vlan_num)$/;"	f	file:
 gen_wlanhostop	gencode.c	/^gen_wlanhostop(compiler_state_t *cstate, const u_char *eaddr, int dir)$/;"	f	file:
-genl_ctrl_alloc_cache	pcap-linux.c	622;"	d	file:
+genl_ctrl_alloc_cache	pcap-linux.c	623;"	d	file:
 get_airpcap_handle_op	pcap-int.h	/^	get_airpcap_handle_op_t get_airpcap_handle_op;$/;"	m	struct:pcap
 get_airpcap_handle_op_t	pcap-int.h	/^typedef PAirpcapHandle	(*get_airpcap_handle_op_t)(pcap_t *);$/;"	t
 get_figure_of_merit	fad-helpers.c	/^get_figure_of_merit(pcap_if_t *dev)$/;"	f	file:
 get_from_block_data	sf-pcap-ng.c	/^get_from_block_data(struct block_cursor *cursor, size_t chunk_size,$/;"	f	file:
 get_if_description	fad-helpers.c	/^get_if_description(const char *name)$/;"	f	file:
 get_mac80211_phydev	pcap-linux.c	/^get_mac80211_phydev(pcap_t *handle, const char *device, char *phydev_path,$/;"	f	file:
-get_nl_errmsg	pcap-linux.c	593;"	d	file:
-get_nl_errmsg	pcap-linux.c	611;"	d	file:
+get_nl_errmsg	pcap-linux.c	594;"	d	file:
+get_nl_errmsg	pcap-linux.c	612;"	d	file:
 get_opthdr_from_block_data	sf-pcap-ng.c	/^get_opthdr_from_block_data(pcap_t *p, struct block_cursor *cursor, char *errbuf)$/;"	f	file:
 get_optvalue_from_block_data	sf-pcap-ng.c	/^get_optvalue_from_block_data(struct block_cursor *cursor,$/;"	f	file:
 get_sa_len	fad-getad.c	/^get_sa_len(struct sockaddr *addr)$/;"	f	file:
 getevent_op	pcap-int.h	/^	getevent_op_t getevent_op;$/;"	m	struct:pcap
 getevent_op_t	pcap-int.h	/^typedef HANDLE	(*getevent_op_t)(pcap_t *);$/;"	t
-getnonblock_op	pcap-int.h	/^	getnonblock_op_t getnonblock_op;        \/\/ 对应回调函数：pcap_getnonblock_fd        | pcap_getnonblock_mmap$/;"	m	struct:pcap
+getnonblock_op	pcap-int.h	/^	getnonblock_op_t getnonblock_op;        \/\/ 对应回调函数：pcap_getnonblock_fd        \/ pcap_getnonblock_mmap$/;"	m	struct:pcap
 getnonblock_op_t	pcap-int.h	/^typedef int	(*getnonblock_op_t)(pcap_t *, char *);$/;"	t
 getopt	missing/getopt.c	/^getopt(nargc, nargv, ostr)$/;"	f
 h1	pcap-linux.c	/^	struct tpacket_hdr		*h1;$/;"	m	union:thdr	typeref:struct:thdr::tpacket_hdr	file:
@@ -2552,7 +2552,7 @@ len	msdos/pktdrvr.h	/^        char len;$/;"	m	struct:__anon15
 len	pcap-int.h	/^    bpf_u_int32 len;		\/* length this packet (off wire) *\/$/;"	m	struct:pcap_sf_patched_pkthdr
 len	pcap-int.h	/^    bpf_u_int32 len;		\/* length this packet (off wire) *\/$/;"	m	struct:pcap_sf_pkthdr
 len	pcap-rpcap.h	/^	uint32 len;				\/* Real length this packet (off wire) *\/$/;"	m	struct:rpcap_pkthdr
-len	pcap/pcap.h	/^	bpf_u_int32 len;	\/* length this packet (off wire) *\/$/;"	m	struct:pcap_pkthdr
+len	pcap/pcap.h	/^	bpf_u_int32 len;	\/* length this packet (off wire)  包理论上的长度(有可能因为被截断导致caplen<len) *\/$/;"	m	struct:pcap_pkthdr
 len	pcap/pcap.h	/^	u_int len;	\/* Current size of the queue, in bytes. *\/$/;"	m	struct:pcap_send_queue
 len	pcap/usb.h	/^	u_int32_t	len;$/;"	m	struct:_usb_isodesc
 len	sf-pcap-ng.c	/^	bpf_u_int32	len;$/;"	m	struct:enhanced_packet_block	file:
@@ -2647,7 +2647,7 @@ memset	msdos/pktdrvr.c	126;"	d	file:
 merge	gencode.c	/^merge(b0, b1)$/;"	f	file:
 method	pcap-rpcap.h	/^	uint8 method;		\/* Sampling method *\/$/;"	m	struct:rpcap_sampling
 method	remote-ext.h	/^	int method;$/;"	m	struct:pcap_samp
-min	pcap-int.h	366;"	d
+min	pcap-int.h	368;"	d
 minVer	msdos/pktdrvr.h	/^        BYTE  minVer;       \/* Minor driver implementation ver.  *\/$/;"	m	struct:__anon16
 minorModuleVersion	msdos/ndis2.h	/^        BYTE  minorModuleVersion;$/;"	m	struct:_CommonChars
 minorNdisVersion	msdos/ndis2.h	/^        BYTE  minorNdisVersion;        \/* 0                  *\/$/;"	m	struct:_CommonChars
@@ -2751,7 +2751,7 @@ nl80211_init	pcap-linux.c	/^nl80211_init(pcap_t *handle, struct nl80211_state *s
 nl80211_state	pcap-linux.c	/^struct nl80211_state {$/;"	s	file:
 nl_cache	pcap-linux.c	/^	struct nl_cache *nl_cache;$/;"	m	struct:nl80211_state	typeref:struct:nl80211_state::nl_cache	file:
 nl_sock	pcap-linux.c	/^	struct nl_sock *nl_sock;$/;"	m	struct:nl80211_state	typeref:struct:nl80211_state::nl_sock	file:
-nl_sock	pcap-linux.c	597;"	d	file:
+nl_sock	pcap-linux.c	598;"	d	file:
 nl_socket_alloc	pcap-linux.c	/^nl_socket_alloc(void)$/;"	f	file:
 nl_socket_free	pcap-linux.c	/^nl_socket_free(struct nl_handle *h)$/;"	f	file:
 no_optimize	gencode.c	/^	int no_optimize;$/;"	m	struct:_compiler_state	file:
@@ -2838,10 +2838,10 @@ packetFilter	msdos/ndis2.h	/^        WORD   packetFilter;$/;"	m	struct:_MacStatu
 packetLength	msdos/ndis2.h	/^        int    packetLength;$/;"	m	struct:_PktBuf
 packet_block	sf-pcap-ng.c	/^struct packet_block {$/;"	s	file:
 packet_header	pcap-enet.c	/^struct packet_header {$/;"	s	file:
-packets_left	pcap-linux.c	/^	int packets_left; \/* Unhandled packets left within the block from previous call to pcap_read_linux_mmap_v3 in case of TPACKET_V3. *\/$/;"	m	struct:pcap_linux	file:
+packets_left	pcap-linux.c	/^	int packets_left; \/* Unhandled packets left within the block from previous call to pcap_read_linux_mmap_v3 in case of TPACKET_V3. 待处理的帧数量 *\/$/;"	m	struct:pcap_linux	file:
 packets_nobufs	pcap-netfilter-linux.c	/^	u_int   packets_nobufs; \/* ENOBUFS counter *\/$/;"	m	struct:pcap_netfilter	file:
 packets_read	pcap-dbus.c	/^	u_int	packets_read;	\/* count of packets read *\/$/;"	m	struct:pcap_dbus	file:
-packets_read	pcap-linux.c	/^	u_int	packets_read;	\/* count of packets read with recvfrom() *\/$/;"	m	struct:pcap_linux	file:
+packets_read	pcap-linux.c	/^	u_int	packets_read;	\/* count of packets read with recvfrom()  统计捕获到的包 *\/$/;"	m	struct:pcap_linux	file:
 packets_read	pcap-netfilter-linux.c	/^	u_int	packets_read;	\/* count of packets read with recvfrom() *\/$/;"	m	struct:pcap_netfilter	file:
 packets_read	pcap-rpcap.h	/^	u_int	packets_read;	\/* count of packets read with recvfrom() *\/$/;"	m	struct:pcap_md
 pad	gencode.h	/^	unsigned char pad;$/;"	m	struct:qual
@@ -2917,9 +2917,9 @@ pcap_fileno	pcap.c	/^pcap_fileno(pcap_t *p)$/;"	f
 pcap_findalldevs	pcap.c	/^pcap_findalldevs(pcap_if_t **alldevsp, char *errbuf)$/;"	f
 pcap_findalldevs_ex	pcap-new.c	/^int pcap_findalldevs_ex(char *source, struct pcap_rmtauth *auth, pcap_if_t **alldevs, char *errbuf)$/;"	f
 pcap_findalldevs_interfaces	fad-getad.c	/^pcap_findalldevs_interfaces(pcap_if_t **alldevsp, char *errbuf,$/;"	f
-pcap_fopen_offline	pcap/pcap.h	369;"	d
+pcap_fopen_offline	pcap/pcap.h	370;"	d
 pcap_fopen_offline	savefile.c	/^pcap_fopen_offline(FILE *fp, char *errbuf)$/;"	f	file:
-pcap_fopen_offline_with_tstamp_precision	pcap/pcap.h	367;"	d
+pcap_fopen_offline_with_tstamp_precision	pcap/pcap.h	368;"	d
 pcap_fopen_offline_with_tstamp_precision	savefile.c	/^pcap_fopen_offline_with_tstamp_precision(FILE *fp, u_int precision,$/;"	f	file:
 pcap_free_datalinks	pcap.c	/^pcap_free_datalinks(int *dlt_list)$/;"	f
 pcap_free_tstamp_types	pcap.c	/^pcap_free_tstamp_types(int *tstamp_type_list)$/;"	f
@@ -3234,7 +3234,7 @@ read_block	sf-pcap-ng.c	/^read_block(FILE *fp, pcap_t *p, struct block_cursor *c
 read_bytes	sf-pcap-ng.c	/^read_bytes(FILE *fp, void *buf, size_t bytes_to_read, int fail_on_eof,$/;"	f	file:
 read_infile	tests/filtertest.c	/^read_infile(char *fname)$/;"	f	file:
 read_infile	tests/valgrindtest.c	/^read_infile(char *fname)$/;"	f	file:
-read_op	pcap-int.h	/^	read_op_t read_op;      \/\/ 在该捕获接口上进行读操作的回调函数(linux上目前缺省就是pcap_read_linux_mmap_v3)$/;"	m	struct:pcap
+read_op	pcap-int.h	/^	read_op_t read_op;      \/\/ 在该捕获接口上进行读操作的回调函数(linux上就是 pcap_read_linux \/ pcap_read_linux_mmap_v3)$/;"	m	struct:pcap
 read_op_t	pcap-int.h	/^typedef int	(*read_op_t)(pcap_t *, int cnt, pcap_handler, u_char *);$/;"	t
 read_timeout	pcap-rpcap.h	/^	uint32 read_timeout;				\/* Read timeout in milliseconds *\/$/;"	m	struct:rpcap_startcapreq
 readloop	pcap-enet.c	/^readloop(int cnt, int if_fd, struct bpf_program *fp, printfunc printit)$/;"	f
@@ -3372,13 +3372,13 @@ setbuff_op	pcap-int.h	/^	setbuff_op_t setbuff_op;$/;"	m	struct:pcap
 setbuff_op_t	pcap-int.h	/^typedef int	(*setbuff_op_t)(pcap_t *, int);$/;"	t
 setdirection_op	pcap-int.h	/^	setdirection_op_t setdirection_op;      \/\/ 对应回调函数：pcap_setdirection_linux$/;"	m	struct:pcap
 setdirection_op_t	pcap-int.h	/^typedef int	(*setdirection_op_t)(pcap_t *, pcap_direction_t);$/;"	t
-setfilter_op	pcap-int.h	/^	setfilter_op_t setfilter_op;            \/\/ 对应回调函数：pcap_setfilter_linux       | pcap_setfilter_linux_mmap$/;"	m	struct:pcap
+setfilter_op	pcap-int.h	/^	setfilter_op_t setfilter_op;            \/\/ 对应回调函数：pcap_setfilter_linux       \/ pcap_setfilter_linux_mmap$/;"	m	struct:pcap
 setfilter_op_t	pcap-int.h	/^typedef int	(*setfilter_op_t)(pcap_t *, struct bpf_program *);$/;"	t
 setmintocopy_op	pcap-int.h	/^	setmintocopy_op_t setmintocopy_op;$/;"	m	struct:pcap
 setmintocopy_op_t	pcap-int.h	/^typedef int	(*setmintocopy_op_t)(pcap_t *, int);$/;"	t
 setmode_op	pcap-int.h	/^	setmode_op_t setmode_op;$/;"	m	struct:pcap
 setmode_op_t	pcap-int.h	/^typedef int	(*setmode_op_t)(pcap_t *, int);$/;"	t
-setnonblock_op	pcap-int.h	/^	setnonblock_op_t setnonblock_op;        \/\/ 对应回调函数：pcap_setnonblock_fd        | pcap_setnonblock_mmap$/;"	m	struct:pcap
+setnonblock_op	pcap-int.h	/^	setnonblock_op_t setnonblock_op;        \/\/ 对应回调函数：pcap_setnonblock_fd        \/ pcap_setnonblock_mmap$/;"	m	struct:pcap
 setnonblock_op_t	pcap-int.h	/^typedef int	(*setnonblock_op_t)(pcap_t *, int, char *);$/;"	t
 setup	pcap/usb.h	/^		pcap_usb_setup setup;$/;"	m	union:_usb_header_mmapped::__anon34
 setup	pcap/usb.h	/^	pcap_usb_setup setup;$/;"	m	struct:_usb_header
@@ -3426,7 +3426,7 @@ sll_pkttype	pcap/sll.h	/^	u_int16_t sll_pkttype;		\/* packet type *\/$/;"	m	stru
 sll_protocol	pcap/sll.h	/^	u_int16_t sll_protocol;		\/* protocol *\/$/;"	m	struct:sll_header
 sn_append_char	missing/snprintf.c	/^sn_append_char (struct state *state, unsigned char c)$/;"	f	file:
 sn_reserve	missing/snprintf.c	/^sn_reserve (struct state *state, size_t n)$/;"	f	file:
-snaplen	gencode.c	/^	int snaplen;    \/\/ 同步自$/;"	m	struct:_compiler_state	file:
+snaplen	gencode.c	/^	int snaplen;    \/\/ 同步自pcap.snapshot$/;"	m	struct:_compiler_state	file:
 snaplen	pcap-rpcap.h	/^	uint32 snaplen;						\/* Length of the snapshot (number of bytes to capture for each packet) *\/$/;"	m	struct:rpcap_startcapreq
 snaplen	pcap/pcap.h	/^	bpf_u_int32 snaplen;	\/* max length saved portion of each pkt *\/$/;"	m	struct:pcap_file_header
 snaplen	sf-pcap-ng.c	/^	bpf_u_int32	snaplen;$/;"	m	struct:interface_description_block	file:
@@ -3571,7 +3571,7 @@ transmitConfirm	msdos/ndis2.h	/^        void  (*transmitConfirm) (void);$/;"	m	s
 transmitConfirmGlue	msdos/ndis2.h	/^  RENAME_ASM_SYM (transmitConfirmGlue);$/;"	v
 ts	pcap-int.h	/^    struct pcap_timeval ts;	\/* time stamp *\/$/;"	m	struct:pcap_sf_patched_pkthdr	typeref:struct:pcap_sf_patched_pkthdr::pcap_timeval
 ts	pcap-int.h	/^    struct pcap_timeval ts;	\/* time stamp *\/$/;"	m	struct:pcap_sf_pkthdr	typeref:struct:pcap_sf_pkthdr::pcap_timeval
-ts	pcap/pcap.h	/^	struct timeval ts;	\/* time stamp *\/$/;"	m	struct:pcap_pkthdr	typeref:struct:pcap_pkthdr::timeval
+ts	pcap/pcap.h	/^	struct timeval ts;	\/* time stamp  包的时间戳*\/$/;"	m	struct:pcap_pkthdr	typeref:struct:pcap_pkthdr::timeval
 ts_sec	pcap/usb.h	/^	int64_t ts_sec;$/;"	m	struct:_usb_header
 ts_sec	pcap/usb.h	/^	int64_t ts_sec;$/;"	m	struct:_usb_header_mmapped
 ts_usec	pcap/usb.h	/^	int32_t ts_usec;$/;"	m	struct:_usb_header

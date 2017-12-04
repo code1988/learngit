@@ -29,7 +29,7 @@ struct sockaddr_ll {
 #define PACKET_BROADCAST	1		/* To all		标示物理层广播包 */
 #define PACKET_MULTICAST	2		/* To group		标示物理层组播包 */
 #define PACKET_OTHERHOST	3		/* To someone else 	标示目标地址是其他主机的数据包 */
-#define PACKET_OUTGOING		4		/* Outgoing of any type */
+#define PACKET_OUTGOING		4		/* Outgoing of any type 标示本地主机的环回包(这个似乎是发送时的包类型) */
 #define PACKET_LOOPBACK		5		/* MC/BRD frame looped back 标示这是个loopback包 */
 #define PACKET_USER		6		/* To user space	*/
 #define PACKET_KERNEL		7		/* To kernel space	*/
@@ -75,7 +75,7 @@ struct sockaddr_ll {
  *      TPACKET_V2 : 相比V1的改进有以下几点
  *                          32位的用户空间环形缓冲区可以基于64位内核工作;
  *                          时间戳的精度从ms提升到ns;
- *                          支持携带VLAN信息；
+ *                          支持携带VLAN信息(这意味着通过V1接收到的vlan包将会丢失vlan信息)；
  *      TPACKET_V3 : 相比V2的改进有以下几点
  *                          内存块可以配置成可变帧长(V1、V2的帧长都是tpacket_req.tp_frame_size固定值);
  *                          read/poll基于block-level(V1、V2基于packet_level);
@@ -152,6 +152,11 @@ struct tpacket_hdr {
 	unsigned int	tp_usec;
 };
 
+/* V1帧结构基本如下：
+ *          struct tpacket_hdr + padding + struct sockaddr_ll + frame_data
+ * V2帧结构基本如下(V3类似)：
+ *          struct tpacket_hdr + struct sockaddr_ll + padding + frame_data
+ */
 #define TPACKET_ALIGNMENT	16
 #define TPACKET_ALIGN(x)	(((x)+TPACKET_ALIGNMENT-1)&~(TPACKET_ALIGNMENT-1))
 #define TPACKET_HDRLEN		(TPACKET_ALIGN(sizeof(struct tpacket_hdr)) + sizeof(struct sockaddr_ll))    // V1环形缓冲区帧头长度
@@ -170,22 +175,23 @@ struct tpacket2_hdr {
 	__u8		tp_padding[4];
 };
 
+// TPACKET_V3环形缓冲区帧头子结构，主要包含了VLAN信息
 struct tpacket_hdr_variant1 {
 	__u32	tp_rxhash;
-	__u32	tp_vlan_tci;
-	__u16	tp_vlan_tpid;
+	__u32	tp_vlan_tci;    // 低12bit为vid
+	__u16	tp_vlan_tpid;   // 缺省就是0x8100
 	__u16	tp_padding;
 };
 
 // TPACKET_V3环形缓冲区每个帧的头部结构
 struct tpacket3_hdr {
 	__u32		tp_next_offset; // 指向同一个内存块中的下一个帧
-	__u32		tp_sec;
-	__u32		tp_nsec;
-	__u32		tp_snaplen;
-	__u32		tp_len;
+	__u32		tp_sec;         // 时间戳(s)
+	__u32		tp_nsec;        // 时间戳(ns)
+	__u32		tp_snaplen;     // 捕获到的帧实际长度
+	__u32		tp_len;         // 帧的理论长度
 	__u32		tp_status;
-	__u16		tp_mac;
+	__u16		tp_mac;         // 以太网MAC字段距离帧头的偏移量
 	__u16		tp_net;
 	/* pkt_hdr variants */
 	union {
@@ -205,7 +211,7 @@ struct tpacket_bd_ts {
 // tpacket内存块头部子结构(V1、V2、V3共用)
 struct tpacket_hdr_v1 {
 	__u32	block_status;   // 主要用来标识该内存块当前是否正在被内核使用(内存块被内核填充期间是无法提供给用户使用的)
-	__u32	num_pkts;
+	__u32	num_pkts;       // 该内存块中的帧数量
 	__u32	offset_to_first_pkt;    // 该内存块中第一个帧距离内存块起始地址的偏移量
 
 	/* Number of valid bytes (including padding)
@@ -262,9 +268,8 @@ struct tpacket_block_desc {
 	__u32 offset_to_priv;           // 该内存块私有空间距离内存块起始地址的偏移量
 	union tpacket_bd_header_u hdr;
 };
-
-#define TPACKET2_HDRLEN		(TPACKET_ALIGN(sizeof(struct tpacket2_hdr)) + sizeof(struct sockaddr_ll))
-#define TPACKET3_HDRLEN		(TPACKET_ALIGN(sizeof(struct tpacket3_hdr)) + sizeof(struct sockaddr_ll))
+#define TPACKET2_HDRLEN		(TPACKET_ALIGN(sizeof(struct tpacket2_hdr)) + sizeof(struct sockaddr_ll))   // V2环形缓冲区帧头长度
+#define TPACKET3_HDRLEN		(TPACKET_ALIGN(sizeof(struct tpacket3_hdr)) + sizeof(struct sockaddr_ll))   // V3环形缓冲区帧头长度
 
 // 环形缓冲区版本枚举
 enum tpacket_versions {

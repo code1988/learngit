@@ -299,7 +299,7 @@ typedef int		socklen_t;
  * 跟pcap句柄关联的linux平台私有空间
  */
 struct pcap_linux {
-	u_int	packets_read;	/* count of packets read with recvfrom() */
+	u_int	packets_read;	/* count of packets read with recvfrom()  统计捕获到的包 */
 	long	proc_dropped;	/* packets reported dropped by /proc/net/dev  记录该接口droped报文数量 */
 	struct pcap_stat stat;
 
@@ -322,8 +322,8 @@ struct pcap_linux {
 	u_char	*oneshot_buffer; /* buffer for copy of packet */
 	int	poll_timeout;	/* timeout to use in poll()  poll系统调用传入的超时参数，默认来自上面的timeout，但TPACKET_V3在3.19版本之前不允许不超时 */
 #ifdef HAVE_TPACKET3
-	unsigned char *current_packet; /* Current packet within the TPACKET_V3 block. Move to next block if NULL. */
-	int packets_left; /* Unhandled packets left within the block from previous call to pcap_read_linux_mmap_v3 in case of TPACKET_V3. */
+	unsigned char *current_packet; /* Current packet within the TPACKET_V3 block. Move to next block if NULL. 指向当前待处理的帧 */
+	int packets_left; /* Unhandled packets left within the block from previous call to pcap_read_linux_mmap_v3 in case of TPACKET_V3. 待处理的帧数量 */
 #endif
 };
 
@@ -376,6 +376,7 @@ struct tpacket_hdr_64 {
  */
 #define TPACKET_V1_64 99
 
+// pcap管理的帧头/块头(显然，只有TPACKET_V3才是块头)
 union thdr {
 	struct tpacket_hdr		*h1;
 	struct tpacket_hdr_64		*h1_64;
@@ -1461,7 +1462,7 @@ pcap_activate_linux(pcap_t *handle)
 		goto fail;
 	}
 
-    // 注册pcap句柄中linux平台相关的回调函数
+    // 注册pcap句柄中linux平台相关的回调函数(linux平台的回调函数又分为2组，这里缺省注册了一组无PACKET_MMAP机制的回调)
 	handle->inject_op = pcap_inject_linux;
 	handle->setfilter_op = pcap_setfilter_linux;
 	handle->setdirection_op = pcap_setdirection_linux;
@@ -1635,6 +1636,13 @@ fail:
  *  Read at most max_packets from the capture stream and call the callback
  *  for each of them. Returns the number of packets handled or -1 if an
  *  error occured.
+ *
+ *  在指定接口上进行捕获包操作(无PACKET_MMAP)
+ *
+ * @p       - pcap句柄
+ * @cnt     - 设置捕获数据包个数，捕获数量超过该值则退出本函数，-1表示一直捕获
+ * @callback- 捕获到数据包后的回调函数
+ * @user    - 传递给回调函数的参数
  */
 static int
 pcap_read_linux(pcap_t *handle, int max_packets, pcap_handler callback, u_char *user)
@@ -1657,6 +1665,7 @@ pcap_set_datalink_linux(pcap_t *handle, int dlt)
  * linux_check_direction()
  *
  * Do checks based on packet direction.
+ * 检查指定的包是否满足配置的捕包方向
  */
 static inline int
 linux_check_direction(const pcap_t *handle, const struct sockaddr_ll *sll)
@@ -1709,6 +1718,8 @@ linux_check_direction(const pcap_t *handle, const struct sockaddr_ll *sll)
  *  Read a packet from the socket calling the handler provided by
  *  the user. Returns the number of packets received or -1 if an
  *  error occured.
+ *
+ *  从捕获套接字上读取一个包(无PACKET_MMAP)，最后执行了用户注册的捕获回调函数
  */
 static int
 pcap_read_packet(pcap_t *handle, pcap_handler callback, u_char *userdata)
@@ -1741,6 +1752,8 @@ pcap_read_packet(pcap_t *handle, pcap_handler callback, u_char *userdata)
 	/*
 	 * If this is a cooked device, leave extra room for a
 	 * fake packet header.
+     *
+     * 如果工作在加工模式，则预留一个伪造头长度的空间
 	 */
 	if (handlep->cooked)
 		offset = SLL_HDR_LEN;
@@ -1784,6 +1797,7 @@ pcap_read_packet(pcap_t *handle, pcap_handler callback, u_char *userdata)
 	iov.iov_base		= bp + offset;
 #endif /* defined(HAVE_PACKET_AUXDATA) && defined(HAVE_LINUX_TPACKET_AUXDATA_TP_VLAN_TCI) */
 
+    // 除非是因为recvfrom被信号中断，否则这里只尝试捕获一个包
 	do {
 		/*
 		 * Has "pcap_breakloop()" been called?
@@ -1837,6 +1851,7 @@ pcap_read_packet(pcap_t *handle, pcap_handler callback, u_char *userdata)
 	}
 
 #ifdef HAVE_PF_PACKET_SOCKETS
+    // 由于socket和bind之间存在一个时间间隔，所以有可能导致一开始接收到来自其他接口的包，这里就是对这些包进行过滤
 	if (!handlep->sock_packet) {
 		/*
 		 * Unfortunately, there is a window between socket() and
@@ -1849,6 +1864,8 @@ pcap_read_packet(pcap_t *handle, pcap_handler callback, u_char *userdata)
 		 * that won't handle packet sockets without socket
 		 * filter support, and it's a bit more complicated.
 		 * It would save some instructions per packet, however.)
+         *
+         * 包对应的接口序号检查
 		 */
 		if (handlep->ifindex != -1 &&
 		    from.sll_ifindex != handlep->ifindex)
@@ -1859,6 +1876,8 @@ pcap_read_packet(pcap_t *handle, pcap_handler callback, u_char *userdata)
 		 * We can only do this if we're using PF_PACKET; the
 		 * address returned for SOCK_PACKET is a "sockaddr_pkt"
 		 * which lacks the relevant packet type information.
+         *
+         * 包方向检查
 		 */
 		if (!linux_check_direction(handle, &from))
 			return 0;
@@ -1868,6 +1887,8 @@ pcap_read_packet(pcap_t *handle, pcap_handler callback, u_char *userdata)
 #ifdef HAVE_PF_PACKET_SOCKETS
 	/*
 	 * If this is a cooked device, fill in the fake packet header.
+     *
+     * 如果是加工模式，则这里构造伪包头
 	 */
 	if (handlep->cooked) {
 		/*
@@ -1980,7 +2001,9 @@ pcap_read_packet(pcap_t *handle, pcap_handler callback, u_char *userdata)
 	if (caplen > handle->snapshot)
 		caplen = handle->snapshot;
 
-	/* Run the packet filter if not using kernel filter */
+	/* Run the packet filter if not using kernel filter 
+     * 运行用户级别包过滤
+     * */
 	if (handlep->filter_in_userland && handle->fcode.bf_insns) {
 		if (bpf_filter_with_aux_data(handle->fcode.bf_insns, bp,
 		    packet_len, caplen, &aux_data) == 0) {
@@ -1991,7 +2014,10 @@ pcap_read_packet(pcap_t *handle, pcap_handler callback, u_char *userdata)
 
 	/* Fill in our own header data */
 
-	/* get timestamp for this packet */
+	/* get timestamp for this packet 
+     *
+     * 添加时间戳
+     * */
 #if defined(SIOCGSTAMPNS) && defined(SO_TIMESTAMPNS)
 	if (handle->opt.tstamp_precision == PCAP_TSTAMP_PRECISION_NANO) {
 		if (ioctl(handle->fd, SIOCGSTAMPNS, &pcap_header.ts) == -1) {
@@ -2058,7 +2084,9 @@ pcap_read_packet(pcap_t *handle, pcap_handler callback, u_char *userdata)
 	 */
 	handlep->packets_read++;
 
-	/* Call the user supplied callback function */
+	/* Call the user supplied callback function 
+     * 调用用户注册的包捕获回调
+     * */
 	callback(userdata, &pcap_header, bp);
 
 	return 1;
@@ -2837,6 +2865,8 @@ pcap_setdirection_linux(pcap_t *handle, pcap_direction_t d)
  * for the PACKET_ #defines change, so that programs
  * that look at the packet type field will always be
  * able to handle DLT_LINUX_SLL captures.
+ *
+ * 包类型从标准的linux定义映射为pcap定义的LINUX_SLL_*
  */
 static short int
 map_packet_type_to_sll_type(short int sll_pkttype)
@@ -4478,7 +4508,7 @@ retry:
 	}
 
 	/* allocate a ring for each frame header pointer
-     * 创建一个pcap内部用于管理接收环形缓冲区每个帧头的结构
+     * 创建一个pcap内部用于管理接收环形缓冲区每个帧头/块头的结构
      * */
 	handle->cc = req.tp_frame_nr;
 	handle->buffer = malloc(handle->cc * sizeof(union thdr *));
@@ -4617,6 +4647,7 @@ pcap_setnonblock_mmap(pcap_t *p, int nonblock, char *errbuf)
 
 /*
  * Get the status field of the ring buffer frame at a specified offset.
+ * 获取环形缓冲区中指定帧的状态字段
  */
 static inline int
 pcap_get_ring_frame_status(pcap_t *handle, int offset)
@@ -4653,6 +4684,7 @@ pcap_get_ring_frame_status(pcap_t *handle, int offset)
 
 /*
  * Block waiting for frames to be available.
+ * 等待有帧收到
  */
 static int pcap_wait_for_frames_mmap(pcap_t *handle)
 {
@@ -4738,7 +4770,10 @@ static int pcap_wait_for_frames_mmap(pcap_t *handle)
 	return 0;
 }
 
-/* handle a single memory mapped packet */
+/* handle a single memory mapped packet 
+ *
+ * 操作环形缓冲区中一个指定的帧缓冲区
+ * */
 static int pcap_handle_packet_mmap(
 		pcap_t *handle,
 		pcap_handler callback,
@@ -4819,6 +4854,7 @@ static int pcap_handle_packet_mmap(
 		hdrp->sll_protocol = sll->sll_protocol;
 	}
 
+    // 用户级别过滤(前提是开启了)
 	if (handlep->filter_in_userland && handle->fcode.bf_insns) {
 		struct bpf_aux_data aux_data;
 
@@ -4830,6 +4866,7 @@ static int pcap_handle_packet_mmap(
 			return 0;
 	}
 
+    // 检查包的方向
 	if (!linux_check_direction(handle, sll))
 		return 0;
 
@@ -4847,6 +4884,7 @@ static int pcap_handle_packet_mmap(
 	}
 
 #if defined(HAVE_TPACKET2) || defined(HAVE_TPACKET3)
+    // 只有TPACKET_V2和TPACKET_V3才支持携带vlan信息，这里就是对vlan帧进行了复原
 	if (tp_vlan_tci_valid &&
 		handlep->vlan_offset != -1 &&
 		tp_snaplen >= (unsigned int) handlep->vlan_offset)
@@ -4888,7 +4926,9 @@ static int pcap_handle_packet_mmap(
 	if (pcaphdr.caplen > (bpf_u_int32)handle->snapshot)
 		pcaphdr.caplen = handle->snapshot;
 
-	/* pass the packet to the user */
+	/* pass the packet to the user 
+     * 最后调用用户注册的捕获回调函数
+     * */
 	callback(user, &pcaphdr, bp);
 
 	return 1;
@@ -5153,6 +5193,12 @@ pcap_read_linux_mmap_v2(pcap_t *handle, int max_packets, pcap_handler callback,
 #endif /* HAVE_TPACKET2 */
 
 #ifdef HAVE_TPACKET3
+/* 在指定接口上进行包捕获操作(PACKET_MMAP + TPACKET_V3)
+ * @handle          - pcap句柄
+ * @max_packets     - 设置捕获数据包个数，捕获数量超过该值则退出本函数，-1表示一直捕获
+ * @callback        - 捕获到数据包后的回调函数
+ * @user            - 传递给回调函数的参数
+ */
 static int
 pcap_read_linux_mmap_v3(pcap_t *handle, int max_packets, pcap_handler callback,
 		u_char *user)
@@ -5163,6 +5209,7 @@ pcap_read_linux_mmap_v3(pcap_t *handle, int max_packets, pcap_handler callback,
 	int ret;
 
 again:
+    // 等待环形缓冲区中有内存块提交给用户进程
 	if (handlep->current_packet == NULL) {
 		/* wait for frames availability.*/
 		h.raw = RING_GET_CURRENT_FRAME(handle);
@@ -5187,12 +5234,16 @@ again:
 	}
 
 	/* non-positive values of max_packets are used to require all
-	 * packets currently available in the ring */
+	 * packets currently available in the ring 
+     * 循环接收数据包，直到达到设置的数量，具体的流程就是依次遍历每个内存块以及其中的每个帧，进行读取
+     * */
 	while ((pkts < max_packets) || PACKET_COUNT_IS_UNLIMITED(max_packets)) {
 		int packets_to_read;
 
+        // 刷新当前准备进行读取操作的位置
 		if (handlep->current_packet == NULL) {
 			h.raw = RING_GET_CURRENT_FRAME(handle);
+            // 要读取的块如果处于TP_STATUS_KERNEL状态意味着当前环形缓冲区没有数据可读，可以进一步推导出是因为poll超时才进入这里
 			if (h.h3->hdr.bh1.block_status == TP_STATUS_KERNEL)
 				break;
 
@@ -5212,6 +5263,7 @@ again:
 			packets_to_read = max_packets - pkts;
 		}
 
+        // 从一个内存块中循环捕获packets_to_read数量的帧
 		while (packets_to_read-- && !handle->break_loop) {
 			struct tpacket3_hdr* tp3_hdr = (struct tpacket3_hdr*) handlep->current_packet;
 			ret = pcap_handle_packet_mmap(
@@ -5242,6 +5294,7 @@ again:
 			handlep->packets_left--;
 		}
 
+        // 当块中的帧都读完之后，需要把该内存块还给内核
 		if (handlep->packets_left <= 0) {
 			/*
 			 * Hand this block back to the kernel, and, if

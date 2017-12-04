@@ -149,6 +149,7 @@ typedef enum {
 
 /*
  * Generic per-packet information, as supplied by libpcap.
+ * pcap额外记录的每个包的通用信息
  *
  * The time stamp can and should be a "struct timeval", regardless of
  * whether your system supports 32-bit tv_sec in "struct timeval",
@@ -160,9 +161,9 @@ typedef enum {
  * that's not what the underlying packet capture mechanism supplies.
  */
 struct pcap_pkthdr {
-	struct timeval ts;	/* time stamp */
-	bpf_u_int32 caplen;	/* length of portion present */
-	bpf_u_int32 len;	/* length this packet (off wire) */
+	struct timeval ts;	/* time stamp  包的时间戳*/
+	bpf_u_int32 caplen;	/* length of portion present  包当前捕获到的长度 */
+	bpf_u_int32 len;	/* length this packet (off wire)  包理论上的长度(有可能因为被截断导致caplen<len) */
 };
 
 /*

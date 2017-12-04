@@ -155,7 +155,7 @@ struct pcap {
 	/*
 	 * Method to call to read packets on a live capture.
 	 */
-	read_op_t read_op;      // 在该捕获接口上进行读操作的回调函数(linux上目前缺省就是pcap_read_linux_mmap_v3)
+	read_op_t read_op;      // 在该捕获接口上进行读操作的回调函数(linux上就是 pcap_read_linux / pcap_read_linux_mmap_v3)
 
 	/*
 	 * Method to call to read packets from a savefile.
@@ -175,9 +175,9 @@ struct pcap {
 	u_int bufsize;  // 该值初始时来自用户配置的snapshot，当开启PACKET_MMAP时，跟配置的接收环形缓冲区tp_frame_size值同步
 	void *buffer;   // 当开启PACKET_MMAP时，指向一个成员为union thdr结构的数组，记录了接收环形缓冲区中每个帧的帧头;当不支持PACKET_MMAP时，暂略
 	u_char *bp;
-	int cc;         // 跟配置的接收环形缓冲区tp_frame_nr值同步
+	int cc;         // 跟配置的接收环形缓冲区tp_frame_nr值同步(由于pcap中内存块数量和帧数量相等，所以本字段也就是内存块数量)
 
-	int break_loop;		/* flag set to force break from packet-reading loop */
+	int break_loop;		/* flag set to force break from packet-reading loop 标识是否强制退出循环捕获 */
 
 	void *priv;		/* private data for methods  指向该pcap句柄的私有空间 */
 
@@ -214,7 +214,9 @@ struct pcap {
 	struct pcap_stat stat;		/* used for pcap_stats_ex() */
 #endif
 
-	/* We're accepting only packets in this direction/these directions. */
+	/* We're accepting only packets in this direction/these directions. 
+     * 捕包方向
+     * */
 	pcap_direction_t direction;
 
 	/*
@@ -244,11 +246,11 @@ struct pcap {
 	activate_op_t activate_op;              // 对应回调函数：pcap_activate_linux
 	can_set_rfmon_op_t can_set_rfmon_op;    // 对应回调函数：pcap_can_set_rfmon_linux
 	inject_op_t inject_op;                  // 对应回调函数：pcap_inject_linux
-	setfilter_op_t setfilter_op;            // 对应回调函数：pcap_setfilter_linux       | pcap_setfilter_linux_mmap
+	setfilter_op_t setfilter_op;            // 对应回调函数：pcap_setfilter_linux       / pcap_setfilter_linux_mmap
 	setdirection_op_t setdirection_op;      // 对应回调函数：pcap_setdirection_linux
 	set_datalink_op_t set_datalink_op;      // 对应回调函数：pcap_set_datalink_linux
-	getnonblock_op_t getnonblock_op;        // 对应回调函数：pcap_getnonblock_fd        | pcap_getnonblock_mmap
-	setnonblock_op_t setnonblock_op;        // 对应回调函数：pcap_setnonblock_fd        | pcap_setnonblock_mmap
+	getnonblock_op_t getnonblock_op;        // 对应回调函数：pcap_getnonblock_fd        / pcap_getnonblock_mmap
+	setnonblock_op_t setnonblock_op;        // 对应回调函数：pcap_setnonblock_fd        / pcap_setnonblock_mmap
 	stats_op_t stats_op;                    // 对应回调函数：pcap_stats_linux
 
 	/*
