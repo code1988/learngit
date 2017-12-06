@@ -67,25 +67,25 @@ static char *_jsonFilePath    = NULL; /**< JSON file path  指向一个JSON文�
 static json_object *jArray_known_flows;     // 记录已知报文的JSON对象(数组形式)
 static json_object *jArray_unknown_flows;   // 记录未知报文的JSON对象(数组形式)
 #endif
-static u_int8_t live_capture = 0;
+static u_int8_t live_capture = 0;           // 标识是否打开了一个捕获接口
 static u_int8_t undetected_flows_deleted = 0;
 /** User preferences **/
 static u_int8_t enable_protocol_guess = 1, verbose = 0, nDPI_traceLevel = 0;
 static u_int8_t json_flag = 0;      // 标识是否启用JSON格式输出
 static u_int8_t stats_flag = 0, file_first_time = 1; 
 static u_int32_t pcap_analysis_duration = (u_int32_t)-1;
-static u_int16_t decode_tunnels = 0;
+static u_int16_t decode_tunnels = 0;// 标识是否使能隧道功能
 static u_int16_t num_loops = 1;     // 探测循环次数(仅测试用)
 static u_int8_t shutdown_app = 0, quiet_mode = 0;
-static u_int8_t num_threads = 1;    // 线程数量
+static u_int8_t num_threads = 1;    // 线程数量(传入的是pcap文件时固定使用单线程)
 static struct timeval begin, end;
 #ifdef linux
 static int core_affinity[MAX_NUM_READER_THREADS];   // 线程-cpu亲和关系映射表
 #endif
 static struct timeval pcap_start, pcap_end;
 /** Detection parameters **/
-static time_t capture_for = 0;      // 捕获超时时间(相对时间)
-static time_t capture_until = 0;    // 捕获超时时间点(绝对时间)
+static time_t capture_for = 0;      // 捕获超时时间(相对时间)(只对传入了捕获接口有效)
+static time_t capture_until = 0;    // 捕获超时时间点(绝对时间)(只对传入了捕获接口有效)
 static u_int32_t num_flows;
 
 struct info_pair{
@@ -140,7 +140,7 @@ static u_int16_t extcap_packet_filter = (u_int16_t)-1;
 
 // struct associated to a workflow for a thread 定义了一个线程处理单元
 struct reader_thread {
-  struct ndpi_workflow * workflow;
+  struct ndpi_workflow * workflow;      // 指向一条对应的工作流
   pthread_t pthread;                    // 记录了对应的线程ID
   u_int64_t last_idle_scan_time;
   u_int32_t idle_scan_idx;
@@ -158,7 +158,8 @@ typedef struct ndpi_id {
 } ndpi_id_t;
 
 // used memory counters
-u_int32_t current_ndpi_memory = 0, max_ndpi_memory = 0;
+u_int32_t current_ndpi_memory = 0;  // 记录了当前分配的堆内存字节数
+u_int32_t max_ndpi_memory = 0;      // 记录了分配过的堆内存峰值
 
 
 void test_lib(); /* Forward */
@@ -1008,6 +1009,8 @@ static void node_idle_scan_walker(const void *node, ndpi_VISIT which, int depth,
 
 /**
  * @brief On Protocol Discover - call node_guess_undetected_protocol() for protocol
+ * 工作流探测完成后的回调函数
+ * @udata 实际传入的是用来索引线程处理单元的线程序号
  */
 static void on_protocol_discovered(struct ndpi_workflow * workflow,
 				   struct ndpi_flow_info * flow,
@@ -1070,38 +1073,42 @@ static void debug_printf(u_int32_t protocol, void *id_struct,
 
 /**
  * @brief Setup for detection begin
+ * 初始化一个指定的线程处理单元(对应了一条流)
  */
 static void setupDetection(u_int16_t thread_id, pcap_t * pcap_handle) {
 
   NDPI_PROTOCOL_BITMASK all;
   struct ndpi_workflow_prefs prefs;
 
+  // 初始化流的参数配置块
   memset(&prefs, 0, sizeof(prefs));
   prefs.decode_tunnels = decode_tunnels;
   prefs.num_roots = NUM_ROOTS;
   prefs.max_ndpi_flows = MAX_NDPI_FLOWS;
   prefs.quiet_mode = quiet_mode;
 
-  memset(&ndpi_thread_info[thread_id], 0, sizeof(ndpi_thread_info[thread_id]));
-  ndpi_thread_info[thread_id].workflow = ndpi_workflow_init(&prefs, pcap_handle);
+    memset(&ndpi_thread_info[thread_id], 0, sizeof(ndpi_thread_info[thread_id]));
+    // 为该线程处理单元创建并初始化一条工作流
+    ndpi_thread_info[thread_id].workflow = ndpi_workflow_init(&prefs, pcap_handle);
 
-  /* Preferences */
-  ndpi_thread_info[thread_id].workflow->ndpi_struct->http_dont_dissect_response = 0;
-  ndpi_thread_info[thread_id].workflow->ndpi_struct->dns_dissect_response = 0;
+    /* Preferences */
+    ndpi_thread_info[thread_id].workflow->ndpi_struct->http_dont_dissect_response = 0;
+    ndpi_thread_info[thread_id].workflow->ndpi_struct->dns_dissect_response = 0;
 
-  ndpi_workflow_set_flow_detected_callback(ndpi_thread_info[thread_id].workflow,
-					   on_protocol_discovered, (void *)(uintptr_t)thread_id);
+    // 指定这条工作流注册探测完成后的回调函数
+    ndpi_workflow_set_flow_detected_callback(ndpi_thread_info[thread_id].workflow,
+                       on_protocol_discovered, (void *)(uintptr_t)thread_id);
 
-  // enable all protocols
-  NDPI_BITMASK_SET_ALL(all);
-  ndpi_set_protocol_detection_bitmask2(ndpi_thread_info[thread_id].workflow->ndpi_struct, &all);
+    // enable all protocols
+    NDPI_BITMASK_SET_ALL(all);
+    ndpi_set_protocol_detection_bitmask2(ndpi_thread_info[thread_id].workflow->ndpi_struct, &all);
 
-  // clear memory for results
-  memset(ndpi_thread_info[thread_id].workflow->stats.protocol_counter, 0, sizeof(ndpi_thread_info[thread_id].workflow->stats.protocol_counter));
-  memset(ndpi_thread_info[thread_id].workflow->stats.protocol_counter_bytes, 0, sizeof(ndpi_thread_info[thread_id].workflow->stats.protocol_counter_bytes));
-  memset(ndpi_thread_info[thread_id].workflow->stats.protocol_flows, 0, sizeof(ndpi_thread_info[thread_id].workflow->stats.protocol_flows));
+    // clear memory for results
+    memset(ndpi_thread_info[thread_id].workflow->stats.protocol_counter, 0, sizeof(ndpi_thread_info[thread_id].workflow->stats.protocol_counter));
+    memset(ndpi_thread_info[thread_id].workflow->stats.protocol_counter_bytes, 0, sizeof(ndpi_thread_info[thread_id].workflow->stats.protocol_counter_bytes));
+    memset(ndpi_thread_info[thread_id].workflow->stats.protocol_flows, 0, sizeof(ndpi_thread_info[thread_id].workflow->stats.protocol_flows));
 
-  if(_protoFilePath != NULL)
+    if(_protoFilePath != NULL)
     ndpi_load_protocols_file(ndpi_thread_info[thread_id].workflow->ndpi_struct, _protoFilePath);
 }
 
@@ -1684,7 +1691,7 @@ static void breakPcapLoop(u_int16_t thread_id) {
 
 /**
  * @brief Sigproc is executed for each packet in the pcap file
- * SIGINT信号处理函数
+ * SIGINT/SIGALRM信号处理函数
  */
 void sigproc(int sig) {
 
@@ -1726,6 +1733,7 @@ static int getNextPcapFileFromPlaylist(u_int16_t thread_id, char filename[], u_i
 
 /**
  * @brief Configure the pcap handle
+ * 编译并应用BPF过滤规则
  */
 static void configurePcapHandle(pcap_t * pcap_handle) {
 
@@ -1746,6 +1754,7 @@ static void configurePcapHandle(pcap_t * pcap_handle) {
 
 /**
  * @brief Open a pcap file or a specified device - Always returns a valid pcap_t
+ * 通过调用libpcap库，打开指定的pcap文件或捕获接口
  */
 static pcap_t * openPcapFileOrDevice(u_int16_t thread_id, const u_char * pcap_file) {
 
@@ -1754,47 +1763,51 @@ static pcap_t * openPcapFileOrDevice(u_int16_t thread_id, const u_char * pcap_fi
   char pcap_error_buffer[PCAP_ERRBUF_SIZE];
   pcap_t * pcap_handle = NULL;
 
-  /* trying to open a live interface */
-  if((pcap_handle = pcap_open_live((char*)pcap_file, snaplen, promisc, 500, pcap_error_buffer)) == NULL) {
-    capture_for = capture_until = 0;
+  /* trying to open a live interface 
+   * 首先假设传入的是捕获接口，所以用pcap_open_live打开<最大捕包长度1536，混杂模式开启，500ms超时时间>
+   * */
+    if((pcap_handle = pcap_open_live((char*)pcap_file, snaplen, promisc, 500, pcap_error_buffer)) == NULL) {
+        // 如果打开捕获接口失败，则尝试打开pcap文件
+        capture_for = capture_until = 0;
 
-    live_capture = 0;
-    num_threads = 1; /* Open pcap files in single threads mode */
+        live_capture = 0;
+        num_threads = 1; /* Open pcap files in single threads mode */
 
-    /* trying to open a pcap file */
-    if((pcap_handle = pcap_open_offline((char*)pcap_file, pcap_error_buffer)) == NULL) {
-      char filename[256];
+        /* trying to open a pcap file */
+        if((pcap_handle = pcap_open_offline((char*)pcap_file, pcap_error_buffer)) == NULL) {
+            char filename[256];
 
-      /* trying to open a pcap playlist */
-      if(getNextPcapFileFromPlaylist(thread_id, filename, sizeof(filename)) != 0 ||
-	 (pcap_handle = pcap_open_offline(filename, pcap_error_buffer)) == NULL) {
-
-        printf("ERROR: could not open pcap file or playlist: %s\n", pcap_error_buffer);
-        exit(-1);
-      } else {
-        if((!json_flag) && (!quiet_mode)) printf("Reading packets from playlist %s...\n", pcap_file);
-      }
+            /* trying to open a pcap playlist */
+            if(getNextPcapFileFromPlaylist(thread_id, filename, sizeof(filename)) != 0 ||
+               (pcap_handle = pcap_open_offline(filename, pcap_error_buffer)) == NULL) {
+                printf("ERROR: could not open pcap file or playlist: %s\n", pcap_error_buffer);
+                exit(-1);
+            } else {
+                if((!json_flag) && (!quiet_mode)) printf("Reading packets from playlist %s...\n", pcap_file);
+            }
+        } else {
+            if((!json_flag) && (!quiet_mode)) printf("Reading packets from pcap file %s...\n", pcap_file);
+        }
     } else {
-      if((!json_flag) && (!quiet_mode)) printf("Reading packets from pcap file %s...\n", pcap_file);
+        live_capture = 1;
+
+        if((!json_flag) && (!quiet_mode)) printf("Capturing live traffic from device %s...\n", pcap_file);
     }
-  } else {
-    live_capture = 1;
 
-    if((!json_flag) && (!quiet_mode)) printf("Capturing live traffic from device %s...\n", pcap_file);
-  }
+    // 编译并应用BPF过滤规则
+    configurePcapHandle(pcap_handle);
 
-  configurePcapHandle(pcap_handle);
-
-  if(capture_for > 0) {
-    if((!json_flag) && (!quiet_mode)) printf("Capturing traffic up to %u seconds\n", (unsigned int)capture_for);
+    // 如果设置了超时时间，则注册SIGALRM定时器，超时后强制退出捕获
+    if(capture_for > 0) {
+        if((!json_flag) && (!quiet_mode)) printf("Capturing traffic up to %u seconds\n", (unsigned int)capture_for);
 
 #ifndef WIN32
-    alarm(capture_for);
-    signal(SIGALRM, sigproc);
+        alarm(capture_for);
+        signal(SIGALRM, sigproc);
 #endif
-  }
+    }
 
-  return pcap_handle;
+    return pcap_handle;
 }
 
 
@@ -1991,6 +2004,7 @@ void test_lib() {
     if(trace) fprintf(trace, "Opening %s\n", (const u_char*)_pcap_file[thread_id]);
 #endif
 
+    // 通过调用libpcap库，打开指定的pcap文件或捕获接口
     cap = openPcapFileOrDevice(thread_id, (const u_char*)_pcap_file[thread_id]);
     setupDetection(thread_id, cap);
   }

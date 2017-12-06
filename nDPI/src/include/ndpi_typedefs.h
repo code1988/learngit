@@ -716,6 +716,7 @@ typedef struct {
   u_int16_t port_low, port_high;
 } ndpi_port_range;
 
+// ndpi根据协议安全性进行的归类
 typedef enum {
   NDPI_PROTOCOL_SAFE = 0,              /* Safe protocol with encryption */
   NDPI_PROTOCOL_ACCEPTABLE,            /* Ok but not encrypted */
@@ -727,7 +728,7 @@ typedef enum {
 
 #define NUM_BREEDS (NDPI_PROTOCOL_UNRATED+1)
 
-/* Abstract categories to group the protocols. */
+/* Abstract categories to group the protocols. ndpi根据协议用途进行的归类 */
 typedef enum {
   NDPI_PROTOCOL_CATEGORY_UNSPECIFIED = 0,   /* For general services and unknown protocols */
   NDPI_PROTOCOL_CATEGORY_MEDIA,             /* Multimedia and streaming */
@@ -757,20 +758,21 @@ typedef enum {
 			       */
 } ndpi_protocol_category_t;
 
-/* ntop extensions */
+/* ntop extensions 定义了协议的缺省信息单元 */
 typedef struct ndpi_proto_defaults {
-  char *protoName;
-  ndpi_protocol_category_t protoCategory;
-  u_int16_t protoId, protoIdx;
+  char *protoName;                          // 协议名 
+  ndpi_protocol_category_t protoCategory;   // 协议类别1(根据用途归类)
+  u_int16_t protoId, protoIdx;              // 协议ID
   u_int16_t master_tcp_protoId[2], master_udp_protoId[2]; /* The main protocols on which this sub-protocol sits on */
-  ndpi_protocol_breed_t protoBreed;
+  ndpi_protocol_breed_t protoBreed;         // 协议类别2(根据安全性归类)
   void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow);
 } ndpi_proto_defaults_t;
 
+// 定义了二叉树节点结构
 typedef struct ndpi_default_ports_tree_node {
-  ndpi_proto_defaults_t *proto;
+  ndpi_proto_defaults_t *proto;     // 指向关联的协议的缺省信息单元
   u_int8_t customUserProto;
-  u_int16_t default_port;
+  u_int16_t default_port;           // 关联的协议的一个缺省端口号
 } ndpi_default_ports_tree_node_t;
 
 typedef struct _ndpi_automa {
@@ -784,8 +786,9 @@ typedef struct ndpi_proto {
 
 #define NDPI_PROTOCOL_NULL { NDPI_PROTOCOL_UNKNOWN , NDPI_PROTOCOL_UNKNOWN }
 
+// 定义了每条工作流专属的探测模块
 struct ndpi_detection_module_struct {
-  NDPI_PROTOCOL_BITMASK detection_bitmask;
+  NDPI_PROTOCOL_BITMASK detection_bitmask;  // 该探测模块中所有协议的使能/禁止位的集合
   NDPI_PROTOCOL_BITMASK generic_http_packet_bitmask;
 
   u_int32_t current_ts;
@@ -811,11 +814,11 @@ struct ndpi_detection_module_struct {
   struct ndpi_call_function_struct callback_buffer_non_tcp_udp[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];
   u_int32_t callback_buffer_size_non_tcp_udp;
 
-  ndpi_default_ports_tree_node_t *tcpRoot, *udpRoot;
+  ndpi_default_ports_tree_node_t *tcpRoot, *udpRoot;    // 指向2棵专门维护所有协议缺省端口信息的二叉树
 
 #ifdef NDPI_ENABLE_DEBUG_MESSAGES
   /* debug callback, only set when debug is used */
-  ndpi_debug_function_ptr ndpi_debug_printf;
+  ndpi_debug_function_ptr ndpi_debug_printf;    // 调试信息输出回调函数
   const char *ndpi_debug_print_file;
   const char *ndpi_debug_print_function;
   u_int32_t ndpi_debug_print_line;
@@ -829,16 +832,16 @@ struct ndpi_detection_module_struct {
   /* subprotocol registration handler */
   struct ndpi_subprotocol_conf_struct subprotocol_conf[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];
 
-  u_int ndpi_num_supported_protocols;
+  u_int ndpi_num_supported_protocols;   // 支持的协议数量
   u_int ndpi_num_custom_protocols;
 
-  /* HTTP/DNS/HTTPS host matching */
+  /* HTTP/DNS/HTTPS host matching 5个AC自动机句柄 */
   ndpi_automa host_automa,                     /* Used for DNS/HTTPS */
     content_automa,                            /* Used for HTTP subprotocol_detection */
     subprotocol_automa,                        /* Used for HTTP subprotocol_detection */
     bigrams_automa, impossible_bigrams_automa; /* TOR */
 
-  /* IP-based protocol detection */
+  /* IP-based protocol detection  指向一个trie树模块的句柄 */
   void *protocols_ptree;
 
   /* irc parameters */
@@ -879,8 +882,8 @@ struct ndpi_detection_module_struct {
 #endif
 #endif
 
-  ndpi_proto_defaults_t proto_defaults[NDPI_MAX_SUPPORTED_PROTOCOLS+NDPI_MAX_NUM_CUSTOM_PROTOCOLS];
-
+  ndpi_proto_defaults_t proto_defaults[NDPI_MAX_SUPPORTED_PROTOCOLS+NDPI_MAX_NUM_CUSTOM_PROTOCOLS]; // 这张表记录了所有支持的协议的缺省信息，主要是端口信息
+                                                                                                    // 根据分配的协议ID号进行索引
   u_int8_t http_dont_dissect_response:1, dns_dissect_response:1,
     direction_detect_disable:1; /* disable internal detection of packet direction */
 };
@@ -1060,17 +1063,19 @@ struct ndpi_flow_struct {
   struct ndpi_id_struct *dst;
 };
 
+// 主机名-协议ID的映射单元
 typedef struct {
-  char *string_to_match, *proto_name;
-  int protocol_id;
-  ndpi_protocol_category_t proto_category;
-  ndpi_protocol_breed_t protocol_breed;
+  char *string_to_match, *proto_name;       // 主机名,服务名
+  int protocol_id;                          // ndpi分配的协议ID
+  ndpi_protocol_category_t proto_category;  // ndpi根据协议用途定义的类别
+  ndpi_protocol_breed_t protocol_breed;     // ndpi根据协议安全性定义的类别
 } ndpi_protocol_match;
 
+// 网络号-协议ID的映射单元
 typedef struct {
-  u_int32_t network;
-  u_int8_t cidr;
-  u_int8_t value;
+  u_int32_t network;    // 网络号
+  u_int8_t cidr;        // 掩码长度
+  u_int8_t value;       // ndpi分配的协议ID
 } ndpi_network;
 
 #endif/* __NDPI_TYPEDEFS_H__ */

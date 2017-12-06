@@ -851,7 +851,7 @@ char* ndpi_get_http_url(struct ndpi_detection_module_struct *ndpi_mod,
 }
 
 /* ********************************* */
-
+// 处理http协议报文的回调函数
 char* ndpi_get_http_content_type(struct ndpi_detection_module_struct *ndpi_mod,
 			       struct ndpi_flow_struct *flow) {
   if((!flow) || (!flow->http.content_type))
@@ -860,7 +860,7 @@ char* ndpi_get_http_content_type(struct ndpi_detection_module_struct *ndpi_mod,
     return(flow->http.content_type);
 }
 
-
+// 初始化http协议分析器
 void init_http_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int32_t *id,
 			 NDPI_PROTOCOL_BITMASK *detection_bitmask)
 {

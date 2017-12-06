@@ -92,12 +92,12 @@ typedef struct ndpi_stats {
 } ndpi_stats_t;
 
 
-// flow preferences
+// flow preferences 定义了工作流的参数配置块
 typedef struct ndpi_workflow_prefs {
-  u_int8_t decode_tunnels;
-  u_int8_t quiet_mode;
-  u_int32_t num_roots;
-  u_int32_t max_ndpi_flows;
+  u_int8_t decode_tunnels;  // 标识是否使能隧道功能
+  u_int8_t quiet_mode;      // 标识是否使能安静模式
+  u_int32_t num_roots;      // 固定为NUM_ROOTS
+  u_int32_t max_ndpi_flows; // 固定为MAX_NDPI_FLOWS
 } ndpi_workflow_prefs_t;
 
 struct ndpi_workflow;
@@ -106,24 +106,24 @@ struct ndpi_workflow;
 typedef void (*ndpi_workflow_callback_ptr) (struct ndpi_workflow *, struct ndpi_flow_info *, void *);
 
 
-// workflow main structure
+// workflow main structure 定义了工作流的主结构
 typedef struct ndpi_workflow {
   u_int64_t last_time;
 
-  struct ndpi_workflow_prefs prefs;
+  struct ndpi_workflow_prefs prefs; // 记录了这条流关联的参数配置块
   struct ndpi_stats stats;
 
-  ndpi_workflow_callback_ptr __flow_detected_callback;
-  void * __flow_detected_udata;
+  ndpi_workflow_callback_ptr __flow_detected_callback;  // 完成探测后的回调函数 (on_protocol_discovered)
+  void * __flow_detected_udata;                         // 传递给__flow_detected_callback回调函数的参数
   ndpi_workflow_callback_ptr __flow_giveup_callback;
   void * __flow_giveup_udata;
 
   /* outside referencies */
-  pcap_t *pcap_handle;
+  pcap_t *pcap_handle;      // 指向这条流关联的pcap句柄
 
   /* allocated by prefs */
-  void **ndpi_flows_root;
-  struct ndpi_detection_module_struct *ndpi_struct;
+  void **ndpi_flows_root;   // 一个prefs.num_roots长度的数组，成员为 void *
+  struct ndpi_detection_module_struct *ndpi_struct; // 指向这条工作流专属的探测模块
 } ndpi_workflow_t;
 
 
@@ -149,7 +149,9 @@ struct ndpi_proto ndpi_workflow_process_packet(struct ndpi_workflow * workflow,
 
 
 /* flow callbacks for complete detected flow
-   (ndpi_flow_info will be freed right after) */
+   (ndpi_flow_info will be freed right after) 
+   为指定的工作流注册探测完成后的回调函数
+   */
 static inline void ndpi_workflow_set_flow_detected_callback(struct ndpi_workflow * workflow, ndpi_workflow_callback_ptr callback, void * udata) {
   workflow->__flow_detected_callback = callback;
   workflow->__flow_detected_udata = udata;

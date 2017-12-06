@@ -56,7 +56,7 @@ int check_punycode_string(char * buffer , int len)
 }
 
 /* ftp://ftp.cc.uoc.gr/mirrors/OpenBSD/src/lib/libc/stdlib/tsearch.c */
-/* find or insert datum into search tree */
+/* find or insert datum into search tree 查找或插入传入的节点到二叉树中 */
 void * ndpi_tsearch(const void *vkey, void **vrootp,
 		    int (*compar)(const void *, const void *))
 {
@@ -213,11 +213,11 @@ u_int8_t ndpi_ips_match(u_int32_t src, u_int32_t dst,
 
 /* ****************************************** */
 
-static void *(*_ndpi_flow_malloc)(size_t size);
-static void  (*_ndpi_flow_free)(void *ptr);
+static void *(*_ndpi_flow_malloc)(size_t size); // 定义了ndpi封装的flow_malloc函数指针(2.0版本尚未使用)
+static void  (*_ndpi_flow_free)(void *ptr);     // 定义了ndpi封装的flow_free函数指针(2.0版本尚未使用)
 
-static void *(*_ndpi_malloc)(size_t size);
-static void  (*_ndpi_free)(void *ptr);
+static void *(*_ndpi_malloc)(size_t size);  // 定义了一个ndpi封装的malloc函数指针
+static void  (*_ndpi_free)(void *ptr);      // 定义了一个ndpi封装的free函数指针
 
 /* ****************************************** */
 
@@ -411,7 +411,7 @@ ndpi_port_range * ndpi_build_default_ports_range(ndpi_port_range *ports,
 }
 
 /* *********************************************************************************** */
-
+// 设置缺省的端口范围，这里支持5个范围
 ndpi_port_range * ndpi_build_default_ports(ndpi_port_range *ports,
 					   u_int16_t portA,
 					   u_int16_t portB,
@@ -431,7 +431,17 @@ ndpi_port_range * ndpi_build_default_ports(ndpi_port_range *ports,
 }
 
 /* ********************************************************************************** */
-
+/* 将一组传入的协议缺省信息注册到ndpi_mod->proto_defaults这张表中，同时用2棵二叉树来维护这些信息
+ * @ndpi_mod            - 指向探测模块句柄
+ * @breed               - ndpi根据协议安全性进行的归类
+ * @protoId             - ndpi为协议分配的唯一ID号
+ * @tcp_master_protoId  -
+ * @udp_master_protoId  -
+ * @protoName           - 协议名
+ * @protoCategory       - ndpi根据协议用途进行的归类
+ * @tcpDefPorts         - 该协议对应的一组缺省TCP端口范围
+ * @udpDefPorts         - 该协议对应的一组缺省UDP端口范围
+ */
 void ndpi_set_proto_defaults(struct ndpi_detection_module_struct *ndpi_mod,
 			     ndpi_protocol_breed_t breed, u_int16_t protoId,
 			     u_int16_t tcp_master_protoId[2], u_int16_t udp_master_protoId[2],
@@ -465,6 +475,7 @@ void ndpi_set_proto_defaults(struct ndpi_detection_module_struct *ndpi_mod,
   memcpy(&ndpi_mod->proto_defaults[protoId].master_tcp_protoId, tcp_master_protoId, 2*sizeof(u_int16_t));
   memcpy(&ndpi_mod->proto_defaults[protoId].master_udp_protoId, udp_master_protoId, 2*sizeof(u_int16_t));
 
+  // 将该协议按照tcp/udp分为2类，分别添加5组关联的缺省端口信息，这部分信息通过二叉树来维护
   for(j=0; j<MAX_DEFAULT_PORTS; j++) {
     if(udpDefPorts[j].port_low != 0) addDefaultPort(&udpDefPorts[j], &ndpi_mod->proto_defaults[protoId], 0, &ndpi_mod->udpRoot);
     if(tcpDefPorts[j].port_low != 0) addDefaultPort(&tcpDefPorts[j], &ndpi_mod->proto_defaults[protoId], 0, &ndpi_mod->tcpRoot);
@@ -472,7 +483,7 @@ void ndpi_set_proto_defaults(struct ndpi_detection_module_struct *ndpi_mod,
 }
 
 /* ******************************************************************** */
-
+// 二叉树比较函数
 static int ndpi_default_ports_tree_node_t_cmp(const void *a, const void *b)
 {
   ndpi_default_ports_tree_node_t *fa = (ndpi_default_ports_tree_node_t*)a;
@@ -500,7 +511,7 @@ void ndpi_default_ports_tree_node_t_walker(const void *node, const ndpi_VISIT wh
 }
 
 /* ******************************************************************** */
-
+// 为指定协议的一组连续的端口号挨个创建节点并插入二叉树
 static void addDefaultPort(ndpi_port_range *range,
 			   ndpi_proto_defaults_t *def,
 			   u_int8_t customUserProto,
@@ -509,6 +520,7 @@ static void addDefaultPort(ndpi_port_range *range,
   ndpi_default_ports_tree_node_t *ret;
   u_int16_t port;
 
+  // 依次为范围内的每个端口创建对应的二叉树节点，并插入二叉树
   for(port=range->port_low; port<=range->port_high; port++) {
     ndpi_default_ports_tree_node_t *node = (ndpi_default_ports_tree_node_t*)ndpi_malloc(sizeof(ndpi_default_ports_tree_node_t));
 
@@ -626,13 +638,14 @@ static int ndpi_remove_host_url_subprotocol(struct ndpi_detection_module_struct 
 }
 
 /* ******************************************************************** */
-
+// 实际就是将传入的一组主机名-协议ID的映射单元加入AC自动机
 void ndpi_init_protocol_match(struct ndpi_detection_module_struct *ndpi_mod,
 			      ndpi_protocol_match *match)
 {
   u_int16_t no_master[2] = { NDPI_PROTOCOL_NO_MASTER_PROTO, NDPI_PROTOCOL_NO_MASTER_PROTO };
   ndpi_port_range ports_a[MAX_DEFAULT_PORTS], ports_b[MAX_DEFAULT_PORTS];
 
+  // 将传入的一组主机名-协议ID的映射单元加入AC自动机
   ndpi_add_host_url_subprotocol(ndpi_mod, match->string_to_match,
 				match->protocol_id, match->protocol_breed);
 
@@ -654,11 +667,12 @@ void ndpi_init_protocol_match(struct ndpi_detection_module_struct *ndpi_mod,
 }
 
 /* ******************************************************************** */
-
+// 分别将预定义的4张表加入各自的AC自动机
 static void init_string_based_protocols(struct ndpi_detection_module_struct *ndpi_mod)
 {
   int i;
 
+  // 将host_match这张映射表加入AC自动机host_automa
   for(i=0; host_match[i].string_to_match != NULL; i++)
     ndpi_init_protocol_match(ndpi_mod, &host_match[i]);
 
@@ -666,16 +680,19 @@ static void init_string_based_protocols(struct ndpi_detection_module_struct *ndp
   ac_automata_display(ndpi_mod->host_automa.ac_automa, 'n');
 #endif
 
+  // 将content_match这张映射表加入AC自动机content_automa
   for(i=0; content_match[i].string_to_match != NULL; i++)
     ndpi_add_content_subprotocol(ndpi_mod, content_match[i].string_to_match,
 				 content_match[i].protocol_id,
 				 content_match[i].protocol_breed);
 
+  // 将ndpi_en_bigrams这张表加入AC自动机bigrams_automa
   for(i=0; ndpi_en_bigrams[i] != NULL; i++)
     ndpi_string_to_automa(ndpi_mod, &ndpi_mod->bigrams_automa,
 			  (char*)ndpi_en_bigrams[i],
 			  1, NDPI_PROTOCOL_UNRATED);
 
+  // 将ndpi_en_impossible_bigrams这张表加入AC自动机impossible_bigrams_automa
   for(i=0; ndpi_en_impossible_bigrams[i] != NULL; i++)
     ndpi_string_to_automa(ndpi_mod, &ndpi_mod->impossible_bigrams_automa,
 			  (char*)ndpi_en_impossible_bigrams[i],
@@ -703,6 +720,7 @@ static void ndpi_init_placeholder_proto(struct ndpi_detection_module_struct *ndp
    be updated whenever a new protocol is added to NDPI.
 
    每个新增的协议都必须同时在这里添加映射表项
+   这里实际上是通过4个AC自动机和2棵二叉树，来维护所有协议预定义的缺省信息
 
    Do NOT add web services (NDPI_SERVICE_xxx) here.
 */
@@ -1624,18 +1642,21 @@ static void ndpi_init_protocol_defaults(struct ndpi_detection_module_struct *ndp
 			    ndpi_build_default_ports(ports_a, 0, 0, 0, 0, 0),   /* TCP */
 			    ndpi_build_default_ports(ports_b, 0, 0, 0, 0, 0));  /* UDP */
     
-/* To be removed as soon as we define new protocols */
+    /* To be removed as soon as we define new protocols  给209、217、224这三个协议号分别占了坑 */
     ndpi_init_placeholder_proto(ndpi_mod, ports_a, ports_b, no_master, NDPI_PROTOCOL_FREE_209);
     ndpi_init_placeholder_proto(ndpi_mod, ports_a, ports_b, no_master, NDPI_PROTOCOL_FREE_217);
     ndpi_init_placeholder_proto(ndpi_mod, ports_a, ports_b, no_master, NDPI_PROTOCOL_FREE_224);
 
-    /* calling function for host and content matched protocols */
+    /* calling function for host and content matched protocols 
+     * 分别将预定义的4张表加入各自的AC自动机
+     * */
     init_string_based_protocols(ndpi_mod);
 
+    // 最后检查一下支持的协议是否都已经注册完毕
     for(i=0; i<(int)ndpi_mod->ndpi_num_supported_protocols; i++) {
-      if(ndpi_mod->proto_defaults[i].protoName == NULL) {
-	printf("[NDPI] %s(missing protoId=%d) INTERNAL ERROR: not all protocols have been initialized\n", __FUNCTION__, i);
-      }
+        if(ndpi_mod->proto_defaults[i].protoName == NULL) {
+	        printf("[NDPI] %s(missing protoId=%d) INTERNAL ERROR: not all protocols have been initialized\n", __FUNCTION__, i);
+        }
     }
 }
 
@@ -1718,7 +1739,7 @@ u_int8_t ndpi_is_tor_flow(struct ndpi_detection_module_struct *ndpi_struct,
 }
 
 /* ******************************************* */
-
+// 根据一组传入的信息创建一个对应的trie树节点
 static patricia_node_t* add_to_ptree(patricia_tree_t *tree, int family,
 				     void *addr, int bits) {
   prefix_t prefix;
@@ -1731,7 +1752,7 @@ static patricia_node_t* add_to_ptree(patricia_tree_t *tree, int family,
   return(node);
 }
 /* ******************************************* */
-
+// 将ipv4类型的网络号-协议ID映射表导入trie树中
 static void ndpi_init_ptree_ipv4(struct ndpi_detection_module_struct *ndpi_str,
 				 void *ptree, ndpi_network host_list[]) {
   int i;
@@ -1780,6 +1801,7 @@ void set_ndpi_flow_malloc(void* (*__ndpi_flow_malloc)(size_t size)) { _ndpi_flow
 void set_ndpi_free(void  (*__ndpi_free)(void *ptr))       { _ndpi_free = __ndpi_free; }
 void set_ndpi_flow_free(void  (*__ndpi_flow_free)(void *ptr))       { _ndpi_flow_free = __ndpi_flow_free; }
 
+// 调试信息输出回调函数
 void ndpi_debug_printf(unsigned int proto, struct ndpi_detection_module_struct *ndpi_str, ndpi_log_level_t log_level, const char * format, ...)
 {
 #ifdef NDPI_ENABLE_DEBUG_MESSAGES
@@ -1800,6 +1822,7 @@ void ndpi_debug_printf(unsigned int proto, struct ndpi_detection_module_struct *
 #endif
 }
 
+// 注册调试信息输出回调
 void set_ndpi_debug_function(struct ndpi_detection_module_struct *ndpi_str, ndpi_debug_function_ptr ndpi_debug_printf) {
 #ifdef NDPI_ENABLE_DEBUG_MESSAGES
   ndpi_str->ndpi_debug_printf = ndpi_debug_printf;
@@ -1807,30 +1830,32 @@ void set_ndpi_debug_function(struct ndpi_detection_module_struct *ndpi_str, ndpi
 }
 
 /* ******************************************************************** */
-
+// 创建并初始化一个探测模块
 struct ndpi_detection_module_struct *ndpi_init_detection_module(void) {
-  struct ndpi_detection_module_struct *ndpi_str = ndpi_malloc(sizeof(struct ndpi_detection_module_struct));
-
-  if(ndpi_str == NULL) {
+    struct ndpi_detection_module_struct *ndpi_str = ndpi_malloc(sizeof(struct ndpi_detection_module_struct));
+    if(ndpi_str == NULL) {
 #ifdef NDPI_ENABLE_DEBUG_MESSAGES
-    NDPI_LOG(0, ndpi_str, NDPI_LOG_DEBUG, "ndpi_init_detection_module initial malloc failed for ndpi_str\n");
+        NDPI_LOG(0, ndpi_str, NDPI_LOG_DEBUG, "ndpi_init_detection_module initial malloc failed for ndpi_str\n");
 #endif /* NDPI_ENABLE_DEBUG_MESSAGES */
-    return NULL;
-  }
-  memset(ndpi_str, 0, sizeof(struct ndpi_detection_module_struct));
+        return NULL;
+    }
+    memset(ndpi_str, 0, sizeof(struct ndpi_detection_module_struct));
 
 #ifdef NDPI_ENABLE_DEBUG_MESSAGES
-  set_ndpi_debug_function(ndpi_str, (ndpi_debug_function_ptr)ndpi_debug_printf);
+    // 注册调试信息输出回调
+    set_ndpi_debug_function(ndpi_str, (ndpi_debug_function_ptr)ndpi_debug_printf);
 #endif /* NDPI_ENABLE_DEBUG_MESSAGES */
 
-  if((ndpi_str->protocols_ptree = ndpi_New_Patricia(32 /* IPv4 */)) != NULL)
-    ndpi_init_ptree_ipv4(ndpi_str, ndpi_str->protocols_ptree, host_protocol_list);
+    // 创建一颗trie树，并将ipv4类型的网络号-协议ID映射表导入trie树中
+    if((ndpi_str->protocols_ptree = ndpi_New_Patricia(32 /* IPv4 */)) != NULL)
+        ndpi_init_ptree_ipv4(ndpi_str, ndpi_str->protocols_ptree, host_protocol_list);
 
   NDPI_BITMASK_RESET(ndpi_str->detection_bitmask);
 #ifdef NDPI_ENABLE_DEBUG_MESSAGES
   ndpi_str->user_data = NULL;
 #endif
 
+  // 以下包括各种协议的超时值初始化、AC自动机初始化等
   ndpi_str->ticks_per_second = 1000; /* ndpi_str->ticks_per_second */
   ndpi_str->tcp_max_retransmission_window_size = NDPI_DEFAULT_MAX_TCP_RETRANSMISSION_WINDOW_SIZE;
   ndpi_str->directconnect_connection_ip_tick_timeout =
@@ -1855,13 +1880,15 @@ struct ndpi_detection_module_struct *ndpi_init_detection_module(void) {
   ndpi_str->ndpi_num_supported_protocols = NDPI_MAX_SUPPORTED_PROTOCOLS;
   ndpi_str->ndpi_num_custom_protocols = 0;
 
-  ndpi_str->host_automa.ac_automa = ac_automata_init(ac_match_handler);
-  ndpi_str->content_automa.ac_automa = ac_automata_init(ac_match_handler);
-  ndpi_str->bigrams_automa.ac_automa = ac_automata_init(ac_match_handler);
-  ndpi_str->impossible_bigrams_automa.ac_automa = ac_automata_init(ac_match_handler);
+    // 创建4个AC自动机
+    ndpi_str->host_automa.ac_automa = ac_automata_init(ac_match_handler);
+    ndpi_str->content_automa.ac_automa = ac_automata_init(ac_match_handler);
+    ndpi_str->bigrams_automa.ac_automa = ac_automata_init(ac_match_handler);
+    ndpi_str->impossible_bigrams_automa.ac_automa = ac_automata_init(ac_match_handler);
 
-  ndpi_init_protocol_defaults(ndpi_str);
-  return ndpi_str;
+    // 最后通过4个AC自动机和2棵二叉树，来维护所有协议预定义的缺省信息
+    ndpi_init_protocol_defaults(ndpi_str);
+    return ndpi_str;
 }
 
 /* *********************************************** */
@@ -2237,12 +2264,12 @@ int ndpi_load_protocols_file(struct ndpi_detection_module_struct *ndpi_mod, char
 
 /* 注册一个指定的协议分析器
  * @lable                   - 协议名
- * @ndpi_struct             -
- * @detection_bitmask       - 
- * @idx                     -
- * @ndpi_protocol_id        - 协议ID号
- * @func                    -
- * @ndpi_selection_bitmask  -
+ * @ndpi_struct             - 指向探测模块
+ * @detection_bitmask       - 指向一张该探测模块中所有协议的使能/禁止位表
+ * @idx                     - 每注册一个协议递增
+ * @ndpi_protocol_id        - ndpi分配给该协议的ID号
+ * @func                    - 该协议的报文处理回调函数
+ * @ndpi_selection_bitmask  - 选择位集合(这些位包含了IP、TCP、UDP、IPV4、IPV6、payload等)
  * @b_save_bitmask_unknow   -
  * @b_add_detection_bitmask -
  */

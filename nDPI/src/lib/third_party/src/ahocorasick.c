@@ -43,6 +43,7 @@ static void ac_automata_traverse_setfailure
 /******************************************************************************
  * FUNCTION: ac_automata_init
  * Initialize automata; allocate memories and set initial values
+ * 初始化一个AC自动机并返回对应的句柄
  * PARAMS:
  * MATCH_CALBACK mc: call-back function
  * the call-back function will be used to reach the caller on match occurrence

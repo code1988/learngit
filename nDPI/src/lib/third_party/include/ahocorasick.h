@@ -23,6 +23,7 @@
 
 #include "node.h"
 
+// 定义了AC句柄
 typedef struct
 {
   /* The root of the Aho-Corasick trie */

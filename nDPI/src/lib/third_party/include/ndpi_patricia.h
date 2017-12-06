@@ -99,23 +99,25 @@ typedef struct the_prefix_t {
 
 /* } */
 
-/* pointer to usr data (ex. route flap info) */
+/* pointer to usr data (ex. route flap info) 定义了trie树节点关联的用户信息 */
 union patricia_node_value_t {
-  void *user_data;
-  u_int32_t user_value;
+  void *user_data;      // 通用指针 或
+  u_int32_t user_value; // 无符号整形
 };
 
+// 定义了trie树的节点结构
 typedef struct _patricia_node_t {
   u_int bit;			/* flag if this node used */
   prefix_t *prefix;		/* who we are in patricia tree */
-  struct _patricia_node_t *l, *r;	/* left and right children */
+  struct _patricia_node_t *l, *r;	/* left and right children  指向左、右子树 */
   struct _patricia_node_t *parent;/* may be used */
   void *data;			/* pointer to data */
-  union patricia_node_value_t value;
+  union patricia_node_value_t value;    // 用于记录用户自定义的数据
 } patricia_node_t;
 
+// 定义了trie树的完整实例(包含了一个trie树的所有信息)
 typedef struct _patricia_tree_t {
-  patricia_node_t 	*head;
+  patricia_node_t 	*head;  // 指向trie树的root节点
   u_int		maxbits;	/* for IP, 32 bit addresses */
   int num_active_node;		/* for debug purpose */
 } patricia_tree_t;
@@ -252,7 +254,7 @@ MRT Credits
                                                            info@merit.edu
      _________________________________________________________________
 
-                                               � 1999 Merit Network, Inc.
+                                               ? 1999 Merit Network, Inc.
                                                          [6]www@merit.edu
 
 References

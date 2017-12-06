@@ -209,9 +209,9 @@
 #define NDPI_COMPARE_IPV6_ADDRESS_STRUCTS(x,y)  \
   ((((u_int64_t *)(x))[0]) < (((u_int64_t *)(y))[0]) || ( (((u_int64_t *)(x))[0]) == (((u_int64_t *)(y))[0]) && (((u_int64_t *)(x))[1]) < (((u_int64_t *)(y))[1])) )
 
-#define NDPI_NUM_BITS              256
+#define NDPI_NUM_BITS              256      // ndpi最大可操作的位长
 
-#define NDPI_BITS /* 32 */ (sizeof(ndpi_ndpi_mask) * 8 /* number of bits in a byte */)        /* bits per mask */
+#define NDPI_BITS /* 32 */ (sizeof(ndpi_ndpi_mask) * 8 /* number of bits in a byte */)        /* bits per mask 32位机器上就是32 */
 #define howmanybits(x, y)   (((x)+((y)-1))/(y))
 
 
@@ -221,15 +221,16 @@
 #define NDPI_ZERO(p)      memset((char *)(p), 0, sizeof(*(p)))
 #define NDPI_ONE(p)       memset((char *)(p), 0xFF, sizeof(*(p)))
 
-#define NDPI_NUM_FDS_BITS     howmanybits(NDPI_NUM_BITS, NDPI_BITS)
+#define NDPI_NUM_FDS_BITS     howmanybits(NDPI_NUM_BITS, NDPI_BITS) // 256/32 = 8
 
 #define NDPI_PROTOCOL_BITMASK ndpi_protocol_bitmask_struct_t
 
-#define NDPI_BITMASK_ADD(a,b)     NDPI_SET(&a,b)
-#define NDPI_BITMASK_DEL(a,b)     NDPI_CLR(&a,b)
-#define NDPI_BITMASK_RESET(a)     NDPI_ZERO(&a)
-#define NDPI_BITMASK_SET_ALL(a)   NDPI_ONE(&a)
-#define NDPI_BITMASK_SET(a, b)    { memcpy(&a, &b, sizeof(NDPI_PROTOCOL_BITMASK)); }
+// ndpi的位操作API
+#define NDPI_BITMASK_ADD(a,b)     NDPI_SET(&a,b)    // 变量a的b位置1
+#define NDPI_BITMASK_DEL(a,b)     NDPI_CLR(&a,b)    // 变量a的b位清0
+#define NDPI_BITMASK_RESET(a)     NDPI_ZERO(&a)     // 变量a执行全部位0
+#define NDPI_BITMASK_SET_ALL(a)   NDPI_ONE(&a)      // 变量a执行全部位1
+#define NDPI_BITMASK_SET(a, b)    { memcpy(&a, &b, sizeof(NDPI_PROTOCOL_BITMASK)); }    // 变量b内容拷贝给变量a
 
 /* this is a very very tricky macro *g*,
  * the compiler will remove all shifts here if the protocol is static...

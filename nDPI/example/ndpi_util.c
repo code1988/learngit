@@ -84,6 +84,7 @@ extern u_int32_t current_ndpi_memory, max_ndpi_memory;
 
 /**
  * @brief malloc wrapper function
+ * ndpi封装的malloc函数，主要就是附加了堆内存使用计数器、堆内存使用峰值快照
  */
 static void *malloc_wrapper(size_t size) {
   current_ndpi_memory += size;
@@ -98,33 +99,36 @@ static void *malloc_wrapper(size_t size) {
 
 /**
  * @brief free wrapper function
+ * ndpi封装的free函数
  */
 static void free_wrapper(void *freeable) {
   free(freeable);
 }
 
 /* ***************************************************** */
-
+// 创建并初始化一条工作流(核心部件就是一个探测模块)，返回创建的流的句柄
 struct ndpi_workflow * ndpi_workflow_init(const struct ndpi_workflow_prefs * prefs, pcap_t * pcap_handle) {
 
-  set_ndpi_malloc(malloc_wrapper), set_ndpi_free(free_wrapper);
-  set_ndpi_flow_malloc(NULL), set_ndpi_flow_free(NULL);
-  /* TODO: just needed here to init ndpi malloc wrapper */
-  struct ndpi_detection_module_struct * module = ndpi_init_detection_module();
+    set_ndpi_malloc(malloc_wrapper), set_ndpi_free(free_wrapper);
+    set_ndpi_flow_malloc(NULL), set_ndpi_flow_free(NULL);
+    /* TODO: just needed here to init ndpi malloc wrapper */
+    // 创建并初始化一个探测模块
+    struct ndpi_detection_module_struct * module = ndpi_init_detection_module();
 
-  struct ndpi_workflow * workflow = ndpi_calloc(1, sizeof(struct ndpi_workflow));
+    // 创建并初始化一条工作流
+    struct ndpi_workflow * workflow = ndpi_calloc(1, sizeof(struct ndpi_workflow));
 
-  workflow->pcap_handle = pcap_handle;
-  workflow->prefs = *prefs;
-  workflow->ndpi_struct = module;
+    workflow->pcap_handle = pcap_handle;
+    workflow->prefs = *prefs;
+    workflow->ndpi_struct = module;
 
-  if(workflow->ndpi_struct == NULL) {
+    if(workflow->ndpi_struct == NULL) {
     NDPI_LOG(0, NULL, NDPI_LOG_ERROR, "global structure initialization failed\n");
     exit(-1);
-  }
+    }
 
-  workflow->ndpi_flows_root = ndpi_calloc(workflow->prefs.num_roots, sizeof(void *));
-  return workflow;
+    workflow->ndpi_flows_root = ndpi_calloc(workflow->prefs.num_roots, sizeof(void *));
+    return workflow;
 }
 
 /* ***************************************************** */

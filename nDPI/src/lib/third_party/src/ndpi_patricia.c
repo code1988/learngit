@@ -362,7 +362,7 @@ ndpi_Deref_Prefix (prefix_t * prefix)
 static int num_active_patricia = 0;
 
 /* these routines support continuous mask only */
-
+// 创建并初始化一个trie树模块
 patricia_tree_t *
 ndpi_New_Patricia (int maxbits)
 {
@@ -641,7 +641,7 @@ ndpi_patricia_search_best (patricia_tree_t *patricia, prefix_t *prefix)
   return (ndpi_patricia_search_best2 (patricia, prefix, 1));
 }
 
-
+// 创建trie树节点并插入
 patricia_node_t *
 ndpi_patricia_lookup (patricia_tree_t *patricia, prefix_t *prefix)
 {
