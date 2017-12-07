@@ -1830,7 +1830,7 @@ void set_ndpi_debug_function(struct ndpi_detection_module_struct *ndpi_str, ndpi
 }
 
 /* ******************************************************************** */
-// 创建并初始化一个探测模块
+// 创建并初始化一个探测模块(核心任务就是注册了所有支持协议的缺省信息，需要注意的是，后续可以根据实际需求决定使能其中的哪些协议)
 struct ndpi_detection_module_struct *ndpi_init_detection_module(void) {
     struct ndpi_detection_module_struct *ndpi_str = ndpi_malloc(sizeof(struct ndpi_detection_module_struct));
     if(ndpi_str == NULL) {
@@ -2116,7 +2116,10 @@ char * strsep(char **sp, char *sep)
 
 /* ******************************************************************** */
 
-
+/* 解析传入的一条协议规则字串
+ * @rule    - 协议字串
+ * @do_add  - 1表示添加协议，0表示删除协议
+ */
 int ndpi_handle_rule(struct ndpi_detection_module_struct *ndpi_mod, char* rule, u_int8_t do_add) {
 
   char *at, *proto, *elem;
@@ -2232,6 +2235,7 @@ int ndpi_handle_rule(struct ndpi_detection_module_struct *ndpi_mod, char* rule, 
   tcp:80,tcp:3128@HTTP
   udp:139@NETBIOS
 
+  从指定的协议文件中导入协议缺省信息(似乎只是导入，并没有使能)
 */
 int ndpi_load_protocols_file(struct ndpi_detection_module_struct *ndpi_mod, char* path) {
 
@@ -2265,12 +2269,12 @@ int ndpi_load_protocols_file(struct ndpi_detection_module_struct *ndpi_mod, char
 /* 注册一个指定的协议分析器
  * @lable                   - 协议名
  * @ndpi_struct             - 指向探测模块
- * @detection_bitmask       - 指向一张该探测模块中所有协议的使能/禁止位表
+ * @detection_bitmask       - 指向一张该探测模块中所有协议的使能/禁止位表，只有在该表中对应位置1的协议才会真正执行本函数
  * @idx                     - 每注册一个协议递增
  * @ndpi_protocol_id        - ndpi分配给该协议的ID号
  * @func                    - 该协议的报文处理回调函数
  * @ndpi_selection_bitmask  - 选择位集合(这些位包含了IP、TCP、UDP、IPV4、IPV6、payload等)
- * @b_save_bitmask_unknow   -
+ * @b_save_bitmask_unknow   - 是否记录unknow包
  * @b_add_detection_bitmask -
  */
 void ndpi_set_bitmask_protocol_detection( char * label,
@@ -2283,47 +2287,52 @@ void ndpi_set_bitmask_protocol_detection( char * label,
 					  u_int8_t b_save_bitmask_unknow,
 					  u_int8_t b_add_detection_bitmask)
 {
-  /*
+    /*
     Compare specify protocol bitmask with main detection bitmask
-  */
-  if(NDPI_COMPARE_PROTOCOL_TO_BITMASK(*detection_bitmask, ndpi_protocol_id) != 0) {
+    */
+    if(NDPI_COMPARE_PROTOCOL_TO_BITMASK(*detection_bitmask, ndpi_protocol_id) != 0) {
 #ifdef DEBUG
-    NDPI_LOG(0, ndpi_struct, NDPI_LOG_DEBUG,"[NDPI] ndpi_set_bitmask_protocol_detection: %s : [callback_buffer] idx= %u, [proto_defaults] protocol_id=%u\n", label, idx, ndpi_protocol_id);
+        NDPI_LOG(0, ndpi_struct, NDPI_LOG_DEBUG,"[NDPI] ndpi_set_bitmask_protocol_detection: %s : [callback_buffer] idx= %u, [proto_defaults] protocol_id=%u\n", label, idx, ndpi_protocol_id);
 #endif
 
-    if(ndpi_struct->proto_defaults[ndpi_protocol_id].protoIdx != 0)
-      printf("[NDPI] Internal error: protocol %s/%u has been already registered\n", label, ndpi_protocol_id);
-    else {
+        if(ndpi_struct->proto_defaults[ndpi_protocol_id].protoIdx != 0)
+            printf("[NDPI] Internal error: protocol %s/%u has been already registered\n", label, ndpi_protocol_id);
+        else {
 #ifdef DEBUG
-      printf("[NDPI] Adding %s with protocol id %d\n", label, ndpi_protocol_id);
+            printf("[NDPI] Adding %s with protocol id %d\n", label, ndpi_protocol_id);
 #endif
+        }
+
+        /*
+          Set function and index protocol within proto_default structure for port protocol detection
+          and callback_buffer function for DPI protocol detection
+        */
+        ndpi_struct->proto_defaults[ndpi_protocol_id].protoIdx = idx;
+        ndpi_struct->proto_defaults[ndpi_protocol_id].func = ndpi_struct->callback_buffer[idx].func = func;
+
+        /*
+          Set ndpi_selection_bitmask for protocol
+        */
+        ndpi_struct->callback_buffer[idx].ndpi_selection_bitmask = ndpi_selection_bitmask;
+
+        /*
+          Reset protocol detection bitmask via NDPI_PROTOCOL_UNKNOWN and than add specify protocol bitmast to callback
+          buffer.
+          根据传入的b_save_bitmask_unknow和b_add_detection_bitmask判断是否设置该协议callback_buffer[idx].detection_bitmask中的对应位
+        */
+        if(b_save_bitmask_unknow) NDPI_SAVE_AS_BITMASK(ndpi_struct->callback_buffer[idx].detection_bitmask, NDPI_PROTOCOL_UNKNOWN);
+        if(b_add_detection_bitmask) NDPI_ADD_PROTOCOL_TO_BITMASK(ndpi_struct->callback_buffer[idx].detection_bitmask, ndpi_protocol_id);
+
+        // 最后将该协议callback_buffer[idx].excluded_protocol_bitmask中的对应位置1
+        NDPI_SAVE_AS_BITMASK(ndpi_struct->callback_buffer[idx].excluded_protocol_bitmask, ndpi_protocol_id);
     }
-
-    /*
-      Set function and index protocol within proto_default structure for port protocol detection
-      and callback_buffer function for DPI protocol detection
-    */
-    ndpi_struct->proto_defaults[ndpi_protocol_id].protoIdx = idx;
-    ndpi_struct->proto_defaults[ndpi_protocol_id].func = ndpi_struct->callback_buffer[idx].func = func;
-
-    /*
-      Set ndpi_selection_bitmask for protocol
-    */
-    ndpi_struct->callback_buffer[idx].ndpi_selection_bitmask = ndpi_selection_bitmask;
-
-    /*
-      Reset protocol detection bitmask via NDPI_PROTOCOL_UNKNOWN and than add specify protocol bitmast to callback
-      buffer.
-    */
-    if(b_save_bitmask_unknow) NDPI_SAVE_AS_BITMASK(ndpi_struct->callback_buffer[idx].detection_bitmask, NDPI_PROTOCOL_UNKNOWN);
-    if(b_add_detection_bitmask) NDPI_ADD_PROTOCOL_TO_BITMASK(ndpi_struct->callback_buffer[idx].detection_bitmask, ndpi_protocol_id);
-
-    NDPI_SAVE_AS_BITMASK(ndpi_struct->callback_buffer[idx].excluded_protocol_bitmask, ndpi_protocol_id);
-  }
 }
 
 /* ******************************************************************** */
-
+/* 本函数就是对实际需要探测的协议进行统一注册的入口
+ * @ndpi_struct - 指向要操作的探测模块
+ * @dbm - 调用者实际通过该集合来控制实际需要应用的协议，只有该字段中被置1的对应协议，其协议分析器才真正允许被加载
+ */
 void ndpi_set_protocol_detection_bitmask2(struct ndpi_detection_module_struct *ndpi_struct,
 					  const NDPI_PROTOCOL_BITMASK * dbm)
 {
@@ -2762,71 +2771,72 @@ void ndpi_set_protocol_detection_bitmask2(struct ndpi_detection_module_struct *n
   /* ----------------------------------------------------------------- */
 
 
-  ndpi_struct->callback_buffer_size = a;
+    ndpi_struct->callback_buffer_size = a;
 
-  NDPI_LOG(NDPI_PROTOCOL_UNKNOWN, ndpi_struct, NDPI_LOG_DEBUG,
+    NDPI_LOG(NDPI_PROTOCOL_UNKNOWN, ndpi_struct, NDPI_LOG_DEBUG,
 	   "callback_buffer_size is %u\n", ndpi_struct->callback_buffer_size);
 
-  /* now build the specific buffer for tcp, udp and non_tcp_udp */
-  ndpi_struct->callback_buffer_size_tcp_payload = 0;
-  ndpi_struct->callback_buffer_size_tcp_no_payload = 0;
-  for(a = 0; a < ndpi_struct->callback_buffer_size; a++) {
-    if((ndpi_struct->callback_buffer[a].ndpi_selection_bitmask
-	& (NDPI_SELECTION_BITMASK_PROTOCOL_INT_TCP |
-	   NDPI_SELECTION_BITMASK_PROTOCOL_INT_TCP_OR_UDP |
-	   NDPI_SELECTION_BITMASK_PROTOCOL_COMPLETE_TRAFFIC)) != 0) {
-      NDPI_LOG(NDPI_PROTOCOL_UNKNOWN, ndpi_struct, NDPI_LOG_DEBUG,
-	       "callback_buffer_tcp_payload, adding buffer %u as entry %u\n", a,
-	       ndpi_struct->callback_buffer_size_tcp_payload);
+    /* now build the specific buffer for tcp, udp and non_tcp_udp 
+     * 进一步将已经使能的协议分为tcp、udp、其他这3类
+     * */
+    ndpi_struct->callback_buffer_size_tcp_payload = 0;
+    ndpi_struct->callback_buffer_size_tcp_no_payload = 0;
+    for(a = 0; a < ndpi_struct->callback_buffer_size; a++) {
+        if((ndpi_struct->callback_buffer[a].ndpi_selection_bitmask
+        & (NDPI_SELECTION_BITMASK_PROTOCOL_INT_TCP |
+           NDPI_SELECTION_BITMASK_PROTOCOL_INT_TCP_OR_UDP |
+           NDPI_SELECTION_BITMASK_PROTOCOL_COMPLETE_TRAFFIC)) != 0) {
+            NDPI_LOG(NDPI_PROTOCOL_UNKNOWN, ndpi_struct, NDPI_LOG_DEBUG,
+               "callback_buffer_tcp_payload, adding buffer %u as entry %u\n", a,
+               ndpi_struct->callback_buffer_size_tcp_payload);
 
-      memcpy(&ndpi_struct->callback_buffer_tcp_payload[ndpi_struct->callback_buffer_size_tcp_payload],
-	     &ndpi_struct->callback_buffer[a], sizeof(struct ndpi_call_function_struct));
-      ndpi_struct->callback_buffer_size_tcp_payload++;
+            memcpy(&ndpi_struct->callback_buffer_tcp_payload[ndpi_struct->callback_buffer_size_tcp_payload],
+             &ndpi_struct->callback_buffer[a], sizeof(struct ndpi_call_function_struct));
+            ndpi_struct->callback_buffer_size_tcp_payload++;
 
-      if((ndpi_struct->
-	  callback_buffer[a].ndpi_selection_bitmask & NDPI_SELECTION_BITMASK_PROTOCOL_HAS_PAYLOAD) == 0) {
-	NDPI_LOG(NDPI_PROTOCOL_UNKNOWN, ndpi_struct, NDPI_LOG_DEBUG,
-		 "\tcallback_buffer_tcp_no_payload, additional adding buffer %u to no_payload process\n", a);
+            if((ndpi_struct->callback_buffer[a].ndpi_selection_bitmask & NDPI_SELECTION_BITMASK_PROTOCOL_HAS_PAYLOAD) == 0) {
+                NDPI_LOG(NDPI_PROTOCOL_UNKNOWN, ndpi_struct, NDPI_LOG_DEBUG,
+             "\tcallback_buffer_tcp_no_payload, additional adding buffer %u to no_payload process\n", a);
 
-	memcpy(&ndpi_struct->callback_buffer_tcp_no_payload
-	       [ndpi_struct->callback_buffer_size_tcp_no_payload], &ndpi_struct->callback_buffer[a],
-	       sizeof(struct ndpi_call_function_struct));
-	ndpi_struct->callback_buffer_size_tcp_no_payload++;
-      }
+                memcpy(&ndpi_struct->callback_buffer_tcp_no_payload
+               [ndpi_struct->callback_buffer_size_tcp_no_payload], &ndpi_struct->callback_buffer[a],
+               sizeof(struct ndpi_call_function_struct));
+                ndpi_struct->callback_buffer_size_tcp_no_payload++;
+            }
+        }
     }
-  }
 
-  ndpi_struct->callback_buffer_size_udp = 0;
-  for(a = 0; a < ndpi_struct->callback_buffer_size; a++) {
-    if((ndpi_struct->callback_buffer[a].ndpi_selection_bitmask & (NDPI_SELECTION_BITMASK_PROTOCOL_INT_UDP |
-								  NDPI_SELECTION_BITMASK_PROTOCOL_INT_TCP_OR_UDP |
-								  NDPI_SELECTION_BITMASK_PROTOCOL_COMPLETE_TRAFFIC))
-       != 0) {
-      NDPI_LOG(NDPI_PROTOCOL_UNKNOWN, ndpi_struct, NDPI_LOG_DEBUG,
-	       "callback_buffer_size_udp: adding buffer : %u as entry %u\n", a, ndpi_struct->callback_buffer_size_udp);
+    ndpi_struct->callback_buffer_size_udp = 0;
+    for(a = 0; a < ndpi_struct->callback_buffer_size; a++) {
+        if((ndpi_struct->callback_buffer[a].ndpi_selection_bitmask & (NDPI_SELECTION_BITMASK_PROTOCOL_INT_UDP |
+                                      NDPI_SELECTION_BITMASK_PROTOCOL_INT_TCP_OR_UDP |
+                                      NDPI_SELECTION_BITMASK_PROTOCOL_COMPLETE_TRAFFIC))
+           != 0) {
+          NDPI_LOG(NDPI_PROTOCOL_UNKNOWN, ndpi_struct, NDPI_LOG_DEBUG,
+               "callback_buffer_size_udp: adding buffer : %u as entry %u\n", a, ndpi_struct->callback_buffer_size_udp);
 
-      memcpy(&ndpi_struct->callback_buffer_udp[ndpi_struct->callback_buffer_size_udp],
-	     &ndpi_struct->callback_buffer[a], sizeof(struct ndpi_call_function_struct));
-      ndpi_struct->callback_buffer_size_udp++;
+          memcpy(&ndpi_struct->callback_buffer_udp[ndpi_struct->callback_buffer_size_udp],
+             &ndpi_struct->callback_buffer[a], sizeof(struct ndpi_call_function_struct));
+          ndpi_struct->callback_buffer_size_udp++;
+        }
     }
-  }
 
-  ndpi_struct->callback_buffer_size_non_tcp_udp = 0;
-  for(a = 0; a < ndpi_struct->callback_buffer_size; a++) {
-    if((ndpi_struct->callback_buffer[a].ndpi_selection_bitmask & (NDPI_SELECTION_BITMASK_PROTOCOL_INT_TCP |
-								  NDPI_SELECTION_BITMASK_PROTOCOL_INT_UDP |
-								  NDPI_SELECTION_BITMASK_PROTOCOL_INT_TCP_OR_UDP))
-       == 0
-       || (ndpi_struct->
-	   callback_buffer[a].ndpi_selection_bitmask & NDPI_SELECTION_BITMASK_PROTOCOL_COMPLETE_TRAFFIC) != 0) {
-      NDPI_LOG(NDPI_PROTOCOL_UNKNOWN, ndpi_struct, NDPI_LOG_DEBUG,
-	       "callback_buffer_non_tcp_udp: adding buffer : %u as entry %u\n", a, ndpi_struct->callback_buffer_size_non_tcp_udp);
+    ndpi_struct->callback_buffer_size_non_tcp_udp = 0;
+    for(a = 0; a < ndpi_struct->callback_buffer_size; a++) {
+        if((ndpi_struct->callback_buffer[a].ndpi_selection_bitmask & (NDPI_SELECTION_BITMASK_PROTOCOL_INT_TCP |
+                                      NDPI_SELECTION_BITMASK_PROTOCOL_INT_UDP |
+                                      NDPI_SELECTION_BITMASK_PROTOCOL_INT_TCP_OR_UDP))
+           == 0
+           || (ndpi_struct->
+           callback_buffer[a].ndpi_selection_bitmask & NDPI_SELECTION_BITMASK_PROTOCOL_COMPLETE_TRAFFIC) != 0) {
+          NDPI_LOG(NDPI_PROTOCOL_UNKNOWN, ndpi_struct, NDPI_LOG_DEBUG,
+               "callback_buffer_non_tcp_udp: adding buffer : %u as entry %u\n", a, ndpi_struct->callback_buffer_size_non_tcp_udp);
 
-      memcpy(&ndpi_struct->callback_buffer_non_tcp_udp[ndpi_struct->callback_buffer_size_non_tcp_udp],
-	     &ndpi_struct->callback_buffer[a], sizeof(struct ndpi_call_function_struct));
-      ndpi_struct->callback_buffer_size_non_tcp_udp++;
+          memcpy(&ndpi_struct->callback_buffer_non_tcp_udp[ndpi_struct->callback_buffer_size_non_tcp_udp],
+             &ndpi_struct->callback_buffer[a], sizeof(struct ndpi_call_function_struct));
+          ndpi_struct->callback_buffer_size_non_tcp_udp++;
+        }
     }
-  }
 }
 
 #ifdef NDPI_DETECTION_SUPPORT_IPV6

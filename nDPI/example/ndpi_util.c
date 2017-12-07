@@ -545,7 +545,7 @@ static struct ndpi_proto packet_processing(struct ndpi_workflow * workflow,
 }
 
 /* ****************************************************** */
-
+// 指定的工作流对接收报文的处理入口
 struct ndpi_proto ndpi_workflow_process_packet (struct ndpi_workflow * workflow,
 						const struct pcap_pkthdr *header,
 						const u_char *packet) {
@@ -592,10 +592,10 @@ struct ndpi_proto ndpi_workflow_process_packet (struct ndpi_workflow * workflow,
   /* counters */
   u_int8_t vlan_packet = 0;
 
-  /* Increment raw packet counter */
+  /* Increment raw packet counter  刷新接收到的原始报文数量 */
   workflow->stats.raw_packet_count++;
 
-  /* setting time */
+  /* setting time  记录时间 */
   time = ((uint64_t) header->ts.tv_sec) * TICK_RESOLUTION + header->ts.tv_usec / (1000000 / TICK_RESOLUTION);
 
   /* safety check */
@@ -603,15 +603,15 @@ struct ndpi_proto ndpi_workflow_process_packet (struct ndpi_workflow * workflow,
     /* printf("\nWARNING: timestamp bug in the pcap file (ts delta: %llu, repairing)\n", ndpi_thread_info[thread_id].last_time - time); */
     time = workflow->last_time;
   }
-  /* update last time value */
+  /* update last time value  刷新最后一次收到包的时间 */
   workflow->last_time = time;
 
-  /*** check Data Link type ***/
-  const int datalink_type = pcap_datalink(workflow->pcap_handle);
-
- datalink_check:
-  switch(datalink_type) {
-  case DLT_NULL:
+    /*** check Data Link type  检查接口的链路类型 ***/
+    const int datalink_type = pcap_datalink(workflow->pcap_handle);
+    // 根据接口的链路类型作初步过滤(通常就是DLT_EN10MB类型，这里首先丢弃了不带SNAP字段的802.3+llc报文)
+    datalink_check:
+    switch(datalink_type) {
+    case DLT_NULL:
     if(ntohl(*((u_int32_t*)&packet[eth_offset])) == 2)
       type = ETH_P_IP;
     else
@@ -621,41 +621,44 @@ struct ndpi_proto ndpi_workflow_process_packet (struct ndpi_workflow * workflow,
     break;
 
     /* Cisco PPP in HDLC-like framing - 50 */
-  case DLT_PPP_SERIAL:
+    case DLT_PPP_SERIAL:
     chdlc = (struct ndpi_chdlc *) &packet[eth_offset];
     ip_offset = sizeof(struct ndpi_chdlc); /* CHDLC_OFF = 4 */
     type = ntohs(chdlc->proto_code);
     break;
 
     /* Cisco PPP with HDLC framing - 104 */
-  case DLT_C_HDLC:
+    case DLT_C_HDLC:
     chdlc = (struct ndpi_chdlc *) &packet[eth_offset];
     ip_offset = sizeof(struct ndpi_chdlc); /* CHDLC_OFF = 4 */
     type = ntohs(chdlc->proto_code);
     break;
 
     /* IEEE 802.3 Ethernet - 1 */
-  case DLT_EN10MB:
+    case DLT_EN10MB:
     ethernet = (struct ndpi_ethhdr *) &packet[eth_offset];
     ip_offset = sizeof(struct ndpi_ethhdr) + eth_offset;
     check = ntohs(ethernet->h_proto);
 
+    // 判断h_proto字段表示协议类型还是长度
     if(check <= 1500)
       pyld_eth_len = check;
     else if (check >= 1536)
       type = check;
 
+    // 如果表示的是长度，ndpi认为就是IEEE-802.3 + 802.2-LLC格式，所以这里进一步判断是否存在SNAP字段
     if(pyld_eth_len != 0) {
-      llc = (struct ndpi_llc_header_snap *)(&packet[ip_offset]);
-      /* check for LLC layer with SNAP extension */
-      if(llc->dsap == SNAP || llc->ssap == SNAP) {
-	type = llc->snap.proto_ID;
-	ip_offset += + 8;
-      }
-      /* No SNAP extension - Spanning Tree pkt must be discarted */
-      else if(llc->dsap == BSTP || llc->ssap == BSTP) {
-	goto v4_warning;
-      }
+        llc = (struct ndpi_llc_header_snap *)(&packet[ip_offset]);
+        /* check for LLC layer with SNAP extension */
+        if(llc->dsap == SNAP || llc->ssap == SNAP) {
+            type = llc->snap.proto_ID;
+            ip_offset += + 8;
+        }
+        // ndpi似乎认为不带SNAP的LLC字段就只有STP报文
+        /* No SNAP extension - Spanning Tree pkt must be discarted  STP协议报文将被直接丢弃 */
+        else if(llc->dsap == BSTP || llc->ssap == BSTP) {
+            goto v4_warning;
+        }
     }
     break;
 
@@ -666,7 +669,7 @@ struct ndpi_proto ndpi_workflow_process_packet (struct ndpi_workflow * workflow,
     break;
 
     /* Radiotap link-layer - 127 */
-  case DLT_IEEE802_11_RADIO:
+    case DLT_IEEE802_11_RADIO:
     radiotap = (struct ndpi_radiotap_header *) &packet[eth_offset];
     radio_len = radiotap->len;
 
@@ -697,189 +700,195 @@ struct ndpi_proto ndpi_workflow_process_packet (struct ndpi_workflow * workflow,
     ip_offset = wifi_len + radio_len + sizeof(struct ndpi_llc_header_snap) + eth_offset;
     break;
 
-  case DLT_RAW:
-    ip_offset = eth_offset = 0;
-    break;
+    case DLT_RAW:
+        ip_offset = eth_offset = 0;
+        break;
 
-  default:
-    /* printf("Unknown datalink %d\n", datalink_type); */
-    return(nproto);
-  }
-
-  /* check ether type */
-  switch(type) {
-  case VLAN:
-    vlan_id = ((packet[ip_offset] << 8) + packet[ip_offset+1]) & 0xFFF;
-    type = (packet[ip_offset+2] << 8) + packet[ip_offset+3];
-    ip_offset += 4;
-    vlan_packet = 1;
-    // double tagging for 802.1Q
-    if(type == 0x8100) {
-      vlan_id = ((packet[ip_offset] << 8) + packet[ip_offset+1]) & 0xFFF;
-      type = (packet[ip_offset+2] << 8) + packet[ip_offset+3];
-      ip_offset += 4;
-    }
-    break;
-  case MPLS_UNI:
-  case MPLS_MULTI:
-    mpls = (struct ndpi_mpls_header *) &packet[ip_offset];
-    label = ntohl(mpls->label);
-    /* label = ntohl(*((u_int32_t*)&packet[ip_offset])); */
-    workflow->stats.mpls_count++;
-    type = ETH_P_IP, ip_offset += 4;
-
-    while((label & 0x100) != 0x100) {
-      ip_offset += 4;
-      label = ntohl(mpls->label);
-    }
-    break;
-  case PPPoE:
-    workflow->stats.pppoe_count++;
-    type = ETH_P_IP;
-    ip_offset += 8;
-    break;
-  default:
-    break;
-  }
-
-  workflow->stats.vlan_count += vlan_packet;
-
- iph_check:
-  /* Check and set IP header size and total packet length */
-  iph = (struct ndpi_iphdr *) &packet[ip_offset];
-
-  /* just work on Ethernet packets that contain IP */
-  if(type == ETH_P_IP && header->caplen >= ip_offset) {
-    frag_off = ntohs(iph->frag_off);
-
-    proto = iph->protocol;
-    if(header->caplen < header->len) {
-      static u_int8_t cap_warning_used = 0;
-
-      if(cap_warning_used == 0) {
-	if(!workflow->prefs.quiet_mode)
-	  NDPI_LOG(0, workflow->ndpi_struct, NDPI_LOG_DEBUG, "\n\nWARNING: packet capture size is smaller than packet size, DETECTION MIGHT NOT WORK CORRECTLY\n\n");
-	cap_warning_used = 1;
-      }
-    }
-  }
-
-  if(iph->version == IPVERSION) {
-    ip_len = ((u_int16_t)iph->ihl * 4);
-    iph6 = NULL;
-
-    if(iph->protocol == IPPROTO_IPV6) {
-      ip_offset += ip_len;
-      goto iph_check;
+    default:
+        /* printf("Unknown datalink %d\n", datalink_type); */
+        return(nproto);
     }
 
-    if((frag_off & 0x1FFF) != 0) {
-      static u_int8_t ipv4_frags_warning_used = 0;
-      workflow->stats.fragmented_count++;
+    /* check ether type  这里处理了以下几种特殊的以太网类型 */
+    switch(type) {
+    case VLAN:      // 处理vlan报文(支持QinQ)
+        vlan_id = ((packet[ip_offset] << 8) + packet[ip_offset+1]) & 0xFFF; 
+        type = (packet[ip_offset+2] << 8) + packet[ip_offset+3];
+        ip_offset += 4;
+        vlan_packet = 1;
+        // double tagging for 802.1Q
+        if(type == 0x8100) {
+        vlan_id = ((packet[ip_offset] << 8) + packet[ip_offset+1]) & 0xFFF;
+        type = (packet[ip_offset+2] << 8) + packet[ip_offset+3];
+        ip_offset += 4;
+        }
+        break;
+    case MPLS_UNI:
+    case MPLS_MULTI:
+        mpls = (struct ndpi_mpls_header *) &packet[ip_offset];
+        label = ntohl(mpls->label);
+        /* label = ntohl(*((u_int32_t*)&packet[ip_offset])); */
+        workflow->stats.mpls_count++;
+        type = ETH_P_IP, ip_offset += 4;
 
-      if(ipv4_frags_warning_used == 0) {
-	if(!workflow->prefs.quiet_mode)
-	  NDPI_LOG(0, workflow->ndpi_struct, NDPI_LOG_DEBUG, "\n\nWARNING: IPv4 fragments are not handled by this demo (nDPI supports them)\n");
-	ipv4_frags_warning_used = 1;
-      }
-
-      workflow->stats.total_discarded_bytes +=  header->len;
-      return(nproto);
+        while((label & 0x100) != 0x100) {
+        ip_offset += 4;
+        label = ntohl(mpls->label);
+        }
+        break;
+    case PPPoE:
+        workflow->stats.pppoe_count++;
+        type = ETH_P_IP;
+        ip_offset += 8;
+        break;
+    default:
+        break;
     }
-  } else if(iph->version == 6) {
-    iph6 = (struct ndpi_ipv6hdr *)&packet[ip_offset];
-    proto = iph6->ip6_ctlun.ip6_un1.ip6_un1_nxt;
-    ip_len = sizeof(struct ndpi_ipv6hdr);
 
-    if(proto == IPPROTO_DSTOPTS /* IPv6 destination option */) {
+    workflow->stats.vlan_count += vlan_packet;
 
-      u_int8_t *options = (u_int8_t*)&packet[ip_offset+ip_len];
-      proto = options[0];
-      ip_len += 8 * (options[1] + 1);
+    // 以下是网络层检测(ndpi只支持分析IP协议包，所以其他类型的网络层报文就在这里被丢弃了)
+iph_check:
+    /* Check and set IP header size and total packet length */
+    iph = (struct ndpi_iphdr *) &packet[ip_offset];
+
+    /* just work on Ethernet packets that contain IP  处理IP包头 */
+    if(type == ETH_P_IP && header->caplen >= ip_offset) {
+        frag_off = ntohs(iph->frag_off);
+
+        proto = iph->protocol;
+        if(header->caplen < header->len) {
+            static u_int8_t cap_warning_used = 0;
+
+            if(cap_warning_used == 0) {
+                if(!workflow->prefs.quiet_mode)
+                NDPI_LOG(0, workflow->ndpi_struct, NDPI_LOG_DEBUG, "\n\nWARNING: packet capture size is smaller than packet size, DETECTION MIGHT NOT WORK CORRECTLY\n\n");
+                cap_warning_used = 1;
+            }
+        }
     }
-    iph = NULL;
 
-  } else {
-    static u_int8_t ipv4_warning_used = 0;
+    if(iph->version == IPVERSION) {
+        // 处理IPv4报文(支持IPv6-in-IPv4隧道协议)
+        ip_len = ((u_int16_t)iph->ihl * 4);
+        iph6 = NULL;
 
-  v4_warning:
-    if(ipv4_warning_used == 0) {
-      if(!workflow->prefs.quiet_mode)
-        NDPI_LOG(0, workflow->ndpi_struct, NDPI_LOG_DEBUG, "\n\nWARNING: only IPv4/IPv6 packets are supported in this demo (nDPI supports both IPv4 and IPv6), all other packets will be discarded\n\n");
-      ipv4_warning_used = 1;
+        if(iph->protocol == IPPROTO_IPV6) {
+            ip_offset += ip_len;
+            goto iph_check;
+        }
+
+        // ndpiReader这个demo不支持IP分片报文(但ndpi本身是支持的)
+        if((frag_off & 0x1FFF) != 0) {
+            static u_int8_t ipv4_frags_warning_used = 0;
+            workflow->stats.fragmented_count++;
+
+            if(ipv4_frags_warning_used == 0) {
+                if(!workflow->prefs.quiet_mode)
+                    NDPI_LOG(0, workflow->ndpi_struct, NDPI_LOG_DEBUG, "\n\nWARNING: IPv4 fragments are not handled by this demo (nDPI supports them)\n");
+                ipv4_frags_warning_used = 1;
+            }
+
+            workflow->stats.total_discarded_bytes +=  header->len;
+            return(nproto);
+        }
+    } else if(iph->version == 6) {
+        // 处理IPv6报文
+        iph6 = (struct ndpi_ipv6hdr *)&packet[ip_offset];
+        proto = iph6->ip6_ctlun.ip6_un1.ip6_un1_nxt;
+        ip_len = sizeof(struct ndpi_ipv6hdr);
+
+        if(proto == IPPROTO_DSTOPTS /* IPv6 destination option */) {
+
+          u_int8_t *options = (u_int8_t*)&packet[ip_offset+ip_len];
+          proto = options[0];
+          ip_len += 8 * (options[1] + 1);
+        }
+        iph = NULL;
+
+    } else {
+        // 丢弃ipv4和ipv6以外的报文
+        static u_int8_t ipv4_warning_used = 0;
+
+v4_warning:
+        if(ipv4_warning_used == 0) {
+            if(!workflow->prefs.quiet_mode)
+            NDPI_LOG(0, workflow->ndpi_struct, NDPI_LOG_DEBUG, "\n\nWARNING: only IPv4/IPv6 packets are supported in this demo (nDPI supports both IPv4 and IPv6), all other packets will be discarded\n\n");
+            ipv4_warning_used = 1;
+        }
+        workflow->stats.total_discarded_bytes +=  header->len;
+        return(nproto);
     }
-    workflow->stats.total_discarded_bytes +=  header->len;
-    return(nproto);
-  }
 
-  if(workflow->prefs.decode_tunnels && (proto == IPPROTO_UDP)) {
-    struct ndpi_udphdr *udp = (struct ndpi_udphdr *)&packet[ip_offset+ip_len];
-    u_int16_t sport = ntohs(udp->source), dport = ntohs(udp->dest);
+    // 程序运行到这里意味着是一个IP协议报文
+    // decode_tunnels标识目前没用到，这部分暂略
+    if(workflow->prefs.decode_tunnels && (proto == IPPROTO_UDP)) {
+        struct ndpi_udphdr *udp = (struct ndpi_udphdr *)&packet[ip_offset+ip_len];
+        u_int16_t sport = ntohs(udp->source), dport = ntohs(udp->dest);
 
-    if((sport == GTP_U_V1_PORT) || (dport == GTP_U_V1_PORT)) {
-      /* Check if it's GTPv1 */
-      u_int offset = ip_offset+ip_len+sizeof(struct ndpi_udphdr);
-      u_int8_t flags = packet[offset];
-      u_int8_t message_type = packet[offset+1];
+        if((sport == GTP_U_V1_PORT) || (dport == GTP_U_V1_PORT)) {
+            /* Check if it's GTPv1 */
+            u_int offset = ip_offset+ip_len+sizeof(struct ndpi_udphdr);
+            u_int8_t flags = packet[offset];
+            u_int8_t message_type = packet[offset+1];
 
-      if((((flags & 0xE0) >> 5) == 1 /* GTPv1 */) &&
-	 (message_type == 0xFF /* T-PDU */)) {
+            if((((flags & 0xE0) >> 5) == 1 /* GTPv1 */) &&
+            (message_type == 0xFF /* T-PDU */)) {
+                ip_offset = ip_offset+ip_len+sizeof(struct ndpi_udphdr)+8; /* GTPv1 header len */
+                if(flags & 0x04) ip_offset += 1; /* next_ext_header is present */
+                if(flags & 0x02) ip_offset += 4; /* sequence_number is present (it also includes next_ext_header and pdu_number) */
+                if(flags & 0x01) ip_offset += 1; /* pdu_number is present */
 
-	ip_offset = ip_offset+ip_len+sizeof(struct ndpi_udphdr)+8; /* GTPv1 header len */
-	if(flags & 0x04) ip_offset += 1; /* next_ext_header is present */
-	if(flags & 0x02) ip_offset += 4; /* sequence_number is present (it also includes next_ext_header and pdu_number) */
-	if(flags & 0x01) ip_offset += 1; /* pdu_number is present */
+                iph = (struct ndpi_iphdr *) &packet[ip_offset];
 
-	iph = (struct ndpi_iphdr *) &packet[ip_offset];
+                if(iph->version != IPVERSION) {
+                // printf("WARNING: not good (packet_id=%u)!\n", (unsigned int)workflow->stats.raw_packet_count);
+                goto v4_warning;
+                }
+            }
+        } else if((sport == TZSP_PORT) || (dport == TZSP_PORT)) {
+            /* https://en.wikipedia.org/wiki/TZSP */
+            u_int offset = ip_offset+ip_len+sizeof(struct ndpi_udphdr);
+            u_int8_t version = packet[offset];
+            u_int8_t type    = packet[offset+1];
+            u_int16_t encapsulates = ntohs(*((u_int16_t*)&packet[offset+2]));
 
-	if(iph->version != IPVERSION) {
-	  // printf("WARNING: not good (packet_id=%u)!\n", (unsigned int)workflow->stats.raw_packet_count);
-	  goto v4_warning;
-	}
-      }
-    } else if((sport == TZSP_PORT) || (dport == TZSP_PORT)) {
-      /* https://en.wikipedia.org/wiki/TZSP */
-      u_int offset = ip_offset+ip_len+sizeof(struct ndpi_udphdr);
-      u_int8_t version = packet[offset];
-      u_int8_t type    = packet[offset+1];
-      u_int16_t encapsulates = ntohs(*((u_int16_t*)&packet[offset+2]));
+            if((version == 1) && (type == 0) && (encapsulates == 1)) {
+                u_int8_t stop = 0;
 
-      if((version == 1) && (type == 0) && (encapsulates == 1)) {
-	u_int8_t stop = 0;
+                offset += 4;
 
-	offset += 4;
+                while((!stop) && (offset < header->caplen)) {
+                u_int8_t tag_type = packet[offset];
+                u_int8_t tag_len;
 
-	while((!stop) && (offset < header->caplen)) {
-	  u_int8_t tag_type = packet[offset];
-	  u_int8_t tag_len;
+                switch(tag_type) {
+                case 0: /* PADDING Tag */
+                tag_len = 1;
+                break;
+                case 1: /* END Tag */
+                tag_len = 1, stop = 1;
+                break;
+                default:
+                tag_len = packet[offset+1];
+                break;
+                }
 
-	  switch(tag_type) {
-	  case 0: /* PADDING Tag */
-	    tag_len = 1;
-	    break;
-	  case 1: /* END Tag */
-	    tag_len = 1, stop = 1;
-	    break;
-	  default:
-	    tag_len = packet[offset+1];
-	    break;
-	  }
+                offset += tag_len;
 
-	  offset += tag_len;
-
-	  if(offset >= header->caplen)
-	    return(nproto); /* Invalid packet */
-	  else {
-	    eth_offset = offset;
-	    goto datalink_check;
-	  }
-	}
-      }
+                if(offset >= header->caplen)
+                return(nproto); /* Invalid packet */
+                else {
+                eth_offset = offset;
+                goto datalink_check;
+                }
+                }
+            }
+        }
     }
-  }
 
-  /* process the packet */
-  return(packet_processing(workflow, time, vlan_id, iph, iph6,
+    /* process the packet */
+    return(packet_processing(workflow, time, vlan_id, iph, iph6,
 			   ip_offset, header->caplen - ip_offset, header->caplen));
 }
 

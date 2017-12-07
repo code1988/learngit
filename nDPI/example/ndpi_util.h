@@ -75,18 +75,21 @@ typedef struct ndpi_flow_info {
 } ndpi_flow_info_t;
 
 
-// flow statistics info
+// flow statistics info 定义了对应工作流的统计信息
 typedef struct ndpi_stats {
   u_int32_t guessed_flow_protocols;
-  u_int64_t raw_packet_count;
+  u_int64_t raw_packet_count;           // 记录了从libpcap收到的原始报文数量
   u_int64_t ip_packet_count;
   u_int64_t total_wire_bytes, total_ip_bytes, total_discarded_bytes;
-  u_int64_t protocol_counter[NDPI_MAX_SUPPORTED_PROTOCOLS + NDPI_MAX_NUM_CUSTOM_PROTOCOLS + 1];
-  u_int64_t protocol_counter_bytes[NDPI_MAX_SUPPORTED_PROTOCOLS + NDPI_MAX_NUM_CUSTOM_PROTOCOLS + 1];
-  u_int32_t protocol_flows[NDPI_MAX_SUPPORTED_PROTOCOLS + NDPI_MAX_NUM_CUSTOM_PROTOCOLS + 1];
+  u_int64_t protocol_counter[NDPI_MAX_SUPPORTED_PROTOCOLS + NDPI_MAX_NUM_CUSTOM_PROTOCOLS + 1];     // 这张表记录了每种使能的协议收到的报文数量
+  u_int64_t protocol_counter_bytes[NDPI_MAX_SUPPORTED_PROTOCOLS + NDPI_MAX_NUM_CUSTOM_PROTOCOLS + 1];   // 这张表记录了每种使能的协议收到的字节数量
+  u_int32_t protocol_flows[NDPI_MAX_SUPPORTED_PROTOCOLS + NDPI_MAX_NUM_CUSTOM_PROTOCOLS + 1];       // 这张表记录了每种使能的协议收到的流数量
   u_int32_t ndpi_flow_count;
   u_int64_t tcp_count, udp_count;
-  u_int64_t mpls_count, pppoe_count, vlan_count, fragmented_count;
+  u_int64_t mpls_count;
+  u_int64_t pppoe_count;
+  u_int64_t vlan_count;             // 记录了收到的vlan报文数量
+  u_int64_t fragmented_count;       // 记录了收到的IP分片报文数量
   u_int64_t packet_len[6];
   u_int16_t max_packet_len;
 } ndpi_stats_t;
@@ -108,7 +111,7 @@ typedef void (*ndpi_workflow_callback_ptr) (struct ndpi_workflow *, struct ndpi_
 
 // workflow main structure 定义了工作流的主结构
 typedef struct ndpi_workflow {
-  u_int64_t last_time;
+  u_int64_t last_time;      // 最后一次收到包的时间
 
   struct ndpi_workflow_prefs prefs; // 记录了这条流关联的参数配置块
   struct ndpi_stats stats;

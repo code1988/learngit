@@ -962,6 +962,7 @@ pcap_breakloop(pcap_t *p)
 	p->break_loop = 1;
 }
 
+// 获取指定pcap关联接口的链路类型
 int
 pcap_datalink(pcap_t *p)
 {

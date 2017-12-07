@@ -699,10 +699,11 @@ struct ndpi_packet_struct {
 struct ndpi_detection_module_struct;
 struct ndpi_flow_struct;
 
+// 定义了实际使能的协议单元
 struct ndpi_call_function_struct {
-  NDPI_PROTOCOL_BITMASK detection_bitmask;
-  NDPI_PROTOCOL_BITMASK excluded_protocol_bitmask;
-  NDPI_SELECTION_BITMASK_PROTOCOL_SIZE ndpi_selection_bitmask;
+  NDPI_PROTOCOL_BITMASK detection_bitmask;                      // 该字段的设置跟ndpi_set_bitmask_protocol_detection函数的入参有关
+  NDPI_PROTOCOL_BITMASK excluded_protocol_bitmask;              // 实际被使能的协议会将该集合的对应位置1
+  NDPI_SELECTION_BITMASK_PROTOCOL_SIZE ndpi_selection_bitmask;  // 选择位集合(这些位包含了IP、TCP、UDP、IPV4、IPV6、payload等)
   void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow);
   u_int8_t detection_feature;
 };
@@ -762,10 +763,11 @@ typedef enum {
 typedef struct ndpi_proto_defaults {
   char *protoName;                          // 协议名 
   ndpi_protocol_category_t protoCategory;   // 协议类别1(根据用途归类)
-  u_int16_t protoId, protoIdx;              // 协议ID
+  u_int16_t protoId;    // ndpi分配的协议ID
+  u_int16_t protoIdx;   // 协议序号(在ndpi_set_protocol_detection_bitmask2中初始化是从0递增得到)   
   u_int16_t master_tcp_protoId[2], master_udp_protoId[2]; /* The main protocols on which this sub-protocol sits on */
   ndpi_protocol_breed_t protoBreed;         // 协议类别2(根据安全性归类)
-  void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow);
+  void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow);  // 指向协议关联的报文解析回调接口
 } ndpi_proto_defaults_t;
 
 // 定义了二叉树节点结构
@@ -788,7 +790,7 @@ typedef struct ndpi_proto {
 
 // 定义了每条工作流专属的探测模块
 struct ndpi_detection_module_struct {
-  NDPI_PROTOCOL_BITMASK detection_bitmask;  // 该探测模块中所有协议的使能/禁止位的集合
+  NDPI_PROTOCOL_BITMASK detection_bitmask;  // 该探测模块中所有协议的使能/禁止位的集合，只有其中置1的那些协议才是该探测模块中实际使能了的
   NDPI_PROTOCOL_BITMASK generic_http_packet_bitmask;
 
   u_int32_t current_ts;
@@ -799,20 +801,25 @@ struct ndpi_detection_module_struct {
 #endif
 
   /* callback function buffer */
-  struct ndpi_call_function_struct callback_buffer[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];
-  u_int32_t callback_buffer_size;
+  struct ndpi_call_function_struct callback_buffer[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];   // 这张表记录了实际使能的协议信息
+                                                                                        // 需要注意的是这张表的索引号不再是协议ID，而是协议序号
+  u_int32_t callback_buffer_size;       // 记录了实际使能的协议数量
 
-  struct ndpi_call_function_struct callback_buffer_tcp_no_payload[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];
-  u_int32_t callback_buffer_size_tcp_no_payload;
+  struct ndpi_call_function_struct callback_buffer_tcp_no_payload[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];// 这张表记录了实际使能的基于tcp不带payload的协议信息
+                                                                                                    // 显然这张表的内容来自于总表callback_buffer
+  u_int32_t callback_buffer_size_tcp_no_payload;// 记录了实际使能的基于tcp不带payload的协议数量
 
-  struct ndpi_call_function_struct callback_buffer_tcp_payload[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];
-  u_int32_t callback_buffer_size_tcp_payload;
+  struct ndpi_call_function_struct callback_buffer_tcp_payload[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];   // 这张表记录了实际使能的基于tcp带payload的协议信息
+                                                                                                    // 显然这张表的内容来自于总表callback_buffer
+  u_int32_t callback_buffer_size_tcp_payload;   // 记录了实际使能的基于tcp带payload的协议数量
 
-  struct ndpi_call_function_struct callback_buffer_udp[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];
-  u_int32_t callback_buffer_size_udp;
+  struct ndpi_call_function_struct callback_buffer_udp[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];           // 这张表记录了实际使能的基于udp的协议信息
+                                                                                                    // 显然这张表的内容来自于总表callback_buffer
+  u_int32_t callback_buffer_size_udp;           // 记录了实际使能的基于udp的协议数量
 
-  struct ndpi_call_function_struct callback_buffer_non_tcp_udp[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];
-  u_int32_t callback_buffer_size_non_tcp_udp;
+  struct ndpi_call_function_struct callback_buffer_non_tcp_udp[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];   // 这张表记录了实际使能的基于其他的协议信息
+                                                                                                    // 显然这张表的内容来自于总表callback_buffer
+  u_int32_t callback_buffer_size_non_tcp_udp;   // 记录了实际使能的基于其他(非tcp和udp)的协议数量
 
   ndpi_default_ports_tree_node_t *tcpRoot, *udpRoot;    // 指向2棵专门维护所有协议缺省端口信息的二叉树
 

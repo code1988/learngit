@@ -75,8 +75,8 @@ EAQ_DEFAULT_SIZE	src/lib/protocols/eaq.c	30;"	d	file:
 ELMT_FROM_HH	example/uthash.h	111;"	d
 EMAIL	src/lib/protocols/oscar.c	69;"	d	file:
 EMPTY	src/lib/protocols/rx.c	64;"	d	file:
-EPOCHFILETIME	example/ndpiReader.c	2111;"	d	file:
-EPOCHFILETIME	example/ndpiReader.c	2113;"	d	file:
+EPOCHFILETIME	example/ndpiReader.c	2114;"	d	file:
+EPOCHFILETIME	example/ndpiReader.c	2116;"	d	file:
 ETH_P_IP	example/ndpi_util.c	36;"	d	file:
 ETH_P_IPV6	example/ndpi_util.c	40;"	d	file:
 FCF_FROM_DS	example/ndpi_util.c	58;"	d	file:
@@ -279,7 +279,7 @@ NDPI_IGMP_PROTOCOL_TYPE	src/include/ndpi_define.h	257;"	d
 NDPI_IPIP_PROTOCOL_TYPE	src/include/ndpi_define.h	261;"	d
 NDPI_IPSEC_PROTOCOL_AH	src/include/ndpi_define.h	254;"	d
 NDPI_IPSEC_PROTOCOL_ESP	src/include/ndpi_define.h	253;"	d
-NDPI_IP_STRING_SIZE	src/include/ndpi_typedefs.h	870;"	d
+NDPI_IP_STRING_SIZE	src/include/ndpi_typedefs.h	877;"	d
 NDPI_IRC_CONNECTION_TIMEOUT	src/include/ndpi_define.h	168;"	d
 NDPI_IRC_FIND_LESS	src/lib/protocols/irc.c	29;"	d	file:
 NDPI_ISSET	src/include/ndpi_define.h	220;"	d
@@ -452,7 +452,7 @@ NDPI_PROTOCOL_NFS	src/include/ndpi_protocol_ids.h	51;"	d
 NDPI_PROTOCOL_NOE	src/include/ndpi_protocol_ids.h	200;"	d
 NDPI_PROTOCOL_NO_MASTER_PROTO	src/include/ndpi_protocol_ids.h	37;"	d
 NDPI_PROTOCOL_NTP	src/include/ndpi_protocol_ids.h	49;"	d
-NDPI_PROTOCOL_NULL	src/include/ndpi_typedefs.h	787;"	d
+NDPI_PROTOCOL_NULL	src/include/ndpi_typedefs.h	789;"	d
 NDPI_PROTOCOL_NUM_CATEGORIES	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_NUM_CATEGORIES \/*$/;"	e	enum:__anon23
 NDPI_PROTOCOL_OCS	src/include/ndpi_protocol_ids.h	266;"	d
 NDPI_PROTOCOL_OFFICE_365	src/include/ndpi_protocol_ids.h	267;"	d
@@ -626,7 +626,7 @@ NO_CON	src/lib/protocols/coap.c	29;"	d	file:
 NO_DECLTYPE	example/uthash.h	42;"	d
 NO_DECLTYPE	example/uthash.h	45;"	d
 NO_SAVE_DETECTION_BITMASK_AS_UNKNOWN	src/include/ndpi_api.h	43;"	d
-NUM_BREEDS	src/include/ndpi_typedefs.h	729;"	d
+NUM_BREEDS	src/include/ndpi_typedefs.h	730;"	d
 NUM_ROOTS	example/ndpi_util.h	38;"	d
 O_ERROR	src/lib/protocols/oscar.c	33;"	d	file:
 PACK_OFF	src/include/ndpi_typedefs.h	/^} PACK_OFF;$/;"	v	typeref:struct:ndpi_cdp
@@ -1107,16 +1107,16 @@ byte_counter	src/include/ndpi_typedefs.h	/^  u_int16_t byte_counter[2];$/;"	m	st
 bytes	example/ndpi_util.h	/^  u_int64_t bytes;$/;"	m	struct:ndpi_flow_info	access:public
 bytesToSize	wireshark/ndpi.lua	/^function bytesToSize(bytes)$/;"	f
 call_number	src/lib/protocols/rx.c	/^  u_int32_t call_number;$/;"	m	struct:ndpi_rx_header	file:	access:public
-callback_buffer	src/include/ndpi_typedefs.h	/^  struct ndpi_call_function_struct callback_buffer[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];$/;"	m	struct:ndpi_detection_module_struct	typeref:struct:ndpi_detection_module_struct::ndpi_call_function_struct	access:public
-callback_buffer_non_tcp_udp	src/include/ndpi_typedefs.h	/^  struct ndpi_call_function_struct callback_buffer_non_tcp_udp[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];$/;"	m	struct:ndpi_detection_module_struct	typeref:struct:ndpi_detection_module_struct::ndpi_call_function_struct	access:public
-callback_buffer_size	src/include/ndpi_typedefs.h	/^  u_int32_t callback_buffer_size;$/;"	m	struct:ndpi_detection_module_struct	access:public
-callback_buffer_size_non_tcp_udp	src/include/ndpi_typedefs.h	/^  u_int32_t callback_buffer_size_non_tcp_udp;$/;"	m	struct:ndpi_detection_module_struct	access:public
-callback_buffer_size_tcp_no_payload	src/include/ndpi_typedefs.h	/^  u_int32_t callback_buffer_size_tcp_no_payload;$/;"	m	struct:ndpi_detection_module_struct	access:public
-callback_buffer_size_tcp_payload	src/include/ndpi_typedefs.h	/^  u_int32_t callback_buffer_size_tcp_payload;$/;"	m	struct:ndpi_detection_module_struct	access:public
-callback_buffer_size_udp	src/include/ndpi_typedefs.h	/^  u_int32_t callback_buffer_size_udp;$/;"	m	struct:ndpi_detection_module_struct	access:public
-callback_buffer_tcp_no_payload	src/include/ndpi_typedefs.h	/^  struct ndpi_call_function_struct callback_buffer_tcp_no_payload[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];$/;"	m	struct:ndpi_detection_module_struct	typeref:struct:ndpi_detection_module_struct::ndpi_call_function_struct	access:public
-callback_buffer_tcp_payload	src/include/ndpi_typedefs.h	/^  struct ndpi_call_function_struct callback_buffer_tcp_payload[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];$/;"	m	struct:ndpi_detection_module_struct	typeref:struct:ndpi_detection_module_struct::ndpi_call_function_struct	access:public
-callback_buffer_udp	src/include/ndpi_typedefs.h	/^  struct ndpi_call_function_struct callback_buffer_udp[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];$/;"	m	struct:ndpi_detection_module_struct	typeref:struct:ndpi_detection_module_struct::ndpi_call_function_struct	access:public
+callback_buffer	src/include/ndpi_typedefs.h	/^  struct ndpi_call_function_struct callback_buffer[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];   \/\/ 这张表记录了实际使能的协议信息$/;"	m	struct:ndpi_detection_module_struct	typeref:struct:ndpi_detection_module_struct::ndpi_call_function_struct	access:public
+callback_buffer_non_tcp_udp	src/include/ndpi_typedefs.h	/^  struct ndpi_call_function_struct callback_buffer_non_tcp_udp[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];   \/\/ 这张表记录了实际使能的基于其他的协议信息$/;"	m	struct:ndpi_detection_module_struct	typeref:struct:ndpi_detection_module_struct::ndpi_call_function_struct	access:public
+callback_buffer_size	src/include/ndpi_typedefs.h	/^  u_int32_t callback_buffer_size;       \/\/ 记录了实际使能的协议数量$/;"	m	struct:ndpi_detection_module_struct	access:public
+callback_buffer_size_non_tcp_udp	src/include/ndpi_typedefs.h	/^  u_int32_t callback_buffer_size_non_tcp_udp;   \/\/ 记录了实际使能的基于其他(非tcp和udp)的协议数量$/;"	m	struct:ndpi_detection_module_struct	access:public
+callback_buffer_size_tcp_no_payload	src/include/ndpi_typedefs.h	/^  u_int32_t callback_buffer_size_tcp_no_payload;\/\/ 记录了实际使能的基于tcp不带payload的协议数量$/;"	m	struct:ndpi_detection_module_struct	access:public
+callback_buffer_size_tcp_payload	src/include/ndpi_typedefs.h	/^  u_int32_t callback_buffer_size_tcp_payload;   \/\/ 记录了实际使能的基于tcp带payload的协议数量$/;"	m	struct:ndpi_detection_module_struct	access:public
+callback_buffer_size_udp	src/include/ndpi_typedefs.h	/^  u_int32_t callback_buffer_size_udp;           \/\/ 记录了实际使能的基于udp的协议数量$/;"	m	struct:ndpi_detection_module_struct	access:public
+callback_buffer_tcp_no_payload	src/include/ndpi_typedefs.h	/^  struct ndpi_call_function_struct callback_buffer_tcp_no_payload[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];\/\/ 这张表记录了实际使能的基于tcp不带payload的协议信息$/;"	m	struct:ndpi_detection_module_struct	typeref:struct:ndpi_detection_module_struct::ndpi_call_function_struct	access:public
+callback_buffer_tcp_payload	src/include/ndpi_typedefs.h	/^  struct ndpi_call_function_struct callback_buffer_tcp_payload[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];   \/\/ 这张表记录了实际使能的基于tcp带payload的协议信息$/;"	m	struct:ndpi_detection_module_struct	typeref:struct:ndpi_detection_module_struct::ndpi_call_function_struct	access:public
+callback_buffer_udp	src/include/ndpi_typedefs.h	/^  struct ndpi_call_function_struct callback_buffer_udp[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];           \/\/ 这张表记录了实际使能的基于udp的协议信息$/;"	m	struct:ndpi_detection_module_struct	typeref:struct:ndpi_detection_module_struct::ndpi_call_function_struct	access:public
 capture_for	example/ndpiReader.c	/^static time_t capture_for = 0;      \/\/ 捕获超时时间(相对时间)(只对传入了捕获接口有效)$/;"	v	file:
 capture_until	example/ndpiReader.c	/^static time_t capture_until = 0;    \/\/ 捕获超时时间点(绝对时间)(只对传入了捕获接口有效)$/;"	v	file:
 cb_data	src/lib/protocols/btlib.c	/^void cb_data(bt_parse_data_cb_t *cbd,int *ret) {$/;"	f	signature:(bt_parse_data_cb_t *cbd,int *ret)
@@ -1213,8 +1213,8 @@ detected_protocol_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK 
 detected_protocol_stack	src/include/ndpi_typedefs.h	/^  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];$/;"	m	struct:ndpi_flow_struct	access:public
 detected_protocol_stack	src/include/ndpi_typedefs.h	/^  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];$/;"	m	struct:ndpi_packet_struct	access:public
 detected_subprotocol_stack	src/include/ndpi_typedefs.h	/^  u_int8_t detected_subprotocol_stack[NDPI_PROTOCOL_SIZE];$/;"	m	struct:ndpi_packet_struct	access:public
-detection_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK detection_bitmask;$/;"	m	struct:ndpi_call_function_struct	access:public
-detection_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK detection_bitmask;$/;"	m	struct:ndpi_detection_module_struct	access:public
+detection_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK detection_bitmask;                      \/\/ 该字段的设置跟ndpi_set_bitmask_protocol_detection函数的入参有关$/;"	m	struct:ndpi_call_function_struct	access:public
+detection_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK detection_bitmask;  \/\/ 该探测模块中所有协议的使能\/禁止位的集合，只有其中置1的那些协议才是该探测模块中实际使能了的$/;"	m	struct:ndpi_detection_module_struct	access:public
 detection_completed	example/ndpi_util.h	/^  u_int8_t detection_completed, protocol, bidirectional;$/;"	m	struct:ndpi_flow_info	access:public
 detection_feature	src/include/ndpi_typedefs.h	/^  u_int8_t detection_feature;$/;"	m	struct:ndpi_call_function_struct	access:public
 dhcp_packet_t	src/lib/protocols/dhcp.c	/^} dhcp_packet_t;$/;"	t	typeref:struct:__anon10	file:
@@ -1262,7 +1262,7 @@ end	example/ndpiReader.c	/^static struct timeval begin, end;$/;"	v	typeref:struc
 epoch	src/lib/protocols/ayiya.c	/^  u_int32_t epoch;$/;"	m	struct:ayiya	file:	access:public
 ethernet_crc32	example/ndpi_util.c	/^u_int32_t ethernet_crc32(const void* data, size_t n_bytes) {$/;"	f	signature:(const void* data, size_t n_bytes)
 ethernet_crc32	example/ndpi_util.h	/^u_int32_t ethernet_crc32(const void* data, size_t n_bytes);$/;"	p	signature:(const void* data, size_t n_bytes)
-excluded_protocol_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK excluded_protocol_bitmask;$/;"	m	struct:ndpi_call_function_struct	access:public
+excluded_protocol_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK excluded_protocol_bitmask;              \/\/ 实际被使能的协议会将该集合的对应位置1$/;"	m	struct:ndpi_call_function_struct	access:public
 excluded_protocol_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK excluded_protocol_bitmask;$/;"	m	struct:ndpi_flow_struct	access:public
 exp	src/include/ndpi_typedefs.h	/^  u_int32_t label:20, exp:3, s:1, ttl:8;$/;"	m	struct:ndpi_mpls_header	access:public
 expand_mult	example/uthash.h	/^   unsigned expand_mult;$/;"	m	struct:UT_hash_bucket	access:public
@@ -1998,11 +1998,11 @@ ndpi_bytestream_to_number	src/lib/ndpi_main.c	/^u_int32_t ndpi_bytestream_to_num
 ndpi_bytestream_to_number64	src/include/ndpi_main.h	/^  u_int64_t ndpi_bytestream_to_number64(const u_int8_t * str, u_int16_t max_chars_to_read, u_int16_t * bytes_read);$/;"	p	signature:(const u_int8_t * str, u_int16_t max_chars_to_read, u_int16_t * bytes_read)
 ndpi_bytestream_to_number64	src/lib/ndpi_main.c	/^u_int64_t ndpi_bytestream_to_number64(const u_int8_t * str, u_int16_t max_chars_to_read, u_int16_t * bytes_read)$/;"	f	signature:(const u_int8_t * str, u_int16_t max_chars_to_read, u_int16_t * bytes_read)
 ndpi_call_function_struct	src/include/ndpi_typedefs.h	/^struct ndpi_call_function_struct {$/;"	s
-ndpi_call_function_struct::detection_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK detection_bitmask;$/;"	m	struct:ndpi_call_function_struct	access:public
+ndpi_call_function_struct::detection_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK detection_bitmask;                      \/\/ 该字段的设置跟ndpi_set_bitmask_protocol_detection函数的入参有关$/;"	m	struct:ndpi_call_function_struct	access:public
 ndpi_call_function_struct::detection_feature	src/include/ndpi_typedefs.h	/^  u_int8_t detection_feature;$/;"	m	struct:ndpi_call_function_struct	access:public
-ndpi_call_function_struct::excluded_protocol_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK excluded_protocol_bitmask;$/;"	m	struct:ndpi_call_function_struct	access:public
+ndpi_call_function_struct::excluded_protocol_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK excluded_protocol_bitmask;              \/\/ 实际被使能的协议会将该集合的对应位置1$/;"	m	struct:ndpi_call_function_struct	access:public
 ndpi_call_function_struct::func	src/include/ndpi_typedefs.h	/^  void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow);$/;"	m	struct:ndpi_call_function_struct	access:public
-ndpi_call_function_struct::ndpi_selection_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_SELECTION_BITMASK_PROTOCOL_SIZE ndpi_selection_bitmask;$/;"	m	struct:ndpi_call_function_struct	access:public
+ndpi_call_function_struct::ndpi_selection_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_SELECTION_BITMASK_PROTOCOL_SIZE ndpi_selection_bitmask;  \/\/ 选择位集合(这些位包含了IP、TCP、UDP、IPV4、IPV6、payload等)$/;"	m	struct:ndpi_call_function_struct	access:public
 ndpi_calloc	src/include/ndpi_api.h	/^  void * ndpi_calloc(unsigned long count, size_t size);$/;"	p	signature:(unsigned long count, size_t size)
 ndpi_calloc	src/lib/ndpi_main.c	/^void * ndpi_calloc(unsigned long count, size_t size)$/;"	f	signature:(unsigned long count, size_t size)
 ndpi_category_str	src/include/ndpi_api.h	/^  const char* ndpi_category_str(ndpi_protocol_category_t category);$/;"	p	signature:(ndpi_protocol_category_t category)
@@ -2097,19 +2097,19 @@ ndpi_detection_module_struct::bt6_ht	src/include/ndpi_typedefs.h	/^  struct hash
 ndpi_detection_module_struct::bt_ann	src/include/ndpi_typedefs.h	/^  struct bt_announce *bt_ann;$/;"	m	struct:ndpi_detection_module_struct	typeref:struct:ndpi_detection_module_struct::bt_announce	access:public
 ndpi_detection_module_struct::bt_ann_len	src/include/ndpi_typedefs.h	/^  int    bt_ann_len;$/;"	m	struct:ndpi_detection_module_struct	access:public
 ndpi_detection_module_struct::bt_ht	src/include/ndpi_typedefs.h	/^  struct hash_ip4p_table *bt_ht;$/;"	m	struct:ndpi_detection_module_struct	typeref:struct:ndpi_detection_module_struct::hash_ip4p_table	access:public
-ndpi_detection_module_struct::callback_buffer	src/include/ndpi_typedefs.h	/^  struct ndpi_call_function_struct callback_buffer[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];$/;"	m	struct:ndpi_detection_module_struct	typeref:struct:ndpi_detection_module_struct::ndpi_call_function_struct	access:public
-ndpi_detection_module_struct::callback_buffer_non_tcp_udp	src/include/ndpi_typedefs.h	/^  struct ndpi_call_function_struct callback_buffer_non_tcp_udp[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];$/;"	m	struct:ndpi_detection_module_struct	typeref:struct:ndpi_detection_module_struct::ndpi_call_function_struct	access:public
-ndpi_detection_module_struct::callback_buffer_size	src/include/ndpi_typedefs.h	/^  u_int32_t callback_buffer_size;$/;"	m	struct:ndpi_detection_module_struct	access:public
-ndpi_detection_module_struct::callback_buffer_size_non_tcp_udp	src/include/ndpi_typedefs.h	/^  u_int32_t callback_buffer_size_non_tcp_udp;$/;"	m	struct:ndpi_detection_module_struct	access:public
-ndpi_detection_module_struct::callback_buffer_size_tcp_no_payload	src/include/ndpi_typedefs.h	/^  u_int32_t callback_buffer_size_tcp_no_payload;$/;"	m	struct:ndpi_detection_module_struct	access:public
-ndpi_detection_module_struct::callback_buffer_size_tcp_payload	src/include/ndpi_typedefs.h	/^  u_int32_t callback_buffer_size_tcp_payload;$/;"	m	struct:ndpi_detection_module_struct	access:public
-ndpi_detection_module_struct::callback_buffer_size_udp	src/include/ndpi_typedefs.h	/^  u_int32_t callback_buffer_size_udp;$/;"	m	struct:ndpi_detection_module_struct	access:public
-ndpi_detection_module_struct::callback_buffer_tcp_no_payload	src/include/ndpi_typedefs.h	/^  struct ndpi_call_function_struct callback_buffer_tcp_no_payload[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];$/;"	m	struct:ndpi_detection_module_struct	typeref:struct:ndpi_detection_module_struct::ndpi_call_function_struct	access:public
-ndpi_detection_module_struct::callback_buffer_tcp_payload	src/include/ndpi_typedefs.h	/^  struct ndpi_call_function_struct callback_buffer_tcp_payload[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];$/;"	m	struct:ndpi_detection_module_struct	typeref:struct:ndpi_detection_module_struct::ndpi_call_function_struct	access:public
-ndpi_detection_module_struct::callback_buffer_udp	src/include/ndpi_typedefs.h	/^  struct ndpi_call_function_struct callback_buffer_udp[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];$/;"	m	struct:ndpi_detection_module_struct	typeref:struct:ndpi_detection_module_struct::ndpi_call_function_struct	access:public
+ndpi_detection_module_struct::callback_buffer	src/include/ndpi_typedefs.h	/^  struct ndpi_call_function_struct callback_buffer[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];   \/\/ 这张表记录了实际使能的协议信息$/;"	m	struct:ndpi_detection_module_struct	typeref:struct:ndpi_detection_module_struct::ndpi_call_function_struct	access:public
+ndpi_detection_module_struct::callback_buffer_non_tcp_udp	src/include/ndpi_typedefs.h	/^  struct ndpi_call_function_struct callback_buffer_non_tcp_udp[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];   \/\/ 这张表记录了实际使能的基于其他的协议信息$/;"	m	struct:ndpi_detection_module_struct	typeref:struct:ndpi_detection_module_struct::ndpi_call_function_struct	access:public
+ndpi_detection_module_struct::callback_buffer_size	src/include/ndpi_typedefs.h	/^  u_int32_t callback_buffer_size;       \/\/ 记录了实际使能的协议数量$/;"	m	struct:ndpi_detection_module_struct	access:public
+ndpi_detection_module_struct::callback_buffer_size_non_tcp_udp	src/include/ndpi_typedefs.h	/^  u_int32_t callback_buffer_size_non_tcp_udp;   \/\/ 记录了实际使能的基于其他(非tcp和udp)的协议数量$/;"	m	struct:ndpi_detection_module_struct	access:public
+ndpi_detection_module_struct::callback_buffer_size_tcp_no_payload	src/include/ndpi_typedefs.h	/^  u_int32_t callback_buffer_size_tcp_no_payload;\/\/ 记录了实际使能的基于tcp不带payload的协议数量$/;"	m	struct:ndpi_detection_module_struct	access:public
+ndpi_detection_module_struct::callback_buffer_size_tcp_payload	src/include/ndpi_typedefs.h	/^  u_int32_t callback_buffer_size_tcp_payload;   \/\/ 记录了实际使能的基于tcp带payload的协议数量$/;"	m	struct:ndpi_detection_module_struct	access:public
+ndpi_detection_module_struct::callback_buffer_size_udp	src/include/ndpi_typedefs.h	/^  u_int32_t callback_buffer_size_udp;           \/\/ 记录了实际使能的基于udp的协议数量$/;"	m	struct:ndpi_detection_module_struct	access:public
+ndpi_detection_module_struct::callback_buffer_tcp_no_payload	src/include/ndpi_typedefs.h	/^  struct ndpi_call_function_struct callback_buffer_tcp_no_payload[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];\/\/ 这张表记录了实际使能的基于tcp不带payload的协议信息$/;"	m	struct:ndpi_detection_module_struct	typeref:struct:ndpi_detection_module_struct::ndpi_call_function_struct	access:public
+ndpi_detection_module_struct::callback_buffer_tcp_payload	src/include/ndpi_typedefs.h	/^  struct ndpi_call_function_struct callback_buffer_tcp_payload[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];   \/\/ 这张表记录了实际使能的基于tcp带payload的协议信息$/;"	m	struct:ndpi_detection_module_struct	typeref:struct:ndpi_detection_module_struct::ndpi_call_function_struct	access:public
+ndpi_detection_module_struct::callback_buffer_udp	src/include/ndpi_typedefs.h	/^  struct ndpi_call_function_struct callback_buffer_udp[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];           \/\/ 这张表记录了实际使能的基于udp的协议信息$/;"	m	struct:ndpi_detection_module_struct	typeref:struct:ndpi_detection_module_struct::ndpi_call_function_struct	access:public
 ndpi_detection_module_struct::content_automa	src/include/ndpi_typedefs.h	/^    content_automa,                            \/* Used for HTTP subprotocol_detection *\/$/;"	m	struct:ndpi_detection_module_struct	access:public
 ndpi_detection_module_struct::current_ts	src/include/ndpi_typedefs.h	/^  u_int32_t current_ts;$/;"	m	struct:ndpi_detection_module_struct	access:public
-ndpi_detection_module_struct::detection_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK detection_bitmask;$/;"	m	struct:ndpi_detection_module_struct	access:public
+ndpi_detection_module_struct::detection_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK detection_bitmask;  \/\/ 该探测模块中所有协议的使能\/禁止位的集合，只有其中置1的那些协议才是该探测模块中实际使能了的$/;"	m	struct:ndpi_detection_module_struct	access:public
 ndpi_detection_module_struct::directconnect_connection_ip_tick_timeout	src/include/ndpi_typedefs.h	/^  u_int32_t directconnect_connection_ip_tick_timeout;$/;"	m	struct:ndpi_detection_module_struct	access:public
 ndpi_detection_module_struct::direction_detect_disable	src/include/ndpi_typedefs.h	/^    direction_detect_disable:1; \/* disable internal detection of packet direction *\/$/;"	m	struct:ndpi_detection_module_struct	access:public
 ndpi_detection_module_struct::dns_dissect_response	src/include/ndpi_typedefs.h	/^  u_int8_t http_dont_dissect_response:1, dns_dissect_response:1,$/;"	m	struct:ndpi_detection_module_struct	access:public
@@ -2800,8 +2800,8 @@ ndpi_proto_defaults::master_tcp_protoId	src/include/ndpi_typedefs.h	/^  u_int16_
 ndpi_proto_defaults::master_udp_protoId	src/include/ndpi_typedefs.h	/^  u_int16_t master_tcp_protoId[2], master_udp_protoId[2]; \/* The main protocols on which this sub-protocol sits on *\/$/;"	m	struct:ndpi_proto_defaults	access:public
 ndpi_proto_defaults::protoBreed	src/include/ndpi_typedefs.h	/^  ndpi_protocol_breed_t protoBreed;         \/\/ 协议类别2(根据安全性归类)$/;"	m	struct:ndpi_proto_defaults	access:public
 ndpi_proto_defaults::protoCategory	src/include/ndpi_typedefs.h	/^  ndpi_protocol_category_t protoCategory;   \/\/ 协议类别1(根据用途归类)$/;"	m	struct:ndpi_proto_defaults	access:public
-ndpi_proto_defaults::protoId	src/include/ndpi_typedefs.h	/^  u_int16_t protoId, protoIdx;              \/\/ 协议ID$/;"	m	struct:ndpi_proto_defaults	access:public
-ndpi_proto_defaults::protoIdx	src/include/ndpi_typedefs.h	/^  u_int16_t protoId, protoIdx;              \/\/ 协议ID$/;"	m	struct:ndpi_proto_defaults	access:public
+ndpi_proto_defaults::protoId	src/include/ndpi_typedefs.h	/^  u_int16_t protoId;    \/\/ ndpi分配的协议ID$/;"	m	struct:ndpi_proto_defaults	access:public
+ndpi_proto_defaults::protoIdx	src/include/ndpi_typedefs.h	/^  u_int16_t protoIdx;   \/\/ 协议序号(在ndpi_set_protocol_detection_bitmask2中初始化是从0递增得到)   $/;"	m	struct:ndpi_proto_defaults	access:public
 ndpi_proto_defaults::protoName	src/include/ndpi_typedefs.h	/^  char *protoName;                          \/\/ 协议名 $/;"	m	struct:ndpi_proto_defaults	access:public
 ndpi_proto_defaults_t	src/include/ndpi_typedefs.h	/^} ndpi_proto_defaults_t;$/;"	t	typeref:struct:ndpi_proto_defaults
 ndpi_proto_sorter	example/ndpiReader.c	/^struct ndpi_proto_sorter {$/;"	s	file:
@@ -3149,7 +3149,7 @@ ndpi_search_zattoo	src/include/ndpi_protocols.h	/^void ndpi_search_zattoo(struct
 ndpi_search_zattoo	src/lib/protocols/zattoo.c	/^void ndpi_search_zattoo(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)$/;"	f	signature:(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 ndpi_search_zmq	src/include/ndpi_protocols.h	/^void ndpi_search_zmq(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow);$/;"	p	signature:(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 ndpi_search_zmq	src/lib/protocols/zeromq.c	/^void ndpi_search_zmq(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow) {$/;"	f	signature:(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
-ndpi_selection_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_SELECTION_BITMASK_PROTOCOL_SIZE ndpi_selection_bitmask;$/;"	m	struct:ndpi_call_function_struct	access:public
+ndpi_selection_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_SELECTION_BITMASK_PROTOCOL_SIZE ndpi_selection_bitmask;  \/\/ 选择位集合(这些位包含了IP、TCP、UDP、IPV4、IPV6、payload等)$/;"	m	struct:ndpi_call_function_struct	access:public
 ndpi_set_automa	src/include/ndpi_api.h	/^  void ndpi_set_automa(struct ndpi_detection_module_struct *ndpi_struct, void* automa);$/;"	p	signature:(struct ndpi_detection_module_struct *ndpi_struct, void* automa)
 ndpi_set_bitmask_protocol_detection	src/include/ndpi_api.h	/^  void ndpi_set_bitmask_protocol_detection(char *label, struct ndpi_detection_module_struct *ndpi_struct,$/;"	p	signature:(char *label, struct ndpi_detection_module_struct *ndpi_struct, const NDPI_PROTOCOL_BITMASK *detection_bitmask, const u_int32_t idx, u_int16_t ndpi_protocol_id, void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow), const NDPI_SELECTION_BITMASK_PROTOCOL_SIZE ndpi_selection_bitmask, u_int8_t b_save_bitmask_unknow, u_int8_t b_add_detection_bitmask)
 ndpi_set_bitmask_protocol_detection	src/lib/ndpi_main.c	/^void ndpi_set_bitmask_protocol_detection( char * label,$/;"	f	signature:( char * label, struct ndpi_detection_module_struct *ndpi_struct, const NDPI_PROTOCOL_BITMASK * detection_bitmask, const u_int32_t idx, u_int16_t ndpi_protocol_id, void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow), const NDPI_SELECTION_BITMASK_PROTOCOL_SIZE ndpi_selection_bitmask, u_int8_t b_save_bitmask_unknow, u_int8_t b_add_detection_bitmask)
@@ -3512,8 +3512,8 @@ proto	src/lib/protocols/netflow.c	/^  u_int8_t  proto;      \/* IP protocol, e.g
 proto	src/lib/protocols/netflow.c	/^  u_int8_t proto;        \/* IP protocol, e.g., 6=TCP, 17=UDP, etc... *\/$/;"	m	struct:flow_ver5_rec	file:	access:public
 protoBreed	src/include/ndpi_typedefs.h	/^  ndpi_protocol_breed_t protoBreed;         \/\/ 协议类别2(根据安全性归类)$/;"	m	struct:ndpi_proto_defaults	access:public
 protoCategory	src/include/ndpi_typedefs.h	/^  ndpi_protocol_category_t protoCategory;   \/\/ 协议类别1(根据用途归类)$/;"	m	struct:ndpi_proto_defaults	access:public
-protoId	src/include/ndpi_typedefs.h	/^  u_int16_t protoId, protoIdx;              \/\/ 协议ID$/;"	m	struct:ndpi_proto_defaults	access:public
-protoIdx	src/include/ndpi_typedefs.h	/^  u_int16_t protoId, protoIdx;              \/\/ 协议ID$/;"	m	struct:ndpi_proto_defaults	access:public
+protoId	src/include/ndpi_typedefs.h	/^  u_int16_t protoId;    \/\/ ndpi分配的协议ID$/;"	m	struct:ndpi_proto_defaults	access:public
+protoIdx	src/include/ndpi_typedefs.h	/^  u_int16_t protoIdx;   \/\/ 协议序号(在ndpi_set_protocol_detection_bitmask2中初始化是从0递增得到)   $/;"	m	struct:ndpi_proto_defaults	access:public
 protoName	src/include/ndpi_typedefs.h	/^  char *protoName;                          \/\/ 协议名 $/;"	m	struct:ndpi_proto_defaults	access:public
 proto_ID	src/include/ndpi_typedefs.h	/^  u_int16_t   proto_ID;$/;"	m	struct:ndpi_snap_extension	access:public
 proto_category	src/include/ndpi_typedefs.h	/^  ndpi_protocol_category_t proto_category;  \/\/ ndpi根据协议用途定义的类别$/;"	m	struct:__anon33	access:public

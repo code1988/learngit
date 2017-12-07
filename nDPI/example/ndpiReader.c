@@ -76,9 +76,10 @@ static u_int8_t stats_flag = 0, file_first_time = 1;
 static u_int32_t pcap_analysis_duration = (u_int32_t)-1;
 static u_int16_t decode_tunnels = 0;// 标识是否使能隧道功能
 static u_int16_t num_loops = 1;     // 探测循环次数(仅测试用)
-static u_int8_t shutdown_app = 0, quiet_mode = 0;
+static u_int8_t shutdown_app = 0;   // 标识是否终止捕获
+static u_int8_t quiet_mode = 0;     // 标识是否开启安静模式
 static u_int8_t num_threads = 1;    // 线程数量(传入的是pcap文件时固定使用单线程)
-static struct timeval begin, end;
+static struct timeval begin, end;   // 记录了开始、结束时间
 #ifdef linux
 static int core_affinity[MAX_NUM_READER_THREADS];   // 线程-cpu亲和关系映射表
 #endif
@@ -1099,8 +1100,11 @@ static void setupDetection(u_int16_t thread_id, pcap_t * pcap_handle) {
     ndpi_workflow_set_flow_detected_callback(ndpi_thread_info[thread_id].workflow,
                        on_protocol_discovered, (void *)(uintptr_t)thread_id);
 
-    // enable all protocols
+    /* enable all protocols
+     * 显然，作为展示用的demo，ndpiReader在这里将所有默认支持的协议都使能了
+     */
     NDPI_BITMASK_SET_ALL(all);
+    // 对实际需要探测的协议进行统一注册的入口
     ndpi_set_protocol_detection_bitmask2(ndpi_thread_info[thread_id].workflow->ndpi_struct, &all);
 
     // clear memory for results
@@ -1108,6 +1112,7 @@ static void setupDetection(u_int16_t thread_id, pcap_t * pcap_handle) {
     memset(ndpi_thread_info[thread_id].workflow->stats.protocol_counter_bytes, 0, sizeof(ndpi_thread_info[thread_id].workflow->stats.protocol_counter_bytes));
     memset(ndpi_thread_info[thread_id].workflow->stats.protocol_flows, 0, sizeof(ndpi_thread_info[thread_id].workflow->stats.protocol_flows));
 
+    // 如果传入了协议配置文件，则从文件中导入协议
     if(_protoFilePath != NULL)
     ndpi_load_protocols_file(ndpi_thread_info[thread_id].workflow->ndpi_struct, _protoFilePath);
 }
@@ -1376,6 +1381,7 @@ void printPortStats(struct port_stats *stats) {
 
 /**
  * @brief Print result
+ * 打印捕获结果
  */
 static void printResults(u_int64_t tot_usec) {
   u_int32_t i;
@@ -1813,6 +1819,8 @@ static pcap_t * openPcapFileOrDevice(u_int16_t thread_id, const u_char * pcap_fi
 
 /**
  * @brief Check pcap packet
+ * libpcap库捕获到数据包后的回调函数，可以认为就是每个接收包在ndpi中的起始入口
+ * @args  实际传入了线程序号
  */
 static void pcap_process_packet(u_char *args,
 				const struct pcap_pkthdr *header,
@@ -1820,10 +1828,13 @@ static void pcap_process_packet(u_char *args,
   struct ndpi_proto p;
   u_int16_t thread_id = *((u_int16_t*)args);
 
-  /* allocate an exact size buffer to check overflows */
+  /* allocate an exact size buffer to check overflows 
+   * 首先对每个接收到的报文进行了转储
+   * */
   uint8_t *packet_checked = malloc(header->caplen);
 
   memcpy(packet_checked, packet, header->caplen);
+  // 使用该线程单元对应的工作流开始对转储的报文进行处理
   p = ndpi_workflow_process_packet(ndpi_thread_info[thread_id].workflow, header, packet_checked);
 
   if((capture_until != 0) && (header->ts.tv_sec >= capture_until)) {
@@ -1933,6 +1944,7 @@ static void pcap_process_packet(u_char *args,
 
 /**
  * @brief Call pcap_loop() to process packets from a live capture or savefile
+ * 通过调用libpcap库API pcap_loop执行捕获循环
  */
 static void runPcapLoop(u_int16_t thread_id) {
   if((!shutdown_app) && (ndpi_thread_info[thread_id].workflow->pcap_handle != NULL))
@@ -1941,6 +1953,8 @@ static void runPcapLoop(u_int16_t thread_id) {
 
 /**
  * @brief Process a running thread
+ * 每个线程处理单元的执行线程
+ * @_thread_id  - 线程序号(不是pthread_t)
  */
 void * processing_thread(void *_thread_id) {
 
@@ -1948,34 +1962,36 @@ void * processing_thread(void *_thread_id) {
   char pcap_error_buffer[PCAP_ERRBUF_SIZE];
 
 #if defined(linux) && defined(HAVE_PTHREAD_SETAFFINITY_NP)
-  if(core_affinity[thread_id] >= 0) {
-    cpu_set_t cpuset;
-    CPU_ZERO(&cpuset);
-    CPU_SET(core_affinity[thread_id], &cpuset);
+    // 设置该线程的cpu亲和性
+    if(core_affinity[thread_id] >= 0) {
+        cpu_set_t cpuset;
+        CPU_ZERO(&cpuset);
+        CPU_SET(core_affinity[thread_id], &cpuset);
 
-    if(pthread_setaffinity_np(pthread_self(), sizeof(cpu_set_t), &cpuset) != 0)
-      fprintf(stderr, "Error while binding thread %ld to core %d\n", thread_id, core_affinity[thread_id]);
-    else {
-      if((!json_flag) && (!quiet_mode)) printf("Running thread %ld on core %d...\n", thread_id, core_affinity[thread_id]);
-    }
-  } else
+        if(pthread_setaffinity_np(pthread_self(), sizeof(cpu_set_t), &cpuset) != 0)
+          fprintf(stderr, "Error while binding thread %ld to core %d\n", thread_id, core_affinity[thread_id]);
+        else {
+          if((!json_flag) && (!quiet_mode)) printf("Running thread %ld on core %d...\n", thread_id, core_affinity[thread_id]);
+        }
+    } else
 #endif
-    if((!json_flag) && (!quiet_mode)) printf("Running thread %ld...\n", thread_id);
+        if((!json_flag) && (!quiet_mode)) printf("Running thread %ld...\n", thread_id);
 
- pcap_loop:
- runPcapLoop(thread_id);
+pcap_loop:
+    // 线程进入捕获循环
+    runPcapLoop(thread_id);
 
-  if(playlist_fp[thread_id] != NULL) { /* playlist: read next file */
-    char filename[256];
+    if(playlist_fp[thread_id] != NULL) { /* playlist: read next file */
+        char filename[256];
 
-    if(getNextPcapFileFromPlaylist(thread_id, filename, sizeof(filename)) == 0 &&
-       (ndpi_thread_info[thread_id].workflow->pcap_handle = pcap_open_offline(filename, pcap_error_buffer)) != NULL) {
-      configurePcapHandle(ndpi_thread_info[thread_id].workflow->pcap_handle);
-      goto pcap_loop;
+        if(getNextPcapFileFromPlaylist(thread_id, filename, sizeof(filename)) == 0 &&
+           (ndpi_thread_info[thread_id].workflow->pcap_handle = pcap_open_offline(filename, pcap_error_buffer)) != NULL) {
+          configurePcapHandle(ndpi_thread_info[thread_id].workflow->pcap_handle);
+          goto pcap_loop;
+        }
     }
-  }
 
-  return NULL;
+    return NULL;
 }
 
 
@@ -2006,15 +2022,19 @@ void test_lib() {
 
     // 通过调用libpcap库，打开指定的pcap文件或捕获接口
     cap = openPcapFileOrDevice(thread_id, (const u_char*)_pcap_file[thread_id]);
+    // 初始化每个个线程处理单元(对应了一条流)
     setupDetection(thread_id, cap);
   }
 
+  // 记录开始时间
   gettimeofday(&begin, NULL);
 
   int status;
   void * thd_res;
 
-  /* Running processing threads */
+  /* Running processing threads 
+   * 为每个线程处理单元创建对应的执行线程
+   * */
   for(thread_id = 0; thread_id < num_threads; thread_id++) {
     status = pthread_create(&ndpi_thread_info[thread_id].pthread, NULL, processing_thread, (void *) thread_id);
     /* check pthreade_create return value */
@@ -2023,7 +2043,9 @@ void test_lib() {
       exit(-1);
     }
   }
-  /* Waiting for completion */
+  /* Waiting for completion 
+   * 等待线程结束
+   * */
   for(thread_id = 0; thread_id < num_threads; thread_id++) {
     status = pthread_join(ndpi_thread_info[thread_id].pthread, &thd_res);
     /* check pthreade_join return value */
@@ -2037,12 +2059,16 @@ void test_lib() {
     }
   }
 
+  // 记录结束时间，然后计算耗时
   gettimeofday(&end, NULL);
   tot_usec = end.tv_sec*1000000 + end.tv_usec - (begin.tv_sec*1000000 + begin.tv_usec);
 
-  /* Printing cumulative results */
+  /* Printing cumulative results 
+   * 打印详细的捕获结果
+   * */
   printResults(tot_usec);
 
+  // 扫尾收工
   for(thread_id = 0; thread_id < num_threads; thread_id++) {
     if(ndpi_thread_info[thread_id].workflow->pcap_handle != NULL)
       pcap_close(ndpi_thread_info[thread_id].workflow->pcap_handle);
