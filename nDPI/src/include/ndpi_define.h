@@ -161,7 +161,7 @@
 /* DEFINITION OF MAX LINE NUMBERS FOR line parse algorithm */
 #define NDPI_MAX_PARSE_LINES_PER_PACKET                         64
 
-#define MAX_PACKET_COUNTER                                   65000
+#define MAX_PACKET_COUNTER                                   65000  // 一个数据流中的包上限
 #define MAX_DEFAULT_PORTS                                        5
 
 #define NDPI_DIRECTCONNECT_CONNECTION_IP_TICK_TIMEOUT          600

@@ -150,7 +150,7 @@ void ndpi_twalk(const void *vroot, void (*action)(const void *, ndpi_VISIT, int,
     ndpi_trecurse(root, action, 0, user_data);
 }
 
-/* find a node, or return 0 */
+/* find a node, or return 0  搜索二叉树，查找匹配的节点 */
 void * ndpi_tfind(const void *vkey, void *vrootp,
 		  int (*compar)(const void *, const void *))
 {
@@ -2887,7 +2887,9 @@ static int ndpi_handle_ipv6_extension_headers(struct ndpi_detection_module_struc
 }
 #endif							/* NDPI_DETECTION_SUPPORT_IPV6 */
 
-
+/* 检查IP头是否有效以及是否是个分片包
+ * @返回值：1表示IP头有效并且不是一个分片包，其他情况则返回0
+ */
 static u_int8_t ndpi_iph_is_valid_and_not_fragmented(const struct ndpi_iphdr *iph, const u_int16_t ipsize)
 {
   //#ifdef REQUIRE_FULL_PACKETS
@@ -2900,6 +2902,15 @@ static u_int8_t ndpi_iph_is_valid_and_not_fragmented(const struct ndpi_iphdr *ip
   return 1;
 }
 
+/* 获取传入的IP包的l4层头信息，并且顺便检测了一下IP头
+ * @ndpi_struct     - 指向传入包所属的探测模块
+ * @l3              - 指向l3层头
+ * @l3_len          - 传入数据包的l3层长度
+ * @l4_return       - 用于存放指向l4层头的指针
+ * @l4_len_return   - 用于存放l4层的长度
+ * @l4_protocol_return  - 用于存放l4层使用的协议号
+ * @flags           - 支持的参数有NDPI_DETECTION_ONLY_IPV6、NDPI_DETECTION_ONLY_IPV4
+ */
 static u_int8_t ndpi_detection_get_l4_internal(struct ndpi_detection_module_struct *ndpi_struct,
 					       const u_int8_t * l3, u_int16_t l3_len,
 					       const u_int8_t ** l4_return, u_int16_t * l4_len_return,
@@ -2943,6 +2954,7 @@ static u_int8_t ndpi_detection_get_l4_internal(struct ndpi_detection_module_stru
   }
 #endif
 
+  // 获取IPv4/IPv6的l4层头信息
   if(iph != NULL && ndpi_iph_is_valid_and_not_fragmented(iph, l3_len)) {
     u_int16_t len  = ntohs(iph->tot_len);
     u_int16_t hlen = (iph->ihl * 4);
@@ -2993,6 +3005,13 @@ void ndpi_apply_flow_protocol_to_packet(struct ndpi_flow_struct *flow,
   memcpy(&packet->protocol_stack_info, &flow->protocol_stack_info, sizeof(packet->protocol_stack_info));
 }
 
+/* 对传入的IP包完成传输层和网络层的分析，并将结果填充到指定的数据包管理块中
+ * @ndpi_struct     - 指向传入包所属的探测模块
+ * @flow            - 指向传入包所属的数据流
+ * @packetlen       - 传入的IP包长度
+ *
+ * 备注：这里反复对l3层头进行了检测，稍显混乱
+ */
 static int ndpi_init_packet_header(struct ndpi_detection_module_struct *ndpi_struct,
 				   struct ndpi_flow_struct *flow,
 				   unsigned short packetlen)
@@ -3004,6 +3023,7 @@ static int ndpi_init_packet_header(struct ndpi_detection_module_struct *ndpi_str
   u_int8_t l4protocol;
   u_int8_t l4_result;
 
+  // 初始化数据包管理块
   if (flow) {
     /* reset payload_packet_len, will be set if ipv4 tcp or udp */
     flow->packet.payload_packet_len = 0;
@@ -3026,6 +3046,7 @@ static int ndpi_init_packet_header(struct ndpi_detection_module_struct *ndpi_str
 
   l3len = flow->packet.l3_packet_len;
 
+  // 区分IPv4和IPv6
 #ifdef NDPI_DETECTION_SUPPORT_IPV6
   if(flow->packet.iph != NULL) {
 #endif							/* NDPI_DETECTION_SUPPORT_IPV6 */
@@ -3060,6 +3081,7 @@ static int ndpi_init_packet_header(struct ndpi_detection_module_struct *ndpi_str
    */
 
 
+  // 获取包的l4层信息
   l4ptr = NULL;
   l4len = 0;
   l4protocol = 0;
@@ -3074,45 +3096,45 @@ static int ndpi_init_packet_header(struct ndpi_detection_module_struct *ndpi_str
   flow->packet.l4_protocol = l4protocol;
   flow->packet.l4_packet_len = l4len;
 
-  /* tcp / udp detection */
-  if(l4protocol == IPPROTO_TCP && flow->packet.l4_packet_len >= 20 /* min size of tcp */ ) {
-    /* tcp */
-    flow->packet.tcp = (struct ndpi_tcphdr *) l4ptr;
+    /* tcp / udp detection  根据获取到的l4层信息对包进行分类：tcp、udp、其他 */
+    if(l4protocol == IPPROTO_TCP && flow->packet.l4_packet_len >= 20 /* min size of tcp */ ) {
+        /* tcp */
+        flow->packet.tcp = (struct ndpi_tcphdr *) l4ptr;
 
-    if(flow->packet.l4_packet_len >=flow->packet.tcp->doff * 4) {
-      flow->packet.payload_packet_len =
-	flow->packet.l4_packet_len -flow->packet.tcp->doff * 4;
-      flow->packet.actual_payload_len =flow->packet.payload_packet_len;
-      flow->packet.payload = ((u_int8_t *)flow->packet.tcp) + (flow->packet.tcp->doff * 4);
+        if(flow->packet.l4_packet_len >=flow->packet.tcp->doff * 4) {
+            flow->packet.payload_packet_len = flow->packet.l4_packet_len -flow->packet.tcp->doff * 4;
+            flow->packet.actual_payload_len =flow->packet.payload_packet_len;
+            flow->packet.payload = ((u_int8_t *)flow->packet.tcp) + (flow->packet.tcp->doff * 4);
 
-      /* check for new tcp syn packets, here
-       * idea: reset detection state if a connection is unknown
-       */
-      if(flow && flow->packet.tcp->syn != 0
-	 && flow->packet.tcp->ack == 0
-	 && flow->init_finished != 0
-	 && flow->detected_protocol_stack[0] == NDPI_PROTOCOL_UNKNOWN) {
-	memset(flow, 0, sizeof(*(flow)));
+            /* check for new tcp syn packets, here
+             * idea: reset detection state if a connection is unknown
+             */
+            if(flow && flow->packet.tcp->syn != 0 && flow->packet.tcp->ack == 0 && 
+               flow->init_finished != 0 && flow->detected_protocol_stack[0] == NDPI_PROTOCOL_UNKNOWN) {
+                memset(flow, 0, sizeof(*(flow)));
 
-	NDPI_LOG(NDPI_PROTOCOL_UNKNOWN, ndpi_struct,
-		 NDPI_LOG_DEBUG,
-		 "%s:%u: tcp syn packet for unknown protocol, reset detection state\n", __FUNCTION__, __LINE__);
-
-      }
+                NDPI_LOG(NDPI_PROTOCOL_UNKNOWN, ndpi_struct,NDPI_LOG_DEBUG,
+             "%s:%u: tcp syn packet for unknown protocol, reset detection state\n", __FUNCTION__, __LINE__);
+            }
+        } else {
+            /* tcp header not complete */
+            flow->packet.tcp = NULL;
+        }
+    } else if(l4protocol == IPPROTO_UDP && flow->packet.l4_packet_len >= 8 /* size of udp */ ) {
+        flow->packet.udp = (struct ndpi_udphdr *) l4ptr;
+        flow->packet.payload_packet_len =flow->packet.l4_packet_len - 8;
+        flow->packet.payload = ((u_int8_t *)flow->packet.udp) + 8;
     } else {
-      /* tcp header not complete */
-      flow->packet.tcp = NULL;
+        flow->packet.generic_l4_ptr = l4ptr;
     }
-  } else if(l4protocol == IPPROTO_UDP && flow->packet.l4_packet_len >= 8 /* size of udp */ ) {
-    flow->packet.udp = (struct ndpi_udphdr *) l4ptr;
-    flow->packet.payload_packet_len =flow->packet.l4_packet_len - 8;
-    flow->packet.payload = ((u_int8_t *)flow->packet.udp) + 8;
-  } else {
-    flow->packet.generic_l4_ptr = l4ptr;
-  }
-  return 0;
+    return 0;
 }
 
+/* 通过分析TCP头，记录TCP建立连接的握手信息
+ * @ndpi_struct     - 指向当前操作的探测模块
+ * @flow            - 指向当前操作的数据流
+ * 
+ */
 void ndpi_connection_tracking(struct ndpi_detection_module_struct *ndpi_struct,
 			      struct ndpi_flow_struct *flow)
 {
@@ -3129,111 +3151,115 @@ void ndpi_connection_tracking(struct ndpi_detection_module_struct *ndpi_struct,
 
   packet->tcp_retransmission = 0, packet->packet_direction = 0;
 
-  if(ndpi_struct->direction_detect_disable) {
-    packet->packet_direction = flow->packet_direction;
-  } else {
-    if(iph != NULL && iph->saddr < iph->daddr)
-      packet->packet_direction = 1;
+    if(ndpi_struct->direction_detect_disable) {
+        packet->packet_direction = flow->packet_direction;
+    } else {
+        if(iph != NULL && iph->saddr < iph->daddr)
+            packet->packet_direction = 1;
 
 #ifdef NDPI_DETECTION_SUPPORT_IPV6
-    if(iphv6 != NULL && NDPI_COMPARE_IPV6_ADDRESS_STRUCTS(&iphv6->ip6_src, &iphv6->ip6_dst) != 0)
-      packet->packet_direction = 1;
+        if(iphv6 != NULL && NDPI_COMPARE_IPV6_ADDRESS_STRUCTS(&iphv6->ip6_src, &iphv6->ip6_dst) != 0)
+            packet->packet_direction = 1;
 #endif
-  }
-
-  packet->packet_lines_parsed_complete = 0;
-  if(flow == NULL)
-    return;
-
-  if(flow->init_finished == 0) {
-    flow->init_finished = 1;
-    flow->setup_packet_direction = packet->packet_direction;
-  }
-
-  if(tcph != NULL) {
-    /* reset retried bytes here before setting it */
-    packet->num_retried_bytes = 0;
-
-    if(!ndpi_struct->direction_detect_disable)
-      packet->packet_direction = (tcph->source < tcph->dest) ? 1 : 0;
-
-    if(tcph->syn != 0 && tcph->ack == 0 && flow->l4.tcp.seen_syn == 0 && flow->l4.tcp.seen_syn_ack == 0
-       && flow->l4.tcp.seen_ack == 0) {
-      flow->l4.tcp.seen_syn = 1;
-    }
-    if(tcph->syn != 0 && tcph->ack != 0 && flow->l4.tcp.seen_syn == 1 && flow->l4.tcp.seen_syn_ack == 0
-       && flow->l4.tcp.seen_ack == 0) {
-      flow->l4.tcp.seen_syn_ack = 1;
-    }
-    if(tcph->syn == 0 && tcph->ack == 1 && flow->l4.tcp.seen_syn == 1 && flow->l4.tcp.seen_syn_ack == 1
-       && flow->l4.tcp.seen_ack == 0) {
-      flow->l4.tcp.seen_ack = 1;
-    }
-    if((flow->next_tcp_seq_nr[0] == 0 && flow->next_tcp_seq_nr[1] == 0)
-       || (proxy_enabled && (flow->next_tcp_seq_nr[0] == 0 || flow->next_tcp_seq_nr[1] == 0))) {
-      /* initialize tcp sequence counters */
-      /* the ack flag needs to be set to get valid sequence numbers from the other
-       * direction. Usually it will catch the second packet syn+ack but it works
-       * also for asymmetric traffic where it will use the first data packet
-       *
-       * if the syn flag is set add one to the sequence number,
-       * otherwise use the payload length.
-       */
-      if(tcph->ack != 0) {
-	flow->next_tcp_seq_nr[flow->packet.packet_direction] =
-	  ntohl(tcph->seq) + (tcph->syn ? 1 : packet->payload_packet_len);
-	if(!proxy_enabled) {
-	  flow->next_tcp_seq_nr[1 -flow->packet.packet_direction] = ntohl(tcph->ack_seq);
-	}
-      }
-    } else if(packet->payload_packet_len > 0) {
-      /* check tcp sequence counters */
-      if(((u_int32_t)(ntohl(tcph->seq) - flow->next_tcp_seq_nr[packet->packet_direction])) >
-	 ndpi_struct->tcp_max_retransmission_window_size) {
-
-	packet->tcp_retransmission = 1;
-
-	/* CHECK IF PARTIAL RETRY IS HAPPENING */
-	if((flow->next_tcp_seq_nr[packet->packet_direction] - ntohl(tcph->seq) < packet->payload_packet_len)) {
-	  /* num_retried_bytes actual_payload_len hold info about the partial retry
-	     analyzer which require this info can make use of this info
-	     Other analyzer can use packet->payload_packet_len */
-	  packet->num_retried_bytes = (u_int16_t)(flow->next_tcp_seq_nr[packet->packet_direction] - ntohl(tcph->seq));
-	  packet->actual_payload_len = packet->payload_packet_len - packet->num_retried_bytes;
-	  flow->next_tcp_seq_nr[packet->packet_direction] = ntohl(tcph->seq) + packet->payload_packet_len;
-	}
-      }
-
-      /* normal path
-	 actual_payload_len is initialized to payload_packet_len during tcp header parsing itself.
-	 It will be changed only in case of retransmission */
-      else {
-	packet->num_retried_bytes = 0;
-	flow->next_tcp_seq_nr[packet->packet_direction] = ntohl(tcph->seq) + packet->payload_packet_len;
-      }
     }
 
-    if(tcph->rst) {
-      flow->next_tcp_seq_nr[0] = 0;
-      flow->next_tcp_seq_nr[1] = 0;
+    packet->packet_lines_parsed_complete = 0;
+    if(flow == NULL)
+        return;
+
+    // 数据流到这里完成初始化
+    if(flow->init_finished == 0) {
+        flow->init_finished = 1;
+        flow->setup_packet_direction = packet->packet_direction;
     }
-  } else if(udph != NULL) {
-    if(!ndpi_struct->direction_detect_disable)
-      packet->packet_direction = (udph->source < udph->dest) ? 1 : 0;
-  }
 
-  if(flow->packet_counter < MAX_PACKET_COUNTER && packet->payload_packet_len) {
-    flow->packet_counter++;
-  }
+    // 分别分析TCP包和UDP包信息
+    if(tcph != NULL) {
+        // 分析TCP协议信息，判断TCP的状态
+        /* reset retried bytes here before setting it */
+        packet->num_retried_bytes = 0;
 
-  if(flow->packet_direction_counter[packet->packet_direction] < MAX_PACKET_COUNTER && packet->payload_packet_len) {
-    flow->packet_direction_counter[packet->packet_direction]++;
-  }
+        if(!ndpi_struct->direction_detect_disable)
+            packet->packet_direction = (tcph->source < tcph->dest) ? 1 : 0;
 
-  if(flow->byte_counter[packet->packet_direction] + packet->payload_packet_len >
+        // 情况1：当前TCP包是TCP建立连接时的第一次握手
+        if(tcph->syn != 0 && tcph->ack == 0 && flow->l4.tcp.seen_syn == 0 && flow->l4.tcp.seen_syn_ack == 0 && flow->l4.tcp.seen_ack == 0) {
+            flow->l4.tcp.seen_syn = 1;
+        }
+        // 情况2：当前TCP包是TCP建立连接时的第二次握手
+        if(tcph->syn != 0 && tcph->ack != 0 && flow->l4.tcp.seen_syn == 1 && flow->l4.tcp.seen_syn_ack == 0 && flow->l4.tcp.seen_ack == 0) {
+            flow->l4.tcp.seen_syn_ack = 1;
+        }
+        // 情况3：当前TCP包是TCP建立连接时的第三次握手
+        if(tcph->syn == 0 && tcph->ack == 1 && flow->l4.tcp.seen_syn == 1 && flow->l4.tcp.seen_syn_ack == 1
+        && flow->l4.tcp.seen_ack == 0) {
+            flow->l4.tcp.seen_ack = 1;
+        }
+        if((flow->next_tcp_seq_nr[0] == 0 && flow->next_tcp_seq_nr[1] == 0) || 
+           (proxy_enabled && (flow->next_tcp_seq_nr[0] == 0 || flow->next_tcp_seq_nr[1] == 0))) {
+            /* initialize tcp sequence counters */
+            /* the ack flag needs to be set to get valid sequence numbers from the other
+            * direction. Usually it will catch the second packet syn+ack but it works
+            * also for asymmetric traffic where it will use the first data packet
+            *
+            * if the syn flag is set add one to the sequence number,
+            * otherwise use the payload length.
+            */
+            if(tcph->ack != 0) {
+                flow->next_tcp_seq_nr[flow->packet.packet_direction] =
+                ntohl(tcph->seq) + (tcph->syn ? 1 : packet->payload_packet_len);
+                if(!proxy_enabled) {
+                    flow->next_tcp_seq_nr[1 -flow->packet.packet_direction] = ntohl(tcph->ack_seq);
+                }
+            }
+        } else if(packet->payload_packet_len > 0) {
+            /* check tcp sequence counters */
+            if(((u_int32_t)(ntohl(tcph->seq) - flow->next_tcp_seq_nr[packet->packet_direction])) >
+            ndpi_struct->tcp_max_retransmission_window_size) {
+
+                packet->tcp_retransmission = 1;
+
+                /* CHECK IF PARTIAL RETRY IS HAPPENING */
+                if((flow->next_tcp_seq_nr[packet->packet_direction] - ntohl(tcph->seq) < packet->payload_packet_len)) {
+                    /* num_retried_bytes actual_payload_len hold info about the partial retry
+                     analyzer which require this info can make use of this info
+                     Other analyzer can use packet->payload_packet_len */
+                    packet->num_retried_bytes = (u_int16_t)(flow->next_tcp_seq_nr[packet->packet_direction] - ntohl(tcph->seq));
+                    packet->actual_payload_len = packet->payload_packet_len - packet->num_retried_bytes;
+                    flow->next_tcp_seq_nr[packet->packet_direction] = ntohl(tcph->seq) + packet->payload_packet_len;
+                }
+            }
+
+            /* normal path
+            actual_payload_len is initialized to payload_packet_len during tcp header parsing itself.
+            It will be changed only in case of retransmission */
+            else {
+            packet->num_retried_bytes = 0;
+            flow->next_tcp_seq_nr[packet->packet_direction] = ntohl(tcph->seq) + packet->payload_packet_len;
+            }
+        }
+
+        if(tcph->rst) {
+          flow->next_tcp_seq_nr[0] = 0;
+          flow->next_tcp_seq_nr[1] = 0;
+        }
+    } else if(udph != NULL) {
+        if(!ndpi_struct->direction_detect_disable)
+            packet->packet_direction = (udph->source < udph->dest) ? 1 : 0;
+    }
+
+    if(flow->packet_counter < MAX_PACKET_COUNTER && packet->payload_packet_len) {
+        flow->packet_counter++;
+    }
+
+    if(flow->packet_direction_counter[packet->packet_direction] < MAX_PACKET_COUNTER && packet->payload_packet_len) {
+        flow->packet_direction_counter[packet->packet_direction]++;
+    }
+
+    if(flow->byte_counter[packet->packet_direction] + packet->payload_packet_len >
      flow->byte_counter[packet->packet_direction]) {
-    flow->byte_counter[packet->packet_direction] += packet->payload_packet_len;
-  }
+        flow->byte_counter[packet->packet_direction] += packet->payload_packet_len;
+    }
 }
 
 void check_ndpi_other_flow_func(struct ndpi_detection_module_struct *ndpi_struct,
@@ -3468,7 +3494,15 @@ ndpi_protocol ndpi_detection_giveup(struct ndpi_detection_module_struct *ndpi_st
 }
 
 /* ********************************************************************************* */
-
+/* 分析传入的IP包，对数据流完成一系列的初始化动作
+ * @ndpi_struct     - 指向传入包所属的探测模块
+ * @flow            - 指向传入包所属的数据流
+ * @packet          - 指向传入包的IP头
+ * @packetlen       - IP包的长度
+ * @current_tick_l  - 收到该IP包的时间(ms)
+ * @src             - 指向ndpi_flow_info->src_id
+ * @dst             - 指向ndpi_flow_info->dst_id
+ */
 ndpi_protocol ndpi_detection_process_packet(struct ndpi_detection_module_struct *ndpi_struct,
 					    struct ndpi_flow_struct *flow,
 					    const unsigned char *packet,
@@ -3502,6 +3536,7 @@ ndpi_protocol ndpi_detection_process_packet(struct ndpi_detection_module_struct 
   flow->packet.iph = (struct ndpi_iphdr *)packet;
   /* we are interested in ipv4 packet */
 
+  // 对数据包完成传输层和网络层的分析，并将结果填充到flow->packet中
   if(ndpi_init_packet_header(ndpi_struct, flow, packetlen) != 0)
     return(ret);
 
@@ -3509,6 +3544,7 @@ ndpi_protocol ndpi_detection_process_packet(struct ndpi_detection_module_struct 
 
   flow->src = src, flow->dst = dst;
 
+  // 通过分析l4层头，记录建立连接的握手信息
   ndpi_connection_tracking(ndpi_struct, flow);
 
   /* build ndpi_selection packet bitmask */
@@ -4192,7 +4228,7 @@ void ndpi_int_change_protocol(struct ndpi_detection_module_struct *ndpi_struct,
 /*   } */
 /* } */
 
-/* turns a packet back to unknown */
+/* turns a packet back to unknown 将数据包复位成unkown协议 */
 void ndpi_int_reset_packet_protocol(struct ndpi_packet_struct *packet) {
   int a;
 

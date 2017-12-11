@@ -36,7 +36,7 @@
 #define MAX_IDLE_TIME           30000
 #define IDLE_SCAN_BUDGET         1024
 #define NUM_ROOTS                 512
-#define MAX_NDPI_FLOWS      200000000
+#define MAX_NDPI_FLOWS      200000000   // 可以容纳的数据流上限
 #define TICK_RESOLUTION          1000
 #define MAX_NUM_IP_ADDRESS          5  /* len of ip address array */
 #define UPDATED_TREE                1
@@ -44,21 +44,27 @@
 #define DIR_SRC                    10
 #define DIR_DST                    20
 
-// flow tracking
+/* flow tracking 定义了数据流的跟踪信息(作为二叉树的节点数据来进行管理)
+ * 
+ * 备注：这是一个属于demo的结构，而ndpi_flow_struct是一个属于nDPI核心库的结构，包含了真正的数据流信息
+ *       这个结构可以看做是数据流结构的一层壳，其目的是方便对真正数据流的管理
+ */
 typedef struct ndpi_flow_info {
-  u_int32_t hashval;
-  u_int32_t lower_ip;
-  u_int32_t upper_ip;
-  u_int16_t lower_port;
-  u_int16_t upper_port;
-  u_int8_t detection_completed, protocol, bidirectional;
-  u_int16_t vlan_id;
-  struct ndpi_flow_struct *ndpi_flow;
-  char lower_name[48], upper_name[48];
+  u_int32_t hashval;            // (protocol + vlan_id + lower_ip + upper_id + lower_port + upper_port) % 512
+  u_int32_t lower_ip;           // 记录了该数据流的源IP
+  u_int32_t upper_ip;           // 记录了该数据流的目的IP
+  u_int16_t lower_port;         // 记录了该数据流的源端口
+  u_int16_t upper_port;         // 记录了该数据流的目的端口
+  u_int8_t detection_completed;
+  u_int8_t protocol;            // 记录了该数据流的传输层协议号(比如TCP)
+  u_int8_t bidirectional;
+  u_int16_t vlan_id;            // 记录了该数据流关联的VLAN ID
+  struct ndpi_flow_struct *ndpi_flow;   // 记录了数据流传输层执行上的信息
+  char lower_name[48], upper_name[48];  // 分别记录了该数据流的源IP名和目的IP名
   u_int8_t ip_version;
-  u_int64_t last_seen;
-  u_int64_t bytes;
-  u_int32_t packets;
+  u_int64_t last_seen;  // 记录了最近收到包的时间
+  u_int64_t bytes;      // 记录了收到的包字节总数(前提是识别为有效流)
+  u_int32_t packets;    // 记录了收到的包数量(前提是识别为有效流)
   
   // result only, not used for flow identification
   ndpi_protocol detected_protocol;
@@ -79,19 +85,20 @@ typedef struct ndpi_flow_info {
 typedef struct ndpi_stats {
   u_int32_t guessed_flow_protocols;
   u_int64_t raw_packet_count;           // 记录了从libpcap收到的原始报文数量
-  u_int64_t ip_packet_count;
+  u_int64_t ip_packet_count;            // 记录了收到的IP报文数量
   u_int64_t total_wire_bytes, total_ip_bytes, total_discarded_bytes;
   u_int64_t protocol_counter[NDPI_MAX_SUPPORTED_PROTOCOLS + NDPI_MAX_NUM_CUSTOM_PROTOCOLS + 1];     // 这张表记录了每种使能的协议收到的报文数量
   u_int64_t protocol_counter_bytes[NDPI_MAX_SUPPORTED_PROTOCOLS + NDPI_MAX_NUM_CUSTOM_PROTOCOLS + 1];   // 这张表记录了每种使能的协议收到的字节数量
   u_int32_t protocol_flows[NDPI_MAX_SUPPORTED_PROTOCOLS + NDPI_MAX_NUM_CUSTOM_PROTOCOLS + 1];       // 这张表记录了每种使能的协议收到的流数量
-  u_int32_t ndpi_flow_count;
-  u_int64_t tcp_count, udp_count;
+  u_int32_t ndpi_flow_count;        // 记录了数据流的数量 
+  u_int64_t tcp_count, udp_count;   // 分别记录了收到的TCP、UDP报文数量
   u_int64_t mpls_count;
   u_int64_t pppoe_count;
   u_int64_t vlan_count;             // 记录了收到的vlan报文数量
   u_int64_t fragmented_count;       // 记录了收到的IP分片报文数量
-  u_int64_t packet_len[6];
-  u_int16_t max_packet_len;
+  u_int64_t packet_len[6];          // 收到的不同长度(基于传输层长度)的包统计
+                                    // 6个元素依次对应：<64、64<= && <128、128<= && <256、256<= && <1024、1204<= && <1500、1500<=
+  u_int16_t max_packet_len;         // 记录了收到的最长包
 } ndpi_stats_t;
 
 
@@ -125,7 +132,7 @@ typedef struct ndpi_workflow {
   pcap_t *pcap_handle;      // 指向这条流关联的pcap句柄
 
   /* allocated by prefs */
-  void **ndpi_flows_root;   // 一个prefs.num_roots长度的数组，成员为 void *
+  void **ndpi_flows_root;   // 一个prefs.num_roots长度的hash数组，每个成员是二叉树的根节点，所以整个组织形式为 hash + 二叉树结构，存放了所有的数据流
   struct ndpi_detection_module_struct *ndpi_struct; // 指向这条工作流专属的探测模块
 } ndpi_workflow_t;
 

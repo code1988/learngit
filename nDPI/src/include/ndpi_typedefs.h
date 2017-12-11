@@ -47,11 +47,11 @@ typedef enum
     ndpi_leaf
   } ndpi_VISIT;
 
-/* NDPI_NODE */
+/* NDPI_NODE 二叉树节点 */
 typedef struct node_t
 {
-  char *key;
-  struct node_t *left, *right;
+  char *key;    // 节点上的数据(struct ndpi_flow_info / )
+  struct node_t *left, *right;  // 左、右子树
 } ndpi_node;
 
 /* NDPI_MASK_SIZE */
@@ -441,7 +441,7 @@ struct ndpi_id_struct {
 };
 
 /* ************************************************** */
-
+// 定义了TCP的状态信息结构
 struct ndpi_flow_tcp_struct {
 #ifdef NDPI_PROTOCOL_MAIL_SMTP
   u_int16_t smtp_command_bitmask;
@@ -524,9 +524,9 @@ struct ndpi_flow_tcp_struct {
 #ifdef NDPI_PROTOCOL_DIRECT_DOWNLOAD_LINK
   u_int32_t ddlink_server_direction:1;
 #endif
-  u_int32_t seen_syn:1;
-  u_int32_t seen_syn_ack:1;
-  u_int32_t seen_ack:1;
+  u_int32_t seen_syn:1;         // 标识是否已经收到tcp建立连接时的第一个握手报文
+  u_int32_t seen_syn_ack:1;     // 标识是否已经收到tcp建立连接时的第二个握手报文
+  u_int32_t seen_ack:1;         // 标识是否已经收到tcp建立连接时的第三个握手报文
 #ifdef NDPI_PROTOCOL_ICECAST
   u_int32_t icecast_stage:1;
 #endif
@@ -580,7 +580,7 @@ struct ndpi_flow_tcp_struct {
   ;
 
 /* ************************************************** */
-
+// 定义了UDP的状态信息结构
 struct ndpi_flow_udp_struct {
 #ifdef NDPI_PROTOCOL_BATTLEFIELD
   u_int32_t battlefield_msg_id;
@@ -639,18 +639,19 @@ struct ndpi_int_one_line_struct {
   u_int16_t len;
 };
 
+// 定义了一个数据包的相关信息结构
 struct ndpi_packet_struct {
-  const struct ndpi_iphdr *iph;
+  const struct ndpi_iphdr *iph;         // IPv4头
 #ifdef NDPI_DETECTION_SUPPORT_IPV6
-  const struct ndpi_ipv6hdr *iphv6;
+  const struct ndpi_ipv6hdr *iphv6;     // IPv6头
 #endif
-  const struct ndpi_tcphdr *tcp;
-  const struct ndpi_udphdr *udp;
-  const u_int8_t *generic_l4_ptr;	/* is set only for non tcp-udp traffic */
-  const u_int8_t *payload;
+  const struct ndpi_tcphdr *tcp;        // TCP头
+  const struct ndpi_udphdr *udp;        // UDP头
+  const u_int8_t *generic_l4_ptr;	/* is set only for non tcp-udp traffic 除了tcp和udp之外的其他情况的l4层头 */
+  const u_int8_t *payload;              // 指向l4层payload首地址的指针
 
-  u_int32_t tick_timestamp;
-  u_int64_t tick_timestamp_l;
+  u_int32_t tick_timestamp;     // 收到包的时间(s)
+  u_int64_t tick_timestamp_l;   // 收到包的时间(ms)
 
   u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];
   u_int8_t detected_subprotocol_stack[NDPI_PROTOCOL_SIZE];
@@ -679,20 +680,20 @@ struct ndpi_packet_struct {
   struct ndpi_int_one_line_struct http_method;
   struct ndpi_int_one_line_struct http_response;
 
-  u_int16_t l3_packet_len;
-  u_int16_t l4_packet_len;
-  u_int16_t payload_packet_len;
-  u_int16_t actual_payload_len;
+  u_int16_t l3_packet_len;      // 记录了收到包的l3层长度
+  u_int16_t l4_packet_len;      // 记录了收到包的l4层长度
+  u_int16_t payload_packet_len; // 记录了收到包的l4层payload长度
+  u_int16_t actual_payload_len; // 缺省从payload_packet_len同步过来
   u_int16_t num_retried_bytes;
   u_int16_t parsed_lines;
   u_int16_t parsed_unix_lines;
   u_int16_t empty_line_position;
   u_int8_t tcp_retransmission;
-  u_int8_t l4_protocol;
+  u_int8_t l4_protocol;         // 记录了收到包的l4层协议号(比如TCP)
 
   u_int8_t ssl_certificate_detected:4, ssl_certificate_num_checks:4;
   u_int8_t packet_lines_parsed_complete:1,
-    packet_direction:1,
+    packet_direction:1,         // 标识收到包的方向，有两种情况下会置1：源ip < 目的ip时;源端口 < 目的端口时
     empty_line_position_set:1;
 };
 
@@ -892,11 +893,12 @@ struct ndpi_detection_module_struct {
   ndpi_proto_defaults_t proto_defaults[NDPI_MAX_SUPPORTED_PROTOCOLS+NDPI_MAX_NUM_CUSTOM_PROTOCOLS]; // 这张表记录了所有支持的协议的缺省信息，主要是端口信息
                                                                                                     // 根据分配的协议ID号进行索引
   u_int8_t http_dont_dissect_response:1, dns_dissect_response:1,
-    direction_detect_disable:1; /* disable internal detection of packet direction */
+    direction_detect_disable:1; /* disable internal detection of packet direction  标识是否禁止内部检测包的方向 */
 };
 
+// 定义了数据流结构
 struct ndpi_flow_struct {
-  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];
+  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];    // 记录了该数据流的主协议和子协议
 #ifndef WIN32
   __attribute__ ((__packed__))
 #endif
@@ -905,7 +907,11 @@ struct ndpi_flow_struct {
   /* init parameter, internal used to set up timestamp,... */
   u_int16_t guessed_protocol_id, guessed_host_protocol_id;
 
-  u_int8_t protocol_id_already_guessed:1, host_already_guessed:1, init_finished:1, setup_packet_direction:1, packet_direction:1;
+  u_int8_t protocol_id_already_guessed:1, 
+           host_already_guessed:1, 
+           init_finished:1,                 // 标识该数据流是否完成了初始化
+           setup_packet_direction:1,        // 同步自packet_direction
+           packet_direction:1;
 
   /*
      if ndpi_struct->direction_detect_disable == 1
@@ -916,6 +922,7 @@ struct ndpi_flow_struct {
   /*
      the tcp / udp / other l4 value union
      used to reduce the number of bytes for tcp or udp protocol states
+     记录该数据流的TCP/UDP状态信息
   */
   union {
     struct ndpi_flow_tcp_struct tcp;
@@ -926,6 +933,7 @@ struct ndpi_flow_struct {
      Pointer to src or dst
      that identifies the
      server of this connection
+     缺省指向dst
   */
   struct ndpi_id_struct *server_id;
   /* HTTP host or DNS query */
@@ -988,9 +996,9 @@ struct ndpi_flow_struct {
 #ifdef NDPI_PROTOCOL_REDIS
   u_int8_t redis_s2d_first_char, redis_d2s_first_char;
 #endif
-  u_int16_t packet_counter;		      // can be 0 - 65000
-  u_int16_t packet_direction_counter[2];
-  u_int16_t byte_counter[2];
+  u_int16_t packet_counter;		            // can be 0 - 65000 属于该数据流的包计数器
+  u_int16_t packet_direction_counter[2];    // 分别记录了该数据流在两个方向上的包数量
+  u_int16_t byte_counter[2];                // 分别记录了该数据流在两个方向上的payload字节数
 #ifdef NDPI_PROTOCOL_BITTORRENT
   u_int8_t bittorrent_stage;		      // can be 0 - 255
 #endif
@@ -1064,7 +1072,7 @@ struct ndpi_flow_struct {
 #endif
 
   /* internal structures to save functions calls */
-  struct ndpi_packet_struct packet;
+  struct ndpi_packet_struct packet;     // 记录了当前数据包的相关信息
   struct ndpi_flow_struct *flow;
   struct ndpi_id_struct *src;
   struct ndpi_id_struct *dst;

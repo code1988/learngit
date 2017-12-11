@@ -154,7 +154,7 @@ void ndpi_workflow_free(struct ndpi_workflow * workflow) {
 }
 
 /* ***************************************************** */
-
+// 用于二叉树workflow->ndpi_flows_root[*]的比较函数
 int ndpi_workflow_node_cmp(const void *a, const void *b) {
   struct ndpi_flow_info *fa = (struct ndpi_flow_info*)a;
   struct ndpi_flow_info *fb = (struct ndpi_flow_info*)b;
@@ -210,7 +210,27 @@ static void patchIPv6Address(char *str) {
 }
 
 /* ***************************************************** */
-
+/* 根据传入的IP包获取传输层的相关信息，并基于这些信息完成数据流的分类，对于新的数据流则创建对应的节点插入二叉树
+ * @workflow    - 指向当前操作所属的工作流
+ * @version     - IPv4/IPv6版本号
+ * @vlan_id     - 该传入IP包关联的VLAN ID
+ * @iph         - IPv4包头
+ * @iph6        - IPv6包头
+ * @ip_offset   - IPv4/IPv6包头距离接收到的原始报文头部的偏移量
+ * @ipsize      - 该传入的IP包长度
+ * @l4_packet_len   - 该传入的IP包的传输层长度
+ * @tcph        - 用于存放指向TCP头的指针
+ * @udph        - 用于存放指向UDP头的指针
+ * @sport       - 用于存放源端口号
+ * @dport       - 用于存放目的端口号
+ * @src         - 用于存放指向ndpi_flow_info->src_id的指针
+ * @dst         - 用于存放指向ndpi_flow_info->dst_id的指针
+ * @proto       - 用于存放传输层的协议号
+ * @payload     - 用于存放指向传输层payload的指针
+ * @payload_len - 用于存放传输层payload的长度
+ * @src_to_dst_direction    - 用于存放是否跟数据流同向的标识
+ * @返回值：    成功返回该IP包所属的数据流结构;失败返回NULL
+ */
 static struct ndpi_flow_info *get_ndpi_flow_info(struct ndpi_workflow * workflow,
 						 const u_int8_t version,
 						 u_int16_t vlan_id,
@@ -252,6 +272,7 @@ static struct ndpi_flow_info *get_ndpi_flow_info(struct ndpi_workflow * workflow
     l3 = (u_int8_t*)iph6;
   }
 
+  // 更新相关的统计信息
   if(l4_packet_len < 64)
     workflow->stats.packet_len[0]++;
   else if(l4_packet_len >= 64 && l4_packet_len < 128)
@@ -294,90 +315,93 @@ static struct ndpi_flow_info *get_ndpi_flow_info(struct ndpi_workflow * workflow
     *sport = *dport = 0;
   }
 
-  flow.protocol = iph->protocol, flow.vlan_id = vlan_id;
-  flow.lower_ip = iph->saddr, flow.upper_ip = iph->daddr;
-  flow.lower_port = htons(*sport), flow.upper_port = htons(*dport);
-  flow.hashval = hashval = flow.protocol + flow.vlan_id + flow.lower_ip + flow.upper_ip + flow.lower_port + flow.upper_port;
-  idx = hashval % workflow->prefs.num_roots;
-  ret = ndpi_tfind(&flow, &workflow->ndpi_flows_root[idx], ndpi_workflow_node_cmp);
+    flow.protocol = iph->protocol, flow.vlan_id = vlan_id;
+    flow.lower_ip = iph->saddr, flow.upper_ip = iph->daddr;
+    flow.lower_port = htons(*sport), flow.upper_port = htons(*dport);
+    flow.hashval = hashval = flow.protocol + flow.vlan_id + flow.lower_ip + flow.upper_ip + flow.lower_port + flow.upper_port;
+    idx = hashval % workflow->prefs.num_roots;
 
-  if(ret == NULL) {
-    if(workflow->stats.ndpi_flow_count == workflow->prefs.max_ndpi_flows) {
-      NDPI_LOG(0, workflow->ndpi_struct, NDPI_LOG_ERROR,
-	       "maximum flow count (%u) has been exceeded\n",
-	       workflow->prefs.max_ndpi_flows);
-      exit(-1);
+    // 搜索对应hash地址上的二叉树，检查是否存在匹配的节点
+    ret = ndpi_tfind(&flow, &workflow->ndpi_flows_root[idx], ndpi_workflow_node_cmp);
+
+    if(ret == NULL) {
+        // 如果不存在匹配节点，意味着是一个新的数据流，需要创建一个新的对应节点并插入二叉树
+        if(workflow->stats.ndpi_flow_count == workflow->prefs.max_ndpi_flows) {
+            NDPI_LOG(0, workflow->ndpi_struct, NDPI_LOG_ERROR,
+               "maximum flow count (%u) has been exceeded\n",
+               workflow->prefs.max_ndpi_flows);
+            exit(-1);
+        } else {
+            struct ndpi_flow_info *newflow = (struct ndpi_flow_info*)malloc(sizeof(struct ndpi_flow_info));
+
+            if(newflow == NULL) {
+            NDPI_LOG(0, workflow->ndpi_struct, NDPI_LOG_ERROR, "[NDPI] %s(1): not enough memory\n", __FUNCTION__);
+            return(NULL);
+            }
+
+            memset(newflow, 0, sizeof(struct ndpi_flow_info));
+            newflow->hashval = hashval;
+            newflow->protocol = iph->protocol, newflow->vlan_id = vlan_id;
+            newflow->lower_ip = iph->saddr, newflow->upper_ip = iph->daddr;
+            newflow->lower_port = htons(*sport), newflow->upper_port = htons(*dport);
+            newflow->ip_version = version;
+
+            if(version == IPVERSION) {
+                inet_ntop(AF_INET, &newflow->lower_ip, newflow->lower_name, sizeof(newflow->lower_name));
+                inet_ntop(AF_INET, &newflow->upper_ip, newflow->upper_name, sizeof(newflow->upper_name));
+            } else {
+                inet_ntop(AF_INET6, &iph6->ip6_src, newflow->lower_name, sizeof(newflow->lower_name));
+                inet_ntop(AF_INET6, &iph6->ip6_dst, newflow->upper_name, sizeof(newflow->upper_name));
+                /* For consistency across platforms replace :0: with :: */
+                patchIPv6Address(newflow->lower_name), patchIPv6Address(newflow->upper_name);
+            }
+
+            if((newflow->ndpi_flow = ndpi_flow_malloc(SIZEOF_FLOW_STRUCT)) == NULL) {
+                NDPI_LOG(0, workflow->ndpi_struct, NDPI_LOG_ERROR, "[NDPI] %s(2): not enough memory\n", __FUNCTION__);
+                free(newflow);
+                return(NULL);
+            } else
+                memset(newflow->ndpi_flow, 0, SIZEOF_FLOW_STRUCT);
+
+            if((newflow->src_id = ndpi_malloc(SIZEOF_ID_STRUCT)) == NULL) {
+                NDPI_LOG(0, workflow->ndpi_struct, NDPI_LOG_ERROR, "[NDPI] %s(3): not enough memory\n", __FUNCTION__);
+                free(newflow);
+                return(NULL);
+            } else
+                memset(newflow->src_id, 0, SIZEOF_ID_STRUCT);
+
+            if((newflow->dst_id = ndpi_malloc(SIZEOF_ID_STRUCT)) == NULL) {
+                NDPI_LOG(0, workflow->ndpi_struct, NDPI_LOG_ERROR, "[NDPI] %s(4): not enough memory\n", __FUNCTION__);
+                free(newflow);
+                return(NULL);
+            } else
+                memset(newflow->dst_id, 0, SIZEOF_ID_STRUCT);
+
+            ndpi_tsearch(newflow, &workflow->ndpi_flows_root[idx], ndpi_workflow_node_cmp); /* Add */
+            workflow->stats.ndpi_flow_count++;
+
+            *src = newflow->src_id, *dst = newflow->dst_id;
+
+            return newflow;
+        }
     } else {
-      struct ndpi_flow_info *newflow = (struct ndpi_flow_info*)malloc(sizeof(struct ndpi_flow_info));
+        // 如果存在匹配的节点，意味着该IP包属于一个已经存在的数据流，只需要继续在该数据流上进行操作
+        struct ndpi_flow_info *flow = *(struct ndpi_flow_info**)ret;
 
-      if(newflow == NULL) {
-	NDPI_LOG(0, workflow->ndpi_struct, NDPI_LOG_ERROR, "[NDPI] %s(1): not enough memory\n", __FUNCTION__);
-	return(NULL);
-      }
+        if(flow->lower_ip == iph->saddr && flow->upper_ip == iph->daddr && 
+           flow->lower_port == htons(*sport) && flow->upper_port == htons(*dport))
+            *src = flow->src_id, *dst = flow->dst_id, *src_to_dst_direction = 1;
+        else
+            *src = flow->dst_id, *dst = flow->src_id, *src_to_dst_direction = 0, flow->bidirectional = 1;
 
-      memset(newflow, 0, sizeof(struct ndpi_flow_info));
-      newflow->hashval = hashval;
-      newflow->protocol = iph->protocol, newflow->vlan_id = vlan_id;
-      newflow->lower_ip = iph->saddr, newflow->upper_ip = iph->daddr;
-      newflow->lower_port = htons(*sport), newflow->upper_port = htons(*dport);
-      newflow->ip_version = version;
-
-      if(version == IPVERSION) {
-	inet_ntop(AF_INET, &newflow->lower_ip, newflow->lower_name, sizeof(newflow->lower_name));
-	inet_ntop(AF_INET, &newflow->upper_ip, newflow->upper_name, sizeof(newflow->upper_name));
-      } else {
-	inet_ntop(AF_INET6, &iph6->ip6_src, newflow->lower_name, sizeof(newflow->lower_name));
-	inet_ntop(AF_INET6, &iph6->ip6_dst, newflow->upper_name, sizeof(newflow->upper_name));
-	/* For consistency across platforms replace :0: with :: */
-	patchIPv6Address(newflow->lower_name), patchIPv6Address(newflow->upper_name);
-      }
-
-      if((newflow->ndpi_flow = ndpi_flow_malloc(SIZEOF_FLOW_STRUCT)) == NULL) {
-	NDPI_LOG(0, workflow->ndpi_struct, NDPI_LOG_ERROR, "[NDPI] %s(2): not enough memory\n", __FUNCTION__);
-	free(newflow);
-	return(NULL);
-      } else
-	memset(newflow->ndpi_flow, 0, SIZEOF_FLOW_STRUCT);
-
-      if((newflow->src_id = ndpi_malloc(SIZEOF_ID_STRUCT)) == NULL) {
-	NDPI_LOG(0, workflow->ndpi_struct, NDPI_LOG_ERROR, "[NDPI] %s(3): not enough memory\n", __FUNCTION__);
-	free(newflow);
-	return(NULL);
-      } else
-	memset(newflow->src_id, 0, SIZEOF_ID_STRUCT);
-
-      if((newflow->dst_id = ndpi_malloc(SIZEOF_ID_STRUCT)) == NULL) {
-	NDPI_LOG(0, workflow->ndpi_struct, NDPI_LOG_ERROR, "[NDPI] %s(4): not enough memory\n", __FUNCTION__);
-	free(newflow);
-	return(NULL);
-      } else
-	memset(newflow->dst_id, 0, SIZEOF_ID_STRUCT);
-
-      ndpi_tsearch(newflow, &workflow->ndpi_flows_root[idx], ndpi_workflow_node_cmp); /* Add */
-      workflow->stats.ndpi_flow_count++;
-
-      *src = newflow->src_id, *dst = newflow->dst_id;
-
-      return newflow;
+        return flow;
     }
-  } else {
-    struct ndpi_flow_info *flow = *(struct ndpi_flow_info**)ret;
-
-    if(flow->lower_ip == iph->saddr
-       && flow->upper_ip == iph->daddr
-       && flow->lower_port == htons(*sport)
-       && flow->upper_port == htons(*dport)
-       )
-      *src = flow->src_id, *dst = flow->dst_id, *src_to_dst_direction = 1;
-    else
-      *src = flow->dst_id, *dst = flow->src_id, *src_to_dst_direction = 0, flow->bidirectional = 1;
-
-    return flow;
-  }
 }
 
 /* ****************************************************** */
 
+/* 根据传入的IPv6包获取数据流的相关信息，从而实现了对数据流的分类
+ */
 static struct ndpi_flow_info *get_ndpi_flow_info6(struct ndpi_workflow * workflow,
 						  u_int16_t vlan_id,
 						  const struct ndpi_ipv6hdr *iph6,
@@ -474,7 +498,17 @@ void process_ndpi_collected_info(struct ndpi_workflow * workflow, struct ndpi_fl
 
 /**
    Function to process the packet:
+   处理传入的IP包，也就是处理传输层及以上的信息
    determine the flow of a packet and try to decode it
+   @workflow    - 指向当前操作所属的工作流
+   @time        - 最近收到包的时间(ms)，通常就是收到该IP包的时间
+   @vlan_id     - 该传入IP包关联的VLAN ID
+   @iph         - 如果该传入IP包属于IPv4，则这里指向该IPv4包头，否则传入NULL
+   @iph6        - 如果该传入IP包属于IPv6，则这里指向该IPv6包头，否则传入NULL
+   @ip_offset   - IPv4/IPv6包头距离接收到的原始报文头部的偏移量
+   @ipsize      - 该传入的IP包长度
+   @rawsize     - 接收到的原始报文的总长度
+
    @return: 0 if success; else != 0
 
    @Note: ipsize = header->len - ip_offset ; rawsize = header->len
@@ -497,34 +531,36 @@ static struct ndpi_proto packet_processing(struct ndpi_workflow * workflow,
   u_int8_t src_to_dst_direction = 1;
   struct ndpi_proto nproto = { NDPI_PROTOCOL_UNKNOWN, NDPI_PROTOCOL_UNKNOWN };
 
-  if(iph)
-    flow = get_ndpi_flow_info(workflow, IPVERSION, vlan_id, iph, NULL,
-			      ip_offset, ipsize,
-			      ntohs(iph->tot_len) - (iph->ihl * 4),
-			      &tcph, &udph, &sport, &dport,
-			      &src, &dst, &proto,
-			      &payload, &payload_len, &src_to_dst_direction);
-  else
-    flow = get_ndpi_flow_info6(workflow, vlan_id, iph6, ip_offset,
-			       &tcph, &udph, &sport, &dport,
-			       &src, &dst, &proto,
-			       &payload, &payload_len, &src_to_dst_direction);
+    // 根据IPv4还是IPv6完成流分类操作(实际IPv6最终还是调用了IPv4的接口)
+    if(iph)
+        flow = get_ndpi_flow_info(workflow, IPVERSION, vlan_id, iph, NULL,
+                  ip_offset, ipsize,
+                  ntohs(iph->tot_len) - (iph->ihl * 4),
+                  &tcph, &udph, &sport, &dport,
+                  &src, &dst, &proto,
+                  &payload, &payload_len, &src_to_dst_direction);
+    else
+        flow = get_ndpi_flow_info6(workflow, vlan_id, iph6, ip_offset,
+                   &tcph, &udph, &sport, &dport,
+                   &src, &dst, &proto,
+                   &payload, &payload_len, &src_to_dst_direction);
 
-  if(flow != NULL) {
-    workflow->stats.ip_packet_count++;
-    workflow->stats.total_wire_bytes += rawsize + 24 /* CRC etc */,
-      workflow->stats.total_ip_bytes += rawsize;
-    ndpi_flow = flow->ndpi_flow;
-    flow->packets++, flow->bytes += rawsize;
-    flow->last_seen = time;
-  } else { // flow is NULL
-    workflow->stats.total_discarded_bytes++;
-    return(nproto);
-  }
+    if(flow != NULL) {
+        workflow->stats.ip_packet_count++;
+        workflow->stats.total_wire_bytes += rawsize + 24 /* CRC etc */,
+          workflow->stats.total_ip_bytes += rawsize;
+        ndpi_flow = flow->ndpi_flow;
+        flow->packets++, flow->bytes += rawsize;
+        flow->last_seen = time;
+    } else { // flow is NULL
+        workflow->stats.total_discarded_bytes++;
+        return(nproto);
+    }
 
   /* Protocol already detected */
   if(flow->detection_completed) return(flow->detected_protocol);
 
+  // 这里开始对包的应用层进行分析
   flow->detected_protocol = ndpi_detection_process_packet(workflow->ndpi_struct, ndpi_flow,
 							  iph ? (uint8_t *)iph : (uint8_t *)iph6,
 							  ipsize, time, src, dst);
@@ -887,7 +923,9 @@ v4_warning:
         }
     }
 
-    /* process the packet */
+    /* process the packet 
+     * 进一步处理IP包，也就是对其传输层进行处理
+     * */
     return(packet_processing(workflow, time, vlan_id, iph, iph6,
 			   ip_offset, header->caplen - ip_offset, header->caplen));
 }
