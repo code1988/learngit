@@ -70,7 +70,9 @@ static json_object *jArray_unknown_flows;   // 记录未知报文的JSON对象(�
 static u_int8_t live_capture = 0;           // 标识是否打开了一个捕获接口
 static u_int8_t undetected_flows_deleted = 0;
 /** User preferences **/
-static u_int8_t enable_protocol_guess = 1, verbose = 0, nDPI_traceLevel = 0;
+static u_int8_t enable_protocol_guess = 1;
+static u_int8_t verbose = 0;        // 控制输出信息的详细程度:0/1/2/3
+static u_int8_t nDPI_traceLevel = 0;
 static u_int8_t json_flag = 0;      // 标识是否启用JSON格式输出
 static u_int8_t stats_flag = 0, file_first_time = 1; 
 static u_int32_t pcap_analysis_duration = (u_int32_t)-1;
@@ -83,7 +85,7 @@ static struct timeval begin, end;   // 记录了开始、结束时间
 #ifdef linux
 static int core_affinity[MAX_NUM_READER_THREADS];   // 线程-cpu亲和关系映射表
 #endif
-static struct timeval pcap_start, pcap_end;
+static struct timeval pcap_start, pcap_end;     // 捕获起始和结束时间(只在没有传入捕获接口时有效)
 /** Detection parameters **/
 static time_t capture_for = 0;      // 捕获超时时间(相对时间)(只对传入了捕获接口有效)
 static time_t capture_until = 0;    // 捕获超时时间点(绝对时间)(只对传入了捕获接口有效)
@@ -145,7 +147,7 @@ struct reader_thread {
   pthread_t pthread;                    // 记录了对应的线程ID
   u_int64_t last_idle_scan_time;
   u_int32_t idle_scan_idx;
-  u_int32_t num_idle_flows;
+  u_int32_t num_idle_flows;             // 记录了空闲的数据流数量
   struct ndpi_flow_info *idle_flows[IDLE_SCAN_BUDGET];
 };
 
@@ -767,6 +769,7 @@ static void node_print_known_proto_walker(const void *node, ndpi_VISIT which, in
 
 /**
  * @brief Guess Undetected Protocol
+ * 对没有探测到的协议进行猜测
  */
 static u_int16_t node_guess_undetected_protocol(u_int16_t thread_id, struct ndpi_flow_info *flow) {
 
@@ -1020,6 +1023,7 @@ static void on_protocol_discovered(struct ndpi_workflow * workflow,
   const u_int16_t thread_id = (uintptr_t) udata;
 
   if(verbose > 1){
+      // 如果用户使能了协议猜测选项，则会对没有探测到的协议进行猜测
     if(enable_protocol_guess) {
       if(flow->detected_protocol.app_protocol == NDPI_PROTOCOL_UNKNOWN) {
         flow->detected_protocol.app_protocol = node_guess_undetected_protocol(thread_id, flow),
@@ -1104,7 +1108,7 @@ static void setupDetection(u_int16_t thread_id, pcap_t * pcap_handle) {
      * 显然，作为展示用的demo，ndpiReader在这里将所有默认支持的协议都使能了
      */
     NDPI_BITMASK_SET_ALL(all);
-    // 对实际需要探测的协议进行统一注册的入口
+    // 对实际需要探测的协议进行统一使能的入口
     ndpi_set_protocol_detection_bitmask2(ndpi_thread_info[thread_id].workflow->ndpi_struct, &all);
 
     // clear memory for results
@@ -1825,53 +1829,57 @@ static pcap_t * openPcapFileOrDevice(u_int16_t thread_id, const u_char * pcap_fi
 static void pcap_process_packet(u_char *args,
 				const struct pcap_pkthdr *header,
 				const u_char *packet) {
-  struct ndpi_proto p;
-  u_int16_t thread_id = *((u_int16_t*)args);
+    struct ndpi_proto p;
+    u_int16_t thread_id = *((u_int16_t*)args);
 
-  /* allocate an exact size buffer to check overflows 
-   * 首先对每个接收到的报文进行了转储
-   * */
-  uint8_t *packet_checked = malloc(header->caplen);
+    /* allocate an exact size buffer to check overflows 
+    * 首先对每个接收到的报文进行了转储
+    * */
+    uint8_t *packet_checked = malloc(header->caplen);
 
-  memcpy(packet_checked, packet, header->caplen);
-  // 使用该线程单元对应的工作流开始对转储的报文进行处理
-  p = ndpi_workflow_process_packet(ndpi_thread_info[thread_id].workflow, header, packet_checked);
+    memcpy(packet_checked, packet, header->caplen);
+    // 使用该线程单元对应的工作流开始对转储的报文进行识别，返回识别结果
+    p = ndpi_workflow_process_packet(ndpi_thread_info[thread_id].workflow, header, packet_checked);
 
-  if((capture_until != 0) && (header->ts.tv_sec >= capture_until)) {
-    if(ndpi_thread_info[thread_id].workflow->pcap_handle != NULL)
-      pcap_breakloop(ndpi_thread_info[thread_id].workflow->pcap_handle);
-    return;
-  }
-
-  /* Check if capture is live or not */
-  if(!live_capture) {
-    if(!pcap_start.tv_sec) pcap_start.tv_sec = header->ts.tv_sec, pcap_start.tv_usec = header->ts.tv_usec;
-    pcap_end.tv_sec = header->ts.tv_sec, pcap_end.tv_usec = header->ts.tv_usec;
-  }
-
-  /* Idle flows cleanup */
-  if(live_capture) {
-    if(ndpi_thread_info[thread_id].last_idle_scan_time + IDLE_SCAN_PERIOD < ndpi_thread_info[thread_id].workflow->last_time) {
-      /* scan for idle flows */
-      ndpi_twalk(ndpi_thread_info[thread_id].workflow->ndpi_flows_root[ndpi_thread_info[thread_id].idle_scan_idx], node_idle_scan_walker, &thread_id);
-
-      /* remove idle flows (unfortunately we cannot do this inline) */
-      while (ndpi_thread_info[thread_id].num_idle_flows > 0) {
-
-	/* search and delete the idle flow from the "ndpi_flow_root" (see struct reader thread) - here flows are the node of a b-tree */
-	ndpi_tdelete(ndpi_thread_info[thread_id].idle_flows[--ndpi_thread_info[thread_id].num_idle_flows],
-		     &ndpi_thread_info[thread_id].workflow->ndpi_flows_root[ndpi_thread_info[thread_id].idle_scan_idx],
-		     ndpi_workflow_node_cmp);
-
-	/* free the memory associated to idle flow in "idle_flows" - (see struct reader thread)*/
-	ndpi_free_flow_info_half(ndpi_thread_info[thread_id].idle_flows[ndpi_thread_info[thread_id].num_idle_flows]);
-	ndpi_free(ndpi_thread_info[thread_id].idle_flows[ndpi_thread_info[thread_id].num_idle_flows]);
-      }
-
-      if(++ndpi_thread_info[thread_id].idle_scan_idx == ndpi_thread_info[thread_id].workflow->prefs.num_roots) ndpi_thread_info[thread_id].idle_scan_idx = 0;
-      ndpi_thread_info[thread_id].last_idle_scan_time = ndpi_thread_info[thread_id].workflow->last_time;
+    // 检查是否超时，超时则强制退出循环捕获
+    if((capture_until != 0) && (header->ts.tv_sec >= capture_until)) {
+        if(ndpi_thread_info[thread_id].workflow->pcap_handle != NULL)
+            pcap_breakloop(ndpi_thread_info[thread_id].workflow->pcap_handle);
+        return;
     }
-  }
+
+    /* Check if capture is live or not 
+     * 如果没有打开捕获接口，则需要更新捕获时间
+     */
+    if(!live_capture) {
+        if(!pcap_start.tv_sec) 
+            pcap_start.tv_sec = header->ts.tv_sec, pcap_start.tv_usec = header->ts.tv_usec;
+        pcap_end.tv_sec = header->ts.tv_sec, pcap_end.tv_usec = header->ts.tv_usec;
+    }
+
+    /* Idle flows cleanup  清除空闲的数据流 */
+    if(live_capture) {
+        if(ndpi_thread_info[thread_id].last_idle_scan_time + IDLE_SCAN_PERIOD < ndpi_thread_info[thread_id].workflow->last_time) {
+            /* scan for idle flows */
+            ndpi_twalk(ndpi_thread_info[thread_id].workflow->ndpi_flows_root[ndpi_thread_info[thread_id].idle_scan_idx], node_idle_scan_walker, &thread_id);
+
+            /* remove idle flows (unfortunately we cannot do this inline) */
+            while (ndpi_thread_info[thread_id].num_idle_flows > 0) {
+                /* search and delete the idle flow from the "ndpi_flow_root" (see struct reader thread) - here flows are the node of a b-tree */
+                ndpi_tdelete(ndpi_thread_info[thread_id].idle_flows[--ndpi_thread_info[thread_id].num_idle_flows],
+                     &ndpi_thread_info[thread_id].workflow->ndpi_flows_root[ndpi_thread_info[thread_id].idle_scan_idx],
+                     ndpi_workflow_node_cmp);
+
+                /* free the memory associated to idle flow in "idle_flows" - (see struct reader thread)*/
+                ndpi_free_flow_info_half(ndpi_thread_info[thread_id].idle_flows[ndpi_thread_info[thread_id].num_idle_flows]);
+                ndpi_free(ndpi_thread_info[thread_id].idle_flows[ndpi_thread_info[thread_id].num_idle_flows]);
+            }
+
+            if(++ndpi_thread_info[thread_id].idle_scan_idx == ndpi_thread_info[thread_id].workflow->prefs.num_roots) 
+                ndpi_thread_info[thread_id].idle_scan_idx = 0;
+            ndpi_thread_info[thread_id].last_idle_scan_time = ndpi_thread_info[thread_id].workflow->last_time;
+        }
+    }
 
 #ifdef DEBUG_TRACE
   if(trace) fprintf(trace, "Found %u bytes packet %u.%u\n", header->caplen, p.app_protocol, p.master_protocol);
@@ -1912,33 +1920,33 @@ static void pcap_process_packet(u_char *args,
     pcap_dump_flush(extcap_dumper);
   }
 
-  /* check for buffer changes */
-  if(memcmp(packet, packet_checked, header->caplen) != 0)
-    printf("INTERNAL ERROR: ingress packet was modified by nDPI: this should not happen [thread_id=%u, packetId=%lu, caplen=%u]\n",
-	   thread_id, (unsigned long)ndpi_thread_info[thread_id].workflow->stats.raw_packet_count, header->caplen);
-  free(packet_checked);
+    /* check for buffer changes 确认包缓存没有被修改过 */
+    if(memcmp(packet, packet_checked, header->caplen) != 0)
+        printf("INTERNAL ERROR: ingress packet was modified by nDPI: this should not happen [thread_id=%u, packetId=%lu, caplen=%u]\n",
+               thread_id, (unsigned long)ndpi_thread_info[thread_id].workflow->stats.raw_packet_count, header->caplen);
+    free(packet_checked);
 
-  if((pcap_end.tv_sec-pcap_start.tv_sec) > pcap_analysis_duration) {
-    int i;
-    u_int64_t tot_usec;
+    if((pcap_end.tv_sec-pcap_start.tv_sec) > pcap_analysis_duration) {
+        int i;
+        u_int64_t tot_usec;
 
-    gettimeofday(&end, NULL);
-    tot_usec = end.tv_sec*1000000 + end.tv_usec - (begin.tv_sec*1000000 + begin.tv_usec);
+        gettimeofday(&end, NULL);
+        tot_usec = end.tv_sec*1000000 + end.tv_usec - (begin.tv_sec*1000000 + begin.tv_usec);
 
-    printResults(tot_usec);
+        printResults(tot_usec);
 
-    for(i=0; i<ndpi_thread_info[thread_id].workflow->prefs.num_roots; i++) {
-      ndpi_tdestroy(ndpi_thread_info[thread_id].workflow->ndpi_flows_root[i], ndpi_flow_info_freer);
-      ndpi_thread_info[thread_id].workflow->ndpi_flows_root[i] = NULL;
+        for(i=0; i<ndpi_thread_info[thread_id].workflow->prefs.num_roots; i++) {
+            ndpi_tdestroy(ndpi_thread_info[thread_id].workflow->ndpi_flows_root[i], ndpi_flow_info_freer);
+            ndpi_thread_info[thread_id].workflow->ndpi_flows_root[i] = NULL;
 
-      memset(&ndpi_thread_info[thread_id].workflow->stats, 0, sizeof(struct ndpi_stats));
+            memset(&ndpi_thread_info[thread_id].workflow->stats, 0, sizeof(struct ndpi_stats));
+        }
+
+        printf("\n-------------------------------------------\n\n");
+
+        memcpy(&begin, &end, sizeof(begin));
+        memcpy(&pcap_start, &pcap_end, sizeof(pcap_start));
     }
-
-    printf("\n-------------------------------------------\n\n");
-
-    memcpy(&begin, &end, sizeof(begin));
-    memcpy(&pcap_start, &pcap_end, sizeof(pcap_start));
-  }
 }
 
 

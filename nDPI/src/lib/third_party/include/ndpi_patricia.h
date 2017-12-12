@@ -102,7 +102,7 @@ typedef struct the_prefix_t {
 /* pointer to usr data (ex. route flap info) 定义了trie树节点关联的用户信息 */
 union patricia_node_value_t {
   void *user_data;      // 通用指针 或
-  u_int32_t user_value; // 无符号整形
+  u_int32_t user_value; // 无符号整形(通常该字段记录了所属trie树节点关联的协议ID)
 };
 
 // 定义了trie树的节点结构

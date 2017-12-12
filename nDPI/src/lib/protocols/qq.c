@@ -652,8 +652,7 @@ void ndpi_search_qq_tcp(struct ndpi_detection_module_struct *ndpi_struct, struct
 
 }
 
-/* 处理QQ协议报文的回调函数
- */
+// QQ协议探测回调函数入口
 void ndpi_search_qq(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 {
   struct ndpi_packet_struct *packet = &flow->packet;

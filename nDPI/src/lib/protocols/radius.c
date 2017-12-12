@@ -29,30 +29,34 @@ struct radius_header {
   u_int16_t len;
 };
 
+// 完成radius协议探测
 static void ndpi_check_radius(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 {
   struct ndpi_packet_struct *packet = &flow->packet;
   // const u_int8_t *packet_payload = packet->payload;
   u_int32_t payload_len = packet->payload_packet_len;
 
-  if(packet->udp != NULL) {
-    struct radius_header *h = (struct radius_header*)packet->payload;
+    if(packet->udp != NULL) {
+        struct radius_header *h = (struct radius_header*)packet->payload;
 
-    if((payload_len > sizeof(struct radius_header))
-       && (h->code > 0)
-       && (h->code <= 5)
-       && (ntohs(h->len) == payload_len)) {
-      NDPI_LOG(NDPI_PROTOCOL_RADIUS, ndpi_struct, NDPI_LOG_DEBUG, "Found radius.\n");
-      ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_RADIUS, NDPI_PROTOCOL_UNKNOWN);
+        if((payload_len > sizeof(struct radius_header))
+        && (h->code > 0)
+        && (h->code <= 5)
+        && (ntohs(h->len) == payload_len)) {
+            NDPI_LOG(NDPI_PROTOCOL_RADIUS, ndpi_struct, NDPI_LOG_DEBUG, "Found radius.\n");
+            // 识别成功后将包和数据流的协议栈设为NDPI_PROTOCOL_RADIUS + NDPI_PROTOCOL_UNKNOWN
+            ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_RADIUS, NDPI_PROTOCOL_UNKNOWN);
 
-      return;
+            return;
+        }
+
+        // 识别失败则将radius协议排除出这条数据流
+        NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_RADIUS);
+        return;
     }
-
-    NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_RADIUS);
-    return;
-  }
 }
 
+// radius协议探测回调函数入口
 void ndpi_search_radius(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 {
   struct ndpi_packet_struct *packet = &flow->packet;
@@ -64,7 +68,7 @@ void ndpi_search_radius(struct ndpi_detection_module_struct *ndpi_struct, struct
     ndpi_check_radius(ndpi_struct, flow);
 }
 
-
+// 初始化radius协议分析器
 void init_radius_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int32_t *id, NDPI_PROTOCOL_BITMASK *detection_bitmask)
 {
   ndpi_set_bitmask_protocol_detection("Radius", ndpi_struct, detection_bitmask, *id,

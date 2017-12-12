@@ -634,7 +634,7 @@ ndpi_patricia_search_best2 (patricia_tree_t *patricia, prefix_t *prefix, int inc
   return (NULL);
 }
 
-
+// 根据指定前缀搜索trie树，返回匹配节点
 patricia_node_t *
 ndpi_patricia_search_best (patricia_tree_t *patricia, prefix_t *prefix)
 {

@@ -437,7 +437,7 @@ static struct ndpi_flow_info *get_ndpi_flow_info6(struct ndpi_workflow * workflo
 }
 
 /* ****************************************************** */
-
+// 收集指定数据流的信息
 void process_ndpi_collected_info(struct ndpi_workflow * workflow, struct ndpi_flow_info *flow) {
   if(!flow->ndpi_flow) return;
 
@@ -481,17 +481,20 @@ void process_ndpi_collected_info(struct ndpi_workflow * workflow, struct ndpi_fl
     }
   }
 
-  if(flow->detection_completed) {
-    if(flow->detected_protocol.app_protocol == NDPI_PROTOCOL_UNKNOWN) {
-      if (workflow->__flow_giveup_callback != NULL)
-	workflow->__flow_giveup_callback(workflow, flow, workflow->__flow_giveup_udata);
-    } else {
-      if (workflow->__flow_detected_callback != NULL)
-	workflow->__flow_detected_callback(workflow, flow, workflow->__flow_detected_udata);
-    }
+    // 如果已经完成了探测，最后执行一些处理
+    if(flow->detection_completed) {
+        if(flow->detected_protocol.app_protocol == NDPI_PROTOCOL_UNKNOWN) {
+            // 如果探测完成后没有识别该数据流，则执行用户自己的放弃回调函数
+            if (workflow->__flow_giveup_callback != NULL)
+                workflow->__flow_giveup_callback(workflow, flow, workflow->__flow_giveup_udata);
+        } else {
+            // 如果识别了该数据流，则执行用户自己的完成探测后的回调函数
+            if (workflow->__flow_detected_callback != NULL)
+                workflow->__flow_detected_callback(workflow, flow, workflow->__flow_detected_udata);
+        }
 
-    ndpi_free_flow_info_half(flow);
-  }
+        ndpi_free_flow_info_half(flow);
+    }
 }
 
 /* ****************************************************** */
@@ -509,7 +512,7 @@ void process_ndpi_collected_info(struct ndpi_workflow * workflow, struct ndpi_fl
    @ipsize      - 该传入的IP包长度
    @rawsize     - 接收到的原始报文的总长度
 
-   @return: 0 if success; else != 0
+   @return: 数据流的识别结果
 
    @Note: ipsize = header->len - ip_offset ; rawsize = header->len
 */
@@ -531,7 +534,7 @@ static struct ndpi_proto packet_processing(struct ndpi_workflow * workflow,
   u_int8_t src_to_dst_direction = 1;
   struct ndpi_proto nproto = { NDPI_PROTOCOL_UNKNOWN, NDPI_PROTOCOL_UNKNOWN };
 
-    // 根据IPv4还是IPv6完成流分类操作(实际IPv6最终还是调用了IPv4的接口)
+    // 根据IPv4还是IPv6完成数据流分类操作(实际IPv6最终还是调用了IPv4的接口)，返回对应的数据流结构
     if(iph)
         flow = get_ndpi_flow_info(workflow, IPVERSION, vlan_id, iph, NULL,
                   ip_offset, ipsize,
@@ -548,7 +551,7 @@ static struct ndpi_proto packet_processing(struct ndpi_workflow * workflow,
     if(flow != NULL) {
         workflow->stats.ip_packet_count++;
         workflow->stats.total_wire_bytes += rawsize + 24 /* CRC etc */,
-          workflow->stats.total_ip_bytes += rawsize;
+        workflow->stats.total_ip_bytes += rawsize;
         ndpi_flow = flow->ndpi_flow;
         flow->packets++, flow->bytes += rawsize;
         flow->last_seen = time;
@@ -557,27 +560,35 @@ static struct ndpi_proto packet_processing(struct ndpi_workflow * workflow,
         return(nproto);
     }
 
-  /* Protocol already detected */
-  if(flow->detection_completed) return(flow->detected_protocol);
+    /* Protocol already detected */
+    if(flow->detection_completed) return(flow->detected_protocol);
 
-  // 这里开始对包的应用层进行分析
-  flow->detected_protocol = ndpi_detection_process_packet(workflow->ndpi_struct, ndpi_flow,
+    // 调用核心库分析该IP包，完成数据流的识别
+    flow->detected_protocol = ndpi_detection_process_packet(workflow->ndpi_struct, ndpi_flow,
 							  iph ? (uint8_t *)iph : (uint8_t *)iph6,
 							  ipsize, time, src, dst);
 
-  if((flow->detected_protocol.app_protocol != NDPI_PROTOCOL_UNKNOWN)
+    // 程序运行到这里意味着完成了对该数据流的识别
+    /* 满足以下任一种情况都意味着该数据流探测结束:
+     *      该数据流识别成功；
+     *      该接收包为TCP并且数据流中记录的报文超过了8个;
+     *      该接收包为UDP并且数据流中记录的报文超过了10个
+     */
+    if((flow->detected_protocol.app_protocol != NDPI_PROTOCOL_UNKNOWN)
      || ((proto == IPPROTO_UDP) && (flow->packets > 8))
      || ((proto == IPPROTO_TCP) && (flow->packets > 10))) {
-    /* New protocol detected or give up */
-    flow->detection_completed = 1;
+        /* New protocol detected or give up */
+        flow->detection_completed = 1;
 
-    if(flow->detected_protocol.app_protocol == NDPI_PROTOCOL_UNKNOWN)
-	    flow->detected_protocol = ndpi_detection_giveup(workflow->ndpi_struct,
+        // 探测结束时如果还没有识别成功，这里会放弃继续探测操作
+        if(flow->detected_protocol.app_protocol == NDPI_PROTOCOL_UNKNOWN){
+	        flow->detected_protocol = ndpi_detection_giveup(workflow->ndpi_struct;
 							    flow->ndpi_flow);
-    process_ndpi_collected_info(workflow, flow);
-  }  
+            process_ndpi_collected_info(workflow, flow);
+        }
+    }
 
-  return(flow->detected_protocol);
+    return(flow->detected_protocol);
 }
 
 /* ****************************************************** */
@@ -924,7 +935,7 @@ v4_warning:
     }
 
     /* process the packet 
-     * 进一步处理IP包，也就是对其传输层进行处理
+     * 进一步处理IP包，也就是对其传输层及以上进行处理
      * */
     return(packet_processing(workflow, time, vlan_id, iph, iph6,
 			   ip_offset, header->caplen - ip_offset, header->caplen));

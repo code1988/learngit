@@ -504,6 +504,7 @@ static u_int16_t http_request_url_offset(struct ndpi_detection_module_struct *nd
   return 0;
 }
 
+// 指定数据流排除http协议的可能性
 static void http_bitmask_exclude(struct ndpi_flow_struct *flow)
 {
   NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_HTTP);
@@ -815,13 +816,14 @@ void ndpi_search_http_tcp(struct ndpi_detection_module_struct *ndpi_struct,
 			  struct ndpi_flow_struct *flow) {
   struct ndpi_packet_struct *packet = &flow->packet;
 
-  /* Break after 20 packets. */
+  /* Break after 20 packets. http协议的数据流中包的数量不会超过20个 */
   if(flow->packet_counter > 20) {
     NDPI_LOG(NDPI_PROTOCOL_HTTP, ndpi_struct, NDPI_LOG_DEBUG, "Exclude HTTP.\n");
     http_bitmask_exclude(flow);
     return;
   }
 
+  // 确保该数据包的主协议号已经被识别
   if(packet->detected_protocol_stack[0] != NDPI_PROTOCOL_UNKNOWN) {
      return;
    }
@@ -851,7 +853,7 @@ char* ndpi_get_http_url(struct ndpi_detection_module_struct *ndpi_mod,
 }
 
 /* ********************************* */
-// 处理http协议报文的回调函数
+// http协议探测回调函数入口
 char* ndpi_get_http_content_type(struct ndpi_detection_module_struct *ndpi_mod,
 			       struct ndpi_flow_struct *flow) {
   if((!flow) || (!flow->http.content_type))

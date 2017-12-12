@@ -75,8 +75,8 @@ EAQ_DEFAULT_SIZE	src/lib/protocols/eaq.c	30;"	d	file:
 ELMT_FROM_HH	example/uthash.h	111;"	d
 EMAIL	src/lib/protocols/oscar.c	69;"	d	file:
 EMPTY	src/lib/protocols/rx.c	64;"	d	file:
-EPOCHFILETIME	example/ndpiReader.c	2137;"	d	file:
-EPOCHFILETIME	example/ndpiReader.c	2139;"	d	file:
+EPOCHFILETIME	example/ndpiReader.c	2141;"	d	file:
+EPOCHFILETIME	example/ndpiReader.c	2143;"	d	file:
 ETH_P_IP	example/ndpi_util.c	36;"	d	file:
 ETH_P_IPV6	example/ndpi_util.c	40;"	d	file:
 FCF_FROM_DS	example/ndpi_util.c	58;"	d	file:
@@ -204,14 +204,14 @@ MAC_timestamp	src/include/ndpi_typedefs.h	/^  u_int64_t MAC_timestamp;$/;"	m	str
 MAJOR_VERSION	src/lib/protocols/oscar.c	43;"	d	file:
 MATCH_CALBACK_f	src/lib/third_party/include/actypes.h	/^typedef int (*MATCH_CALBACK_f)(AC_MATCH_t *, void *);$/;"	t
 MAXLINE	src/lib/third_party/include/ndpi_patricia.h	54;"	d
-MAX_DEFAULT_PORTS	src/include/ndpi_define.h	165;"	d
+MAX_DEFAULT_PORTS	src/include/ndpi_define.h	166;"	d
 MAX_IDLE_TIME	example/ndpi_util.h	36;"	d
 MAX_NDPI_FLOWS	example/ndpi_util.h	39;"	d
 MAX_NUM_IP_ADDRESS	example/ndpi_util.h	41;"	d
 MAX_NUM_READER_THREADS	example/ndpi_util.h	34;"	d
 MAX_NUM_STUN_PKTS	src/lib/protocols/stun.c	29;"	d	file:
 MAX_PACKETS_FOR_MSN	src/lib/protocols/msn.c	28;"	d	file:
-MAX_PACKET_COUNTER	src/include/ndpi_define.h	164;"	d
+MAX_PACKET_COUNTER	src/include/ndpi_define.h	165;"	d
 MAX_STR_LEN	src/lib/ndpi_main.c	1809;"	d	file:
 MINOR_VERSION	src/lib/protocols/oscar.c	44;"	d	file:
 MORE_1	src/lib/protocols/rx.c	71;"	d	file:
@@ -233,22 +233,22 @@ MUR_THREE_ONE	example/uthash.h	674;"	d
 MUR_THREE_ONE	example/uthash.h	678;"	d
 MUR_TWO_TWO	example/uthash.h	675;"	d
 MUR_TWO_TWO	example/uthash.h	679;"	d
-NDPI_ADD_PROTOCOL_TO_BITMASK	src/include/ndpi_define.h	238;"	d
-NDPI_BATTLEFIELD_CONNECTION_TIMEOUT	src/include/ndpi_define.h	170;"	d
-NDPI_BITMASK_ADD	src/include/ndpi_define.h	229;"	d
+NDPI_ADD_PROTOCOL_TO_BITMASK	src/include/ndpi_define.h	239;"	d
+NDPI_BATTLEFIELD_CONNECTION_TIMEOUT	src/include/ndpi_define.h	171;"	d
+NDPI_BITMASK_ADD	src/include/ndpi_define.h	230;"	d
 NDPI_BITMASK_COMPARE	src/include/ndpi_main.h	/^  int NDPI_BITMASK_COMPARE(NDPI_PROTOCOL_BITMASK a, NDPI_PROTOCOL_BITMASK b);$/;"	p	signature:(NDPI_PROTOCOL_BITMASK a, NDPI_PROTOCOL_BITMASK b)
 NDPI_BITMASK_COMPARE	src/lib/ndpi_main.c	/^int NDPI_BITMASK_COMPARE(NDPI_PROTOCOL_BITMASK a, NDPI_PROTOCOL_BITMASK b) {$/;"	f	signature:(NDPI_PROTOCOL_BITMASK a, NDPI_PROTOCOL_BITMASK b)
-NDPI_BITMASK_DEL	src/include/ndpi_define.h	230;"	d
+NDPI_BITMASK_DEL	src/include/ndpi_define.h	231;"	d
 NDPI_BITMASK_IS_EMPTY	src/include/ndpi_main.h	/^  int NDPI_BITMASK_IS_EMPTY(NDPI_PROTOCOL_BITMASK a);$/;"	p	signature:(NDPI_PROTOCOL_BITMASK a)
 NDPI_BITMASK_IS_EMPTY	src/lib/ndpi_main.c	/^int NDPI_BITMASK_IS_EMPTY(NDPI_PROTOCOL_BITMASK a) {$/;"	f	signature:(NDPI_PROTOCOL_BITMASK a)
-NDPI_BITMASK_RESET	src/include/ndpi_define.h	231;"	d
-NDPI_BITMASK_SET	src/include/ndpi_define.h	233;"	d
-NDPI_BITMASK_SET_ALL	src/include/ndpi_define.h	232;"	d
-NDPI_BITS	src/include/ndpi_define.h	214;"	d
+NDPI_BITMASK_RESET	src/include/ndpi_define.h	232;"	d
+NDPI_BITMASK_SET	src/include/ndpi_define.h	234;"	d
+NDPI_BITMASK_SET_ALL	src/include/ndpi_define.h	233;"	d
+NDPI_BITS	src/include/ndpi_define.h	215;"	d
 NDPI_BT_PORTS	src/include/ndpi_typedefs.h	401;"	d
-NDPI_CLR	src/include/ndpi_define.h	219;"	d
-NDPI_COMPARE_IPV6_ADDRESS_STRUCTS	src/include/ndpi_define.h	209;"	d
-NDPI_COMPARE_PROTOCOL_TO_BITMASK	src/include/ndpi_define.h	240;"	d
+NDPI_CLR	src/include/ndpi_define.h	220;"	d
+NDPI_COMPARE_IPV6_ADDRESS_STRUCTS	src/include/ndpi_define.h	210;"	d
+NDPI_COMPARE_PROTOCOL_TO_BITMASK	src/include/ndpi_define.h	241;"	d
 NDPI_CONTENT_AVI	src/include/ndpi_protocol_ids.h	79;"	d
 NDPI_CONTENT_FLASH	src/include/ndpi_protocol_ids.h	80;"	d
 NDPI_CONTENT_MMS	src/include/ndpi_protocol_ids.h	86;"	d
@@ -259,52 +259,52 @@ NDPI_CONTENT_REALMEDIA	src/include/ndpi_protocol_ids.h	84;"	d
 NDPI_CONTENT_WEBM	src/include/ndpi_protocol_ids.h	197;"	d
 NDPI_CONTENT_WINDOWSMEDIA	src/include/ndpi_protocol_ids.h	85;"	d
 NDPI_DEBUG_DIRECT_DOWNLOAD_LINK_IP	src/lib/protocols/directdownloadlink.c	33;"	d	file:
-NDPI_DEFAULT_MAX_TCP_RETRANSMISSION_WINDOW_SIZE	src/include/ndpi_define.h	156;"	d
-NDPI_DEL_PROTOCOL_FROM_BITMASK	src/include/ndpi_define.h	239;"	d
+NDPI_DEFAULT_MAX_TCP_RETRANSMISSION_WINDOW_SIZE	src/include/ndpi_define.h	157;"	d
+NDPI_DEL_PROTOCOL_FROM_BITMASK	src/include/ndpi_define.h	240;"	d
 NDPI_DETECTION_ONLY_IPV4	src/include/ndpi_api.h	37;"	d
 NDPI_DETECTION_ONLY_IPV6	src/include/ndpi_api.h	38;"	d
 NDPI_DETECTION_SUPPORT_IPV6	src/include/ndpi_protocol_ids.h	32;"	d
-NDPI_DIRECTCONNECT_CONNECTION_IP_TICK_TIMEOUT	src/include/ndpi_define.h	167;"	d
-NDPI_DST_HAS_PROTOCOL	src/include/ndpi_define.h	142;"	d
+NDPI_DIRECTCONNECT_CONNECTION_IP_TICK_TIMEOUT	src/include/ndpi_define.h	168;"	d
+NDPI_DST_HAS_PROTOCOL	src/include/ndpi_define.h	143;"	d
 NDPI_DUMP_BITMASK	src/include/ndpi_main.h	/^  void NDPI_DUMP_BITMASK(NDPI_PROTOCOL_BITMASK a);$/;"	p	signature:(NDPI_PROTOCOL_BITMASK a)
 NDPI_DUMP_BITMASK	src/lib/ndpi_main.c	/^void NDPI_DUMP_BITMASK(NDPI_PROTOCOL_BITMASK a) {$/;"	f	signature:(NDPI_PROTOCOL_BITMASK a)
-NDPI_EGP_PROTOCOL_TYPE	src/include/ndpi_define.h	258;"	d
-NDPI_FLOW_PROTOCOL_EXCLUDED	src/include/ndpi_define.h	151;"	d
-NDPI_GNUTELLA_CONNECTION_TIMEOUT	src/include/ndpi_define.h	169;"	d
-NDPI_GRE_PROTOCOL_TYPE	src/include/ndpi_define.h	255;"	d
+NDPI_EGP_PROTOCOL_TYPE	src/include/ndpi_define.h	259;"	d
+NDPI_FLOW_PROTOCOL_EXCLUDED	src/include/ndpi_define.h	152;"	d
+NDPI_GNUTELLA_CONNECTION_TIMEOUT	src/include/ndpi_define.h	170;"	d
+NDPI_GRE_PROTOCOL_TYPE	src/include/ndpi_define.h	256;"	d
 NDPI_IAX_MAX_INFORMATION_ELEMENTS	src/lib/protocols/iax.c	30;"	d	file:
-NDPI_ICMPV6_PROTOCOL_TYPE	src/include/ndpi_define.h	262;"	d
-NDPI_ICMP_PROTOCOL_TYPE	src/include/ndpi_define.h	256;"	d
-NDPI_IGMP_PROTOCOL_TYPE	src/include/ndpi_define.h	257;"	d
-NDPI_IPIP_PROTOCOL_TYPE	src/include/ndpi_define.h	261;"	d
-NDPI_IPSEC_PROTOCOL_AH	src/include/ndpi_define.h	254;"	d
-NDPI_IPSEC_PROTOCOL_ESP	src/include/ndpi_define.h	253;"	d
-NDPI_IP_STRING_SIZE	src/include/ndpi_typedefs.h	878;"	d
-NDPI_IRC_CONNECTION_TIMEOUT	src/include/ndpi_define.h	168;"	d
+NDPI_ICMPV6_PROTOCOL_TYPE	src/include/ndpi_define.h	263;"	d
+NDPI_ICMP_PROTOCOL_TYPE	src/include/ndpi_define.h	257;"	d
+NDPI_IGMP_PROTOCOL_TYPE	src/include/ndpi_define.h	258;"	d
+NDPI_IPIP_PROTOCOL_TYPE	src/include/ndpi_define.h	262;"	d
+NDPI_IPSEC_PROTOCOL_AH	src/include/ndpi_define.h	255;"	d
+NDPI_IPSEC_PROTOCOL_ESP	src/include/ndpi_define.h	254;"	d
+NDPI_IP_STRING_SIZE	src/include/ndpi_typedefs.h	883;"	d
+NDPI_IRC_CONNECTION_TIMEOUT	src/include/ndpi_define.h	169;"	d
 NDPI_IRC_FIND_LESS	src/lib/protocols/irc.c	29;"	d	file:
-NDPI_ISSET	src/include/ndpi_define.h	220;"	d
+NDPI_ISSET	src/include/ndpi_define.h	221;"	d
 NDPI_IS_NOT_STUN	src/lib/protocols/stun.c	/^  NDPI_IS_NOT_STUN$/;"	e	enum:__anon14	file:
 NDPI_IS_STUN	src/lib/protocols/stun.c	/^  NDPI_IS_STUN,$/;"	e	enum:__anon14	file:
-NDPI_JABBER_FT_TIMEOUT	src/include/ndpi_define.h	179;"	d
-NDPI_JABBER_STUN_TIMEOUT	src/include/ndpi_define.h	178;"	d
+NDPI_JABBER_FT_TIMEOUT	src/include/ndpi_define.h	180;"	d
+NDPI_JABBER_STUN_TIMEOUT	src/include/ndpi_define.h	179;"	d
 NDPI_LAST_IMPLEMENTED_PROTOCOL	src/include/ndpi_protocol_ids.h	281;"	d
-NDPI_LOG	src/include/ndpi_define.h	183;"	d
-NDPI_LOG	src/include/ndpi_define.h	195;"	d
-NDPI_LOG	src/include/ndpi_define.h	197;"	d
+NDPI_LOG	src/include/ndpi_define.h	184;"	d
+NDPI_LOG	src/include/ndpi_define.h	196;"	d
+NDPI_LOG	src/include/ndpi_define.h	198;"	d
 NDPI_LOG_DEBUG	src/include/ndpi_typedefs.h	/^    NDPI_LOG_DEBUG$/;"	e	enum:__anon15
 NDPI_LOG_ERROR	src/include/ndpi_typedefs.h	/^    NDPI_LOG_ERROR,$/;"	e	enum:__anon15
 NDPI_LOG_TRACE	src/include/ndpi_typedefs.h	/^    NDPI_LOG_TRACE,$/;"	e	enum:__anon15
-NDPI_MAX_DNS_REQUESTS	src/include/ndpi_define.h	292;"	d
+NDPI_MAX_DNS_REQUESTS	src/include/ndpi_define.h	293;"	d
 NDPI_MAX_MDNS_REQUESTS	src/lib/protocols/mdns.c	27;"	d	file:
 NDPI_MAX_NUM_CUSTOM_PROTOCOLS	src/include/ndpi_protocol_ids.h	284;"	d
-NDPI_MAX_PARSE_LINES_PER_PACKET	src/include/ndpi_define.h	162;"	d
+NDPI_MAX_PARSE_LINES_PER_PACKET	src/include/ndpi_define.h	163;"	d
 NDPI_MAX_SSL_REQUEST_SIZE	src/lib/protocols/ssl.c	30;"	d	file:
 NDPI_MAX_SUPPORTED_PROTOCOLS	src/include/ndpi_protocol_ids.h	283;"	d
-NDPI_NUM_BITS	src/include/ndpi_define.h	212;"	d
-NDPI_NUM_FDS_BITS	src/include/ndpi_define.h	224;"	d
-NDPI_ONE	src/include/ndpi_define.h	222;"	d
-NDPI_OSPF_PROTOCOL_TYPE	src/include/ndpi_define.h	259;"	d
-NDPI_PARSE_PACKET_LINE_INFO	src/include/ndpi_define.h	248;"	d
+NDPI_NUM_BITS	src/include/ndpi_define.h	213;"	d
+NDPI_NUM_FDS_BITS	src/include/ndpi_define.h	225;"	d
+NDPI_ONE	src/include/ndpi_define.h	223;"	d
+NDPI_OSPF_PROTOCOL_TYPE	src/include/ndpi_define.h	260;"	d
+NDPI_PARSE_PACKET_LINE_INFO	src/include/ndpi_define.h	249;"	d
 NDPI_POPO_IP_SUBNET_END	src/lib/protocols/attic/popo.c	56;"	d	file:
 NDPI_POPO_IP_SUBNET_START	src/lib/protocols/attic/popo.c	55;"	d	file:
 NDPI_PROTOCOL_1KXUN	src/include/ndpi_protocol_ids.h	246;"	d
@@ -321,7 +321,7 @@ NDPI_PROTOCOL_ARMAGETRON	src/include/ndpi_protocol_ids.h	144;"	d
 NDPI_PROTOCOL_AYIYA	src/include/ndpi_protocol_ids.h	106;"	d
 NDPI_PROTOCOL_BATTLEFIELD	src/include/ndpi_protocol_ids.h	111;"	d
 NDPI_PROTOCOL_BGP	src/include/ndpi_protocol_ids.h	53;"	d
-NDPI_PROTOCOL_BITMASK	src/include/ndpi_define.h	226;"	d
+NDPI_PROTOCOL_BITMASK	src/include/ndpi_define.h	227;"	d
 NDPI_PROTOCOL_BITTORRENT	src/include/ndpi_protocol_ids.h	77;"	d
 NDPI_PROTOCOL_BJNP	src/include/ndpi_protocol_ids.h	245;"	d
 NDPI_PROTOCOL_CATEGORY_CHAT	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_CATEGORY_CHAT,              \/* Instant messaging *\/$/;"	e	enum:__anon23
@@ -452,7 +452,7 @@ NDPI_PROTOCOL_NFS	src/include/ndpi_protocol_ids.h	51;"	d
 NDPI_PROTOCOL_NOE	src/include/ndpi_protocol_ids.h	200;"	d
 NDPI_PROTOCOL_NO_MASTER_PROTO	src/include/ndpi_protocol_ids.h	37;"	d
 NDPI_PROTOCOL_NTP	src/include/ndpi_protocol_ids.h	49;"	d
-NDPI_PROTOCOL_NULL	src/include/ndpi_typedefs.h	790;"	d
+NDPI_PROTOCOL_NULL	src/include/ndpi_typedefs.h	792;"	d
 NDPI_PROTOCOL_NUM_CATEGORIES	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_NUM_CATEGORIES \/*$/;"	e	enum:__anon23
 NDPI_PROTOCOL_OCS	src/include/ndpi_protocol_ids.h	266;"	d
 NDPI_PROTOCOL_OFFICE_365	src/include/ndpi_protocol_ids.h	267;"	d
@@ -565,62 +565,62 @@ NDPI_PROTOCOL_YAHOO	src/include/ndpi_protocol_ids.h	110;"	d
 NDPI_PROTOCOL_YOUTUBE	src/include/ndpi_protocol_ids.h	164;"	d
 NDPI_PROTOCOL_ZATTOO	src/include/ndpi_protocol_ids.h	95;"	d
 NDPI_PROTOCOL_ZMQ	src/include/ndpi_protocol_ids.h	217;"	d
-NDPI_RTSP_CONNECTION_TIMEOUT	src/include/ndpi_define.h	172;"	d
-NDPI_SAVE_AS_BITMASK	src/include/ndpi_define.h	242;"	d
-NDPI_SCTP_PROTOCOL_TYPE	src/include/ndpi_define.h	260;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_COMPLETE_TRAFFIC	src/include/ndpi_define.h	90;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_HAS_PAYLOAD	src/include/ndpi_define.h	86;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_INT_TCP	src/include/ndpi_define.h	83;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_INT_TCP_OR_UDP	src/include/ndpi_define.h	85;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_INT_UDP	src/include/ndpi_define.h	84;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_IP	src/include/ndpi_define.h	82;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_IPV4_OR_IPV6	src/include/ndpi_define.h	89;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_IPV6	src/include/ndpi_define.h	88;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_NO_TCP_RETRANSMISSION	src/include/ndpi_define.h	87;"	d
+NDPI_RTSP_CONNECTION_TIMEOUT	src/include/ndpi_define.h	173;"	d
+NDPI_SAVE_AS_BITMASK	src/include/ndpi_define.h	243;"	d
+NDPI_SCTP_PROTOCOL_TYPE	src/include/ndpi_define.h	261;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_COMPLETE_TRAFFIC	src/include/ndpi_define.h	91;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_HAS_PAYLOAD	src/include/ndpi_define.h	87;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_INT_TCP	src/include/ndpi_define.h	84;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_INT_TCP_OR_UDP	src/include/ndpi_define.h	86;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_INT_UDP	src/include/ndpi_define.h	85;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_IP	src/include/ndpi_define.h	83;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_IPV4_OR_IPV6	src/include/ndpi_define.h	90;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_IPV6	src/include/ndpi_define.h	89;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_NO_TCP_RETRANSMISSION	src/include/ndpi_define.h	88;"	d
 NDPI_SELECTION_BITMASK_PROTOCOL_SIZE	src/include/ndpi_define.h	80;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_TCP	src/include/ndpi_define.h	94;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_TCP_OR_UDP	src/include/ndpi_define.h	96;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_TCP_OR_UDP_WITHOUT_RETRANSMISSION	src/include/ndpi_define.h	126;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_TCP_OR_UDP_WITH_PAYLOAD	src/include/ndpi_define.h	118;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_TCP_OR_UDP_WITH_PAYLOAD_WITHOUT_RETRANSMISSION	src/include/ndpi_define.h	134;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_TCP_WITHOUT_RETRANSMISSION	src/include/ndpi_define.h	122;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_TCP_WITH_PAYLOAD	src/include/ndpi_define.h	109;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_TCP_WITH_PAYLOAD_WITHOUT_RETRANSMISSION	src/include/ndpi_define.h	130;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_UDP	src/include/ndpi_define.h	95;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_UDP_WITH_PAYLOAD	src/include/ndpi_define.h	114;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP	src/include/ndpi_define.h	104;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP_OR_UDP	src/include/ndpi_define.h	106;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP_OR_UDP_WITHOUT_RETRANSMISSION	src/include/ndpi_define.h	128;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP_OR_UDP_WITH_PAYLOAD	src/include/ndpi_define.h	120;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP_OR_UDP_WITH_PAYLOAD_WITHOUT_RETRANSMISSION	src/include/ndpi_define.h	136;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP_WITHOUT_RETRANSMISSION	src/include/ndpi_define.h	124;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP_WITH_PAYLOAD	src/include/ndpi_define.h	111;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP_WITH_PAYLOAD_WITHOUT_RETRANSMISSION	src/include/ndpi_define.h	132;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_UDP	src/include/ndpi_define.h	105;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_UDP_WITH_PAYLOAD	src/include/ndpi_define.h	116;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_V6_TCP	src/include/ndpi_define.h	99;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_V6_TCP_OR_UDP	src/include/ndpi_define.h	101;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_V6_TCP_OR_UDP_WITHOUT_RETRANSMISSION	src/include/ndpi_define.h	127;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_V6_TCP_OR_UDP_WITH_PAYLOAD	src/include/ndpi_define.h	119;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_V6_TCP_OR_UDP_WITH_PAYLOAD_WITHOUT_RETRANSMISSION	src/include/ndpi_define.h	135;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_V6_TCP_WITHOUT_RETRANSMISSION	src/include/ndpi_define.h	123;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_V6_TCP_WITH_PAYLOAD	src/include/ndpi_define.h	110;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_V6_TCP_WITH_PAYLOAD_WITHOUT_RETRANSMISSION	src/include/ndpi_define.h	131;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_V6_UDP	src/include/ndpi_define.h	100;"	d
-NDPI_SELECTION_BITMASK_PROTOCOL_V6_UDP_WITH_PAYLOAD	src/include/ndpi_define.h	115;"	d
-NDPI_SET	src/include/ndpi_define.h	218;"	d
-NDPI_SOULSEEK_CONNECTION_IP_TICK_TIMEOUT	src/include/ndpi_define.h	180;"	d
-NDPI_SRC_HAS_PROTOCOL	src/include/ndpi_define.h	140;"	d
-NDPI_SRC_OR_DST_HAS_PROTOCOL	src/include/ndpi_define.h	144;"	d
-NDPI_STATICSTRING_LEN	src/include/ndpi_define.h	206;"	d
-NDPI_THUNDER_CONNECTION_TIMEOUT	src/include/ndpi_define.h	171;"	d
-NDPI_TVANTS_CONNECTION_TIMEOUT	src/include/ndpi_define.h	173;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_TCP	src/include/ndpi_define.h	95;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_TCP_OR_UDP	src/include/ndpi_define.h	97;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_TCP_OR_UDP_WITHOUT_RETRANSMISSION	src/include/ndpi_define.h	127;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_TCP_OR_UDP_WITH_PAYLOAD	src/include/ndpi_define.h	119;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_TCP_OR_UDP_WITH_PAYLOAD_WITHOUT_RETRANSMISSION	src/include/ndpi_define.h	135;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_TCP_WITHOUT_RETRANSMISSION	src/include/ndpi_define.h	123;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_TCP_WITH_PAYLOAD	src/include/ndpi_define.h	110;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_TCP_WITH_PAYLOAD_WITHOUT_RETRANSMISSION	src/include/ndpi_define.h	131;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_UDP	src/include/ndpi_define.h	96;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_UDP_WITH_PAYLOAD	src/include/ndpi_define.h	115;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP	src/include/ndpi_define.h	105;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP_OR_UDP	src/include/ndpi_define.h	107;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP_OR_UDP_WITHOUT_RETRANSMISSION	src/include/ndpi_define.h	129;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP_OR_UDP_WITH_PAYLOAD	src/include/ndpi_define.h	121;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP_OR_UDP_WITH_PAYLOAD_WITHOUT_RETRANSMISSION	src/include/ndpi_define.h	137;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP_WITHOUT_RETRANSMISSION	src/include/ndpi_define.h	125;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP_WITH_PAYLOAD	src/include/ndpi_define.h	112;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP_WITH_PAYLOAD_WITHOUT_RETRANSMISSION	src/include/ndpi_define.h	133;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_UDP	src/include/ndpi_define.h	106;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_UDP_WITH_PAYLOAD	src/include/ndpi_define.h	117;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_V6_TCP	src/include/ndpi_define.h	100;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_V6_TCP_OR_UDP	src/include/ndpi_define.h	102;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_V6_TCP_OR_UDP_WITHOUT_RETRANSMISSION	src/include/ndpi_define.h	128;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_V6_TCP_OR_UDP_WITH_PAYLOAD	src/include/ndpi_define.h	120;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_V6_TCP_OR_UDP_WITH_PAYLOAD_WITHOUT_RETRANSMISSION	src/include/ndpi_define.h	136;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_V6_TCP_WITHOUT_RETRANSMISSION	src/include/ndpi_define.h	124;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_V6_TCP_WITH_PAYLOAD	src/include/ndpi_define.h	111;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_V6_TCP_WITH_PAYLOAD_WITHOUT_RETRANSMISSION	src/include/ndpi_define.h	132;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_V6_UDP	src/include/ndpi_define.h	101;"	d
+NDPI_SELECTION_BITMASK_PROTOCOL_V6_UDP_WITH_PAYLOAD	src/include/ndpi_define.h	116;"	d
+NDPI_SET	src/include/ndpi_define.h	219;"	d
+NDPI_SOULSEEK_CONNECTION_IP_TICK_TIMEOUT	src/include/ndpi_define.h	181;"	d
+NDPI_SRC_HAS_PROTOCOL	src/include/ndpi_define.h	141;"	d
+NDPI_SRC_OR_DST_HAS_PROTOCOL	src/include/ndpi_define.h	145;"	d
+NDPI_STATICSTRING_LEN	src/include/ndpi_define.h	207;"	d
+NDPI_THUNDER_CONNECTION_TIMEOUT	src/include/ndpi_define.h	172;"	d
+NDPI_TVANTS_CONNECTION_TIMEOUT	src/include/ndpi_define.h	174;"	d
 NDPI_USE_ASYMMETRIC_DETECTION	src/include/ndpi_define.h	79;"	d
-NDPI_YAHOO_DETECT_HTTP_CONNECTIONS	src/include/ndpi_define.h	174;"	d
-NDPI_YAHOO_LAN_VIDEO_TIMEOUT	src/include/ndpi_define.h	175;"	d
-NDPI_ZATTOO_CONNECTION_TIMEOUT	src/include/ndpi_define.h	176;"	d
-NDPI_ZATTOO_FLASH_TIMEOUT	src/include/ndpi_define.h	177;"	d
-NDPI_ZERO	src/include/ndpi_define.h	221;"	d
+NDPI_YAHOO_DETECT_HTTP_CONNECTIONS	src/include/ndpi_define.h	175;"	d
+NDPI_YAHOO_LAN_VIDEO_TIMEOUT	src/include/ndpi_define.h	176;"	d
+NDPI_ZATTOO_CONNECTION_TIMEOUT	src/include/ndpi_define.h	177;"	d
+NDPI_ZATTOO_FLASH_TIMEOUT	src/include/ndpi_define.h	178;"	d
+NDPI_ZERO	src/include/ndpi_define.h	222;"	d
 NO_ADD_TO_DETECTION_BITMASK	src/include/ndpi_api.h	41;"	d
 NO_CON	src/lib/protocols/coap.c	29;"	d	file:
 NO_DECLTYPE	example/uthash.h	42;"	d
@@ -970,7 +970,7 @@ amqp_header::ptype	src/lib/protocols/amqp.c	/^	u_int8_t ptype;$/;"	m	struct:amqp
 answer	src/include/ndpi_typedefs.h	/^      char answer[96];$/;"	m	struct:ndpi_flow_struct::__anon26::__anon31	access:public
 answer_rrs	src/lib/protocols/netbios.c	/^  u_int16_t transaction_id, flags, questions, answer_rrs, authority_rrs, additional_rrs;$/;"	m	struct:netbios_header	file:	access:public
 app_protocol	example/ndpiReader.c	/^  u_int16_t master_protocol \/* e.g. HTTP *\/, app_protocol \/* e.g. FaceBook *\/;$/;"	m	struct:ndpi_packet_trailer	file:	access:public
-app_protocol	src/include/ndpi_typedefs.h	/^  u_int16_t master_protocol \/* e.g. HTTP *\/, app_protocol \/* e.g. FaceBook *\/;$/;"	m	struct:ndpi_proto	access:public
+app_protocol	src/include/ndpi_typedefs.h	/^  u_int16_t app_protocol; \/* e.g. FaceBook  对应detected_protocol_stack[0] *\/$/;"	m	struct:ndpi_proto	access:public
 asc	wireshark/ndpi.lua	/^function asc(a,b) return (a < b) end$/;"	f
 astring	src/lib/third_party/include/actypes.h	/^  AC_ALPHABET_t * astring; \/* String of alphabets *\/$/;"	m	struct:__anon4	access:public
 astring	src/lib/third_party/include/actypes.h	/^  AC_ALPHABET_t * astring; \/* String of alphabets *\/$/;"	m	struct:__anon5	access:public
@@ -1177,7 +1177,7 @@ cumulative_addr	example/ndpiReader.c	/^  u_int32_t cumulative_addr; \/*to hold c
 current_ndpi_memory	example/ndpiReader.c	/^u_int32_t current_ndpi_memory = 0;  \/\/ 记录了当前分配的堆内存字节数$/;"	v
 current_node	src/lib/third_party/include/ahocorasick.h	/^  AC_NODE_t * current_node; \/* Pointer to current node while searching *\/$/;"	m	struct:__anon8	access:public
 current_ts	src/include/ndpi_typedefs.h	/^  u_int32_t current_ts;$/;"	m	struct:ndpi_detection_module_struct	access:public
-customUserProto	src/include/ndpi_typedefs.h	/^  u_int8_t customUserProto;$/;"	m	struct:ndpi_default_ports_tree_node	access:public
+customUserProto	src/include/ndpi_typedefs.h	/^  u_int8_t customUserProto;         \/\/ 标识是否是一个自定义的协议$/;"	m	struct:ndpi_default_ports_tree_node	access:public
 cwr	src/include/ndpi_typedefs.h	/^  u_int16_t doff:4, res1:4, cwr:1, ece:1, urg:1, ack:1, psh:1, rst:1, syn:1, fin:1;$/;"	m	struct:ndpi_tcphdr	access:public
 cwr	src/include/ndpi_typedefs.h	/^  u_int16_t res1:4, doff:4, fin:1, syn:1, rst:1, psh:1, ack:1, urg:1, ece:1, cwr:1;$/;"	m	struct:ndpi_tcphdr	access:public
 d	src/lib/protocols/btlib.h	/^	struct bt_ipv4p d;$/;"	m	struct:bt_ipv4p2	typeref:struct:bt_ipv4p2::bt_ipv4p	access:public
@@ -1194,7 +1194,7 @@ dataOffset	src/lib/protocols/afp.c	/^  u_int32_t dataOffset, length, reserved;$/
 ddlink_server_direction	src/include/ndpi_typedefs.h	/^  u_int32_t ddlink_server_direction:1;$/;"	m	struct:ndpi_flow_tcp_struct	access:public
 decode_tunnels	example/ndpiReader.c	/^static u_int16_t decode_tunnels = 0;\/\/ 标识是否使能隧道功能$/;"	v	file:
 decode_tunnels	example/ndpi_util.h	/^  u_int8_t decode_tunnels;  \/\/ 标识是否使能隧道功能$/;"	m	struct:ndpi_workflow_prefs	access:public
-default_port	src/include/ndpi_typedefs.h	/^  u_int16_t default_port;           \/\/ 关联的协议的一个缺省端口号$/;"	m	struct:ndpi_default_ports_tree_node	access:public
+default_port	src/include/ndpi_typedefs.h	/^  u_int16_t default_port;           \/\/ 关联协议的一个缺省端口号(通过该值在二叉树节点中进行匹配)$/;"	m	struct:ndpi_default_ports_tree_node	access:public
 deletePortsStats	example/ndpiReader.c	/^static void deletePortsStats(struct port_stats *stats) {$/;"	f	file:	signature:(struct port_stats *stats)
 deleteTopStats	example/ndpiReader.c	/^static void deleteTopStats(struct top_stats *stats) {$/;"	f	file:	signature:(struct top_stats *stats)
 depth	src/lib/third_party/include/node.h	/^  unsigned short depth; \/* depth: distance between this node and the root *\/$/;"	m	struct:ac_node	access:public
@@ -1210,18 +1210,18 @@ detected_gnutella_udp_port2	src/include/ndpi_typedefs.h	/^  u_int16_t detected_g
 detected_os	src/include/ndpi_typedefs.h	/^  u_char detected_os[32];$/;"	m	struct:ndpi_flow_struct	access:public
 detected_protocol	example/ndpi_util.h	/^  ndpi_protocol detected_protocol;$/;"	m	struct:ndpi_flow_info	access:public
 detected_protocol_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK detected_protocol_bitmask;$/;"	m	struct:ndpi_id_struct	access:public
-detected_protocol_stack	src/include/ndpi_typedefs.h	/^  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];    \/\/ 记录了该数据流的主协议和子协议$/;"	m	struct:ndpi_flow_struct	access:public
-detected_protocol_stack	src/include/ndpi_typedefs.h	/^  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];$/;"	m	struct:ndpi_packet_struct	access:public
+detected_protocol_stack	src/include/ndpi_typedefs.h	/^  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];    \/\/ 依次记录了该数据包识别到的子协议号和主协议号$/;"	m	struct:ndpi_packet_struct	access:public
+detected_protocol_stack	src/include/ndpi_typedefs.h	/^  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];    \/\/ 依次记录了该数据流识别到的子协议号和主协议号$/;"	m	struct:ndpi_flow_struct	access:public
 detected_subprotocol_stack	src/include/ndpi_typedefs.h	/^  u_int8_t detected_subprotocol_stack[NDPI_PROTOCOL_SIZE];$/;"	m	struct:ndpi_packet_struct	access:public
 detection_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK detection_bitmask;                      \/\/ 该字段的设置跟ndpi_set_bitmask_protocol_detection函数的入参有关$/;"	m	struct:ndpi_call_function_struct	access:public
 detection_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK detection_bitmask;  \/\/ 该探测模块中所有协议的使能\/禁止位的集合，只有其中置1的那些协议才是该探测模块中实际使能了的$/;"	m	struct:ndpi_detection_module_struct	access:public
-detection_completed	example/ndpi_util.h	/^  u_int8_t detection_completed;$/;"	m	struct:ndpi_flow_info	access:public
+detection_completed	example/ndpi_util.h	/^  u_int8_t detection_completed; \/\/ 标识是否完成对该数据流的探测$/;"	m	struct:ndpi_flow_info	access:public
 detection_feature	src/include/ndpi_typedefs.h	/^  u_int8_t detection_feature;$/;"	m	struct:ndpi_call_function_struct	access:public
 dhcp_packet_t	src/lib/protocols/dhcp.c	/^} dhcp_packet_t;$/;"	t	typeref:struct:__anon10	file:
 directconnect_connection_ip_tick_timeout	src/include/ndpi_typedefs.h	/^  u_int32_t directconnect_connection_ip_tick_timeout;$/;"	m	struct:ndpi_detection_module_struct	access:public
 directconnect_last_safe_access_time	src/include/ndpi_typedefs.h	/^  u_int32_t directconnect_last_safe_access_time;$/;"	m	struct:ndpi_id_struct	access:public
 directconnect_stage	src/include/ndpi_typedefs.h	/^  u_int32_t directconnect_stage:2;	      \/\/ 0 - 1$/;"	m	struct:ndpi_flow_struct	access:public
-direction_detect_disable	src/include/ndpi_typedefs.h	/^    direction_detect_disable:1; \/* disable internal detection of packet direction  标识是否禁止内部检测包的方向 *\/$/;"	m	struct:ndpi_detection_module_struct	access:public
+direction_detect_disable	src/include/ndpi_typedefs.h	/^    direction_detect_disable:1; \/* disable internal detection of packet direction  目前固定清0 *\/$/;"	m	struct:ndpi_detection_module_struct	access:public
 dns	src/include/ndpi_typedefs.h	/^    } dns;$/;"	m	union:ndpi_flow_struct::__anon26	typeref:struct:ndpi_flow_struct::__anon26::__anon27	access:public
 dns_dissect_response	src/include/ndpi_typedefs.h	/^  u_int8_t http_dont_dissect_response:1, dns_dissect_response:1,$/;"	m	struct:ndpi_detection_module_struct	access:public
 do_gettimeofday	src/lib/protocols/netflow.c	29;"	d	file:
@@ -1263,7 +1263,7 @@ epoch	src/lib/protocols/ayiya.c	/^  u_int32_t epoch;$/;"	m	struct:ayiya	file:	ac
 ethernet_crc32	example/ndpi_util.c	/^u_int32_t ethernet_crc32(const void* data, size_t n_bytes) {$/;"	f	signature:(const void* data, size_t n_bytes)
 ethernet_crc32	example/ndpi_util.h	/^u_int32_t ethernet_crc32(const void* data, size_t n_bytes);$/;"	p	signature:(const void* data, size_t n_bytes)
 excluded_protocol_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK excluded_protocol_bitmask;              \/\/ 实际被使能的协议会将该集合的对应位置1$/;"	m	struct:ndpi_call_function_struct	access:public
-excluded_protocol_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK excluded_protocol_bitmask;$/;"	m	struct:ndpi_flow_struct	access:public
+excluded_protocol_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK excluded_protocol_bitmask;      \/\/ 这张表记录了该数据流排除掉的协议ID集合$/;"	m	struct:ndpi_flow_struct	access:public
 exp	src/include/ndpi_typedefs.h	/^  u_int32_t label:20, exp:3, s:1, ttl:8;$/;"	m	struct:ndpi_mpls_header	access:public
 expand_mult	example/uthash.h	/^   unsigned expand_mult;$/;"	m	struct:UT_hash_bucket	access:public
 extcap_buf	example/ndpiReader.c	/^static char extcap_buf[16384];$/;"	v	file:
@@ -1387,18 +1387,18 @@ getNameLength	src/lib/protocols/dns.c	/^static u_int getNameLength(u_int i, cons
 getNextPcapFileFromPlaylist	example/ndpiReader.c	/^static int getNextPcapFileFromPlaylist(u_int16_t thread_id, char filename[], u_int32_t filename_len) {$/;"	f	file:	signature:(u_int16_t thread_id, char filename[], u_int32_t filename_len)
 getSSLcertificate	src/lib/protocols/ssl.c	/^int getSSLcertificate(struct ndpi_detection_module_struct *ndpi_struct,$/;"	f	signature:(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow, char *buffer, int buffer_len)
 getTopStats	example/ndpiReader.c	/^static int getTopStats(struct top_stats **topStats, struct port_stats *stats, u_int64_t total_packet_count){$/;"	f	file:	signature:(struct top_stats **topStats, struct port_stats *stats, u_int64_t total_packet_count)
-get_l16	src/include/ndpi_define.h	275;"	d
-get_l16	src/include/ndpi_define.h	279;"	d
-get_l32	src/include/ndpi_define.h	276;"	d
-get_l32	src/include/ndpi_define.h	280;"	d
+get_l16	src/include/ndpi_define.h	276;"	d
+get_l16	src/include/ndpi_define.h	280;"	d
+get_l32	src/include/ndpi_define.h	277;"	d
+get_l32	src/include/ndpi_define.h	281;"	d
 get_ndpi_flow_info	example/ndpi_util.c	/^static struct ndpi_flow_info *get_ndpi_flow_info(struct ndpi_workflow * workflow,$/;"	f	file:	signature:(struct ndpi_workflow * workflow, const u_int8_t version, u_int16_t vlan_id, const struct ndpi_iphdr *iph, const struct ndpi_ipv6hdr *iph6, u_int16_t ip_offset, u_int16_t ipsize, u_int16_t l4_packet_len, struct ndpi_tcphdr **tcph, struct ndpi_udphdr **udph, u_int16_t *sport, u_int16_t *dport, struct ndpi_id_struct **src, struct ndpi_id_struct **dst, u_int8_t *proto, u_int8_t **payload, u_int16_t *payload_len, u_int8_t *src_to_dst_direction)
 get_ndpi_flow_info6	example/ndpi_util.c	/^static struct ndpi_flow_info *get_ndpi_flow_info6(struct ndpi_workflow * workflow,$/;"	f	file:	signature:(struct ndpi_workflow * workflow, u_int16_t vlan_id, const struct ndpi_ipv6hdr *iph6, u_int16_t ip_offset, struct ndpi_tcphdr **tcph, struct ndpi_udphdr **udph, u_int16_t *sport, u_int16_t *dport, struct ndpi_id_struct **src, struct ndpi_id_struct **dst, u_int8_t *proto, u_int8_t **payload, u_int16_t *payload_len, u_int8_t *src_to_dst_direction)
 get_packet_id	src/lib/protocols/openvpn.c	/^u_int32_t get_packet_id(const u_int8_t * payload, u_int8_t hms) {$/;"	f	file:	signature:(const u_int8_t * payload, u_int8_t hms)
-get_u_int16_t	src/include/ndpi_define.h	266;"	d
-get_u_int32_t	src/include/ndpi_define.h	267;"	d
-get_u_int64_t	src/include/ndpi_define.h	268;"	d
-get_u_int8_t	src/include/ndpi_define.h	265;"	d
-get_ul8	src/include/ndpi_define.h	271;"	d
+get_u_int16_t	src/include/ndpi_define.h	267;"	d
+get_u_int32_t	src/include/ndpi_define.h	268;"	d
+get_u_int64_t	src/include/ndpi_define.h	269;"	d
+get_u_int8_t	src/include/ndpi_define.h	266;"	d
+get_ul8	src/include/ndpi_define.h	272;"	d
 getopt	example/ndpiReader.c	32;"	d	file:
 gettimeofday	example/ndpiReader.c	/^int gettimeofday(struct timeval *tv, struct timezone *tz) {$/;"	f	signature:(struct timeval *tv, struct timezone *tz)
 gettimeofday	src/lib/ndpi_main.c	/^int gettimeofday(struct timeval * tp, struct timezone * tzp) {$/;"	f	signature:(struct timeval * tp, struct timezone * tzp)
@@ -1416,8 +1416,8 @@ gtp_header_generic::message_len	src/lib/protocols/gtp.c	/^  u_int16_t message_le
 gtp_header_generic::message_type	src/lib/protocols/gtp.c	/^  u_int8_t flags, message_type;$/;"	m	struct:gtp_header_generic	file:	access:public
 gtp_header_generic::teid	src/lib/protocols/gtp.c	/^  u_int32_t teid;$/;"	m	struct:gtp_header_generic	file:	access:public
 guessed_flow_protocols	example/ndpi_util.h	/^  u_int32_t guessed_flow_protocols;$/;"	m	struct:ndpi_stats	access:public
-guessed_host_protocol_id	src/include/ndpi_typedefs.h	/^  u_int16_t guessed_protocol_id, guessed_host_protocol_id;$/;"	m	struct:ndpi_flow_struct	access:public
-guessed_protocol_id	src/include/ndpi_typedefs.h	/^  u_int16_t guessed_protocol_id, guessed_host_protocol_id;$/;"	m	struct:ndpi_flow_struct	access:public
+guessed_host_protocol_id	src/include/ndpi_typedefs.h	/^  u_int16_t guessed_host_protocol_id;       \/\/ 记录了猜测得到的nDPI定义的子协议ID$/;"	m	struct:ndpi_flow_struct	access:public
+guessed_protocol_id	src/include/ndpi_typedefs.h	/^  u_int16_t guessed_protocol_id;            \/\/ 记录了猜测得到的nDPI定义的主协议ID$/;"	m	struct:ndpi_flow_struct	access:public
 h323_valid_packets	src/include/ndpi_typedefs.h	/^  u_int8_t h323_valid_packets;$/;"	m	struct:ndpi_flow_tcp_struct	access:public
 h_dest	src/include/ndpi_typedefs.h	/^  u_char h_dest[6];       \/* destination eth addr *\/$/;"	m	struct:ndpi_ethhdr	access:public
 h_int	src/lib/protocols/btlib.h	/^		  h_int:1,h_mint:1,h_ip:1;$/;"	m	struct:bt_parse_protocol	access:public
@@ -1466,7 +1466,7 @@ host_match	src/lib/ndpi_content_match.c	/^ndpi_protocol_match host_match[] = {$/
 host_protocol_list	src/lib/ndpi_content_match.c	/^static ndpi_network host_protocol_list[] = {$/;"	v	file:
 host_server_name	example/ndpi_util.h	/^  char host_server_name[192];$/;"	m	struct:ndpi_flow_info	access:public
 host_server_name	src/include/ndpi_typedefs.h	/^  u_char host_server_name[256];$/;"	m	struct:ndpi_flow_struct	access:public
-howmanybits	src/include/ndpi_define.h	215;"	d
+howmanybits	src/include/ndpi_define.h	216;"	d
 http	src/include/ndpi_typedefs.h	/^  } http;$/;"	m	struct:ndpi_flow_struct	typeref:struct:ndpi_flow_struct::__anon25	access:public
 http_bitmask_exclude	src/lib/protocols/http.c	/^static void http_bitmask_exclude(struct ndpi_flow_struct *flow)$/;"	f	file:	signature:(struct ndpi_flow_struct *flow)
 http_contentlen	src/include/ndpi_typedefs.h	/^  struct ndpi_int_one_line_struct http_contentlen;$/;"	m	struct:ndpi_packet_struct	typeref:struct:ndpi_packet_struct::ndpi_int_one_line_struct	access:public
@@ -1920,12 +1920,12 @@ mail_pop_stage	src/include/ndpi_typedefs.h	/^  u_int32_t mail_pop_stage:2;$/;"	m
 main	example/ndpiReader.c	/^int main(int argc, char **argv) {$/;"	f	signature:(int argc, char **argv)
 malloc_wrapper	example/ndpi_util.c	/^static void *malloc_wrapper(size_t size) {$/;"	f	file:	signature:(size_t size)
 master_protocol	example/ndpiReader.c	/^  u_int16_t master_protocol \/* e.g. HTTP *\/, app_protocol \/* e.g. FaceBook *\/;$/;"	m	struct:ndpi_packet_trailer	file:	access:public
-master_protocol	src/include/ndpi_typedefs.h	/^  u_int16_t master_protocol \/* e.g. HTTP *\/, app_protocol \/* e.g. FaceBook *\/;$/;"	m	struct:ndpi_proto	access:public
+master_protocol	src/include/ndpi_typedefs.h	/^  u_int16_t master_protocol; \/* e.g. HTTP  对应detected_protocol_stack[1] *\/ $/;"	m	struct:ndpi_proto	access:public
 master_tcp_protoId	src/include/ndpi_typedefs.h	/^  u_int16_t master_tcp_protoId[2], master_udp_protoId[2]; \/* The main protocols on which this sub-protocol sits on *\/$/;"	m	struct:ndpi_proto_defaults	access:public
 master_udp_protoId	src/include/ndpi_typedefs.h	/^  u_int16_t master_tcp_protoId[2], master_udp_protoId[2]; \/* The main protocols on which this sub-protocol sits on *\/$/;"	m	struct:ndpi_proto_defaults	access:public
 match	src/lib/third_party/include/ahocorasick.h	/^  AC_MATCH_t match; \/* Any match is reported with this *\/$/;"	m	struct:__anon8	access:public
 match_callback	src/lib/third_party/include/ahocorasick.h	/^  MATCH_CALBACK_f match_callback; \/* Match call-back function *\/$/;"	m	struct:__anon8	access:public
-match_first_bytes	src/include/ndpi_define.h	286;"	d
+match_first_bytes	src/include/ndpi_define.h	287;"	d
 match_num	src/lib/third_party/include/actypes.h	/^  unsigned int match_num; \/* Number of matched patterns *\/$/;"	m	struct:__anon6	access:public
 matched_patterns	src/lib/third_party/include/node.h	/^  AC_PATTERN_t * matched_patterns; \/* Array of matched patterns *\/$/;"	m	struct:ac_node	access:public
 matched_patterns_max	src/lib/third_party/include/node.h	/^  unsigned short matched_patterns_max; \/* Max capacity of allocated memory for matched_patterns *\/$/;"	m	struct:ac_node	access:public
@@ -2075,9 +2075,9 @@ ndpi_debug_print_line	src/include/ndpi_typedefs.h	/^  u_int32_t ndpi_debug_print
 ndpi_debug_printf	src/include/ndpi_typedefs.h	/^  ndpi_debug_function_ptr ndpi_debug_printf;    \/\/ 调试信息输出回调函数$/;"	m	struct:ndpi_detection_module_struct	access:public
 ndpi_debug_printf	src/lib/ndpi_main.c	/^void ndpi_debug_printf(unsigned int proto, struct ndpi_detection_module_struct *ndpi_str, ndpi_log_level_t log_level, const char * format, ...)$/;"	f	signature:(unsigned int proto, struct ndpi_detection_module_struct *ndpi_str, ndpi_log_level_t log_level, const char * format, ...)
 ndpi_default_ports_tree_node	src/include/ndpi_typedefs.h	/^typedef struct ndpi_default_ports_tree_node {$/;"	s
-ndpi_default_ports_tree_node::customUserProto	src/include/ndpi_typedefs.h	/^  u_int8_t customUserProto;$/;"	m	struct:ndpi_default_ports_tree_node	access:public
-ndpi_default_ports_tree_node::default_port	src/include/ndpi_typedefs.h	/^  u_int16_t default_port;           \/\/ 关联的协议的一个缺省端口号$/;"	m	struct:ndpi_default_ports_tree_node	access:public
-ndpi_default_ports_tree_node::proto	src/include/ndpi_typedefs.h	/^  ndpi_proto_defaults_t *proto;     \/\/ 指向关联的协议的缺省信息单元$/;"	m	struct:ndpi_default_ports_tree_node	access:public
+ndpi_default_ports_tree_node::customUserProto	src/include/ndpi_typedefs.h	/^  u_int8_t customUserProto;         \/\/ 标识是否是一个自定义的协议$/;"	m	struct:ndpi_default_ports_tree_node	access:public
+ndpi_default_ports_tree_node::default_port	src/include/ndpi_typedefs.h	/^  u_int16_t default_port;           \/\/ 关联协议的一个缺省端口号(通过该值在二叉树节点中进行匹配)$/;"	m	struct:ndpi_default_ports_tree_node	access:public
+ndpi_default_ports_tree_node::proto	src/include/ndpi_typedefs.h	/^  ndpi_proto_defaults_t *proto;     \/\/ 指向关联协议的缺省信息单元$/;"	m	struct:ndpi_default_ports_tree_node	access:public
 ndpi_default_ports_tree_node_t	src/include/ndpi_typedefs.h	/^} ndpi_default_ports_tree_node_t;$/;"	t	typeref:struct:ndpi_default_ports_tree_node
 ndpi_default_ports_tree_node_t_cmp	src/lib/ndpi_main.c	/^static int ndpi_default_ports_tree_node_t_cmp(const void *a, const void *b)$/;"	f	file:	signature:(const void *a, const void *b)
 ndpi_default_ports_tree_node_t_walker	src/lib/ndpi_main.c	/^void ndpi_default_ports_tree_node_t_walker(const void *node, const ndpi_VISIT which, const int depth)$/;"	f	signature:(const void *node, const ndpi_VISIT which, const int depth)
@@ -2111,7 +2111,7 @@ ndpi_detection_module_struct::content_automa	src/include/ndpi_typedefs.h	/^    c
 ndpi_detection_module_struct::current_ts	src/include/ndpi_typedefs.h	/^  u_int32_t current_ts;$/;"	m	struct:ndpi_detection_module_struct	access:public
 ndpi_detection_module_struct::detection_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK detection_bitmask;  \/\/ 该探测模块中所有协议的使能\/禁止位的集合，只有其中置1的那些协议才是该探测模块中实际使能了的$/;"	m	struct:ndpi_detection_module_struct	access:public
 ndpi_detection_module_struct::directconnect_connection_ip_tick_timeout	src/include/ndpi_typedefs.h	/^  u_int32_t directconnect_connection_ip_tick_timeout;$/;"	m	struct:ndpi_detection_module_struct	access:public
-ndpi_detection_module_struct::direction_detect_disable	src/include/ndpi_typedefs.h	/^    direction_detect_disable:1; \/* disable internal detection of packet direction  标识是否禁止内部检测包的方向 *\/$/;"	m	struct:ndpi_detection_module_struct	access:public
+ndpi_detection_module_struct::direction_detect_disable	src/include/ndpi_typedefs.h	/^    direction_detect_disable:1; \/* disable internal detection of packet direction  目前固定清0 *\/$/;"	m	struct:ndpi_detection_module_struct	access:public
 ndpi_detection_module_struct::dns_dissect_response	src/include/ndpi_typedefs.h	/^  u_int8_t http_dont_dissect_response:1, dns_dissect_response:1,$/;"	m	struct:ndpi_detection_module_struct	access:public
 ndpi_detection_module_struct::generic_http_packet_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK generic_http_packet_bitmask;$/;"	m	struct:ndpi_detection_module_struct	access:public
 ndpi_detection_module_struct::gnutella_timeout	src/include/ndpi_typedefs.h	/^  u_int32_t gnutella_timeout;$/;"	m	struct:ndpi_detection_module_struct	access:public
@@ -2136,12 +2136,12 @@ ndpi_detection_module_struct::rtsp_connection_timeout	src/include/ndpi_typedefs.
 ndpi_detection_module_struct::soulseek_connection_ip_tick_timeout	src/include/ndpi_typedefs.h	/^  u_int32_t soulseek_connection_ip_tick_timeout;$/;"	m	struct:ndpi_detection_module_struct	access:public
 ndpi_detection_module_struct::subprotocol_automa	src/include/ndpi_typedefs.h	/^    subprotocol_automa,                        \/* Used for HTTP subprotocol_detection *\/$/;"	m	struct:ndpi_detection_module_struct	access:public
 ndpi_detection_module_struct::subprotocol_conf	src/include/ndpi_typedefs.h	/^  struct ndpi_subprotocol_conf_struct subprotocol_conf[NDPI_MAX_SUPPORTED_PROTOCOLS + 1];$/;"	m	struct:ndpi_detection_module_struct	typeref:struct:ndpi_detection_module_struct::ndpi_subprotocol_conf_struct	access:public
-ndpi_detection_module_struct::tcpRoot	src/include/ndpi_typedefs.h	/^  ndpi_default_ports_tree_node_t *tcpRoot, *udpRoot;    \/\/ 指向2棵专门维护所有协议缺省端口信息的二叉树$/;"	m	struct:ndpi_detection_module_struct	access:public
+ndpi_detection_module_struct::tcpRoot	src/include/ndpi_typedefs.h	/^  ndpi_default_ports_tree_node_t *tcpRoot, *udpRoot;    \/\/ 分别指向tcp和udp二叉树，这两棵二叉树共同维护了proto_defaults这张表(实际不只是tcp和udp协议)的信息$/;"	m	struct:ndpi_detection_module_struct	access:public
 ndpi_detection_module_struct::tcp_max_retransmission_window_size	src/include/ndpi_typedefs.h	/^  u_int32_t tcp_max_retransmission_window_size;$/;"	m	struct:ndpi_detection_module_struct	access:public
 ndpi_detection_module_struct::thunder_timeout	src/include/ndpi_typedefs.h	/^  u_int32_t thunder_timeout;$/;"	m	struct:ndpi_detection_module_struct	access:public
 ndpi_detection_module_struct::ticks_per_second	src/include/ndpi_typedefs.h	/^  u_int32_t ticks_per_second;$/;"	m	struct:ndpi_detection_module_struct	access:public
 ndpi_detection_module_struct::tvants_connection_timeout	src/include/ndpi_typedefs.h	/^  u_int32_t tvants_connection_timeout;$/;"	m	struct:ndpi_detection_module_struct	access:public
-ndpi_detection_module_struct::udpRoot	src/include/ndpi_typedefs.h	/^  ndpi_default_ports_tree_node_t *tcpRoot, *udpRoot;    \/\/ 指向2棵专门维护所有协议缺省端口信息的二叉树$/;"	m	struct:ndpi_detection_module_struct	access:public
+ndpi_detection_module_struct::udpRoot	src/include/ndpi_typedefs.h	/^  ndpi_default_ports_tree_node_t *tcpRoot, *udpRoot;    \/\/ 分别指向tcp和udp二叉树，这两棵二叉树共同维护了proto_defaults这张表(实际不只是tcp和udp协议)的信息$/;"	m	struct:ndpi_detection_module_struct	access:public
 ndpi_detection_module_struct::user_data	src/include/ndpi_typedefs.h	/^  void *user_data;$/;"	m	struct:ndpi_detection_module_struct	access:public
 ndpi_detection_module_struct::yahoo_detect_http_connections	src/include/ndpi_typedefs.h	/^  u_int8_t yahoo_detect_http_connections;$/;"	m	struct:ndpi_detection_module_struct	access:public
 ndpi_detection_module_struct::yahoo_lan_video_timeout	src/include/ndpi_typedefs.h	/^  u_int32_t yahoo_lan_video_timeout;$/;"	m	struct:ndpi_detection_module_struct	access:public
@@ -2193,7 +2193,7 @@ ndpi_flow_info::bidirectional	example/ndpi_util.h	/^  u_int8_t bidirectional;$/;
 ndpi_flow_info::bittorent_hash	example/ndpi_util.h	/^  char bittorent_hash[41];$/;"	m	struct:ndpi_flow_info	access:public
 ndpi_flow_info::bytes	example/ndpi_util.h	/^  u_int64_t bytes;      \/\/ 记录了收到的包字节总数(前提是识别为有效流)$/;"	m	struct:ndpi_flow_info	access:public
 ndpi_flow_info::detected_protocol	example/ndpi_util.h	/^  ndpi_protocol detected_protocol;$/;"	m	struct:ndpi_flow_info	access:public
-ndpi_flow_info::detection_completed	example/ndpi_util.h	/^  u_int8_t detection_completed;$/;"	m	struct:ndpi_flow_info	access:public
+ndpi_flow_info::detection_completed	example/ndpi_util.h	/^  u_int8_t detection_completed; \/\/ 标识是否完成对该数据流的探测$/;"	m	struct:ndpi_flow_info	access:public
 ndpi_flow_info::dst_id	example/ndpi_util.h	/^  void *src_id, *dst_id;$/;"	m	struct:ndpi_flow_info	access:public
 ndpi_flow_info::hashval	example/ndpi_util.h	/^  u_int32_t hashval;            \/\/ (protocol + vlan_id + lower_ip + upper_id + lower_port + upper_port) % 512$/;"	m	struct:ndpi_flow_info	access:public
 ndpi_flow_info::host_server_name	example/ndpi_util.h	/^  char host_server_name[192];$/;"	m	struct:ndpi_flow_info	access:public
@@ -2247,16 +2247,16 @@ ndpi_flow_struct::bittorent_hash	src/include/ndpi_typedefs.h	/^  u_char bittoren
 ndpi_flow_struct::bittorrent_stage	src/include/ndpi_typedefs.h	/^  u_int8_t bittorrent_stage;		      \/\/ can be 0 - 255$/;"	m	struct:ndpi_flow_struct	access:public
 ndpi_flow_struct::byte_counter	src/include/ndpi_typedefs.h	/^  u_int16_t byte_counter[2];                \/\/ 分别记录了该数据流在两个方向上的payload字节数$/;"	m	struct:ndpi_flow_struct	access:public
 ndpi_flow_struct::detected_os	src/include/ndpi_typedefs.h	/^  u_char detected_os[32];$/;"	m	struct:ndpi_flow_struct	access:public
-ndpi_flow_struct::detected_protocol_stack	src/include/ndpi_typedefs.h	/^  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];    \/\/ 记录了该数据流的主协议和子协议$/;"	m	struct:ndpi_flow_struct	access:public
+ndpi_flow_struct::detected_protocol_stack	src/include/ndpi_typedefs.h	/^  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];    \/\/ 依次记录了该数据流识别到的子协议号和主协议号$/;"	m	struct:ndpi_flow_struct	access:public
 ndpi_flow_struct::directconnect_stage	src/include/ndpi_typedefs.h	/^  u_int32_t directconnect_stage:2;	      \/\/ 0 - 1$/;"	m	struct:ndpi_flow_struct	access:public
 ndpi_flow_struct::dst	src/include/ndpi_typedefs.h	/^  struct ndpi_id_struct *dst;$/;"	m	struct:ndpi_flow_struct	typeref:struct:ndpi_flow_struct::ndpi_id_struct	access:public
 ndpi_flow_struct::edonkey_stage	src/include/ndpi_typedefs.h	/^  u_int32_t edonkey_stage:2;	                \/\/ 0 - 3$/;"	m	struct:ndpi_flow_struct	access:public
-ndpi_flow_struct::excluded_protocol_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK excluded_protocol_bitmask;$/;"	m	struct:ndpi_flow_struct	access:public
+ndpi_flow_struct::excluded_protocol_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK excluded_protocol_bitmask;      \/\/ 这张表记录了该数据流排除掉的协议ID集合$/;"	m	struct:ndpi_flow_struct	access:public
 ndpi_flow_struct::florensia_stage	src/include/ndpi_typedefs.h	/^  u_int32_t florensia_stage:1;$/;"	m	struct:ndpi_flow_struct	access:public
 ndpi_flow_struct::flow	src/include/ndpi_typedefs.h	/^  struct ndpi_flow_struct *flow;$/;"	m	struct:ndpi_flow_struct	typeref:struct:ndpi_flow_struct::ndpi_flow_struct	access:public
 ndpi_flow_struct::ftp_control_stage	src/include/ndpi_typedefs.h	/^  u_int32_t ftp_control_stage:2;$/;"	m	struct:ndpi_flow_struct	access:public
-ndpi_flow_struct::guessed_host_protocol_id	src/include/ndpi_typedefs.h	/^  u_int16_t guessed_protocol_id, guessed_host_protocol_id;$/;"	m	struct:ndpi_flow_struct	access:public
-ndpi_flow_struct::guessed_protocol_id	src/include/ndpi_typedefs.h	/^  u_int16_t guessed_protocol_id, guessed_host_protocol_id;$/;"	m	struct:ndpi_flow_struct	access:public
+ndpi_flow_struct::guessed_host_protocol_id	src/include/ndpi_typedefs.h	/^  u_int16_t guessed_host_protocol_id;       \/\/ 记录了猜测得到的nDPI定义的子协议ID$/;"	m	struct:ndpi_flow_struct	access:public
+ndpi_flow_struct::guessed_protocol_id	src/include/ndpi_typedefs.h	/^  u_int16_t guessed_protocol_id;            \/\/ 记录了猜测得到的nDPI定义的主协议ID$/;"	m	struct:ndpi_flow_struct	access:public
 ndpi_flow_struct::host_already_guessed	src/include/ndpi_typedefs.h	/^           host_already_guessed:1, $/;"	m	struct:ndpi_flow_struct	access:public
 ndpi_flow_struct::host_server_name	src/include/ndpi_typedefs.h	/^  u_char host_server_name[256];$/;"	m	struct:ndpi_flow_struct	access:public
 ndpi_flow_struct::http	src/include/ndpi_typedefs.h	/^  } http;$/;"	m	struct:ndpi_flow_struct	typeref:struct:ndpi_flow_struct::__anon25	access:public
@@ -2278,7 +2278,7 @@ ndpi_flow_struct::pando_stage	src/include/ndpi_typedefs.h	/^  u_int32_t pando_st
 ndpi_flow_struct::pplive_stage1	src/include/ndpi_typedefs.h	/^  u_int32_t pplive_stage1:3;			\/\/ 0 - 6$/;"	m	struct:ndpi_flow_struct	access:public
 ndpi_flow_struct::pplive_stage2	src/include/ndpi_typedefs.h	/^  u_int32_t pplive_stage2:2;			\/\/ 0 - 2$/;"	m	struct:ndpi_flow_struct	access:public
 ndpi_flow_struct::pplive_stage3	src/include/ndpi_typedefs.h	/^  u_int32_t pplive_stage3:2;			\/\/ 0 - 2$/;"	m	struct:ndpi_flow_struct	access:public
-ndpi_flow_struct::protocol_id_already_guessed	src/include/ndpi_typedefs.h	/^  u_int8_t protocol_id_already_guessed:1, $/;"	m	struct:ndpi_flow_struct	access:public
+ndpi_flow_struct::protocol_id_already_guessed	src/include/ndpi_typedefs.h	/^  u_int8_t protocol_id_already_guessed:1,   \/\/ 标识该数据流是否进行了协议猜测$/;"	m	struct:ndpi_flow_struct	access:public
 ndpi_flow_struct::protocol_stack_info	src/include/ndpi_typedefs.h	/^  u_int16_t protocol_stack_info;$/;"	m	struct:ndpi_flow_struct	access:public
 ndpi_flow_struct::protos	src/include/ndpi_typedefs.h	/^  } protos;$/;"	m	struct:ndpi_flow_struct	typeref:union:ndpi_flow_struct::__anon26	access:public
 ndpi_flow_struct::qq_stage	src/include/ndpi_typedefs.h	/^  u_int32_t qq_stage:3;$/;"	m	struct:ndpi_flow_struct	access:public
@@ -2689,8 +2689,8 @@ ndpi_match_string_id	src/lib/ndpi_main.c	/^int ndpi_match_string_id(void *_autom
 ndpi_match_string_subprotocol	src/include/ndpi_api.h	/^  int ndpi_match_string_subprotocol(struct ndpi_detection_module_struct *ndpi_struct,$/;"	p	signature:(struct ndpi_detection_module_struct *ndpi_struct, char *string_to_match, u_int string_to_match_len, u_int8_t is_host_match)
 ndpi_match_string_subprotocol	src/lib/ndpi_main.c	/^int ndpi_match_string_subprotocol(struct ndpi_detection_module_struct *ndpi_struct,$/;"	f	signature:(struct ndpi_detection_module_struct *ndpi_struct, char *string_to_match, u_int string_to_match_len, u_int8_t is_host_match)
 ndpi_match_strprefix	src/include/ndpi_main.h	126;"	d
-ndpi_max	src/include/ndpi_define.h	246;"	d
-ndpi_min	src/include/ndpi_define.h	245;"	d
+ndpi_max	src/include/ndpi_define.h	247;"	d
+ndpi_min	src/include/ndpi_define.h	246;"	d
 ndpi_mpls_header	src/include/ndpi_typedefs.h	/^struct ndpi_mpls_header$/;"	s
 ndpi_mpls_header::exp	src/include/ndpi_typedefs.h	/^  u_int32_t label:20, exp:3, s:1, ttl:8;$/;"	m	struct:ndpi_mpls_header	access:public
 ndpi_mpls_header::label	src/include/ndpi_typedefs.h	/^  u_int32_t label:20, exp:3, s:1, ttl:8;$/;"	m	struct:ndpi_mpls_header	access:public
@@ -2720,7 +2720,7 @@ ndpi_packet_struct	src/include/ndpi_typedefs.h	/^struct ndpi_packet_struct {$/;"
 ndpi_packet_struct::accept_line	src/include/ndpi_typedefs.h	/^  struct ndpi_int_one_line_struct accept_line;$/;"	m	struct:ndpi_packet_struct	typeref:struct:ndpi_packet_struct::ndpi_int_one_line_struct	access:public
 ndpi_packet_struct::actual_payload_len	src/include/ndpi_typedefs.h	/^  u_int16_t actual_payload_len; \/\/ 缺省从payload_packet_len同步过来$/;"	m	struct:ndpi_packet_struct	access:public
 ndpi_packet_struct::content_line	src/include/ndpi_typedefs.h	/^  struct ndpi_int_one_line_struct content_line;$/;"	m	struct:ndpi_packet_struct	typeref:struct:ndpi_packet_struct::ndpi_int_one_line_struct	access:public
-ndpi_packet_struct::detected_protocol_stack	src/include/ndpi_typedefs.h	/^  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];$/;"	m	struct:ndpi_packet_struct	access:public
+ndpi_packet_struct::detected_protocol_stack	src/include/ndpi_typedefs.h	/^  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];    \/\/ 依次记录了该数据包识别到的子协议号和主协议号$/;"	m	struct:ndpi_packet_struct	access:public
 ndpi_packet_struct::detected_subprotocol_stack	src/include/ndpi_typedefs.h	/^  u_int8_t detected_subprotocol_stack[NDPI_PROTOCOL_SIZE];$/;"	m	struct:ndpi_packet_struct	access:public
 ndpi_packet_struct::empty_line_position	src/include/ndpi_typedefs.h	/^  u_int16_t empty_line_position;$/;"	m	struct:ndpi_packet_struct	access:public
 ndpi_packet_struct::empty_line_position_set	src/include/ndpi_typedefs.h	/^    empty_line_position_set:1;$/;"	m	struct:ndpi_packet_struct	access:public
@@ -2792,8 +2792,8 @@ ndpi_preorder	src/include/ndpi_typedefs.h	/^    ndpi_preorder,$/;"	e	enum:__anon
 ndpi_proto	src/include/ndpi_typedefs.h	/^typedef struct ndpi_proto {$/;"	s
 ndpi_proto.dissector	wireshark/ndpi.lua	/^function ndpi_proto.dissector(tvb, pinfo, tree)$/;"	f
 ndpi_proto.init	wireshark/ndpi.lua	/^function ndpi_proto.init()$/;"	f
-ndpi_proto::app_protocol	src/include/ndpi_typedefs.h	/^  u_int16_t master_protocol \/* e.g. HTTP *\/, app_protocol \/* e.g. FaceBook *\/;$/;"	m	struct:ndpi_proto	access:public
-ndpi_proto::master_protocol	src/include/ndpi_typedefs.h	/^  u_int16_t master_protocol \/* e.g. HTTP *\/, app_protocol \/* e.g. FaceBook *\/;$/;"	m	struct:ndpi_proto	access:public
+ndpi_proto::app_protocol	src/include/ndpi_typedefs.h	/^  u_int16_t app_protocol; \/* e.g. FaceBook  对应detected_protocol_stack[0] *\/$/;"	m	struct:ndpi_proto	access:public
+ndpi_proto::master_protocol	src/include/ndpi_typedefs.h	/^  u_int16_t master_protocol; \/* e.g. HTTP  对应detected_protocol_stack[1] *\/ $/;"	m	struct:ndpi_proto	access:public
 ndpi_proto_defaults	src/include/ndpi_typedefs.h	/^typedef struct ndpi_proto_defaults {$/;"	s
 ndpi_proto_defaults::func	src/include/ndpi_typedefs.h	/^  void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow);  \/\/ 指向协议关联的报文解析回调接口$/;"	m	struct:ndpi_proto_defaults	access:public
 ndpi_proto_defaults::master_tcp_protoId	src/include/ndpi_typedefs.h	/^  u_int16_t master_tcp_protoId[2], master_udp_protoId[2]; \/* The main protocols on which this sub-protocol sits on *\/$/;"	m	struct:ndpi_proto_defaults	access:public
@@ -3374,7 +3374,7 @@ num_answers	src/include/ndpi_typedefs.h	/^  u_int16_t num_answers;$/;"	m	struct:
 num_buckets	example/uthash.h	/^   unsigned num_buckets, log2_num_buckets;$/;"	m	struct:UT_hash_table	access:public
 num_bytes	example/ndpiReader.c	/^  u_int32_t num_pkts, num_bytes;$/;"	m	struct:port_stats	file:	access:public
 num_flows	example/ndpiReader.c	/^static u_int32_t num_flows;$/;"	v	file:
-num_idle_flows	example/ndpiReader.c	/^  u_int32_t num_idle_flows;$/;"	m	struct:reader_thread	file:	access:public
+num_idle_flows	example/ndpiReader.c	/^  u_int32_t num_idle_flows;             \/\/ 记录了空闲的数据流数量$/;"	m	struct:reader_thread	file:	access:public
 num_items	example/uthash.h	/^   unsigned num_items;$/;"	m	struct:UT_hash_table	access:public
 num_loops	example/ndpiReader.c	/^static u_int16_t num_loops = 1;     \/\/ 探测循环次数(仅测试用)$/;"	v	file:
 num_pkts	example/ndpiReader.c	/^  u_int32_t num_pkts, num_bytes;$/;"	m	struct:port_stats	file:	access:public
@@ -3438,16 +3438,16 @@ patchIPv6Address	example/ndpi_util.c	/^static void patchIPv6Address(char *str) {
 patricia_node_t	src/lib/third_party/include/ndpi_patricia.h	/^} patricia_node_t;$/;"	t	typeref:struct:_patricia_node_t
 patricia_node_value_t	src/lib/third_party/include/ndpi_patricia.h	/^union patricia_node_value_t {$/;"	u
 patricia_node_value_t::user_data	src/lib/third_party/include/ndpi_patricia.h	/^  void *user_data;      \/\/ 通用指针 或$/;"	m	union:patricia_node_value_t	access:public
-patricia_node_value_t::user_value	src/lib/third_party/include/ndpi_patricia.h	/^  u_int32_t user_value; \/\/ 无符号整形$/;"	m	union:patricia_node_value_t	access:public
+patricia_node_value_t::user_value	src/lib/third_party/include/ndpi_patricia.h	/^  u_int32_t user_value; \/\/ 无符号整形(通常该字段记录了所属trie树节点关联的协议ID)$/;"	m	union:patricia_node_value_t	access:public
 patricia_tree_t	src/lib/third_party/include/ndpi_patricia.h	/^} patricia_tree_t;$/;"	t	typeref:struct:_patricia_tree_t
 patterns	src/lib/third_party/include/actypes.h	/^  AC_PATTERN_t * patterns; \/* Array of matched pattern *\/$/;"	m	struct:__anon6	access:public
 payload	src/include/ndpi_typedefs.h	/^  const u_int8_t *payload;              \/\/ 指向l4层payload首地址的指针$/;"	m	struct:ndpi_packet_struct	access:public
 payload_packet_len	src/include/ndpi_typedefs.h	/^  u_int16_t payload_packet_len; \/\/ 记录了收到包的l4层payload长度$/;"	m	struct:ndpi_packet_struct	access:public
 pcap_analysis_duration	example/ndpiReader.c	/^static u_int32_t pcap_analysis_duration = (u_int32_t)-1;$/;"	v	file:
-pcap_end	example/ndpiReader.c	/^static struct timeval pcap_start, pcap_end;$/;"	v	typeref:struct:	file:
+pcap_end	example/ndpiReader.c	/^static struct timeval pcap_start, pcap_end;     \/\/ 捕获起始和结束时间(只在没有传入捕获接口时有效)$/;"	v	typeref:struct:	file:
 pcap_handle	example/ndpi_util.h	/^  pcap_t *pcap_handle;      \/\/ 指向这条流关联的pcap句柄$/;"	m	struct:ndpi_workflow	access:public
 pcap_process_packet	example/ndpiReader.c	/^static void pcap_process_packet(u_char *args,$/;"	f	file:	signature:(u_char *args, const struct pcap_pkthdr *header, const u_char *packet)
-pcap_start	example/ndpiReader.c	/^static struct timeval pcap_start, pcap_end;$/;"	v	typeref:struct:timeval	file:
+pcap_start	example/ndpiReader.c	/^static struct timeval pcap_start, pcap_end;     \/\/ 捕获起始和结束时间(只在没有传入捕获接口时有效)$/;"	v	typeref:struct:timeval	file:
 peers	src/lib/protocols/btlib.h	/^	struct bt_ipv4p		*peers;$/;"	m	struct:bt_parse_protocol	typeref:struct:bt_parse_protocol::bt_ipv4p	access:public
 playlist_fp	example/ndpiReader.c	/^static FILE *playlist_fp[MAX_NUM_READER_THREADS] = { NULL }; \/**< Ingress playlist *\/$/;"	v	file:
 pop_command_bitmask	src/include/ndpi_typedefs.h	/^  u_int16_t pop_command_bitmask;$/;"	m	struct:ndpi_flow_tcp_struct	access:public
@@ -3506,7 +3506,7 @@ print_safe_str	src/lib/protocols/btlib.c	/^static void print_safe_str(char *msg,
 process_ndpi_collected_info	example/ndpi_util.c	/^void process_ndpi_collected_info(struct ndpi_workflow * workflow, struct ndpi_flow_info *flow) {$/;"	f	signature:(struct ndpi_workflow * workflow, struct ndpi_flow_info *flow)
 process_ndpi_collected_info	example/ndpi_util.h	/^void process_ndpi_collected_info(struct ndpi_workflow * workflow, struct ndpi_flow_info *flow);$/;"	p	signature:(struct ndpi_workflow * workflow, struct ndpi_flow_info *flow)
 processing_thread	example/ndpiReader.c	/^void * processing_thread(void *_thread_id) {$/;"	f	signature:(void *_thread_id)
-proto	src/include/ndpi_typedefs.h	/^  ndpi_proto_defaults_t *proto;     \/\/ 指向关联的协议的缺省信息单元$/;"	m	struct:ndpi_default_ports_tree_node	access:public
+proto	src/include/ndpi_typedefs.h	/^  ndpi_proto_defaults_t *proto;     \/\/ 指向关联协议的缺省信息单元$/;"	m	struct:ndpi_default_ports_tree_node	access:public
 proto	src/lib/protocols/netflow.c	/^  u_int8_t  proto;      \/* IP protocol, e.g., 6=TCP, 17=UDP, etc... *\/$/;"	m	struct:flow_ver1_rec	file:	access:public
 proto	src/lib/protocols/netflow.c	/^  u_int8_t  proto;      \/* IP protocol, e.g., 6=TCP, 17=UDP, etc... *\/$/;"	m	struct:flow_ver7_rec	file:	access:public
 proto	src/lib/protocols/netflow.c	/^  u_int8_t proto;        \/* IP protocol, e.g., 6=TCP, 17=UDP, etc... *\/$/;"	m	struct:flow_ver5_rec	file:	access:public
@@ -3530,7 +3530,7 @@ protocol_counter	example/ndpi_util.h	/^  u_int64_t protocol_counter[NDPI_MAX_SUP
 protocol_counter_bytes	example/ndpi_util.h	/^  u_int64_t protocol_counter_bytes[NDPI_MAX_SUPPORTED_PROTOCOLS + NDPI_MAX_NUM_CUSTOM_PROTOCOLS + 1];   \/\/ 这张表记录了每种使能的协议收到的字节数量$/;"	m	struct:ndpi_stats	access:public
 protocol_flows	example/ndpi_util.h	/^  u_int32_t protocol_flows[NDPI_MAX_SUPPORTED_PROTOCOLS + NDPI_MAX_NUM_CUSTOM_PROTOCOLS + 1];       \/\/ 这张表记录了每种使能的协议收到的流数量$/;"	m	struct:ndpi_stats	access:public
 protocol_id	src/include/ndpi_typedefs.h	/^  int protocol_id;                          \/\/ ndpi分配的协议ID$/;"	m	struct:__anon33	access:public
-protocol_id_already_guessed	src/include/ndpi_typedefs.h	/^  u_int8_t protocol_id_already_guessed:1, $/;"	m	struct:ndpi_flow_struct	access:public
+protocol_id_already_guessed	src/include/ndpi_typedefs.h	/^  u_int8_t protocol_id_already_guessed:1,   \/\/ 标识该数据流是否进行了协议猜测$/;"	m	struct:ndpi_flow_struct	access:public
 protocol_stack_info	src/include/ndpi_typedefs.h	/^  u_int16_t protocol_stack_info;$/;"	m	struct:ndpi_flow_struct	access:public
 protocol_stack_info	src/include/ndpi_typedefs.h	/^  u_int16_t protocol_stack_info;$/;"	m	struct:ndpi_packet_struct	access:public
 protocols_ptree	src/include/ndpi_typedefs.h	/^  void *protocols_ptree;$/;"	m	struct:ndpi_detection_module_struct	access:public
@@ -3573,7 +3573,7 @@ reader_thread	example/ndpiReader.c	/^struct reader_thread {$/;"	s	file:
 reader_thread::idle_flows	example/ndpiReader.c	/^  struct ndpi_flow_info *idle_flows[IDLE_SCAN_BUDGET];$/;"	m	struct:reader_thread	typeref:struct:reader_thread::ndpi_flow_info	file:	access:public
 reader_thread::idle_scan_idx	example/ndpiReader.c	/^  u_int32_t idle_scan_idx;$/;"	m	struct:reader_thread	file:	access:public
 reader_thread::last_idle_scan_time	example/ndpiReader.c	/^  u_int64_t last_idle_scan_time;$/;"	m	struct:reader_thread	file:	access:public
-reader_thread::num_idle_flows	example/ndpiReader.c	/^  u_int32_t num_idle_flows;$/;"	m	struct:reader_thread	file:	access:public
+reader_thread::num_idle_flows	example/ndpiReader.c	/^  u_int32_t num_idle_flows;             \/\/ 记录了空闲的数据流数量$/;"	m	struct:reader_thread	file:	access:public
 reader_thread::pthread	example/ndpiReader.c	/^  pthread_t pthread;                    \/\/ 记录了对应的线程ID$/;"	m	struct:reader_thread	file:	access:public
 reader_thread::workflow	example/ndpiReader.c	/^  struct ndpi_workflow * workflow;      \/\/ 指向一条对应的工作流$/;"	m	struct:reader_thread	typeref:struct:reader_thread::ndpi_workflow	file:	access:public
 redis_d2s_first_char	src/include/ndpi_typedefs.h	/^  u_int8_t redis_s2d_first_char, redis_d2s_first_char;$/;"	m	struct:ndpi_flow_struct	access:public
@@ -3682,7 +3682,7 @@ sname	src/lib/protocols/dhcp.c	/^  uint8_t	sname[DHCP_SNAME_LEN]; \/* 44 *\/$/;"
 snap	src/include/ndpi_typedefs.h	/^  struct ndpi_snap_extension snap;$/;"	m	struct:ndpi_llc_header_snap	typeref:struct:ndpi_llc_header_snap::ndpi_snap_extension	access:public
 snmp_msg_id	src/include/ndpi_typedefs.h	/^  u_int32_t snmp_msg_id;$/;"	m	struct:ndpi_flow_udp_struct	access:public
 snmp_stage	src/include/ndpi_typedefs.h	/^  u_int32_t snmp_stage:2;$/;"	m	struct:ndpi_flow_udp_struct	access:public
-snprintf	src/include/ndpi_define.h	289;"	d
+snprintf	src/include/ndpi_define.h	290;"	d
 socks4_stage	src/include/ndpi_typedefs.h	/^  u_int32_t socks4_stage:2;	                \/\/ 0 - 3$/;"	m	struct:ndpi_flow_struct	access:public
 socks5_stage	src/include/ndpi_typedefs.h	/^  u_int32_t socks5_stage:2;	                \/\/ 0 - 3$/;"	m	struct:ndpi_flow_struct	access:public
 sort	src/lib/third_party/include/sort.h	/^void sort(void *base, size_t num, size_t len,$/;"	p	signature:(void *base, size_t num, size_t len, int (*cmp_func)(const void *, const void *), void (*swap_func)(void *, void *, int size))
@@ -3758,7 +3758,7 @@ tbl	example/uthash.h	/^   struct UT_hash_table *tbl;$/;"	m	struct:UT_hash_handle
 tbl	src/include/ndpi_typedefs.h	/^  struct hash_ip4p        tbl;$/;"	m	struct:hash_ip4p_table	typeref:struct:hash_ip4p_table::hash_ip4p	access:public
 tcp	src/include/ndpi_typedefs.h	/^    struct ndpi_flow_tcp_struct tcp;$/;"	m	union:ndpi_flow_struct::__anon24	typeref:struct:ndpi_flow_struct::__anon24::ndpi_flow_tcp_struct	access:public
 tcp	src/include/ndpi_typedefs.h	/^  const struct ndpi_tcphdr *tcp;        \/\/ TCP头$/;"	m	struct:ndpi_packet_struct	typeref:struct:ndpi_packet_struct::ndpi_tcphdr	access:public
-tcpRoot	src/include/ndpi_typedefs.h	/^  ndpi_default_ports_tree_node_t *tcpRoot, *udpRoot;    \/\/ 指向2棵专门维护所有协议缺省端口信息的二叉树$/;"	m	struct:ndpi_detection_module_struct	access:public
+tcpRoot	src/include/ndpi_typedefs.h	/^  ndpi_default_ports_tree_node_t *tcpRoot, *udpRoot;    \/\/ 分别指向tcp和udp二叉树，这两棵二叉树共同维护了proto_defaults这张表(实际不只是tcp和udp协议)的信息$/;"	m	struct:ndpi_detection_module_struct	access:public
 tcp_count	example/ndpi_util.h	/^  u_int64_t tcp_count, udp_count;   \/\/ 分别记录了收到的TCP、UDP报文数量$/;"	m	struct:ndpi_stats	access:public
 tcp_flags	src/lib/protocols/netflow.c	/^  u_int8_t  tcp_flags;  \/* Cumulative OR of tcp flags *\/$/;"	m	struct:flow_ver7_rec	file:	access:public
 tcp_flags	src/lib/protocols/netflow.c	/^  u_int8_t tcp_flags;   \/* Cumulative OR of tcp flags *\/$/;"	m	struct:flow_ver5_rec	file:	access:public
@@ -3873,7 +3873,7 @@ u_short	src/include/ndpi_win32.h	/^typedef unsigned short u_short;$/;"	t
 ubntac2	src/include/ndpi_typedefs.h	/^    } ubntac2;$/;"	m	union:ndpi_flow_struct::__anon26	typeref:struct:ndpi_flow_struct::__anon26::__anon32	access:public
 udp	src/include/ndpi_typedefs.h	/^    struct ndpi_flow_udp_struct udp;$/;"	m	union:ndpi_flow_struct::__anon24	typeref:struct:ndpi_flow_struct::__anon24::ndpi_flow_udp_struct	access:public
 udp	src/include/ndpi_typedefs.h	/^  const struct ndpi_udphdr *udp;        \/\/ UDP头$/;"	m	struct:ndpi_packet_struct	typeref:struct:ndpi_packet_struct::ndpi_udphdr	access:public
-udpRoot	src/include/ndpi_typedefs.h	/^  ndpi_default_ports_tree_node_t *tcpRoot, *udpRoot;    \/\/ 指向2棵专门维护所有协议缺省端口信息的二叉树$/;"	m	struct:ndpi_detection_module_struct	access:public
+udpRoot	src/include/ndpi_typedefs.h	/^  ndpi_default_ports_tree_node_t *tcpRoot, *udpRoot;    \/\/ 分别指向tcp和udp二叉树，这两棵二叉树共同维护了proto_defaults这张表(实际不只是tcp和udp协议)的信息$/;"	m	struct:ndpi_detection_module_struct	access:public
 udp_count	example/ndpi_util.h	/^  u_int64_t tcp_count, udp_count;   \/\/ 分别记录了收到的TCP、UDP报文数量$/;"	m	struct:ndpi_stats	access:public
 udport	src/lib/protocols/teamspeak.c	/^  u_int16_t udport = 0, usport = 0;$/;"	v
 uint	src/include/ndpi_win32.h	/^typedef unsigned int   uint;$/;"	t
@@ -3894,7 +3894,7 @@ usenet_stage	src/include/ndpi_typedefs.h	/^  u_int32_t usenet_stage:2;$/;"	m	str
 user_agent_line	src/include/ndpi_typedefs.h	/^  struct ndpi_int_one_line_struct user_agent_line;$/;"	m	struct:ndpi_packet_struct	typeref:struct:ndpi_packet_struct::ndpi_int_one_line_struct	access:public
 user_data	src/include/ndpi_typedefs.h	/^  void *user_data;$/;"	m	struct:ndpi_detection_module_struct	access:public
 user_data	src/lib/third_party/include/ndpi_patricia.h	/^  void *user_data;      \/\/ 通用指针 或$/;"	m	union:patricia_node_value_t	access:public
-user_value	src/lib/third_party/include/ndpi_patricia.h	/^  u_int32_t user_value; \/\/ 无符号整形$/;"	m	union:patricia_node_value_t	access:public
+user_value	src/lib/third_party/include/ndpi_patricia.h	/^  u_int32_t user_value; \/\/ 无符号整形(通常该字段记录了所属trie树节点关联的协议ID)$/;"	m	union:patricia_node_value_t	access:public
 usport	src/lib/protocols/teamspeak.c	/^  u_int16_t udport = 0, usport = 0;$/;"	v
 uthash_expand_fyi	example/uthash.h	102;"	d
 uthash_fatal	example/uthash.h	83;"	d

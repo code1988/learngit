@@ -653,7 +653,7 @@ struct ndpi_packet_struct {
   u_int32_t tick_timestamp;     // 收到包的时间(s)
   u_int64_t tick_timestamp_l;   // 收到包的时间(ms)
 
-  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];
+  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];    // 依次记录了该数据包识别到的子协议号和主协议号
   u_int8_t detected_subprotocol_stack[NDPI_PROTOCOL_SIZE];
 
 
@@ -771,11 +771,11 @@ typedef struct ndpi_proto_defaults {
   void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow);  // 指向协议关联的报文解析回调接口
 } ndpi_proto_defaults_t;
 
-// 定义了二叉树节点结构
+// 定义了二叉树节点结构(通过default_port字段进行匹配)
 typedef struct ndpi_default_ports_tree_node {
-  ndpi_proto_defaults_t *proto;     // 指向关联的协议的缺省信息单元
-  u_int8_t customUserProto;
-  u_int16_t default_port;           // 关联的协议的一个缺省端口号
+  ndpi_proto_defaults_t *proto;     // 指向关联协议的缺省信息单元
+  u_int8_t customUserProto;         // 标识是否是一个自定义的协议
+  u_int16_t default_port;           // 关联协议的一个缺省端口号(通过该值在二叉树节点中进行匹配)
 } ndpi_default_ports_tree_node_t;
 
 typedef struct _ndpi_automa {
@@ -783,8 +783,10 @@ typedef struct _ndpi_automa {
   u_int8_t ac_automa_finalized;
 } ndpi_automa;
 
+// 解析得到的协议结果结构
 typedef struct ndpi_proto {
-  u_int16_t master_protocol /* e.g. HTTP */, app_protocol /* e.g. FaceBook */;
+  u_int16_t master_protocol; /* e.g. HTTP  对应detected_protocol_stack[1] */ 
+  u_int16_t app_protocol; /* e.g. FaceBook  对应detected_protocol_stack[0] */
 } ndpi_protocol;
 
 #define NDPI_PROTOCOL_NULL { NDPI_PROTOCOL_UNKNOWN , NDPI_PROTOCOL_UNKNOWN }
@@ -822,7 +824,7 @@ struct ndpi_detection_module_struct {
                                                                                                     // 显然这张表的内容来自于总表callback_buffer
   u_int32_t callback_buffer_size_non_tcp_udp;   // 记录了实际使能的基于其他(非tcp和udp)的协议数量
 
-  ndpi_default_ports_tree_node_t *tcpRoot, *udpRoot;    // 指向2棵专门维护所有协议缺省端口信息的二叉树
+  ndpi_default_ports_tree_node_t *tcpRoot, *udpRoot;    // 分别指向tcp和udp二叉树，这两棵二叉树共同维护了proto_defaults这张表(实际不只是tcp和udp协议)的信息
 
 #ifdef NDPI_ENABLE_DEBUG_MESSAGES
   /* debug callback, only set when debug is used */
@@ -849,7 +851,10 @@ struct ndpi_detection_module_struct {
     subprotocol_automa,                        /* Used for HTTP subprotocol_detection */
     bigrams_automa, impossible_bigrams_automa; /* TOR */
 
-  /* IP-based protocol detection  指向一个trie树模块的句柄 */
+  /* IP-based protocol detection  
+   * 指向一个trie树模块的句柄,trie树中每个节点的信息都来自host_protocol_list
+   * 可以认为该trie树维护的是网络中常用的那些网站
+   */
   void *protocols_ptree;
 
   /* irc parameters */
@@ -893,21 +898,22 @@ struct ndpi_detection_module_struct {
   ndpi_proto_defaults_t proto_defaults[NDPI_MAX_SUPPORTED_PROTOCOLS+NDPI_MAX_NUM_CUSTOM_PROTOCOLS]; // 这张表记录了所有支持的协议的缺省信息，主要是端口信息
                                                                                                     // 根据分配的协议ID号进行索引
   u_int8_t http_dont_dissect_response:1, dns_dissect_response:1,
-    direction_detect_disable:1; /* disable internal detection of packet direction  标识是否禁止内部检测包的方向 */
+    direction_detect_disable:1; /* disable internal detection of packet direction  目前固定清0 */
 };
 
 // 定义了数据流结构
 struct ndpi_flow_struct {
-  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];    // 记录了该数据流的主协议和子协议
+  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];    // 依次记录了该数据流识别到的子协议号和主协议号
 #ifndef WIN32
   __attribute__ ((__packed__))
 #endif
   u_int16_t protocol_stack_info;
 
   /* init parameter, internal used to set up timestamp,... */
-  u_int16_t guessed_protocol_id, guessed_host_protocol_id;
+  u_int16_t guessed_protocol_id;            // 记录了猜测得到的nDPI定义的主协议ID
+  u_int16_t guessed_host_protocol_id;       // 记录了猜测得到的nDPI定义的子协议ID
 
-  u_int8_t protocol_id_already_guessed:1, 
+  u_int8_t protocol_id_already_guessed:1,   // 标识该数据流是否进行了协议猜测
            host_already_guessed:1, 
            init_finished:1,                 // 标识该数据流是否完成了初始化
            setup_packet_direction:1,        // 同步自packet_direction
@@ -989,7 +995,7 @@ struct ndpi_flow_struct {
   /*** ALL protocol specific 64 bit variables here ***/
 
   /* protocols which have marked a connection as this connection cannot be protocol XXX, multiple u_int64_t */
-  NDPI_PROTOCOL_BITMASK excluded_protocol_bitmask;
+  NDPI_PROTOCOL_BITMASK excluded_protocol_bitmask;      // 这张表记录了该数据流排除掉的协议ID集合
 
   u_int8_t num_stun_udp_pkts;
 

@@ -141,7 +141,7 @@ static void ndpi_trecurse(ndpi_node *root, void (*action)(const void *, ndpi_VIS
   }
 }
 
-/* Walk the nodes of a tree */
+/* Walk the nodes of a tree  遍历指定二叉树的所有节点，每个节点调用action函数 */
 void ndpi_twalk(const void *vroot, void (*action)(const void *, ndpi_VISIT, int, void *), void *user_data)
 {
   ndpi_node *root = (ndpi_node *)vroot;
@@ -1692,7 +1692,7 @@ static int fill_prefix_v4(prefix_t *p, struct in_addr *a, int b, int mb) {
 }
 
 /* ******************************************* */
-
+// 根据传入的ip地址搜索trie树，如果存在匹配节点则返回关联的协议ID，否则返回NDPI_PROTOCOL_UNKNOWN
 u_int16_t ndpi_network_ptree_match(struct ndpi_detection_module_struct *ndpi_struct, struct in_addr *pin /* network byte order */) {
   prefix_t prefix;
   patricia_node_t *node;
@@ -1830,7 +1830,10 @@ void set_ndpi_debug_function(struct ndpi_detection_module_struct *ndpi_str, ndpi
 }
 
 /* ******************************************************************** */
-// 创建并初始化一个探测模块(核心任务就是注册了所有支持协议的缺省信息，需要注意的是，后续可以根据实际需求决定使能其中的哪些协议)
+/* 创建并初始化一个nDPI核心库探测模块，这个探测模块中维护了所有支持的协议.
+ *
+ * 备注：本函数只是注册了所有支持的协议，但并未使能其中任何一个协议
+ */
 struct ndpi_detection_module_struct *ndpi_init_detection_module(void) {
     struct ndpi_detection_module_struct *ndpi_str = ndpi_malloc(sizeof(struct ndpi_detection_module_struct));
     if(ndpi_str == NULL) {
@@ -1850,35 +1853,36 @@ struct ndpi_detection_module_struct *ndpi_init_detection_module(void) {
     if((ndpi_str->protocols_ptree = ndpi_New_Patricia(32 /* IPv4 */)) != NULL)
         ndpi_init_ptree_ipv4(ndpi_str, ndpi_str->protocols_ptree, host_protocol_list);
 
-  NDPI_BITMASK_RESET(ndpi_str->detection_bitmask);
+    // 不使能所有协议
+    NDPI_BITMASK_RESET(ndpi_str->detection_bitmask);
 #ifdef NDPI_ENABLE_DEBUG_MESSAGES
-  ndpi_str->user_data = NULL;
+    ndpi_str->user_data = NULL;
 #endif
 
-  // 以下包括各种协议的超时值初始化、AC自动机初始化等
-  ndpi_str->ticks_per_second = 1000; /* ndpi_str->ticks_per_second */
-  ndpi_str->tcp_max_retransmission_window_size = NDPI_DEFAULT_MAX_TCP_RETRANSMISSION_WINDOW_SIZE;
-  ndpi_str->directconnect_connection_ip_tick_timeout =
+    // 以下包括各种协议的超时值初始化、AC自动机初始化等
+    ndpi_str->ticks_per_second = 1000; /* ndpi_str->ticks_per_second */
+    ndpi_str->tcp_max_retransmission_window_size = NDPI_DEFAULT_MAX_TCP_RETRANSMISSION_WINDOW_SIZE;
+    ndpi_str->directconnect_connection_ip_tick_timeout =
     NDPI_DIRECTCONNECT_CONNECTION_IP_TICK_TIMEOUT * ndpi_str->ticks_per_second;
 
-  ndpi_str->rtsp_connection_timeout = NDPI_RTSP_CONNECTION_TIMEOUT * ndpi_str->ticks_per_second;
-  ndpi_str->tvants_connection_timeout = NDPI_TVANTS_CONNECTION_TIMEOUT * ndpi_str->ticks_per_second;
-  ndpi_str->irc_timeout = NDPI_IRC_CONNECTION_TIMEOUT * ndpi_str->ticks_per_second;
-  ndpi_str->gnutella_timeout = NDPI_GNUTELLA_CONNECTION_TIMEOUT * ndpi_str->ticks_per_second;
+    ndpi_str->rtsp_connection_timeout = NDPI_RTSP_CONNECTION_TIMEOUT * ndpi_str->ticks_per_second;
+    ndpi_str->tvants_connection_timeout = NDPI_TVANTS_CONNECTION_TIMEOUT * ndpi_str->ticks_per_second;
+    ndpi_str->irc_timeout = NDPI_IRC_CONNECTION_TIMEOUT * ndpi_str->ticks_per_second;
+    ndpi_str->gnutella_timeout = NDPI_GNUTELLA_CONNECTION_TIMEOUT * ndpi_str->ticks_per_second;
 
-  ndpi_str->battlefield_timeout = NDPI_BATTLEFIELD_CONNECTION_TIMEOUT * ndpi_str->ticks_per_second;
+    ndpi_str->battlefield_timeout = NDPI_BATTLEFIELD_CONNECTION_TIMEOUT * ndpi_str->ticks_per_second;
 
-  ndpi_str->thunder_timeout = NDPI_THUNDER_CONNECTION_TIMEOUT * ndpi_str->ticks_per_second;
-  ndpi_str->yahoo_detect_http_connections = NDPI_YAHOO_DETECT_HTTP_CONNECTIONS;
+    ndpi_str->thunder_timeout = NDPI_THUNDER_CONNECTION_TIMEOUT * ndpi_str->ticks_per_second;
+    ndpi_str->yahoo_detect_http_connections = NDPI_YAHOO_DETECT_HTTP_CONNECTIONS;
 
-  ndpi_str->yahoo_lan_video_timeout = NDPI_YAHOO_LAN_VIDEO_TIMEOUT * ndpi_str->ticks_per_second;
-  ndpi_str->zattoo_connection_timeout = NDPI_ZATTOO_CONNECTION_TIMEOUT * ndpi_str->ticks_per_second;
-  ndpi_str->jabber_stun_timeout = NDPI_JABBER_STUN_TIMEOUT * ndpi_str->ticks_per_second;
-  ndpi_str->jabber_file_transfer_timeout = NDPI_JABBER_FT_TIMEOUT * ndpi_str->ticks_per_second;
-  ndpi_str->soulseek_connection_ip_tick_timeout = NDPI_SOULSEEK_CONNECTION_IP_TICK_TIMEOUT * ndpi_str->ticks_per_second;
+    ndpi_str->yahoo_lan_video_timeout = NDPI_YAHOO_LAN_VIDEO_TIMEOUT * ndpi_str->ticks_per_second;
+    ndpi_str->zattoo_connection_timeout = NDPI_ZATTOO_CONNECTION_TIMEOUT * ndpi_str->ticks_per_second;
+    ndpi_str->jabber_stun_timeout = NDPI_JABBER_STUN_TIMEOUT * ndpi_str->ticks_per_second;
+    ndpi_str->jabber_file_transfer_timeout = NDPI_JABBER_FT_TIMEOUT * ndpi_str->ticks_per_second;
+    ndpi_str->soulseek_connection_ip_tick_timeout = NDPI_SOULSEEK_CONNECTION_IP_TICK_TIMEOUT * ndpi_str->ticks_per_second;
 
-  ndpi_str->ndpi_num_supported_protocols = NDPI_MAX_SUPPORTED_PROTOCOLS;
-  ndpi_str->ndpi_num_custom_protocols = 0;
+    ndpi_str->ndpi_num_supported_protocols = NDPI_MAX_SUPPORTED_PROTOCOLS;
+    ndpi_str->ndpi_num_custom_protocols = 0;
 
     // 创建4个AC自动机
     ndpi_str->host_automa.ac_automa = ac_automata_init(ac_match_handler);
@@ -2010,12 +2014,19 @@ int ndpi_get_protocol_id_master_proto(struct ndpi_detection_module_struct *ndpi_
 }
 
 /* ****************************************************** */
-
+/* 根据传入的信息从tcp或udp二叉树中查找匹配的节点
+ * @ndpi_struct - 指向传入信息所属的探测模块
+ * @proto       - l4层的协议号
+ * @sport       - 源端口
+ * @dport       - 目的端口
+ */
 static ndpi_default_ports_tree_node_t* ndpi_get_guessed_protocol_id(struct ndpi_detection_module_struct *ndpi_struct,
 								    u_int8_t proto, u_int16_t sport, u_int16_t dport) {
   const void *ret;
   ndpi_default_ports_tree_node_t node;
 
+  // 本函数只支持tcp和udp协议
+  // 这里直接尝试根据端口号来匹配对应的应用层协议
   if(sport && dport) {
     int low  = ndpi_min(sport, dport);
     int high = ndpi_max(sport, dport);
@@ -2039,58 +2050,68 @@ static ndpi_default_ports_tree_node_t* ndpi_get_guessed_protocol_id(struct ndpi_
 }
 
 /* ****************************************************** */
-
+/* 根据传入的信息猜测对应的协议ID
+ * @ndpi_struct - 指向传入信息所属的探测模块
+ * @proto       - l4层的协议号
+ * @sport       - 源端口
+ * @dport       - 目的端口
+ * @user_defined_proto  - 用于存放是否是用户自定义协议的标识
+ * @返回值      - 猜测成功返回nDPI定义的协议ID，失败返回NDPI_PROTOCOL_UNKNOWN
+ *
+ * 备注：本函数只能基于TCP和UDP报文进行猜测
+ */
 u_int16_t ndpi_guess_protocol_id(struct ndpi_detection_module_struct *ndpi_struct,
 				 u_int8_t proto, u_int16_t sport, u_int16_t dport,
 				 u_int8_t *user_defined_proto) {
 
-  *user_defined_proto = 0; /* Default */
-  if(sport && dport) {
-    ndpi_default_ports_tree_node_t *found = ndpi_get_guessed_protocol_id(ndpi_struct, proto, sport, dport);
+    *user_defined_proto = 0; /* Default */
+    if(sport && dport) {
+        // 首先对TCP和UDP报文进行上层协议猜测，具体的方法是根据端口号查找是否存在匹配的二叉树节点
+        ndpi_default_ports_tree_node_t *found = ndpi_get_guessed_protocol_id(ndpi_struct, proto, sport, dport);
 
-    if(found != NULL) {
-      *user_defined_proto = found->customUserProto;
-      return(found->proto->protoId);
+        if(found != NULL) {
+            *user_defined_proto = found->customUserProto;
+            return(found->proto->protoId);
+        }
+    } else {
+        /* No TCP/UDP */
+        // 然后既不是TCP也不是UDP的报文进行猜测
+        switch(proto) {
+        case NDPI_IPSEC_PROTOCOL_ESP:
+        case NDPI_IPSEC_PROTOCOL_AH:
+          return(NDPI_PROTOCOL_IP_IPSEC);
+          break;
+        case NDPI_GRE_PROTOCOL_TYPE:
+          return(NDPI_PROTOCOL_IP_GRE);
+          break;
+        case NDPI_ICMP_PROTOCOL_TYPE:
+          return(NDPI_PROTOCOL_IP_ICMP);
+          break;
+        case NDPI_IGMP_PROTOCOL_TYPE:
+          return(NDPI_PROTOCOL_IP_IGMP);
+          break;
+        case NDPI_EGP_PROTOCOL_TYPE:
+          return(NDPI_PROTOCOL_IP_EGP);
+          break;
+        case NDPI_SCTP_PROTOCOL_TYPE:
+          return(NDPI_PROTOCOL_IP_SCTP);
+          break;
+        case NDPI_OSPF_PROTOCOL_TYPE:
+          return(NDPI_PROTOCOL_IP_OSPF);
+          break;
+        case NDPI_IPIP_PROTOCOL_TYPE:
+          return(NDPI_PROTOCOL_IP_IP_IN_IP);
+          break;
+        case NDPI_ICMPV6_PROTOCOL_TYPE:
+          return(NDPI_PROTOCOL_IP_ICMPV6);
+          break;
+        case 112:
+          return(NDPI_PROTOCOL_IP_VRRP);
+          break;
+        }
     }
-  } else {
-    /* No TCP/UDP */
 
-    switch(proto) {
-    case NDPI_IPSEC_PROTOCOL_ESP:
-    case NDPI_IPSEC_PROTOCOL_AH:
-      return(NDPI_PROTOCOL_IP_IPSEC);
-      break;
-    case NDPI_GRE_PROTOCOL_TYPE:
-      return(NDPI_PROTOCOL_IP_GRE);
-      break;
-    case NDPI_ICMP_PROTOCOL_TYPE:
-      return(NDPI_PROTOCOL_IP_ICMP);
-      break;
-    case NDPI_IGMP_PROTOCOL_TYPE:
-      return(NDPI_PROTOCOL_IP_IGMP);
-      break;
-    case NDPI_EGP_PROTOCOL_TYPE:
-      return(NDPI_PROTOCOL_IP_EGP);
-      break;
-    case NDPI_SCTP_PROTOCOL_TYPE:
-      return(NDPI_PROTOCOL_IP_SCTP);
-      break;
-    case NDPI_OSPF_PROTOCOL_TYPE:
-      return(NDPI_PROTOCOL_IP_OSPF);
-      break;
-    case NDPI_IPIP_PROTOCOL_TYPE:
-      return(NDPI_PROTOCOL_IP_IP_IN_IP);
-      break;
-    case NDPI_ICMPV6_PROTOCOL_TYPE:
-      return(NDPI_PROTOCOL_IP_ICMPV6);
-      break;
-    case 112:
-      return(NDPI_PROTOCOL_IP_VRRP);
-      break;
-    }
-  }
-
-  return(NDPI_PROTOCOL_UNKNOWN);
+    return(NDPI_PROTOCOL_UNKNOWN);
 }
 
 /* ******************************************************************** */
@@ -2329,7 +2350,7 @@ void ndpi_set_bitmask_protocol_detection( char * label,
 }
 
 /* ******************************************************************** */
-/* 本函数就是对实际需要探测的协议进行统一注册的入口
+/* 本函数就是开启一个已经初始化的nDPI核心库探测模块中需要使能的协议
  * @ndpi_struct - 指向要操作的探测模块
  * @dbm - 调用者实际通过该集合来控制实际需要应用的协议，只有该字段中被置1的对应协议，其协议分析器才真正允许被加载
  */
@@ -3262,6 +3283,10 @@ void ndpi_connection_tracking(struct ndpi_detection_module_struct *ndpi_struct,
     }
 }
 
+/* 处理传入的数据流(既不是TCP也不是UDP)，基本流程如下：
+ *      [1]. 优先通过猜测到的协议解析器进行识别
+ *      [2]. 识别失败的情况下，再遍历对应的协议集合，依次执行集合中的协议解析器，直到识别完成
+ */
 void check_ndpi_other_flow_func(struct ndpi_detection_module_struct *ndpi_struct,
 				struct ndpi_flow_struct *flow,
 				NDPI_SELECTION_BITMASK_PROTOCOL_SIZE *ndpi_selection_packet) {
@@ -3307,50 +3332,57 @@ void check_ndpi_other_flow_func(struct ndpi_detection_module_struct *ndpi_struct
   }
 }
 
-
+/* 处理传入的UDP数据流，基本流程如下：
+ *      [1]. 优先通过猜测到的协议解析器进行识别
+ *      [2]. 识别失败的情况下，再遍历对应的协议集合，依次执行集合中的协议解析器，直到识别完成
+ */
 void check_ndpi_udp_flow_func(struct ndpi_detection_module_struct *ndpi_struct,
 			      struct ndpi_flow_struct *flow,
 			      NDPI_SELECTION_BITMASK_PROTOCOL_SIZE *ndpi_selection_packet) {
-  void *func = NULL;
-  u_int32_t a;
-  u_int16_t proto_index = ndpi_struct->proto_defaults[flow->guessed_protocol_id].protoIdx;
-  int16_t proto_id = ndpi_struct->proto_defaults[flow->guessed_protocol_id].protoId;
-  NDPI_PROTOCOL_BITMASK detection_bitmask;
+    void *func = NULL;
+    u_int32_t a;
+    u_int16_t proto_index = ndpi_struct->proto_defaults[flow->guessed_protocol_id].protoIdx;
+    int16_t proto_id = ndpi_struct->proto_defaults[flow->guessed_protocol_id].protoId;
+    NDPI_PROTOCOL_BITMASK detection_bitmask;
 
-  NDPI_SAVE_AS_BITMASK(detection_bitmask, flow->packet.detected_protocol_stack[0]);
+    NDPI_SAVE_AS_BITMASK(detection_bitmask, flow->packet.detected_protocol_stack[0]);
 
-  if((proto_id != NDPI_PROTOCOL_UNKNOWN)
-     && NDPI_BITMASK_COMPARE(flow->excluded_protocol_bitmask,
-			     ndpi_struct->callback_buffer[proto_index].excluded_protocol_bitmask) == 0
-     && NDPI_BITMASK_COMPARE(ndpi_struct->callback_buffer[proto_index].detection_bitmask,
-			     detection_bitmask) != 0
-     && (ndpi_struct->callback_buffer[proto_index].ndpi_selection_bitmask
-	 & *ndpi_selection_packet) == ndpi_struct->callback_buffer[proto_index].ndpi_selection_bitmask) {
-    if((flow->guessed_protocol_id != NDPI_PROTOCOL_UNKNOWN)
-       && (ndpi_struct->proto_defaults[flow->guessed_protocol_id].func != NULL))
-      ndpi_struct->proto_defaults[flow->guessed_protocol_id].func(ndpi_struct, flow),
-	func = ndpi_struct->proto_defaults[flow->guessed_protocol_id].func;
-  }
+    // 如果目前为止猜测的协议ID有效，并且该猜测协议已经开启，则优先调用该协议注册的解析器完成识别
+    if((proto_id != NDPI_PROTOCOL_UNKNOWN)
+    && NDPI_BITMASK_COMPARE(flow->excluded_protocol_bitmask,
+             ndpi_struct->callback_buffer[proto_index].excluded_protocol_bitmask) == 0
+    && NDPI_BITMASK_COMPARE(ndpi_struct->callback_buffer[proto_index].detection_bitmask,
+             detection_bitmask) != 0
+    && (ndpi_struct->callback_buffer[proto_index].ndpi_selection_bitmask
+    & *ndpi_selection_packet) == ndpi_struct->callback_buffer[proto_index].ndpi_selection_bitmask) {
+        if((flow->guessed_protocol_id != NDPI_PROTOCOL_UNKNOWN)
+        && (ndpi_struct->proto_defaults[flow->guessed_protocol_id].func != NULL)){
+            ndpi_struct->proto_defaults[flow->guessed_protocol_id].func(ndpi_struct, flow);
+            func = ndpi_struct->proto_defaults[flow->guessed_protocol_id].func;
+        }
+    }
 
-  for(a = 0; a < ndpi_struct->callback_buffer_size_udp; a++) {
-    if((func != ndpi_struct->callback_buffer_udp[a].func)
-       && (ndpi_struct->callback_buffer_udp[a].ndpi_selection_bitmask & *ndpi_selection_packet) ==
-       ndpi_struct->callback_buffer_udp[a].ndpi_selection_bitmask
-       && NDPI_BITMASK_COMPARE(flow->excluded_protocol_bitmask,
-			       ndpi_struct->callback_buffer_udp[a].excluded_protocol_bitmask) == 0
-       && NDPI_BITMASK_COMPARE(ndpi_struct->callback_buffer_udp[a].detection_bitmask,
-			       detection_bitmask) != 0) {
-      ndpi_struct->callback_buffer_udp[a].func(ndpi_struct, flow);
-      // NDPI_LOG(NDPI_PROTOCOL_UNKNOWN, ndpi_struct, NDPI_LOG_DEBUG, "[UDP,CALL] dissector of protocol as callback_buffer idx =  %d\n",a);
-      if(flow->detected_protocol_stack[0] != NDPI_PROTOCOL_UNKNOWN)
-	break; /* Stop after detecting the first protocol */
-    } else
-      NDPI_LOG(NDPI_PROTOCOL_UNKNOWN, ndpi_struct, NDPI_LOG_DEBUG,
-	       "[UDP,SKIP] dissector of protocol as callback_buffer idx =  %d\n",a);
-  }
+    for(a = 0; a < ndpi_struct->callback_buffer_size_udp; a++) {
+        if((func != ndpi_struct->callback_buffer_udp[a].func)
+        && (ndpi_struct->callback_buffer_udp[a].ndpi_selection_bitmask & *ndpi_selection_packet) ==
+        ndpi_struct->callback_buffer_udp[a].ndpi_selection_bitmask
+        && NDPI_BITMASK_COMPARE(flow->excluded_protocol_bitmask,
+                   ndpi_struct->callback_buffer_udp[a].excluded_protocol_bitmask) == 0
+        && NDPI_BITMASK_COMPARE(ndpi_struct->callback_buffer_udp[a].detection_bitmask,
+                   detection_bitmask) != 0) {
+            ndpi_struct->callback_buffer_udp[a].func(ndpi_struct, flow);
+            // NDPI_LOG(NDPI_PROTOCOL_UNKNOWN, ndpi_struct, NDPI_LOG_DEBUG, "[UDP,CALL] dissector of protocol as callback_buffer idx =  %d\n",a);
+            if(flow->detected_protocol_stack[0] != NDPI_PROTOCOL_UNKNOWN)
+                break; /* Stop after detecting the first protocol */
+        } else
+            NDPI_LOG(NDPI_PROTOCOL_UNKNOWN, ndpi_struct, NDPI_LOG_DEBUG,"[UDP,SKIP] dissector of protocol as callback_buffer idx =  %d\n",a);
+    }
 }
 
-
+/* 处理传入的TCP数据流，基本流程如下：
+ *      [1]. 优先通过猜测到的协议解析器进行识别
+ *      [2]. 识别失败的情况下，再遍历对应的协议集合，依次执行集合中的协议解析器，直到识别完成
+ */
 void check_ndpi_tcp_flow_func(struct ndpi_detection_module_struct *ndpi_struct,
 			      struct ndpi_flow_struct *flow,
 			      NDPI_SELECTION_BITMASK_PROTOCOL_SIZE *ndpi_selection_packet) {
@@ -3362,69 +3394,74 @@ void check_ndpi_tcp_flow_func(struct ndpi_detection_module_struct *ndpi_struct,
 
   NDPI_SAVE_AS_BITMASK(detection_bitmask, flow->packet.detected_protocol_stack[0]);
 
-  if(flow->packet.payload_packet_len != 0) {
-    if((proto_id != NDPI_PROTOCOL_UNKNOWN)
-       && NDPI_BITMASK_COMPARE(flow->excluded_protocol_bitmask,
-			       ndpi_struct->callback_buffer[proto_index].excluded_protocol_bitmask) == 0
-       && NDPI_BITMASK_COMPARE(ndpi_struct->callback_buffer[proto_index].detection_bitmask,
-			       detection_bitmask) != 0
-       && (ndpi_struct->callback_buffer[proto_index].ndpi_selection_bitmask & *ndpi_selection_packet) == ndpi_struct->callback_buffer[proto_index].ndpi_selection_bitmask) {
-      if((flow->guessed_protocol_id != NDPI_PROTOCOL_UNKNOWN)
-	 && (ndpi_struct->proto_defaults[flow->guessed_protocol_id].func != NULL))
-	ndpi_struct->proto_defaults[flow->guessed_protocol_id].func(ndpi_struct, flow),
-	  func = ndpi_struct->proto_defaults[flow->guessed_protocol_id].func;
+    // 根据收到的TCP包是否有payload分为2种情况处理(其实流程基本一样)
+    if(flow->packet.payload_packet_len != 0) {
+        // 如果目前为止猜测的协议ID有效，并且该猜测协议已经开启，则优先调用该协议注册的解析器完成识别
+        if((proto_id != NDPI_PROTOCOL_UNKNOWN) && 
+           NDPI_BITMASK_COMPARE(flow->excluded_protocol_bitmask,ndpi_struct->callback_buffer[proto_index].excluded_protocol_bitmask) == 0 && 
+           NDPI_BITMASK_COMPARE(ndpi_struct->callback_buffer[proto_index].detection_bitmask,detection_bitmask) != 0 && 
+           (ndpi_struct->callback_buffer[proto_index].ndpi_selection_bitmask & *ndpi_selection_packet) == ndpi_struct->callback_buffer[proto_index].ndpi_selection_bitmask) {
+            if((flow->guessed_protocol_id != NDPI_PROTOCOL_UNKNOWN) && (ndpi_struct->proto_defaults[flow->guessed_protocol_id].func != NULL)){
+                ndpi_struct->proto_defaults[flow->guessed_protocol_id].func(ndpi_struct, flow);
+                func = ndpi_struct->proto_defaults[flow->guessed_protocol_id].func;
+            }
+        }
+
+        // 程序运行到这里，如果该TCP数据流尚未完成识别，通常意味着上一步的协议解析器识别失败
+        // 需要遍历已经使能的相关协议集合，执行相应的解析器，直到识别成功
+        if(flow->detected_protocol_stack[0] == NDPI_PROTOCOL_UNKNOWN) {
+            for(a = 0; a < ndpi_struct->callback_buffer_size_tcp_payload; a++) {
+                if((func != ndpi_struct->callback_buffer_tcp_payload[a].func) && 
+                   (ndpi_struct->callback_buffer_tcp_payload[a].ndpi_selection_bitmask & *ndpi_selection_packet) == ndpi_struct->callback_buffer_tcp_payload[a].ndpi_selection_bitmask && 
+                   NDPI_BITMASK_COMPARE(flow->excluded_protocol_bitmask,ndpi_struct->callback_buffer_tcp_payload[a].excluded_protocol_bitmask) == 0 && 
+                   NDPI_BITMASK_COMPARE(ndpi_struct->callback_buffer_tcp_payload[a].detection_bitmask,detection_bitmask) != 0) {
+                    ndpi_struct->callback_buffer_tcp_payload[a].func(ndpi_struct, flow);
+
+                    // 一旦识别成功就结束遍历
+                    if(flow->detected_protocol_stack[0] != NDPI_PROTOCOL_UNKNOWN)
+                        break; /* Stop after detecting the first protocol */
+                }
+            }
+        }
+    } else {
+        /* no payload */
+        // 如果目前为止猜测的协议ID有效，并且该猜测协议已经开启，则优先调用该协议注册的解析器完成识别
+        if((proto_id != NDPI_PROTOCOL_UNKNOWN) && 
+           NDPI_BITMASK_COMPARE(flow->excluded_protocol_bitmask,ndpi_struct->callback_buffer[proto_index].excluded_protocol_bitmask) == 0 && 
+           NDPI_BITMASK_COMPARE(ndpi_struct->callback_buffer[proto_index].detection_bitmask,detection_bitmask) != 0 && 
+           (ndpi_struct->callback_buffer[proto_index].ndpi_selection_bitmask & *ndpi_selection_packet) == ndpi_struct->callback_buffer[proto_index].ndpi_selection_bitmask) {
+            if((flow->guessed_protocol_id != NDPI_PROTOCOL_UNKNOWN)
+            && (ndpi_struct->proto_defaults[flow->guessed_protocol_id].func != NULL)
+            && ((ndpi_struct->callback_buffer[flow->guessed_protocol_id].ndpi_selection_bitmask & NDPI_SELECTION_BITMASK_PROTOCOL_HAS_PAYLOAD) == 0)){
+                ndpi_struct->proto_defaults[flow->guessed_protocol_id].func(ndpi_struct, flow);
+                func = ndpi_struct->proto_defaults[flow->guessed_protocol_id].func;
+            }
+        }
+
+        for(a = 0; a < ndpi_struct->callback_buffer_size_tcp_no_payload; a++) {
+            if((func != ndpi_struct->callback_buffer_tcp_payload[a].func)
+            && (ndpi_struct->callback_buffer_tcp_no_payload[a].ndpi_selection_bitmask & *ndpi_selection_packet) ==
+            ndpi_struct->callback_buffer_tcp_no_payload[a].ndpi_selection_bitmask
+            && NDPI_BITMASK_COMPARE(flow->excluded_protocol_bitmask,
+                     ndpi_struct->
+                     callback_buffer_tcp_no_payload[a].excluded_protocol_bitmask) == 0
+            && NDPI_BITMASK_COMPARE(ndpi_struct->callback_buffer_tcp_no_payload[a].detection_bitmask,
+                     detection_bitmask) != 0) {
+                ndpi_struct->callback_buffer_tcp_no_payload[a].func(ndpi_struct, flow);
+
+                // 一旦识别成功就结束遍历
+                if(flow->detected_protocol_stack[0] != NDPI_PROTOCOL_UNKNOWN)
+                    break; /* Stop after detecting the first protocol */
+            }
+        }
     }
-
-    if(flow->detected_protocol_stack[0] == NDPI_PROTOCOL_UNKNOWN) {
-      for(a = 0; a < ndpi_struct->callback_buffer_size_tcp_payload; a++) {
-	if((func != ndpi_struct->callback_buffer_tcp_payload[a].func)
-	   && (ndpi_struct->callback_buffer_tcp_payload[a].ndpi_selection_bitmask & *ndpi_selection_packet) == ndpi_struct->callback_buffer_tcp_payload[a].ndpi_selection_bitmask
-	   && NDPI_BITMASK_COMPARE(flow->excluded_protocol_bitmask,
-				   ndpi_struct->callback_buffer_tcp_payload[a].excluded_protocol_bitmask) == 0
-	   && NDPI_BITMASK_COMPARE(ndpi_struct->callback_buffer_tcp_payload[a].detection_bitmask,
-				   detection_bitmask) != 0) {
-	  ndpi_struct->callback_buffer_tcp_payload[a].func(ndpi_struct, flow);
-
-
-	  if(flow->detected_protocol_stack[0] != NDPI_PROTOCOL_UNKNOWN)
-	    break; /* Stop after detecting the first protocol */
-	}
-      }
-    }
-  } else {
-    /* no payload */
-    if((proto_id != NDPI_PROTOCOL_UNKNOWN)
-       && NDPI_BITMASK_COMPARE(flow->excluded_protocol_bitmask,
-			       ndpi_struct->callback_buffer[proto_index].excluded_protocol_bitmask) == 0
-       && NDPI_BITMASK_COMPARE(ndpi_struct->callback_buffer[proto_index].detection_bitmask,
-			       detection_bitmask) != 0
-       && (ndpi_struct->callback_buffer[proto_index].ndpi_selection_bitmask
-	   & *ndpi_selection_packet) == ndpi_struct->callback_buffer[proto_index].ndpi_selection_bitmask) {
-      if((flow->guessed_protocol_id != NDPI_PROTOCOL_UNKNOWN)
-	 && (ndpi_struct->proto_defaults[flow->guessed_protocol_id].func != NULL)
-	 && ((ndpi_struct->callback_buffer[flow->guessed_protocol_id].ndpi_selection_bitmask & NDPI_SELECTION_BITMASK_PROTOCOL_HAS_PAYLOAD) == 0))
-	ndpi_struct->proto_defaults[flow->guessed_protocol_id].func(ndpi_struct, flow),
-	  func = ndpi_struct->proto_defaults[flow->guessed_protocol_id].func;
-    }
-
-    for(a = 0; a < ndpi_struct->callback_buffer_size_tcp_no_payload; a++) {
-      if((func != ndpi_struct->callback_buffer_tcp_payload[a].func)
-	 && (ndpi_struct->callback_buffer_tcp_no_payload[a].ndpi_selection_bitmask & *ndpi_selection_packet) ==
-	 ndpi_struct->callback_buffer_tcp_no_payload[a].ndpi_selection_bitmask
-	 && NDPI_BITMASK_COMPARE(flow->excluded_protocol_bitmask,
-				 ndpi_struct->
-				 callback_buffer_tcp_no_payload[a].excluded_protocol_bitmask) == 0
-	 && NDPI_BITMASK_COMPARE(ndpi_struct->callback_buffer_tcp_no_payload[a].detection_bitmask,
-				 detection_bitmask) != 0) {
-	ndpi_struct->callback_buffer_tcp_no_payload[a].func(ndpi_struct, flow);
-
-	if(flow->detected_protocol_stack[0] != NDPI_PROTOCOL_UNKNOWN)
-	  break; /* Stop after detecting the first protocol */
-      }
-    }
-  }
 }
 
+/* 按TCP、UDP、其他分类处理接收包和所属的数据流
+ * @ndpi_struct     - 指向传入包所属的探测模块
+ * @flow            - 指向传入包所属的数据流
+ * @ndpi_selection_packet   - 接收包在l4层以下信息集合
+ */
 void check_ndpi_flow_func(struct ndpi_detection_module_struct *ndpi_struct,
 			  struct ndpi_flow_struct *flow,
 			  NDPI_SELECTION_BITMASK_PROTOCOL_SIZE *ndpi_selection_packet) {
@@ -3437,64 +3474,62 @@ void check_ndpi_flow_func(struct ndpi_detection_module_struct *ndpi_struct,
 }
 
 /* ********************************************************************************* */
-
+// 放弃对指定数据流的继续探测，这里会基于现有信息进行最后尝试识别操作，返回识别结果
 ndpi_protocol ndpi_detection_giveup(struct ndpi_detection_module_struct *ndpi_struct,
 				    struct ndpi_flow_struct *flow) {
-  ndpi_protocol ret = { NDPI_PROTOCOL_UNKNOWN, NDPI_PROTOCOL_UNKNOWN };
+    ndpi_protocol ret = { NDPI_PROTOCOL_UNKNOWN, NDPI_PROTOCOL_UNKNOWN };
 
-  if(flow == NULL) return(ret);
+    if(flow == NULL) return(ret);
 
-  /* TODO: add the remaining stage_XXXX protocols */
-  if(flow->detected_protocol_stack[0] == NDPI_PROTOCOL_UNKNOWN) {
-    u_int16_t guessed_protocol_id, guessed_host_protocol_id;
+    /* TODO: add the remaining stage_XXXX protocols */
+    if(flow->detected_protocol_stack[0] == NDPI_PROTOCOL_UNKNOWN) {
+        // 在该数据流尚未被识别的情况下放弃探测，需要继续完成协议识别
+        u_int16_t guessed_protocol_id, guessed_host_protocol_id;
 
-    if(flow->protos.ssl.client_certificate[0] != '\0') {
-      ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_SSL, NDPI_PROTOCOL_UNKNOWN);
+        if(flow->protos.ssl.client_certificate[0] != '\0') {
+            // 虽然尚未识别，但已知识别到ssl的客户端证书，就将该数据流识别为ssl协议
+            ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_SSL, NDPI_PROTOCOL_UNKNOWN);
+        } else {
+            // 除了直接可以识别为ssl协议的情况，其他情况下这里尝试进行了协议猜测
+            if((flow->guessed_protocol_id == NDPI_PROTOCOL_UNKNOWN) && (flow->packet.l4_protocol == IPPROTO_TCP) && (flow->l4.tcp.ssl_stage > 1))
+                flow->guessed_protocol_id = NDPI_PROTOCOL_SSL;
+
+            guessed_protocol_id = flow->guessed_protocol_id,
+            guessed_host_protocol_id = flow->guessed_host_protocol_id;
+
+            if((guessed_host_protocol_id != NDPI_PROTOCOL_UNKNOWN) && (NDPI_ISSET(&flow->excluded_protocol_bitmask, guessed_host_protocol_id)))
+                guessed_host_protocol_id = NDPI_PROTOCOL_UNKNOWN;
+
+
+            /* Ignore guessed protocol if they have been discarded */
+            if((guessed_protocol_id != NDPI_PROTOCOL_UNKNOWN) && (guessed_host_protocol_id == NDPI_PROTOCOL_UNKNOWN) && 
+               (NDPI_ISSET(&flow->excluded_protocol_bitmask, guessed_protocol_id)))
+                guessed_protocol_id = NDPI_PROTOCOL_UNKNOWN;
+
+            // 只要协议ID和主机协议ID中猜到一个，就将猜测结果作为识别结果
+            if((guessed_protocol_id != NDPI_PROTOCOL_UNKNOWN) || (guessed_host_protocol_id != NDPI_PROTOCOL_UNKNOWN)) {
+                ndpi_int_change_protocol(ndpi_struct, flow,guessed_host_protocol_id,guessed_protocol_id);
+            }
+        }
     } else {
-      if((flow->guessed_protocol_id == NDPI_PROTOCOL_UNKNOWN)
-	 && (flow->packet.l4_protocol == IPPROTO_TCP)
-	 && (flow->l4.tcp.ssl_stage > 1))
-	flow->guessed_protocol_id = NDPI_PROTOCOL_SSL;
+        // 在该数据流已经被识别的情况下放弃探测，会用猜测结果覆盖识别结果(目的?)
+        flow->detected_protocol_stack[1] = flow->guessed_protocol_id;
+        flow->detected_protocol_stack[0] = flow->guessed_host_protocol_id;
 
-      guessed_protocol_id = flow->guessed_protocol_id,
-	guessed_host_protocol_id = flow->guessed_host_protocol_id;
-
-      if((guessed_host_protocol_id != NDPI_PROTOCOL_UNKNOWN)
-	 && (NDPI_ISSET(&flow->excluded_protocol_bitmask, guessed_host_protocol_id)))
-	guessed_host_protocol_id = NDPI_PROTOCOL_UNKNOWN;
-
-
-      /* Ignore guessed protocol if they have been discarded */
-      if((guessed_protocol_id != NDPI_PROTOCOL_UNKNOWN)
-	 && (guessed_host_protocol_id == NDPI_PROTOCOL_UNKNOWN)
-	 && (NDPI_ISSET(&flow->excluded_protocol_bitmask, guessed_protocol_id)))
-	guessed_protocol_id = NDPI_PROTOCOL_UNKNOWN;
-
-      if((guessed_protocol_id != NDPI_PROTOCOL_UNKNOWN)
-	 || (guessed_host_protocol_id != NDPI_PROTOCOL_UNKNOWN)) {
-	ndpi_int_change_protocol(ndpi_struct, flow,
-				 guessed_host_protocol_id,
-				 guessed_protocol_id);
-      }
+        if(flow->detected_protocol_stack[1] == flow->detected_protocol_stack[0])
+            flow->detected_protocol_stack[1] = flow->guessed_host_protocol_id;
     }
-  } else {
-    flow->detected_protocol_stack[1] = flow->guessed_protocol_id,
-      flow->detected_protocol_stack[0] = flow->guessed_host_protocol_id;
 
-    if(flow->detected_protocol_stack[1] == flow->detected_protocol_stack[0])
-      flow->detected_protocol_stack[1] = flow->guessed_host_protocol_id;
-  }
+    if((flow->detected_protocol_stack[0] == NDPI_PROTOCOL_UNKNOWN) && (flow->num_stun_udp_pkts > 0))
+        ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_STUN, flow->guessed_host_protocol_id);
 
-  if((flow->detected_protocol_stack[0] == NDPI_PROTOCOL_UNKNOWN) && (flow->num_stun_udp_pkts > 0))
-    ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_STUN, flow->guessed_host_protocol_id);
+    ret.master_protocol = flow->detected_protocol_stack[1], ret.app_protocol = flow->detected_protocol_stack[0];
 
-  ret.master_protocol = flow->detected_protocol_stack[1], ret.app_protocol = flow->detected_protocol_stack[0];
-
-  return(ret);
+    return(ret);
 }
 
 /* ********************************************************************************* */
-/* 分析传入的IP包，对数据流完成一系列的初始化动作
+/* 分析传入的IP包，完成数据流的识别
  * @ndpi_struct     - 指向传入包所属的探测模块
  * @flow            - 指向传入包所属的数据流
  * @packet          - 指向传入包的IP头
@@ -3502,6 +3537,9 @@ ndpi_protocol ndpi_detection_giveup(struct ndpi_detection_module_struct *ndpi_st
  * @current_tick_l  - 收到该IP包的时间(ms)
  * @src             - 指向ndpi_flow_info->src_id
  * @dst             - 指向ndpi_flow_info->dst_id
+ * @返回值          - 返回数据流的识别结果
+ *
+ * 备注：本API是ndpi核心库处理收到包的入口
  */
 ndpi_protocol ndpi_detection_process_packet(struct ndpi_detection_module_struct *ndpi_struct,
 					    struct ndpi_flow_struct *flow,
@@ -3511,43 +3549,46 @@ ndpi_protocol ndpi_detection_process_packet(struct ndpi_detection_module_struct 
 					    struct ndpi_id_struct *src,
 					    struct ndpi_id_struct *dst)
 {
-  NDPI_SELECTION_BITMASK_PROTOCOL_SIZE ndpi_selection_packet;
-  u_int32_t a;
-  ndpi_protocol ret = { NDPI_PROTOCOL_UNKNOWN, NDPI_PROTOCOL_UNKNOWN };
+    NDPI_SELECTION_BITMASK_PROTOCOL_SIZE ndpi_selection_packet;
+    u_int32_t a;
+    ndpi_protocol ret = { NDPI_PROTOCOL_UNKNOWN, NDPI_PROTOCOL_UNKNOWN };
 
-  if(flow == NULL)
+    if(flow == NULL)
     return(ret);
 
-  if(flow->server_id == NULL) flow->server_id = dst; /* Default */
-  if(flow->detected_protocol_stack[0] != NDPI_PROTOCOL_UNKNOWN)
-    goto ret_protocols;
+    if(flow->server_id == NULL) 
+        flow->server_id = dst; /* Default */
 
-  /* need at least 20 bytes for ip header */
-  if(packetlen < 20) {
-    /* reset protocol which is normally done in init_packet_header */
-    ndpi_int_reset_packet_protocol(&flow->packet);
+    // 如果该数据流的已经被识别，意味着当前收到数据包不是该数据流的第一个包，不需要再继续解析，直接返回识别结果即可
+    if(flow->detected_protocol_stack[0] != NDPI_PROTOCOL_UNKNOWN)
+        goto ret_protocols;
+
+    /* need at least 20 bytes for ip header */
+    if(packetlen < 20) {
+        /* reset protocol which is normally done in init_packet_header */
+        ndpi_int_reset_packet_protocol(&flow->packet);
+        return(ret);
+    }
+
+    flow->packet.tick_timestamp_l = current_tick_l;
+    flow->packet.tick_timestamp = (u_int32_t)current_tick_l/1000;
+
+    /* parse packet */
+    flow->packet.iph = (struct ndpi_iphdr *)packet;
+    /* we are interested in ipv4 packet */
+
+    // 对数据包完成传输层和网络层的分析，并将结果填充到flow->packet中
+    if(ndpi_init_packet_header(ndpi_struct, flow, packetlen) != 0)
     return(ret);
-  }
 
-  flow->packet.tick_timestamp_l = current_tick_l;
-  flow->packet.tick_timestamp = (u_int32_t)current_tick_l/1000;
+    /* detect traffic for tcp or udp only */
 
-  /* parse packet */
-  flow->packet.iph = (struct ndpi_iphdr *)packet;
-  /* we are interested in ipv4 packet */
+    flow->src = src, flow->dst = dst;
 
-  // 对数据包完成传输层和网络层的分析，并将结果填充到flow->packet中
-  if(ndpi_init_packet_header(ndpi_struct, flow, packetlen) != 0)
-    return(ret);
+    // 通过分析l4层头，记录TCP建立连接的握手信息(除TCP之外的报文就是简单的设置为完成了数据流的初始化)
+    ndpi_connection_tracking(ndpi_struct, flow);
 
-  /* detect traffic for tcp or udp only */
-
-  flow->src = src, flow->dst = dst;
-
-  // 通过分析l4层头，记录建立连接的握手信息
-  ndpi_connection_tracking(ndpi_struct, flow);
-
-  /* build ndpi_selection packet bitmask */
+  /* build ndpi_selection packet bitmask  ndpi_selection_packet变量设置，该变量是l4层以下信息集合 */
   ndpi_selection_packet = NDPI_SELECTION_BITMASK_PROTOCOL_COMPLETE_TRAFFIC;
   if(flow->packet.iph != NULL)
     ndpi_selection_packet |= NDPI_SELECTION_BITMASK_PROTOCOL_IP | NDPI_SELECTION_BITMASK_PROTOCOL_IPV4_OR_IPV6;
@@ -3571,82 +3612,86 @@ ndpi_protocol ndpi_detection_process_packet(struct ndpi_detection_module_struct 
     ndpi_selection_packet |= NDPI_SELECTION_BITMASK_PROTOCOL_IPV6 | NDPI_SELECTION_BITMASK_PROTOCOL_IPV4_OR_IPV6;
 #endif							/* NDPI_DETECTION_SUPPORT_IPV6 */
 
-  if((!flow->protocol_id_already_guessed)
-     && (
+    // 程序到这里意味着接收包的核心库对接收包的信息已经采集完毕，下面开始进行协议猜测
+    if((!flow->protocol_id_already_guessed) && (
 #ifdef NDPI_DETECTION_SUPPORT_IPV6
-	 flow->packet.iphv6 ||
+     flow->packet.iphv6 ||
 #endif
-	 flow->packet.iph)) {
-    u_int16_t sport, dport;
-    u_int8_t protocol;
-    u_int8_t user_defined_proto;
+     flow->packet.iph)) {
+        u_int16_t sport, dport;
+        u_int8_t protocol;
+        u_int8_t user_defined_proto;
 
-    flow->protocol_id_already_guessed = 1;
+        flow->protocol_id_already_guessed = 1;
 
 #ifdef NDPI_DETECTION_SUPPORT_IPV6
-    if(flow->packet.iphv6 != NULL) {
-      protocol = flow->packet.iphv6->ip6_ctlun.ip6_un1.ip6_un1_nxt;
-    } else
+        if(flow->packet.iphv6 != NULL) {
+          protocol = flow->packet.iphv6->ip6_ctlun.ip6_un1.ip6_un1_nxt;
+        } else
 #endif
-      {
-	protocol = flow->packet.iph->protocol;
-      }
+        {
+            protocol = flow->packet.iph->protocol;
+        }
 
-    if(flow->packet.udp) sport = ntohs(flow->packet.udp->source), dport = ntohs(flow->packet.udp->dest);
-    else if(flow->packet.tcp) sport = ntohs(flow->packet.tcp->source), dport = ntohs(flow->packet.tcp->dest);
-    else sport = dport = 0;
+        if(flow->packet.udp) sport = ntohs(flow->packet.udp->source), dport = ntohs(flow->packet.udp->dest);
+        else if(flow->packet.tcp) sport = ntohs(flow->packet.tcp->source), dport = ntohs(flow->packet.tcp->dest);
+        else sport = dport = 0;
 
-    /* guess protocol */
-    flow->guessed_protocol_id = (int16_t) ndpi_guess_protocol_id(ndpi_struct, protocol, sport, dport, &user_defined_proto);
+        /* guess protocol  首先根据端口号猜测协议ID */
+        flow->guessed_protocol_id = (int16_t) ndpi_guess_protocol_id(ndpi_struct, protocol, sport, dport, &user_defined_proto);
 
-    if(user_defined_proto && flow->guessed_protocol_id != NDPI_PROTOCOL_UNKNOWN) {
+        // 对于IPv4报文，会进一步猜测其主机协议，其中自定义的应用协议在猜测完后直接返回猜测结果，而普通应用协议则继续往下执行
+        if(user_defined_proto && flow->guessed_protocol_id != NDPI_PROTOCOL_UNKNOWN) {
+            if(flow->packet.iph) {
+                /* guess host protocol */
+                flow->guessed_host_protocol_id = ndpi_network_ptree_match(ndpi_struct, (struct in_addr *)&flow->packet.iph->saddr);
+                if(flow->guessed_host_protocol_id == NDPI_PROTOCOL_UNKNOWN)
+                    flow->guessed_host_protocol_id = ndpi_network_ptree_match(ndpi_struct, (struct in_addr *)&flow->packet.iph->daddr);
+                if(flow->guessed_host_protocol_id != NDPI_PROTOCOL_UNKNOWN)
+                    /* ret.master_protocol = flow->guessed_protocol_id , ret.app_protocol = flow->guessed_host_protocol_id; /\* ****** *\/ */
+                    ret = ndpi_detection_giveup(ndpi_struct, flow);
 
-      if(flow->packet.iph) {
-	/* guess host protocol */
-	flow->guessed_host_protocol_id = ndpi_network_ptree_match(ndpi_struct, (struct in_addr *)&flow->packet.iph->saddr);
-	if(flow->guessed_host_protocol_id == NDPI_PROTOCOL_UNKNOWN)
-	  flow->guessed_host_protocol_id = ndpi_network_ptree_match(ndpi_struct, (struct in_addr *)&flow->packet.iph->daddr);
-	if(flow->guessed_host_protocol_id != NDPI_PROTOCOL_UNKNOWN)
-	  /* ret.master_protocol = flow->guessed_protocol_id , ret.app_protocol = flow->guessed_host_protocol_id; /\* ****** *\/ */
-	  ret = ndpi_detection_giveup(ndpi_struct, flow);
-
-	return(ret);
-      }
-    } else {
-      /* guess host protocol */
-      if(flow->packet.iph) {
-	flow->guessed_host_protocol_id = ndpi_network_ptree_match(ndpi_struct, (struct in_addr *)&flow->packet.iph->saddr);
-	if(flow->guessed_host_protocol_id == NDPI_PROTOCOL_UNKNOWN)
-	  flow->guessed_host_protocol_id = ndpi_network_ptree_match(ndpi_struct, (struct in_addr *)&flow->packet.iph->daddr);
-      }
+                return(ret);
+            }
+        } else {
+            /* guess host protocol */
+            if(flow->packet.iph) {
+                flow->guessed_host_protocol_id = ndpi_network_ptree_match(ndpi_struct, (struct in_addr *)&flow->packet.iph->saddr);
+                if(flow->guessed_host_protocol_id == NDPI_PROTOCOL_UNKNOWN)
+                    flow->guessed_host_protocol_id = ndpi_network_ptree_match(ndpi_struct, (struct in_addr *)&flow->packet.iph->daddr);
+            }
+        }
     }
-  }
 
-  check_ndpi_flow_func(ndpi_struct, flow, &ndpi_selection_packet);
+    // 完成协议猜测之后，按TCP、UDP、其他分类来识别接收包和所属的数据流
+    check_ndpi_flow_func(ndpi_struct, flow, &ndpi_selection_packet);
 
-  a = flow->packet.detected_protocol_stack[0];
-  if(NDPI_COMPARE_PROTOCOL_TO_BITMASK(ndpi_struct->detection_bitmask, a) == 0)
-    a = NDPI_PROTOCOL_UNKNOWN;
+    // 程序运行到这里意味着该接收包的识别已经结束
+    
+    a = flow->packet.detected_protocol_stack[0];
+    // 只识别核心库使能了的协议
+    if(NDPI_COMPARE_PROTOCOL_TO_BITMASK(ndpi_struct->detection_bitmask, a) == 0)
+        a = NDPI_PROTOCOL_UNKNOWN;
 
-  if(a != NDPI_PROTOCOL_UNKNOWN) {
-    int i;
+    if(a != NDPI_PROTOCOL_UNKNOWN) {
+        int i;
 
-    for(i=0; (i<sizeof(flow->host_server_name)) && (flow->host_server_name[i] != '\0'); i++)
-      flow->host_server_name[i] = tolower(flow->host_server_name[i]);
+        for(i=0; (i<sizeof(flow->host_server_name)) && (flow->host_server_name[i] != '\0'); i++)
+            flow->host_server_name[i] = tolower(flow->host_server_name[i]);
 
-    flow->host_server_name[i] ='\0';
-  }
+        flow->host_server_name[i] ='\0';
+    }
 
- ret_protocols:
-  if(flow->detected_protocol_stack[1] != NDPI_PROTOCOL_UNKNOWN) {
-    ret.master_protocol = flow->detected_protocol_stack[1], ret.app_protocol = flow->detected_protocol_stack[0];
+ret_protocols:
+    if(flow->detected_protocol_stack[1] != NDPI_PROTOCOL_UNKNOWN) {
+        ret.master_protocol = flow->detected_protocol_stack[1], ret.app_protocol = flow->detected_protocol_stack[0];
 
-    if(ret.app_protocol == ret.master_protocol)
-      ret.master_protocol = NDPI_PROTOCOL_UNKNOWN;
-  } else
-    ret.app_protocol = flow->detected_protocol_stack[0];
+        if(ret.app_protocol == ret.master_protocol)
+            ret.master_protocol = NDPI_PROTOCOL_UNKNOWN;
+    } else
+        ret.app_protocol = flow->detected_protocol_stack[0];
 
-  return(ret);
+    return(ret);
 }
 
 u_int32_t ndpi_bytestream_to_number(const u_int8_t * str, u_int16_t max_chars_to_read, u_int16_t * bytes_read)
@@ -4131,6 +4176,7 @@ u_int8_t ndpi_detection_get_l4(const u_int8_t * l3, u_int16_t l3_len, const u_in
   return ndpi_detection_get_l4_internal(NULL, l3, l3_len, l4_return, l4_len_return, l4_protocol_return, flags);
 }
 
+// 设置探测到的协议ID
 void ndpi_set_detected_protocol(struct ndpi_detection_module_struct *ndpi_struct,
 				struct ndpi_flow_struct *flow,
 				u_int16_t upper_detected_protocol,
@@ -4139,21 +4185,22 @@ void ndpi_set_detected_protocol(struct ndpi_detection_module_struct *ndpi_struct
   struct ndpi_id_struct *src = flow->src;
   struct ndpi_id_struct *dst = flow->dst;
 
-  ndpi_int_change_protocol(ndpi_struct, flow, upper_detected_protocol, lower_detected_protocol);
+    // 更新包的协议栈和流的协议栈，这之后两者内容将同步
+    ndpi_int_change_protocol(ndpi_struct, flow, upper_detected_protocol, lower_detected_protocol);
 
-  if(src != NULL) {
-    NDPI_ADD_PROTOCOL_TO_BITMASK(src->detected_protocol_bitmask, upper_detected_protocol);
+    if(src != NULL) {
+        NDPI_ADD_PROTOCOL_TO_BITMASK(src->detected_protocol_bitmask, upper_detected_protocol);
 
-    if(lower_detected_protocol != NDPI_PROTOCOL_UNKNOWN)
-      NDPI_ADD_PROTOCOL_TO_BITMASK(src->detected_protocol_bitmask, lower_detected_protocol);
-  }
+        if(lower_detected_protocol != NDPI_PROTOCOL_UNKNOWN)
+            NDPI_ADD_PROTOCOL_TO_BITMASK(src->detected_protocol_bitmask, lower_detected_protocol);
+    }
 
-  if(dst != NULL) {
-    NDPI_ADD_PROTOCOL_TO_BITMASK(dst->detected_protocol_bitmask, upper_detected_protocol);
+    if(dst != NULL) {
+        NDPI_ADD_PROTOCOL_TO_BITMASK(dst->detected_protocol_bitmask, upper_detected_protocol);
 
-    if(lower_detected_protocol != NDPI_PROTOCOL_UNKNOWN)
-      NDPI_ADD_PROTOCOL_TO_BITMASK(dst->detected_protocol_bitmask, lower_detected_protocol);
-  }
+        if(lower_detected_protocol != NDPI_PROTOCOL_UNKNOWN)
+            NDPI_ADD_PROTOCOL_TO_BITMASK(dst->detected_protocol_bitmask, lower_detected_protocol);
+    }
 }
 
 u_int16_t ndpi_get_flow_masterprotocol(struct ndpi_detection_module_struct *ndpi_struct,
@@ -4161,6 +4208,7 @@ u_int16_t ndpi_get_flow_masterprotocol(struct ndpi_detection_module_struct *ndpi
   return(flow->detected_protocol_stack[1]);
 }
 
+// 刷新流的协议栈
 void ndpi_int_change_flow_protocol(struct ndpi_detection_module_struct *ndpi_struct,
 				   struct ndpi_flow_struct *flow,
 				   u_int16_t upper_detected_protocol,
@@ -4170,6 +4218,7 @@ void ndpi_int_change_flow_protocol(struct ndpi_detection_module_struct *ndpi_str
   flow->detected_protocol_stack[0] = upper_detected_protocol, flow->detected_protocol_stack[1] = lower_detected_protocol;
 }
 
+// 刷新包的协议栈
 void ndpi_int_change_packet_protocol(struct ndpi_detection_module_struct *ndpi_struct,
 				     struct ndpi_flow_struct *flow,
 				     u_int16_t upper_detected_protocol,
@@ -4187,6 +4236,7 @@ void ndpi_int_change_packet_protocol(struct ndpi_detection_module_struct *ndpi_s
 }
 
 /* generic function for changing the protocol
+ * 刷新包的协议栈和流的协议栈，显然调用本函数后，包的协议栈和流的协议栈内容将同步
  *
  * what it does is:
  * 1.update the flow protocol stack with the new protocol
@@ -4196,17 +4246,14 @@ void ndpi_int_change_protocol(struct ndpi_detection_module_struct *ndpi_struct,
 			      struct ndpi_flow_struct *flow,
 			      u_int16_t upper_detected_protocol,
 			      u_int16_t lower_detected_protocol) {
-  if((upper_detected_protocol == NDPI_PROTOCOL_UNKNOWN)
-     && (lower_detected_protocol != NDPI_PROTOCOL_UNKNOWN))
-    upper_detected_protocol = lower_detected_protocol;
+    if((upper_detected_protocol == NDPI_PROTOCOL_UNKNOWN) && (lower_detected_protocol != NDPI_PROTOCOL_UNKNOWN))
+        upper_detected_protocol = lower_detected_protocol;
 
-  if(upper_detected_protocol == lower_detected_protocol)
-    lower_detected_protocol = NDPI_PROTOCOL_UNKNOWN;
+    if(upper_detected_protocol == lower_detected_protocol)
+        lower_detected_protocol = NDPI_PROTOCOL_UNKNOWN;
 
-  ndpi_int_change_flow_protocol(ndpi_struct, flow,
-				upper_detected_protocol, lower_detected_protocol);
-  ndpi_int_change_packet_protocol(ndpi_struct, flow,
-				  upper_detected_protocol, lower_detected_protocol);
+    ndpi_int_change_flow_protocol(ndpi_struct, flow,upper_detected_protocol, lower_detected_protocol);
+    ndpi_int_change_packet_protocol(ndpi_struct, flow,upper_detected_protocol, lower_detected_protocol);
 }
 
 /* change protocol only if guessing is active */
@@ -4228,7 +4275,7 @@ void ndpi_int_change_protocol(struct ndpi_detection_module_struct *ndpi_struct,
 /*   } */
 /* } */
 
-/* turns a packet back to unknown 将数据包复位成unkown协议 */
+/* turns a packet back to unknown  将指定数据包的主协议和子协议都复位成NDPI_PROTOCOL_UNKNOWN */
 void ndpi_int_reset_packet_protocol(struct ndpi_packet_struct *packet) {
   int a;
 
@@ -4442,7 +4489,7 @@ u_int16_t ndpi_get_lower_proto(ndpi_protocol proto) {
 }
 
 /* ****************************************************** */
-
+// 对没有探测到的协议进行猜测
 ndpi_protocol ndpi_guess_undetected_protocol(struct ndpi_detection_module_struct *ndpi_struct,
 					     u_int8_t proto,
 					     u_int32_t shost /* host byte order */, u_int16_t sport,
@@ -4852,6 +4899,7 @@ int gettimeofday(struct timeval * tp, struct timezone * tzp) {
 }
 #endif
 
+// 逐位比较变量a和b，只要有1位同时为1则返回1,否则返回0
 int NDPI_BITMASK_COMPARE(NDPI_PROTOCOL_BITMASK a, NDPI_PROTOCOL_BITMASK b) {
   int i;
 

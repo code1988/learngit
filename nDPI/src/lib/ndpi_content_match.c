@@ -19,7 +19,7 @@
  */
 
 /* ****************************************************** */
-// 定义了一张IPV4类型的网络号-协议ID的映射表
+// 定义了一张IPV4类型的网络号-协议ID的映射表，该表的特殊之处在于协议ID都是一些常见的网站
 static ndpi_network host_protocol_list[] = {
 
   /*
@@ -7955,7 +7955,7 @@ static ndpi_network host_protocol_list[] = {
 
 /*
   Host-based match
-    定义了一张基于主机名/域名的协议映射表
+    定义了一张域名-协议ID映射表
   HTTP:  Server: field
   HTTPS: Server certificate name
 */
