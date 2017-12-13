@@ -104,7 +104,7 @@ typedef struct ndpi_stats {
 
 // flow preferences 定义了工作流的参数配置块
 typedef struct ndpi_workflow_prefs {
-  u_int8_t decode_tunnels;  // 标识是否使能隧道功能
+  u_int8_t decode_tunnels;  // 标识是否使能解析GTP隧道功能
   u_int8_t quiet_mode;      // 标识是否使能安静模式
   u_int32_t num_roots;      // 固定为NUM_ROOTS
   u_int32_t max_ndpi_flows; // 固定为MAX_NDPI_FLOWS

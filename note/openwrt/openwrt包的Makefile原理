@@ -21,6 +21,7 @@
     INSTALL_DATA    := install -m0644
 
     TARGET_CC:=$(TARGET_CROSS)gcc
+    GNU_TARGET_NAME=$(OPTIMIZE_FOR_CPU)-openwrt-linux
 
 
 2. PKG_XXX系列变量

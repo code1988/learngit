@@ -7955,7 +7955,7 @@ static ndpi_network host_protocol_list[] = {
 
 /*
   Host-based match
-    定义了一张域名-协议ID映射表
+    定义了一张Host(http头中的一个字段)-协议ID映射表
   HTTP:  Server: field
   HTTPS: Server certificate name
 */
@@ -8209,6 +8209,7 @@ ndpi_protocol_match host_match[] = {
 
 /*
   Mime-type content match match
+  定义了一张MIME-Type(又称Content-Type，http头中的一个字段) - 协议ID映射表 
 */
 ndpi_protocol_match content_match[] = {
   { "audio/mpeg",			NULL,		        NDPI_CONTENT_MPEG, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },

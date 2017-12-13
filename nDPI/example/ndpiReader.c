@@ -76,7 +76,7 @@ static u_int8_t nDPI_traceLevel = 0;
 static u_int8_t json_flag = 0;      // 标识是否启用JSON格式输出
 static u_int8_t stats_flag = 0, file_first_time = 1; 
 static u_int32_t pcap_analysis_duration = (u_int32_t)-1;
-static u_int16_t decode_tunnels = 0;// 标识是否使能隧道功能
+static u_int16_t decode_tunnels = 0;// 标识是否使能GTP隧道功能
 static u_int16_t num_loops = 1;     // 探测循环次数(仅测试用)
 static u_int8_t shutdown_app = 0;   // 标识是否终止捕获
 static u_int8_t quiet_mode = 0;     // 标识是否开启安静模式
@@ -440,7 +440,7 @@ static void parseOptions(int argc, char **argv) {
       capture_until = capture_for + time(NULL);
       break;
 
-    case 't':
+    case 't':       // 使能解析GTP隧道协议
       decode_tunnels = 1;
       break;
 
@@ -1124,6 +1124,7 @@ static void setupDetection(u_int16_t thread_id, pcap_t * pcap_handle) {
 
 /**
  * @brief End of detection and free flow
+ * 结束指定的线程处理单元中的工作流
  */
 static void terminateDetection(u_int16_t thread_id) {
   ndpi_workflow_free(ndpi_thread_info[thread_id].workflow);
@@ -1823,7 +1824,7 @@ static pcap_t * openPcapFileOrDevice(u_int16_t thread_id, const u_char * pcap_fi
 
 /**
  * @brief Check pcap packet
- * libpcap库捕获到数据包后的回调函数，可以认为就是每个接收包在ndpi中的起始入口
+ * libpcap库捕获到数据包后的回调函数，可以认为就是每个接收包在demo中的起始入口
  * @args  实际传入了线程序号
  */
 static void pcap_process_packet(u_char *args,
@@ -2076,7 +2077,7 @@ void test_lib() {
    * */
   printResults(tot_usec);
 
-  // 扫尾收工
+  // 扫尾收工，结束所有线程处理单元中的工作流
   for(thread_id = 0; thread_id < num_threads; thread_id++) {
     if(ndpi_thread_info[thread_id].workflow->pcap_handle != NULL)
       pcap_close(ndpi_thread_info[thread_id].workflow->pcap_handle);

@@ -846,14 +846,15 @@ struct ndpi_detection_module_struct {
   u_int ndpi_num_custom_protocols;
 
   /* HTTP/DNS/HTTPS host matching 5个AC自动机句柄 */
-  ndpi_automa host_automa,                     /* Used for DNS/HTTPS */
-    content_automa,                            /* Used for HTTP subprotocol_detection */
-    subprotocol_automa,                        /* Used for HTTP subprotocol_detection */
-    bigrams_automa, impossible_bigrams_automa; /* TOR */
+  ndpi_automa host_automa,                     /* Used for DNS/HTTPS  维护了host_match映射表 */
+    content_automa,                            /* Used for HTTP subprotocol_detection  维护了content_match映射表 */
+    subprotocol_automa,                        /* Used for HTTP subprotocol_detection  (貌似没用到) */
+    bigrams_automa,     // 维护了ndpi_en_bigrams映射表(貌似没用到) 
+    impossible_bigrams_automa; /* TOR  维护了ndpi_en_impossible_bigrams映射表(貌似没用到) */
 
   /* IP-based protocol detection  
    * 指向一个trie树模块的句柄,trie树中每个节点的信息都来自host_protocol_list
-   * 可以认为该trie树维护的是网络中常用的那些网站
+   * 可以认为该trie树维护的是网络中常用的那些网站IP
    */
   void *protocols_ptree;
 

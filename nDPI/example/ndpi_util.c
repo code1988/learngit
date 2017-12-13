@@ -141,13 +141,15 @@ void ndpi_flow_info_freer(void *node) {
 }
 
 /* ***************************************************** */
-
+// 释放指定的工作流
 void ndpi_workflow_free(struct ndpi_workflow * workflow) {
   int i;
 
+  // 释放demo管理的ndpi_flows_root中的所有二叉树
   for(i=0; i<workflow->prefs.num_roots; i++)
     ndpi_tdestroy(workflow->ndpi_flows_root[i], ndpi_flow_info_freer);
 
+  // 释放该工作流中的探测模块
   ndpi_exit_detection_module(workflow->ndpi_struct);
   free(workflow->ndpi_flows_root);
   free(workflow);
@@ -868,7 +870,7 @@ v4_warning:
     }
 
     // 程序运行到这里意味着是一个IP协议报文
-    // decode_tunnels标识目前没用到，这部分暂略
+    // 识别GTP隧道协议(略)
     if(workflow->prefs.decode_tunnels && (proto == IPPROTO_UDP)) {
         struct ndpi_udphdr *udp = (struct ndpi_udphdr *)&packet[ip_offset+ip_len];
         u_int16_t sport = ntohs(udp->source), dport = ntohs(udp->dest);

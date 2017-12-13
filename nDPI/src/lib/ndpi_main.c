@@ -600,6 +600,7 @@ static int ndpi_string_to_automa(struct ndpi_detection_module_struct *ndpi_struc
 
 /* ****************************************************** */
 
+// 将传入的一组域名-协议ID的映射单元加入AC自动机
 static int ndpi_add_host_url_subprotocol(struct ndpi_detection_module_struct *ndpi_struct,
 					 char *value, int protocol_id,
 					 ndpi_protocol_breed_t breed)
@@ -638,14 +639,14 @@ static int ndpi_remove_host_url_subprotocol(struct ndpi_detection_module_struct 
 }
 
 /* ******************************************************************** */
-// 实际就是将传入的一组主机名-协议ID的映射单元加入AC自动机
+// 实际就是将传入的一组域名-协议ID的映射单元加入AC自动机
 void ndpi_init_protocol_match(struct ndpi_detection_module_struct *ndpi_mod,
 			      ndpi_protocol_match *match)
 {
   u_int16_t no_master[2] = { NDPI_PROTOCOL_NO_MASTER_PROTO, NDPI_PROTOCOL_NO_MASTER_PROTO };
   ndpi_port_range ports_a[MAX_DEFAULT_PORTS], ports_b[MAX_DEFAULT_PORTS];
 
-  // 将传入的一组主机名-协议ID的映射单元加入AC自动机
+  // 将传入的一组域名-协议ID的映射单元加入AC自动机
   ndpi_add_host_url_subprotocol(ndpi_mod, match->string_to_match,
 				match->protocol_id, match->protocol_breed);
 
@@ -667,7 +668,7 @@ void ndpi_init_protocol_match(struct ndpi_detection_module_struct *ndpi_mod,
 }
 
 /* ******************************************************************** */
-// 分别将预定义的4张表加入各自的AC自动机
+// 分别将预定义的4张表加入各自的AC自动机(主要用了前2个AC自动机)
 static void init_string_based_protocols(struct ndpi_detection_module_struct *ndpi_mod)
 {
   int i;
@@ -1964,7 +1965,7 @@ int ndpi_match_string_id(void *_automa, char *string_to_match, unsigned long *id
 static void free_ptree_data(void *data) { ; }
 
 /* ****************************************************** */
-
+// 释放指定的探测模块
 void ndpi_exit_detection_module(struct ndpi_detection_module_struct *ndpi_struct) {
   if(ndpi_struct != NULL) {
     int i;
@@ -2050,7 +2051,7 @@ static ndpi_default_ports_tree_node_t* ndpi_get_guessed_protocol_id(struct ndpi_
 }
 
 /* ****************************************************** */
-/* 根据传入的信息猜测对应的协议ID
+/* 根据传入的l4层信息猜测最有可能的协议ID
  * @ndpi_struct - 指向传入信息所属的探测模块
  * @proto       - l4层的协议号
  * @sport       - 源端口
@@ -2058,7 +2059,7 @@ static ndpi_default_ports_tree_node_t* ndpi_get_guessed_protocol_id(struct ndpi_
  * @user_defined_proto  - 用于存放是否是用户自定义协议的标识
  * @返回值      - 猜测成功返回nDPI定义的协议ID，失败返回NDPI_PROTOCOL_UNKNOWN
  *
- * 备注：本函数只能基于TCP和UDP报文进行猜测
+ * 备注：本函数通常可以猜测到l7层以下的常用IP包协议，以及那些通常关联某个端口号的应用层协议
  */
 u_int16_t ndpi_guess_protocol_id(struct ndpi_detection_module_struct *ndpi_struct,
 				 u_int8_t proto, u_int16_t sport, u_int16_t dport,
@@ -2075,7 +2076,7 @@ u_int16_t ndpi_guess_protocol_id(struct ndpi_detection_module_struct *ndpi_struc
         }
     } else {
         /* No TCP/UDP */
-        // 然后既不是TCP也不是UDP的报文进行猜测
+        // 然后对既不是TCP也不是UDP的报文进行猜测
         switch(proto) {
         case NDPI_IPSEC_PROTOCOL_ESP:
         case NDPI_IPSEC_PROTOCOL_AH:
@@ -2256,7 +2257,7 @@ int ndpi_handle_rule(struct ndpi_detection_module_struct *ndpi_mod, char* rule, 
   tcp:80,tcp:3128@HTTP
   udp:139@NETBIOS
 
-  从指定的协议文件中导入协议缺省信息(似乎只是导入，并没有使能)
+  从指定的协议文件中导入自定义的协议缺省信息
 */
 int ndpi_load_protocols_file(struct ndpi_detection_module_struct *ndpi_mod, char* path) {
 
@@ -3019,6 +3020,7 @@ static u_int8_t ndpi_detection_get_l4_internal(struct ndpi_detection_module_stru
   return 0;
 }
 
+// 将数据包的协议栈跟所属数据流的协议栈同步
 void ndpi_apply_flow_protocol_to_packet(struct ndpi_flow_struct *flow,
 					struct ndpi_packet_struct *packet)
 {
@@ -3059,6 +3061,7 @@ static int ndpi_init_packet_header(struct ndpi_detection_module_struct *ndpi_str
 #endif							/* NDPI_DETECTION_SUPPORT_IPV6 */
   }
 
+  // 同步数据包和数据流的协议栈内容
   if(flow) {
     ndpi_apply_flow_protocol_to_packet(flow, &flow->packet);
   } else {
@@ -3637,10 +3640,10 @@ ndpi_protocol ndpi_detection_process_packet(struct ndpi_detection_module_struct 
         else if(flow->packet.tcp) sport = ntohs(flow->packet.tcp->source), dport = ntohs(flow->packet.tcp->dest);
         else sport = dport = 0;
 
-        /* guess protocol  首先根据端口号猜测协议ID */
+        /* guess protocol  首先根据l4层信息猜测最有可能的协议ID */
         flow->guessed_protocol_id = (int16_t) ndpi_guess_protocol_id(ndpi_struct, protocol, sport, dport, &user_defined_proto);
 
-        // 对于IPv4报文，会进一步猜测其主机协议，其中自定义的应用协议在猜测完后直接返回猜测结果，而普通应用协议则继续往下执行
+        // 对于IPv4报文，会根据IP地址进一步猜测其主机协议，其中自定义的应用协议在猜测完后直接返回猜测结果，而普通应用协议则继续往下执行
         if(user_defined_proto && flow->guessed_protocol_id != NDPI_PROTOCOL_UNKNOWN) {
             if(flow->packet.iph) {
                 /* guess host protocol */
@@ -4750,7 +4753,12 @@ int ndpi_match_prefix(const u_int8_t *payload, size_t payload_len,
 }
 
 /* ****************************************************** */
-
+/* 根据传入的Host信息/MIME-Type信息匹配对应的子协议ID
+ * @string_to_match     - 需要进行匹配的信息串
+ * @string_to_match_len - 信息串长度
+ * @is_host_match       - 标识是否传入了Host信息
+ * @返回值              - 成功返回匹配到的协议ID，失败返回NDPI_PROTOCOL_UNKNOWN
+ */
 int ndpi_match_string_subprotocol(struct ndpi_detection_module_struct *ndpi_struct,
 				  char *string_to_match, u_int string_to_match_len,
 				  u_int8_t is_host_match) {
@@ -4774,6 +4782,10 @@ int ndpi_match_string_subprotocol(struct ndpi_detection_module_struct *ndpi_stru
 
 /* ****************************************************** */
 
+/* 根据传入的Host信息/MIME-Type信息匹配对应的子协议ID，匹配成功将更新数据包和数据流的协议栈
+ *
+ * 备注：实际就是对ndpi_match_string_subprotocol的一层封装
+ */
 static int ndpi_automa_match_string_subprotocol(struct ndpi_detection_module_struct *ndpi_struct,
 						struct ndpi_flow_struct *flow,
 						char *string_to_match, u_int string_to_match_len,
@@ -4795,6 +4807,7 @@ static int ndpi_automa_match_string_subprotocol(struct ndpi_detection_module_str
   }
 #endif
 
+  // 匹配成功将更新数据包和数据流的协议栈
   if(matching_protocol_id != NDPI_PROTOCOL_UNKNOWN) {
     /* Move the protocol on slot 0 down one position */
     packet->detected_protocol_stack[1] = master_protocol_id,
@@ -4814,8 +4827,7 @@ static int ndpi_automa_match_string_subprotocol(struct ndpi_detection_module_str
   return(NDPI_PROTOCOL_UNKNOWN);
 }
 
-/* ****************************************************** */
-
+// 根据传入的Host信息配对应的子协议ID，匹配成功将更新数据包和数据流的协议栈
 int ndpi_match_host_subprotocol(struct ndpi_detection_module_struct *ndpi_struct,
 				struct ndpi_flow_struct *flow,
 				char *string_to_match, u_int string_to_match_len,
@@ -4825,8 +4837,7 @@ int ndpi_match_host_subprotocol(struct ndpi_detection_module_struct *ndpi_struct
 					      master_protocol_id, 1));
 }
 
-/* ****************************************************** */
-
+// 根据传入的MIME-Type信息匹配对应的子协议ID，匹配成功将更新数据包和数据流的协议栈
 int ndpi_match_content_subprotocol(struct ndpi_detection_module_struct *ndpi_struct,
 				   struct ndpi_flow_struct *flow,
 				   char *string_to_match, u_int string_to_match_len,
