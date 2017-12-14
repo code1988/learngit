@@ -2292,9 +2292,9 @@ int ndpi_load_protocols_file(struct ndpi_detection_module_struct *ndpi_mod, char
  * @lable                   - 协议名
  * @ndpi_struct             - 指向探测模块
  * @detection_bitmask       - 指向一张该探测模块中所有协议的使能/禁止位表，只有在该表中对应位置1的协议才会真正执行本函数
- * @idx                     - 每注册一个协议递增
+ * @idx                     - 每使能一个协议递增
  * @ndpi_protocol_id        - ndpi分配给该协议的ID号
- * @func                    - 该协议的报文处理回调函数
+ * @func                    - 该协议的解析器回调函数
  * @ndpi_selection_bitmask  - 选择位集合(这些位包含了IP、TCP、UDP、IPV4、IPV6、payload等)
  * @b_save_bitmask_unknow   - 是否记录unknow包
  * @b_add_detection_bitmask -

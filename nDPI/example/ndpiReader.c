@@ -75,7 +75,7 @@ static u_int8_t verbose = 0;        // 控制输出信息的详细程度:0/1/2/3
 static u_int8_t nDPI_traceLevel = 0;
 static u_int8_t json_flag = 0;      // 标识是否启用JSON格式输出
 static u_int8_t stats_flag = 0, file_first_time = 1; 
-static u_int32_t pcap_analysis_duration = (u_int32_t)-1;
+static u_int32_t pcap_analysis_duration = (u_int32_t)-1;    // 解析pcap文件时耗时如果超过该值将会分段打印识别结果
 static u_int16_t decode_tunnels = 0;// 标识是否使能GTP隧道功能
 static u_int16_t num_loops = 1;     // 探测循环次数(仅测试用)
 static u_int8_t shutdown_app = 0;   // 标识是否终止捕获
@@ -410,7 +410,7 @@ static void parseOptions(int argc, char **argv) {
 #endif
       break;
 
-    case 'm':
+    case 'm':       // 指定pcap文件分段识别的超时时间(s)
       pcap_analysis_duration = atol(optarg);
       break;
 

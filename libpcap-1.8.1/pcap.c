@@ -920,7 +920,7 @@ pcap_dispatch(pcap_t *p, int cnt, pcap_handler callback, u_char *user)
  * @cnt     - 设置捕获数据包个数，捕获数量超过该值则退出本函数，-1表示一直捕获
  * @callback- 捕获到数据包后的回调函数
  * @user    - 传递给回调函数的参数
- * @返回值： <=0意味着遇到结束符或者出错；>0表示剩余未捕获的包数量
+ * @返回值： 0意味着遇到结束符或者超过捕获数量，小于0意味着异常返回
  */
 int
 pcap_loop(pcap_t *p, int cnt, pcap_handler callback, u_char *user)
