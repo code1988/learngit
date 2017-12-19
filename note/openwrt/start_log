@@ -1,0 +1,284 @@
+                                         Booting Linux on physical CPU 0x0
+                                         Linux version 3.14.38+ge4944a5 (code5@code) (gcc version 4.8.3 (OpenWrt/Linaro GCC 4.8-2014.04 unknown) ) #155 SMP PREEMPT Tue Nov 21 13:49:52 CST 2017
+                                         CPU: ARMv7 Processor [410fc075] revision 5 (ARMv7), cr=10c53c7d
+                                         CPU: PIPT / VIPT nonaliasing data cache, VIPT aliasing instruction cache
+                                         Machine model: Freescale i.MX6 UltraLite 14x14 EVK Board
+                                         cma: CMA: reserved 320 MiB at 8c000000
+                                         Memory policy: Data cache writealloc
+                                         On node 0 totalpages: 131072
+                                         free_area_init_node: node 0, pgdat 806b95c0, node_mem_map 8bb57000
+                                           DMA zone: 1024 pages used for memmap
+                                           DMA zone: 0 pages reserved
+                                           DMA zone: 131072 pages, LIFO batch:31
+                                         PERCPU: Embedded 7 pages/cpu @8bb40000 s8064 r8192 d12416 u32768
+                                         pcpu-alloc: s8064 r8192 d12416 u32768 alloc=8*4096
+                                         pcpu-alloc: [0] 0 
+                                         Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 130048
+                                         Kernel command line: console=ttymxc1,115200 root=/dev/mtdblock2 rootfstype=jffs2 mtdparts=21e0000.qspi:512k(bootloader),5120k(kernel),16384k(rootfs),64k(factoy)...
+                                         PID hash table entries: 2048 (order: 1, 8192 bytes)
+                                         Dentry cache hash table entries: 65536 (order: 6, 262144 bytes)
+                                         Inode-cache hash table entries: 32768 (order: 5, 131072 bytes)
+                                         Memory: 184084K/524288K available (4797K kernel code, 242K rwdata, 1464K rodata, 351K init, 367K bss, 340204K reserved, 0K highmem)
+                                         Virtual kernel memory layout:
+                                             vector  : 0xffff0000 - 0xffff1000   (   4 kB)
+                                             fixmap  : 0xfff00000 - 0xfffe0000   ( 896 kB)
+                                             vmalloc : 0xa0800000 - 0xff000000   (1512 MB)
+                                             lowmem  : 0x80000000 - 0xa0000000   ( 512 MB)
+                                             pkmap   : 0x7fe00000 - 0x80000000   (   2 MB)
+                                             modules : 0x7f000000 - 0x7fe00000   (  14 MB)
+                                               .text : 0x80008000 - 0x8062565c   (6262 kB)
+                                               .init : 0x80626000 - 0x8067df80   ( 352 kB)
+                                               .data : 0x8067e000 - 0x806ba9e0   ( 243 kB)
+                                                .bss : 0x806ba9ec - 0x80716698   ( 368 kB)
+                                         SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=1, Nodes=1
+                                         Preemptible hierarchical RCU implementation.
+                                            RCU restricting CPUs from NR_CPUS=4 to nr_cpu_ids=1.
+                                         RCU: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=1
+                                         NR_IRQS:16 nr_irqs:16 16
+                                         kmemleak: Kernel memory leak detector disabled
+                                         Switching to timer-based delay loop
+                                         sched_clock: 32 bits at 3000kHz, resolution 333ns, wraps every 1431655765682ns
+                                         clocksource_of_init: no matching clocksources found
+                                         Console: colour dummy device 80x30
+                                         kmemleak: Early log buffer exceeded (1744), please increase DEBUG_KMEMLEAK_EARLY_LOG_SIZE
+                                         Calibrating delay loop (skipped), value calculated using timer frequency.. 6.00 BogoMIPS (lpj=30000)
+                                         pid_max: default: 32768 minimum: 301
+                                         Mount-cache hash table entries: 1024 (order: 0, 4096 bytes)
+                                         Mountpoint-cache hash table entries: 1024 (order: 0, 4096 bytes)
+                                         CPU: Testing write buffer coherency: ok
+                                         /cpus/cpu@0 missing clock-frequency property
+                                         CPU0: thread -1, cpu 0, socket 0, mpidr 80000000
+                                         Setting up static identity map for 0x804906b8 - 0x80490710
+                                         Brought up 1 CPUs
+                                         SMP: Total of 1 processors activated (6.00 BogoMIPS).
+                                         CPU: All CPU(s) started in SVC mode.
+                                         VFP support v0.3: implementor 41 architecture 2 part 30 variant 7 rev 5
+                                         pinctrl core: initialized pinctrl subsystem
+                                         regulator-dummy: no parameters
+                                         NET: Registered protocol family 16
+                                         DMA: preallocated 256 KiB pool for atomic coherent allocations
+                                         cpuidle: using governor ladder
+                                         cpuidle: using governor menu
+
+// 下面开始进行imx6ul板卡初始化
+@imx6ul_init_machine    ---------------> Use WDOG1 as reset source
+                                         gpiochip_add: registered GPIOs 0 to 31 on device: 209c000.gpio
+                                         gpiochip_add: registered GPIOs 32 to 63 on device: 20a0000.gpio
+                                         gpiochip_add: registered GPIOs 64 to 95 on device: 20a4000.gpio
+                                         gpiochip_add: registered GPIOs 96 to 127 on device: 20a8000.gpio
+                                         gpiochip_add: registered GPIOs 128 to 159 on device: 20ac000.gpio
+                                         syscon 20c8000.anatop: regmap [mem 0x020c8000-0x020c8fff] registered
+                                         vdd3p0: 2625 <--> 3400 mV at 3000 mV 
+                                         cpu: 725 <--> 1450 mV at 1150 mV 
+                                         vddsoc: 725 <--> 1450 mV at 1175 mV 
+                                         syscon 20e4000.iomuxc-gpr: regmap [mem 0x020e4000-0x020e7fff] registered
+                                         syscon 21ac000.romcp: regmap [mem 0x021ac000-0x021affff] registered
+                                         syscon 21bc000.ocotp-ctrl: regmap [mem 0x021bc000-0x021bffff] registered
+
+// 下面开始进行imx6ul板卡驱动的注册和probe操作，包括了pinctrl、weim、sdma、串口、SPI-flash、网卡、看门狗、CAAM、SNVS、我司的netlink等
+@imx6ul_pinctrl_probe   ---------------> imx6ul-pinctrl 20e0000.iomuxc: initialized IMX pinctrl driver
+                                         20dc000.gpc supply pu not found, using dummy regulator
+                                         bio: create slab <bio-0> at 0
+                                         mxs-dma 1804000.dma-apbh: initialized
+                                         pps_core: LinuxPPS API ver. 1 registered
+                                         pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+                                         PTP clock support registered
+                                         Switched to clocksource mxc_timer1
+                                         NET: Registered protocol family 2
+                                         TCP established hash table entries: 4096 (order: 2, 16384 bytes)
+                                         TCP bind hash table entries: 4096 (order: 3, 32768 bytes)
+                                         TCP: Hash tables configured (established 4096 bind 4096)
+                                         TCP: reno registered
+                                         UDP hash table entries: 256 (order: 1, 8192 bytes)
+                                         UDP-Lite hash table entries: 256 (order: 1, 8192 bytes)
+                                         NET: Registered protocol family 1
+                                         RPC: Registered named UNIX socket transport module.
+                                         RPC: Registered udp transport module.
+                                         RPC: Registered tcp transport module.
+                                         RPC: Registered tcp NFSv4.1 backchannel transport module.
+                                         imx rpmsg driver is registered.
+                                         Bus freq driver module loaded
+                                         futex hash table entries: 256 (order: 2, 16384 bytes)
+                                         VFS: Disk quotas dquot_6.5.2
+                                         Dquot-cache hash table entries: 1024 (order 0, 4096 bytes)
+                                         NFS: Registering the id_resolver key type
+                                         Key type id_resolver registered
+                                         Key type id_legacy registered
+                                         nfs4filelayout_init: NFSv4 File Layout Driver Registering...
+                                         jffs2: version 2.2. (NAND) © 2001-2006 Red Hat, Inc.
+                                         fuse init (API version 7.22)
+                                         msgmni has been set to 999
+                                         io scheduler noop registered
+                                         io scheduler deadline registered
+                                         io scheduler cfq registered (default)
+@weim_probe     -----------------------> imx-weim 21b8000.weim: Driver registered.
+@sdma_probe     -----------------------> imx-sdma 20ec000.sdma: no event needs to be remapped
+                                         imx-sdma 20ec000.sdma: loaded firmware 3.1
+                                         imx-sdma 20ec000.sdma: initialized
+@imx_serial_init  ---------------------> Serial: IMX driver
+                                         2018000.serial: ttymxc6 at MMIO 0x2018000 (irq = 71, base_baud = 5000000) is a IMX
+                                         2020000.serial: ttymxc0 at MMIO 0x2020000 (irq = 58, base_baud = 5000000) is a IMX
+                                         21e8000.serial: ttymxc1 at MMIO 0x21e8000 (irq = 59, base_baud = 5000000) is a IMX
+                                         console [ttymxc1] enabled
+                                         21ec000.serial: ttymxc2 at MMIO 0x21ec000 (irq = 60, base_baud = 5000000) is a IMX
+                                         21f0000.serial: ttymxc3 at MMIO 0x21f0000 (irq = 61, base_baud = 5000000) is a IMX
+                                         21f4000.serial: ttymxc4 at MMIO 0x21f4000 (irq = 62, base_baud = 5000000) is a IMX
+@lpuart_serial_init  ------------------> serial: Freescale lpuart driver
+@imx_sema4_init      ------------------> imx sema4 driver is registered.
+@brd_init            ------------------> brd: module loaded
+@loop_init           ------------------> loop: module loaded
+@fsl_qspi_probe      ------------------> fsl-quadspi 21e0000.qspi: n25q256a (32768 Kbytes)
+                                         5 cmdlinepart partitions found on MTD device 21e0000.qspi
+                                         Creating 5 MTD partitions on "21e0000.qspi":
+                                         0x000000000000-0x000000080000 : "bootloader"
+                                         0x000000080000-0x000000580000 : "kernel"
+                                         0x000000580000-0x000001580000 : "rootfs"
+                                         0x000001580000-0x000001590000 : "factoy"
+                                         0x000001590000-0x000001f90000 : "user"
+                                         fsl-quadspi 21e0000.qspi: QuadSPI SPI NOR flash driver
+@fec_probe: start    ------------------> 2188000.ethernet supply phy not found, using dummy regulator
+                                         of_get_named_gpiod_flags: can't parse gpios property of node '/soc/aips-bus@02100000/ethernet@02188000[0]'
+                                         pps pps0: new PPS source ptp0
+                                         libphy: fec_enet_mii_bus: probed
+                                         [debug]: assign eth ifindex to 4096
+@fec_probe: end      ------------------> fec 2188000.ethernet eth0: registered PHC device 0
+                                         snvs_rtc 20cc034.snvs-rtc-lp: rtc core: registered 20cc034.snvs-rtc-lp as rtc0
+@imx2_wdt_probe      ------------------> imx2-wdt 20bc000.wdog: IMX2+ Watchdog Timer enabled. timeout=60s (nowayout=0)
+@caam_probe          ------------------> caam 2140000.caam: Instantiated RNG4 SH0
+                                         caam 2140000.caam: Instantiated RNG4 SH1
+                                         caam 2140000.caam: device ID = 0x0a160300 (Era 8)
+                                         caam 2140000.caam: job rings = 3, qi = 0
+                                         caam algorithms registered in /proc/crypto
+                                         caam_jr 2141000.jr0: registering rng-caam
+                                         platform caam_sm: blkkey_ex: 8 keystore units available
+                                         platform caam_sm: 64-bit clear key:
+                                         platform caam_sm: [0000] 00 01 02 03 04 0f 06 07
+                                         platform caam_sm: 64-bit black key:
+                                         platform caam_sm: [0000] 45 0c 22 de f1 d2 e0 4f
+                                         platform caam_sm: [0008] 95 5f fa 8b c5 eb 8d ef
+                                         platform caam_sm: 128-bit clear key:
+                                         ...
+                                         platform caam_sm: [0008] 2f bd a1 10 8e ed a8 3a
+                                         platform caam_sm: [0016] 29 2f 75 4b bf d3 ba 90
+                                         platform caam_sm: [0024] ad 4c 9a d2 88 b9 35 09
+@snvs_secvio_probe   ------------------> snvs-secvio 20cc000.caam-snvs: violation handlers armed - non-secure state
+@我司netlink驱动     ------------------> kernel jw msg queue init...OK 
+
+// 下面开始初始化一些内核通用模块，包括Packet Generator、netfilter、bridge、DSA、802.1Q等
+@pg_init             ------------------> pktgen: Packet Generator for packet performance testing. Version: 2.74
+                                         NET: Registered protocol family 26
+@nfnetlink_init      ------------------> Netfilter messages via NETLINK v0.30.
+@nf_conntrack_standalone_init  --------> nf_conntrack version 0.5.0 (7996 buckets, 31984 max)
+                                         nf_tables: (c) 2007-2009 Patrick McHardy <kaber@trash.net>
+                                         TCP: cubic registered
+                                         NET: Registered protocol family 17
+@br_init             ------------------> Bridge firewalling registered
+@dsa_probe           ------------------> Distributed Switch Architecture driver version 0.1
+                                         [DSA]: parse port index = 8, if index = 1
+                                         [DSA]: parse port index = 1, if index = 2
+                                         [DSA]: parse port index = 5, if index = 3
+                                         [DSA]: parse port index = 4, if index = 4
+                                         [DSA]: parse port index = 7, if index = 5
+                                         [DSA]: parse port index = 6, if index = 6
+                                         [DSA]: parse port index = 2, if index = 7
+                                         [DSA]: parse port index = 3, if index = 8
+                                         [DSA]: parse port index = 9, if index = 9
+                                         [DSA]: parse port index = 10, if index = 10
+                                         [DSA]: parse port index = 0, if index = -1
+                                          [DSA mv6390x probe]: vendor id = a11
+                                         eth0[0]: detected a Marvell 88E6390X switch
+                                         [mv88e6390x setup]: vendor id = a10
+                                         mv88e6390x_setup_dsa, cpu port = 0
+                                         libphy: dsa slave smi: probed
+                                         NET: Registered protocol family 4
+@vlan_proto_init     ------------------> 8021q: 802.1Q VLAN Support v1.8
+                                         sctp: Hash tables configured (established 16384 bind 16384)
+                                         Key type dns_resolver registered
+                                         cpu cpu0: dev_pm_opp_get_opp_count: device OPP not found (-19)
+                                         regulator-dummy: disabling
+                                         snvs_rtc 20cc034.snvs-rtc-lp: setting system clock to 1970-01-29 03:47:09 UTC (2432829)
+                                         VFS: Mounted root (jffs2 filesystem) readonly on device 31:2.
+                                         Freeing unused kernel memory: 348K (80626000 - 8067d000)
+                                         init: Console is alive
+                                         init: - watchdog -
+                                         init: - preinit -
+                                         mount_root: mounting /dev/root
+                                         procd: - early -
+                                         procd: - watchdog -
+                                         procd: - ubus -
+                                         random: ubusd urandom read with 112 bits of entropy available
+                                         procd: - init -
+                                         random: nonblocking pool is initialized
+                                         fec 2188000.ethernet eth0: Freescale FEC PHY driver [Generic PHY] (mii_bus:phy_addr=2188000.ethernet:00, irq=-1)
+                                         libphy: 2188000.ethernet:00 - Link is Up - 100/Full
+                                         gpio_i2c_init
+                                         fec 2188000.ethernet eth0: Freescale FEC PHY driver [Generic PHY] (mii_bus:phy_addr=2188000.ethernet:00, irq=-1)
+                                         device Gex-1 entered promiscuous mode
+                                         device eth0 entered promiscuous mode
+                                         dsa dsa.13 Gex-1: link up, 1000 Mb/s, full duplex, flow control enabled
+                                         br-lan: port 1(Gex-1) entered forwarding state
+                                         br-lan: port 1(Gex-1) entered forwarding state
+                                         device Gex-2 entered promiscuous mode
+                                         device Gex-3 entered promiscuous mode
+                                         device Gex-4 entered promiscuous mode
+                                         device Gex-5 entered promiscuous mode
+                                         device Gex-6 entered promiscuous mode
+                                         device Gex-7 entered promiscuous mode
+                                         device Gex-8 entered promiscuous mode
+                                         device Gex-9 entered promiscuous mode
+                                         dsa dsa.13 Gex-8: link up, 100 Mb/s, full duplex, flow control disabled
+                                         br-lan: port 8(Gex-8) entered forwarding state
+                                         br-lan: port 8(Gex-8) entered forwarding state
+                                         dsa dsa.13 Gex-9: link up, 1000 Mb/s, full duplex, flow control enabled
+                                         device Gex-10 entered promiscuous mode
+                                         dsa dsa.13 Gex-10: link up, 1000 Mb/s, full duplex, flow control enabled
+                                         br-lan: port 9(Gex-9) entered forwarding state
+                                         br-lan: port 9(Gex-9) entered forwarding state
+                                         br-lan: port 10(Gex-10) entered forwarding state
+                                         br-lan: port 10(Gex-10) entered forwarding state
+                                         libphy: 2188000.ethernet:00 - Link is Up - 100/Half
+                                         br-lan: port 1(Gex-1) entered forwarding state
+                                         br-lan: port 8(Gex-8) entered forwarding state
+                                         br-lan: port 9(Gex-9) entered forwarding state
+                                         br-lan: port 10(Gex-10) entered forwarding state
+                                         libphy: 2188000.ethernet:00 - Link is Up - 100/Full
+                                         dsa dsa.13 Gex-1: link down
+                                         br-lan: port 1(Gex-1) entered disabled state
+                                         dsa dsa.13 Gex-8: link down
+                                         br-lan: port 8(Gex-8) entered disabled state
+                                         dsa dsa.13 Gex-9: link down
+                                         br-lan: port 9(Gex-9) entered disabled state
+                                         dsa dsa.13 Gex-10: link down
+                                         br-lan: port 10(Gex-10) entered disabled state
+                                         device Gex-1.1 entered promiscuous mode
+                                         device Gex-2.1 entered promiscuous mode
+                                         device Gex-3.1 entered promiscuous mode
+                                         device Gex-4.1 entered promiscuous mode
+                                         device Gex-5.1 entered promiscuous mode
+                                         device Gex-6.1 entered promiscuous mode
+                                         device Gex-7.1 entered promiscuous mode
+                                         device Gex-8.1 entered promiscuous mode
+                                         device Gex-9.1 entered promiscuous mode
+                                         device Gex-10.1 entered promiscuous mode
+                                         dsa dsa.13 Gex-8: link up, 100 Mb/s, full duplex, flow control disabled
+                                         br-lan: port 8(Gex-8) entered forwarding state
+                                         br-lan: port 8(Gex-8) entered forwarding state
+                                         br-lan: port 18(Gex-8.1) entered forwarding state
+                                         br-lan: port 18(Gex-8.1) entered forwarding state
+                                         dsa dsa.13 Gex-1: link up, 1000 Mb/s, full duplex, flow control enabled
+                                         br-lan: port 1(Gex-1) entered forwarding state
+                                         br-lan: port 1(Gex-1) entered forwarding state
+                                         br-lan: port 11(Gex-1.1) entered forwarding state
+                                         br-lan: port 11(Gex-1.1) entered forwarding state
+                                         br-lan: port 8(Gex-8) entered forwarding state
+                                         br-lan: port 18(Gex-8.1) entered forwarding state
+                                         br-lan: port 1(Gex-1) entered forwarding state
+                                         br-lan: port 11(Gex-1.1) entered forwarding state
+                                         unexport_store: status -22
+                                         unexport_store: status -22
+                                         gpio-117 (sysfs): gpiod_request: status -16
+                                         export_store: status -16
+                                         gpio-120 (sysfs): gpiod_request: status -16
+                                         export_store: status -16
+                                         gpio-75 (sysfs): gpiod_request: status -16
+                                         export_store: status -16

@@ -3787,6 +3787,7 @@ static struct pernet_operations pg_net_ops = {
 	.size = sizeof(struct pktgen_net),
 };
 
+// 包生成器模块化注册接口
 static int __init pg_init(void)
 {
 	int ret = 0;

@@ -417,7 +417,9 @@ int caam_get_era(u32 caam_id)
 }
 EXPORT_SYMBOL(caam_get_era);
 
-/* Probe routine for CAAM top (controller) level */
+/* Probe routine for CAAM top (controller) level 
+ * imx系列隶属于platform总线的CAAM模块驱动回调函数
+ * */
 static int caam_probe(struct platform_device *pdev)
 {
 	int ret, ring, rspec, gen_sk, ent_delay = RTSDCTL_ENT_DLY_MIN;
@@ -803,6 +805,7 @@ static struct of_device_id caam_match[] = {
 };
 MODULE_DEVICE_TABLE(of, caam_match);
 
+// imx系列隶属于platform总线的CAAM(密码加速和保证模块)模块驱动描述符
 static struct platform_driver caam_driver = {
 	.driver = {
 		.name = "caam",
@@ -813,6 +816,7 @@ static struct platform_driver caam_driver = {
 	.remove      = caam_remove,
 };
 
+// imx系列隶属于platform总线的CAAM模块驱动注册和注销接口
 module_platform_driver(caam_driver);
 
 MODULE_LICENSE("GPL");

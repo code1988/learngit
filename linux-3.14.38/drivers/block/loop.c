@@ -1818,6 +1818,7 @@ static struct miscdevice loop_misc = {
 MODULE_ALIAS_MISCDEV(LOOP_CTRL_MINOR);
 MODULE_ALIAS("devname:loop-control");
 
+// loop模块驱动初始化接口
 static int __init loop_init(void)
 {
 	int i, nr;

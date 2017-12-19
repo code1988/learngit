@@ -59,7 +59,8 @@ struct machine_desc {
 	void			(*init_early)(void);
 	void			(*init_irq)(void);      // 板卡中断控制器初始化
 	void			(*init_time)(void);
-	void			(*init_machine)(void);  // 将设备树中定义的各种device node加入到系统中
+	void			(*init_machine)(void);  // 指向板卡自定义的初始化函数，实际就是将设备树中定义的各种device node加入到系统中
+                                            // 被 arch/arm/kernel/setup.c -> customize_machine调用
 	void			(*init_late)(void);
 #ifdef CONFIG_MULTI_IRQ_HANDLER
 	void			(*handle_irq)(struct pt_regs *);

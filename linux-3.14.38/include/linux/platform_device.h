@@ -218,6 +218,19 @@ static inline void platform_set_drvdata(struct platform_device *pdev,
  * anything special in module init/exit.  This eliminates a lot of
  * boilerplate.  Each module may only use this macro once, and
  * calling it replaces module_init() and module_exit()
+ *
+ * 这个宏封装了platform总线驱动基本格式，包括module_init()和module_exit()，以及对应的int和exit函数
+ * 展开后其实就是：
+                static int __init __platform_driver##_init(void) 
+                { 
+                    return platform_driver_register(&(__platform_driver)); 
+                } 
+                static void __exit __platform_driver##_exit(void) 
+                { 
+                    platform_driver_unregister(&(__platform_driver)); 
+                } 
+                module_init(__platform_driver##_init); 
+                module_exit(__platform_driver##_exit);
  */
 #define module_platform_driver(__platform_driver) \
 	module_driver(__platform_driver, platform_driver_register, \

@@ -1837,6 +1837,7 @@ void pinctrl_unregister(struct pinctrl_dev *pctldev)
 }
 EXPORT_SYMBOL_GPL(pinctrl_unregister);
 
+// pinctrl子系统全局初始化入口
 static int __init pinctrl_init(void)
 {
 	pr_info("initialized pinctrl subsystem\n");

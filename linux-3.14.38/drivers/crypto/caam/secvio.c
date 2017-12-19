@@ -190,6 +190,7 @@ static int snvs_secvio_remove(struct platform_device *pdev)
 	return 0;
 }
 
+// imx系列隶属于platform总线的SNVS模块驱动匹配回调函数
 static int snvs_secvio_probe(struct platform_device *pdev)
 {
 	struct device *svdev;
@@ -274,6 +275,7 @@ static struct of_device_id snvs_secvio_match[] = {
 };
 MODULE_DEVICE_TABLE(of, snvs_secvio_match);
 
+// imx系列隶属于platform总线的SNVS模块驱动描述符
 static struct platform_driver snvs_secvio_driver = {
 	.driver = {
 		.name = "snvs-secvio",
@@ -284,6 +286,7 @@ static struct platform_driver snvs_secvio_driver = {
 	.remove      = snvs_secvio_remove,
 };
 
+// imx系列隶属于platform总线的SNVS模块驱动注册和注销接口
 module_platform_driver(snvs_secvio_driver);
 
 MODULE_LICENSE("Dual BSD/GPL");

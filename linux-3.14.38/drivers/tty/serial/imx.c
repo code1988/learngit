@@ -2139,6 +2139,7 @@ static int serial_imx_remove(struct platform_device *pdev)
 	return uart_remove_one_port(&imx_reg, &sport->port);
 }
 
+// imx系列隶属于platform总线的串口驱动描述符
 static struct platform_driver serial_imx_driver = {
 	.probe		= serial_imx_probe,
 	.remove		= serial_imx_remove,
@@ -2153,6 +2154,7 @@ static struct platform_driver serial_imx_driver = {
 	},
 };
 
+// imx系列串口模块驱动初始化入口
 static int __init imx_serial_init(void)
 {
 	int ret;

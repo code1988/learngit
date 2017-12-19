@@ -41,6 +41,7 @@ static void __init imx6ul_enet_clk_init(void)
 
 }
 
+// 未执行到
 static int ksz8081_phy_fixup(struct phy_device *dev)
 {
 	if (dev && dev->interface == PHY_INTERFACE_MODE_MII) {

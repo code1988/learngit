@@ -290,10 +290,11 @@ void __init parse_early_options(char *cmdline);
 #else /* MODULE */  // 以下的内容都是针对模块(即不会被编译进内核image中)的定义
 
 /* Don't use these in loadable modules, but some people do... */
+// 初始化时的运行优先级依次下降
 #define early_initcall(fn)		module_init(fn)
-#define core_initcall(fn)		module_init(fn)
-#define postcore_initcall(fn)		module_init(fn)
-#define arch_initcall(fn)		module_init(fn)
+#define core_initcall(fn)		module_init(fn)             // 包含的模块：pinctrl、netlink、vfp
+#define postcore_initcall(fn)		module_init(fn)         // 包含的模块：DMA
+#define arch_initcall(fn)		module_init(fn)             // 包含的模块：用户自定义的板卡初始化函数(customize_machine)
 #define subsys_initcall(fn)		module_init(fn)
 #define fs_initcall(fn)			module_init(fn)
 #define rootfs_initcall(fn)		module_init(fn)

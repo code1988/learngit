@@ -1012,6 +1012,7 @@ static void fsl_qspi_unprep(struct spi_nor *nor, enum spi_nor_ops ops)
 	mutex_unlock(&q->lock);
 }
 
+// imx系列隶属于platform总线的qspi模块驱动匹配回调函数
 static int fsl_qspi_probe(struct platform_device *pdev)
 {
 	struct device_node *np = pdev->dev.of_node;
@@ -1246,6 +1247,7 @@ static int fsl_qspi_resume(struct platform_device *pdev)
 	return 0;
 }
 
+// imx系列隶属于platform总线的qspi模块驱动描述符
 static struct platform_driver fsl_qspi_driver = {
 	.driver = {
 		.name	= "fsl-quadspi",
@@ -1258,6 +1260,8 @@ static struct platform_driver fsl_qspi_driver = {
 	.suspend	= fsl_qspi_suspend,
 	.resume		= fsl_qspi_resume,
 };
+
+// imx系列隶属于platform总线的qspi模块驱动注册和注销接口
 module_platform_driver(fsl_qspi_driver);
 
 MODULE_DESCRIPTION("Freescale QuadSPI Controller Driver");

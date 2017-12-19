@@ -111,6 +111,7 @@ static int __init weim_parse_dt(struct platform_device *pdev,
 	return ret;
 }
 
+// imx系列隶属于platform总线的weim驱动匹配成功后的回调函数
 static int __init weim_probe(struct platform_device *pdev)
 {
 	struct resource *res;
@@ -143,6 +144,7 @@ static int __init weim_probe(struct platform_device *pdev)
 	return ret;
 }
 
+// imx系列隶属于platform总线的weim驱动描述符
 static struct platform_driver weim_driver = {
 	.driver = {
 		.name		= "imx-weim",
@@ -150,6 +152,8 @@ static struct platform_driver weim_driver = {
 		.of_match_table	= weim_id_table,
 	},
 };
+
+// imx系列隶属于platform总线的weim驱动初始化接口
 module_platform_driver_probe(weim_driver, weim_probe);
 
 MODULE_AUTHOR("Freescale Semiconductor Inc.");

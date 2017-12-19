@@ -552,6 +552,7 @@ static struct kobject *brd_probe(dev_t dev, int *part, void *data)
 	return kobj;
 }
 
+// ramdisk驱动初始化接口
 static int __init brd_init(void)
 {
 	int i, nr;

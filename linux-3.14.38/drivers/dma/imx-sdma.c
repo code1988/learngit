@@ -1876,6 +1876,7 @@ static struct dma_chan *sdma_xlate(struct of_phandle_args *dma_spec,
 	return dma_request_channel(mask, sdma_filter_fn, &data);
 }
 
+// imx系列隶属于platform总线的sdma驱动匹配成功回调函数
 static int __init sdma_probe(struct platform_device *pdev)
 {
 	const struct of_device_id *of_id =
@@ -2168,6 +2169,7 @@ static const struct dev_pm_ops sdma_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(sdma_suspend, sdma_resume)
 };
 
+// imx系列隶属于platform总线的sdma驱动描述符
 static struct platform_driver sdma_driver = {
 	.driver		= {
 		.name	= "imx-sdma",
@@ -2178,6 +2180,7 @@ static struct platform_driver sdma_driver = {
 	.remove		= sdma_remove,
 };
 
+// imx系列隶属于platform总线的sdma驱动初始化接口
 static int __init sdma_module_init(void)
 {
 	return platform_driver_probe(&sdma_driver, sdma_probe);

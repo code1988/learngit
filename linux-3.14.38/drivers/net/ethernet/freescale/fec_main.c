@@ -3336,6 +3336,7 @@ static void fec_enet_of_parse_stop_mode(struct platform_device *pdev)
 	fep->gpr.req_bit = out_val[2];
 }
 
+// imx系列隶属于platform总线的网卡驱动匹配回调函数
 static int
 fec_probe(struct platform_device *pdev)
 {
@@ -3513,6 +3514,11 @@ fec_probe(struct platform_device *pdev)
 	fec_enet_clk_enable(ndev, false);
 	pinctrl_pm_select_sleep_state(&pdev->dev);
 
+#if 0   // sync from our platform  - 20171219
+    ndev->ifindex = 4096;
+    printk("[debug]: assign eth ifindex to 4096\n");
+#endif
+
 	ret = register_netdev(ndev);
 	if (ret)
 		goto failed_register;
@@ -3676,6 +3682,7 @@ static const struct dev_pm_ops fec_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(fec_suspend, fec_resume)
 };
 
+// imx系列隶属于platform总线的网卡驱动描述符
 static struct platform_driver fec_driver = {
 	.driver	= {
 		.name	= DRIVER_NAME,
@@ -3688,6 +3695,7 @@ static struct platform_driver fec_driver = {
 	.remove	= fec_drv_remove,
 };
 
+// imx系列隶属于platform总线的网卡驱动注册和注销接口
 module_platform_driver(fec_driver);
 
 MODULE_ALIAS("platform:"DRIVER_NAME);

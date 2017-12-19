@@ -444,6 +444,7 @@ static struct pernet_operations nfnetlink_net_ops = {
 	.exit_batch	= nfnetlink_net_exit_batch,
 };
 
+// 用于netlink的netfilter模块初始化接口
 static int __init nfnetlink_init(void)
 {
 	int i;

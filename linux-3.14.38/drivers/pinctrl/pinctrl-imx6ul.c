@@ -292,12 +292,13 @@ static struct of_device_id imx6ul_pinctrl_of_match[] = {
 	{ /* sentinel */ }
 };
 
+// imx6ul平台隶属于platform总线的pinctrl驱动匹配成功后的回调函数
 static int imx6ul_pinctrl_probe(struct platform_device *pdev)
 {
 	return imx_pinctrl_probe(pdev, &imx6ul_pinctrl_info);
 }
 
-// imx6ul平台隶属于platform总线的gpio驱动接口
+// imx6ul平台隶属于platform总线的pinctrl驱动描述符
 static struct platform_driver imx6ul_pinctrl_driver = {
 	.driver = {
 		.name = "imx6ul-pinctrl",
@@ -308,6 +309,7 @@ static struct platform_driver imx6ul_pinctrl_driver = {
 	.remove = imx_pinctrl_remove,
 };
 
+// imx6ul平台隶属于platform总线的pinctrl驱动注册接口
 static int __init imx6ul_pinctrl_init(void)
 {
 	return platform_driver_register(&imx6ul_pinctrl_driver);

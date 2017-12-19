@@ -332,6 +332,7 @@ static const struct of_device_id imx_sema4_dt_ids[] = {
 };
 MODULE_DEVICE_TABLE(of, imx_sema4_dt_ids);
 
+// imx系列隶属于platform总线的sema4驱动匹配回调函数
 static int imx_sema4_probe(struct platform_device *pdev)
 {
 	struct resource *res;
@@ -402,6 +403,7 @@ static int imx_sema4_remove(struct platform_device *pdev)
 	return 0;
 }
 
+// imx系列隶属于platform总线的sema4驱动描述符
 static struct platform_driver imx_sema4_driver = {
 	.driver = {
 		   .owner = THIS_MODULE,
@@ -412,6 +414,7 @@ static struct platform_driver imx_sema4_driver = {
 	.remove = imx_sema4_remove,
 };
 
+// imx系列sema4模块驱动初始化入口
 static int __init imx_sema4_init(void)
 {
 	int ret;

@@ -562,6 +562,7 @@ static struct pernet_operations nf_conntrack_net_ops = {
 	.exit_batch	= nf_conntrack_pernet_exit,
 };
 
+// netfilter的conntrack_standalone模块初始化接口
 static int __init nf_conntrack_standalone_init(void)
 {
 	int ret = nf_conntrack_init_start();
