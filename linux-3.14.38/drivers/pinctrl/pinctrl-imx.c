@@ -414,6 +414,7 @@ static const struct pinconf_ops imx_pinconf_ops = {
 	.pin_config_group_dbg_show = imx_pinconf_group_dbg_show,
 };
 
+// 定义了一个imx系列通用的pinctrl控制器描述符
 static struct pinctrl_desc imx_pinctrl_desc = {
 	.pctlops = &imx_pctrl_ops,
 	.pmxops = &imx_pmx_ops,
@@ -579,7 +580,7 @@ static int imx_pinctrl_probe_dt(struct platform_device *pdev,
 	return 0;
 }
 
-// imx系列pinctrl驱动匹配成功后的回调函数
+// imx系列通用的pinctrl驱动匹配成功后的回调函数
 int imx_pinctrl_probe(struct platform_device *pdev,
 		      struct imx_pinctrl_soc_info *info)
 {

@@ -30,13 +30,14 @@
 typedef u32 phandle;
 typedef u32 ihandle;
 
+// 用来描述dts中的一个属性信息
 struct property {
-	char	*name;
-	int	length;
-	void	*value;
-	struct property *next;
+	char	*name;  // 属性名
+	int	length;     // 属性值的长度
+	void	*value; // 属性值，支持表的格式
+	struct property *next;  // 指向下一个属性信息
 	unsigned long _flags;
-	unsigned int unique_id;
+	unsigned int unique_id; // 分配给该属性的唯一编号
 };
 
 #if defined(CONFIG_SPARC)
@@ -575,6 +576,8 @@ static inline int of_property_count_strings(struct device_node *np,
 /**
  * of_property_read_string_index() - Find and read a string from a multiple
  * strings property.
+ * 根据属性名在指定设备节点中查找对应的字符串列表类型的属性值，最后返回指定序号的字符串
+ * 
  * @np:		device node from which the property value is to be read.
  * @propname:	name of the property to be searched.
  * @index:	index of the string in the list of strings

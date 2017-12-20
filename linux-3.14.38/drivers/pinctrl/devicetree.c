@@ -1,5 +1,9 @@
 /*
  * Device tree integration for the pin control subsystem
+ * pin-control子系统相关的dts信息解析接口
+ *      属性                含义
+ *      "pinctrl-names"     pin-control状态名 / 状态名列表
+ *      "pinctrl-0"         第一条pin-control状态信息(对应第一个状态名)
  *
  * Copyright (C) 2012 NVIDIA CORPORATION. All rights reserved.
  *
@@ -237,7 +241,9 @@ int pinctrl_dt_to_map(struct pinctrl *p)
 	/* We may store pointers to property names within the node */
 	of_node_get(np);
 
-	/* For each defined state ID */
+	/* For each defined state ID 
+     * 遍历dts中该device定义的每个pin-control状态
+     * */
 	for (state = 0; ; state++) {
 		/* Retrieve the pinctrl-* property */
 		propname = kasprintf(GFP_KERNEL, "pinctrl-%d", state);
@@ -245,8 +251,8 @@ int pinctrl_dt_to_map(struct pinctrl *p)
 		kfree(propname);
 		if (!prop)
 			break;
-		list = prop->value;
-		size /= sizeof(*list);
+		list = prop->value;     // 每个pin-control状态中包含的pin操作表
+		size /= sizeof(*list);  // 每个pin-control状态中包含的pin操作表项数量
 
 		/* Determine whether pinctrl-names property names the state */
 		ret = of_property_read_string_index(np, "pinctrl-names",

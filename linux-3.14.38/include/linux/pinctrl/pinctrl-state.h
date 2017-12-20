@@ -1,5 +1,6 @@
 /*
  * Standard pin control state definitions
+ * 标准的pin-control状态定义
  */
 
 /**

@@ -17,7 +17,12 @@
 
 /**
  * pinctrl_bind_pins() - called by the device core before probe
+ * 将指定device和对应的pin-control句柄绑定(显然本函数就是封装了一系列pin-control子系统API)
+ * 绑定之后会将该pin-control缺省状态设置到相关的硬件中
+ *
  * @dev: the device that is just about to probe
+ *
+ * 备注：本接口只会在really_probe中，设备probe之前被调用到
  */
 int pinctrl_bind_pins(struct device *dev)
 {
@@ -27,6 +32,7 @@ int pinctrl_bind_pins(struct device *dev)
 	if (!dev->pins)
 		return -ENOMEM;
 
+    // 创建该device对应的pin-control句柄(带垃圾回收机制)
 	dev->pins->p = devm_pinctrl_get(dev);
 	if (IS_ERR(dev->pins->p)) {
 		dev_dbg(dev, "no pinctrl handle\n");
@@ -34,6 +40,7 @@ int pinctrl_bind_pins(struct device *dev)
 		goto cleanup_alloc;
 	}
 
+    // 从该pin-control句柄中检索缺省状态的描述符
 	dev->pins->default_state = pinctrl_lookup_state(dev->pins->p,
 					PINCTRL_STATE_DEFAULT);
 	if (IS_ERR(dev->pins->default_state)) {
@@ -42,6 +49,7 @@ int pinctrl_bind_pins(struct device *dev)
 		goto cleanup_get;
 	}
 
+    // 通过该pin-control设置缺省状态到相关硬件中
 	ret = pinctrl_select_state(dev->pins->p, dev->pins->default_state);
 	if (ret) {
 		dev_dbg(dev, "failed to activate default pinctrl state\n");

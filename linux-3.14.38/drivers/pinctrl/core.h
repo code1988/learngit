@@ -55,6 +55,7 @@ struct pinctrl_dev {
 
 /**
  * struct pinctrl - per-device pin control state holder
+ * 该结构用来管理一个device的所有pin-control状态信息，也可以理解为该device的pin-control子系统操作句柄
  * @node: global list node
  * @dev: the device using this pin control handle
  * @states: a list of states for this device
@@ -64,38 +65,44 @@ struct pinctrl_dev {
  * @users: reference count
  */
 struct pinctrl {
-	struct list_head node;
-	struct device *dev;
-	struct list_head states;
-	struct pinctrl_state *state;
+	struct list_head node;      // 链接了系统中所有device对应的pin-control句柄
+	struct device *dev;         // 指向该pin-control句柄对应的device
+	struct list_head states;    // 该device的所有pin-control状态被挂入到这个链表中
+	struct pinctrl_state *state;// 当前该device的pin-control状态 
 	struct list_head dt_maps;
-	struct kref users;
+	struct kref users;          // 该pin-control句柄的引用计数，调用pinctrl_get时加1,调用pinctrl_put时减1
 };
 
 /**
  * struct pinctrl_state - a pinctrl state for a device
+ * 用来描述一个pin-control状态
+ *
  * @node: list node for struct pinctrl's @states field
  * @name: the name of this state
  * @settings: a list of settings for this state
  */
 struct pinctrl_state {
-	struct list_head node;
-	const char *name;
-	struct list_head settings;
+	struct list_head node;      // 链接了该device的所有pin-control状态
+	const char *name;           // 该状态的名字
+	struct list_head settings;  // 该状态包含的所有setting被挂入到这个链表中
 };
 
 /**
  * struct pinctrl_setting_mux - setting data for MAP_TYPE_MUX_GROUP
+ * 用来描述MAP_TYPE_MUX_GROUP类型的setting信息，显然该setting信息用来设置指定pin脚的复用行为 
+ *
  * @group: the group selector to program
  * @func: the function selector to program
  */
 struct pinctrl_setting_mux {
-	unsigned group;
-	unsigned func;
+	unsigned group; // 选择pin group编号
+	unsigned func;  // 选择要复用的功能编号
 };
 
 /**
  * struct pinctrl_setting_configs - setting data for MAP_TYPE_CONFIGS_*
+ * 用来描述MAP_TYPE_CONFIGS_*类型的setting信息，显然该setting信息用来设置指定pin脚/group的电气特性
+ *
  * @group_or_pin: the group selector or pin ID to program
  * @configs: a pointer to an array of config parameters/values to program into
  *	hardware. Each individual pin controller defines the format and meaning
@@ -103,13 +110,15 @@ struct pinctrl_setting_mux {
  * @num_configs: the number of entries in array @configs
  */
 struct pinctrl_setting_configs {
-	unsigned group_or_pin;
-	unsigned long *configs;
-	unsigned num_configs;
+	unsigned group_or_pin;  // 选择pin或pin group编号
+	unsigned long *configs; // 指向一张要设置的值的表
+	unsigned num_configs;   // 表中值的数量
 };
 
 /**
  * struct pinctrl_setting - an individual mux or config setting
+ * 用来描述一个setting信息(3.14.38版本支持2种类型的setting：mux、configs)
+ *
  * @node: list node for struct pinctrl_settings's @settings field
  * @type: the type of setting
  * @pctldev: pin control device handling to be programmed. Not used for
@@ -119,12 +128,12 @@ struct pinctrl_setting_configs {
  */
 struct pinctrl_setting {
 	struct list_head node;
-	enum pinctrl_map_type type;
+	enum pinctrl_map_type type;     // 该setting的类型
 	struct pinctrl_dev *pctldev;
 	const char *dev_name;
 	union {
-		struct pinctrl_setting_mux mux;
-		struct pinctrl_setting_configs configs;
+		struct pinctrl_setting_mux mux;         // mux类型的setting信息
+		struct pinctrl_setting_configs configs; // configs类型的setting信息
 	} data;
 };
 

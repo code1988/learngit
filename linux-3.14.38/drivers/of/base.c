@@ -177,6 +177,11 @@ static struct property *__of_find_property(const struct device_node *np,
 	return pp;
 }
 
+/* 根据给定的属性名，在指定node中查找其对应的属性描述符
+ * @np      - 指向一个设备树节点
+ * @name    - 指向检索的属性名
+ * @lenp    - 用于存放对应属性值的长度
+ */
 struct property *of_find_property(const struct device_node *np,
 				  const char *name,
 				  int *lenp)

@@ -1,5 +1,6 @@
 /*
  * Core driver for the pin muxing portions of the pin control subsystem
+ * pin控制器子系统中pin mux相关的核心驱动部分
  *
  * Copyright (C) 2011-2012 ST-Ericsson SA
  * Written on behalf of Linaro for ST-Ericsson

@@ -1,5 +1,6 @@
 /*
  * Machine interface for the pinctrl subsystem.
+ * 跟具体板卡的pinctrl驱动相关的头文件
  *
  * Copyright (C) 2011 ST-Ericsson SA
  * Written on behalf of Linaro for ST-Ericsson
@@ -16,12 +17,13 @@
 
 #include <linux/pinctrl/pinctrl-state.h>
 
+// setting的类型枚举
 enum pinctrl_map_type {
 	PIN_MAP_TYPE_INVALID,
 	PIN_MAP_TYPE_DUMMY_STATE,
-	PIN_MAP_TYPE_MUX_GROUP,
-	PIN_MAP_TYPE_CONFIGS_PIN,
-	PIN_MAP_TYPE_CONFIGS_GROUP,
+	PIN_MAP_TYPE_MUX_GROUP,         // 功能复用
+	PIN_MAP_TYPE_CONFIGS_PIN,       // 设置指定pin脚的电气特性
+	PIN_MAP_TYPE_CONFIGS_GROUP,     // 设置指定pin group的电气特性
 };
 
 /**

@@ -71,10 +71,11 @@ struct imx_pin_reg {
 	u16 conf_reg;
 };
 
+// 定义了imx系列通用的板卡pinctrl子系统描述符
 struct imx_pinctrl_soc_info {
-	struct device *dev;
-	const struct pinctrl_pin_desc *pins;
-	unsigned int npins;
+	struct device *dev;                     // 驱动-设备匹配后，该字段指向匹配的设备
+	const struct pinctrl_pin_desc *pins;    // 指向一张pin脚描述表
+	unsigned int npins;                     // pin脚描述表的表项数量
 	struct imx_pin_reg *pin_regs;
 	struct imx_pin_group *groups;
 	unsigned int ngroups;
@@ -91,6 +92,7 @@ struct imx_pinctrl_soc_info {
 #define NO_MUX		0x0
 #define NO_PAD		0x0
 
+// 定义一个imx平台上的pin脚
 #define IMX_PINCTRL_PIN(pin) PINCTRL_PIN(pin, #pin)
 
 #define PAD_CTL_MASK(len)	((1 << len) - 1)

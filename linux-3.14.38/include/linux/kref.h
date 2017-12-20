@@ -36,6 +36,7 @@ static inline void kref_init(struct kref *kref)
 
 /**
  * kref_get - increment refcount for object.
+ * 指定对象的引用计数加1
  * @kref: object.
  */
 static inline void kref_get(struct kref *kref)
@@ -79,6 +80,8 @@ static inline int kref_sub(struct kref *kref, unsigned int count,
 
 /**
  * kref_put - decrement refcount for object.
+ * 指定对象的引用计数减1,当引用计数为0时执行release回调
+ *
  * @kref: object.
  * @release: pointer to the function that will clean up the object when the
  *	     last reference to the object is released.

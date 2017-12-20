@@ -22,12 +22,13 @@
 
 /**
  * struct dev_pin_info - pin state container for devices
+ * 用于描述device关联的pin-control状态信息
  * @p: pinctrl handle for the containing device
  * @default_state: the default state for the handle, if found
  */
 struct dev_pin_info {
-	struct pinctrl *p;
-	struct pinctrl_state *default_state;
+	struct pinctrl *p;                      // 指向该pin-control的操作句柄
+	struct pinctrl_state *default_state;    // 指向该pin-control的缺省状态
 #ifdef CONFIG_PM
 	struct pinctrl_state *sleep_state;
 	struct pinctrl_state *idle_state;

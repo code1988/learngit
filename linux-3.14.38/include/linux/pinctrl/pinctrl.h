@@ -30,17 +30,20 @@ struct device_node;
 /**
  * struct pinctrl_pin_desc - boards/machines provide information on their
  * pins, pads or other muxable units in this struct
+ * 定义了通用的pin脚描述符
  * @number: unique pin number from the global pin number space
  * @name: a name for this pin
  * @drv_data: driver-defined per-pin data. pinctrl core does not touch this
  */
 struct pinctrl_pin_desc {
-	unsigned number;
-	const char *name;
+	unsigned number;    // pin脚序号
+	const char *name;   // pin脚名
 	void *drv_data;
 };
 
-/* Convenience macro to define a single named or anonymous pin descriptor */
+/* Convenience macro to define a single named or anonymous pin descriptor 
+ * 这两个宏用来定义有名/匿名pin脚
+ * */
 #define PINCTRL_PIN(a, b) { .number = a, .name = b }
 #define PINCTRL_PIN_ANON(a) { .number = a }
 
@@ -106,6 +109,8 @@ struct pinctrl_ops {
 /**
  * struct pinctrl_desc - pin controller descriptor, register this to pin
  * control subsystem
+ * 定义了pin控制器描述符结构
+ *
  * @name: name for the pin controller
  * @pins: an array of pin descriptors describing all the pins handled by
  *	this pin controller
@@ -119,9 +124,9 @@ struct pinctrl_ops {
  * @owner: module providing the pin controller, used for refcounting
  */
 struct pinctrl_desc {
-	const char *name;
-	struct pinctrl_pin_desc const *pins;
-	unsigned int npins;
+	const char *name;                       // 该pin控制器名
+	struct pinctrl_pin_desc const *pins;    // 指向一张pin脚描述符表
+	unsigned int npins;                     // pin脚描述符表中的表项数量
 	const struct pinctrl_ops *pctlops;
 	const struct pinmux_ops *pmxops;
 	const struct pinconf_ops *confops;

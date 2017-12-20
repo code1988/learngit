@@ -623,6 +623,7 @@ extern int devres_release_group(struct device *dev, void *id);
 
 /* managed devm_k.alloc/kfree for device drivers */
 extern void *devm_kmalloc(struct device *dev, size_t size, gfp_t gfp);
+// 带垃圾回收机制的kzalloc
 static inline void *devm_kzalloc(struct device *dev, size_t size, gfp_t gfp)
 {
 	return devm_kmalloc(dev, size, gfp | __GFP_ZERO);
@@ -759,7 +760,7 @@ struct device {
 	struct dev_pm_domain	*pm_domain;
 
 #ifdef CONFIG_PINCTRL
-	struct dev_pin_info	*pins;
+	struct dev_pin_info	*pins;  // 指向和该device关联的pin/pin group描述信息
 #endif
 
 #ifdef CONFIG_NUMA
@@ -813,6 +814,7 @@ static inline struct device *kobj_to_dev(struct kobject *kobj)
 /* Get the wakeup routines, which depend on struct device */
 #include <linux/pm_wakeup.h>
 
+// 获取设备名
 static inline const char *dev_name(const struct device *dev)
 {
 	/* Use the init name until the kobject becomes available */

@@ -1,5 +1,8 @@
 /*
  * Consumer interface the pin control subsystem
+ * 使用本头文件的场景：
+ *    设置引脚复用功能；
+ *    配置引脚的电气特性  
  *
  * Copyright (C) 2012 ST-Ericsson SA
  * Written on behalf of Linaro for ST-Ericsson

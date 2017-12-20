@@ -1,5 +1,6 @@
 /*
  * Utils functions to implement the pincontrol driver.
+ * pin控制器子系统中的一些utility接口
  *
  * Copyright (c) 2013, NVIDIA Corporation.
  *

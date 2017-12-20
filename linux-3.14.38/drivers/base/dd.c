@@ -279,7 +279,7 @@ EXPORT_SYMBOL_GPL(device_bind_driver);
 static atomic_t probe_count = ATOMIC_INIT(0);
 static DECLARE_WAIT_QUEUE_HEAD(probe_waitqueue);
 
-// 对匹配的设备和驱动真正执行绑定操作
+// 对匹配的设备和驱动真正执行绑定操作，这个过程中就会执行probe回调
 static int really_probe(struct device *dev, struct device_driver *drv)
 {
 	int ret = 0;
@@ -292,7 +292,10 @@ static int really_probe(struct device *dev, struct device_driver *drv)
 
 	dev->driver = drv;  // 将驱动接口跟设备绑定
 
-	/* If using pinctrl, bind pins now before probing */
+	/* If using pinctrl, bind pins now before probing 
+     * 如果该device要使用到pin-control子系统，则需要在probe之前先将device和对应的pin-control句柄进行绑定
+     * 同时将该device设置为pin-control缺省状态
+     */
 	ret = pinctrl_bind_pins(dev);
 	if (ret)
 		goto probe_failed;
