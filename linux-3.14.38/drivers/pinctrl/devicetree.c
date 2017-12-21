@@ -1,9 +1,10 @@
 /*
  * Device tree integration for the pin control subsystem
  * pin-control子系统相关的dts信息解析接口
- *      属性                含义
- *      "pinctrl-names"     pin-control状态名 / 状态名列表
- *      "pinctrl-0"         第一条pin-control状态信息(对应第一个状态名)
+ *      属性                属性值              含义
+ *      "pinctrl-names"     "xxx", ...          pin-control状态名 / 状态名列表
+ *      "pinctrl-x"         <&xxx ...>, ...     一个独立的pin-control状态信息
+ *                                              属性值格式表示一个独立的状态可以包含多个phandle(一个phandle表示一条可选的pin配置表项，对应了一个设备节点)
  *
  * Copyright (C) 2012 NVIDIA CORPORATION. All rights reserved.
  *
@@ -111,6 +112,11 @@ struct pinctrl_dev *of_pinctrl_get(struct device_node *np)
 	return pctldev;
 }
 
+/* 解析一个指定的设备节点(用来记录一条pin操作表项)
+ * @p           - 指向一个需要被继续填充的pin-control句柄
+ * @statename   - 指向一个pin-control状态名
+ * @np_config   - 指向一个待解析的设备节点
+ */
 static int dt_to_map_one_config(struct pinctrl *p, const char *statename,
 				struct device_node *np_config)
 {
@@ -161,6 +167,7 @@ static int dt_to_map_one_config(struct pinctrl *p, const char *statename,
 	return dt_remember_or_free_map(p, statename, pctldev, map, num_maps);
 }
 
+// 给指定pin-control状态名创建一个dummy的状态
 static int dt_remember_dummy_state(struct pinctrl *p, const char *statename)
 {
 	struct pinctrl_map *map;
@@ -245,7 +252,9 @@ int pinctrl_dt_to_map(struct pinctrl *p)
      * 遍历dts中该device定义的每个pin-control状态
      * */
 	for (state = 0; ; state++) {
-		/* Retrieve the pinctrl-* property */
+		/* Retrieve the pinctrl-* property 
+         * 在该设备节点中从序号0开始检索存储了pin-control状态的属性条目
+         * */
 		propname = kasprintf(GFP_KERNEL, "pinctrl-%d", state);
 		prop = of_find_property(np, propname, &size);
 		kfree(propname);
@@ -254,24 +263,31 @@ int pinctrl_dt_to_map(struct pinctrl *p)
 		list = prop->value;     // 每个pin-control状态中包含的pin操作表
 		size /= sizeof(*list);  // 每个pin-control状态中包含的pin操作表项数量
 
-		/* Determine whether pinctrl-names property names the state */
+		/* Determine whether pinctrl-names property names the state 
+         * 在该设备节点中检索存储了pin-control状态名列表的属性条目，并从中返回当前状态对应的状态名
+         * */
 		ret = of_property_read_string_index(np, "pinctrl-names",
 						    state, &statename);
 		/*
 		 * If not, statename is just the integer state ID. But rather
 		 * than dynamically allocate it and have to free it later,
 		 * just point part way into the property name for the string.
+         * 如果不存在跟当前pin-control状态对应的状态名，则缺省使用"pinctrl-"后面的序号作为该状态的状态名
 		 */
 		if (ret < 0) {
 			/* strlen("pinctrl-") == 8 */
 			statename = prop->name + 8;
 		}
 
-		/* For every referenced pin configuration node in it */
+		/* For every referenced pin configuration node in it 
+         * 遍历当前pin-control状态中的每条pin操作表项
+         * */
 		for (config = 0; config < size; config++) {
 			phandle = be32_to_cpup(list++);
 
-			/* Look up the pin configuration node */
+			/* Look up the pin configuration node 
+             * 查找该phandle对应的设备节点
+             * */
 			np_config = of_find_node_by_phandle(phandle);
 			if (!np_config) {
 				dev_err(p->dev,
@@ -281,14 +297,18 @@ int pinctrl_dt_to_map(struct pinctrl *p)
 				goto err;
 			}
 
-			/* Parse the node */
+			/* Parse the node 
+             * 解析该phandle对应的设备节点
+             * */
 			ret = dt_to_map_one_config(p, statename, np_config);
 			of_node_put(np_config);
 			if (ret < 0)
 				goto err;
 		}
 
-		/* No entries in DT? Generate a dummy state table entry */
+		/* No entries in DT? Generate a dummy state table entry 
+         * 如果不存在pin操作表项，就创建一个dummy的pin-control状态
+         * */
 		if (!size) {
 			ret = dt_remember_dummy_state(p, statename);
 			if (ret < 0)

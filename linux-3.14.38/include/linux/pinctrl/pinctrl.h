@@ -109,7 +109,7 @@ struct pinctrl_ops {
 /**
  * struct pinctrl_desc - pin controller descriptor, register this to pin
  * control subsystem
- * 定义了pin控制器描述符结构
+ * 定义了pin-control设备的通用low-level描述符
  *
  * @name: name for the pin controller
  * @pins: an array of pin descriptors describing all the pins handled by
@@ -124,12 +124,12 @@ struct pinctrl_ops {
  * @owner: module providing the pin controller, used for refcounting
  */
 struct pinctrl_desc {
-	const char *name;                       // 该pin控制器名
+	const char *name;                       // 该pin-control设备名
 	struct pinctrl_pin_desc const *pins;    // 指向一张pin脚描述符表
 	unsigned int npins;                     // pin脚描述符表中的表项数量
-	const struct pinctrl_ops *pctlops;
-	const struct pinmux_ops *pmxops;
-	const struct pinconf_ops *confops;
+	const struct pinctrl_ops *pctlops;      // 该pin-control设备操作底层驱动的接口集合(pin group相关功能)
+	const struct pinmux_ops *pmxops;        // 该pin-control设备操作底层驱动的接口集合(mux相关功能)
+	const struct pinconf_ops *confops;      // 该pin-control设备操作底层驱动的接口集合(drive-streng等相关功能)
 	struct module *owner;
 };
 

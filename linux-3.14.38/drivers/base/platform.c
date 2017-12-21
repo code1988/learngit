@@ -57,9 +57,11 @@ void __weak arch_setup_pdev_archdata(struct platform_device *pdev)
 
 /**
  * platform_get_resource - get a resource for a device
+ * 获取指定platform设备的指定类型的资源，返回获取到的资源
+ *
  * @dev: platform device
- * @type: resource type
- * @num: resource index
+ * @type: resource type     资源类型，可以是memory、IRQ等
+ * @num: resource index     资源的序号
  */
 struct resource *platform_get_resource(struct platform_device *dev,
 				       unsigned int type, unsigned int num)

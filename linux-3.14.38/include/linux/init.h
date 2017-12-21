@@ -294,7 +294,7 @@ void __init parse_early_options(char *cmdline);
 #define early_initcall(fn)		module_init(fn)
 #define core_initcall(fn)		module_init(fn)             // 包含的模块：pinctrl、netlink、vfp
 #define postcore_initcall(fn)		module_init(fn)         // 包含的模块：DMA
-#define arch_initcall(fn)		module_init(fn)             // 包含的模块：用户自定义的板卡初始化函数(customize_machine)
+#define arch_initcall(fn)		module_init(fn)             // 包含的模块：板卡初始化函数(customize_machine)、板卡pin-control驱动
 #define subsys_initcall(fn)		module_init(fn)
 #define fs_initcall(fn)			module_init(fn)
 #define rootfs_initcall(fn)		module_init(fn)

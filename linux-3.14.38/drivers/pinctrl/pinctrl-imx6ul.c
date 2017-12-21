@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Freescale Semiconductor, Inc.
- * 适用于imx6ul平台的GPIO驱动通用部分
+ * imx6ul平台的pin-control驱动
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -282,23 +282,25 @@ static const struct pinctrl_pin_desc imx6ul_pinctrl_pads[] = {
 	IMX_PINCTRL_PIN(MX6UL_PAD_CSI_DATA07),
 };
 
+// imx6ul平台pin-control子系统描述符
 static struct imx_pinctrl_soc_info imx6ul_pinctrl_info = {
 	.pins = imx6ul_pinctrl_pads,
 	.npins = ARRAY_SIZE(imx6ul_pinctrl_pads),
 };
 
+// imx6ul平台pin-control驱动支持的device描述列表(显然这里只支持1种device描述)
 static struct of_device_id imx6ul_pinctrl_of_match[] = {
 	{ .compatible = "fsl,imx6ul-iomuxc", },
 	{ /* sentinel */ }
 };
 
-// imx6ul平台隶属于platform总线的pinctrl驱动匹配成功后的回调函数
+// imx6ul平台隶属于platform总线的pin-control驱动匹配成功后的回调函数
 static int imx6ul_pinctrl_probe(struct platform_device *pdev)
 {
 	return imx_pinctrl_probe(pdev, &imx6ul_pinctrl_info);
 }
 
-// imx6ul平台隶属于platform总线的pinctrl驱动描述符
+// imx6ul平台隶属于platform总线的pin-control驱动描述符
 static struct platform_driver imx6ul_pinctrl_driver = {
 	.driver = {
 		.name = "imx6ul-pinctrl",
@@ -309,11 +311,12 @@ static struct platform_driver imx6ul_pinctrl_driver = {
 	.remove = imx_pinctrl_remove,
 };
 
-// imx6ul平台隶属于platform总线的pinctrl驱动注册接口
+// imx6ul平台隶属于platform总线的pin-control驱动注册接口
 static int __init imx6ul_pinctrl_init(void)
 {
 	return platform_driver_register(&imx6ul_pinctrl_driver);
 }
+// pin-control驱动的启动优先级必须高，因为会有其他驱动依赖该子系统
 arch_initcall(imx6ul_pinctrl_init);
 
 static void __exit imx6ul_pinctrl_exit(void)

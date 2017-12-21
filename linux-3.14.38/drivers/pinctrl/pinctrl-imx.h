@@ -71,7 +71,7 @@ struct imx_pin_reg {
 	u16 conf_reg;
 };
 
-// 定义了imx系列通用的板卡pinctrl子系统描述符
+// 定义了imx系列通用的板卡pin-control模块的low-level描述符
 struct imx_pinctrl_soc_info {
 	struct device *dev;                     // 驱动-设备匹配后，该字段指向匹配的设备
 	const struct pinctrl_pin_desc *pins;    // 指向一张pin脚描述表

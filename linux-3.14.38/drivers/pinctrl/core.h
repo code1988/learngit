@@ -19,6 +19,8 @@ struct pinctrl_gpio_range;
 
 /**
  * struct pinctrl_dev - pin control class device
+ * 用于描述pin-control类设备(显然描述的内容仅限于pin-control相关)
+ *
  * @node: node to include this pin controller in the global pin controller list
  * @desc: the pin controller descriptor supplied when initializing this pin
  *	controller
@@ -37,11 +39,11 @@ struct pinctrl_gpio_range;
  * @device_root: debugfs root for this device
  */
 struct pinctrl_dev {
-	struct list_head node;
-	struct pinctrl_desc *desc;
+	struct list_head node;      // 链接在全局的pin-control设备链表中
+	struct pinctrl_desc *desc;  // 指向对应的low-level描述符
 	struct radix_tree_root pin_desc_tree;
 	struct list_head gpio_ranges;
-	struct device *dev;
+	struct device *dev;         // 指向对应的device
 	struct module *owner;
 	void *driver_data;
 	struct pinctrl *p;

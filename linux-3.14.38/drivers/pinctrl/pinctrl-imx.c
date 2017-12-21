@@ -32,16 +32,16 @@
 #define IMX_NO_PAD_CTL	0x80000000	/* no pin config need */
 #define IMX_PAD_SION 0x40000000		/* set SION */
 
-/**
+/** imx系列通用的pin-control全局描述符
  * @dev: a pointer back to containing device
  * @base: the offset to the controller in virtual memory
  */
 struct imx_pinctrl {
-	struct device *dev;
+	struct device *dev;                         // 指向关联的device
 	struct pinctrl_dev *pctl;
-	void __iomem *base;
+	void __iomem *base;                         // 硬件寄存器的基地址
 	void __iomem *input_sel_base;
-	const struct imx_pinctrl_soc_info *info;
+	const struct imx_pinctrl_soc_info *info;    // 指向对应的low-level描述符
 };
 
 static const inline struct imx_pin_group *imx_pinctrl_find_group_by_name(
@@ -171,6 +171,7 @@ static void imx_dt_free_map(struct pinctrl_dev *pctldev,
 	kfree(map);
 }
 
+// imx系列pin-control设备操作底层驱动pin group相关功能的接口集合
 static const struct pinctrl_ops imx_pctrl_ops = {
 	.get_groups_count = imx_get_groups_count,
 	.get_group_name = imx_get_group_name,
@@ -302,6 +303,7 @@ static int imx_pmx_get_groups(struct pinctrl_dev *pctldev, unsigned selector,
 	return 0;
 }
 
+// imx系列pin-control设备操作底层驱动mux相关功能的接口集合
 static const struct pinmux_ops imx_pmx_ops = {
 	.get_functions_count = imx_pmx_get_funcs_count,
 	.get_function_name = imx_pmx_get_func_name,
@@ -407,6 +409,7 @@ static void imx_pinconf_group_dbg_show(struct pinctrl_dev *pctldev,
 	}
 }
 
+// imx系列pin-control设备操作底层驱动drive-streng相关功能的接口集合
 static const struct pinconf_ops imx_pinconf_ops = {
 	.pin_config_get = imx_pinconf_get,
 	.pin_config_set = imx_pinconf_set,
@@ -414,7 +417,7 @@ static const struct pinconf_ops imx_pinconf_ops = {
 	.pin_config_group_dbg_show = imx_pinconf_group_dbg_show,
 };
 
-// 定义了一个imx系列通用的pinctrl控制器描述符
+// 定义了一个imx系列pin-control设备low-level描述符
 static struct pinctrl_desc imx_pinctrl_desc = {
 	.pctlops = &imx_pctrl_ops,
 	.pmxops = &imx_pmx_ops,
@@ -580,7 +583,10 @@ static int imx_pinctrl_probe_dt(struct platform_device *pdev,
 	return 0;
 }
 
-// imx系列通用的pinctrl驱动匹配成功后的回调函数
+/* imx系列通用的pin-control驱动和设备匹配成功后的回调函数
+ * @pdev    - 指向已经匹配的platform设备
+ * @info    - 指向预定义的imx系列通用的板卡pin-control模块的low-level描述符
+ */
 int imx_pinctrl_probe(struct platform_device *pdev,
 		      struct imx_pinctrl_soc_info *info)
 {
@@ -606,6 +612,7 @@ int imx_pinctrl_probe(struct platform_device *pdev,
 	if (!info->pin_regs)
 		return -ENOMEM;
 
+    // 获取该platform设备拥有的memory资源
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	ipctl->base = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(ipctl->base))

@@ -248,7 +248,7 @@ struct device_driver {
 
 	bool suppress_bind_attrs;	/* disables bind/unbind via sysfs */
 
-	const struct of_device_id	*of_match_table;
+	const struct of_device_id	*of_match_table;    // 指向该驱动支持的device描述列表(规定最后一个表项为NULL)
 	const struct acpi_device_id	*acpi_match_table;
 
 	int (*probe) (struct device *dev);
@@ -786,7 +786,7 @@ struct device {
 	/* arch specific additions */
 	struct dev_archdata	archdata;
 
-	struct device_node	*of_node; /* associated device tree node */
+	struct device_node	*of_node; /* associated device tree node  指向和该device关联的设备节点(源自对应的dts节点) */
 	struct acpi_dev_node	acpi_node; /* associated ACPI device node */
 
 	dev_t			devt;	/* dev_t, creates the sysfs "dev" */

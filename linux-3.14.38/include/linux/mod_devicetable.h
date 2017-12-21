@@ -219,6 +219,7 @@ struct serio_device_id {
 
 /*
  * Struct used for matching a device
+ * driver支持的device描述，用于跟device进行匹配
  */
 struct of_device_id
 {

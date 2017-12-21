@@ -20,7 +20,7 @@
 // setting的类型枚举
 enum pinctrl_map_type {
 	PIN_MAP_TYPE_INVALID,
-	PIN_MAP_TYPE_DUMMY_STATE,
+	PIN_MAP_TYPE_DUMMY_STATE,       // dummy
 	PIN_MAP_TYPE_MUX_GROUP,         // 功能复用
 	PIN_MAP_TYPE_CONFIGS_PIN,       // 设置指定pin脚的电气特性
 	PIN_MAP_TYPE_CONFIGS_GROUP,     // 设置指定pin group的电气特性

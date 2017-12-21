@@ -899,6 +899,7 @@ EXPORT_SYMBOL_GPL(of_modalias_node);
 
 /**
  * of_find_node_by_phandle - Find a node given a phandle
+ * 根据给定的phandle查找对应的设备节点
  * @handle:	phandle of the node to find
  *
  * Returns a node pointer with refcount incremented, use
