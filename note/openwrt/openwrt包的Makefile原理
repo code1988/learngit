@@ -29,6 +29,9 @@
     PKG_VERSION     -软件包的版本
     PKG_RELEASE     -这个 makefile 的版本
 
+    PKG_CONFIG_DEPENDS  -定义了选择这个软件包时指定的配置选项
+    PKG_BUILD_DIR       -真正编译当前软件包的目录
+
     # 对于从git上下载的软件包，以下这些变量定义是必须的
     PKG_REV         -要下载的软件包在svn/git上的版本号
     PKG_SOURCE      -要下载的软件包的名字,一般是由 PKG_NAME 和 PKG_VERSION 组成
@@ -37,8 +40,8 @@
     PKG_SOURCE_VERSION  -源代码版本号，用于对从git下载的源代码进行MD5检查
     PKG_SOURCE_PROTO    -源代码的下载方式，即svn/git
 
-    PKG_CONFIG_DEPENDS  -定义了选择这个软件包时指定的配置选项
-    PKG_BUILD_DIR       -真正编译当前软件包的目录
+    # 以下是makefile根据上面的变量自行推导出来的变量
+    PKG_INFO_DIR    := $(STAGING_DIR)/pkginfo
 
 
 3. include $(INCLUDE_DIR)/package.mk    就是将$(TOPDIR)/include目录下的package.mk文件中的内容导入进来
