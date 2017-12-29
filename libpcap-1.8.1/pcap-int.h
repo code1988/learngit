@@ -184,7 +184,7 @@ struct pcap {
 	int swapped;
 	FILE *rfile;		/* null if live capture, non-null if savefile */
 	u_int fddipad;
-	struct pcap *next;	/* list of open pcaps that need stuff cleared on close */
+	struct pcap *next;	/* list of open pcaps that need stuff cleared on close 这张链表记录了所有已经打开的pcap句柄，目的是可以被用于关闭操作 */
 
 	/*
 	 * File version number; meaningful only for a savefile, but we

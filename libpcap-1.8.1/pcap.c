@@ -1978,6 +1978,7 @@ pcap_close_all(void)
 		pcap_close(handle);
 }
 
+// 将pcap库的清理函数注册为调用进程的进程终止处理函数，返回0表示注册失败，返回1表示注册成功
 int
 pcap_do_addexit(pcap_t *p)
 {
@@ -1998,6 +1999,7 @@ pcap_do_addexit(pcap_t *p)
 	return (1);
 }
 
+// 将指定pcap句柄添加到进程终止时要关闭的pcap链表中
 void
 pcap_add_to_pcaps_to_close(pcap_t *p)
 {
@@ -2005,6 +2007,7 @@ pcap_add_to_pcaps_to_close(pcap_t *p)
 	pcaps_to_close = p;
 }
 
+// 将指定pcap句柄从进程终止时要关闭的pcap链表中移除
 void
 pcap_remove_from_pcaps_to_close(pcap_t *p)
 {

@@ -104,7 +104,7 @@ int uloop_timeout_remaining(struct uloop_timeout *timeout);
 int uloop_process_add(struct uloop_process *p);
 int uloop_process_delete(struct uloop_process *p);
 
-// 结束socket连接
+// 强制结束uloop_run
 static inline void uloop_end(void)
 {
 	uloop_cancelled = true; // 触发SIGINT/SIGTERM信号标志

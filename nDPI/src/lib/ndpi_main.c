@@ -2116,7 +2116,7 @@ u_int16_t ndpi_guess_protocol_id(struct ndpi_detection_module_struct *ndpi_struc
 }
 
 /* ******************************************************************** */
-
+// 返回指定探测模块支持的协议数量
 u_int ndpi_get_num_supported_protocols(struct ndpi_detection_module_struct *ndpi_mod) {
   return(ndpi_mod->ndpi_num_supported_protocols);
 }
@@ -4646,7 +4646,7 @@ ndpi_protocol_category_t ndpi_get_proto_category(struct ndpi_detection_module_st
 }
 
 /* ****************************************************** */
-
+// 返回指定协议对应的名称
 char* ndpi_get_proto_name(struct ndpi_detection_module_struct *ndpi_mod, u_int16_t proto_id) {
   if((proto_id >= ndpi_mod->ndpi_num_supported_protocols)
      || ((proto_id < (NDPI_MAX_SUPPORTED_PROTOCOLS+NDPI_MAX_NUM_CUSTOM_PROTOCOLS))
@@ -4657,7 +4657,7 @@ char* ndpi_get_proto_name(struct ndpi_detection_module_struct *ndpi_mod, u_int16
 }
 
 /* ****************************************************** */
-
+// 返回指定协议对应的breed类别
 ndpi_protocol_breed_t ndpi_get_proto_breed(struct ndpi_detection_module_struct *ndpi_mod,
 					   u_int16_t proto_id) {
   if((proto_id >= ndpi_mod->ndpi_num_supported_protocols)

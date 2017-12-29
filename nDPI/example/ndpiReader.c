@@ -1392,7 +1392,7 @@ static void printResults(u_int64_t tot_usec) {
   u_int32_t i;
   u_int64_t total_flow_bytes = 0;
   u_int32_t avg_pkt_size = 0;
-  struct ndpi_stats cumulative_stats;
+  struct ndpi_stats cumulative_stats;       // 记录归总后的统计信息
   int thread_id;
   char buf[32];
 #ifdef HAVE_JSON_C
@@ -1545,46 +1545,46 @@ static void printResults(u_int64_t tot_usec) {
 #endif
   }
 
-  if((!json_flag) && (!quiet_mode)) printf("\n\nDetected protocols:\n");
-  for(i = 0; i <= ndpi_get_num_supported_protocols(ndpi_thread_info[0].workflow->ndpi_struct); i++) {
-    ndpi_protocol_breed_t breed = ndpi_get_proto_breed(ndpi_thread_info[0].workflow->ndpi_struct, i);
+    if((!json_flag) && (!quiet_mode)) printf("\n\nDetected protocols:\n");
+    for(i = 0; i <= ndpi_get_num_supported_protocols(ndpi_thread_info[0].workflow->ndpi_struct); i++) {
+        ndpi_protocol_breed_t breed = ndpi_get_proto_breed(ndpi_thread_info[0].workflow->ndpi_struct, i);
 
-    if(cumulative_stats.protocol_counter[i] > 0) {
-      breed_stats[breed] += (long long unsigned int)cumulative_stats.protocol_counter_bytes[i];
+        if(cumulative_stats.protocol_counter[i] > 0) {
+            breed_stats[breed] += (long long unsigned int)cumulative_stats.protocol_counter_bytes[i];
 
-      if(results_file)
-	fprintf(results_file, "%s\t%llu\t%llu\t%u\n",
-		ndpi_get_proto_name(ndpi_thread_info[0].workflow->ndpi_struct, i),
-		(long long unsigned int)cumulative_stats.protocol_counter[i],
-		(long long unsigned int)cumulative_stats.protocol_counter_bytes[i],
-		cumulative_stats.protocol_flows[i]);
+            if(results_file)
+                fprintf(results_file, "%s\t%llu\t%llu\t%u\n",
+                        ndpi_get_proto_name(ndpi_thread_info[0].workflow->ndpi_struct, i),
+                        (long long unsigned int)cumulative_stats.protocol_counter[i],
+                        (long long unsigned int)cumulative_stats.protocol_counter_bytes[i],
+                        cumulative_stats.protocol_flows[i]);
 
-      if((!json_flag) && (!quiet_mode)) {
-	printf("\t%-20s packets: %-13llu bytes: %-13llu "
-	       "flows: %-13u\n",
-	       ndpi_get_proto_name(ndpi_thread_info[0].workflow->ndpi_struct, i),
-	       (long long unsigned int)cumulative_stats.protocol_counter[i],
-	       (long long unsigned int)cumulative_stats.protocol_counter_bytes[i],
-	       cumulative_stats.protocol_flows[i]);
-      } else {
+            if((!json_flag) && (!quiet_mode)) {
+                printf("\t%-20s packets: %-13llu bytes: %-13llu "
+               "flows: %-13u\n",
+               ndpi_get_proto_name(ndpi_thread_info[0].workflow->ndpi_struct, i),
+               (long long unsigned int)cumulative_stats.protocol_counter[i],
+               (long long unsigned int)cumulative_stats.protocol_counter_bytes[i],
+               cumulative_stats.protocol_flows[i]);
+            } else {
 #ifdef HAVE_JSON_C
-	if(json_fp) {
-	  jObj = json_object_new_object();
+                if(json_fp) {
+                    jObj = json_object_new_object();
 
-	  json_object_object_add(jObj,"name",json_object_new_string(ndpi_get_proto_name(ndpi_thread_info[0].workflow->ndpi_struct, i)));
-	  json_object_object_add(jObj,"breed",json_object_new_string(ndpi_get_proto_breed_name(ndpi_thread_info[0].workflow->ndpi_struct, breed)));
-	  json_object_object_add(jObj,"packets",json_object_new_int64(cumulative_stats.protocol_counter[i]));
-	  json_object_object_add(jObj,"bytes",json_object_new_int64(cumulative_stats.protocol_counter_bytes[i]));
-	  json_object_object_add(jObj,"flows",json_object_new_int(cumulative_stats.protocol_flows[i]));
+                    json_object_object_add(jObj,"name",json_object_new_string(ndpi_get_proto_name(ndpi_thread_info[0].workflow->ndpi_struct, i)));
+                    json_object_object_add(jObj,"breed",json_object_new_string(ndpi_get_proto_breed_name(ndpi_thread_info[0].workflow->ndpi_struct, breed)));
+                    json_object_object_add(jObj,"packets",json_object_new_int64(cumulative_stats.protocol_counter[i]));
+                    json_object_object_add(jObj,"bytes",json_object_new_int64(cumulative_stats.protocol_counter_bytes[i]));
+                    json_object_object_add(jObj,"flows",json_object_new_int(cumulative_stats.protocol_flows[i]));
 
-	  json_object_array_add(jArray_detProto,jObj);
-	}
+                    json_object_array_add(jArray_detProto,jObj);
+                }
 #endif
-      }
+          }
 
-      total_flow_bytes += cumulative_stats.protocol_counter_bytes[i];
+          total_flow_bytes += cumulative_stats.protocol_counter_bytes[i];
+        }
     }
-  }
 
   if((!json_flag) && (!quiet_mode)) {
     printf("\n\nProtocol statistics:\n");
