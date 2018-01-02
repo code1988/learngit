@@ -48,7 +48,13 @@
     安装busybox:
                 cd busybox-1.26.2
                 make defconfig
-                make CROSS_COMPILE=arm-linux-gnueabi-
+                make menuconfig
+                作如下配置：
+                    Busybox Settings --->
+                                    Build Options --->
+                                                [*] Build BusyBox as a static binary (no shared libs)
+                                                (arm-linux-gnueabihf-) Cross Compiler prefix
+                make
                 make install
     制作根文件系统的脚本:
                 

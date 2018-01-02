@@ -1,5 +1,6 @@
 /*
  * NETLINK      Kernel-user communication protocol.
+ * netlink协议核心文件
  *
  * 		Authors:	Alan Cox <alan@lxorguk.ukuu.org.uk>
  * 				Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
@@ -1930,7 +1931,8 @@ static int netlink_unicast_kernel(struct sock *sk, struct sk_buff *skb,
 		NETLINK_CB(skb).sk = ssk;
         // netlink tap机制暂略
 		netlink_deliver_tap_kernel(sk, ssk, skb);
-        // 调用内核netlink套接字的协议类型相关的netlink_rcv回调
+        // 调用内核netlink套接字的协议类型相关的netlink_rcv钩子来处理收到的消息
+        // 到这里，意味着发往内核的netlink消息已经被成功接收
 		nlk->netlink_rcv(skb);
 		consume_skb(skb);
 	} else {
