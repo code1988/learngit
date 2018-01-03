@@ -82,7 +82,7 @@ struct listeners {
  * 用于netlink_sock->flags中
  * */
 #define NETLINK_KERNEL_SOCKET	0x1     // 用来标识该netlink套接字是内核套接字
-#define NETLINK_RECV_PKTINFO	0x2
+#define NETLINK_RECV_PKTINFO	0x2     // 用来标识该netlink套接字支持接收辅助消息
 #define NETLINK_BROADCAST_SEND_ERROR	0x4
 #define NETLINK_RECV_NO_ENOBUFS	0x8
 
@@ -270,12 +270,15 @@ static void netlink_overrun(struct sock *sk)
 	atomic_inc(&sk->sk_drops);
 }
 
+// 条件合适的情况下唤醒指定netlink套接字的等待队列中的用户进程
 static void netlink_rcv_wake(struct sock *sk)
 {
 	struct netlink_sock *nlk = nlk_sk(sk);
 
+    // 如果该netlink套接字的接收队列已经为空，则清除该套接字的拥挤标志
 	if (skb_queue_empty(&sk->sk_receive_queue))
 		clear_bit(NETLINK_CONGESTED, &nlk->state);
+    // 如果确认拥挤标志已经被清除了，则唤醒等待队列中那些准备将netlink单播消息发送到该netlink套接字接收队列中的用户进程
 	if (!test_bit(NETLINK_CONGESTED, &nlk->state))
 		wake_up_interruptible(&nlk->wait);
 }
@@ -2523,6 +2526,7 @@ static int netlink_getsockopt(struct socket *sock, int level, int optname,
 	return err;
 }
 
+// 填充netlink辅助消息
 static void netlink_cmsg_recv_pktinfo(struct msghdr *msg, struct sk_buff *skb)
 {
 	struct nl_pktinfo info;
@@ -2698,9 +2702,12 @@ static int netlink_recvmsg(struct kiocb *kiocb, struct socket *sock,
 		copied = len;
 	}
 
+    // 计算transport layer相对缓冲区头部的偏移量(目前不知道干嘛用)
 	skb_reset_transport_header(data_skb);
+    // 将skb中的数据拷贝到iovec结构的数据缓冲区
 	err = skb_copy_datagram_iovec(data_skb, 0, msg->msg_iov, copied);
 
+    // 填充返回给用户进程的地址信息
 	if (msg->msg_name) {
 		DECLARE_SOCKADDR(struct sockaddr_nl *, addr, msg->msg_name);
 		addr->nl_family = AF_NETLINK;
@@ -2710,6 +2717,7 @@ static int netlink_recvmsg(struct kiocb *kiocb, struct socket *sock,
 		msg->msg_namelen = sizeof(*addr);
 	}
 
+    // 处理netlink辅助消息
 	if (nlk->flags & NETLINK_RECV_PKTINFO)
 		netlink_cmsg_recv_pktinfo(msg, skb);
 
@@ -2718,11 +2726,15 @@ static int netlink_recvmsg(struct kiocb *kiocb, struct socket *sock,
 		siocb->scm = &scm;
 	}
 	siocb->scm->creds = *NETLINK_CREDS(skb);
+
+    // 如果用户进程recvmsg传入了MSG_TRUNC标志，这里重新将返回的长度值改为skb实际收到的数据长度
 	if (flags & MSG_TRUNC)
 		copied = data_skb->len;
 
+    // 释放承载了该netlink消息的skb
 	skb_free_datagram(sk, skb);
 
+    // 如果有需要还要执行dump操作
 	if (nlk->cb_running &&
 	    atomic_read(&sk->sk_rmem_alloc) <= sk->sk_rcvbuf / 2) {
 		ret = netlink_dump(sk);
@@ -2734,6 +2746,8 @@ static int netlink_recvmsg(struct kiocb *kiocb, struct socket *sock,
 
 	scm_recv(sock, msg, siocb->scm, flags);
 out:
+    // 正常情况下，程序运行到这里意味着一个承载了netlink消息的skb已经处理完毕
+    // 条件合适的情况下唤醒该netlink套接字的等待队列中的用户进程
 	netlink_rcv_wake(sk);
 	return err ? : copied;
 }

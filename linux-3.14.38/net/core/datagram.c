@@ -263,6 +263,10 @@ struct sk_buff *skb_recv_datagram(struct sock *sk, unsigned int flags,
 }
 EXPORT_SYMBOL(skb_recv_datagram);
 
+/* 释放承载了datagram类型数据的skb
+ * @sk  - 指向一个sock结构
+ * @skb - 指向一个需要被释放的skb
+ */
 void skb_free_datagram(struct sock *sk, struct sk_buff *skb)
 {
 	consume_skb(skb);
@@ -335,6 +339,8 @@ EXPORT_SYMBOL(skb_kill_datagram);
 
 /**
  *	skb_copy_datagram_iovec - Copy a datagram to an iovec.
+ *	将skb中的数据拷贝到iovec结构的数据缓冲区 
+ *
  *	@skb: buffer to copy
  *	@offset: offset in the buffer to start copying from
  *	@to: io vector to copy to

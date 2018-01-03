@@ -470,7 +470,7 @@ netlink支持用户进程和内核相互交互（两边都可以主动发起）�
           内核不管是发送单播还是组播消息，流程的终点都只有一个，就是目的用户进程netlink套接字的接收队列
 
 本文最后要分析的就是netlink消息接收流程了，由于发往内核的netlink消息在调用协议类型相关的netlink_rcv钩子时就已经意味着接收完成了，也就没有展开分析的必要。
-所以接下来实际上就是对用户进程调用recvmsg接收来自内核或者其他进程的netlink消息流程展开分析(有关sendmsg系统调用的公用部分代码解析将在另一片文章中展开)
+所以接下来实际上就是对用户进程调用recvmsg接收来自内核或者其他进程的netlink消息流程展开分析(有关recvmsg系统调用的公用部分代码解析将在另一片文章中展开)
     /* 用户进程对netlink套接字调用recvmsg()系统调用后，内核执行netlink操作的总入口函数
      *  @sock    - 指向用户进程的netlink套接字，也就是接收方的
      *  @msg     - 用于存放接收到的netlink消息
@@ -490,6 +490,57 @@ netlink支持用户进程和内核相互交互（两边都可以主动发起）�
         if (skb == NULL)
             goto out;
         
-        // 程序运行到这里意味着已经接收到数据
+        // 程序运行到这里意味着已经获取到一个skb
+        data_skb = skb;
+
+        // 如果收到的skb中承载的netlink消息长度大于用户空间接收缓存的最大长度，则设置MSG_TRUNC标志，并将实际接收长度改为接收缓存的长度
+        copied = data_skb->len;
+        if (len < copied){
+            msg->msg_flags |= MSG_TRUNC;
+            copied = len;
+        }
+
+        // 计算transport layer相对缓冲区头部的偏移量(目前不知道干嘛用)
+        skb_reset_transport_header(data_skb);
+
+        // 将skb中的数据拷贝到iovec结构的数据缓冲区
+        err = skb_copy_datagram_iovec(data_skb, 0, msg->msg_iov, copied);
     
+        // 填充返回给用户进程的地址信息
+        if (msg->msg_name){
+            DECLARE_SOCKADDR(struct sockaddr_nl *, addr, msg->msg_name); 
+            addr->nl_family = AF_NETLINK;
+            addr->nl_pad    = 0;
+            addr->nl_pid    = NETLINK_CB(skb).portid;
+            addr->nl_groups = netlink_group_mask(NETLINK_CB(skb).dst_group);
+            msg->msg_namelen = sizeof(*addr);
+        }
+
+        // 处理netlink辅助消息 
+        if (nlk->flags & NETLINK_RECV_PKTINFO)
+            netlink_cmsg_recv_pktinfo(msg, skb);
+        if (NULL == siocb->scm){
+            memset(&scm, 0, sizeof(scm));
+            siocb->scm = &scm;
+        }
+        siocb->scm->creds = *NETLINK_CREDS(skb);
+
+        // 如果用户进程recvmsg传入了MSG_TRUNC标志，这里重新将返回的长度值改为skb实际收到的数据长度
+        if (flags & MSG_TRUNC)
+            copied = data_skb->len;
+
+        // 释放承载了该netlink消息的skb
+        skb_free_datagram(sk, skb);
+
+        // 如果有需要还要执行dump操作(这步操作需要再确认)
+        if (nlk->cb_running && atomic_read(&sk->sk_rmem_alloc) <= sk->sk_rcvbuf / 2)
+            ret = netlink_dump(sk);
+
+        scm_recv(sock, msg, siocb->scm, flags);
+
+out:
+        // 正常情况下，程序运行到这里意味着一个承载了netlink消息的skb已经处理完毕
+        // 条件合适的情况下唤醒该netlink套接字的等待队列中的用户进程
+        netlink_rcv_wake(sk); 
+        return err ? : copied;
     }

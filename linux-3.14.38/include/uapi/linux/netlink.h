@@ -120,6 +120,7 @@ struct nlmsgerr {
 #define NETLINK_RX_RING		6
 #define NETLINK_TX_RING		7
 
+// 定义了netlink的辅助消息结构，实际只是包含了一个group成员
 struct nl_pktinfo {
 	__u32	group;
 };

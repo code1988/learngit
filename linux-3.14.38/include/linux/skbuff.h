@@ -840,7 +840,9 @@ static inline struct skb_shared_hwtstamps *skb_hwtstamps(struct sk_buff *skb)
 
 /**
  *	skb_queue_empty - check if a queue is empty
- *	@list: queue head
+ *	判断指定队列是否为空
+ *	@list: queue head   指向一个队列头
+ *	@返回值:    1-空  0-非空
  *
  *	Returns true if the queue is empty, false otherwise.
  */
@@ -1736,6 +1738,7 @@ static inline int skb_mac_header_was_set(const struct sk_buff *skb)
 	return skb->mac_header != (typeof(skb->mac_header))~0U;
 }
 
+// 计算mac layer相对缓冲区头部的偏移量
 static inline void skb_reset_mac_header(struct sk_buff *skb)
 {
 	skb->mac_header = skb->data - skb->head;
