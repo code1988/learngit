@@ -75,8 +75,8 @@ EAQ_DEFAULT_SIZE	src/lib/protocols/eaq.c	30;"	d	file:
 ELMT_FROM_HH	example/uthash.h	111;"	d
 EMAIL	src/lib/protocols/oscar.c	69;"	d	file:
 EMPTY	src/lib/protocols/rx.c	64;"	d	file:
-EPOCHFILETIME	example/ndpiReader.c	2145;"	d	file:
-EPOCHFILETIME	example/ndpiReader.c	2147;"	d	file:
+EPOCHFILETIME	example/ndpiReader.c	2154;"	d	file:
+EPOCHFILETIME	example/ndpiReader.c	2156;"	d	file:
 ETH_P_IP	example/ndpi_util.c	36;"	d	file:
 ETH_P_IPV6	example/ndpi_util.c	40;"	d	file:
 FCF_FROM_DS	example/ndpi_util.c	58;"	d	file:
@@ -212,7 +212,7 @@ MAX_NUM_READER_THREADS	example/ndpi_util.h	34;"	d
 MAX_NUM_STUN_PKTS	src/lib/protocols/stun.c	29;"	d	file:
 MAX_PACKETS_FOR_MSN	src/lib/protocols/msn.c	28;"	d	file:
 MAX_PACKET_COUNTER	src/include/ndpi_define.h	165;"	d
-MAX_STR_LEN	src/lib/ndpi_main.c	1810;"	d	file:
+MAX_STR_LEN	src/lib/ndpi_main.c	1818;"	d	file:
 MINOR_VERSION	src/lib/protocols/oscar.c	44;"	d	file:
 MORE_1	src/lib/protocols/rx.c	71;"	d	file:
 MPLS_MULTI	example/ndpi_util.c	48;"	d	file:
@@ -1192,8 +1192,8 @@ daddr	src/include/ndpi_typedefs.h	/^  u_int32_t daddr;$/;"	m	struct:ndpi_iphdr	a
 data	src/lib/third_party/include/ndpi_patricia.h	/^  void *data;			\/* pointer to data *\/$/;"	m	struct:_patricia_node_t	access:public
 dataOffset	src/lib/protocols/afp.c	/^  u_int32_t dataOffset, length, reserved;$/;"	m	struct:afpHeader	file:	access:public
 ddlink_server_direction	src/include/ndpi_typedefs.h	/^  u_int32_t ddlink_server_direction:1;$/;"	m	struct:ndpi_flow_tcp_struct	access:public
-decode_tunnels	example/ndpiReader.c	/^static u_int16_t decode_tunnels = 0;\/\/ 标识是否使能隧道功能$/;"	v	file:
-decode_tunnels	example/ndpi_util.h	/^  u_int8_t decode_tunnels;  \/\/ 标识是否使能隧道功能$/;"	m	struct:ndpi_workflow_prefs	access:public
+decode_tunnels	example/ndpiReader.c	/^static u_int16_t decode_tunnels = 0;\/\/ 标识是否使能GTP隧道功能$/;"	v	file:
+decode_tunnels	example/ndpi_util.h	/^  u_int8_t decode_tunnels;  \/\/ 标识是否使能解析GTP隧道功能$/;"	m	struct:ndpi_workflow_prefs	access:public
 default_port	src/include/ndpi_typedefs.h	/^  u_int16_t default_port;           \/\/ 关联协议的一个缺省端口号(通过该值在二叉树节点中进行匹配)$/;"	m	struct:ndpi_default_ports_tree_node	access:public
 deletePortsStats	example/ndpiReader.c	/^static void deletePortsStats(struct port_stats *stats) {$/;"	f	file:	signature:(struct port_stats *stats)
 deleteTopStats	example/ndpiReader.c	/^static void deleteTopStats(struct top_stats *stats) {$/;"	f	file:	signature:(struct top_stats *stats)
@@ -1213,7 +1213,7 @@ detected_protocol_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK 
 detected_protocol_stack	src/include/ndpi_typedefs.h	/^  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];    \/\/ 依次记录了该数据包识别到的子协议号和主协议号$/;"	m	struct:ndpi_packet_struct	access:public
 detected_protocol_stack	src/include/ndpi_typedefs.h	/^  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];    \/\/ 依次记录了该数据流识别到的子协议号和主协议号$/;"	m	struct:ndpi_flow_struct	access:public
 detected_subprotocol_stack	src/include/ndpi_typedefs.h	/^  u_int8_t detected_subprotocol_stack[NDPI_PROTOCOL_SIZE];$/;"	m	struct:ndpi_packet_struct	access:public
-detection_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK detection_bitmask;                      \/\/ 该字段的设置跟ndpi_set_bitmask_protocol_detection函数的入参有关$/;"	m	struct:ndpi_call_function_struct	access:public
+detection_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK detection_bitmask;                      \/\/ (协议序号掩码集合)该字段的设置跟ndpi_set_bitmask_protocol_detection函数的入参有关$/;"	m	struct:ndpi_call_function_struct	access:public
 detection_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK detection_bitmask;  \/\/ 该探测模块中所有协议的使能\/禁止位的集合，只有其中置1的那些协议才是该探测模块中实际使能了的$/;"	m	struct:ndpi_detection_module_struct	access:public
 detection_completed	example/ndpi_util.h	/^  u_int8_t detection_completed; \/\/ 标识是否完成对该数据流的探测$/;"	m	struct:ndpi_flow_info	access:public
 detection_feature	src/include/ndpi_typedefs.h	/^  u_int8_t detection_feature;$/;"	m	struct:ndpi_call_function_struct	access:public
@@ -1262,7 +1262,7 @@ end	example/ndpiReader.c	/^static struct timeval begin, end;   \/\/ 记录了开
 epoch	src/lib/protocols/ayiya.c	/^  u_int32_t epoch;$/;"	m	struct:ayiya	file:	access:public
 ethernet_crc32	example/ndpi_util.c	/^u_int32_t ethernet_crc32(const void* data, size_t n_bytes) {$/;"	f	signature:(const void* data, size_t n_bytes)
 ethernet_crc32	example/ndpi_util.h	/^u_int32_t ethernet_crc32(const void* data, size_t n_bytes);$/;"	p	signature:(const void* data, size_t n_bytes)
-excluded_protocol_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK excluded_protocol_bitmask;              \/\/ 实际被使能的协议会将该集合的对应位置1$/;"	m	struct:ndpi_call_function_struct	access:public
+excluded_protocol_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK excluded_protocol_bitmask;              \/\/ (协议序号掩码集合)实际被使能的协议会将该集合的对应位置1$/;"	m	struct:ndpi_call_function_struct	access:public
 excluded_protocol_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK excluded_protocol_bitmask;      \/\/ 这张表记录了该数据流排除掉的协议ID集合$/;"	m	struct:ndpi_flow_struct	access:public
 exp	src/include/ndpi_typedefs.h	/^  u_int32_t label:20, exp:3, s:1, ttl:8;$/;"	m	struct:ndpi_mpls_header	access:public
 expand_mult	example/uthash.h	/^   unsigned expand_mult;$/;"	m	struct:UT_hash_bucket	access:public
@@ -1374,8 +1374,8 @@ free_ptree_data	src/lib/ndpi_main.c	/^static void free_ptree_data(void *data) { 
 free_wrapper	example/ndpi_util.c	/^static void free_wrapper(void *freeable) {$/;"	f	file:	signature:(void *freeable)
 ftp_control_stage	src/include/ndpi_typedefs.h	/^  u_int32_t ftp_control_stage:2;$/;"	m	struct:ndpi_flow_struct	access:public
 func	src/include/ndpi_typedefs.h	/^  void (*func) (struct ndpi_detection_module_struct *, char *attr, char *value, int protocol_id);$/;"	m	struct:ndpi_subprotocol_conf_struct	access:public
-func	src/include/ndpi_typedefs.h	/^  void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow);  \/\/ 指向协议关联的报文解析回调接口$/;"	m	struct:ndpi_proto_defaults	access:public
-func	src/include/ndpi_typedefs.h	/^  void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow);$/;"	m	struct:ndpi_call_function_struct	access:public
+func	src/include/ndpi_typedefs.h	/^  void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow);  \/\/ 指向协议关联的应用层解析器$/;"	m	struct:ndpi_call_function_struct	access:public
+func	src/include/ndpi_typedefs.h	/^  void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow);  \/\/ 指向协议关联的应用层解析器$/;"	m	struct:ndpi_proto_defaults	access:public
 generic_http_packet_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK generic_http_packet_bitmask;$/;"	m	struct:ndpi_detection_module_struct	access:public
 generic_l4_ptr	src/include/ndpi_typedefs.h	/^  const u_int8_t *generic_l4_ptr;	\/* is set only for non tcp-udp traffic 除了tcp和udp之外的其他情况的l4层头 *\/$/;"	m	struct:ndpi_packet_struct	access:public
 generic_swap	src/lib/third_party/src/sort.c	/^static void generic_swap(void *_a, void *_b, int size)$/;"	f	file:	signature:(void *_a, void *_b, int size)
@@ -1498,8 +1498,8 @@ id	src/lib/protocols/btlib.h	/^	u_int8_t  id[20];$/;"	m	struct:bt_nodes_data	acc
 id	src/lib/third_party/include/node.h	/^  int id; \/* Node ID : for debugging purpose *\/$/;"	m	struct:ac_node	access:public
 ideal_chain_maxlen	example/uthash.h	/^   unsigned ideal_chain_maxlen;$/;"	m	struct:UT_hash_table	access:public
 identity	src/lib/protocols/ayiya.c	/^  u_int8_t identity[16];$/;"	m	struct:ayiya	file:	access:public
-idle_flows	example/ndpiReader.c	/^  struct ndpi_flow_info *idle_flows[IDLE_SCAN_BUDGET];$/;"	m	struct:reader_thread	typeref:struct:reader_thread::ndpi_flow_info	file:	access:public
-idle_scan_idx	example/ndpiReader.c	/^  u_int32_t idle_scan_idx;$/;"	m	struct:reader_thread	file:	access:public
+idle_flows	example/ndpiReader.c	/^  struct ndpi_flow_info *idle_flows[IDLE_SCAN_BUDGET];  \/\/ 空闲的数据流集合(暂存用)$/;"	m	struct:reader_thread	typeref:struct:reader_thread::ndpi_flow_info	file:	access:public
+idle_scan_idx	example/ndpiReader.c	/^  u_int32_t idle_scan_idx;              \/\/ hash表中空闲数据流所在的散列地址序号$/;"	m	struct:reader_thread	file:	access:public
 ihl	src/include/ndpi_typedefs.h	/^  u_int8_t ihl:4, version:4;$/;"	m	struct:ndpi_iphdr	access:public
 imesh_stage	src/include/ndpi_typedefs.h	/^  u_int32_t imesh_stage:4;$/;"	m	struct:ndpi_flow_tcp_struct	access:public
 impossible_bigrams_automa	src/include/ndpi_typedefs.h	/^    impossible_bigrams_automa; \/* TOR  维护了ndpi_en_impossible_bigrams映射表(貌似没用到) *\/$/;"	m	struct:ndpi_detection_module_struct	access:public
@@ -1877,9 +1877,9 @@ label	src/include/ndpi_typedefs.h	/^  u_int32_t label:20, exp:3, s:1, ttl:8;$/;"
 last	src/lib/protocols/netflow.c	/^  u_int32_t last;       \/* and of last packet of the flow *\/$/;"	m	struct:flow_ver1_rec	file:	access:public
 last	src/lib/protocols/netflow.c	/^  u_int32_t last;       \/* and of last packet of the flow *\/$/;"	m	struct:flow_ver5_rec	file:	access:public
 last	src/lib/protocols/netflow.c	/^  u_int32_t last;       \/* and of last packet of the flow *\/$/;"	m	struct:flow_ver7_rec	file:	access:public
-last_idle_scan_time	example/ndpiReader.c	/^  u_int64_t last_idle_scan_time;$/;"	m	struct:reader_thread	file:	access:public
+last_idle_scan_time	example/ndpiReader.c	/^  u_int64_t last_idle_scan_time;        \/\/ 记录了最近一次扫描空闲数据流的时间$/;"	m	struct:reader_thread	file:	access:public
 last_seen	example/ndpi_util.h	/^  u_int64_t last_seen;  \/\/ 记录了最近收到包的时间$/;"	m	struct:ndpi_flow_info	access:public
-last_time	example/ndpi_util.h	/^  u_int64_t last_time;      \/\/ 最后一次收到包的时间$/;"	m	struct:ndpi_workflow	access:public
+last_time	example/ndpi_util.h	/^  u_int64_t last_time;      \/\/ 该工作流最近一次收到包的时间$/;"	m	struct:ndpi_workflow	access:public
 last_time_port_used	src/include/ndpi_typedefs.h	/^  u_int32_t last_time_port_used[NDPI_PROTOCOL_IRC_MAXPORT];$/;"	m	struct:ndpi_id_struct	access:public
 lchg	src/include/ndpi_typedefs.h	/^  time_t                  lchg;$/;"	m	struct:hash_ip4p_node	access:public
 left	example/ndpiReader.c	/^    struct node_a *left, *right;$/;"	m	struct:node_a	typeref:struct:node_a::node_a	file:	access:public
@@ -1998,11 +1998,11 @@ ndpi_bytestream_to_number	src/lib/ndpi_main.c	/^u_int32_t ndpi_bytestream_to_num
 ndpi_bytestream_to_number64	src/include/ndpi_main.h	/^  u_int64_t ndpi_bytestream_to_number64(const u_int8_t * str, u_int16_t max_chars_to_read, u_int16_t * bytes_read);$/;"	p	signature:(const u_int8_t * str, u_int16_t max_chars_to_read, u_int16_t * bytes_read)
 ndpi_bytestream_to_number64	src/lib/ndpi_main.c	/^u_int64_t ndpi_bytestream_to_number64(const u_int8_t * str, u_int16_t max_chars_to_read, u_int16_t * bytes_read)$/;"	f	signature:(const u_int8_t * str, u_int16_t max_chars_to_read, u_int16_t * bytes_read)
 ndpi_call_function_struct	src/include/ndpi_typedefs.h	/^struct ndpi_call_function_struct {$/;"	s
-ndpi_call_function_struct::detection_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK detection_bitmask;                      \/\/ 该字段的设置跟ndpi_set_bitmask_protocol_detection函数的入参有关$/;"	m	struct:ndpi_call_function_struct	access:public
+ndpi_call_function_struct::detection_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK detection_bitmask;                      \/\/ (协议序号掩码集合)该字段的设置跟ndpi_set_bitmask_protocol_detection函数的入参有关$/;"	m	struct:ndpi_call_function_struct	access:public
 ndpi_call_function_struct::detection_feature	src/include/ndpi_typedefs.h	/^  u_int8_t detection_feature;$/;"	m	struct:ndpi_call_function_struct	access:public
-ndpi_call_function_struct::excluded_protocol_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK excluded_protocol_bitmask;              \/\/ 实际被使能的协议会将该集合的对应位置1$/;"	m	struct:ndpi_call_function_struct	access:public
-ndpi_call_function_struct::func	src/include/ndpi_typedefs.h	/^  void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow);$/;"	m	struct:ndpi_call_function_struct	access:public
-ndpi_call_function_struct::ndpi_selection_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_SELECTION_BITMASK_PROTOCOL_SIZE ndpi_selection_bitmask;  \/\/ 选择位集合(这些位包含了IP、TCP、UDP、IPV4、IPV6、payload等)$/;"	m	struct:ndpi_call_function_struct	access:public
+ndpi_call_function_struct::excluded_protocol_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK excluded_protocol_bitmask;              \/\/ (协议序号掩码集合)实际被使能的协议会将该集合的对应位置1$/;"	m	struct:ndpi_call_function_struct	access:public
+ndpi_call_function_struct::func	src/include/ndpi_typedefs.h	/^  void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow);  \/\/ 指向协议关联的应用层解析器$/;"	m	struct:ndpi_call_function_struct	access:public
+ndpi_call_function_struct::ndpi_selection_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_SELECTION_BITMASK_PROTOCOL_SIZE ndpi_selection_bitmask;  \/\/ 该协议配置的l3 + l4层特征位集合$/;"	m	struct:ndpi_call_function_struct	access:public
 ndpi_calloc	src/include/ndpi_api.h	/^  void * ndpi_calloc(unsigned long count, size_t size);$/;"	p	signature:(unsigned long count, size_t size)
 ndpi_calloc	src/lib/ndpi_main.c	/^void * ndpi_calloc(unsigned long count, size_t size)$/;"	f	signature:(unsigned long count, size_t size)
 ndpi_category_str	src/include/ndpi_api.h	/^  const char* ndpi_category_str(ndpi_protocol_category_t category);$/;"	p	signature:(ndpi_protocol_category_t category)
@@ -2660,7 +2660,7 @@ ndpi_isdigit	src/lib/protocols/ssl.c	92;"	d	file:
 ndpi_isprint	src/lib/protocols/ssl.c	94;"	d	file:
 ndpi_ispunct	src/lib/protocols/ssl.c	95;"	d	file:
 ndpi_isspace	src/lib/protocols/ssl.c	93;"	d	file:
-ndpi_leaf	src/include/ndpi_typedefs.h	/^    ndpi_leaf$/;"	e	enum:__anon16
+ndpi_leaf	src/include/ndpi_typedefs.h	/^    ndpi_leaf       \/\/ 二叉树叶节点$/;"	e	enum:__anon16
 ndpi_llc_header_snap	src/include/ndpi_typedefs.h	/^struct ndpi_llc_header_snap$/;"	s
 ndpi_llc_header_snap::ctrl	src/include/ndpi_typedefs.h	/^  u_int8_t    ctrl;$/;"	m	struct:ndpi_llc_header_snap	access:public
 ndpi_llc_header_snap::dsap	src/include/ndpi_typedefs.h	/^  u_int8_t    dsap;$/;"	m	struct:ndpi_llc_header_snap	access:public
@@ -2795,7 +2795,7 @@ ndpi_proto.init	wireshark/ndpi.lua	/^function ndpi_proto.init()$/;"	f
 ndpi_proto::app_protocol	src/include/ndpi_typedefs.h	/^  u_int16_t app_protocol; \/* e.g. FaceBook  对应detected_protocol_stack[0] *\/$/;"	m	struct:ndpi_proto	access:public
 ndpi_proto::master_protocol	src/include/ndpi_typedefs.h	/^  u_int16_t master_protocol; \/* e.g. HTTP  对应detected_protocol_stack[1] *\/ $/;"	m	struct:ndpi_proto	access:public
 ndpi_proto_defaults	src/include/ndpi_typedefs.h	/^typedef struct ndpi_proto_defaults {$/;"	s
-ndpi_proto_defaults::func	src/include/ndpi_typedefs.h	/^  void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow);  \/\/ 指向协议关联的报文解析回调接口$/;"	m	struct:ndpi_proto_defaults	access:public
+ndpi_proto_defaults::func	src/include/ndpi_typedefs.h	/^  void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow);  \/\/ 指向协议关联的应用层解析器$/;"	m	struct:ndpi_proto_defaults	access:public
 ndpi_proto_defaults::master_tcp_protoId	src/include/ndpi_typedefs.h	/^  u_int16_t master_tcp_protoId[2], master_udp_protoId[2]; \/* The main protocols on which this sub-protocol sits on *\/$/;"	m	struct:ndpi_proto_defaults	access:public
 ndpi_proto_defaults::master_udp_protoId	src/include/ndpi_typedefs.h	/^  u_int16_t master_tcp_protoId[2], master_udp_protoId[2]; \/* The main protocols on which this sub-protocol sits on *\/$/;"	m	struct:ndpi_proto_defaults	access:public
 ndpi_proto_defaults::protoBreed	src/include/ndpi_typedefs.h	/^  ndpi_protocol_breed_t protoBreed;         \/\/ 协议类别2(根据安全性归类)$/;"	m	struct:ndpi_proto_defaults	access:public
@@ -3149,7 +3149,7 @@ ndpi_search_zattoo	src/include/ndpi_protocols.h	/^void ndpi_search_zattoo(struct
 ndpi_search_zattoo	src/lib/protocols/zattoo.c	/^void ndpi_search_zattoo(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)$/;"	f	signature:(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 ndpi_search_zmq	src/include/ndpi_protocols.h	/^void ndpi_search_zmq(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow);$/;"	p	signature:(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 ndpi_search_zmq	src/lib/protocols/zeromq.c	/^void ndpi_search_zmq(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow) {$/;"	f	signature:(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
-ndpi_selection_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_SELECTION_BITMASK_PROTOCOL_SIZE ndpi_selection_bitmask;  \/\/ 选择位集合(这些位包含了IP、TCP、UDP、IPV4、IPV6、payload等)$/;"	m	struct:ndpi_call_function_struct	access:public
+ndpi_selection_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_SELECTION_BITMASK_PROTOCOL_SIZE ndpi_selection_bitmask;  \/\/ 该协议配置的l3 + l4层特征位集合$/;"	m	struct:ndpi_call_function_struct	access:public
 ndpi_set_automa	src/include/ndpi_api.h	/^  void ndpi_set_automa(struct ndpi_detection_module_struct *ndpi_struct, void* automa);$/;"	p	signature:(struct ndpi_detection_module_struct *ndpi_struct, void* automa)
 ndpi_set_bitmask_protocol_detection	src/include/ndpi_api.h	/^  void ndpi_set_bitmask_protocol_detection(char *label, struct ndpi_detection_module_struct *ndpi_struct,$/;"	p	signature:(char *label, struct ndpi_detection_module_struct *ndpi_struct, const NDPI_PROTOCOL_BITMASK *detection_bitmask, const u_int32_t idx, u_int16_t ndpi_protocol_id, void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow), const NDPI_SELECTION_BITMASK_PROTOCOL_SIZE ndpi_selection_bitmask, u_int8_t b_save_bitmask_unknow, u_int8_t b_add_detection_bitmask)
 ndpi_set_bitmask_protocol_detection	src/lib/ndpi_main.c	/^void ndpi_set_bitmask_protocol_detection( char * label,$/;"	f	signature:( char * label, struct ndpi_detection_module_struct *ndpi_struct, const NDPI_PROTOCOL_BITMASK * detection_bitmask, const u_int32_t idx, u_int16_t ndpi_protocol_id, void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow), const NDPI_SELECTION_BITMASK_PROTOCOL_SIZE ndpi_selection_bitmask, u_int8_t b_save_bitmask_unknow, u_int8_t b_add_detection_bitmask)
@@ -3195,7 +3195,7 @@ ndpi_strdup	src/lib/ndpi_main.c	/^char * ndpi_strdup(const char *s)$/;"	f	signat
 ndpi_string_to_automa	src/lib/ndpi_main.c	/^static int ndpi_string_to_automa(struct ndpi_detection_module_struct *ndpi_struct,$/;"	f	file:	signature:(struct ndpi_detection_module_struct *ndpi_struct, ndpi_automa *automa, char *value, int protocol_id, ndpi_protocol_breed_t breed)
 ndpi_strnstr	src/include/ndpi_api.h	/^  char* ndpi_strnstr(const char *s, const char *find, size_t slen);$/;"	p	signature:(const char *s, const char *find, size_t slen)
 ndpi_strnstr	src/lib/ndpi_main.c	/^char* ndpi_strnstr(const char *s, const char *find, size_t slen) {$/;"	f	signature:(const char *s, const char *find, size_t slen)
-ndpi_struct	example/ndpi_util.h	/^  struct ndpi_detection_module_struct *ndpi_struct; \/\/ 指向这条工作流专属的探测模块$/;"	m	struct:ndpi_workflow	typeref:struct:ndpi_workflow::ndpi_detection_module_struct	access:public
+ndpi_struct	example/ndpi_util.h	/^  struct ndpi_detection_module_struct *ndpi_struct; \/\/ 指向该工作流专属的探测模块$/;"	m	struct:ndpi_workflow	typeref:struct:ndpi_workflow::ndpi_detection_module_struct	access:public
 ndpi_subprotocol_conf_struct	src/include/ndpi_typedefs.h	/^struct ndpi_subprotocol_conf_struct {$/;"	s
 ndpi_subprotocol_conf_struct::func	src/include/ndpi_typedefs.h	/^  void (*func) (struct ndpi_detection_module_struct *, char *attr, char *value, int protocol_id);$/;"	m	struct:ndpi_subprotocol_conf_struct	access:public
 ndpi_tcphdr	src/include/ndpi_typedefs.h	/^struct ndpi_tcphdr$/;"	s
@@ -3267,11 +3267,11 @@ ndpi_workflow::__flow_detected_callback	example/ndpi_util.h	/^  ndpi_workflow_ca
 ndpi_workflow::__flow_detected_udata	example/ndpi_util.h	/^  void * __flow_detected_udata;                         \/\/ 传递给__flow_detected_callback回调函数的参数$/;"	m	struct:ndpi_workflow	access:public
 ndpi_workflow::__flow_giveup_callback	example/ndpi_util.h	/^  ndpi_workflow_callback_ptr __flow_giveup_callback;$/;"	m	struct:ndpi_workflow	access:public
 ndpi_workflow::__flow_giveup_udata	example/ndpi_util.h	/^  void * __flow_giveup_udata;$/;"	m	struct:ndpi_workflow	access:public
-ndpi_workflow::last_time	example/ndpi_util.h	/^  u_int64_t last_time;      \/\/ 最后一次收到包的时间$/;"	m	struct:ndpi_workflow	access:public
+ndpi_workflow::last_time	example/ndpi_util.h	/^  u_int64_t last_time;      \/\/ 该工作流最近一次收到包的时间$/;"	m	struct:ndpi_workflow	access:public
 ndpi_workflow::ndpi_flows_root	example/ndpi_util.h	/^  void **ndpi_flows_root;   \/\/ 一个prefs.num_roots长度的hash数组，每个成员是二叉树的根节点，所以整个组织形式为 hash + 二叉树结构，存放了所有的数据流$/;"	m	struct:ndpi_workflow	access:public
-ndpi_workflow::ndpi_struct	example/ndpi_util.h	/^  struct ndpi_detection_module_struct *ndpi_struct; \/\/ 指向这条工作流专属的探测模块$/;"	m	struct:ndpi_workflow	typeref:struct:ndpi_workflow::ndpi_detection_module_struct	access:public
-ndpi_workflow::pcap_handle	example/ndpi_util.h	/^  pcap_t *pcap_handle;      \/\/ 指向这条流关联的pcap句柄$/;"	m	struct:ndpi_workflow	access:public
-ndpi_workflow::prefs	example/ndpi_util.h	/^  struct ndpi_workflow_prefs prefs; \/\/ 记录了这条流关联的参数配置块$/;"	m	struct:ndpi_workflow	typeref:struct:ndpi_workflow::ndpi_workflow_prefs	access:public
+ndpi_workflow::ndpi_struct	example/ndpi_util.h	/^  struct ndpi_detection_module_struct *ndpi_struct; \/\/ 指向该工作流专属的探测模块$/;"	m	struct:ndpi_workflow	typeref:struct:ndpi_workflow::ndpi_detection_module_struct	access:public
+ndpi_workflow::pcap_handle	example/ndpi_util.h	/^  pcap_t *pcap_handle;      \/\/ 指向该工作流关联的pcap句柄$/;"	m	struct:ndpi_workflow	access:public
+ndpi_workflow::prefs	example/ndpi_util.h	/^  struct ndpi_workflow_prefs prefs; \/\/ 记录了该工作流关联的参数配置块$/;"	m	struct:ndpi_workflow	typeref:struct:ndpi_workflow::ndpi_workflow_prefs	access:public
 ndpi_workflow::stats	example/ndpi_util.h	/^  struct ndpi_stats stats;$/;"	m	struct:ndpi_workflow	typeref:struct:ndpi_workflow::ndpi_stats	access:public
 ndpi_workflow_callback_ptr	example/ndpi_util.h	/^typedef void (*ndpi_workflow_callback_ptr) (struct ndpi_workflow *, struct ndpi_flow_info *, void *);$/;"	t
 ndpi_workflow_free	example/ndpi_util.c	/^void ndpi_workflow_free(struct ndpi_workflow * workflow) {$/;"	f	signature:(struct ndpi_workflow * workflow)
@@ -3281,7 +3281,7 @@ ndpi_workflow_init	example/ndpi_util.h	/^struct ndpi_workflow * ndpi_workflow_in
 ndpi_workflow_node_cmp	example/ndpi_util.c	/^int ndpi_workflow_node_cmp(const void *a, const void *b) {$/;"	f	signature:(const void *a, const void *b)
 ndpi_workflow_node_cmp	example/ndpi_util.h	/^int ndpi_workflow_node_cmp(const void *a, const void *b);$/;"	p	signature:(const void *a, const void *b)
 ndpi_workflow_prefs	example/ndpi_util.h	/^typedef struct ndpi_workflow_prefs {$/;"	s
-ndpi_workflow_prefs::decode_tunnels	example/ndpi_util.h	/^  u_int8_t decode_tunnels;  \/\/ 标识是否使能隧道功能$/;"	m	struct:ndpi_workflow_prefs	access:public
+ndpi_workflow_prefs::decode_tunnels	example/ndpi_util.h	/^  u_int8_t decode_tunnels;  \/\/ 标识是否使能解析GTP隧道功能$/;"	m	struct:ndpi_workflow_prefs	access:public
 ndpi_workflow_prefs::max_ndpi_flows	example/ndpi_util.h	/^  u_int32_t max_ndpi_flows; \/\/ 固定为MAX_NDPI_FLOWS$/;"	m	struct:ndpi_workflow_prefs	access:public
 ndpi_workflow_prefs::num_roots	example/ndpi_util.h	/^  u_int32_t num_roots;      \/\/ 固定为NUM_ROOTS$/;"	m	struct:ndpi_workflow_prefs	access:public
 ndpi_workflow_prefs::quiet_mode	example/ndpi_util.h	/^  u_int8_t quiet_mode;      \/\/ 标识是否使能安静模式$/;"	m	struct:ndpi_workflow_prefs	access:public
@@ -3374,7 +3374,7 @@ num_answers	src/include/ndpi_typedefs.h	/^  u_int16_t num_answers;$/;"	m	struct:
 num_buckets	example/uthash.h	/^   unsigned num_buckets, log2_num_buckets;$/;"	m	struct:UT_hash_table	access:public
 num_bytes	example/ndpiReader.c	/^  u_int32_t num_pkts, num_bytes;$/;"	m	struct:port_stats	file:	access:public
 num_flows	example/ndpiReader.c	/^static u_int32_t num_flows;$/;"	v	file:
-num_idle_flows	example/ndpiReader.c	/^  u_int32_t num_idle_flows;             \/\/ 记录了空闲的数据流数量$/;"	m	struct:reader_thread	file:	access:public
+num_idle_flows	example/ndpiReader.c	/^  u_int32_t num_idle_flows;             \/\/ 记录了空闲数据流集合中的数据流数量(暂存用)$/;"	m	struct:reader_thread	file:	access:public
 num_items	example/uthash.h	/^   unsigned num_items;$/;"	m	struct:UT_hash_table	access:public
 num_loops	example/ndpiReader.c	/^static u_int16_t num_loops = 1;     \/\/ 探测循环次数(仅测试用)$/;"	v	file:
 num_pkts	example/ndpiReader.c	/^  u_int32_t num_pkts, num_bytes;$/;"	m	struct:port_stats	file:	access:public
@@ -3443,9 +3443,9 @@ patricia_tree_t	src/lib/third_party/include/ndpi_patricia.h	/^} patricia_tree_t;
 patterns	src/lib/third_party/include/actypes.h	/^  AC_PATTERN_t * patterns; \/* Array of matched pattern *\/$/;"	m	struct:__anon6	access:public
 payload	src/include/ndpi_typedefs.h	/^  const u_int8_t *payload;              \/\/ 指向l4层payload首地址的指针$/;"	m	struct:ndpi_packet_struct	access:public
 payload_packet_len	src/include/ndpi_typedefs.h	/^  u_int16_t payload_packet_len; \/\/ 记录了收到包的l4层payload长度$/;"	m	struct:ndpi_packet_struct	access:public
-pcap_analysis_duration	example/ndpiReader.c	/^static u_int32_t pcap_analysis_duration = (u_int32_t)-1;$/;"	v	file:
+pcap_analysis_duration	example/ndpiReader.c	/^static u_int32_t pcap_analysis_duration = (u_int32_t)-1;    \/\/ 解析pcap文件时耗时如果超过该值将会分段打印识别结果$/;"	v	file:
 pcap_end	example/ndpiReader.c	/^static struct timeval pcap_start, pcap_end;     \/\/ 捕获起始和结束时间(只在没有传入捕获接口时有效)$/;"	v	typeref:struct:	file:
-pcap_handle	example/ndpi_util.h	/^  pcap_t *pcap_handle;      \/\/ 指向这条流关联的pcap句柄$/;"	m	struct:ndpi_workflow	access:public
+pcap_handle	example/ndpi_util.h	/^  pcap_t *pcap_handle;      \/\/ 指向该工作流关联的pcap句柄$/;"	m	struct:ndpi_workflow	access:public
 pcap_process_packet	example/ndpiReader.c	/^static void pcap_process_packet(u_char *args,$/;"	f	file:	signature:(u_char *args, const struct pcap_pkthdr *header, const u_char *packet)
 pcap_start	example/ndpiReader.c	/^static struct timeval pcap_start, pcap_end;     \/\/ 捕获起始和结束时间(只在没有传入捕获接口时有效)$/;"	v	typeref:struct:timeval	file:
 peers	src/lib/protocols/btlib.h	/^	struct bt_ipv4p		*peers;$/;"	m	struct:bt_parse_protocol	typeref:struct:bt_parse_protocol::bt_ipv4p	access:public
@@ -3487,7 +3487,7 @@ prefix	src/lib/third_party/include/ndpi_patricia.h	/^  prefix_t *prefix;		\/* wh
 prefix4_t	src/lib/third_party/include/ndpi_patricia.h	/^} prefix4_t;$/;"	t	typeref:struct:the_prefix4_t
 prefix_t	src/lib/third_party/include/ndpi_patricia.h	/^} prefix_t;$/;"	t	typeref:struct:the_prefix_t
 prefix_touchar	src/lib/third_party/include/ndpi_patricia.h	52;"	d
-prefs	example/ndpi_util.h	/^  struct ndpi_workflow_prefs prefs; \/\/ 记录了这条流关联的参数配置块$/;"	m	struct:ndpi_workflow	typeref:struct:ndpi_workflow::ndpi_workflow_prefs	access:public
+prefs	example/ndpi_util.h	/^  struct ndpi_workflow_prefs prefs; \/\/ 记录了该工作流关联的参数配置块$/;"	m	struct:ndpi_workflow	typeref:struct:ndpi_workflow::ndpi_workflow_prefs	access:public
 present	src/include/ndpi_typedefs.h	/^  u_int32_t present;$/;"	m	struct:ndpi_radiotap_header	access:public
 prev	example/uthash.h	/^   void *prev;                       \/* prev element in app order      *\/$/;"	m	struct:UT_hash_handle	access:public
 prev	src/include/ndpi_typedefs.h	/^  struct hash_ip4p_node   *next,*prev;$/;"	m	struct:hash_ip4p_node	typeref:struct:hash_ip4p_node::	access:public
@@ -3570,10 +3570,10 @@ radius_header::packet_id	src/lib/protocols/radius.c	/^  u_int8_t packet_id;$/;"	
 raw_packet_count	example/ndpi_util.h	/^  u_int64_t raw_packet_count;           \/\/ 记录了从libpcap收到的原始报文数量$/;"	m	struct:ndpi_stats	access:public
 rcvr	src/include/ndpi_typedefs.h	/^  u_char rcvr[6];$/;"	m	struct:ndpi_wifi_header	access:public
 reader_thread	example/ndpiReader.c	/^struct reader_thread {$/;"	s	file:
-reader_thread::idle_flows	example/ndpiReader.c	/^  struct ndpi_flow_info *idle_flows[IDLE_SCAN_BUDGET];$/;"	m	struct:reader_thread	typeref:struct:reader_thread::ndpi_flow_info	file:	access:public
-reader_thread::idle_scan_idx	example/ndpiReader.c	/^  u_int32_t idle_scan_idx;$/;"	m	struct:reader_thread	file:	access:public
-reader_thread::last_idle_scan_time	example/ndpiReader.c	/^  u_int64_t last_idle_scan_time;$/;"	m	struct:reader_thread	file:	access:public
-reader_thread::num_idle_flows	example/ndpiReader.c	/^  u_int32_t num_idle_flows;             \/\/ 记录了空闲的数据流数量$/;"	m	struct:reader_thread	file:	access:public
+reader_thread::idle_flows	example/ndpiReader.c	/^  struct ndpi_flow_info *idle_flows[IDLE_SCAN_BUDGET];  \/\/ 空闲的数据流集合(暂存用)$/;"	m	struct:reader_thread	typeref:struct:reader_thread::ndpi_flow_info	file:	access:public
+reader_thread::idle_scan_idx	example/ndpiReader.c	/^  u_int32_t idle_scan_idx;              \/\/ hash表中空闲数据流所在的散列地址序号$/;"	m	struct:reader_thread	file:	access:public
+reader_thread::last_idle_scan_time	example/ndpiReader.c	/^  u_int64_t last_idle_scan_time;        \/\/ 记录了最近一次扫描空闲数据流的时间$/;"	m	struct:reader_thread	file:	access:public
+reader_thread::num_idle_flows	example/ndpiReader.c	/^  u_int32_t num_idle_flows;             \/\/ 记录了空闲数据流集合中的数据流数量(暂存用)$/;"	m	struct:reader_thread	file:	access:public
 reader_thread::pthread	example/ndpiReader.c	/^  pthread_t pthread;                    \/\/ 记录了对应的线程ID$/;"	m	struct:reader_thread	file:	access:public
 reader_thread::workflow	example/ndpiReader.c	/^  struct ndpi_workflow * workflow;      \/\/ 指向一条对应的工作流$/;"	m	struct:reader_thread	typeref:struct:reader_thread::ndpi_workflow	file:	access:public
 redis_d2s_first_char	src/include/ndpi_typedefs.h	/^  u_int8_t redis_s2d_first_char, redis_d2s_first_char;$/;"	m	struct:ndpi_flow_struct	access:public

@@ -56,7 +56,7 @@ int check_punycode_string(char * buffer , int len)
 }
 
 /* ftp://ftp.cc.uoc.gr/mirrors/OpenBSD/src/lib/libc/stdlib/tsearch.c */
-/* find or insert datum into search tree 查找或插入传入的节点到二叉树中 */
+/* find or insert datum into search tree 插入传入的关键字到二叉树中 */
 void * ndpi_tsearch(const void *vkey, void **vrootp,
 		    int (*compar)(const void *, const void *))
 {
@@ -66,15 +66,20 @@ void * ndpi_tsearch(const void *vkey, void **vrootp,
 
   if(rootp == (ndpi_node **)0)
     return ((void *)0);
+
   while (*rootp != (ndpi_node *)0) {	/* Knuth's T1: */
     int r;
 
+    // 比较传入的关键字和每个节点的关键字，相等则意味着该关键字已经存在，不需要继续插入，直接返回
     if((r = (*compar)(key, (*rootp)->key)) == 0)	/* T2: */
       return ((void *)*rootp);	/* we found it! */
+    // 如果没有匹配到，则根据比较大小选择进入左分支还是右分支
     rootp = (r < 0) ?
       &(*rootp)->left :		/* T3: follow left branch */
       &(*rootp)->right;		/* T4: follow right branch */
   }
+
+  // 搜索运行到这里意味着现有的二叉树中不存在该关键字对应的节点
   q = (ndpi_node *) ndpi_malloc(sizeof(ndpi_node));	/* T5: key not found */
   if(q != (ndpi_node *)0) {	/* make new node */
     *rootp = q;			/* link new node to old */
@@ -84,7 +89,7 @@ void * ndpi_tsearch(const void *vkey, void **vrootp,
   return ((void *)q);
 }
 
-/* delete node with given key */
+/* delete node with given key 查找并删除二叉树中的指定节点 */
 void * ndpi_tdelete(const void *vkey, void **vrootp,
 		    int (*compar)(const void *, const void *))
 {
@@ -128,26 +133,26 @@ void * ndpi_tdelete(const void *vkey, void **vrootp,
 /* Walk the nodes of a tree */
 static void ndpi_trecurse(ndpi_node *root, void (*action)(const void *, ndpi_VISIT, int, void*), int level, void *user_data)
 {
-  if(root->left == (ndpi_node *)0 && root->right == (ndpi_node *)0)
-    (*action)(root, ndpi_leaf, level, user_data);
-  else {
-    (*action)(root, ndpi_preorder, level, user_data);
-    if(root->left != (ndpi_node *)0)
-      ndpi_trecurse(root->left, action, level + 1, user_data);
-    (*action)(root, ndpi_postorder, level, user_data);
-    if(root->right != (ndpi_node *)0)
-      ndpi_trecurse(root->right, action, level + 1, user_data);
-    (*action)(root, ndpi_endorder, level, user_data);
-  }
+    if(root->left == (ndpi_node *)0 && root->right == (ndpi_node *)0)   // 叶节点的情况
+        (*action)(root, ndpi_leaf, level, user_data);   
+    else {                                                              // 干节点的情况
+        (*action)(root, ndpi_preorder, level, user_data);
+        if(root->left != (ndpi_node *)0)
+            ndpi_trecurse(root->left, action, level + 1, user_data);
+        (*action)(root, ndpi_postorder, level, user_data);
+        if(root->right != (ndpi_node *)0)
+            ndpi_trecurse(root->right, action, level + 1, user_data);
+        (*action)(root, ndpi_endorder, level, user_data);
+    }
 }
 
 /* Walk the nodes of a tree  遍历指定二叉树的所有节点，每个节点调用action函数 */
 void ndpi_twalk(const void *vroot, void (*action)(const void *, ndpi_VISIT, int, void *), void *user_data)
 {
-  ndpi_node *root = (ndpi_node *)vroot;
+    ndpi_node *root = (ndpi_node *)vroot;
 
-  if(root != (ndpi_node *)0 && action != (void (*)(const void *, ndpi_VISIT, int, void*))0)
-    ndpi_trecurse(root, action, 0, user_data);
+    if(root != (ndpi_node *)0 && action != (void (*)(const void *, ndpi_VISIT, int, void*))0)
+        ndpi_trecurse(root, action, 0, user_data);
 }
 
 /* find a node, or return 0  搜索二叉树，查找匹配的节点 */
@@ -159,10 +164,13 @@ void * ndpi_tfind(const void *vkey, void *vrootp,
 
   if(rootp == (ndpi_node **)0)
     return ((ndpi_node *)0);
+
   while (*rootp != (ndpi_node *)0) {	/* T1: */
     int r;
+    // 比较传入的关键字和每个节点的关键字，相等则直接返回匹配到的节点
     if((r = (*compar)(key, (*rootp)->key)) == 0)	/* T2: */
       return (*rootp);		/* key found */
+    // 如果没有匹配到，则根据比较大小选择进入左分支还是右分支
     rootp = (r < 0) ?
       &(*rootp)->left :		/* T3: follow left branch */
       &(*rootp)->right;		/* T4: follow right branch */
@@ -2296,8 +2304,8 @@ int ndpi_load_protocols_file(struct ndpi_detection_module_struct *ndpi_mod, char
  * @ndpi_protocol_id        - ndpi分配给该协议的ID号
  * @func                    - 该协议的解析器回调函数
  * @ndpi_selection_bitmask  - 选择位集合(这些位包含了IP、TCP、UDP、IPV4、IPV6、payload等)
- * @b_save_bitmask_unknow   - 是否记录unknow包
- * @b_add_detection_bitmask -
+ * @b_save_bitmask_unknow   - 用来决定是否设置该协议的callback_buffer.detection_bitmask中的NDPI_PROTOCOL_UNKNOWN位
+ * @b_add_detection_bitmask - 用来决定是否设置该协议的callback_buffer.detection_bitmask中的ndpi_protocol_id位
  */
 void ndpi_set_bitmask_protocol_detection( char * label,
 					  struct ndpi_detection_module_struct *ndpi_struct,
@@ -3395,7 +3403,7 @@ void check_ndpi_tcp_flow_func(struct ndpi_detection_module_struct *ndpi_struct,
   int16_t proto_id = ndpi_struct->proto_defaults[flow->guessed_protocol_id].protoId;
   NDPI_PROTOCOL_BITMASK detection_bitmask;
 
-  NDPI_SAVE_AS_BITMASK(detection_bitmask, flow->packet.detected_protocol_stack[0]);
+    NDPI_SAVE_AS_BITMASK(detection_bitmask, flow->packet.detected_protocol_stack[0]);
 
     // 根据收到的TCP包是否有payload分为2种情况处理(其实流程基本一样)
     if(flow->packet.payload_packet_len != 0) {
@@ -4192,8 +4200,10 @@ void ndpi_set_detected_protocol(struct ndpi_detection_module_struct *ndpi_struct
     ndpi_int_change_protocol(ndpi_struct, flow, upper_detected_protocol, lower_detected_protocol);
 
     if(src != NULL) {
+        // 上层协议ID必定被记录
         NDPI_ADD_PROTOCOL_TO_BITMASK(src->detected_protocol_bitmask, upper_detected_protocol);
 
+        // 只有有效的下层协议ID才会被记录
         if(lower_detected_protocol != NDPI_PROTOCOL_UNKNOWN)
             NDPI_ADD_PROTOCOL_TO_BITMASK(src->detected_protocol_bitmask, lower_detected_protocol);
     }
@@ -4249,9 +4259,11 @@ void ndpi_int_change_protocol(struct ndpi_detection_module_struct *ndpi_struct,
 			      struct ndpi_flow_struct *flow,
 			      u_int16_t upper_detected_protocol,
 			      u_int16_t lower_detected_protocol) {
+    // 如果上层协议ID为unknow但是下层协议ID不是unknown，则用下层协议ID同步上层协议ID
     if((upper_detected_protocol == NDPI_PROTOCOL_UNKNOWN) && (lower_detected_protocol != NDPI_PROTOCOL_UNKNOWN))
         upper_detected_protocol = lower_detected_protocol;
 
+    // 如果上、下层协议ID相等，则将下层协议ID调整为unknown
     if(upper_detected_protocol == lower_detected_protocol)
         lower_detected_protocol = NDPI_PROTOCOL_UNKNOWN;
 
@@ -4296,6 +4308,7 @@ void ndpi_int_reset_protocol(struct ndpi_flow_struct *flow) {
   }
 }
 
+// 清空IP
 void NDPI_PROTOCOL_IP_clear(ndpi_ip_addr_t * ip) {
   memset(ip, 0, sizeof(ndpi_ip_addr_t));
 }
@@ -4357,7 +4370,9 @@ int ndpi_packet_dst_ip_eql(const struct ndpi_packet_struct *packet, const ndpi_i
   return 0;
 }
 
-/* get the source ip address from packet and put it into ip */
+/* get the source ip address from packet and put it into ip 
+ * 从指定报文中获取源IP地址
+ * */
 /* NTOP */
 void ndpi_packet_src_ip_get(const struct ndpi_packet_struct *packet, ndpi_ip_addr_t * ip)
 {
@@ -4380,7 +4395,9 @@ void ndpi_packet_src_ip_get(const struct ndpi_packet_struct *packet, ndpi_ip_add
     ip->ipv4 = packet->iph->saddr;
 }
 
-/* get the destination ip address from packet and put it into ip */
+/* get the destination ip address from packet and put it into ip 
+ * 从指定报文中获取目的IP地址
+ * */
 /* NTOP */
 void ndpi_packet_dst_ip_get(const struct ndpi_packet_struct *packet, ndpi_ip_addr_t * ip)
 {

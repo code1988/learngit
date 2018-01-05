@@ -32,8 +32,8 @@
 #include <pcap.h>
 
 #define MAX_NUM_READER_THREADS     16
-#define IDLE_SCAN_PERIOD           10 /* msec (use TICK_RESOLUTION = 1000) */
-#define MAX_IDLE_TIME           30000
+#define IDLE_SCAN_PERIOD           10 /* msec (use TICK_RESOLUTION = 1000) 超过该间隔时间就需要清理一下空闲的数据流 */
+#define MAX_IDLE_TIME           30000   // msec 用来判断数据流是否已经处于空闲状态的时间间隔
 #define IDLE_SCAN_BUDGET         1024
 #define NUM_ROOTS                 512
 #define MAX_NDPI_FLOWS      200000000   // 可以容纳的数据流上限
@@ -118,9 +118,9 @@ typedef void (*ndpi_workflow_callback_ptr) (struct ndpi_workflow *, struct ndpi_
 
 // workflow main structure 定义了工作流的主结构
 typedef struct ndpi_workflow {
-  u_int64_t last_time;      // 最后一次收到包的时间
+  u_int64_t last_time;      // 该工作流最近一次收到包的时间
 
-  struct ndpi_workflow_prefs prefs; // 记录了这条流关联的参数配置块
+  struct ndpi_workflow_prefs prefs; // 记录了该工作流关联的参数配置块
   struct ndpi_stats stats;
 
   ndpi_workflow_callback_ptr __flow_detected_callback;  // 完成探测后的回调函数 (on_protocol_discovered)
@@ -129,11 +129,11 @@ typedef struct ndpi_workflow {
   void * __flow_giveup_udata;
 
   /* outside referencies */
-  pcap_t *pcap_handle;      // 指向这条流关联的pcap句柄
+  pcap_t *pcap_handle;      // 指向该工作流关联的pcap句柄
 
   /* allocated by prefs */
   void **ndpi_flows_root;   // 一个prefs.num_roots长度的hash数组，每个成员是二叉树的根节点，所以整个组织形式为 hash + 二叉树结构，存放了所有的数据流
-  struct ndpi_detection_module_struct *ndpi_struct; // 指向这条工作流专属的探测模块
+  struct ndpi_detection_module_struct *ndpi_struct; // 指向该工作流专属的探测模块
 } ndpi_workflow_t;
 
 

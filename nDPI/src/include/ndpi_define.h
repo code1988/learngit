@@ -79,7 +79,7 @@
 #define NDPI_USE_ASYMMETRIC_DETECTION                           0
 #define NDPI_SELECTION_BITMASK_PROTOCOL_SIZE			u_int32_t
 
-// <=l4层信息归类
+// l3 + l4层特征归类
 #define NDPI_SELECTION_BITMASK_PROTOCOL_IP			(1<<0)
 #define NDPI_SELECTION_BITMASK_PROTOCOL_INT_TCP			(1<<1)
 #define NDPI_SELECTION_BITMASK_PROTOCOL_INT_UDP			(1<<2)
@@ -238,7 +238,7 @@
  */
 #define NDPI_ADD_PROTOCOL_TO_BITMASK(bmask,value)     NDPI_SET(&bmask,value)    // 变量bmask的第value位置1
 #define NDPI_DEL_PROTOCOL_FROM_BITMASK(bmask,value)   NDPI_CLR(&bmask,value)
-#define NDPI_COMPARE_PROTOCOL_TO_BITMASK(bmask,value) NDPI_ISSET(&bmask,value)
+#define NDPI_COMPARE_PROTOCOL_TO_BITMASK(bmask,value) NDPI_ISSET(&bmask,value)  // 判断变量bmask的第value位是否置1
 
 #define NDPI_SAVE_AS_BITMASK(bmask,value)  { NDPI_ZERO(&bmask) ; NDPI_ADD_PROTOCOL_TO_BITMASK(bmask, value); }  // 变量bmask先执行全部位0,再将第value位置1
 

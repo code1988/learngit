@@ -44,7 +44,7 @@ typedef enum
     ndpi_preorder,
     ndpi_postorder,
     ndpi_endorder,
-    ndpi_leaf
+    ndpi_leaf       // 二叉树叶节点
   } ndpi_VISIT;
 
 /* NDPI_NODE 二叉树节点 */
@@ -342,16 +342,18 @@ typedef enum {
   HTTP_METHOD_CONNECT
 } ndpi_http_method;
 
+// 定义了数据流关联的会话信息
 struct ndpi_id_struct {
   /**
      detected_protocol_bitmask:
      access this bitmask to find out whether an id has used skype or not
      if a flag is set here, it will not be reset
      to compare this, use:
+     记录了该数据流识别到的上层协议ID和有效的下层协议ID
   **/
   NDPI_PROTOCOL_BITMASK detected_protocol_bitmask;
 #ifdef NDPI_PROTOCOL_RTSP
-  ndpi_ip_addr_t rtsp_ip_address;
+  ndpi_ip_addr_t rtsp_ip_address;   // 记录了RTSP流的IP地址
 #endif
 #ifdef NDPI_PROTOCOL_SIP
 #ifdef NDPI_PROTOCOL_YAHOO
@@ -375,7 +377,7 @@ struct ndpi_id_struct {
   u_int32_t thunder_ts;
 #endif
 #ifdef NDPI_PROTOCOL_RTSP
-  u_int32_t rtsp_timer;
+  u_int32_t rtsp_timer;     // 记录了RTSP流最近收到包的时间(s)
 #endif
 #ifdef NDPI_PROTOCOL_OSCAR
   u_int32_t oscar_last_safe_access_time;
@@ -436,7 +438,7 @@ struct ndpi_id_struct {
   u_int32_t yahoo_voice_conf_logged_in:1;
 #endif
 #ifdef NDPI_PROTOCOL_RTSP
-  u_int32_t rtsp_ts_set:1;
+  u_int32_t rtsp_ts_set:1;      // 标识是否记录了RTSP流时间
 #endif
 };
 
@@ -653,7 +655,7 @@ struct ndpi_packet_struct {
   u_int32_t tick_timestamp;     // 收到包的时间(s)
   u_int64_t tick_timestamp_l;   // 收到包的时间(ms)
 
-  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];    // 依次记录了该数据包识别到的子协议号和主协议号
+  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];    // 依次记录了该数据包识别到的上层协议号(即app_protocol)和下层协议号(即master_protocol)
   u_int8_t detected_subprotocol_stack[NDPI_PROTOCOL_SIZE];
 
 
@@ -700,12 +702,12 @@ struct ndpi_packet_struct {
 struct ndpi_detection_module_struct;
 struct ndpi_flow_struct;
 
-// 定义了实际使能的协议单元
+// 定义了实际使能的协议的配置信息集合
 struct ndpi_call_function_struct {
-  NDPI_PROTOCOL_BITMASK detection_bitmask;                      // 该字段的设置跟ndpi_set_bitmask_protocol_detection函数的入参有关
-  NDPI_PROTOCOL_BITMASK excluded_protocol_bitmask;              // 实际被使能的协议会将该集合的对应位置1
-  NDPI_SELECTION_BITMASK_PROTOCOL_SIZE ndpi_selection_bitmask;  // 选择位集合(这些位包含了IP、TCP、UDP、IPV4、IPV6、payload等)
-  void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow);
+  NDPI_PROTOCOL_BITMASK detection_bitmask;                      // (协议序号掩码集合)该字段的设置跟ndpi_set_bitmask_protocol_detection函数的入参有关
+  NDPI_PROTOCOL_BITMASK excluded_protocol_bitmask;              // (协议序号掩码集合)实际被使能的协议会将该集合的对应位置1
+  NDPI_SELECTION_BITMASK_PROTOCOL_SIZE ndpi_selection_bitmask;  // 该协议配置的l3 + l4层特征位集合
+  void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow);  // 指向协议关联的应用层解析器
   u_int8_t detection_feature;
 };
 
@@ -768,7 +770,7 @@ typedef struct ndpi_proto_defaults {
   u_int16_t protoIdx;   // 协议序号(在ndpi_set_protocol_detection_bitmask2中初始化是从0递增得到)   
   u_int16_t master_tcp_protoId[2], master_udp_protoId[2]; /* The main protocols on which this sub-protocol sits on */
   ndpi_protocol_breed_t protoBreed;         // 协议类别2(根据安全性归类)
-  void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow);  // 指向协议关联的报文解析回调接口
+  void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow);  // 指向协议关联的应用层解析器
 } ndpi_proto_defaults_t;
 
 // 定义了二叉树节点结构(通过default_port字段进行匹配)
@@ -904,7 +906,7 @@ struct ndpi_detection_module_struct {
 
 // 定义了数据流结构
 struct ndpi_flow_struct {
-  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];    // 依次记录了该数据流识别到的子协议号和主协议号
+  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];    // 依次记录了该数据流识别到的上层协议号(即app_protocol)和下层协议号(即master_protocol)
 #ifndef WIN32
   __attribute__ ((__packed__))
 #endif
@@ -1022,7 +1024,7 @@ struct ndpi_flow_struct {
 #endif
 #ifdef NDPI_PROTOCOL_RTSP
   u_int32_t rtsprdt_stage:2;
-  u_int32_t rtsp_control_flow:1;
+  u_int32_t rtsp_control_flow:1;        // 标识是否探测到RTSP流
 #endif
 #ifdef NDPI_PROTOCOL_YAHOO
   u_int32_t yahoo_detection_finished:2;

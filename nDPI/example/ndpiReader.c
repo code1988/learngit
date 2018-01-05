@@ -145,10 +145,10 @@ static u_int16_t extcap_packet_filter = (u_int16_t)-1;
 struct reader_thread {
   struct ndpi_workflow * workflow;      // 指向一条对应的工作流
   pthread_t pthread;                    // 记录了对应的线程ID
-  u_int64_t last_idle_scan_time;
-  u_int32_t idle_scan_idx;
-  u_int32_t num_idle_flows;             // 记录了空闲的数据流数量
-  struct ndpi_flow_info *idle_flows[IDLE_SCAN_BUDGET];
+  u_int64_t last_idle_scan_time;        // 记录了最近一次扫描空闲数据流的时间
+  u_int32_t idle_scan_idx;              // hash表中空闲数据流所在的散列地址序号
+  u_int32_t num_idle_flows;             // 记录了空闲数据流集合中的数据流数量(暂存用)
+  struct ndpi_flow_info *idle_flows[IDLE_SCAN_BUDGET];  // 空闲的数据流集合(暂存用)
 };
 
 // array for every thread created for a flow  定义了一个线程表，每个线程单元用来处理一条流
@@ -983,31 +983,36 @@ static void port_stats_walker(const void *node, ndpi_VISIT which, int depth, voi
 
 /**
  * @brief Idle Scan Walker
+ * 扫描指定的二叉树节点是否记录了一个已经空闲的数据流
+ * 备注：二叉树ndpi_flows_root执行遍历时的action函数
  */
 static void node_idle_scan_walker(const void *node, ndpi_VISIT which, int depth, void *user_data) {
 
   struct ndpi_flow_info *flow = *(struct ndpi_flow_info **) node;
   u_int16_t thread_id = *((u_int16_t *) user_data);
 
-  if(ndpi_thread_info[thread_id].num_idle_flows == IDLE_SCAN_BUDGET) /* TODO optimise with a budget-based walk */
-    return;
+    if(ndpi_thread_info[thread_id].num_idle_flows == IDLE_SCAN_BUDGET) /* TODO optimise with a budget-based walk */
+        return;
 
-  if((which == ndpi_preorder) || (which == ndpi_leaf)) { /* Avoid walking the same node multiple times */
-    if(flow->last_seen + MAX_IDLE_TIME < ndpi_thread_info[thread_id].workflow->last_time) {
+    // 只扫描前序遍历和叶节点两种情况
+    if((which == ndpi_preorder) || (which == ndpi_leaf)) { /* Avoid walking the same node multiple times */
+        // 通过比较传入的二叉树节点对应的数据流和数据流所属工作流的最近收包时间，来判断该数据流是否已经处于空闲状态
+        if(flow->last_seen + MAX_IDLE_TIME < ndpi_thread_info[thread_id].workflow->last_time) {
 
-      /* update stats */
-      node_proto_guess_walker(node, which, depth, user_data);
+          /* update stats */
+          node_proto_guess_walker(node, which, depth, user_data);
 
-      if((flow->detected_protocol.app_protocol == NDPI_PROTOCOL_UNKNOWN) && !undetected_flows_deleted)
-        undetected_flows_deleted = 1;
+          if((flow->detected_protocol.app_protocol == NDPI_PROTOCOL_UNKNOWN) && !undetected_flows_deleted)
+            undetected_flows_deleted = 1;
 
-      ndpi_free_flow_info_half(flow);
-      ndpi_thread_info[thread_id].workflow->stats.ndpi_flow_count--;
+          // 对于空闲数据流，在二叉树的遍历过程中不能直接销毁，所以这里将其暂时记录到idle_flows集合中，等到遍历完毕后再进行统一销毁
+          ndpi_free_flow_info_half(flow);
+          ndpi_thread_info[thread_id].workflow->stats.ndpi_flow_count--;
 
-      /* adding to a queue (we can't delete it from the tree inline ) */
-      ndpi_thread_info[thread_id].idle_flows[ndpi_thread_info[thread_id].num_idle_flows++] = flow;
+          /* adding to a queue (we can't delete it from the tree inline ) */
+          ndpi_thread_info[thread_id].idle_flows[ndpi_thread_info[thread_id].num_idle_flows++] = flow;
+        }
     }
-  }
 }
 
 
@@ -1858,13 +1863,15 @@ static void pcap_process_packet(u_char *args,
         pcap_end.tv_sec = header->ts.tv_sec, pcap_end.tv_usec = header->ts.tv_usec;
     }
 
-    /* Idle flows cleanup  清除空闲的数据流 */
+    /* Idle flows cleanup  现场捕获模式下，每过IDLE_SCAN_PERIOD间隔，就需要清理一下空闲的数据流 */
     if(live_capture) {
         if(ndpi_thread_info[thread_id].last_idle_scan_time + IDLE_SCAN_PERIOD < ndpi_thread_info[thread_id].workflow->last_time) {
-            /* scan for idle flows */
+            /* scan for idle flows  遍历hash表中序号为idle_scan_idx的二叉树，标记其中的空闲数据流节点 */
             ndpi_twalk(ndpi_thread_info[thread_id].workflow->ndpi_flows_root[ndpi_thread_info[thread_id].idle_scan_idx], node_idle_scan_walker, &thread_id);
 
-            /* remove idle flows (unfortunately we cannot do this inline) */
+            /* remove idle flows (unfortunately we cannot do this inline) 
+             * 只有全部遍历完毕后，才能对空闲数据流执行销毁
+             * */
             while (ndpi_thread_info[thread_id].num_idle_flows > 0) {
                 /* search and delete the idle flow from the "ndpi_flow_root" (see struct reader thread) - here flows are the node of a b-tree */
                 ndpi_tdelete(ndpi_thread_info[thread_id].idle_flows[--ndpi_thread_info[thread_id].num_idle_flows],
@@ -1876,6 +1883,7 @@ static void pcap_process_packet(u_char *args,
                 ndpi_free(ndpi_thread_info[thread_id].idle_flows[ndpi_thread_info[thread_id].num_idle_flows]);
             }
 
+            // 计算下一次需要清理空闲数据流的hash表地址
             if(++ndpi_thread_info[thread_id].idle_scan_idx == ndpi_thread_info[thread_id].workflow->prefs.num_roots) 
                 ndpi_thread_info[thread_id].idle_scan_idx = 0;
             ndpi_thread_info[thread_id].last_idle_scan_time = ndpi_thread_info[thread_id].workflow->last_time;

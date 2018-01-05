@@ -71,7 +71,7 @@
 #include "ndpi_util.h"
 
 /* ***************************************************** */
-
+// 半释放指定的ndpi_flow_info结构
 void ndpi_free_flow_info_half(struct ndpi_flow_info *flow) {
   if(flow->ndpi_flow) { ndpi_flow_free(flow->ndpi_flow); flow->ndpi_flow = NULL; }
   if(flow->src_id)    { ndpi_free(flow->src_id); flow->src_id = NULL; }
@@ -156,18 +156,29 @@ void ndpi_workflow_free(struct ndpi_workflow * workflow) {
 }
 
 /* ***************************************************** */
-// 用于二叉树workflow->ndpi_flows_root[*]的比较函数
+/* 用于二叉树workflow->ndpi_flows_root[*]的比较函数
+ * @a 要匹配的关键字
+ * @b 每个节点中的关键字
+ * @返回值：
+ *          -1表示  a<b
+ *          0表示   a=b
+ *          1表示   a>b
+ */
 int ndpi_workflow_node_cmp(const void *a, const void *b) {
   struct ndpi_flow_info *fa = (struct ndpi_flow_info*)a;
   struct ndpi_flow_info *fb = (struct ndpi_flow_info*)b;
 
+  // [1]. 比较两个数据流的hashval字段
   if(fa->hashval < fb->hashval) return(-1); else if(fa->hashval > fb->hashval) return(1);
 
   /* Flows have the same hash */
   
+  // [2]. 如果hashval字段相等，比较vlan_id字段
   if(fa->vlan_id   < fb->vlan_id   ) return(-1); else { if(fa->vlan_id    > fb->vlan_id   ) return(1); }
+  // [3]. 如果hashval、vlan_id字段相等，比较protocol字段
   if(fa->protocol  < fb->protocol  ) return(-1); else { if(fa->protocol   > fb->protocol  ) return(1); }
   
+  // [4]. 如果hashval、vlan_id、protocol字段相等，并且IP和端口对也相等，则意味着两个数据流实为同一条流
   if(
      (
       (fa->lower_ip      == fb->lower_ip  )
@@ -185,6 +196,7 @@ int ndpi_workflow_node_cmp(const void *a, const void *b) {
      )
     return(0);
   
+  // [5]. 如果hashval、vlan_id、protocol字段相等，但不是同一条流，就通过比较双向ip和端口来确定两条流的比较结果
   if(fa->lower_ip   < fb->lower_ip  ) return(-1); else { if(fa->lower_ip   > fb->lower_ip  ) return(1); }
   if(fa->lower_port < fb->lower_port) return(-1); else { if(fa->lower_port > fb->lower_port) return(1); }
   if(fa->upper_ip   < fb->upper_ip  ) return(-1); else { if(fa->upper_ip   > fb->upper_ip  ) return(1); }
@@ -379,6 +391,7 @@ static struct ndpi_flow_info *get_ndpi_flow_info(struct ndpi_workflow * workflow
             } else
                 memset(newflow->dst_id, 0, SIZEOF_ID_STRUCT);
 
+            // 将新的数据流插入对应的二叉树中
             ndpi_tsearch(newflow, &workflow->ndpi_flows_root[idx], ndpi_workflow_node_cmp); /* Add */
             workflow->stats.ndpi_flow_count++;
 
