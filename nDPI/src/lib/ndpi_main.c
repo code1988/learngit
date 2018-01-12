@@ -3345,7 +3345,7 @@ void check_ndpi_other_flow_func(struct ndpi_detection_module_struct *ndpi_struct
 
 /* 处理传入的UDP数据流，基本流程如下：
  *      [1]. 优先通过猜测到的协议解析器进行识别
- *      [2]. 识别失败的情况下，再遍历对应的协议集合，依次执行集合中的协议解析器，直到识别完成
+ *      [2]. 识别失败的情况下(实际这里无论如何都会往下执行?)，再遍历对应的协议集合，依次执行集合中的协议解析器，直到识别完成
  */
 void check_ndpi_udp_flow_func(struct ndpi_detection_module_struct *ndpi_struct,
 			      struct ndpi_flow_struct *flow,
@@ -3373,6 +3373,7 @@ void check_ndpi_udp_flow_func(struct ndpi_detection_module_struct *ndpi_struct,
         }
     }
 
+    // 如果已经识别成功，不应该继续往下执行?
     for(a = 0; a < ndpi_struct->callback_buffer_size_udp; a++) {
         if((func != ndpi_struct->callback_buffer_udp[a].func)
         && (ndpi_struct->callback_buffer_udp[a].ndpi_selection_bitmask & *ndpi_selection_packet) ==

@@ -57,9 +57,9 @@ typedef struct ndpi_flow_info {
   u_int16_t upper_port;         // 记录了该数据流的目的端口
   u_int8_t detection_completed; // 标识是否完成对该数据流的探测
   u_int8_t protocol;            // 记录了该数据流的传输层协议号(比如TCP)
-  u_int8_t bidirectional;
+  u_int8_t bidirectional;       // 标识是否是一条双向流
   u_int16_t vlan_id;            // 记录了该数据流关联的VLAN ID
-  struct ndpi_flow_struct *ndpi_flow;   // 记录了数据流传输层执行上的信息
+  struct ndpi_flow_struct *ndpi_flow;   // 指向nDPI核心库中的数据流结构
   char lower_name[48], upper_name[48];  // 分别记录了该数据流的源IP名和目的IP名
   u_int8_t ip_version;
   u_int64_t last_seen;  // 记录了最近收到包的时间

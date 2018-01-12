@@ -195,7 +195,7 @@ INIT_AUTH	src/lib/protocols/oscar.c	68;"	d	file:
 IPVERSION	src/include/ndpi_win32.h	41;"	d
 IS	src/lib/protocols/oscar.c	57;"	d	file:
 IS_EXT	src/lib/protocols/oscar.c	70;"	d	file:
-JABBER_MAX_STUN_PORTS	src/include/ndpi_typedefs.h	406;"	d
+JABBER_MAX_STUN_PORTS	src/include/ndpi_typedefs.h	408;"	d
 KEEP_ALIVE	src/lib/protocols/oscar.c	35;"	d	file:
 LAST_PKT	src/lib/protocols/rx.c	68;"	d	file:
 LOC_SRV	src/lib/protocols/oscar.c	54;"	d	file:
@@ -245,7 +245,7 @@ NDPI_BITMASK_RESET	src/include/ndpi_define.h	232;"	d
 NDPI_BITMASK_SET	src/include/ndpi_define.h	234;"	d
 NDPI_BITMASK_SET_ALL	src/include/ndpi_define.h	233;"	d
 NDPI_BITS	src/include/ndpi_define.h	215;"	d
-NDPI_BT_PORTS	src/include/ndpi_typedefs.h	401;"	d
+NDPI_BT_PORTS	src/include/ndpi_typedefs.h	403;"	d
 NDPI_CLR	src/include/ndpi_define.h	220;"	d
 NDPI_COMPARE_IPV6_ADDRESS_STRUCTS	src/include/ndpi_define.h	210;"	d
 NDPI_COMPARE_PROTOCOL_TO_BITMASK	src/include/ndpi_define.h	241;"	d
@@ -279,7 +279,7 @@ NDPI_IGMP_PROTOCOL_TYPE	src/include/ndpi_define.h	258;"	d
 NDPI_IPIP_PROTOCOL_TYPE	src/include/ndpi_define.h	262;"	d
 NDPI_IPSEC_PROTOCOL_AH	src/include/ndpi_define.h	255;"	d
 NDPI_IPSEC_PROTOCOL_ESP	src/include/ndpi_define.h	254;"	d
-NDPI_IP_STRING_SIZE	src/include/ndpi_typedefs.h	884;"	d
+NDPI_IP_STRING_SIZE	src/include/ndpi_typedefs.h	886;"	d
 NDPI_IRC_CONNECTION_TIMEOUT	src/include/ndpi_define.h	169;"	d
 NDPI_IRC_FIND_LESS	src/lib/protocols/irc.c	29;"	d	file:
 NDPI_ISSET	src/include/ndpi_define.h	221;"	d
@@ -417,7 +417,7 @@ NDPI_PROTOCOL_IP_clear	src/lib/ndpi_main.c	/^void NDPI_PROTOCOL_IP_clear(ndpi_ip
 NDPI_PROTOCOL_IP_is_set	src/lib/ndpi_main.c	/^int NDPI_PROTOCOL_IP_is_set(const ndpi_ip_addr_t * ip)$/;"	f	signature:(const ndpi_ip_addr_t * ip)
 NDPI_PROTOCOL_IQIYI	src/include/ndpi_protocol_ids.h	247;"	d
 NDPI_PROTOCOL_IRC	src/include/ndpi_protocol_ids.h	105;"	d
-NDPI_PROTOCOL_IRC_MAXPORT	src/include/ndpi_typedefs.h	363;"	d
+NDPI_PROTOCOL_IRC_MAXPORT	src/include/ndpi_typedefs.h	365;"	d
 NDPI_PROTOCOL_KAKAOTALK	src/include/ndpi_protocol_ids.h	233;"	d
 NDPI_PROTOCOL_KAKAOTALK_VOICE	src/include/ndpi_protocol_ids.h	234;"	d
 NDPI_PROTOCOL_KERBEROS	src/include/ndpi_protocol_ids.h	151;"	d
@@ -452,7 +452,7 @@ NDPI_PROTOCOL_NFS	src/include/ndpi_protocol_ids.h	51;"	d
 NDPI_PROTOCOL_NOE	src/include/ndpi_protocol_ids.h	200;"	d
 NDPI_PROTOCOL_NO_MASTER_PROTO	src/include/ndpi_protocol_ids.h	37;"	d
 NDPI_PROTOCOL_NTP	src/include/ndpi_protocol_ids.h	49;"	d
-NDPI_PROTOCOL_NULL	src/include/ndpi_typedefs.h	792;"	d
+NDPI_PROTOCOL_NULL	src/include/ndpi_typedefs.h	794;"	d
 NDPI_PROTOCOL_NUM_CATEGORIES	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_NUM_CATEGORIES \/*$/;"	e	enum:__anon23
 NDPI_PROTOCOL_OCS	src/include/ndpi_protocol_ids.h	266;"	d
 NDPI_PROTOCOL_OFFICE_365	src/include/ndpi_protocol_ids.h	267;"	d
@@ -626,7 +626,7 @@ NO_CON	src/lib/protocols/coap.c	29;"	d	file:
 NO_DECLTYPE	example/uthash.h	42;"	d
 NO_DECLTYPE	example/uthash.h	45;"	d
 NO_SAVE_DETECTION_BITMASK_AS_UNKNOWN	src/include/ndpi_api.h	43;"	d
-NUM_BREEDS	src/include/ndpi_typedefs.h	731;"	d
+NUM_BREEDS	src/include/ndpi_typedefs.h	733;"	d
 NUM_ROOTS	example/ndpi_util.h	38;"	d
 O_ERROR	src/lib/protocols/oscar.c	33;"	d	file:
 PACK_OFF	src/include/ndpi_typedefs.h	/^} PACK_OFF;$/;"	v	typeref:struct:ndpi_cdp
@@ -1210,8 +1210,8 @@ detected_gnutella_udp_port2	src/include/ndpi_typedefs.h	/^  u_int16_t detected_g
 detected_os	src/include/ndpi_typedefs.h	/^  u_char detected_os[32];$/;"	m	struct:ndpi_flow_struct	access:public
 detected_protocol	example/ndpi_util.h	/^  ndpi_protocol detected_protocol;$/;"	m	struct:ndpi_flow_info	access:public
 detected_protocol_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK detected_protocol_bitmask;$/;"	m	struct:ndpi_id_struct	access:public
-detected_protocol_stack	src/include/ndpi_typedefs.h	/^  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];    \/\/ 依次记录了该数据包识别到的子协议号和主协议号$/;"	m	struct:ndpi_packet_struct	access:public
-detected_protocol_stack	src/include/ndpi_typedefs.h	/^  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];    \/\/ 依次记录了该数据流识别到的子协议号和主协议号$/;"	m	struct:ndpi_flow_struct	access:public
+detected_protocol_stack	src/include/ndpi_typedefs.h	/^  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];    \/\/ 依次记录了该数据包识别到的上层协议号(即app_protocol)和下层协议号(即master_protocol)$/;"	m	struct:ndpi_packet_struct	access:public
+detected_protocol_stack	src/include/ndpi_typedefs.h	/^  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];    \/\/ 依次记录了该数据流识别到的上层协议号(即app_protocol)和下层协议号(即master_protocol)$/;"	m	struct:ndpi_flow_struct	access:public
 detected_subprotocol_stack	src/include/ndpi_typedefs.h	/^  u_int8_t detected_subprotocol_stack[NDPI_PROTOCOL_SIZE];$/;"	m	struct:ndpi_packet_struct	access:public
 detection_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK detection_bitmask;                      \/\/ (协议序号掩码集合)该字段的设置跟ndpi_set_bitmask_protocol_detection函数的入参有关$/;"	m	struct:ndpi_call_function_struct	access:public
 detection_bitmask	src/include/ndpi_typedefs.h	/^  NDPI_PROTOCOL_BITMASK detection_bitmask;  \/\/ 该探测模块中所有协议的使能\/禁止位的集合，只有其中置1的那些协议才是该探测模块中实际使能了的$/;"	m	struct:ndpi_detection_module_struct	access:public
@@ -2182,7 +2182,7 @@ ndpi_finalize_automa	src/lib/ndpi_main.c	/^void ndpi_finalize_automa(void *_auto
 ndpi_find_port_based_protocol	src/include/ndpi_api.h	/^  ndpi_protocol ndpi_find_port_based_protocol(struct ndpi_detection_module_struct *ndpi_struct\/* , u_int8_t proto *\/,$/;"	p	signature:(struct ndpi_detection_module_struct *ndpi_struct , u_int32_t shost, u_int16_t sport, u_int32_t dhost, u_int16_t dport)
 ndpi_find_port_based_protocol	src/lib/ndpi_main.c	/^ndpi_protocol ndpi_find_port_based_protocol(struct ndpi_detection_module_struct *ndpi_struct \/* NOTUSED *\/,$/;"	f	signature:(struct ndpi_detection_module_struct *ndpi_struct , u_int32_t shost, u_int16_t sport, u_int32_t dhost, u_int16_t dport)
 ndpi_florensia_add_connection	src/lib/protocols/florensia.c	/^static void ndpi_florensia_add_connection(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)$/;"	f	file:	signature:(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
-ndpi_flow	example/ndpi_util.h	/^  struct ndpi_flow_struct *ndpi_flow;   \/\/ 记录了数据流传输层执行上的信息$/;"	m	struct:ndpi_flow_info	typeref:struct:ndpi_flow_info::ndpi_flow_struct	access:public
+ndpi_flow	example/ndpi_util.h	/^  struct ndpi_flow_struct *ndpi_flow;   \/\/ 指向nDPI核心库中的数据流结构$/;"	m	struct:ndpi_flow_info	typeref:struct:ndpi_flow_info::ndpi_flow_struct	access:public
 ndpi_flow_count	example/ndpi_util.h	/^  u_int32_t ndpi_flow_count;        \/\/ 记录了数据流的数量 $/;"	m	struct:ndpi_stats	access:public
 ndpi_flow_free	src/include/ndpi_api.h	/^  void   ndpi_flow_free(void *ptr);$/;"	p	signature:(void *ptr)
 ndpi_flow_free	src/lib/ndpi_main.c	/^void ndpi_flow_free(void *ptr) { if(_ndpi_flow_free) _ndpi_flow_free(ptr); else ndpi_free_flow((struct ndpi_flow_struct *) ptr); }$/;"	f	signature:(void *ptr)
@@ -2203,7 +2203,7 @@ ndpi_flow_info::last_seen	example/ndpi_util.h	/^  u_int64_t last_seen;  \/\/ 记
 ndpi_flow_info::lower_ip	example/ndpi_util.h	/^  u_int32_t lower_ip;           \/\/ 记录了该数据流的源IP$/;"	m	struct:ndpi_flow_info	access:public
 ndpi_flow_info::lower_name	example/ndpi_util.h	/^  char lower_name[48], upper_name[48];  \/\/ 分别记录了该数据流的源IP名和目的IP名$/;"	m	struct:ndpi_flow_info	access:public
 ndpi_flow_info::lower_port	example/ndpi_util.h	/^  u_int16_t lower_port;         \/\/ 记录了该数据流的源端口$/;"	m	struct:ndpi_flow_info	access:public
-ndpi_flow_info::ndpi_flow	example/ndpi_util.h	/^  struct ndpi_flow_struct *ndpi_flow;   \/\/ 记录了数据流传输层执行上的信息$/;"	m	struct:ndpi_flow_info	typeref:struct:ndpi_flow_info::ndpi_flow_struct	access:public
+ndpi_flow_info::ndpi_flow	example/ndpi_util.h	/^  struct ndpi_flow_struct *ndpi_flow;   \/\/ 指向nDPI核心库中的数据流结构$/;"	m	struct:ndpi_flow_info	typeref:struct:ndpi_flow_info::ndpi_flow_struct	access:public
 ndpi_flow_info::packets	example/ndpi_util.h	/^  u_int32_t packets;    \/\/ 记录了收到的包数量(前提是识别为有效流)$/;"	m	struct:ndpi_flow_info	access:public
 ndpi_flow_info::protocol	example/ndpi_util.h	/^  u_int8_t protocol;            \/\/ 记录了该数据流的传输层协议号(比如TCP)$/;"	m	struct:ndpi_flow_info	access:public
 ndpi_flow_info::src_id	example/ndpi_util.h	/^  void *src_id, *dst_id;$/;"	m	struct:ndpi_flow_info	access:public
@@ -2247,7 +2247,7 @@ ndpi_flow_struct::bittorent_hash	src/include/ndpi_typedefs.h	/^  u_char bittoren
 ndpi_flow_struct::bittorrent_stage	src/include/ndpi_typedefs.h	/^  u_int8_t bittorrent_stage;		      \/\/ can be 0 - 255$/;"	m	struct:ndpi_flow_struct	access:public
 ndpi_flow_struct::byte_counter	src/include/ndpi_typedefs.h	/^  u_int16_t byte_counter[2];                \/\/ 分别记录了该数据流在两个方向上的payload字节数$/;"	m	struct:ndpi_flow_struct	access:public
 ndpi_flow_struct::detected_os	src/include/ndpi_typedefs.h	/^  u_char detected_os[32];$/;"	m	struct:ndpi_flow_struct	access:public
-ndpi_flow_struct::detected_protocol_stack	src/include/ndpi_typedefs.h	/^  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];    \/\/ 依次记录了该数据流识别到的子协议号和主协议号$/;"	m	struct:ndpi_flow_struct	access:public
+ndpi_flow_struct::detected_protocol_stack	src/include/ndpi_typedefs.h	/^  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];    \/\/ 依次记录了该数据流识别到的上层协议号(即app_protocol)和下层协议号(即master_protocol)$/;"	m	struct:ndpi_flow_struct	access:public
 ndpi_flow_struct::directconnect_stage	src/include/ndpi_typedefs.h	/^  u_int32_t directconnect_stage:2;	      \/\/ 0 - 1$/;"	m	struct:ndpi_flow_struct	access:public
 ndpi_flow_struct::dst	src/include/ndpi_typedefs.h	/^  struct ndpi_id_struct *dst;$/;"	m	struct:ndpi_flow_struct	typeref:struct:ndpi_flow_struct::ndpi_id_struct	access:public
 ndpi_flow_struct::edonkey_stage	src/include/ndpi_typedefs.h	/^  u_int32_t edonkey_stage:2;	                \/\/ 0 - 3$/;"	m	struct:ndpi_flow_struct	access:public
@@ -2285,7 +2285,7 @@ ndpi_flow_struct::qq_stage	src/include/ndpi_typedefs.h	/^  u_int32_t qq_stage:3;
 ndpi_flow_struct::redis_d2s_first_char	src/include/ndpi_typedefs.h	/^  u_int8_t redis_s2d_first_char, redis_d2s_first_char;$/;"	m	struct:ndpi_flow_struct	access:public
 ndpi_flow_struct::redis_s2d_first_char	src/include/ndpi_typedefs.h	/^  u_int8_t redis_s2d_first_char, redis_d2s_first_char;$/;"	m	struct:ndpi_flow_struct	access:public
 ndpi_flow_struct::rtmp_stage	src/include/ndpi_typedefs.h	/^  u_int32_t rtmp_stage:2;$/;"	m	struct:ndpi_flow_struct	access:public
-ndpi_flow_struct::rtsp_control_flow	src/include/ndpi_typedefs.h	/^  u_int32_t rtsp_control_flow:1;$/;"	m	struct:ndpi_flow_struct	access:public
+ndpi_flow_struct::rtsp_control_flow	src/include/ndpi_typedefs.h	/^  u_int32_t rtsp_control_flow:1;        \/\/ 标识是否探测到RTSP流$/;"	m	struct:ndpi_flow_struct	access:public
 ndpi_flow_struct::rtsprdt_stage	src/include/ndpi_typedefs.h	/^  u_int32_t rtsprdt_stage:2;$/;"	m	struct:ndpi_flow_struct	access:public
 ndpi_flow_struct::server_id	src/include/ndpi_typedefs.h	/^  struct ndpi_id_struct *server_id;$/;"	m	struct:ndpi_flow_struct	typeref:struct:ndpi_flow_struct::ndpi_id_struct	access:public
 ndpi_flow_struct::setup_packet_direction	src/include/ndpi_typedefs.h	/^           setup_packet_direction:1,        \/\/ 同步自packet_direction$/;"	m	struct:ndpi_flow_struct	access:public
@@ -2454,9 +2454,9 @@ ndpi_id_struct::jabber_voice_stun_used_ports	src/include/ndpi_typedefs.h	/^  u_i
 ndpi_id_struct::last_time_port_used	src/include/ndpi_typedefs.h	/^  u_int32_t last_time_port_used[NDPI_PROTOCOL_IRC_MAXPORT];$/;"	m	struct:ndpi_id_struct	access:public
 ndpi_id_struct::oscar_last_safe_access_time	src/include/ndpi_typedefs.h	/^  u_int32_t oscar_last_safe_access_time;$/;"	m	struct:ndpi_id_struct	access:public
 ndpi_id_struct::oscar_ssl_session_id	src/include/ndpi_typedefs.h	/^  u_int8_t oscar_ssl_session_id[33];$/;"	m	struct:ndpi_id_struct	access:public
-ndpi_id_struct::rtsp_ip_address	src/include/ndpi_typedefs.h	/^  ndpi_ip_addr_t rtsp_ip_address;$/;"	m	struct:ndpi_id_struct	access:public
-ndpi_id_struct::rtsp_timer	src/include/ndpi_typedefs.h	/^  u_int32_t rtsp_timer;$/;"	m	struct:ndpi_id_struct	access:public
-ndpi_id_struct::rtsp_ts_set	src/include/ndpi_typedefs.h	/^  u_int32_t rtsp_ts_set:1;$/;"	m	struct:ndpi_id_struct	access:public
+ndpi_id_struct::rtsp_ip_address	src/include/ndpi_typedefs.h	/^  ndpi_ip_addr_t rtsp_ip_address;   \/\/ 记录了RTSP流的IP地址$/;"	m	struct:ndpi_id_struct	access:public
+ndpi_id_struct::rtsp_timer	src/include/ndpi_typedefs.h	/^  u_int32_t rtsp_timer;     \/\/ 记录了RTSP流最近收到包的时间(s)$/;"	m	struct:ndpi_id_struct	access:public
+ndpi_id_struct::rtsp_ts_set	src/include/ndpi_typedefs.h	/^  u_int32_t rtsp_ts_set:1;      \/\/ 标识是否记录了RTSP流时间$/;"	m	struct:ndpi_id_struct	access:public
 ndpi_id_struct::soulseek_last_safe_access_time	src/include/ndpi_typedefs.h	/^  u_int32_t soulseek_last_safe_access_time;$/;"	m	struct:ndpi_id_struct	access:public
 ndpi_id_struct::soulseek_listen_port	src/include/ndpi_typedefs.h	/^  u_int16_t soulseek_listen_port;$/;"	m	struct:ndpi_id_struct	access:public
 ndpi_id_struct::thunder_ts	src/include/ndpi_typedefs.h	/^  u_int32_t thunder_ts;$/;"	m	struct:ndpi_id_struct	access:public
@@ -2720,7 +2720,7 @@ ndpi_packet_struct	src/include/ndpi_typedefs.h	/^struct ndpi_packet_struct {$/;"
 ndpi_packet_struct::accept_line	src/include/ndpi_typedefs.h	/^  struct ndpi_int_one_line_struct accept_line;$/;"	m	struct:ndpi_packet_struct	typeref:struct:ndpi_packet_struct::ndpi_int_one_line_struct	access:public
 ndpi_packet_struct::actual_payload_len	src/include/ndpi_typedefs.h	/^  u_int16_t actual_payload_len; \/\/ 缺省从payload_packet_len同步过来$/;"	m	struct:ndpi_packet_struct	access:public
 ndpi_packet_struct::content_line	src/include/ndpi_typedefs.h	/^  struct ndpi_int_one_line_struct content_line;$/;"	m	struct:ndpi_packet_struct	typeref:struct:ndpi_packet_struct::ndpi_int_one_line_struct	access:public
-ndpi_packet_struct::detected_protocol_stack	src/include/ndpi_typedefs.h	/^  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];    \/\/ 依次记录了该数据包识别到的子协议号和主协议号$/;"	m	struct:ndpi_packet_struct	access:public
+ndpi_packet_struct::detected_protocol_stack	src/include/ndpi_typedefs.h	/^  u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];    \/\/ 依次记录了该数据包识别到的上层协议号(即app_protocol)和下层协议号(即master_protocol)$/;"	m	struct:ndpi_packet_struct	access:public
 ndpi_packet_struct::detected_subprotocol_stack	src/include/ndpi_typedefs.h	/^  u_int8_t detected_subprotocol_stack[NDPI_PROTOCOL_SIZE];$/;"	m	struct:ndpi_packet_struct	access:public
 ndpi_packet_struct::empty_line_position	src/include/ndpi_typedefs.h	/^  u_int16_t empty_line_position;$/;"	m	struct:ndpi_packet_struct	access:public
 ndpi_packet_struct::empty_line_position_set	src/include/ndpi_typedefs.h	/^    empty_line_position_set:1;$/;"	m	struct:ndpi_packet_struct	access:public
@@ -3605,11 +3605,11 @@ rst	src/include/ndpi_typedefs.h	/^  u_int16_t res1:4, doff:4, fin:1, syn:1, rst:
 rtmp_stage	src/include/ndpi_typedefs.h	/^  u_int32_t rtmp_stage:2;$/;"	m	struct:ndpi_flow_struct	access:public
 rtp_special_packets_seen	src/include/ndpi_typedefs.h	/^  u_int32_t rtp_special_packets_seen:1;$/;"	m	struct:ndpi_flow_tcp_struct	access:public
 rtsp_connection_timeout	src/include/ndpi_typedefs.h	/^  u_int32_t rtsp_connection_timeout;$/;"	m	struct:ndpi_detection_module_struct	access:public
-rtsp_control_flow	src/include/ndpi_typedefs.h	/^  u_int32_t rtsp_control_flow:1;$/;"	m	struct:ndpi_flow_struct	access:public
-rtsp_ip_address	src/include/ndpi_typedefs.h	/^  ndpi_ip_addr_t rtsp_ip_address;$/;"	m	struct:ndpi_id_struct	access:public
+rtsp_control_flow	src/include/ndpi_typedefs.h	/^  u_int32_t rtsp_control_flow:1;        \/\/ 标识是否探测到RTSP流$/;"	m	struct:ndpi_flow_struct	access:public
+rtsp_ip_address	src/include/ndpi_typedefs.h	/^  ndpi_ip_addr_t rtsp_ip_address;   \/\/ 记录了RTSP流的IP地址$/;"	m	struct:ndpi_id_struct	access:public
 rtsp_parse_packet_acceptline	src/lib/protocols/http.c	/^static void rtsp_parse_packet_acceptline(struct ndpi_detection_module_struct$/;"	f	file:	signature:(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
-rtsp_timer	src/include/ndpi_typedefs.h	/^  u_int32_t rtsp_timer;$/;"	m	struct:ndpi_id_struct	access:public
-rtsp_ts_set	src/include/ndpi_typedefs.h	/^  u_int32_t rtsp_ts_set:1;$/;"	m	struct:ndpi_id_struct	access:public
+rtsp_timer	src/include/ndpi_typedefs.h	/^  u_int32_t rtsp_timer;     \/\/ 记录了RTSP流最近收到包的时间(s)$/;"	m	struct:ndpi_id_struct	access:public
+rtsp_ts_set	src/include/ndpi_typedefs.h	/^  u_int32_t rtsp_ts_set:1;      \/\/ 标识是否记录了RTSP流时间$/;"	m	struct:ndpi_id_struct	access:public
 rtsprdt_stage	src/include/ndpi_typedefs.h	/^  u_int32_t rtsprdt_stage:2;$/;"	m	struct:ndpi_flow_struct	access:public
 runPcapLoop	example/ndpiReader.c	/^static void runPcapLoop(u_int16_t thread_id) {$/;"	f	file:	signature:(u_int16_t thread_id)
 rx_conn_epoch	src/include/ndpi_typedefs.h	/^  u_int32_t rx_conn_epoch;$/;"	m	struct:ndpi_flow_udp_struct	access:public

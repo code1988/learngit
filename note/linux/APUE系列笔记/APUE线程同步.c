@@ -9,7 +9,7 @@
      * @attr    - 用于设置互斥量的属性，NULL表示设置默认属性
      */
 
-    /* API  : int pthread_mutex_destroy(pthread_mutex_t mutex)
+    /* API  : int pthread_mutex_destroy(pthread_mutex_t *mutex)
      * 描述 : 销毁互斥量
      * @mutex   - 指向一个要销毁的互斥量
      *

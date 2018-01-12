@@ -919,7 +919,7 @@ struct ndpi_flow_struct {
   u_int8_t protocol_id_already_guessed:1,   // 标识该数据流是否进行了协议猜测
            host_already_guessed:1, 
            init_finished:1,                 // 标识该数据流是否完成了初始化
-           setup_packet_direction:1,        // 同步自packet_direction
+           setup_packet_direction:1,        // 同步自packet->packet_direction
            packet_direction:1;
 
   /*
