@@ -497,7 +497,7 @@ struct sk_buff {
 	struct nf_bridge_info	*nf_bridge;
 #endif
 
-	int			skb_iif;
+	int			skb_iif;            // 记录了该skb当前关联的设备接口序号
 
 	__u32			rxhash;
 
@@ -1557,6 +1557,7 @@ static inline unsigned char *__skb_push(struct sk_buff *skb, unsigned int len)
 }
 
 unsigned char *skb_pull(struct sk_buff *skb, unsigned int len);
+// 将读指针后移len字节
 static inline unsigned char *__skb_pull(struct sk_buff *skb, unsigned int len)
 {
 	skb->len -= len;
@@ -1564,6 +1565,7 @@ static inline unsigned char *__skb_pull(struct sk_buff *skb, unsigned int len)
 	return skb->data += len;
 }
 
+// 将读指针后移len字节
 static inline unsigned char *skb_pull_inline(struct sk_buff *skb, unsigned int len)
 {
 	return unlikely(len > skb->len) ? NULL : __skb_pull(skb, len);
@@ -1661,7 +1663,7 @@ static inline void skb_reset_inner_headers(struct sk_buff *skb)
 	skb->inner_transport_header = skb->transport_header;
 }
 
-// 计算network layer相对mac地址的偏移量
+// 更新network layer相对mac layer的偏移量
 static inline void skb_reset_mac_len(struct sk_buff *skb)
 {
 	skb->mac_len = skb->network_header - skb->mac_header;
@@ -1728,7 +1730,7 @@ static inline unsigned char *skb_transport_header(const struct sk_buff *skb)
 	return skb->head + skb->transport_header;
 }
 
-// 计算transport layer相对缓冲区头部的偏移量
+// 复位transport layer相对缓冲区头部的偏移量(显然调用本函数时该skb的读指针已经位于transport layer头部)
 static inline void skb_reset_transport_header(struct sk_buff *skb)
 {
 	skb->transport_header = skb->data - skb->head;
@@ -1747,7 +1749,7 @@ static inline unsigned char *skb_network_header(const struct sk_buff *skb)
 	return skb->head + skb->network_header;
 }
 
-// 计算network layer相对缓冲区头部的偏移量
+// 复位network layer相对缓冲区头部的偏移量(显然调用本函数时该skb的读指针已经位于network layer头部)
 static inline void skb_reset_network_header(struct sk_buff *skb)
 {
 	skb->network_header = skb->data - skb->head;
@@ -1770,7 +1772,7 @@ static inline int skb_mac_header_was_set(const struct sk_buff *skb)
 	return skb->mac_header != (typeof(skb->mac_header))~0U;
 }
 
-// 计算mac layer相对缓冲区头部的偏移量
+// 复位mac layer相对缓冲区头部的偏移量(显然调用本函数时该skb的读指针已经位于mac layer头部)
 static inline void skb_reset_mac_header(struct sk_buff *skb)
 {
 	skb->mac_header = skb->data - skb->head;
@@ -2548,14 +2550,21 @@ __wsum __skb_checksum(const struct sk_buff *skb, int offset, int len,
 __wsum skb_checksum(const struct sk_buff *skb, int offset, int len,
 		    __wsum csum);
 
+/* 返回指定skb数据区中从指定地址开始的指定长度的数据
+ * @offset  从读指针向后偏移的长度，作为返回的数据的首地址
+ * @len     要返回的数据长度
+ * @buffer  传入的len长度缓冲区，只有当需要获取的数据不全在当前page中才用到
+ */
 static inline void *skb_header_pointer(const struct sk_buff *skb, int offset,
 				       int len, void *buffer)
 {
 	int hlen = skb_headlen(skb);
 
+    // 如果要获取的数据都在当前页内，则直接返回数据指针即可
 	if (hlen - offset >= len)
 		return skb->data + offset;
 
+    // 程序运行到这里意味着要获取的数据不全在当前page内，则需要拷贝到传入的缓冲区中
 	if (skb_copy_bits(skb, offset, buffer, len) < 0)
 		return NULL;
 

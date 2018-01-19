@@ -142,10 +142,11 @@
 /* This should be increased if a protocol with a bigger head is added. */
 #define GRO_MAX_HEAD (MAX_HEADER + 128)
 
-static DEFINE_SPINLOCK(ptype_lock);
+static DEFINE_SPINLOCK(ptype_lock);         // 定义了一个用于保护ptype_base和ptype_all的自旋锁
 static DEFINE_SPINLOCK(offload_lock);
-struct list_head ptype_base[PTYPE_HASH_SIZE] __read_mostly; /* 除了ETH_P_ALL 之外的协议管理块都会注册到这张hash表中 */
-struct list_head ptype_all __read_mostly;	/* Taps 协议类型为ETH_P_ALL 协议管理块都会注册到这张链表中 */
+struct list_head ptype_base[PTYPE_HASH_SIZE] __read_mostly; /* 除了ETH_P_ALL 之外的以太网协议管理块都会注册到这张hash表中 */
+struct list_head ptype_all __read_mostly;	/* Taps 这张链表中的协议管理块会接收所有协议类型的报文
+                                               (比如基于原始套接字的网络嗅探器会使用这种类型的协议管理块) */
 static struct list_head offload_base __read_mostly;
 
 static int netif_rx_internal(struct sk_buff *skb);
@@ -348,7 +349,7 @@ static inline void netdev_set_addr_lockdep_class(struct net_device *dev)
 
 		Protocol management and registration routines
 
-以下是通用的协议管理和注册程序
+以下是通用的以太网协议管理和注册程序
 *******************************************************************************/
 
 /*
@@ -437,6 +438,7 @@ EXPORT_SYMBOL(__dev_remove_pack);
 
 /**
  *	dev_remove_pack	 - remove packet handler
+ *	从内核中注销一个指定的以太网协议
  *	@pt: packet type declaration
  *
  *	Remove a protocol handler that was previously added to the kernel
@@ -1734,13 +1736,17 @@ int dev_forward_skb(struct net_device *dev, struct sk_buff *skb)
 }
 EXPORT_SYMBOL_GPL(dev_forward_skb);
 
-// 接收到的L2数据包最终会在这里交付到L3
+/* 将skb传递给指定协议管理块进行处理，其中就包括了L3层的入口
+ * @pt_prev     该协议管理块将获得该skb进行处理
+ * @orig_dev    该skb绑定的netdev
+ */
 static inline int deliver_skb(struct sk_buff *skb,
 			      struct packet_type *pt_prev,
 			      struct net_device *orig_dev)
 {
 	if (unlikely(skb_orphan_frags(skb, GFP_ATOMIC)))
 		return -ENOMEM;
+    // 通过本函数执行具体协议的接收函数之前要先对该skb的引用计数加1，以防止正在使用时被释放
 	atomic_inc(&skb->users);
 	return pt_prev->func(skb, skb->dev, pt_prev, orig_dev);
 }
@@ -3566,6 +3572,7 @@ static int __netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc)
 	int ret = NET_RX_DROP;
 	__be16 type;
 
+    // 时间戳检查
 	net_timestamp_check(!netdev_tstamp_prequeue, skb);
 
 	trace_netif_receive_skb(skb);
@@ -3574,8 +3581,10 @@ static int __netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc)
 	if (netpoll_receive_skb(skb))
 		goto out;
 
+    // 首先记录下进入本函数时skb绑定的初始netdev
 	orig_dev = skb->dev;
 
+    // 初始化各层的地址
 	skb_reset_network_header(skb);
 	if (!skb_transport_header_was_set(skb))
 		skb_reset_transport_header(skb);
@@ -3586,11 +3595,12 @@ static int __netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc)
 	rcu_read_lock();
 
 another_round:
+    // 更新该skb当前关联的netdev接口序号
 	skb->skb_iif = skb->dev->ifindex;
 
 	__this_cpu_inc(softnet_data.processed);
 
-    // 如果接收到的skb是802.1q/802.1ad协议的，则在这里去掉tag，从而实现对上层的透明
+    // 如果接收到的skb是ETH_P_8021Q/ETH_P_8021AD协议的，则在这里脱掉tag，从而实现对上层的透明
 	if (skb->protocol == cpu_to_be16(ETH_P_8021Q) ||
 	    skb->protocol == cpu_to_be16(ETH_P_8021AD)) {
 		skb = skb_vlan_untag(skb);
@@ -3598,7 +3608,7 @@ another_round:
 			goto unlock;
 	}
 
-    // 程序运行到这里，skb的数据包缓冲区中已经变成一个普通的以太网帧
+    // 流控相关
 #ifdef CONFIG_NET_CLS_ACT
 	if (skb->tc_verd & TC_NCLS) {
 		skb->tc_verd = CLR_TC_NCLS(skb->tc_verd);
@@ -3609,9 +3619,17 @@ another_round:
 	if (pfmemalloc)
 		goto skip_taps;
 
+    // 将该skb传递给ptype_all中注册的符合条件的协议管理块(通常就是网络嗅探器)
 	list_for_each_entry_rcu(ptype, &ptype_all, list) {
+        /* 至少需要满足以下1个条件：
+         *      该协议管理块没有绑定netdev;
+         *      该协议管理块绑定的netdev就是收到该skb的netdev
+         *
+         * 备注：显然最后一个符合条件的协议管理块(被记录在pt_prev)并不会在这里获得该skb
+         */
 		if (!ptype->dev || ptype->dev == skb->dev) {
 			if (pt_prev)
+                // 符合条件的协议管理块终于获取到该skb，进而会执行协议相关的处理
 				ret = deliver_skb(skb, pt_prev, orig_dev);
 			pt_prev = ptype;
 		}
@@ -3630,12 +3648,13 @@ ncls:
 
     // 如果该skb携带了vlan标志，意味着携带了vlan信息，这里就进行相关处理
 	if (vlan_tx_tag_present(skb)) {
+        // 携带vlan信息的skb会首先交给残留的最后一个协议管理块进行处理
 		if (pt_prev) {
 			ret = deliver_skb(skb, pt_prev, orig_dev);
 			pt_prev = NULL;
 		}
         /* 执行vlan模块特有的接收处理，实际就是将该skb重新关联到对应的vlan设备，并重新执行设备接收流程，
-         * 显然，这跟下面执行rx_handler上注册的bridge模块特有的接收处理的目的基本一样，
+         * 显然，这跟下面执行rx_handler上注册的bridge模块特有的接收处理的目的基本一样,
          * 所以，理论上将vlan_do_receive注册到rx_handler中，做成统一的接口，才是最合理的
          */
 		if (vlan_do_receive(&skb))
@@ -3644,31 +3663,32 @@ ncls:
 			goto unlock;
 	}
 
-    // 程序运行到这里，该skb已经是一个彻底的普通的以太网数据包了
+    // 程序运行到这里，意味着该skb已经不再携带vlan信息
     // 这里尝试获取该skb关联的设备rx_handler钩子
 	rx_handler = rcu_dereference(skb->dev->rx_handler);
 	if (rx_handler) {
-        // 如果之前有遗留下来尚未被上层处理的普通数据包，则先将它传递给上层处理掉
+        // 如果还残留最后一个协议管理块待获取该skb，则在这里处理掉
 		if (pt_prev) {
 			ret = deliver_skb(skb, pt_prev, orig_dev);
 			pt_prev = NULL;
 		}
         // 执行该设备特有的接收处理函数，并对返回值做相应处理
 		switch (rx_handler(&skb)) {
-		case RX_HANDLER_CONSUMED:   // 这种情况意味着skb->dev在处理过程中已经被重定向，剩下的工作都由重定向后的设备完成了，所以处理完后直接返回了?
+		case RX_HANDLER_CONSUMED:   // 这种情况意味着skb已经在rx_handler过程中被释放，所以处理完后直接可以返回了
 			ret = NET_RX_SUCCESS;
 			goto unlock;
-		case RX_HANDLER_ANOTHER:    // 这种情况意味着该skb关联的设备在处理过程中发生变化，需要重新跑一遍设备接收流程
+		case RX_HANDLER_ANOTHER:    // 这种情况意味着该skb关联的netdev在rx_handler过程中发生变化，需要重新跑一遍another_round
 			goto another_round;
 		case RX_HANDLER_EXACT:
 			deliver_exact = true;
-		case RX_HANDLER_PASS:       // 这种情况意味着skb->dev并没有在处理过程中被重定向，所以处理完后又回来继续走下面的流程
+		case RX_HANDLER_PASS:       // 这种情况意味着skb->dev并没有在rx_handler过程中被重定向(也就是正常情况)，所以处理完后又回来继续走下面的流程
 			break;
 		default:
 			BUG();
 		}
 	}
 
+    // vlan信息在上面已经处理掉，通常不应该会进入这里
 	if (unlikely(vlan_tx_tag_present(skb))) {
 		if (vlan_tx_tag_get_id(skb))
 			skb->pkt_type = PACKET_OTHERHOST;
@@ -3682,6 +3702,8 @@ ncls:
 	/* deliver only exact match when indicated */
 	null_or_dev = deliver_exact ? skb->dev : NULL;
 
+    // 正常情况下skb接收流程都会运行到这里
+    // 这里开始在ptype_base表中寻找跟该skb协议类型匹配的协议管理块，然后进行相关处理
 	type = skb->protocol;
 	list_for_each_entry_rcu(ptype,
 			&ptype_base[ntohs(type) & PTYPE_HASH_MASK], list) {
@@ -3694,14 +3716,17 @@ ncls:
 		}
 	}
 
+    // 判断最后是否还存在一个尚未执行的协议管理块
 	if (pt_prev) {
 		if (unlikely(skb_orphan_frags(skb, GFP_ATOMIC)))
 			goto drop;
 		else
+            // 最后一个协议管理块执行接收时不需要对该skb的引用计数加1了，因为必然由它负责释放该skb
 			ret = pt_prev->func(skb, skb->dev, pt_prev, orig_dev);
 	} else {
 drop:
 		atomic_long_inc(&skb->dev->rx_dropped);
+        // 如果最后已经不存在尚未执行的协议管理块，则在这里手动释放该skb
 		kfree_skb(skb);
 		/* Jamal, now you will not able to escape explaining
 		 * me how you were going to use this. :-)
@@ -3772,7 +3797,7 @@ static int netif_receive_skb_internal(struct sk_buff *skb)
 
 /**
  *	netif_receive_skb - process receive buffer from network
- *	网络设备接收数据的总入口函数(显然只是个封装)
+ *	设备层接收数据的总入口函数(显然只是个封装)，通常在设备驱动中被调用
  *	@skb: buffer to process
  *
  *	netif_receive_skb() is the main receive data processing function.

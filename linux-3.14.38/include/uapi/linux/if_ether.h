@@ -105,7 +105,7 @@
 #define ETH_P_802_3	0x0001		/* Dummy type for 802.3 frames  [ raw 802.3封装的以太网帧(len字段后紧跟0xffff标识)，这种封装类型目前只有IPX在用 ]*/
 #define ETH_P_AX25	0x0002		/* Dummy protocol id for AX.25  */
 #define ETH_P_ALL	0x0003		/* Every packet (be careful!!!) */
-#define ETH_P_802_2	0x0004		/* 802.2 frames 		[ 802.2封装的以太网帧(802.2部分具体是带了LLC还是SNAP不一定) ]*/
+#define ETH_P_802_2	0x0004		/* 802.2 frames 		[ 802.3 + 802.2-llc帧(802.2部分具体是否带了SNAP不一定) ]*/
 #define ETH_P_SNAP	0x0005		/* Internal only		*/
 #define ETH_P_DDCMP     0x0006          /* DEC DDCMP: Internal only     */
 #define ETH_P_WAN_PPP   0x0007          /* Dummy type for WAN PPP frames*/

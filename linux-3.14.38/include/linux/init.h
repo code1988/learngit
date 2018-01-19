@@ -175,7 +175,7 @@ extern bool initcall_debug;
  * For backwards compatibility, initcall() puts the call in 
  * the device init subsection.
  * 可以看出，.initcall段是.init段的一块细分区域，区域中存放的是函数指;
- * linux初始化阶段调用do_initcalls会依次执行该段的函数;
+ * linux初始化阶段调用do_initcalls会依次执行该段中存放的函数;
  * .initcall段分为0～7这8个优先级，其中0号优先级最高，7号的最低，初始化时便按照优先级从高到底执行
  *
  * The `id' arg to __define_initcall() is needed so that multiple initcalls
@@ -186,7 +186,11 @@ extern bool initcall_debug;
 	static initcall_t __initcall_##fn##id __used \
 	__attribute__((__section__(".initcall" #id ".init"))) = fn
 
-// 以下这组宏就是用于在.initcall段中注册函数指针的接口
+/* 以下这组宏就是用于在.initcall段的各个优先级区域中注册函数指针的接口
+ * 这些initcall只能用于内建代码中，而不能用于编写模块代码中
+ * 每个优先级都有一个主initcall，这些主initcall必须跟initcall_level_names数组保持同步
+ * 这些initcall初始化时的运行优先级依次下降
+ */
 /*
  * Early initcalls run before initializing SMP.
  *
@@ -200,14 +204,15 @@ extern bool initcall_debug;
  *
  * This only exists for built-in code, not for modules.
  * Keep main.c:initcall_level_names[] in sync.
+ *
  */
 #define pure_initcall(fn)		__define_initcall(fn, 0)
 
-#define core_initcall(fn)		__define_initcall(fn, 1)
+#define core_initcall(fn)		__define_initcall(fn, 1)        // 包含的模块：pinctrl、netlink、vfp
 #define core_initcall_sync(fn)		__define_initcall(fn, 1s)
-#define postcore_initcall(fn)		__define_initcall(fn, 2)
+#define postcore_initcall(fn)		__define_initcall(fn, 2)    // 包含的模块：DMA
 #define postcore_initcall_sync(fn)	__define_initcall(fn, 2s)
-#define arch_initcall(fn)		__define_initcall(fn, 3)
+#define arch_initcall(fn)		__define_initcall(fn, 3)        // 包含的模块：板卡初始化函数(customize_machine)、板卡pin-control驱动
 #define arch_initcall_sync(fn)		__define_initcall(fn, 3s)
 #define subsys_initcall(fn)		__define_initcall(fn, 4)
 #define subsys_initcall_sync(fn)	__define_initcall(fn, 4s)
@@ -267,6 +272,7 @@ void __init parse_early_options(char *cmdline);
 
 /**
  * module_init() - driver initialization entry point
+ * 每个模块驱动初始化入口点，当模块内建在内核代码中时则会在do_initcalls时被调用
  * @x: function to be run at kernel boot time or module insertion
  * 
  * module_init() will either be called during do_initcalls() (if
@@ -284,17 +290,19 @@ void __init parse_early_options(char *cmdline);
  * the driver is a module.  If the driver is statically
  * compiled into the kernel, module_exit() has no effect.
  * There can only be one per module.
+ * 每个模块驱动卸载时入口点，内建在内核中的模块实际无效
  */
 #define module_exit(x)	__exitcall(x);
 
 #else /* MODULE */  // 以下的内容都是针对模块(即不会被编译进内核image中)的定义
 
-/* Don't use these in loadable modules, but some people do... */
-// 初始化时的运行优先级依次下降
+/* Don't use these in loadable modules, but some people do... 
+ * 可加载模块中理论上不需要用到这些initcall
+ * */
 #define early_initcall(fn)		module_init(fn)
-#define core_initcall(fn)		module_init(fn)             // 包含的模块：pinctrl、netlink、vfp
-#define postcore_initcall(fn)		module_init(fn)         // 包含的模块：DMA
-#define arch_initcall(fn)		module_init(fn)             // 包含的模块：板卡初始化函数(customize_machine)、板卡pin-control驱动
+#define core_initcall(fn)		module_init(fn)             
+#define postcore_initcall(fn)		module_init(fn)         
+#define arch_initcall(fn)		module_init(fn)             
 #define subsys_initcall(fn)		module_init(fn)
 #define fs_initcall(fn)			module_init(fn)
 #define rootfs_initcall(fn)		module_init(fn)
@@ -304,13 +312,17 @@ void __init parse_early_options(char *cmdline);
 #define console_initcall(fn)		module_init(fn)
 #define security_initcall(fn)		module_init(fn)
 
-/* Each module must use one module_init(). */
+/* Each module must use one module_init(). 
+ * 每个模块驱动初始化入口点，可加载模块则会在加载时被调用
+ * */
 #define module_init(initfn)					\
 	static inline initcall_t __inittest(void)		\
 	{ return initfn; }					\
 	int init_module(void) __attribute__((alias(#initfn)));
 
-/* This is only required if you want to be unloadable. */
+/* This is only required if you want to be unloadable. 
+ * 每个模块驱动卸载时入口点，只对可加载模块有效
+ * */
 #define module_exit(exitfn)					\
 	static inline exitcall_t __exittest(void)		\
 	{ return exitfn; }					\

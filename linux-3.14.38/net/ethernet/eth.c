@@ -147,7 +147,8 @@ EXPORT_SYMBOL(eth_rebuild_header);
 
 /**
  * eth_type_trans - determine the packet's protocol ID.
- * @skb: received socket data
+ * 判断接收到的帧的协议类型
+ * @skb: received socket data   
  * @dev: receiving network device
  *
  * The rule here is that we
@@ -160,12 +161,13 @@ __be16 eth_type_trans(struct sk_buff *skb, struct net_device *dev)
 	const unsigned short *sap;
 	const struct ethhdr *eth;
 
-	skb->dev = dev;
-	skb_reset_mac_header(skb);
-	skb_pull_inline(skb, ETH_HLEN);
-	eth = eth_hdr(skb);
+	skb->dev = dev;                 // 将该skb跟接收设备绑定
+	skb_reset_mac_header(skb);      // 计算该skb中MAC层位置
+	skb_pull_inline(skb, ETH_HLEN); // 将该skb的读指针后移ETH_HLEN字节，从而跳过以太网头
+	eth = eth_hdr(skb);             // 获取该skb的MAC头
 
 	if (unlikely(is_multicast_ether_addr(eth->h_dest))) {
+        // 如果是多播报文，则进一步区分是多播还是广播
 		if (ether_addr_equal_64bits(eth->h_dest, dev->broadcast))
 			skb->pkt_type = PACKET_BROADCAST;
 		else
@@ -173,6 +175,7 @@ __be16 eth_type_trans(struct sk_buff *skb, struct net_device *dev)
 	}
 	else if (unlikely(!ether_addr_equal_64bits(eth->h_dest,
 						   dev->dev_addr)))
+        // 对目的地址不是本机的报文进行标识
 		skb->pkt_type = PACKET_OTHERHOST;
 
 	/*
@@ -180,6 +183,7 @@ __be16 eth_type_trans(struct sk_buff *skb, struct net_device *dev)
 	 * at all, so we check here whether one of those tagging
 	 * variants has been configured on the receiving interface,
 	 * and if so, set skb->protocol without looking at the packet.
+     * 检查该接收设备是否开启了DSA功能
 	 */
 	if (unlikely(netdev_uses_dsa_tags(dev)))
 		return htons(ETH_P_DSA);
@@ -187,14 +191,19 @@ __be16 eth_type_trans(struct sk_buff *skb, struct net_device *dev)
 	if (unlikely(netdev_uses_trailer_tags(dev)))
 		return htons(ETH_P_TRAILER);
 
+    // 程序运行到这里意味着是一个普通的802.3帧
+    // 这里判断以太网头中的type/len字段的实际类型
 	if (likely(ntohs(eth->h_proto) >= ETH_P_802_3_MIN))
 		return eth->h_proto;
 
+    // 程序运行到这里意味着可能是一个802.3 + 802.2-llc帧
 	/*
 	 *      This is a magic hack to spot IPX packets. Older Novell breaks
 	 *      the protocol design and runs IPX over 802.3 without an 802.2 LLC
 	 *      layer. We look for FFFF which isn't a used 802.2 SSAP/DSAP. This
 	 *      won't work for fault tolerant netware but does for the rest.
+     *
+     *      通过比较dsap + ssap字段的值可以判断是否是一个llc头
 	 */
 	sap = skb_header_pointer(skb, 0, sizeof(*sap), &_service_access_point);
 	if (sap && *sap == 0xFFFF)
@@ -202,6 +211,7 @@ __be16 eth_type_trans(struct sk_buff *skb, struct net_device *dev)
 
 	/*
 	 *      Real 802.2 LLC
+     *      程序运行到这里才真正意味着是一个802.3 + 802.2-llc帧
 	 */
 	return htons(ETH_P_802_2);
 }

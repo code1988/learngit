@@ -16,6 +16,7 @@
 #include <string.h>
 #include "avl-cmp.h"
 
+// avl树提供的缺省的比较函数
 int
 avl_strcmp(const void *k1, const void *k2, void *ptr)
 {

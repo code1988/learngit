@@ -103,7 +103,7 @@ static inline bool is_zero_ether_addr(const u8 *addr)
 
 /**
  * is_multicast_ether_addr - Determine if the Ethernet address is a multicast.
- * 检查是否是一个多播地址，是多播地址返回1，不是则返回0
+ * 检查是否是一个多播地址(包括广播)，是多播地址返回1，不是则返回0
  * @addr: Pointer to a six-byte array containing the Ethernet address
  *
  * Return true if the address is a multicast address.

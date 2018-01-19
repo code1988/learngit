@@ -389,7 +389,7 @@ typedef enum gro_result gro_result_t;
 
 enum rx_handler_result {
 	RX_HANDLER_CONSUMED,    // 表示skb已经在执行rx_handler过程中被释放，不要再对它做进一步处理
-	RX_HANDLER_ANOTHER,     // 表示skb关联的设备在执行rx_handler过程中已经发送变化，所以设备接收流程需要再跑一遍
+	RX_HANDLER_ANOTHER,     // 表示skb关联的设备在执行rx_handler过程中已经发送变化，所以一部分接收流程需要再跑一遍
 	RX_HANDLER_EXACT,
 	RX_HANDLER_PASS,        // 表示skb关联的设备在执行rx_handler过程中没变化，接下来需要继续往后走正常的接收流程
                             // (正常的接收流程就是设备没有注册rx_handler钩子时的接收流程)
@@ -1311,7 +1311,7 @@ struct net_device {
 	struct vlan_info __rcu	*vlan_info;	/* VLAN info 绑定在该网络设备上的所有vlan设备信息管理块*/
 #endif
 #if IS_ENABLED(CONFIG_NET_DSA)
-	struct dsa_switch_tree	*dsa_ptr;	/* dsa specific data */
+	struct dsa_switch_tree	*dsa_ptr;	/* dsa specific data  如果该设备使能了DSA功能，则这里指向绑定的DSA管理块 */
 #endif
 #if IS_ENABLED(CONFIG_TIPC)
 	struct tipc_bearer __rcu *tipc_ptr;	/* TIPC specific data */
@@ -1592,6 +1592,7 @@ void dev_net_set(struct net_device *dev, struct net *net)
 #endif
 }
 
+// 判断传入的网络设备是否使能了ETH_P_DSA类型的DSA功能
 static inline bool netdev_uses_dsa_tags(struct net_device *dev)
 {
 #ifdef CONFIG_NET_DSA_TAG_DSA
@@ -1602,6 +1603,7 @@ static inline bool netdev_uses_dsa_tags(struct net_device *dev)
 	return 0;
 }
 
+// 判断传入的网络设备是否使能了ETH_P_TRAILER类型的DSA功能
 static inline bool netdev_uses_trailer_tags(struct net_device *dev)
 {
 #ifdef CONFIG_NET_DSA_TAG_TRAILER
@@ -1708,18 +1710,20 @@ struct napi_gro_cb {
 
 #define NAPI_GRO_CB(skb) ((struct napi_gro_cb *)(skb)->cb)
 
-// 定义了协议类型相关的设备层面的操作集合
+// 定义了以太网协议相关的信息集合
 struct packet_type {
-	__be16			type;	/* This is really htons(ether_type).协议类型，比如ETH_P_DSA*/
-	struct net_device	*dev;	/* NULL is wildcarded here	非NULL:只处理来自指定设备的该协议类型的数据;NULL:处理来自所有设备的该协议类型的数据*/
+	__be16			type;	/* This is really htons(ether_type). 以太网协议类型(比如ETH_P_DSA) */
+	struct net_device	*dev;	/* NULL is wildcarded here	
+                                   NULL  : 处理来自所有设备的该协议类型的数据(缺省情况);
+                                   非NULL: 只处理来自指定设备的该协议类型的数据(手动bind后) */
 	int			(*func) (struct sk_buff *,
 					 struct net_device *,
 					 struct packet_type *,
-					 struct net_device *);  // 具体的处理函数，用于处理来自设备的数据
+					 struct net_device *);  // 协议相关的处理函数，用于处理来自设备的数据，这其中就包括了通往L3层的入口、DSA模块入口等
 	bool			(*id_match)(struct packet_type *ptype,
 					    struct sock *sk);
-	void			*af_packet_priv;
-	struct list_head	list;
+	void			*af_packet_priv;        // 指向协议私有的数据空间
+	struct list_head	list;               // 用于插入全局链表ptype_all/ptype_base
 };
 
 struct offload_callbacks {

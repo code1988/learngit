@@ -76,7 +76,7 @@ out_free:
 	return NETDEV_TX_OK;
 }
 
-// dsa协议被注册到内核中后，从eth0收到的dsa协议报文都会调用到本函数进行处理
+// ETH_P_DSA协议被注册到内核中后，从关联netdev(通常是eth0)收到该协议报文后的入口
 static int dsa_rcv(struct sk_buff *skb, struct net_device *dev,
 		   struct packet_type *pt, struct net_device *orig_dev)
 {
@@ -187,7 +187,7 @@ out:
 	return 0;
 }
 
-// 定义了一个dsa协议操作集合，在dsa.c的初始化函数中会被注册到内核中
+// 定义了一个ETH_P_DSA协议操作集合，在通用DSA驱动初始化函数中会被注册到内核中
 struct packet_type dsa_packet_type __read_mostly = {
 	.type	= cpu_to_be16(ETH_P_DSA),
 	.func	= dsa_rcv,

@@ -484,6 +484,7 @@ static inline void dsa_of_remove(struct platform_device *pdev)
 }
 #endif
 
+// DSA驱动的probe回调函数
 static int dsa_probe(struct platform_device *pdev)
 {
 	static int dsa_version_printed;
@@ -582,6 +583,7 @@ out:
 	return ret;
 }
 
+// DSA驱动的remove回调函数
 static int dsa_remove(struct platform_device *pdev)
 {
 	struct dsa_switch_tree *dst = platform_get_drvdata(pdev);
@@ -608,12 +610,17 @@ static void dsa_shutdown(struct platform_device *pdev)
 {
 }
 
+/* 定义了一张通用DSA驱动支持的device描述列表，只有符合该表中描述的device才是匹配的device
+ * 
+ * 备注： 3.14.38版本中DSA驱动只支持marvell
+ */
 static const struct of_device_id dsa_of_match_table[] = {
 	{ .compatible = "marvell,dsa", },
 	{}
 };
 MODULE_DEVICE_TABLE(of, dsa_of_match_table);
 
+// 定义了一个platform类型的DSA驱动
 static struct platform_driver dsa_driver = {
 	.probe		= dsa_probe,
 	.remove		= dsa_remove,
@@ -625,15 +632,17 @@ static struct platform_driver dsa_driver = {
 	},
 };
 
+// 通用DSA驱动初始化入口
 static int __init dsa_init_module(void)
 {
 	int rc;
 
+    // 将DSA驱动注册到platform总线中
 	rc = platform_driver_register(&dsa_driver);
 	if (rc)
 		return rc;
 
-    // 注册具体的ETH_P_DSA协议，目前就是dsa_packet_type
+    // 注册具体的DSA协议，目前就是dsa_packet_type
 #ifdef CONFIG_NET_DSA_TAG_DSA
 	dev_add_pack(&dsa_packet_type);
 #endif
@@ -647,6 +656,7 @@ static int __init dsa_init_module(void)
 }
 module_init(dsa_init_module);
 
+// 通用DSA驱动卸载入口
 static void __exit dsa_cleanup_module(void)
 {
 #ifdef CONFIG_NET_DSA_TAG_TRAILER

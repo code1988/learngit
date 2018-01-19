@@ -205,6 +205,7 @@ out:
 	return 0;
 }
 
+// 定义了一个ETH_P_EDSA协议操作集合，在dsa.c的初始化函数中会被注册到内核中
 struct packet_type edsa_packet_type __read_mostly = {
 	.type	= cpu_to_be16(ETH_P_EDSA),
 	.func	= edsa_rcv,

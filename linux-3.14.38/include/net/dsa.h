@@ -16,15 +16,16 @@
 #include <linux/timer.h>
 #include <linux/workqueue.h>
 
-#define DSA_MAX_SWITCHES	4
-#define DSA_MAX_PORTS		12
+#define DSA_MAX_SWITCHES	4   // DSA驱动支持的最大交换机数量
+#define DSA_MAX_PORTS		12  // DSA驱动支持的最大端口数
 
+// 定义了描述switch信息的结构
 struct dsa_chip_data {
 	/*
 	 * How to access the switch configuration registers.
 	 */
 	struct device	*mii_bus;
-	int		sw_addr;
+	int		sw_addr;    // switch地址
 
 	/*
 	 * The names of the switch's ports.  Use "cpu" to
@@ -32,6 +33,8 @@ struct dsa_chip_data {
 	 * "dsa" to indicate that this port is a DSA link to
 	 * another switch, NULL to indicate the port is unused,
 	 * or any other string to indicate this is a physical port.
+     *
+     * 记录了switch每个端口的名字
 	 */
 	char		*port_names[DSA_MAX_PORTS];
 
@@ -40,14 +43,19 @@ struct dsa_chip_data {
 	 * indicates which port on this switch should be used to
 	 * send packets to that are destined for switch a.  Can be
 	 * NULL if there is only one switch chip.
+     *
+     * 不级联switchd情况下该字段为NULL
 	 */
 	s8		*rtable;
 };
 
+// 定义了描述
 struct dsa_platform_data {
 	/*
 	 * Reference to a Linux network interface that connects
 	 * to the root switch chip of the tree.
+     *
+     * 指向一个跟root switch关联的netdev
 	 */
 	struct device	*netdev;
 
@@ -55,8 +63,8 @@ struct dsa_platform_data {
 	 * Info structs describing each of the switch chips
 	 * connected via this network interface.
 	 */
-	int		nr_chips;
-	struct dsa_chip_data	*chip;
+	int		nr_chips;               // 级联switch数量
+	struct dsa_chip_data	*chip;  // 所有级联switch的描述集合
 };
 
 struct dsa_switch_tree {
@@ -71,7 +79,7 @@ struct dsa_switch_tree {
 	 * protocol to use.
 	 */
 	struct net_device	*master_netdev;
-	__be16			tag_protocol;
+	__be16			tag_protocol;   // 记录了该DSA管理块使用的dsa-tag类型(原始类型就是ETH_P_DSA)
 
 	/*
 	 * The switch and port to which the CPU is attached.
@@ -187,6 +195,7 @@ void unregister_switch_driver(struct dsa_switch_driver *type);
  * networking receive path to make sure that received frames get
  * the right ->protocol assigned to them when one of those tag
  * formats is in use.
+ * 判断传入的DSA管理块是否使用了ETH_P_DSA类型的dsa-tag
  */
 static inline bool dsa_uses_dsa_tags(struct dsa_switch_tree *dst)
 {
