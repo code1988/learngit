@@ -755,7 +755,8 @@ struct device {
 	struct device_driver *driver;	/* which driver has allocated this
 					   device */
 	void		*platform_data;	/* Platform specific data, device
-					   core doesn't touch it */
+					   core doesn't touch it 
+                       指向针对该device的具体板卡相关的数据(比如struct dsa_platform_data结构) */
 	struct dev_pm_info	power;
 	struct dev_pm_domain	*pm_domain;
 
@@ -786,7 +787,7 @@ struct device {
 	/* arch specific additions */
 	struct dev_archdata	archdata;
 
-	struct device_node	*of_node; /* associated device tree node  指向和该device关联的设备节点(源自对应的dts节点) */
+	struct device_node	*of_node; /* associated device tree node  指向和该device关联的dts节点 */
 	struct acpi_dev_node	acpi_node; /* associated ACPI device node */
 
 	dev_t			devt;	/* dev_t, creates the sysfs "dev" */
@@ -959,6 +960,7 @@ extern struct device *__root_device_register(const char *name,
 
 extern void root_device_unregister(struct device *root);
 
+// 返回指定device的platform_data字段
 static inline void *dev_get_platdata(const struct device *dev)
 {
 	return dev->platform_data;

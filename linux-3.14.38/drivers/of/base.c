@@ -238,6 +238,7 @@ static const void *__of_get_property(const struct device_node *np,
  * and return the value.
  *
  * 根据给定的属性名，在指定node中查找其对应的属性值
+ * @lenp    用于存放属性值的长度，如果传入NULL意味不关心
  */
 const void *of_get_property(const struct device_node *np, const char *name,
 			    int *lenp)
@@ -1335,10 +1336,11 @@ static int __of_parse_phandle_with_args(const struct device_node *np,
 
 /**
  * of_parse_phandle - Resolve a phandle property to a device_node pointer
- * @np: Pointer to device node holding phandle property
- * @phandle_name: Name of property holding a phandle value
+ * 根据phandle的属性名索引对应的dts节点
+ * @np: Pointer to device node holding phandle property     指向持有该phandle属性的dts节点
+ * @phandle_name: Name of property holding a phandle value  持有一个phandle句柄的属性名
  * @index: For properties holding a table of phandles, this is the index into
- *         the table
+ *         the table    如果该属性名持有的是一个phandle句柄列表，则index参数用来表示具体需要索引的序号
  *
  * Returns the device_node pointer with refcount incremented.  Use
  * of_node_put() on it when done.

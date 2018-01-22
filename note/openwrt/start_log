@@ -187,7 +187,7 @@
                                          [DSA]: parse port index = 0, if index = -1
                                           [DSA mv6390x probe]: vendor id = a11
                                          eth0[0]: detected a Marvell 88E6390X switch
-                                         [mv88e6390x setup]: vendor id = a10
+@mv88e6390x_setup                        [mv88e6390x setup]: vendor id = a10
                                          mv88e6390x_setup_dsa, cpu port = 0
                                          libphy: dsa slave smi: probed
                                          NET: Registered protocol family 4

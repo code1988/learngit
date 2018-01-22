@@ -111,6 +111,8 @@ static int of_mdio_parse_addr(struct device *dev, const struct device_node *np)
 
 /**
  * of_mdiobus_register - Register mii_bus and create PHYs from the device tree
+ * 根据mii总线的dts节点信息注册一条对应的mii总线
+ *
  * @mdio: pointer to mii_bus structure
  * @np: pointer to device_node of MDIO bus.
  *

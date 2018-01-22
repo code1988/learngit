@@ -24,9 +24,10 @@ char dsa_driver_version[] = "0.1";
 
 
 /* switch driver registration ***********************************************/
-static DEFINE_MUTEX(dsa_switch_drivers_mutex);
-static LIST_HEAD(dsa_switch_drivers);
+static DEFINE_MUTEX(dsa_switch_drivers_mutex);  // 定义了一个用于维护switch驱动链表的互斥锁
+static LIST_HEAD(dsa_switch_drivers);           // 定义了一张全局的switch驱动链表
 
+// 注册指定的switch驱动到内核
 void register_switch_driver(struct dsa_switch_driver *drv)
 {
 	mutex_lock(&dsa_switch_drivers_mutex);
@@ -35,6 +36,7 @@ void register_switch_driver(struct dsa_switch_driver *drv)
 }
 EXPORT_SYMBOL_GPL(register_switch_driver);
 
+// 从内核中注销指定的switch驱动
 void unregister_switch_driver(struct dsa_switch_driver *drv)
 {
 	mutex_lock(&dsa_switch_drivers_mutex);
@@ -43,6 +45,12 @@ void unregister_switch_driver(struct dsa_switch_driver *drv)
 }
 EXPORT_SYMBOL_GPL(unregister_switch_driver);
 
+/* 通过mii-bus设备探测指定的switch是否存在
+ * @bus     mii-bus设备，探测动作将通过该设备发出
+ * @sw_addr 要探测的switch的地址序号
+ * @_name   用于存放探测到的switch名
+ * @返回值  探测成功则返回对应的switch驱动，失败则返回NULL
+ */
 static struct dsa_switch_driver *
 dsa_switch_probe(struct mii_bus *bus, int sw_addr, char **_name)
 {
@@ -53,6 +61,7 @@ dsa_switch_probe(struct mii_bus *bus, int sw_addr, char **_name)
 	ret = NULL;
 	name = NULL;
 
+    // 依次遍历已经注册的所有switch驱动，执行其中的probe操作，如果探测成功则会将探测到的switch名存放在_name中
 	mutex_lock(&dsa_switch_drivers_mutex);
 	list_for_each(list, &dsa_switch_drivers) {
 		struct dsa_switch_driver *drv;
@@ -74,6 +83,12 @@ dsa_switch_probe(struct mii_bus *bus, int sw_addr, char **_name)
 
 
 /* basic switch operations **************************************************/
+/* 根据传入的信息创建一个switch实例
+ * @dst     该switch实例所属的DSA实例
+ * @index   该switch的序号，不级联情况下就是0
+ * @parent  该switch实例所属的DSA设备
+ * @bus     该switch实例使用的主mii-bus
+ */
 static struct dsa_switch *
 dsa_switch_setup(struct dsa_switch_tree *dst, int index,
 		 struct device *parent, struct mii_bus *bus)
@@ -88,6 +103,7 @@ dsa_switch_setup(struct dsa_switch_tree *dst, int index,
 
 	/*
 	 * Probe for switch model.
+     * 通过指定的mii-bus设备探测指定的switch是否存在
 	 */
 	drv = dsa_switch_probe(bus, pd->sw_addr, &name);
 	if (drv == NULL) {
@@ -101,6 +117,7 @@ dsa_switch_setup(struct dsa_switch_tree *dst, int index,
 
 	/*
 	 * Allocate and initialise switch state.
+     * 只有成功探测到的switch才会创建对应的实例，显然实际这里申请了switch实例 + switch私有空间
 	 */
 	ds = kzalloc(sizeof(*ds) + drv->priv_size, GFP_KERNEL);
 	if (ds == NULL)
@@ -115,6 +132,7 @@ dsa_switch_setup(struct dsa_switch_tree *dst, int index,
 
 	/*
 	 * Validate supplied switch configuration.
+     * 检查提供给该switch的配置信息是否有效
 	 */
 	for (i = 0; i < DSA_MAX_PORTS; i++) {
 		char *name;
@@ -124,6 +142,7 @@ dsa_switch_setup(struct dsa_switch_tree *dst, int index,
 			continue;
 
 		if (!strcmp(name, "cpu")) {
+            // 如果端口名为"cpu"，意味着是switch上是连接cpu的端口，一个DSA实例中只允许存在一个cpu口
 			if (dst->cpu_switch != -1) {
 				printk(KERN_ERR "multiple cpu ports?!\n");
 				ret = -EINVAL;
@@ -132,8 +151,10 @@ dsa_switch_setup(struct dsa_switch_tree *dst, int index,
 			dst->cpu_switch = index;
 			dst->cpu_port = i;
 		} else if (!strcmp(name, "dsa")) {
+            // 如果端口名为"dsa"，意味着该端口开启了dsa功能
 			ds->dsa_port_mask |= 1 << i;
 		} else {
+            // 除了"cpu"和"dsa"端口，其他端口都是普通的物理口
 			ds->phys_port_mask |= 1 << i;
 		}
 		valid_name_found = true;
@@ -148,6 +169,8 @@ dsa_switch_setup(struct dsa_switch_tree *dst, int index,
 	 * If the CPU connects to this switch, set the switch tree
 	 * tagging protocol to the preferred tagging format of this
 	 * switch.
+     *
+     * 该DSA实例的dsa-tag同步自cpu口所在的switch
 	 */
 	if (ds->dst->cpu_switch == index)
 		ds->dst->tag_protocol = drv->tag_protocol;
@@ -155,11 +178,13 @@ dsa_switch_setup(struct dsa_switch_tree *dst, int index,
 
 	/*
 	 * Do basic register setup.
+     * 执行该switch驱动的setup
 	 */
 	ret = drv->setup(ds);
 	if (ret < 0)
 		goto out;
 
+    // 执行该switch驱动的set_addr
 	ret = drv->set_addr(ds, dst->master_netdev->dev_addr);
 	if (ret < 0)
 		goto out;
@@ -238,6 +263,7 @@ static void dsa_link_poll_timer(unsigned long _dst)
 
 
 /* platform driver init and cleanup *****************************************/
+// 判断指定device所属的class是否为指定的分类
 static int dev_is_class(struct device *dev, void *class)
 {
 	if (dev->class != NULL && !strcmp(dev->class->name, class))
@@ -246,6 +272,10 @@ static int dev_is_class(struct device *dev, void *class)
 	return 0;
 }
 
+/* 从指定device开始递归查找指定类的device
+ *
+ * 备注：其中包括了对找到的device引用计数加1
+ */
 static struct device *dev_find_class(struct device *parent, char *class)
 {
 	if (dev_is_class(parent, class)) {
@@ -256,6 +286,7 @@ static struct device *dev_find_class(struct device *parent, char *class)
 	return device_find_child(parent, class, dev_is_class);
 }
 
+// 从指定device开始递归查找"mdio_bus"类的mii总线设备
 static struct mii_bus *dev_to_mii_bus(struct device *dev)
 {
 	struct device *d;
@@ -264,6 +295,7 @@ static struct mii_bus *dev_to_mii_bus(struct device *dev)
 	if (d != NULL) {
 		struct mii_bus *bus;
 
+        // 获取device对应的mii总线设备
 		bus = to_mii_bus(d);
 		put_device(d);
 
@@ -273,14 +305,17 @@ static struct mii_bus *dev_to_mii_bus(struct device *dev)
 	return NULL;
 }
 
+// 从指定device开始递归查找"net"类的netdev
 static struct net_device *dev_to_net_device(struct device *dev)
 {
 	struct device *d;
 
+    // 从该device开始递归查找"net"类的device
 	d = dev_find_class(dev, "net");
 	if (d != NULL) {
 		struct net_device *nd;
 
+        // 获取device对应的netdev
 		nd = to_net_dev(d);
 		dev_hold(nd);
 		put_device(d);
@@ -292,6 +327,7 @@ static struct net_device *dev_to_net_device(struct device *dev)
 }
 
 #ifdef CONFIG_OF
+// 设置级联switch情况下的switch端口路由表
 static int dsa_of_setup_routing_table(struct dsa_platform_data *pd,
 					struct dsa_chip_data *cd,
 					int chip_index,
@@ -360,6 +396,7 @@ static void dsa_of_free_platform_data(struct dsa_platform_data *pd)
 	kfree(pd->chip);
 }
 
+// 解析DSA设备的dts节点，这过程中主要会创建DSA配置控制块和下属的switch配置控制块
 static int dsa_of_probe(struct platform_device *pdev)
 {
 	struct device_node *np = pdev->dev.of_node;
@@ -373,32 +410,38 @@ static int dsa_of_probe(struct platform_device *pdev)
 	const unsigned int *sw_addr, *port_reg;
 	int ret;
 
+    // 获取记录了mdio设备信息的dts节点
 	mdio = of_parse_phandle(np, "dsa,mii-bus", 0);
 	if (!mdio)
 		return -EINVAL;
 
+    // 根据得到的mdio dts节点进一步获取对应的mdio设备
 	mdio_bus = of_mdio_find_bus(mdio);
 	if (!mdio_bus)
 		return -EINVAL;
 
+    // 获取记录了以太网控制器信息的dts节点
 	ethernet = of_parse_phandle(np, "dsa,ethernet", 0);
 	if (!ethernet)
 		return -EINVAL;
 
+    // 根据得到的以太网控制器dts节点进一步获取对应的以太网控制器设备
 	ethernet_dev = of_find_device_by_node(ethernet);
 	if (!ethernet_dev)
 		return -ENODEV;
 
+    // 创建并初始化DSA配置控制块
 	pd = kzalloc(sizeof(*pd), GFP_KERNEL);
 	if (!pd)
 		return -ENOMEM;
 
-	pdev->dev.platform_data = pd;
-	pd->netdev = &ethernet_dev->dev;
-	pd->nr_chips = of_get_child_count(np);
+	pdev->dev.platform_data = pd;       // 将DSA配置块跟DSA设备关联
+	pd->netdev = &ethernet_dev->dev;    // 将DSA的宿主device设置为上面获取到的以太网控制器设备
+	pd->nr_chips = of_get_child_count(np);  // 获取该DSA的dts节点中配置的switch数量
 	if (pd->nr_chips > DSA_MAX_SWITCHES)
 		pd->nr_chips = DSA_MAX_SWITCHES;
 
+    // 创建并初始化switch配置控制块
 	pd->chip = kzalloc(pd->nr_chips * sizeof(struct dsa_chip_data),
 			GFP_KERNEL);
 	if (!pd->chip) {
@@ -410,8 +453,9 @@ static int dsa_of_probe(struct platform_device *pdev)
 	for_each_available_child_of_node(np, child) {
 		cd = &pd->chip[chip_index];
 
-		cd->mii_bus = &mdio_bus->dev;
+		cd->mii_bus = &mdio_bus->dev;       // 所有switch共用同一个mdio设备
 
+        // 获取该switch的地址序号
 		sw_addr = of_get_property(child, "reg", NULL);
 		if (!sw_addr)
 			continue;
@@ -421,12 +465,14 @@ static int dsa_of_probe(struct platform_device *pdev)
 			continue;
 
 		for_each_available_child_of_node(child, port) {
+            // 获取该switch每个端口的物理地址序号
 			port_reg = of_get_property(port, "reg", NULL);
 			if (!port_reg)
 				continue;
 
 			port_index = be32_to_cpup(port_reg);
 
+            // 获取该switch每个端口名
 			port_name = of_get_property(port, "label", NULL);
 			if (!port_name)
 				continue;
@@ -438,8 +484,10 @@ static int dsa_of_probe(struct platform_device *pdev)
 				goto out_free_chip;
 			}
 
+            // 获取记录了链路信息的dts节点(用于级联情况)
 			link = of_parse_phandle(port, "link", 0);
 
+            // 如果配置了switch级联情况，并且该switch端口是dsa口且配置了"link"属性，则在这里设置switch的路由表
 			if (!strcmp(port_name, "dsa") && link &&
 					pd->nr_chips > 1) {
 				ret = dsa_of_setup_routing_table(pd, cd,
@@ -484,7 +532,9 @@ static inline void dsa_of_remove(struct platform_device *pdev)
 }
 #endif
 
-// DSA驱动的probe回调函数
+/* DSA驱动API: probe回调函数
+ * @pdev    指向匹配到的DSA设备
+ */
 static int dsa_probe(struct platform_device *pdev)
 {
 	static int dsa_version_printed;
@@ -497,6 +547,7 @@ static int dsa_probe(struct platform_device *pdev)
 		printk(KERN_NOTICE "Distributed Switch Architecture "
 			"driver version %s\n", dsa_driver_version);
 
+    // 如果DSA设备存在对应的dts节点，则对其进行解析，这过程中主要会创建DSA配置控制块和下属的switch配置控制块
 	if (pdev->dev.of_node) {
 		ret = dsa_of_probe(pdev);
 		if (ret)
@@ -508,6 +559,7 @@ static int dsa_probe(struct platform_device *pdev)
 	if (pd == NULL || pd->netdev == NULL)
 		return -EINVAL;
 
+    // 获取宿主device对应的netdev
 	dev = dev_to_net_device(pd->netdev);
 	if (dev == NULL) {
 		ret = -EINVAL;
@@ -520,6 +572,7 @@ static int dsa_probe(struct platform_device *pdev)
 		goto out;
 	}
 
+    // 创建并初始化DSA实例
 	dst = kzalloc(sizeof(*dst), GFP_KERNEL);
 	if (dst == NULL) {
 		dev_put(dev);
@@ -527,7 +580,7 @@ static int dsa_probe(struct platform_device *pdev)
 		goto out;
 	}
 
-	platform_set_drvdata(pdev, dst);
+	platform_set_drvdata(pdev, dst);    // 将DSA实例作为私有数据记录到该DSA设备的私有数据块中
 
 	dst->pd = pd;
 	dst->master_netdev = dev;
@@ -538,6 +591,7 @@ static int dsa_probe(struct platform_device *pdev)
 		struct mii_bus *bus;
 		struct dsa_switch *ds;
 
+        // 获取对应的mii-bus设备，这里也就是mdio设备
 		bus = dev_to_mii_bus(pd->chip[i].mii_bus);
 		if (bus == NULL) {
 			printk(KERN_ERR "%s[%d]: no mii bus found for "

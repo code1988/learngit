@@ -677,6 +677,7 @@ static inline int of_property_read_u32(const struct device_node *np,
 	for (dn = of_find_node_with_property(NULL, prop_name); dn; \
 	     dn = of_find_node_with_property(dn, prop_name))
 
+// 获取指定dts节点中的子dts节点数量
 static inline int of_get_child_count(const struct device_node *np)
 {
 	struct device_node *child;

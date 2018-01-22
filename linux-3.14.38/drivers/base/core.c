@@ -1153,6 +1153,7 @@ EXPORT_SYMBOL_GPL(device_register);
 
 /**
  * get_device - increment reference count for device.
+ * 对指定device的引用计数加1
  * @dev: device.
  *
  * This simply forwards the call to kobject_get(), though
@@ -1167,6 +1168,7 @@ EXPORT_SYMBOL_GPL(get_device);
 
 /**
  * put_device - decrement reference count.
+ * 对指定device的引用计数减1
  * @dev: device in question.
  */
 void put_device(struct device *dev)

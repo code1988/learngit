@@ -98,6 +98,7 @@ static int of_mdio_bus_match(struct device *dev, const void *mdio_bus_np)
 }
 /**
  * of_mdio_find_bus - Given an mii_bus node, find the mii_bus.
+ * 根据传入的mii总线的dts节点查找对应mii总线
  * @mdio_bus_np: Pointer to the mii_bus.
  *
  * Returns a pointer to the mii_bus, or NULL if none found.

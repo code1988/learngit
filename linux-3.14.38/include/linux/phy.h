@@ -82,7 +82,7 @@ typedef enum {
 #define PHY_FORCE_TIMEOUT	10
 #define PHY_AN_TIMEOUT		10
 
-#define PHY_MAX_ADDR	32
+#define PHY_MAX_ADDR	32      // switch的地址序号上限
 
 /* Used when trying to connect to a specific phy (mii bus id:phy device id) */
 #define PHY_ID_FMT "%s:%02x"
@@ -103,9 +103,11 @@ struct sk_buff;
 /*
  * The Bus class for PHYs.  Devices which provide access to
  * PHYs should register using this structure
+ *
+ * 定义了mii-bus设备模型
  */
 struct mii_bus {
-	const char *name;
+	const char *name;   // mii-bus设备名
 	char id[MII_BUS_ID_SIZE];
 	void *priv;
 	int (*read)(struct mii_bus *bus, int phy_id, int regnum);
@@ -125,7 +127,7 @@ struct mii_bus {
 		MDIOBUS_UNREGISTERED,
 		MDIOBUS_RELEASED,
 	} state;
-	struct device dev;
+	struct device dev;      // 封装的linux基本设备结构
 
 	/* list of all PHYs on bus */
 	struct phy_device *phy_map[PHY_MAX_ADDR];

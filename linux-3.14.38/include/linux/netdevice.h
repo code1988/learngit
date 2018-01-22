@@ -1311,7 +1311,7 @@ struct net_device {
 	struct vlan_info __rcu	*vlan_info;	/* VLAN info 绑定在该网络设备上的所有vlan设备信息管理块*/
 #endif
 #if IS_ENABLED(CONFIG_NET_DSA)
-	struct dsa_switch_tree	*dsa_ptr;	/* dsa specific data  如果该设备使能了DSA功能，则这里指向绑定的DSA管理块 */
+	struct dsa_switch_tree	*dsa_ptr;	/* dsa specific data  如果该设备使能了DSA功能，则这里指向绑定的DSA实例 */
 #endif
 #if IS_ENABLED(CONFIG_TIPC)
 	struct tipc_bearer __rcu *tipc_ptr;	/* TIPC specific data */
@@ -2594,6 +2594,7 @@ void netdev_run_todo(void);
 
 /**
  *	dev_put - release reference to device
+ *	该netdev的引用计数减1
  *	@dev: network device
  *
  * Release reference to device to allow it to be freed.
@@ -2605,7 +2606,7 @@ static inline void dev_put(struct net_device *dev)
 
 /**
  *	dev_hold - get reference to device
- *	该设备的引用计数加1
+ *	该netdev的引用计数加1
  *	@dev: network device
  *
  * Hold reference to device to keep it from being freed.

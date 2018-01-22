@@ -493,6 +493,7 @@ void mv88e6xxx_get_ethtool_stats(struct dsa_switch *ds,
 	mutex_unlock(&ps->stats_mutex);
 }
 
+// mv88e6系列switch模块驱动统一注册接口
 static int __init mv88e6xxx_init(void)
 {
 #if IS_ENABLED(CONFIG_NET_DSA_MV88E6131)
@@ -505,6 +506,7 @@ static int __init mv88e6xxx_init(void)
 }
 module_init(mv88e6xxx_init);
 
+// mv88e6系列switch模块驱动统一注销接口
 static void __exit mv88e6xxx_cleanup(void)
 {
 #if IS_ENABLED(CONFIG_NET_DSA_MV88E6123_61_65)
