@@ -67,7 +67,7 @@ struct dsa_platform_data {
 	struct dsa_chip_data	*chip;  // 所有级联switch配置信息的描述集合
 };
 
-// DSA实例，该结构被用于netdev->dsa_ptr
+// DSA实例，被记录在DSA设备device->p->driver_data，并和跟宿主netdev->dsa_ptr关联
 struct dsa_switch_tree {
 	/*
 	 * Configuration data for the platform device that owns

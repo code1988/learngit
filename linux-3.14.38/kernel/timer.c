@@ -1704,6 +1704,8 @@ static int __sched do_usleep_range(unsigned long min, unsigned long max)
 
 /**
  * usleep_range - Drop in replacement for udelay where wakeup is flexible
+ * 实际会延迟min-max之间的一段时间(微秒)
+ *
  * @min: Minimum time in usecs to sleep
  * @max: Maximum time in usecs to sleep
  */

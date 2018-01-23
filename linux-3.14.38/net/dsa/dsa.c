@@ -559,7 +559,7 @@ static int dsa_probe(struct platform_device *pdev)
 	if (pd == NULL || pd->netdev == NULL)
 		return -EINVAL;
 
-    // 获取宿主device对应的netdev
+    // 获取宿主device的父结构netdev
 	dev = dev_to_net_device(pd->netdev);
 	if (dev == NULL) {
 		ret = -EINVAL;

@@ -22,10 +22,17 @@
 #define ID_6095		0x0950
 #define ID_6131		0x1060
 
+/* mv88e6131系列switch执行探测指定switch的操作
+ * @bus     - 探测操作最终需要通过mdio设备进行
+ * @sw_addr - 需要探测的switch地址序号
+ *
+ * @返回值  成功探测到该switch则返回switch名，探测失败则返回NULL
+ */
 static char *mv88e6131_probe(struct mii_bus *bus, int sw_addr)
 {
 	int ret;
 
+    // 读取switch-id寄存器值，mv88e6131系列的产品编号位于 [15-4]bit
 	ret = __mv88e6xxx_reg_read(bus, sw_addr, REG_PORT(0), 0x03);
 	if (ret >= 0) {
 		ret &= 0xfff0;
@@ -40,19 +47,22 @@ static char *mv88e6131_probe(struct mii_bus *bus, int sw_addr)
 	return NULL;
 }
 
+/* mv88e6131系列switch执行复位操作
+ * @ds  要操作的switch实例
+ */
 static int mv88e6131_switch_reset(struct dsa_switch *ds)
 {
 	int i;
 	int ret;
 	unsigned long timeout;
 
-	/* Set all ports to the disabled state. */
+	/* Set all ports to the disabled state.  首先将所有端口设置为disabled */
 	for (i = 0; i < 11; i++) {
 		ret = REG_READ(REG_PORT(i), 0x04);
 		REG_WRITE(REG_PORT(i), 0x04, ret & 0xfffc);
 	}
 
-	/* Wait for transmit queues to drain. */
+	/* Wait for transmit queues to drain.  等待2~4ms确保所有端口的发送队列排干净了报文 */
 	usleep_range(2000, 4000);
 
 	/* Reset the switch. */
@@ -272,6 +282,9 @@ static int mv88e6131_setup_port(struct dsa_switch *ds, int p)
 	return 0;
 }
 
+/* mv88e6131系列switch执行设置操作
+ * @ds  要操作的switch实例
+ */
 static int mv88e6131_setup(struct dsa_switch *ds)
 {
 	struct mv88e6xxx_priv_state *ps = (void *)(ds + 1);
@@ -282,6 +295,7 @@ static int mv88e6131_setup(struct dsa_switch *ds)
 	mv88e6xxx_ppu_state_init(ds);
 	mutex_init(&ps->stats_mutex);
 
+    // 读取该switch的产品编号
 	ps->id = REG_READ(REG_PORT(0), 0x03) & 0xfff0;
 
 	ret = mv88e6131_switch_reset(ds);
@@ -378,8 +392,9 @@ static int mv88e6131_get_sset_count(struct dsa_switch *ds)
 	return ARRAY_SIZE(mv88e6131_hw_stats);
 }
 
+// 定义了mv88e6131系列共用的switch驱动
 struct dsa_switch_driver mv88e6131_switch_driver = {
-	.tag_protocol		= cpu_to_be16(ETH_P_DSA),
+	.tag_protocol		= cpu_to_be16(ETH_P_DSA),           // 该switch驱动使用ETH_P_DSA协议
 	.priv_size		= sizeof(struct mv88e6xxx_priv_state),
 	.probe			= mv88e6131_probe,
 	.setup			= mv88e6131_setup,

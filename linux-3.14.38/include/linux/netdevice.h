@@ -1157,7 +1157,7 @@ struct net_device_ops {
  *	Actually, this whole structure is a big mistake.  It mixes I/O
  *	data with strictly "high-level" data, and it has to know about
  *	almost every data structure used in the INET module.
- *	通用网络设备管理块结构
+ *	定义了net设备模型
  *
  *  备注：这个结构有一个待优化的地方
  *	FIXME: cleanup struct net_device such that network protocol info
@@ -1451,7 +1451,7 @@ struct net_device {
 	struct mrp_port __rcu	*mrp_port;
 
 	/* class/net/name entry */
-	struct device		dev;        // sysfs文件系统
+	struct device		dev;        // 封装的linux基本设备结构
 	/* space for optional device, statistics, and wireless sysfs groups */
 	const struct attribute_group *sysfs_groups[4];
 	/* space for optional per-rx queue attributes */

@@ -42,6 +42,12 @@ static int mv88e6xxx_reg_wait_ready(struct mii_bus *bus, int sw_addr)
 	return -ETIMEDOUT;
 }
 
+/* mv88e6xxx系列switch通过mdio设备读switch寄存器
+ * @bus     - 需要通过mdio设备进行读操作
+ * @sw_addr - 指定了需要进行读操作的switch
+ * @addr    - switch的指定端口/全局地址
+ * @reg     - switch的指定端口/全局的寄存器地址序号
+ */
 int __mv88e6xxx_reg_read(struct mii_bus *bus, int sw_addr, int addr, int reg)
 {
 	int ret;
@@ -72,6 +78,11 @@ int __mv88e6xxx_reg_read(struct mii_bus *bus, int sw_addr, int addr, int reg)
 	return ret & 0xffff;
 }
 
+/* mv88e6xxx系列switch读switch寄存器(显然本函数只是个封装)
+ * @ds      - 要操作的switch实例
+ * @addr    - switch的指定端口/全局地址
+ * @reg     - switch的指定端口/全局的寄存器地址序号
+ */
 int mv88e6xxx_reg_read(struct dsa_switch *ds, int addr, int reg)
 {
 	struct mv88e6xxx_priv_state *ps = (void *)(ds + 1);
@@ -85,6 +96,13 @@ int mv88e6xxx_reg_read(struct dsa_switch *ds, int addr, int reg)
 	return ret;
 }
 
+/* mv88e6xxx系列switch通过mdio设备写switch寄存器
+ * @bus     - 需要通过mdio设备进行写操作
+ * @sw_addr - 指定了需要进行读操作的switch
+ * @addr    - switch的指定端口/全局地址
+ * @reg     - switch的指定端口/全局的寄存器地址序号
+ * @val     - 要写入的16位值
+ */
 int __mv88e6xxx_reg_write(struct mii_bus *bus, int sw_addr, int addr,
 			  int reg, u16 val)
 {
@@ -116,6 +134,12 @@ int __mv88e6xxx_reg_write(struct mii_bus *bus, int sw_addr, int addr,
 	return 0;
 }
 
+/* mv88e6xxx系列switch写switch寄存器(显然本函数只是个封装)
+ * @ds      - 要操作的switch实例
+ * @addr    - switch的指定端口/全局地址
+ * @reg     - switch的指定端口/全局的寄存器地址序号
+ * @val     - 要写入的16位值
+ */
 int mv88e6xxx_reg_write(struct dsa_switch *ds, int addr, int reg, u16 val)
 {
 	struct mv88e6xxx_priv_state *ps = (void *)(ds + 1);

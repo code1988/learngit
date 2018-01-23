@@ -11,14 +11,17 @@
 #ifndef __MV88E6XXX_H
 #define __MV88E6XXX_H
 
-#define REG_PORT(p)		(0x10 + (p))
+#define REG_PORT(p)		(0x10 + (p))    // mv88e6131系列端口号-端口地址映射(6097F使用该映射关系)
 #define REG_GLOBAL		0x1b
 #define REG_GLOBAL2		0x1c
 
+// 定义了mv88e6xxx系列switch的私有空间结构(该空间是跟switch实例一起分配的)
 struct mv88e6xxx_priv_state {
 	/* When using multi-chip addressing, this mutex protects
 	 * access to the indirect access registers.  (In single-chip
 	 * mode, this mutex is effectively useless.)
+     *
+     * single-chip模式下这个锁没用
 	 */
 	struct mutex	smi_mutex;
 
@@ -37,7 +40,7 @@ struct mv88e6xxx_priv_state {
 	 */
 	struct mutex	stats_mutex;
 
-	int		id; /* switch product id */
+	int		id; /* switch product id  记录了该mavell switch的产品编号，比如6097F就是0x0990 */
 };
 
 struct mv88e6xxx_hw_stat {
