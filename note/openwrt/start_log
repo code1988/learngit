@@ -174,7 +174,7 @@
                                          NET: Registered protocol family 17
 @br_init             ------------------> Bridge firewalling registered
 @dsa_probe           ------------------> Distributed Switch Architecture driver version 0.1
-                                         [DSA]: parse port index = 8, if index = 1
+@.. ->dsa_of_probe        -------------> [DSA]: parse port index = 8, if index = 1
                                          [DSA]: parse port index = 1, if index = 2
                                          [DSA]: parse port index = 5, if index = 3
                                          [DSA]: parse port index = 4, if index = 4
@@ -185,11 +185,11 @@
                                          [DSA]: parse port index = 9, if index = 9
                                          [DSA]: parse port index = 10, if index = 10
                                          [DSA]: parse port index = 0, if index = -1
-                                          [DSA mv6390x probe]: vendor id = a11
+@.. ->dsa_switch_setup         --------> [DSA mv6390x probe]: vendor id = a11
                                          eth0[0]: detected a Marvell 88E6390X switch
-@mv88e6390x_setup                        [mv88e6390x setup]: vendor id = a10
-                                         mv88e6390x_setup_dsa, cpu port = 0
-                                         libphy: dsa slave smi: probed
+@.. -> .. ->mv88e6390x_setup   --------> [mv88e6390x setup]: vendor id = a10
+@.. -> .. -> .. ->mv88e6390x_setup_dsa > mv88e6390x_setup_dsa, cpu port = 0
+@.. -> .. ->mdiobus_register   --------> libphy: dsa slave smi: probed
                                          NET: Registered protocol family 4
 @vlan_proto_init     ------------------> 8021q: 802.1Q VLAN Support v1.8
                                          sctp: Hash tables configured (established 16384 bind 16384)

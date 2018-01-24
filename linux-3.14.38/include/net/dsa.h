@@ -143,7 +143,7 @@ struct dsa_switch {
 	 */
 	u32			dsa_port_mask;      // 开启了dsa功能的端口集合
 	u32			phys_port_mask;     // 物理口集合
-	struct mii_bus		*slave_mii_bus;         // 指向该switch使用的从mii-bus设备
+	struct mii_bus		*slave_mii_bus;         // 指向该switch使用的从mii-bus设备(该创建该switch时创建，执行读写操作最终还是要通过主mii-bus来完成)
 	struct net_device	*ports[DSA_MAX_PORTS];  // 该switch包含的所有端口对应的netdev集合
 };
 
@@ -154,6 +154,7 @@ static inline bool dsa_is_cpu_port(struct dsa_switch *ds, int p)
 	return !!(ds->index == ds->dst->cpu_switch && p == ds->dst->cpu_port);
 }
 
+// 获取指定switch上的上行口
 static inline u8 dsa_upstream_port(struct dsa_switch *ds)
 {
 	struct dsa_switch_tree *dst = ds->dst;
@@ -163,6 +164,10 @@ static inline u8 dsa_upstream_port(struct dsa_switch *ds)
 	 * to the CPU), return the cpu port number on this switch.
 	 * Else return the (DSA) port number that connects to the
 	 * switch that is one hop closer to the cpu.
+     *
+     * 上行口的定义：
+     *          如果是root switch就是CPU口;
+     *          否则就是该级联switch上更靠近CPU的DSA口
 	 */
 	if (dst->cpu_switch == ds->index)
 		return dst->cpu_port;
@@ -187,22 +192,22 @@ struct dsa_switch_driver {
 	/*
 	 * Access to the switch's PHY registers.
 	 */
-	int	(*phy_read)(struct dsa_switch *ds, int port, int regnum);
-	int	(*phy_write)(struct dsa_switch *ds, int port,
+	int	(*phy_read)(struct dsa_switch *ds, int port, int regnum);   // 读端口寄存器
+	int	(*phy_write)(struct dsa_switch *ds, int port,               // 写端口寄存器
 			     int regnum, u16 val);
 
 	/*
 	 * Link state polling and IRQ handling.
 	 */
-	void	(*poll_link)(struct dsa_switch *ds);
+	void	(*poll_link)(struct dsa_switch *ds);            // 查询该switch所有端口的链路状态
 
 	/*
 	 * ethtool hardware statistics.
 	 */
-	void	(*get_strings)(struct dsa_switch *ds, int port, uint8_t *data);
+	void	(*get_strings)(struct dsa_switch *ds, int port, uint8_t *data); // 获取该switch指定端口的统计项名
 	void	(*get_ethtool_stats)(struct dsa_switch *ds,
-				     int port, uint64_t *data);
-	int	(*get_sset_count)(struct dsa_switch *ds);
+				     int port, uint64_t *data);                             // 获取该switch指定端口的统计信息值
+	int	(*get_sset_count)(struct dsa_switch *ds);                           // 获取该switch的统计项数量
 };
 
 void register_switch_driver(struct dsa_switch_driver *type);

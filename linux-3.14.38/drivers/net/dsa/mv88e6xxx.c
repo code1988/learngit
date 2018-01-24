@@ -171,6 +171,7 @@ int mv88e6xxx_config_prio(struct dsa_switch *ds)
 	return 0;
 }
 
+// mv88e6xxx系列switch直接设置MAC地址
 int mv88e6xxx_set_addr_direct(struct dsa_switch *ds, u8 *addr)
 {
 	REG_WRITE(REG_GLOBAL, 0x01, (addr[0] << 8) | addr[1]);
@@ -180,6 +181,7 @@ int mv88e6xxx_set_addr_direct(struct dsa_switch *ds, u8 *addr)
 	return 0;
 }
 
+// mv88e6xxx系列switch间接设置MAC地址
 int mv88e6xxx_set_addr_indirect(struct dsa_switch *ds, u8 *addr)
 {
 	int i;
@@ -204,6 +206,11 @@ int mv88e6xxx_set_addr_indirect(struct dsa_switch *ds, u8 *addr)
 	return 0;
 }
 
+/* mv88e6xxx系列switch读switch寄存器(非ppu方式)
+ * @ds      - 要操作的switch实例
+ * @addr    - switch的指定端口/全局地址
+ * @regnum  - switch的指定端口/全局的寄存器地址序号
+ */
 int mv88e6xxx_phy_read(struct dsa_switch *ds, int addr, int regnum)
 {
 	if (addr >= 0)
@@ -211,6 +218,12 @@ int mv88e6xxx_phy_read(struct dsa_switch *ds, int addr, int regnum)
 	return 0xffff;
 }
 
+/* mv88e6xxx系列switch写switch寄存器(非ppu方式)
+ * @ds      - 要操作的switch实例
+ * @addr    - switch的指定端口/全局地址
+ * @regnum  - switch的指定端口/全局的寄存器地址序号
+ * @val     - 要写入的值
+ */
 int mv88e6xxx_phy_write(struct dsa_switch *ds, int addr, int regnum, u16 val)
 {
 	if (addr >= 0)
@@ -325,6 +338,11 @@ void mv88e6xxx_ppu_state_init(struct dsa_switch *ds)
 	ps->ppu_timer.function = mv88e6xxx_ppu_reenable_timer;
 }
 
+/* mv88e6xxx系列switch读switch寄存器(ppu方式)
+ * @ds      - 要操作的switch实例
+ * @addr    - switch的指定端口/全局地址
+ * @regnum  - switch的指定端口/全局的寄存器地址序号
+ */
 int mv88e6xxx_phy_read_ppu(struct dsa_switch *ds, int addr, int regnum)
 {
 	int ret;
@@ -338,6 +356,12 @@ int mv88e6xxx_phy_read_ppu(struct dsa_switch *ds, int addr, int regnum)
 	return ret;
 }
 
+/* mv88e6xxx系列switch写switch寄存器(ppu方式)
+ * @ds      - 要操作的switch实例
+ * @addr    - switch的指定端口/全局地址
+ * @regnum  - switch的指定端口/全局的寄存器地址序号
+ * @val     - 要写入的值
+ */
 int mv88e6xxx_phy_write_ppu(struct dsa_switch *ds, int addr,
 			    int regnum, u16 val)
 {
@@ -353,10 +377,12 @@ int mv88e6xxx_phy_write_ppu(struct dsa_switch *ds, int addr,
 }
 #endif
 
+// mv88e6xxx系列switch查询所有端口的链路状态(包括link、速率、双工、流控)
 void mv88e6xxx_poll_link(struct dsa_switch *ds)
 {
 	int i;
 
+    // 遍历每个端口
 	for (i = 0; i < DSA_MAX_PORTS; i++) {
 		struct net_device *dev;
 		int uninitialized_var(port_status);
@@ -365,11 +391,13 @@ void mv88e6xxx_poll_link(struct dsa_switch *ds)
 		int duplex;
 		int fc;
 
+        // 获取每个端口的netdev
 		dev = ds->ports[i];
 		if (dev == NULL)
 			continue;
 
 		link = 0;
+        // 如果该端口netdev处于up状态，则读取该端口link状态
 		if (dev->flags & IFF_UP) {
 			port_status = mv88e6xxx_reg_read(ds, REG_PORT(i), 0x00);
 			if (port_status < 0)
@@ -378,6 +406,7 @@ void mv88e6xxx_poll_link(struct dsa_switch *ds)
 			link = !!(port_status & 0x0800);
 		}
 
+        // 如果探测到link up -> link down，则通知内核该端口netdev的无载波
 		if (!link) {
 			if (netif_carrier_ok(dev)) {
 				netdev_info(dev, "link down\n");
@@ -386,6 +415,7 @@ void mv88e6xxx_poll_link(struct dsa_switch *ds)
 			continue;
 		}
 
+        // 获取该端口当前的速率、双工、流控
 		switch (port_status & 0x0300) {
 		case 0x0000:
 			speed = 10;
@@ -414,6 +444,7 @@ void mv88e6xxx_poll_link(struct dsa_switch *ds)
 	}
 }
 
+// mv88e6xxx系列switch等待统计完成(最多尝试10次)
 static int mv88e6xxx_stats_wait(struct dsa_switch *ds)
 {
 	int ret;
@@ -428,6 +459,7 @@ static int mv88e6xxx_stats_wait(struct dsa_switch *ds)
 	return -ETIMEDOUT;
 }
 
+// mv88e6xxx系列switch发起指定端口的统计请求并等待统计完成
 static int mv88e6xxx_stats_snapshot(struct dsa_switch *ds, int port)
 {
 	int ret;
@@ -443,6 +475,7 @@ static int mv88e6xxx_stats_snapshot(struct dsa_switch *ds, int port)
 	return 0;
 }
 
+// mv88e6xxx系列switch读统计信息
 static void mv88e6xxx_stats_read(struct dsa_switch *ds, int stat, u32 *val)
 {
 	u32 _val;
@@ -471,6 +504,12 @@ static void mv88e6xxx_stats_read(struct dsa_switch *ds, int stat, u32 *val)
 	*val = _val | ret;
 }
 
+/* mv88e6xxx系列switch获取统计项名
+ * @nr_stats    统计项数量
+ * @stats       整张统计项目表
+ * @port        未使用
+ * @data        用于存放统计项名的缓存
+ */
 void mv88e6xxx_get_strings(struct dsa_switch *ds,
 			   int nr_stats, struct mv88e6xxx_hw_stat *stats,
 			   int port, uint8_t *data)
@@ -483,6 +522,12 @@ void mv88e6xxx_get_strings(struct dsa_switch *ds,
 	}
 }
 
+/* mv88e6xxx系列switch获取指定端口的统计信息
+ * @nr_stats    统计项数量
+ * @stats       整张统计项目表
+ * @port        要统计的端口
+ * @data        用于存放统计值的列表缓存，存放顺序跟统计项目表对应
+ */
 void mv88e6xxx_get_ethtool_stats(struct dsa_switch *ds,
 				 int nr_stats, struct mv88e6xxx_hw_stat *stats,
 				 int port, uint64_t *data)
@@ -493,13 +538,14 @@ void mv88e6xxx_get_ethtool_stats(struct dsa_switch *ds,
 
 	mutex_lock(&ps->stats_mutex);
 
+    // 发起指定端口的统计请求并等待统计完成
 	ret = mv88e6xxx_stats_snapshot(ds, port);
 	if (ret < 0) {
 		mutex_unlock(&ps->stats_mutex);
 		return;
 	}
 
-	/* Read each of the counters. */
+	/* Read each of the counters.  读取每项统计值 */
 	for (i = 0; i < nr_stats; i++) {
 		struct mv88e6xxx_hw_stat *s = stats + i;
 		u32 low;

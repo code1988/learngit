@@ -336,6 +336,7 @@ int subsys_virtual_register(struct bus_type *subsys,
 
 /**
  * struct class - device classes
+ * 定义了linux设备模型中设备类的基本结构
  * @name:	Name of the class.
  * @owner:	The module owner.
  * @class_attrs: Default attributes of this class.
@@ -363,7 +364,7 @@ int subsys_virtual_register(struct bus_type *subsys,
  * connected or how they work.
  */
 struct class {
-	const char		*name;
+	const char		*name;      // 类名
 	struct module		*owner;
 
 	struct class_attribute		*class_attrs;
@@ -797,7 +798,7 @@ struct device {
 	struct list_head	devres_head;
 
 	struct klist_node	knode_class;
-	struct class		*class;
+	struct class		*class;             // 指向该device所属的类
 	const struct attribute_group **groups;	/* optional groups 指向所属的属性组表头(比如soc_attr_groups) */
 
 	void	(*release)(struct device *dev); // 指向释放本device结构的回调函数

@@ -320,10 +320,11 @@ EXPORT_SYMBOL(netif_carrier_on);
 
 /**
  *	netif_carrier_off - clear carrier
- *	通知内核链路断开
+ *	通知内核设置指定netdev的无载波
  *	@dev: network device
  *
  * Device has detected loss of carrier.
+ * 显然调用本函数之前探测到了该设备丢失载波(link down)
  */
 void netif_carrier_off(struct net_device *dev)
 {

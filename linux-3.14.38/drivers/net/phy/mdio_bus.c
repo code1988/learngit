@@ -40,8 +40,10 @@
 
 /**
  * mdiobus_alloc_size - allocate a mii_bus structure
+ * 申请一个mii-bus设备结构
+ *
  * @size: extra amount of memory to allocate for private storage.
- * If non-zero, then bus->priv is points to that memory.
+ * If non-zero, then bus->priv is points to that memory.    该mii-bus设备的私有空间长度
  *
  * Description: called by a bus driver to allocate an mii_bus
  * structure to fill in.
@@ -85,6 +87,7 @@ static void mdiobus_release(struct device *d)
 	kfree(bus);
 }
 
+// 定义了一个mdio-bus设备类
 static struct class mdio_bus_class = {
 	.name		= "mdio_bus",
 	.dev_release	= mdiobus_release,
@@ -169,6 +172,7 @@ static inline void of_mdiobus_link_phydev(struct mii_bus *mdio,
 
 /**
  * mdiobus_register - bring up all the PHYs on a given bus and attach them to bus
+ * 注册指定mdio-bus设备
  * @bus: target mii_bus
  *
  * Description: Called by a bus driver to bring up all the PHYs
@@ -188,10 +192,11 @@ int mdiobus_register(struct mii_bus *bus)
 	       bus->state != MDIOBUS_UNREGISTERED);
 
 	bus->dev.parent = bus->parent;
-	bus->dev.class = &mdio_bus_class;
+	bus->dev.class = &mdio_bus_class;       // mdio-bus设备必然是属于mdio-bus设备类
 	bus->dev.groups = NULL;
-	dev_set_name(&bus->dev, "%s", bus->id);
+	dev_set_name(&bus->dev, "%s", bus->id); // mdio-bus设备名就是mdio-bus的ID
 
+    // 将该mdio-bus设备注册到内核
 	err = device_register(&bus->dev);
 	if (err) {
 		pr_err("mii_bus %s failed to register\n", bus->id);
@@ -201,9 +206,11 @@ int mdiobus_register(struct mii_bus *bus)
 
 	mutex_init(&bus->mdio_lock);
 
+    // 如果该mdio-bus设备有注册reset回调，则进行复位
 	if (bus->reset)
 		bus->reset(bus);
 
+    // 扫描该mdio-bus设备上的每个phy地址
 	for (i = 0; i < PHY_MAX_ADDR; i++) {
 		if ((bus->phy_mask & (1 << i)) == 0) {
 			struct phy_device *phydev;
@@ -216,6 +223,7 @@ int mdiobus_register(struct mii_bus *bus)
 		}
 	}
 
+    // 该mdio-bus设备注册完毕
 	bus->state = MDIOBUS_REGISTERED;
 	pr_info("%s: probed\n", bus->name);
 	return 0;
@@ -269,6 +277,9 @@ void mdiobus_free(struct mii_bus *bus)
 }
 EXPORT_SYMBOL(mdiobus_free);
 
+/* 扫描指定mii-bus设备上的指定phy地址
+ * @addr    phy地址序号
+ */
 struct phy_device *mdiobus_scan(struct mii_bus *bus, int addr)
 {
 	struct phy_device *phydev;

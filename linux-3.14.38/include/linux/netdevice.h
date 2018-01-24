@@ -281,10 +281,10 @@ struct header_ops {
  * 显然，以下枚举用于设置net_device->state字段
  */
 enum netdev_state_t {
-	__LINK_STATE_START,         // 标识网络设备是否启用，该标志可被netif_running检测
-	__LINK_STATE_PRESENT,       // 标识网络设备是否可用？ 该标志可被netif_device_present检测
-	__LINK_STATE_NOCARRIER,     // 标识网络设备链路上是否有载波，该标志可被netif_carrier_ok检测
-	__LINK_STATE_LINKWATCH_PENDING, // 标识link监视是否处于等待状态，当设备链路状态改变时需要被置位
+	__LINK_STATE_START,         // 标识网络设备已经启用，该标志可被netif_running检测
+	__LINK_STATE_PRESENT,       // 标识网络设备可以启用？ 该标志可被netif_device_present检测
+	__LINK_STATE_NOCARRIER,     // 标识网络设备链路上没有载波，该标志可被netif_carrier_ok检测
+	__LINK_STATE_LINKWATCH_PENDING, // 标识link监视处于等待状态，当设备链路状态改变时需要被置位
 	__LINK_STATE_DORMANT,
 };
 
@@ -2631,7 +2631,7 @@ void linkwatch_forget_dev(struct net_device *dev);
 
 /**
  *	netif_carrier_ok - test if carrier present
- *	检查设备当前的链路状态
+ *	检查指定设备是否有载波
  *	@dev: network device
  *
  * Check if carrier is present on device

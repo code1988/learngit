@@ -65,10 +65,10 @@ static int mv88e6131_switch_reset(struct dsa_switch *ds)
 	/* Wait for transmit queues to drain.  等待2~4ms确保所有端口的发送队列排干净了报文 */
 	usleep_range(2000, 4000);
 
-	/* Reset the switch. */
+	/* Reset the switch.  该switch执行软复位 */
 	REG_WRITE(REG_GLOBAL, 0x04, 0xc400);
 
-	/* Wait up to one second for reset to complete. */
+	/* Wait up to one second for reset to complete.  不断轮寻该switch是否完成了初始化，同时设置1s超时 */
 	timeout = jiffies + 1 * HZ;
 	while (time_before(jiffies, timeout)) {
 		ret = REG_READ(REG_GLOBAL, 0x00);
@@ -83,6 +83,10 @@ static int mv88e6131_switch_reset(struct dsa_switch *ds)
 	return 0;
 }
 
+/* mv88e6131系列switch执行全局参数初始化操作
+ * 包括使能PHY轮寻、设置缺省的MAC老化时间、使能地址学习、配置映射寄存器优先级、设置vlan协议类型、
+ * 禁止ARP镜像、禁止端口级联、IGMP/ARP设为高优先级等
+ */
 static int mv88e6131_setup_global(struct dsa_switch *ds)
 {
 	int ret;
@@ -163,6 +167,9 @@ static int mv88e6131_setup_global(struct dsa_switch *ds)
 	return 0;
 }
 
+/* mv88e6131系列switch指定端口参数执行初始化
+ * p - 端口号
+ */
 static int mv88e6131_setup_port(struct dsa_switch *ds, int p)
 {
 	struct mv88e6xxx_priv_state *ps = (void *)(ds + 1);
@@ -173,6 +180,8 @@ static int mv88e6131_setup_port(struct dsa_switch *ds, int p)
 	 * or flow control state to any particular values on physical
 	 * ports, but force the CPU port and all DSA ports to 1000 Mb/s
 	 * (100 Mb/s on 6085) full duplex.
+     *
+     * 不强制普通物理口的link、速率、双工、流控，但强制CPU口和DSA口为up、1000M、全双工
 	 */
 	if (dsa_is_cpu_port(ds, p) || ds->dsa_port_mask & (1 << p))
 		if (ps->id == ID_6085)
@@ -188,13 +197,16 @@ static int mv88e6131_setup_port(struct dsa_switch *ds, int p)
 	 * tunneling, determine priority by looking at 802.1p and
 	 * IP priority fields (IP prio has precedence), and set STP
 	 * state to Forwarding.
+     * 必设项： 使能IGMP、Forwarding等
 	 *
 	 * If this is the upstream port for this switch, enable
 	 * forwarding of unknown unicasts, and enable DSA tagging
 	 * mode.
+     * 如果该端口是一个上行口，则使能未知单播转发、使能DSA功能
 	 *
 	 * If this is the link to another switch, use DSA tagging
 	 * mode, but do not enable forwarding of unknown unicasts.
+     * 如果该端口只是个单纯的DSA口，则不需要使能未知单播转发
 	 */
 	val = 0x0433;
 	if (p == dsa_upstream_port(ds)) {
@@ -211,6 +223,7 @@ static int mv88e6131_setup_port(struct dsa_switch *ds, int p)
 
 	/* Port Control 1: disable trunking.  Also, if this is the
 	 * CPU port, enable learn messages to be sent to this port.
+     * 如果该端口是一个CPU口，则使能message port
 	 */
 	REG_WRITE(addr, 0x05, dsa_is_cpu_port(ds, p) ? 0x8000 : 0x0000);
 
@@ -228,6 +241,7 @@ static int mv88e6131_setup_port(struct dsa_switch *ds, int p)
 
 	/* Default VLAN ID and priority: don't set a default VLAN
 	 * ID, and set the default packet priority to zero.
+     * 不设置缺省VLAN
 	 */
 	REG_WRITE(addr, 0x07, 0x0000);
 
@@ -282,7 +296,7 @@ static int mv88e6131_setup_port(struct dsa_switch *ds, int p)
 	return 0;
 }
 
-/* mv88e6131系列switch执行设置操作
+/* mv88e6131系列switch执行初始化操作
  * @ds  要操作的switch实例
  */
 static int mv88e6131_setup(struct dsa_switch *ds)
@@ -298,16 +312,18 @@ static int mv88e6131_setup(struct dsa_switch *ds)
     // 读取该switch的产品编号
 	ps->id = REG_READ(REG_PORT(0), 0x03) & 0xfff0;
 
+    // 对该switch执行复位操作
 	ret = mv88e6131_switch_reset(ds);
 	if (ret < 0)
 		return ret;
 
 	/* @@@ initialise vtu and atu */
-
+    // 对该switch执行全局参数初始化操作
 	ret = mv88e6131_setup_global(ds);
 	if (ret < 0)
 		return ret;
 
+    // 对该switch所有端口参数执行初始化
 	for (i = 0; i < 11; i++) {
 		ret = mv88e6131_setup_port(ds, i);
 		if (ret < 0)
@@ -317,6 +333,7 @@ static int mv88e6131_setup(struct dsa_switch *ds)
 	return 0;
 }
 
+// mv88e6131系列检查端口是否合法(该系列不超过11个端口)
 static int mv88e6131_port_to_phy_addr(int port)
 {
 	if (port >= 0 && port <= 11)
@@ -324,6 +341,11 @@ static int mv88e6131_port_to_phy_addr(int port)
 	return -1;
 }
 
+/* mv88e6131系列switch读指定端口寄存器操作
+ * @ds      要操作的switch实例
+ * @port    要操作的端口号
+ * @regnum  端口寄存器地址序号
+ */
 static int
 mv88e6131_phy_read(struct dsa_switch *ds, int port, int regnum)
 {
@@ -331,6 +353,12 @@ mv88e6131_phy_read(struct dsa_switch *ds, int port, int regnum)
 	return mv88e6xxx_phy_read_ppu(ds, addr, regnum);
 }
 
+/* mv88e6131系列switch写指定端口寄存器操作
+ * @ds      要操作的switch实例
+ * @port    要操作的端口号
+ * @regnum  端口寄存器地址序号
+ * @val     要写入的值
+ */
 static int
 mv88e6131_phy_write(struct dsa_switch *ds,
 			      int port, int regnum, u16 val)
@@ -339,6 +367,7 @@ mv88e6131_phy_write(struct dsa_switch *ds,
 	return mv88e6xxx_phy_write_ppu(ds, addr, regnum, val);
 }
 
+// 定义了一张mv88e6131系列switch统计项目表
 static struct mv88e6xxx_hw_stat mv88e6131_hw_stats[] = {
 	{ "in_good_octets", 8, 0x00, },
 	{ "in_bad_octets", 4, 0x02, },
@@ -372,6 +401,7 @@ static struct mv88e6xxx_hw_stat mv88e6131_hw_stats[] = {
 	{ "hist_1024_max_bytes", 4, 0x0d, },
 };
 
+// mv88e6131系列switch获取统计项名(显然只是个封装)
 static void
 mv88e6131_get_strings(struct dsa_switch *ds, int port, uint8_t *data)
 {
@@ -379,6 +409,7 @@ mv88e6131_get_strings(struct dsa_switch *ds, int port, uint8_t *data)
 			      mv88e6131_hw_stats, port, data);
 }
 
+// mv88e6131系列switch获取指定端口的统计信息(显然只是个封装)
 static void
 mv88e6131_get_ethtool_stats(struct dsa_switch *ds,
 				  int port, uint64_t *data)
@@ -387,6 +418,7 @@ mv88e6131_get_ethtool_stats(struct dsa_switch *ds,
 				    mv88e6131_hw_stats, port, data);
 }
 
+// mv88e6131系列switch获取统计项数量
 static int mv88e6131_get_sset_count(struct dsa_switch *ds)
 {
 	return ARRAY_SIZE(mv88e6131_hw_stats);

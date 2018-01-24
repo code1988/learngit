@@ -15,29 +15,44 @@
 #include "dsa_priv.h"
 
 /* slave mii_bus handling ***************************************************/
+/* 从mii-bus设备读操作
+ * @addr    要读的地址(就是端口号)
+ * @reg     要读的端口寄存器序号
+ *
+ * @返回值  成功返回实际值，失败返回0xffff
+ */
 static int dsa_slave_phy_read(struct mii_bus *bus, int addr, int reg)
 {
 	struct dsa_switch *ds = bus->priv;
 
+    // 只有普通的物理口才能进行读操作
 	if (ds->phys_port_mask & (1 << addr))
 		return ds->drv->phy_read(ds, addr, reg);
 
 	return 0xffff;
 }
 
+/* 从mii-bus设备写操作
+ * @addr    要写的地址(就是端口号)
+ * @reg     要写的端口寄存器序号
+ *
+ * @返回值  成功返回实际值，失败返回0
+ */
 static int dsa_slave_phy_write(struct mii_bus *bus, int addr, int reg, u16 val)
 {
 	struct dsa_switch *ds = bus->priv;
 
+    // 只有普通的物理口才能进行写操作
 	if (ds->phys_port_mask & (1 << addr))
 		return ds->drv->phy_write(ds, addr, reg, val);
 
 	return 0;
 }
 
+// 初始化指定switch的从mii-bus设备
 void dsa_slave_mii_bus_init(struct dsa_switch *ds)
 {
-	ds->slave_mii_bus->priv = (void *)ds;
+	ds->slave_mii_bus->priv = (void *)ds;       // 从mii-bus设备的私有空间指向所属的switch实例
 	ds->slave_mii_bus->name = "dsa slave smi";
 	ds->slave_mii_bus->read = dsa_slave_phy_read;
 	ds->slave_mii_bus->write = dsa_slave_phy_write;
@@ -282,6 +297,7 @@ static int dsa_slave_get_sset_count(struct net_device *dev, int sset)
 	return -EOPNOTSUPP;
 }
 
+// 定义了从DSA设备用于ethtool命令的操作集合
 static const struct ethtool_ops dsa_slave_ethtool_ops = {
 	.get_settings		= dsa_slave_get_settings,
 	.set_settings		= dsa_slave_set_settings,
@@ -332,6 +348,12 @@ static const struct net_device_ops trailer_netdev_ops = {
 #endif
 
 /* slave device setup *******************************************************/
+/* 为指定端口创建对应的从netdev
+ * @ds      switch实例
+ * @parent  该switch实例所属的DSA设备
+ * @port    端口号
+ * @name    端口名
+ */
 struct net_device *
 dsa_slave_create(struct dsa_switch *ds, struct device *parent,
 		 int port, char *name)
@@ -348,9 +370,10 @@ dsa_slave_create(struct dsa_switch *ds, struct device *parent,
 
 	slave_dev->features = master->vlan_features;
 	SET_ETHTOOL_OPS(slave_dev, &dsa_slave_ethtool_ops);
-	eth_hw_addr_inherit(slave_dev, master);
+	eth_hw_addr_inherit(slave_dev, master); // 该端口netdev硬件地址从宿主设备继承
 	slave_dev->tx_queue_len = 0;
 
+    // 根据所属DSA实例使用的dsa-tag类型注册对应的netdev驱动
 	switch (ds->dst->tag_protocol) {
 #ifdef CONFIG_NET_DSA_TAG_DSA
 	case htons(ETH_P_DSA):
@@ -371,8 +394,9 @@ dsa_slave_create(struct dsa_switch *ds, struct device *parent,
 		BUG();
 	}
 
+    // 设置该端口netdev的父device为DSA设备
 	SET_NETDEV_DEV(slave_dev, parent);
-	slave_dev->vlan_features = master->vlan_features;
+	slave_dev->vlan_features = master->vlan_features;   // 该端口netdev->vlan_features从宿主设备继承
 
 	p = netdev_priv(slave_dev);
 	p->dev = slave_dev;
@@ -380,6 +404,7 @@ dsa_slave_create(struct dsa_switch *ds, struct device *parent,
 	p->port = port;
 	p->phy = ds->slave_mii_bus->phy_map[port];
 
+    // 注册该端口netdev到内核
 	ret = register_netdev(slave_dev);
 	if (ret) {
 		printk(KERN_ERR "%s: error %d registering interface %s\n",
@@ -388,8 +413,10 @@ dsa_slave_create(struct dsa_switch *ds, struct device *parent,
 		return NULL;
 	}
 
+    // 刚创建的netdev无载波
 	netif_carrier_off(slave_dev);
 
+    // 将该端口netdev和对应的phy绑定
 	if (p->phy != NULL) {
 		phy_attach(slave_dev, dev_name(&p->phy->dev),
 			   PHY_INTERFACE_MODE_GMII);

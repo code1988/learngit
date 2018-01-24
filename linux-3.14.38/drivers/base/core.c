@@ -1128,6 +1128,8 @@ EXPORT_SYMBOL_GPL(device_add);
 
 /**
  * device_register - register a device with the system.
+ * 将指定设备注册到内核(实际包括初始化该设备、将该设备插入全局的设备链表两步操作)
+ *
  * @dev: pointer to the device structure
  *
  * This happens in two clean steps - initialize the device

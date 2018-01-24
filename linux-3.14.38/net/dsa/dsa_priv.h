@@ -14,23 +14,27 @@
 #include <linux/phy.h>
 #include <net/dsa.h>
 
+// 定义了DSA从netdev的私有空间，实际上就是物理端口实例
 struct dsa_slave_priv {
 	/*
 	 * The linux network interface corresponding to this
 	 * switch port.
+     * 指向该物理口对应的netdev
 	 */
 	struct net_device	*dev;
 
 	/*
 	 * Which switch this port is a part of, and the port index
 	 * for this port.
+     * 指向该物理口所属的switch
 	 */
 	struct dsa_switch	*parent;
-	u8			port;
+	u8			port;       // 该物理口序号
 
 	/*
 	 * The phylib phy_device pointer for the PHY connected
 	 * to this port.
+     * 指向该物理口对应的phy_device
 	 */
 	struct phy_device	*phy;
 };

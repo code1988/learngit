@@ -624,6 +624,7 @@ EXPORT_SYMBOL(phy_attach_direct);
 
 /**
  * phy_attach - attach a network device to a particular PHY device
+ * 将指定netdev和指定phy_device绑定
  * @dev: network device to attach
  * @bus_id: Bus ID of PHY device to attach
  * @interface: PHY device's interface

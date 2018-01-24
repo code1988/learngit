@@ -82,7 +82,7 @@ typedef enum {
 #define PHY_FORCE_TIMEOUT	10
 #define PHY_AN_TIMEOUT		10
 
-#define PHY_MAX_ADDR	32      // switch的地址序号上限
+#define PHY_MAX_ADDR	32      // phy/switch的地址序号上限
 
 /* Used when trying to connect to a specific phy (mii bus id:phy device id) */
 #define PHY_ID_FMT "%s:%02x"
@@ -108,8 +108,8 @@ struct sk_buff;
  */
 struct mii_bus {
 	const char *name;   // mii-bus设备名
-	char id[MII_BUS_ID_SIZE];
-	void *priv;
+	char id[MII_BUS_ID_SIZE];   // 该mii-bus设备的字符串ID号
+	void *priv;         // 该mii-bus设备的私有空间(比如可能指向所属的switch实例) 
 	int (*read)(struct mii_bus *bus, int phy_id, int regnum);
 	int (*write)(struct mii_bus *bus, int phy_id, int regnum, u16 val);
 	int (*reset)(struct mii_bus *bus);
@@ -117,22 +117,25 @@ struct mii_bus {
 	/*
 	 * A lock to ensure that only one thing can read/write
 	 * the MDIO bus at a time
+     * 该互斥锁用于保证读/写操作
 	 */
 	struct mutex mdio_lock;
 
-	struct device *parent;
+	struct device *parent;  // 指向父mii-bus设备的device结构
 	enum {
 		MDIOBUS_ALLOCATED = 1,
-		MDIOBUS_REGISTERED,
+		MDIOBUS_REGISTERED,     // 标识该mii-bus已经注册
 		MDIOBUS_UNREGISTERED,
 		MDIOBUS_RELEASED,
 	} state;
 	struct device dev;      // 封装的linux基本设备结构
 
-	/* list of all PHYs on bus */
+	/* list of all PHYs on bus  这张表记录了该mii-bus实际关联的phy设备 */
 	struct phy_device *phy_map[PHY_MAX_ADDR];
 
-	/* PHY addresses to be ignored when probing */
+	/* PHY addresses to be ignored when probing  
+     * 该mii-bus设备在扫描时需要忽略的phy地址集合
+     * 每一位代表一个phy地址，总共支持32个phy地址 */
 	u32 phy_mask;
 
 	/*
@@ -144,6 +147,7 @@ struct mii_bus {
 #define to_mii_bus(d) container_of(d, struct mii_bus, dev)
 
 struct mii_bus *mdiobus_alloc_size(size_t);
+// 申请一个不带私有空间的mii-bus设备
 static inline struct mii_bus *mdiobus_alloc(void)
 {
 	return mdiobus_alloc_size(0);
@@ -266,6 +270,7 @@ struct phy_c45_device_ids {
 };
 
 /* phy_device: An instance of a PHY
+ * 定义了phy设备模型
  *
  * drv: Pointer to the driver for this PHY instance
  * bus: Pointer to the bus this PHY is on
@@ -303,7 +308,7 @@ struct phy_device {
 
 	struct mii_bus *bus;
 
-	struct device dev;
+	struct device dev;  // 封装的linux基本设备结构
 
 	u32 phy_id;
 

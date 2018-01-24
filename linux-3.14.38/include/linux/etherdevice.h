@@ -252,6 +252,7 @@ static inline void ether_addr_copy(u8 *dst, const u8 *src)
 
 /**
  * eth_hw_addr_inherit - Copy dev_addr from another net_device
+ * 从src继承硬件地址到dst
  * @dst: pointer to net_device to copy dev_addr to
  * @src: pointer to net_device to copy dev_addr from
  *

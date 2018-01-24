@@ -98,10 +98,12 @@ static inline u64 get_jiffies_64(void)
  * good compiler would generate better code (and a really good compiler
  * wouldn't care). Gcc is currently neither.
  */
+// 判断时间a是否超过了时间b
 #define time_after(a,b)		\
 	(typecheck(unsigned long, a) && \
 	 typecheck(unsigned long, b) && \
 	 ((long)((b) - (a)) < 0))
+// 判断时间a是否还未超过时间b
 #define time_before(a,b)	time_after(b,a)
 
 #define time_after_eq(a,b)	\

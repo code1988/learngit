@@ -37,15 +37,17 @@ struct mv88e6xxx_priv_state {
 
 	/* This mutex serialises access to the statistics unit.
 	 * Hold this mutex over snapshot + dump sequences.
+     * 用于访问统计寄存器的互斥锁
 	 */
 	struct mutex	stats_mutex;
 
 	int		id; /* switch product id  记录了该mavell switch的产品编号，比如6097F就是0x0990 */
 };
 
+// 定义了mv88e6xxx系列switch统计项
 struct mv88e6xxx_hw_stat {
-	char string[ETH_GSTRING_LEN];
-	int sizeof_stat;
+	char string[ETH_GSTRING_LEN];   // 统计项名
+	int sizeof_stat;                // 统计项的值长度(字节)
 	int reg;
 };
 

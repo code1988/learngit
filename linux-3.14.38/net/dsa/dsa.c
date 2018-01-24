@@ -83,7 +83,7 @@ dsa_switch_probe(struct mii_bus *bus, int sw_addr, char **_name)
 
 
 /* basic switch operations **************************************************/
-/* 根据传入的信息创建一个switch实例
+/* 根据传入的信息创建一个完整的switch实例
  * @dst     该switch实例所属的DSA实例
  * @index   该switch的序号，不级联情况下就是0
  * @parent  该switch实例所属的DSA设备
@@ -178,24 +178,27 @@ dsa_switch_setup(struct dsa_switch_tree *dst, int index,
 
 	/*
 	 * Do basic register setup.
-     * 执行该switch驱动的setup
+     * 初始化switch
 	 */
 	ret = drv->setup(ds);
 	if (ret < 0)
 		goto out;
 
-    // 执行该switch驱动的set_addr
+    // 将该DSA实例的宿主netdev的硬件地址设置到switch中
 	ret = drv->set_addr(ds, dst->master_netdev->dev_addr);
 	if (ret < 0)
 		goto out;
 
+    // 为该switch申请一个从mii-bus设备
 	ds->slave_mii_bus = mdiobus_alloc();
 	if (ds->slave_mii_bus == NULL) {
 		ret = -ENOMEM;
 		goto out;
 	}
+    // 然后初始化这个从mii-bus设备
 	dsa_slave_mii_bus_init(ds);
 
+    // 最后注册这个从mdio-bus设备
 	ret = mdiobus_register(ds->slave_mii_bus);
 	if (ret < 0)
 		goto out_free;
@@ -203,6 +206,7 @@ dsa_switch_setup(struct dsa_switch_tree *dst, int index,
 
 	/*
 	 * Create network devices for physical switch ports.
+     * 为该switch的所有物理口创建对应的netdev
 	 */
 	for (i = 0; i < DSA_MAX_PORTS; i++) {
 		struct net_device *slave_dev;
@@ -210,6 +214,7 @@ dsa_switch_setup(struct dsa_switch_tree *dst, int index,
 		if (!(ds->phys_port_mask & (1 << i)))
 			continue;
 
+        // 为每个物理端口创建对应的从netdev
 		slave_dev = dsa_slave_create(ds, parent, i, pd->port_names[i]);
 		if (slave_dev == NULL) {
 			printk(KERN_ERR "%s[%d]: can't create dsa "
@@ -587,6 +592,7 @@ static int dsa_probe(struct platform_device *pdev)
 	dst->cpu_switch = -1;
 	dst->cpu_port = -1;
 
+    // 创建配置的每个switch实例(不级联就是1个)
 	for (i = 0; i < pd->nr_chips; i++) {
 		struct mii_bus *bus;
 		struct dsa_switch *ds;
@@ -599,6 +605,7 @@ static int dsa_probe(struct platform_device *pdev)
 			continue;
 		}
 
+        // 创建完整的switch实例
 		ds = dsa_switch_setup(dst, i, &pdev->dev, bus);
 		if (IS_ERR(ds)) {
 			printk(KERN_ERR "%s[%d]: couldn't create dsa switch "
