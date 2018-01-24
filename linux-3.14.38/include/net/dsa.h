@@ -96,8 +96,8 @@ struct dsa_switch_tree {
 	 * Link state polling.
 	 */
 	int			link_poll_needed;       // 标识该DSA是否开启定时轮寻link状态
-	struct work_struct	link_poll_work; 
-	struct timer_list	link_poll_timer;// 论寻link状态的定时器
+	struct work_struct	link_poll_work; // 轮寻link状态的工作队列
+	struct timer_list	link_poll_timer;// 轮寻link状态的定时器
 
 	/*
 	 * Data for the individual switch chips.

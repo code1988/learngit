@@ -242,6 +242,9 @@ static void dsa_switch_destroy(struct dsa_switch *ds)
 
 
 /* link polling *************************************************************/
+/* 用于查询link状态的工作处理函数
+ * @ugly    执行该工作的工作队列
+ */
 static void dsa_link_poll_work(struct work_struct *ugly)
 {
 	struct dsa_switch_tree *dst;
@@ -259,10 +262,14 @@ static void dsa_link_poll_work(struct work_struct *ugly)
 	mod_timer(&dst->link_poll_timer, round_jiffies(jiffies + HZ));
 }
 
+/* 用于查询link状态的定时器处理函数
+ * @_dst    执行该任务的DSA实例
+ */
 static void dsa_link_poll_timer(unsigned long _dst)
 {
 	struct dsa_switch_tree *dst = (void *)_dst;
 
+    // 调度运行对应的工作队列
 	schedule_work(&dst->link_poll_work);
 }
 
@@ -615,6 +622,7 @@ static int dsa_probe(struct platform_device *pdev)
 		}
 
 		dst->ds[i] = ds;
+        // 如果驱动支持就开启该DSA实例的定时轮寻link功能
 		if (ds->drv->poll_link != NULL)
 			dst->link_poll_needed = 1;
 	}
@@ -625,14 +633,17 @@ static int dsa_probe(struct platform_device *pdev)
 	 * sent to the tag format's receive function.
 	 */
 	wmb();
-	dev->dsa_ptr = (void *)dst;
+	dev->dsa_ptr = (void *)dst;     // 将创建的DSA实例跟DSA设备绑定
 
+    // 如果该DSA实例使能了定时轮寻link功能，则在最后注册对应的定时器
 	if (dst->link_poll_needed) {
+        // 初始化用于轮寻link状态的工作队列
 		INIT_WORK(&dst->link_poll_work, dsa_link_poll_work);
+        // 初始化并开启用于轮寻link状态的定时器
 		init_timer(&dst->link_poll_timer);
 		dst->link_poll_timer.data = (unsigned long)dst;
 		dst->link_poll_timer.function = dsa_link_poll_timer;
-		dst->link_poll_timer.expires = round_jiffies(jiffies + HZ);
+		dst->link_poll_timer.expires = round_jiffies(jiffies + HZ); // 这里设为1s超时
 		add_timer(&dst->link_poll_timer);
 	}
 
