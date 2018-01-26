@@ -44,7 +44,7 @@ struct genl_info;
  */
 struct genl_family {
 	unsigned int		id;             // 族ID，在内核中用于唯一标识该族
-	unsigned int		hdrsize;
+	unsigned int		hdrsize;        // 用户自定义头的长度
 	char			name[GENL_NAMSIZ];  // 族名，主要是提供给用户空间使用，用户可以根据族名索引对应的族ID
 	unsigned int		version;
 	unsigned int		maxattr;        // 该族支持的最大属性数量
@@ -61,7 +61,7 @@ struct genl_family {
 	const struct genl_multicast_group *mcgrps; /* private 指向该族支持的内核组播组表 */
 	unsigned int		n_ops;		/* private  该族支持的用户命令数量 */
 	unsigned int		n_mcgrps;	/* private  该族支持的内核组播组数量 */
-	unsigned int		mcgrp_offset;	/* private */
+	unsigned int		mcgrp_offset;	/* private  该族的一段连续的组播组ID的起始号 */
 	struct list_head	family_list;	/* private */
 	struct module		*module;
 };

@@ -259,7 +259,7 @@ int nla_append(struct sk_buff *skb, int attrlen, const void *data);
 
 /**
  * nlmsg_msg_size - length of netlink message not including padding
- * 计算netlink消息长度(netlink消息头 + pading + netlink消息payload）
+ * 计算netlink消息长度(netlink消息头 + padding + netlink消息payload）
  * @payload: length of message payload
  */
 static inline int nlmsg_msg_size(int payload)
@@ -269,7 +269,7 @@ static inline int nlmsg_msg_size(int payload)
 
 /**
  * nlmsg_total_size - length of netlink message including padding
- * 计算netlink消息占用的总空间（netlink消息头 + pading + netlink消息payload + padding）
+ * 计算netlink消息占用的总空间（netlink消息头 + padding + netlink消息payload + padding）
  * @payload: length of message payload      netlink消息payload长度
  */
 static inline int nlmsg_total_size(int payload)
@@ -442,13 +442,14 @@ static inline int nlmsg_report(const struct nlmsghdr *nlh)
 
 /**
  * nlmsg_put - Add a new netlink message to an skb
- * 添加一个新的netlink消息到通用socket buffer
- * @skb: socket buffer to store message in
- * @portid: netlink process id
- * @seq: sequence number of message
- * @type: message type
- * @payload: length of message payload
- * @flags: message flags
+ * 添加一个netlink消息外壳到skb(显然本函数只是个封装)
+ *
+ * @skb: socket buffer to store message in  
+ * @portid: netlink process id              
+ * @seq: sequence number of message         
+ * @type: message type                     
+ * @payload: length of message payload      
+ * @flags: message flags                    
  *
  * Returns NULL if the tailroom of the skb is insufficient to store
  * the message header and payload.
@@ -484,7 +485,7 @@ static inline struct nlmsghdr *nlmsg_put_answer(struct sk_buff *skb,
 
 /**
  * nlmsg_new - Allocate a new netlink message
- * 申请一个缺省类型的skb数据包元，其中包含一个用于承载netlink消息的数据空间
+ * 申请一个skb数据包元，其中包含一个用于承载netlink消息的数据空间
  * @payload: size of the message payload    netlink消息的payload长度
  * @flags: the type of memory to allocate.
  *
@@ -775,6 +776,8 @@ static inline int nla_put_u8(struct sk_buff *skb, int attrtype, u8 value)
 
 /**
  * nla_put_u16 - Add a u16 netlink attribute to a socket buffer
+ * 往skb中添加一条u16类型的netlink属性
+ *
  * @skb: socket buffer to add attribute to
  * @attrtype: attribute type
  * @value: numeric value
@@ -819,6 +822,8 @@ static inline int nla_put_le16(struct sk_buff *skb, int attrtype, __le16 value)
 
 /**
  * nla_put_u32 - Add a u32 netlink attribute to a socket buffer
+ * 往skb中添加一条u32类型的netlink属性
+ *
  * @skb: socket buffer to add attribute to
  * @attrtype: attribute type
  * @value: numeric value
@@ -951,6 +956,8 @@ static inline int nla_put_s64(struct sk_buff *skb, int attrtype, s64 value)
 
 /**
  * nla_put_string - Add a string netlink attribute to a socket buffer
+ * 往skb中添加一条字符串类型的netlink属性
+ *
  * @skb: socket buffer to add attribute to
  * @attrtype: attribute type
  * @str: NUL terminated string

@@ -90,11 +90,13 @@ static int genl_ctrl_event(int event, struct genl_family *family,
 			   const struct genl_multicast_group *grp,
 			   int grp_id);
 
+// 计算族ID的hash值
 static inline unsigned int genl_family_hash(unsigned int id)
 {
 	return id & GENL_FAM_TAB_MASK;
 }
 
+// 获取族ID对应的hash桶
 static inline struct list_head *genl_family_chain(unsigned int id)
 {
 	return &family_ht[genl_family_hash(id)];
@@ -158,6 +160,7 @@ static u16 genl_generate_id(void)
 	return 0;
 }
 
+// 内核自动分配可用的组播地址ID
 static int genl_allocate_reserve_groups(int n_groups, int *first_id)
 {
 	unsigned long *new_groups;
@@ -220,6 +223,7 @@ static int genl_allocate_reserve_groups(int n_groups, int *first_id)
 
 static struct genl_family genl_ctrl;
 
+// 更新genetlink协议的组播组数量
 static int genl_validate_assign_mc_groups(struct genl_family *family)
 {
 	int first_id;
@@ -241,7 +245,7 @@ static int genl_validate_assign_mc_groups(struct genl_family *family)
 			return -EINVAL;
 	}
 
-	/* special-case our own group and hacks */
+	/* special-case our own group and hacks  为该族的组播组分配一个组播地址ID(确保在genetlink所有族中唯一) */
 	if (family == &genl_ctrl) {
 		first_id = GENL_ID_CTRL;
 		BUG_ON(n_groups != 1);
@@ -263,10 +267,13 @@ static int genl_validate_assign_mc_groups(struct genl_family *family)
 
 	family->mcgrp_offset = first_id;
 
-	/* if still initializing, can't and don't need to to realloc bitmaps */
+	/* if still initializing, can't and don't need to to realloc bitmaps 
+     * 如果内核genetlink套接字都尚未创建，则直接返回了
+     * */
 	if (!init_net.genl_sock)
 		return 0;
 
+    // 更新genetlink协议的组播组数量
 	if (family->netnsok) {
 		struct net *net;
 
@@ -422,15 +429,17 @@ int __genl_register_family(struct genl_family *family)
 	} else
 		family->attrbuf = NULL;
 
+    // 更新genetlink协议的组播组数量
 	err = genl_validate_assign_mc_groups(family);
 	if (err)
 		goto errout_locked;
 
+    // 将该族插入对应的hash桶中
 	list_add_tail(&family->family_list, genl_family_chain(family->id));
     // 注册完毕后解锁
 	genl_unlock_all();
 
-	/* send all events */
+	/* send all events  通知内核的控制器族有新的族加入 */
 	genl_ctrl_event(CTRL_CMD_NEWFAMILY, family, NULL, 0);
 	for (i = 0; i < family->n_mcgrps; i++)
 		genl_ctrl_event(CTRL_CMD_NEWMCAST_GRP, family,
@@ -502,12 +511,14 @@ EXPORT_SYMBOL_GPL(genlmsg_new_unicast);
 
 /**
  * genlmsg_put - Add generic netlink header to netlink message
- * @skb: socket buffer holding the message
- * @portid: netlink portid the message is addressed to
- * @seq: sequence number (usually the one of the sender)
- * @family: generic netlink family
- * @flags: netlink message flags
- * @cmd: generic netlink command
+ * 在指定skb中创建一条genetlink协议类型的netlink消息
+ *
+ * @skb: socket buffer holding the message  要承载该netlink消息的skb
+ * @portid: netlink portid the message is addressed to      该netlink消息的目的地址
+ * @seq: sequence number (usually the one of the sender)    该netlink消息序号
+ * @family: generic netlink family      该genetlink消息的目的族管理块
+ * @flags: netlink message flags        该netlink消息要附加的标志集合
+ * @cmd: generic netlink command    指定genetlink目的族定义的命令号
  *
  * Returns pointer to user specific header
  */
@@ -517,16 +528,22 @@ void *genlmsg_put(struct sk_buff *skb, u32 portid, u32 seq,
 	struct nlmsghdr *nlh;
 	struct genlmsghdr *hdr;
 
+    /* 首先添加一个netlink消息外壳到skb，
+     * 其中预留了genetlink消息头 + 用户自定义头的payload空间，
+     * 并且将该genetlink消息的目的族ID作为netlink消息类型
+     */
 	nlh = nlmsg_put(skb, portid, seq, family->id, GENL_HDRLEN +
 			family->hdrsize, flags);
 	if (nlh == NULL)
 		return NULL;
 
+    // 然后往payload空间填充genetlink消息头
 	hdr = nlmsg_data(nlh);
 	hdr->cmd = cmd;
 	hdr->version = family->version;
 	hdr->reserved = 0;
 
+    // 最后返回用户自定义头的地址(待填充)
 	return (char *) hdr + GENL_HDRLEN;
 }
 EXPORT_SYMBOL(genlmsg_put);
@@ -682,6 +699,7 @@ static int genl_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
 	return err;
 }
 
+// 接收处理从用户空间过来的genetlink消息(在netlink_unicast_kernel函数中被调用)
 static void genl_rcv(struct sk_buff *skb)
 {
 	down_read(&cb_lock);
@@ -701,15 +719,25 @@ static struct genl_family genl_ctrl = {
 	.netnsok = true,
 };
 
+/* 创建发往控制器族的genetlink单播消息
+ * @family  要传递的族管理块
+ * @portid  该netlink消息的单播地址
+ * @seq     该netlink消息序号
+ * @flags   该netlink消息附加的标志集合
+ * @skb     要承载该netlink消息的skb
+ * @cmd     控制器族定义的命令号
+ */
 static int ctrl_fill_info(struct genl_family *family, u32 portid, u32 seq,
 			  u32 flags, struct sk_buff *skb, u8 cmd)
 {
 	void *hdr;
 
+    // 在该skb中创建一条发往控制器族的genetlink消息，成功则返回待填充的用户自定义头的地址
 	hdr = genlmsg_put(skb, portid, seq, &genl_ctrl, flags, cmd);
 	if (hdr == NULL)
 		return -1;
 
+    // 往该genetlink消息中添加5条属性，包括要传递族的5条信息
 	if (nla_put_string(skb, CTRL_ATTR_FAMILY_NAME, family->name) ||
 	    nla_put_u16(skb, CTRL_ATTR_FAMILY_ID, family->id) ||
 	    nla_put_u32(skb, CTRL_ATTR_VERSION, family->version) ||
@@ -859,16 +887,24 @@ errout:
 	return skb->len;
 }
 
+/* 创建一个skb，该skb中承载了发往控制器族的genetlink单播消息
+ * @family  要通知给控制器族的族管理块
+ * @portid  netlink消息单播目的地址，0意味着发往内核
+ * @seq     netlink消息序号
+ * @cmd     命令ID
+ */
 static struct sk_buff *ctrl_build_family_msg(struct genl_family *family,
 					     u32 portid, int seq, u8 cmd)
 {
 	struct sk_buff *skb;
 	int err;
 
+    // 申请一个用于承载netlink消息的skb
 	skb = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
 	if (skb == NULL)
 		return ERR_PTR(-ENOBUFS);
 
+    // 创建发往控制器族的genetlink单播消息
 	err = ctrl_fill_info(family, portid, seq, 0, skb, cmd);
 	if (err < 0) {
 		nlmsg_free(skb);
@@ -878,6 +914,13 @@ static struct sk_buff *ctrl_build_family_msg(struct genl_family *family,
 	return skb;
 }
 
+/* 创建一个skb，该skb中承载了发往控制器族的genetlink组播消息
+ * @family  要通知给控制器族的族管理块
+ * @grp     netlink消息组播地址，0意味着发往内核
+ * @grp_id
+ * @seq     netlink消息序号
+ * @cmd     命令ID
+ */
 static struct sk_buff *
 ctrl_build_mcgrp_msg(struct genl_family *family,
 		     const struct genl_multicast_group *grp,
@@ -957,13 +1000,18 @@ static int ctrl_getfamily(struct sk_buff *skb, struct genl_info *info)
 	return genlmsg_reply(msg, info);
 }
 
+/* 向内核genetlink控制器族发送事件通知接口
+ * @event   事件ID(也就是命令ID)
+ * @faminl  该事件关联的族
+ * @grp     发出该事件的组播组
+ */
 static int genl_ctrl_event(int event, struct genl_family *family,
 			   const struct genl_multicast_group *grp,
 			   int grp_id)
 {
 	struct sk_buff *msg;
 
-	/* genl is still initialising */
+	/* genl is still initialising 如果内核genetlink套接字尚未创建，则直接返回 */
 	if (!init_net.genl_sock)
 		return 0;
 
@@ -971,7 +1019,8 @@ static int genl_ctrl_event(int event, struct genl_family *family,
 	case CTRL_CMD_NEWFAMILY:
 	case CTRL_CMD_DELFAMILY:
 		WARN_ON(grp);
-		msg = ctrl_build_family_msg(family, 0, 0, event);
+        // 创建一条发往控制器族的genetlink单播消息，这里用于通知族添加/删除事件
+		msg = ctrl_build_family_msg(family, 0, 0, event);   
 		break;
 	case CTRL_CMD_NEWMCAST_GRP:
 	case CTRL_CMD_DELMCAST_GRP:
@@ -1057,7 +1106,7 @@ static int __init genl_init(void)
 	for (i = 0; i < GENL_FAM_TAB_SIZE; i++)
 		INIT_LIST_HEAD(&family_ht[i]);
 
-    // 注册genetlink协议的控制器族到内核(实质就是创建一个属于内核的NETLINK_GENERIC协议的netlink套接字，并注册到当前网络命名空间)
+    // 注册genetlink协议的控制器族到内核
 	err = genl_register_family_with_ops_groups(&genl_ctrl, genl_ctrl_ops,
 						   genl_ctrl_groups);
 	if (err < 0)

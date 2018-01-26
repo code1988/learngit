@@ -324,6 +324,8 @@ int nla_strcmp(const struct nlattr *nla, const char *str)
 #ifdef CONFIG_NET
 /**
  * __nla_reserve - reserve room for attribute on the skb
+ * 从指定skb中保留一块用于存放netlink属性的空间
+ *
  * @skb: socket buffer to reserve room on
  * @attrtype: attribute type
  * @attrlen: length of attribute payload
@@ -411,6 +413,8 @@ EXPORT_SYMBOL(nla_reserve_nohdr);
 
 /**
  * __nla_put - Add a netlink attribute to a socket buffer
+ * 往skb中添加一条netlink属性
+ *
  * @skb: socket buffer to add attribute to
  * @attrtype: attribute type
  * @attrlen: length of attribute payload
@@ -449,6 +453,8 @@ EXPORT_SYMBOL(__nla_put_nohdr);
 
 /**
  * nla_put - Add a netlink attribute to a socket buffer
+ * 往skb中添加一条netlink属性(显然只是个封装)
+ *
  * @skb: socket buffer to add attribute to
  * @attrtype: attribute type
  * @attrlen: length of attribute payload

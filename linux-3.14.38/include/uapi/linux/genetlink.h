@@ -11,12 +11,12 @@
 
 // genetlink协议的消息头结构(替换了其他netlink协议中的族头位置)
 struct genlmsghdr {
-	__u8	cmd;        // 自定义的消息命令
+	__u8	cmd;        // 自定义的消息命令(跟所属的消息类型，也就是族相关)
 	__u8	version;    // 用于版本控制(可选)
 	__u16	reserved;   // 保留字段
 };
 
-#define GENL_HDRLEN	NLMSG_ALIGN(sizeof(struct genlmsghdr))      // genlmsghdr + pad
+#define GENL_HDRLEN	NLMSG_ALIGN(sizeof(struct genlmsghdr))      // genetlink消息头占用的空间：genlmsghdr + pad
 
 #define GENL_ADMIN_PERM		0x01
 #define GENL_CMD_CAP_DO		0x02

@@ -2875,11 +2875,16 @@ void netlink_kernel_release(struct sock *sk)
 }
 EXPORT_SYMBOL(netlink_kernel_release);
 
+/* 修改具体netlink协议的组播组数量
+ * @sk      必须是内核netlink套接字
+ * @groups  要修改的组播组数量
+ */
 int __netlink_change_ngroups(struct sock *sk, unsigned int groups)
 {
 	struct listeners *new, *old;
-	struct netlink_table *tbl = &nl_table[sk->sk_protocol];
+	struct netlink_table *tbl = &nl_table[sk->sk_protocol]; // 获取该内核netlink套接字所属的具体netlink协议表项
 
+    // 组播组数量不小于32
 	if (groups < 32)
 		groups = 32;
 
@@ -2900,6 +2905,7 @@ int __netlink_change_ngroups(struct sock *sk, unsigned int groups)
 
 /**
  * netlink_change_ngroups - change number of multicast groups
+ * 修改具体netlink协议的组播组数量(显然只是个封装)
  *
  * This changes the number of multicast groups that are available
  * on a certain netlink family. Note that it is not possible to
@@ -2907,8 +2913,8 @@ int __netlink_change_ngroups(struct sock *sk, unsigned int groups)
  * not implicitly call netlink_clear_multicast_users() when the
  * number of groups is reduced.
  *
- * @sk: The kernel netlink socket, as returned by netlink_kernel_create().
- * @groups: The new number of groups.
+ * @sk: The kernel netlink socket, as returned by netlink_kernel_create().  内核netlink套接字
+ * @groups: The new number of groups.   要修改的组播组数量
  */
 int netlink_change_ngroups(struct sock *sk, unsigned int groups)
 {
@@ -2930,6 +2936,15 @@ void __netlink_clear_multicast_users(struct sock *ksk, unsigned int group)
 		netlink_update_socket_mc(nlk_sk(sk), group, 0);
 }
 
+/* 添加一个netlink消息外壳到skb，包括netlink消息头(将填充) + netlink消息payload(不填充)
+ *
+ * @skb:    用于承载该netlink消息的skb
+ * @portid: 该netlink消息的目的单播地址
+ * @seq:    该netlink消息序号
+ * @type:   该netlink消息类型(如果是genetlink协议，这里就是族ID)
+ * @len:    该netlink消息payload长度
+ * @flags:  该netlink消息要附加的标志集合
+ */
 struct nlmsghdr *
 __nlmsg_put(struct sk_buff *skb, u32 portid, u32 seq, int type, int len, int flags)
 {

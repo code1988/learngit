@@ -69,7 +69,7 @@ struct nl_portid_hash {
 	u32			rnd;
 };
 
-// netlink表每个表项的数据结构
+// netlink表每个表项的数据结构，该结构维护了一个具体的netlink协议
 struct netlink_table {
 	struct nl_portid_hash	hash;       // hash表控制块，内部的hash表记录了已经创建的同种协议类型的所有netlink套接字
 	struct hlist_head	mc_list;        // 这个hash桶头节点用于记录同种协议类型下所有阅订了组播功能的套接字
