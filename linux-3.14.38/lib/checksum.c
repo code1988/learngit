@@ -47,6 +47,7 @@ static inline unsigned short from32to16(unsigned int x)
 	return x;
 }
 
+// 计算一段内存的校验和
 static unsigned int do_csum(const unsigned char *buff, int len)
 {
 	int odd;
@@ -117,6 +118,7 @@ EXPORT_SYMBOL(ip_fast_csum);
 /*
  * computes the checksum of a memory block at buff, length len,
  * and adds in "sum" (32-bit)
+ * 计算一段内存的校验和，然后跟wsum进行累加
  *
  * returns a 32-bit number suitable for feeding into itself
  * or csum_tcpudp_magic

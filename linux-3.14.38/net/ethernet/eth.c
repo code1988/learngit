@@ -154,6 +154,8 @@ EXPORT_SYMBOL(eth_rebuild_header);
  * The rule here is that we
  * assume 802.3 if the type field is short enough to be a length.
  * This is normal practice and works for any 'now in use' protocol.
+ *
+ * 备注：经过本函数后，该skb中的读指针已经跳过了标准的以太网头，对于DSA这种不是标准以太网类型的帧，需要后续自己进行处理
  */
 __be16 eth_type_trans(struct sk_buff *skb, struct net_device *dev)
 {

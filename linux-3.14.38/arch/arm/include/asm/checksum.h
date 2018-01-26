@@ -14,6 +14,7 @@
 /*
  * computes the checksum of a memory block at buff, length len,
  * and adds in "sum" (32-bit)
+ * 累加计算
  *
  * returns a 32-bit number suitable for feeding into itself
  * or csum_tcpudp_magic
@@ -41,6 +42,7 @@ csum_partial_copy_from_user(const void __user *src, void *dst, int len, __wsum s
 
 /*
  * 	Fold a partial checksum without adding pseudo headers
+ * 	校验和取反，显然取反后最终返回的是16位校验和
  */
 static inline __sum16 csum_fold(__wsum sum)
 {

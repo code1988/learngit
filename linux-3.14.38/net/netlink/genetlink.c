@@ -20,15 +20,17 @@
 #include <net/sock.h>
 #include <net/genetlink.h>
 
-static DEFINE_MUTEX(genl_mutex); /* serialization of message processing */
+static DEFINE_MUTEX(genl_mutex); /* serialization of message processing 定义了一个用于维护整个genetlink模块的互斥锁 */
 static DECLARE_RWSEM(cb_lock);
 
+// genetlink整体上锁
 void genl_lock(void)
 {
 	mutex_lock(&genl_mutex);
 }
 EXPORT_SYMBOL(genl_lock);
 
+// genetlink整体解锁
 void genl_unlock(void)
 {
 	mutex_unlock(&genl_mutex);
@@ -58,6 +60,7 @@ static void genl_unlock_all(void)
 #define GENL_FAM_TAB_SIZE	16
 #define GENL_FAM_TAB_MASK	(GENL_FAM_TAB_SIZE - 1)
 
+// 定义了一张hash表，用于维护所有已经注册的genetlink族
 static struct list_head family_ht[GENL_FAM_TAB_SIZE];
 /*
  * Bitmap of multicast groups that are currently in use.
@@ -97,6 +100,7 @@ static inline struct list_head *genl_family_chain(unsigned int id)
 	return &family_ht[genl_family_hash(id)];
 }
 
+// 根据族ID索引对应的族管理块
 static struct genl_family *genl_family_find_byid(unsigned int id)
 {
 	struct genl_family *f;
@@ -108,6 +112,7 @@ static struct genl_family *genl_family_find_byid(unsigned int id)
 	return NULL;
 }
 
+// 根据族名索引对应的族管理块
 static struct genl_family *genl_family_find_byname(char *name)
 {
 	struct genl_family *f;
@@ -134,6 +139,7 @@ static const struct genl_ops *genl_get_cmd(u8 cmd, struct genl_family *family)
 
 /* Of course we are going to have problems once we hit
  * 2^16 alive types, but that can only happen by year 2K
+ * 内核自动分配一个可用的族ID
 */
 static u16 genl_generate_id(void)
 {
@@ -221,9 +227,11 @@ static int genl_validate_assign_mc_groups(struct genl_family *family)
 	int err = 0, i;
 	bool groups_allocated = false;
 
+    // 没有注册组播组则直接返回
 	if (!n_groups)
 		return 0;
 
+    // 检查每个组播组的组名是否有效
 	for (i = 0; i < n_groups; i++) {
 		const struct genl_multicast_group *grp = &family->mcgrps[i];
 
@@ -317,6 +325,7 @@ static void genl_unregister_mc_groups(struct genl_family *family)
 	}
 }
 
+// 检查指定族的每个用户命令处理单元是否有效
 static int genl_validate_ops(struct genl_family *family)
 {
 	const struct genl_ops *ops = family->ops;
@@ -330,8 +339,10 @@ static int genl_validate_ops(struct genl_family *family)
 		return 0;
 
 	for (i = 0; i < n_ops; i++) {
+        // 每个命令处理单元的doit和dumpit回调函数必须至少实现1个
 		if (ops[i].dumpit == NULL && ops[i].doit == NULL)
 			return -EINVAL;
+        // 每个命令处理单元的cmd不能重复
 		for (j = i + 1; j < n_ops; j++)
 			if (ops[i].cmd == ops[j].cmd)
 				return -EINVAL;
@@ -346,6 +357,8 @@ static int genl_validate_ops(struct genl_family *family)
 
 /**
  * __genl_register_family - register a generic netlink family
+ * 注册一个genetlink族到内核
+ *
  * @family: generic netlink family
  *
  * Registers the specified family after validating it first. Only one
@@ -362,23 +375,28 @@ int __genl_register_family(struct genl_family *family)
 {
 	int err = -EINVAL, i;
 
+    // 首先检查族ID是否有效
 	if (family->id && family->id < GENL_MIN_ID)
 		goto errout;
 
 	if (family->id > GENL_MAX_ID)
 		goto errout;
 
+    // 接着检查每个用户命令处理单元是否有效
 	err = genl_validate_ops(family);
 	if (err)
 		return err;
 
+    // 检查都通过后，整体上锁，准备真正开始注册
 	genl_lock_all();
 
+    // 确保要注册族的族名唯一性
 	if (genl_family_find_byname(family->name)) {
 		err = -EEXIST;
 		goto errout_locked;
 	}
 
+    // 根据传入的族ID决定是内核自动分配一个可用的族ID，还是使用指定的族ID
 	if (family->id == GENL_ID_GENERATE) {
 		u16 newid = genl_generate_id();
 
@@ -393,6 +411,7 @@ int __genl_register_family(struct genl_family *family)
 		goto errout_locked;
 	}
 
+    // 创建该族的属性缓存列表
 	if (family->maxattr && !family->parallel_ops) {
 		family->attrbuf = kmalloc((family->maxattr+1) *
 					sizeof(struct nlattr *), GFP_KERNEL);
@@ -408,6 +427,7 @@ int __genl_register_family(struct genl_family *family)
 		goto errout_locked;
 
 	list_add_tail(&family->family_list, genl_family_chain(family->id));
+    // 注册完毕后解锁
 	genl_unlock_all();
 
 	/* send all events */
@@ -672,7 +692,7 @@ static void genl_rcv(struct sk_buff *skb)
 /**************************************************************************
  * Controller
  **************************************************************************/
-
+// 定义了genetlink协议的控制器族
 static struct genl_family genl_ctrl = {
 	.id = GENL_ID_CTRL,
 	.name = "nlctrl",
@@ -880,12 +900,16 @@ ctrl_build_mcgrp_msg(struct genl_family *family,
 	return skb;
 }
 
+// 定义了genetlink控制器族的属性有效策略表
 static const struct nla_policy ctrl_policy[CTRL_ATTR_MAX+1] = {
-	[CTRL_ATTR_FAMILY_ID]	= { .type = NLA_U16 },
+	[CTRL_ATTR_FAMILY_ID]	= { .type = NLA_U16 },      // 规定了控制器族的CTRL_ATTR_FAMILY_ID属性值必须是NLA_U16类型
 	[CTRL_ATTR_FAMILY_NAME]	= { .type = NLA_NUL_STRING,
-				    .len = GENL_NAMSIZ - 1 },
+				    .len = GENL_NAMSIZ - 1 },           // 规定了控制器族的CTRL_ATTR_FAMILY_NAME属性值必须是NLA_NUL_STRING类型，并且长度不超过上限
 };
 
+/* 根据传入的genetlink收到的信息返回对应的族信息
+ * 
+ */
 static int ctrl_getfamily(struct sk_buff *skb, struct genl_info *info)
 {
 	struct sk_buff *msg;
@@ -974,6 +998,7 @@ static int genl_ctrl_event(int event, struct genl_family *family,
 	return 0;
 }
 
+// 定义了genetlink控制器族的一张用户命令表，实际只支持一条命令处理单元
 static struct genl_ops genl_ctrl_ops[] = {
 	{
 		.cmd		= CTRL_CMD_GETFAMILY,
@@ -983,18 +1008,24 @@ static struct genl_ops genl_ctrl_ops[] = {
 	},
 };
 
+// 定义了genetlink控制器族的一张内核组播组列表，实际只支持一条组播组
 static struct genl_multicast_group genl_ctrl_groups[] = {
 	{ .name = "notify", },
 };
 
+/* 具体的genetlink功能初始化(实际就是创建一个NETLINK_GENERIC协议的netlink套接字，并注册到当前网络命名空间)
+ * 
+ * 备注：这里实际的内容跟其他很多模块不一样，其他模块基本都是在proc文件系统中创建相应接口
+ */
 static int __net_init genl_pernet_init(struct net *net)
 {
 	struct netlink_kernel_cfg cfg = {
 		.input		= genl_rcv,
-		.flags		= NL_CFG_F_NONROOT_RECV,
+		.flags		= NL_CFG_F_NONROOT_RECV,    // 意味着非超级用户可以加入genetlink协议的多播组，但不能发送组播
 	};
 
 	/* we'll bump the group number right afterwards */
+    // 内核创建一个NETLINK_GENERIC协议的netlink套接字，最后将其注册到当前net命名空间
 	net->genl_sock = netlink_kernel_create(net, NETLINK_GENERIC, &cfg);
 
 	if (!net->genl_sock && net_eq(net, &init_net))
@@ -1017,18 +1048,22 @@ static struct pernet_operations genl_pernet_ops = {
 	.exit = genl_pernet_exit,
 };
 
+// NETLINK_GENERIC协议初始化
 static int __init genl_init(void)
 {
 	int i, err;
 
+    // 首先初始化hash表family_ht
 	for (i = 0; i < GENL_FAM_TAB_SIZE; i++)
 		INIT_LIST_HEAD(&family_ht[i]);
 
+    // 注册genetlink协议的控制器族到内核(实质就是创建一个属于内核的NETLINK_GENERIC协议的netlink套接字，并注册到当前网络命名空间)
 	err = genl_register_family_with_ops_groups(&genl_ctrl, genl_ctrl_ops,
 						   genl_ctrl_groups);
 	if (err < 0)
 		goto problem;
 
+    // 将rtnetlink模块注册到每一个网络命名空间，并且执行了genl_pernet_init
 	err = register_pernet_subsys(&genl_pernet_ops);
 	if (err)
 		goto problem;

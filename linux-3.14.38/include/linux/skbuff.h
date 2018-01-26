@@ -107,8 +107,8 @@
 
 /* Don't change this without changing skb_csum_unnecessary! */
 #define CHECKSUM_NONE		0
-#define CHECKSUM_UNNECESSARY	1
-#define CHECKSUM_COMPLETE	2
+#define CHECKSUM_UNNECESSARY	1   // 标识不需要计算校验和，在大流量应用场景中用于加快发包效率
+#define CHECKSUM_COMPLETE	2       // 标识由硬件计算了校验和，计算结果记录在skb->csum中
 #define CHECKSUM_PARTIAL	3
 
 // 对skb的数据区进行对齐操作
@@ -468,7 +468,7 @@ struct sk_buff {
 	__u16			mac_len,    // 记录了network layer相对mac地址的偏移量，也就是链路层长度
 				hdr_len;
 	union {
-		__wsum		csum;
+		__wsum		csum;       // 记录了该skb当前的校验和，该值随着ip_summed标识和data指针的移动会发生变化
 		struct {
 			__u16	csum_start;
 			__u16	csum_offset;
@@ -478,7 +478,7 @@ struct sk_buff {
 	kmemcheck_bitfield_begin(flags1);
 	__u8			local_df:1,
 				cloned:1,       // 标识该skb是否被克隆，或者标识该skb是克隆出来的，也就意味着克隆时，自身skb和克隆skb的该标志位都要置1 
-				ip_summed:2,
+				ip_summed:2,    // 标识该skb是否需要计算校验和，CHECKSUM_*
 				nohdr:1,
 				nfctinfo:3;
 	__u8			pkt_type:3, // 标识该skb中承载的数据包类型(比如PACKET_MULTICAST)，取值 PACKET_*
@@ -1060,6 +1060,8 @@ static inline struct sk_buff *skb_share_check(struct sk_buff *skb, gfp_t pri)
 
 /**
  *	skb_unshare - make a copy of a shared buffer
+ *	拷贝一个传入的skb并返回副本skb
+ *
  *	@skb: buffer to check
  *	@pri: priority for memory allocation
  *
@@ -1730,7 +1732,7 @@ static inline unsigned char *skb_transport_header(const struct sk_buff *skb)
 	return skb->head + skb->transport_header;
 }
 
-// 复位transport layer相对缓冲区头部的偏移量(显然调用本函数时该skb的读指针已经位于transport layer头部)
+// 复位transport layer相对缓冲区头部的偏移量(显然是将当前skb的读指针位置假设为transport layer头部)
 static inline void skb_reset_transport_header(struct sk_buff *skb)
 {
 	skb->transport_header = skb->data - skb->head;
@@ -1749,7 +1751,7 @@ static inline unsigned char *skb_network_header(const struct sk_buff *skb)
 	return skb->head + skb->network_header;
 }
 
-// 复位network layer相对缓冲区头部的偏移量(显然调用本函数时该skb的读指针已经位于network layer头部)
+// 复位network layer相对缓冲区头部的偏移量(显然是将当前skb的读指针位置假设为network layer头部)
 static inline void skb_reset_network_header(struct sk_buff *skb)
 {
 	skb->network_header = skb->data - skb->head;
@@ -1772,7 +1774,7 @@ static inline int skb_mac_header_was_set(const struct sk_buff *skb)
 	return skb->mac_header != (typeof(skb->mac_header))~0U;
 }
 
-// 复位mac layer相对缓冲区头部的偏移量(显然调用本函数时该skb的读指针已经位于mac layer头部)
+// 复位mac layer相对缓冲区头部的偏移量(显然是将当前skb的读指针位置假设为mac layer头部)
 static inline void skb_reset_mac_header(struct sk_buff *skb)
 {
 	skb->mac_header = skb->data - skb->head;
@@ -2411,9 +2413,10 @@ static inline int skb_linearize_cow(struct sk_buff *skb)
 
 /**
  *	skb_postpull_rcsum - update checksum for received skb after pull
- *	@skb: buffer to update
- *	@start: start of data before pull
- *	@len: length of data pulled
+ *	在读指针后移一段长度(skb_pull)的过程中(就是skb修改了len，但还未修改data指针时)，对接收到的skb重新计算剩下部分数据的校验和
+ *	@skb: buffer to update      需要被更新校验和的skb
+ *	@start: start of data before pull   指向需要被掠过的数据的起始位置
+ *	@len: length of data pulled         需要被掠过的数据长度
  *
  *	After doing a pull on a received packet, you need to call this to
  *	update the CHECKSUM_COMPLETE checksum, or set ip_summed to
@@ -2423,6 +2426,7 @@ static inline int skb_linearize_cow(struct sk_buff *skb)
 static inline void skb_postpull_rcsum(struct sk_buff *skb,
 				      const void *start, unsigned int len)
 {
+    // 只有设置了CHECKSUM_COMPLETE标识的skb才需要重新计算校验和
 	if (skb->ip_summed == CHECKSUM_COMPLETE)
 		skb->csum = csum_sub(skb->csum, csum_partial(start, len, 0));
 }

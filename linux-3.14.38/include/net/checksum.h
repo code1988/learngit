@@ -57,6 +57,7 @@ static __inline__ __wsum csum_and_copy_to_user
 }
 #endif
 
+// 两个校验和相加
 static inline __wsum csum_add(__wsum csum, __wsum addend)
 {
 	u32 res = (__force u32)csum;
@@ -64,11 +65,17 @@ static inline __wsum csum_add(__wsum csum, __wsum addend)
 	return (__force __wsum)(res + (res < (__force u32)addend));
 }
 
+// 两个校验和相减
 static inline __wsum csum_sub(__wsum csum, __wsum addend)
 {
 	return csum_add(csum, ~addend);
 }
 
+/* 两个校验和相加
+ * @csum    原有数据区的校验和
+ * @csum2   新增数据区的校验和
+ * @offset  标识是否需要对低16位进行大小端转换
+ */
 static inline __wsum
 csum_block_add(__wsum csum, __wsum csum2, int offset)
 {

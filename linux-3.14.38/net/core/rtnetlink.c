@@ -54,7 +54,7 @@
 #include <net/rtnetlink.h>
 #include <net/net_namespace.h>
 
-// 每个协议族对应的rtnetlink处理方式
+// 定义了rtnetlink消息处理单元
 struct rtnl_link {
 	rtnl_doit_func		doit;
 	rtnl_dumpit_func	dumpit;
@@ -103,7 +103,7 @@ int lockdep_rtnl_is_held(void)
 EXPORT_SYMBOL(lockdep_rtnl_is_held);
 #endif /* #ifdef CONFIG_PROVE_LOCKING */
 
-// 定义了rtnetlink所有协议族对应的处理方式的集合,按协议族索引,每个表项又是所有消息类型的处理方式的集合
+// 定义了一张包含rtnetlink所有已经注册的消息处理单元的表，这些消息处理单元按照所属协议族进行归类
 // --------------------------------------------------------------------------------------------------
 // | rtnl_msg_handlers[PF_UNSPEC] | -> rtnl_link + rtnl_link + rtnl_link + rtnl_link + rtnl_link +... 
 // --------------------------------------------------------------------------------------------------
@@ -190,8 +190,8 @@ static rtnl_calcit_func rtnl_get_calcit(int protocol, int msgindex)
 /**
  * __rtnl_register - Register a rtnetlink message type
  * 注册一条基于rtnetlink协议的具体消息(整个注册过程实际就是填充数组rtnl_msg_handlers的过程)
- * @protocol: Protocol family or PF_UNSPEC
- * @msgtype: rtnetlink message type
+ * @protocol: Protocol family or PF_UNSPEC  该消息所属的协议族
+ * @msgtype: rtnetlink message type         要注册的消息类型
  * @doit: Function pointer called for each request message 本函数指针用于带NLM_F_REQUEST标志的消息)
  * @dumpit: Function pointer called for each dump request (NLM_F_DUMP) message 本函数指针用于带NLM_F_REQUEST + NLM_F_DUMP标志的消息
  * @calcit: Function pointer to calc size of dump message 本函数指针用于计算带NLM_F_REQUEST + NLM_F_DUMP标志的消息的返回消息长度
@@ -3053,7 +3053,7 @@ static struct pernet_operations rtnetlink_net_ops = {
 	.exit = rtnetlink_net_exit,
 };
 
-// rtnetlink初始化(在netlink_proto_init中被调用) 
+// rtnetlink协议初始化(在netlink_proto_init中被调用) 
 void __init rtnetlink_init(void)
 {
     // 将rtnetlink模块注册到每一个网络命名空间，并且执行了rtnetlink_net_init

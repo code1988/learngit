@@ -9,10 +9,11 @@
 
 /**
  * struct genl_multicast_group - generic netlink multicast group
+ * 定义了genetlink协议的内核组播组结构
  * @name: name of the multicast group, names are per-family
  */
 struct genl_multicast_group {
-	char			name[GENL_NAMSIZ];
+	char			name[GENL_NAMSIZ];  // 组播组名
 };
 
 struct genl_ops;
@@ -20,6 +21,8 @@ struct genl_info;
 
 /**
  * struct genl_family - generic netlink family
+ * 定义了genetlink协议的族管理块
+ *
  * @id: protocol family idenfitier
  * @hdrsize: length of user specific header in bytes
  * @name: name of family
@@ -40,12 +43,12 @@ struct genl_info;
  * @n_ops: number of operations supported by this family (private)
  */
 struct genl_family {
-	unsigned int		id;
+	unsigned int		id;             // 族ID，在内核中用于唯一标识该族
 	unsigned int		hdrsize;
-	char			name[GENL_NAMSIZ];
+	char			name[GENL_NAMSIZ];  // 族名，主要是提供给用户空间使用，用户可以根据族名索引对应的族ID
 	unsigned int		version;
-	unsigned int		maxattr;
-	bool			netnsok;
+	unsigned int		maxattr;        // 该族支持的最大属性数量
+	bool			netnsok;            // 标识是否支持net命名空间
 	bool			parallel_ops;
 	int			(*pre_doit)(const struct genl_ops *ops,
 					    struct sk_buff *skb,
@@ -53,11 +56,11 @@ struct genl_family {
 	void			(*post_doit)(const struct genl_ops *ops,
 					     struct sk_buff *skb,
 					     struct genl_info *info);
-	struct nlattr **	attrbuf;	/* private */
-	const struct genl_ops *	ops;		/* private */
-	const struct genl_multicast_group *mcgrps; /* private */
-	unsigned int		n_ops;		/* private */
-	unsigned int		n_mcgrps;	/* private */
+	struct nlattr **	attrbuf;	/* private  指向该族的属性缓存列表 */
+	const struct genl_ops *	ops;		/* private  指向该族支持的用户命令表 */
+	const struct genl_multicast_group *mcgrps; /* private 指向该族支持的内核组播组表 */
+	unsigned int		n_ops;		/* private  该族支持的用户命令数量 */
+	unsigned int		n_mcgrps;	/* private  该族支持的内核组播组数量 */
 	unsigned int		mcgrp_offset;	/* private */
 	struct list_head	family_list;	/* private */
 	struct module		*module;
@@ -65,6 +68,8 @@ struct genl_family {
 
 /**
  * struct genl_info - receiving information
+ * 定义了内核收到的genetlink信息
+ *
  * @snd_seq: sending sequence number
  * @snd_portid: netlink portid of sender
  * @nlhdr: netlink message header
@@ -101,6 +106,8 @@ static inline void genl_info_net_set(struct genl_info *info, struct net *net)
 
 /**
  * struct genl_ops - generic netlink operations
+ * 定义了genetlink协议的用户命令处理单元(显然，本结构只用于用户空间往内核空间发消息的情况)
+ *
  * @cmd: command identifier
  * @internal_flags: flags used by the family
  * @flags: flags
@@ -111,15 +118,15 @@ static inline void genl_info_net_set(struct genl_info *info, struct net *net)
  * @ops_list: operations list
  */
 struct genl_ops {
-	const struct nla_policy	*policy;
+	const struct nla_policy	*policy;        // 判断该命令处理单元属性是否有效的策略集合，NULL意味着对收到的属性不做检查
 	int		       (*doit)(struct sk_buff *skb,
-				       struct genl_info *info);
+				       struct genl_info *info);     // 标准的命令回调函数
 	int		       (*dumpit)(struct sk_buff *skb,
-					 struct netlink_callback *cb);
-	int		       (*done)(struct netlink_callback *cb);
-	u8			cmd;
-	u8			internal_flags;
-	u8			flags;
+					 struct netlink_callback *cb);  // 需要转储时执行的回调函数
+	int		       (*done)(struct netlink_callback *cb);    // 转储结束后执行的回调函数
+	u8			cmd;                // 命令ID
+	u8			internal_flags;     // 族内部使用的私有标识集合
+	u8			flags;              // GENL_*
 };
 
 int __genl_register_family(struct genl_family *family);
@@ -132,15 +139,20 @@ static inline int genl_register_family(struct genl_family *family)
 
 /**
  * genl_register_family_with_ops - register a generic netlink family with ops
- * @family: generic netlink family
- * @ops: operations to be registered
- * @n_ops: number of elements to register
+ * 注册一个genetlink族
+ *
+ * @family: generic netlink family          指向要注册的族管理块
+ * @ops: operations to be registered        指向同时要被注册的用户命令表
+ * @n_ops: number of elements to register   表中的用户命令数量
+ * @mcgrps      指向同时要被注册的内核组播组表
+ * @n_mcgrps    表中的组播组数量
  *
  * Registers the specified family and operations from the specified table.
  * Only one family may be registered with the same family name or identifier.
  *
  * The family id may equal GENL_ID_GENERATE causing an unique id to
  * be automatically generated and assigned.
+ * 为了避免族ID的唯一性，通常都是让内核自动分配族ID
  *
  * Either a doit or dumpit callback must be specified for every registered
  * operation or the function will fail. Only one operation structure per
@@ -165,10 +177,12 @@ _genl_register_family_with_ops_grps(struct genl_family *family,
 	return __genl_register_family(family);
 }
 
+// 注册一个不带组播组的genetlink族
 #define genl_register_family_with_ops(family, ops)			\
 	_genl_register_family_with_ops_grps((family),			\
 					    (ops), ARRAY_SIZE(ops),	\
 					    NULL, 0)
+// 注册一个带组播组的genetlink族
 #define genl_register_family_with_ops_groups(family, ops, grps)	\
 	_genl_register_family_with_ops_grps((family),			\
 					    (ops), ARRAY_SIZE(ops),	\

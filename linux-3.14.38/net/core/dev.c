@@ -3561,7 +3561,10 @@ static bool skb_pfmemalloc_protocol(struct sk_buff *skb)
 	}
 }
 
-// 网络设备真正执行数据接收流程的地方
+/* 网络设备真正执行数据接收流程的地方
+ *
+ * 备注：需要注意进入本函数时，skb中的读指针已经跳过了标准以太网长度
+ */
 static int __netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc)
 {
 	struct packet_type *ptype, *pt_prev;
@@ -3584,7 +3587,7 @@ static int __netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc)
     // 首先记录下进入本函数时skb绑定的初始netdev
 	orig_dev = skb->dev;
 
-    // 初始化各层的地址
+    // 显然这里将network header、transport header初始化为同一位置
 	skb_reset_network_header(skb);
 	if (!skb_transport_header_was_set(skb))
 		skb_reset_transport_header(skb);
@@ -3702,7 +3705,7 @@ ncls:
 	/* deliver only exact match when indicated */
 	null_or_dev = deliver_exact ? skb->dev : NULL;
 
-    // 正常情况下skb接收流程都会运行到这里
+    // 正常情况下skb接收流程都会运行到这里(包括带DSA-tag的报文)
     // 这里开始在ptype_base表中寻找跟该skb协议类型匹配的协议管理块，然后进行相关处理
 	type = skb->protocol;
 	list_for_each_entry_rcu(ptype,
@@ -3814,7 +3817,9 @@ static int netif_receive_skb_internal(struct sk_buff *skb)
  *	NET_RX_SUCCESS: no congestion
  *	NET_RX_DROP: packet was dropped
  *
- *	备注：当调用过程中skb关联的设备发生了变化，本函数可能被递归调用到
+ *	备注：
+ *	        当调用过程中skb关联的设备发生了变化，本函数可能被递归调用到;
+ *	        skb进入本函数时其中的读指针已经跳过了标准的以太网头长度
  */
 int netif_receive_skb(struct sk_buff *skb)
 {

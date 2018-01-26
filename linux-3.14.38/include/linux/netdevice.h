@@ -1311,7 +1311,7 @@ struct net_device {
 	struct vlan_info __rcu	*vlan_info;	/* VLAN info 绑定在该网络设备上的所有vlan设备信息管理块*/
 #endif
 #if IS_ENABLED(CONFIG_NET_DSA)
-	struct dsa_switch_tree	*dsa_ptr;	/* dsa specific data  如果该设备使能了DSA功能，则这里指向绑定的DSA实例 */
+	struct dsa_switch_tree	*dsa_ptr;	/* dsa specific data  如果该netdev是DSA的宿主设备，则这里指向寄生的DSA实例 */
 #endif
 #if IS_ENABLED(CONFIG_TIPC)
 	struct tipc_bearer __rcu *tipc_ptr;	/* TIPC specific data */

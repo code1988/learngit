@@ -250,15 +250,19 @@ static void dsa_link_poll_work(struct work_struct *ugly)
 	struct dsa_switch_tree *dst;
 	int i;
 
+    // 获取所属的DSA实例
 	dst = container_of(ugly, struct dsa_switch_tree, link_poll_work);
 
+    // 遍历该DSA实例包含的switch(不级联就是1个)
 	for (i = 0; i < dst->pd->nr_chips; i++) {
 		struct dsa_switch *ds = dst->ds[i];
 
+        // 执行每个switch的link轮寻动作
 		if (ds != NULL && ds->drv->poll_link != NULL)
 			ds->drv->poll_link(ds);
 	}
 
+    // 最后刷新定时器
 	mod_timer(&dst->link_poll_timer, round_jiffies(jiffies + HZ));
 }
 
@@ -633,7 +637,7 @@ static int dsa_probe(struct platform_device *pdev)
 	 * sent to the tag format's receive function.
 	 */
 	wmb();
-	dev->dsa_ptr = (void *)dst;     // 将创建的DSA实例跟DSA设备绑定
+	dev->dsa_ptr = (void *)dst;     // 将创建的DSA实例跟宿主netdev绑定
 
     // 如果该DSA实例使能了定时轮寻link功能，则在最后注册对应的定时器
 	if (dst->link_poll_needed) {

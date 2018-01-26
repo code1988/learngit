@@ -310,7 +310,7 @@ static const struct ethtool_ops dsa_slave_ethtool_ops = {
 };
 
 #ifdef CONFIG_NET_DSA_TAG_DSA
-// 定义了dsa类型的netdev操作集合
+// 定义了dsa类型的从端口netdev操作集合
 static const struct net_device_ops dsa_netdev_ops = {
 	.ndo_init		= dsa_slave_init,
 	.ndo_open	 	= dsa_slave_open,
