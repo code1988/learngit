@@ -2291,7 +2291,7 @@ EXPORT_SYMBOL(netlink_broadcast_filtered);
 /* 发送netlink组播消息(显然这只是个封装)
  * @ssk         - 指向源sock结构
  * @skb         - 属于发送方的承载了netlink消息的skb
- * @portid      - 目的单播地址
+ * @portid      - 目的单播地址(?)
  * @group       - 目的组播地址
  *
  * 备注: 以下2种情况都会调用到本函数：

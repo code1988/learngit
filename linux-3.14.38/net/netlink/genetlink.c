@@ -815,6 +815,16 @@ nla_put_failure:
 	return -EMSGSIZE;
 }
 
+/* 创建发往控制器族的genetlink组播消息
+ * @family  要传递的族管理块
+ * @grp     发送该genetlink组播消息的组播组
+ * @grp_id  对应的组播组ID
+ * @portid  该netlink消息的单播地址
+ * @seq     该netlink消息序号
+ * @flags   该netlink消息附加的标志集合
+ * @skb     要承载该netlink消息的skb
+ * @cmd     控制器族定义的命令号
+ */
 static int ctrl_fill_mcgrp_info(struct genl_family *family,
 				const struct genl_multicast_group *grp,
 				int grp_id, u32 portid, u32 seq, u32 flags,
@@ -916,10 +926,10 @@ static struct sk_buff *ctrl_build_family_msg(struct genl_family *family,
 
 /* 创建一个skb，该skb中承载了发往控制器族的genetlink组播消息
  * @family  要通知给控制器族的族管理块
- * @grp     netlink消息组播地址，0意味着发往内核
- * @grp_id
+ * @grp     发送该genetlink组播消息的组播组
+ * @grp_id  对应的组播组ID
  * @seq     netlink消息序号
- * @cmd     命令ID
+ * @cmd     组播命令ID
  */
 static struct sk_buff *
 ctrl_build_mcgrp_msg(struct genl_family *family,
@@ -929,10 +939,12 @@ ctrl_build_mcgrp_msg(struct genl_family *family,
 	struct sk_buff *skb;
 	int err;
 
+    // 申请一个用于承载netlink消息的skb
 	skb = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
 	if (skb == NULL)
 		return ERR_PTR(-ENOBUFS);
 
+    // 创建发往控制器族的genetlink组播消息
 	err = ctrl_fill_mcgrp_info(family, grp, grp_id, portid,
 				   seq, 0, skb, cmd);
 	if (err < 0) {
@@ -1000,10 +1012,11 @@ static int ctrl_getfamily(struct sk_buff *skb, struct genl_info *info)
 	return genlmsg_reply(msg, info);
 }
 
-/* 向内核genetlink控制器族发送事件通知接口
+/* 向内核genetlink控制器族发送指定族的相关事件通知
  * @event   事件ID(也就是命令ID)
  * @faminl  该事件关联的族
- * @grp     发出该事件的组播组
+ * @grp     发出该事件的组播组，可以为NULL
+ * @grp_id  对应的组播组ID
  */
 static int genl_ctrl_event(int event, struct genl_family *family,
 			   const struct genl_multicast_group *grp,
@@ -1035,9 +1048,11 @@ static int genl_ctrl_event(int event, struct genl_family *family,
 		return PTR_ERR(msg);
 
 	if (!family->netnsok) {
+        // 如果指定族不支持多net命名空间，则只往缺省net命名空间的控制器族发送组播消息
 		genlmsg_multicast_netns(&genl_ctrl, &init_net, msg, 0,
 					0, GFP_KERNEL);
 	} else {
+        // 如果支持多net命名空间，则往所有net命名空间的控制器族发送组播消息
 		rcu_read_lock();
 		genlmsg_multicast_allns(&genl_ctrl, msg, 0,
 					0, GFP_ATOMIC);
@@ -1125,6 +1140,11 @@ problem:
 
 subsys_initcall(genl_init);
 
+/* 组播一条指定的genetlink消息到所有net命名空间
+ * @skb     承载了组播消息的skb
+ * @portid  发送方地址，避免发送给自身
+ * @group   组播地址 
+ */
 static int genlmsg_mcast(struct sk_buff *skb, u32 portid, unsigned long group,
 			 gfp_t flags)
 {
@@ -1132,6 +1152,7 @@ static int genlmsg_mcast(struct sk_buff *skb, u32 portid, unsigned long group,
 	struct net *net, *prev = NULL;
 	int err;
 
+    // 发送组播消息到所有net命名空间
 	for_each_net_rcu(net) {
 		if (prev) {
 			tmp = skb_clone(skb, flags);
@@ -1139,6 +1160,7 @@ static int genlmsg_mcast(struct sk_buff *skb, u32 portid, unsigned long group,
 				err = -ENOMEM;
 				goto error;
 			}
+            // 实际是通过每个net命名空间的内核genetlink套接字来发送组播
 			err = nlmsg_multicast(prev->genl_sock, tmp,
 					      portid, group, flags);
 			if (err)
@@ -1154,11 +1176,13 @@ static int genlmsg_mcast(struct sk_buff *skb, u32 portid, unsigned long group,
 	return err;
 }
 
+// 组播一条指定的genetlink消息到所有net命名空间
 int genlmsg_multicast_allns(struct genl_family *family, struct sk_buff *skb,
 			    u32 portid, unsigned int group, gfp_t flags)
 {
 	if (WARN_ON_ONCE(group >= family->n_mcgrps))
 		return -EINVAL;
+    // 计算真正的组播地址
 	group = family->mcgrp_offset + group;
 	return genlmsg_mcast(skb, portid, group, flags);
 }

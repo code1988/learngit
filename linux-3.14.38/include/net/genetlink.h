@@ -44,11 +44,11 @@ struct genl_info;
  */
 struct genl_family {
 	unsigned int		id;             // 族ID，在内核中用于唯一标识该族
-	unsigned int		hdrsize;        // 用户自定义头的长度
+	unsigned int		hdrsize;        // 用户自定义头的长度，0表示不使用
 	char			name[GENL_NAMSIZ];  // 族名，主要是提供给用户空间使用，用户可以根据族名索引对应的族ID
 	unsigned int		version;
 	unsigned int		maxattr;        // 该族支持的最大属性数量
-	bool			netnsok;            // 标识是否支持net命名空间
+	bool			netnsok;            // 标识是否支持多net命名空间
 	bool			parallel_ops;
 	int			(*pre_doit)(const struct genl_ops *ops,
 					    struct sk_buff *skb,
@@ -144,8 +144,8 @@ static inline int genl_register_family(struct genl_family *family)
  * @family: generic netlink family          指向要注册的族管理块
  * @ops: operations to be registered        指向同时要被注册的用户命令表
  * @n_ops: number of elements to register   表中的用户命令数量
- * @mcgrps      指向同时要被注册的内核组播组表
- * @n_mcgrps    表中的组播组数量
+ * @mcgrps      指向同时要被注册的内核组播组表，可以为NULL
+ * @n_mcgrps    表中的组播组数量，可以为0
  *
  * Registers the specified family and operations from the specified table.
  * Only one family may be registered with the same family name or identifier.
@@ -272,11 +272,13 @@ static inline void genlmsg_cancel(struct sk_buff *skb, void *hdr)
 
 /**
  * genlmsg_multicast_netns - multicast a netlink message to a specific netns
- * @family: the generic netlink family
- * @net: the net namespace
- * @skb: netlink message as socket buffer
- * @portid: own netlink portid to avoid sending to yourself
- * @group: offset of multicast group in groups array
+ * 在指定net命名空间从内核发送指定族的genetlink组播消息
+ *
+ * @family: the generic netlink family  目的genetlink族
+ * @net: the net namespace              发组播消息的net命名空间
+ * @skb: netlink message as socket buffer   承载了genetlink消息的skb
+ * @portid: own netlink portid to avoid sending to yourself     发送方自己的地址，用于避免发送给自己
+ * @group: offset of multicast group in groups array            组播组ID序号
  * @flags: allocation flags
  */
 static inline int genlmsg_multicast_netns(struct genl_family *family,
@@ -285,6 +287,7 @@ static inline int genlmsg_multicast_netns(struct genl_family *family,
 {
 	if (WARN_ON_ONCE(group >= family->n_mcgrps))
 		return -EINVAL;
+    // 计算得到真正的组播地址
 	group = family->mcgrp_offset + group;
 	return nlmsg_multicast(net->genl_sock, skb, portid, group, flags);
 }

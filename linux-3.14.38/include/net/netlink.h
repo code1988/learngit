@@ -567,7 +567,7 @@ static inline void nlmsg_free(struct sk_buff *skb)
  *
  * @sk: netlink socket to spread messages to    指向源sock结构
  * @skb: netlink message as socket buffer       指向一个承载了组播netlink消息的skb
- * @portid: own netlink portid to avoid sending to yourself 目的单播地址(英文有问题) 
+ * @portid: own netlink portid to avoid sending to yourself 目的单播地址(英文有问题?) 
  * @group: multicast group id   目的组播地址
  * @flags: allocation flags
  */
