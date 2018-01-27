@@ -251,8 +251,11 @@ static inline void *genlmsg_put_reply(struct sk_buff *skb,
 
 /**
  * genlmsg_end - Finalize a generic netlink message
- * @skb: socket buffer the message is stored in
- * @hdr: user specific header
+ * 结束指定skb中已经构造完毕的genetlink消息
+ *
+ * @skb: socket buffer the message is stored in     承载了已经构造完毕的genetlink消息的skb
+ * @hdr: user specific header                       指向已经填充完毕的用户自定义头
+ * @返回值  skb->len
  */
 static inline int genlmsg_end(struct sk_buff *skb, void *hdr)
 {

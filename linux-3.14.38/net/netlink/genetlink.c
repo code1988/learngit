@@ -745,6 +745,7 @@ static int ctrl_fill_info(struct genl_family *family, u32 portid, u32 seq,
 	    nla_put_u32(skb, CTRL_ATTR_MAXATTR, family->maxattr))
 		goto nla_put_failure;
 
+    // 如果要传递族有命令列表，则往该genetlink消息中继续添加命令列表属性
 	if (family->n_ops) {
 		struct nlattr *nla_ops;
 		int i;
@@ -779,6 +780,7 @@ static int ctrl_fill_info(struct genl_family *family, u32 portid, u32 seq,
 		nla_nest_end(skb, nla_ops);
 	}
 
+    // 如果要传递族有组播组列表，则往该genetlink消息中继续添加组播组列表属性
 	if (family->n_mcgrps) {
 		struct nlattr *nla_grps;
 		int i;

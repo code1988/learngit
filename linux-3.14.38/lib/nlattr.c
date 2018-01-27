@@ -416,9 +416,9 @@ EXPORT_SYMBOL(nla_reserve_nohdr);
  * 往skb中添加一条netlink属性
  *
  * @skb: socket buffer to add attribute to
- * @attrtype: attribute type
- * @attrlen: length of attribute payload
- * @data: head of attribute payload
+ * @attrtype: attribute type                属性类型
+ * @attrlen: length of attribute payload    属性payload长度
+ * @data: head of attribute payload         指向要拷贝到属性payload中的数据
  *
  * The caller is responsible to ensure that the skb provides enough
  * tailroom for the attribute header and payload.

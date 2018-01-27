@@ -55,13 +55,13 @@ enum {
 // 定义了genetlink控制器族支持的属性
 enum {
 	CTRL_ATTR_UNSPEC,
-	CTRL_ATTR_FAMILY_ID,
-	CTRL_ATTR_FAMILY_NAME,
-	CTRL_ATTR_VERSION,
-	CTRL_ATTR_HDRSIZE,
-	CTRL_ATTR_MAXATTR,
-	CTRL_ATTR_OPS,
-	CTRL_ATTR_MCAST_GROUPS,
+	CTRL_ATTR_FAMILY_ID,        // 该属性记录了族ID
+	CTRL_ATTR_FAMILY_NAME,      // 该属性记录了族名
+	CTRL_ATTR_VERSION,          // 该属性记录了族版本
+	CTRL_ATTR_HDRSIZE,          // 该属性记录了族用户自定义头长度
+	CTRL_ATTR_MAXATTR,          // 该属性记录了族支持的熟悉数量
+	CTRL_ATTR_OPS,              // 该属性记录了族支持的用户命令列表
+	CTRL_ATTR_MCAST_GROUPS,     // 该属性记录了族支持的组播组列表
 	__CTRL_ATTR_MAX,
 };
 

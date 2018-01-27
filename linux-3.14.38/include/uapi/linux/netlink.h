@@ -192,7 +192,7 @@ struct nlattr {
 // netlink属性长度也是4字节对齐
 #define NLA_ALIGNTO		4
 #define NLA_ALIGN(len)		(((len) + NLA_ALIGNTO - 1) & ~(NLA_ALIGNTO - 1))
-#define NLA_HDRLEN		((int) NLA_ALIGN(sizeof(struct nlattr)))
+#define NLA_HDRLEN		((int) NLA_ALIGN(sizeof(struct nlattr)))    // 计算属性头占用的空间: 属性头 + padding
 
 
 #endif /* _UAPI__LINUX_NETLINK_H */

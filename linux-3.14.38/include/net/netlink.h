@@ -499,8 +499,10 @@ static inline struct sk_buff *nlmsg_new(size_t payload, gfp_t flags)
 
 /**
  * nlmsg_end - Finalize a netlink message
- * @skb: socket buffer the message is stored in
- * @nlh: netlink message header
+ * 结束指定skb中已经构造完毕的netlink消息，实际就是刷新一下netlink头中的nlmsg_len字段
+ *
+ * @skb: socket buffer the message is stored in     承载了已经构造完毕的netlink消息的skb
+ * @nlh: netlink message header     指向已经构造完毕的netlink消息头
  *
  * Corrects the netlink message header to include the appeneded
  * attributes. Only necessary if attributes have been added to
@@ -510,6 +512,7 @@ static inline struct sk_buff *nlmsg_new(size_t payload, gfp_t flags)
  */
 static inline int nlmsg_end(struct sk_buff *skb, struct nlmsghdr *nlh)
 {
+    // skb的当前尾指针 - netlink消息头指针就是netlink消息payload占用的空间长度
 	nlh->nlmsg_len = skb_tail_pointer(skb) - (unsigned char *)nlh;
 
 	return skb->len;
@@ -648,7 +651,7 @@ nl_dump_check_consistent(struct netlink_callback *cb,
 
 /**
  * nla_attr_size - length of attribute not including padding
- * netlink属性的实际长度（属性header + 属性payload）
+ * netlink属性的实际长度（属性header + padding + 属性payload）
  * @payload: length of payload
  */
 static inline int nla_attr_size(int payload)
@@ -658,7 +661,7 @@ static inline int nla_attr_size(int payload)
 
 /**
  * nla_total_size - total length of attribute including padding
- * netlink属性对齐后总长度（属性header + 属性payload + 尾部padding）
+ * netlink属性占用的空间（属性header + padding + 属性payload + padding）
  * @payload: length of payload
  */
 static inline int nla_total_size(int payload)
