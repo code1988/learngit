@@ -143,7 +143,7 @@ struct dsa_switch {
 	 */
 	u32			dsa_port_mask;      // 开启了dsa功能的端口集合
 	u32			phys_port_mask;     // 物理口集合
-	struct mii_bus		*slave_mii_bus;         // 指向该switch使用的从mii-bus设备(该创建该switch时创建，执行读写操作最终还是要通过主mii-bus来完成)
+	struct mii_bus		*slave_mii_bus;         // 指向该switch使用的从mii-bus设备(创建该switch时创建，执行读写操作最终还是要通过主mii-bus来完成)
 	struct net_device	*ports[DSA_MAX_PORTS];  // 该switch包含的所有端口对应的netdev集合
 };
 
@@ -192,14 +192,14 @@ struct dsa_switch_driver {
 	/*
 	 * Access to the switch's PHY registers.
 	 */
-	int	(*phy_read)(struct dsa_switch *ds, int port, int regnum);   // 读端口寄存器
-	int	(*phy_write)(struct dsa_switch *ds, int port,               // 写端口寄存器
+	int	(*phy_read)(struct dsa_switch *ds, int port, int regnum);   // 读指定端口(即phy)上的指定寄存器
+	int	(*phy_write)(struct dsa_switch *ds, int port,               // 写指定端口(即phy)上的指定寄存器
 			     int regnum, u16 val);
 
 	/*
 	 * Link state polling and IRQ handling.
 	 */
-	void	(*poll_link)(struct dsa_switch *ds);            // 查询该switch所有端口的链路状态
+	void	(*poll_link)(struct dsa_switch *ds);            // 查询该switch所有端口的链路状态   ->mv88e6xxx_poll_link
 
 	/*
 	 * ethtool hardware statistics.

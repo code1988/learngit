@@ -41,7 +41,7 @@ extern int generic_mii_ioctl(struct mii_if_info *mii_if,
 			     struct mii_ioctl_data *mii_data, int cmd,
 			     unsigned int *duplex_changed);
 
-
+// 获取ifreq结构中承载的mii总线数据
 static inline struct mii_ioctl_data *if_mii(struct ifreq *rq)
 {
 	return (struct mii_ioctl_data *) &rq->ifr_ifru;

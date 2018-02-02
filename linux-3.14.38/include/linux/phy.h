@@ -110,8 +110,8 @@ struct mii_bus {
 	const char *name;   // mii-bus设备名
 	char id[MII_BUS_ID_SIZE];   // 该mii-bus设备的字符串ID号
 	void *priv;         // 该mii-bus设备的私有空间(比如可能指向所属的switch实例) 
-	int (*read)(struct mii_bus *bus, int phy_id, int regnum);
-	int (*write)(struct mii_bus *bus, int phy_id, int regnum, u16 val);
+	int (*read)(struct mii_bus *bus, int phy_id, int regnum);           // 读操作
+	int (*write)(struct mii_bus *bus, int phy_id, int regnum, u16 val); // 写操作
 	int (*reset)(struct mii_bus *bus);
 
 	/*
@@ -121,7 +121,7 @@ struct mii_bus {
 	 */
 	struct mutex mdio_lock;
 
-	struct device *parent;  // 指向父mii-bus设备的device结构
+	struct device *parent;  // 指向该mii-bus设备的宿主device结构
 	enum {
 		MDIOBUS_ALLOCATED = 1,
 		MDIOBUS_REGISTERED,     // 标识该mii-bus已经注册
@@ -306,7 +306,7 @@ struct phy_device {
 	/* And management functions */
 	struct phy_driver *drv;
 
-	struct mii_bus *bus;
+	struct mii_bus *bus;// 指向该phy绑定的mii-bus设备
 
 	struct device dev;  // 封装的linux基本设备结构
 
@@ -323,7 +323,7 @@ struct phy_device {
 	phy_interface_t interface;
 
 	/* Bus address of the PHY (0-31) */
-	int addr;
+	int addr;       // phy地址，也就是phy id(在DSA中也就是端口号)
 
 	/*
 	 * forced speed & duplex (no autoneg)
@@ -346,7 +346,7 @@ struct phy_device {
 	u32 advertising;
 	u32 lp_advertising;
 
-	int autoneg;
+	int autoneg;    // 标识是否使能自协商
 
 	int link_timeout;
 

@@ -314,6 +314,8 @@ EXPORT_SYMBOL(phy_ethtool_gset);
 
 /**
  * phy_mii_ioctl - generic PHY MII ioctl interface
+ * phy设备的ioctl接口
+ *
  * @phydev: the phy_device struct
  * @ifr: &struct ifreq for socket ioctl's
  * @cmd: ioctl cmd to execute
@@ -324,20 +326,22 @@ EXPORT_SYMBOL(phy_ethtool_gset);
  */
 int phy_mii_ioctl(struct phy_device *phydev, struct ifreq *ifr, int cmd)
 {
+    // 首先从用户传入的ifreq中获取mii数据
 	struct mii_ioctl_data *mii_data = if_mii(ifr);
 	u16 val = mii_data->val_in;
 
+    // 根据这条ioctl消息关联的mii命令号进行相应的处理
 	switch (cmd) {
-	case SIOCGMIIPHY:
+	case SIOCGMIIPHY:   // 获取该phy的id
 		mii_data->phy_id = phydev->addr;
 		/* fall through */
 
-	case SIOCGMIIREG:
+	case SIOCGMIIREG:   // 读指定phy的指定寄存器
 		mii_data->val_out = mdiobus_read(phydev->bus, mii_data->phy_id,
 						 mii_data->reg_num);
 		return 0;
 
-	case SIOCSMIIREG:
+	case SIOCSMIIREG:   // 写指定phy的指定寄存器
 		if (mii_data->phy_id == phydev->addr) {
 			switch (mii_data->reg_num) {
 			case MII_BMCR:

@@ -307,13 +307,16 @@ EXPORT_SYMBOL(mdiobus_scan);
 
 /**
  * mdiobus_read - Convenience function for reading a given MII mgmt register
+ * mdio总线的读操作接口(封装了对应的锁操作)
+ *
  * @bus: the mii_bus struct
- * @addr: the phy address
- * @regnum: register number to read
+ * @addr: the phy address               指定phy地址
+ * @regnum: register number to reads    指定phy上的指定寄存器
  *
  * NOTE: MUST NOT be called from interrupt context,
  * because the bus read/write functions may wait for an interrupt
  * to conclude the operation.
+ * 本接口不能在中断上下文中被调用
  */
 int mdiobus_read(struct mii_bus *bus, int addr, u32 regnum)
 {
@@ -331,6 +334,8 @@ EXPORT_SYMBOL(mdiobus_read);
 
 /**
  * mdiobus_write - Convenience function for writing a given MII mgmt register
+ * mdio总线的写操作接口(封装了对应的锁操作)
+ *
  * @bus: the mii_bus struct
  * @addr: the phy address
  * @regnum: register number to write
@@ -339,6 +344,7 @@ EXPORT_SYMBOL(mdiobus_read);
  * NOTE: MUST NOT be called from interrupt context,
  * because the bus read/write functions may wait for an interrupt
  * to conclude the operation.
+ * 本接口不能在中断上下文中被调用
  */
 int mdiobus_write(struct mii_bus *bus, int addr, u32 regnum, u16 val)
 {

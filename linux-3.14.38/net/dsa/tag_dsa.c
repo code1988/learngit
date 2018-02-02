@@ -127,7 +127,7 @@ static int dsa_rcv(struct sk_buff *skb, struct net_device *dev,
 
 	/*
 	 * Determine source device and port.
-     * 计算白DSA帧的源switch和源物理口
+     * 计算该DSA帧的源switch和源物理口
 	 */
 	source_device = dsa_header[0] & 0x1f;
 	source_port = (dsa_header[1] >> 3) & 0x1f;

@@ -281,10 +281,10 @@ struct header_ops {
  * 显然，以下枚举用于设置net_device->state字段
  */
 enum netdev_state_t {
-	__LINK_STATE_START,         // 标识网络设备已经启用，该标志可被netif_running检测
-	__LINK_STATE_PRESENT,       // 标识网络设备可以启用？ 该标志可被netif_device_present检测
-	__LINK_STATE_NOCARRIER,     // 标识网络设备链路上没有载波，该标志可被netif_carrier_ok检测
-	__LINK_STATE_LINKWATCH_PENDING, // 标识link监视处于等待状态，当设备链路状态改变时需要被置位
+	__LINK_STATE_START,         // 标识netdev已经启用，该标志可被netif_running检测
+	__LINK_STATE_PRESENT,       // 标识netdev可以启用？ 该标志可被netif_device_present检测
+	__LINK_STATE_NOCARRIER,     // 标识netdev链路上没有载波，该标志可被netif_carrier_ok检测
+	__LINK_STATE_LINKWATCH_PENDING, // 标识netdev已经被添加到链路事件通知链，等待被调度
 	__LINK_STATE_DORMANT,
 };
 
@@ -760,7 +760,7 @@ typedef u16 (*select_queue_fallback_t)(struct net_device *dev,
 
 /*
  * This structure defines the management hooks for network devices.
- * 定义了管理网络设备的通用操作集合
+ * 定义了管理netdev的通用操作集合
  * The following hooks can be defined; unless noted otherwise, they are
  * optional and can be filled with a null pointer.
  *
@@ -1004,7 +1004,7 @@ typedef u16 (*select_queue_fallback_t)(struct net_device *dev,
  *	devices.
  */
 struct net_device_ops {
-	int			(*ndo_init)(struct net_device *dev);
+	int			(*ndo_init)(struct net_device *dev);        // 只会在注册该netdev到内核中时调用一次
 	void			(*ndo_uninit)(struct net_device *dev);
 	int			(*ndo_open)(struct net_device *dev);
 	int			(*ndo_stop)(struct net_device *dev);
@@ -1170,7 +1170,7 @@ struct net_device {
 	 * This is the first field of the "visible" part of this structure
 	 * (i.e. as seen by users in the "Space.c" file).  It is the name
 	 * of the interface.
-     * 网络设备名
+     * netdev名
 	 */
 	char			name[IFNAMSIZ];
 
@@ -1194,7 +1194,7 @@ struct net_device {
 	 *	part of the usual set specified in Space.c.
 	 */
 
-	unsigned long		state;          // 通常是由netdev_state_t定义，主要用来标识该网络设备当前的状态
+	unsigned long		state;          // 通常是由netdev_state_t定义，主要用来标识该netdev当前的状态
 
 	struct list_head	dev_list;
 	struct list_head	napi_list;
@@ -1203,19 +1203,19 @@ struct net_device {
 
 	/* directly linked devices, like slaves for bonding */
 	struct {
-		struct list_head upper; // upper链表中包含了该网络设备的直接上级设备，其中只会有一个master设备，并且通常位于首节点
-		struct list_head lower; // lower链表中包含了该网络设备的直接下级设备
+		struct list_head upper; // upper链表中包含了该netdev的直接上级设备，其中只会有一个master设备，并且通常位于首节点
+		struct list_head lower; // lower链表中包含了该netdev的直接下级设备
 	} adj_list;         // 定义了upper和lower两条邻接链表头节点(只包含直连设备)
 
 	/* all linked devices, *including* neighbours */
 	struct {
-		struct list_head upper; // upper链表中包含了该网络设备的所有上级设备
-		struct list_head lower; // lower链表中包含了该网络设备的所有下级设备
+		struct list_head upper; // upper链表中包含了该netdev的所有上级设备
+		struct list_head lower; // lower链表中包含了该netdev的所有下级设备
 	} all_adj_list;     // 定义了upper和lower两条邻接链表头节点(包含全部设备)
 
 
 	/* currently active device features */
-	netdev_features_t	features;   // 当前在该网络设备上已经使能的功能集合(定义在include/linux/netdevice_features.h中，取值NETIF_F_*)
+	netdev_features_t	features;   // 当前在该netdev上已经使能的功能集合(定义在include/linux/netdevice_features.h中，取值NETIF_F_*)
 	/* user-changeable features */
 	netdev_features_t	hw_features;    // 用户态可修改的功能集合
 	/* user-requested features */
@@ -1232,8 +1232,8 @@ struct net_device {
 	netdev_features_t	mpls_features;
 
 	/* Interface index. Unique device identifier	*/
-	int			ifindex;        // 该网络设备的索引号，用来唯一标识该设备
-	int			iflink;         // 用于标识虚拟网络设备对应的真实设备
+	int			ifindex;        // 该netdev的索引号，用来唯一标识该设备
+	int			iflink;         // 用于标识该虚拟netdev对应的真实设备，真实设备则该值跟ifindex同步
 
 	struct net_device_stats	stats;
 	atomic_long_t		rx_dropped; /* dropped packets by core network
@@ -1248,7 +1248,7 @@ struct net_device {
 	struct iw_public_data *	wireless_data;
 #endif
 	/* Management operations */
-	const struct net_device_ops *netdev_ops;    // 对该网络设备进行通用管理操作的回调函数集(也就是该设备的一套驱动，具体设备类型相关)
+	const struct net_device_ops *netdev_ops;    // 对该netdev进行通用管理操作的回调函数集(也就是该设备的一套驱动，具体设备类型相关)
 	const struct ethtool_ops *ethtool_ops;      // 使用ethtool工具进行管理操作的回调函数集
 	const struct forwarding_accel_ops *fwd_ops;
 
@@ -1308,7 +1308,7 @@ struct net_device {
 	/* Protocol specific pointers */
 
 #if IS_ENABLED(CONFIG_VLAN_8021Q)
-	struct vlan_info __rcu	*vlan_info;	/* VLAN info 绑定在该网络设备上的所有vlan设备信息管理块*/
+	struct vlan_info __rcu	*vlan_info;	/* VLAN info 绑定在该netdev上的所有vlan设备信息管理块*/
 #endif
 #if IS_ENABLED(CONFIG_NET_DSA)
 	struct dsa_switch_tree	*dsa_ptr;	/* dsa specific data  如果该netdev是DSA的宿主设备，则这里指向寄生的DSA实例 */
@@ -1338,7 +1338,7 @@ struct net_device {
 	/* Interface address info used in eth_type_trans() */
 	unsigned char		*dev_addr;	/* hw address, (before bcast
 						   because most packets are
-						   unicast) 记录了该网络设备的mac地址信息 */
+						   unicast) 记录了该netdev的mac地址信息 */
 
 
 #ifdef CONFIG_SYSFS
@@ -1364,7 +1364,7 @@ struct net_device {
  */
 	struct netdev_queue	*_tx ____cacheline_aligned_in_smp;
 
-	/* Number of TX queues allocated at alloc_netdev_mq() time  */
+	/* Number of TX queues allocated at alloc_netdev_mq() time  记录了该netdev的发送队列数量 */
 	unsigned int		num_tx_queues;
 
 	/* Number of TX queues currently active in device  */
@@ -1405,7 +1405,7 @@ struct net_device {
 	/* device index hash chain */
 	struct hlist_node	index_hlist;
 
-	struct list_head	link_watch_list;
+	struct list_head	link_watch_list;    // netdev可以通过该字段加入/退出链路事件通知链
 
 	/* register/unregister state machine */
 	enum { NETREG_UNINITIALIZED=0,
@@ -1434,7 +1434,7 @@ struct net_device {
 
 #ifdef CONFIG_NET_NS
 	/* Network namespace this network device is inside */
-	struct net		*nd_net;    // 多网络命名空间下，该网络设备所属的网络命名空间
+	struct net		*nd_net;    // 多网络命名空间下，该netdev所属的网络命名空间
 #endif
 
 	/* mid-layer private */
@@ -1580,7 +1580,7 @@ struct net *dev_net(const struct net_device *dev)
 
 /* 关联指定网络命名空间和指定设备，同时更新该网络命名空间的关联设备计数值(开启了对应的调试开关)
  *
- * 备注：创建一个网络设备的标准套路：
+ * 备注：创建一个netdev的标准套路：
  *              alloc_netdev -> dev_net_set -> register_netdev
  */
 static inline
@@ -1592,7 +1592,7 @@ void dev_net_set(struct net_device *dev, struct net *net)
 #endif
 }
 
-// 判断传入的网络设备是否使能了ETH_P_DSA类型的DSA功能
+// 判断传入的netdev是否使能了ETH_P_DSA类型的DSA功能
 static inline bool netdev_uses_dsa_tags(struct net_device *dev)
 {
 #ifdef CONFIG_NET_DSA_TAG_DSA
@@ -1603,7 +1603,7 @@ static inline bool netdev_uses_dsa_tags(struct net_device *dev)
 	return 0;
 }
 
-// 判断传入的网络设备是否使能了ETH_P_TRAILER类型的DSA功能
+// 判断传入的netdev是否使能了ETH_P_TRAILER类型的DSA功能
 static inline bool netdev_uses_trailer_tags(struct net_device *dev)
 {
 #ifdef CONFIG_NET_DSA_TAG_TRAILER
@@ -1617,7 +1617,7 @@ static inline bool netdev_uses_trailer_tags(struct net_device *dev)
 /**
  *	netdev_priv - access network device private data
  *	@dev: network device
- *	返回通用网络设备net_device对应的私有数据块
+ *	返回通用netdevnet_device对应的私有数据块
  *
  *  备注：这个私有数据块看起来应该是在struct net_device之后，考虑到对齐需求，二者之间应该存在pading
  * Get network device private data
@@ -1635,7 +1635,7 @@ static inline void *netdev_priv(const struct net_device *dev)
 /* Set the sysfs device type for the network logical device to allow
  * fine-grained identification of different network device types. For
  * example Ethernet, Wirelss LAN, Bluetooth, WiMAX etc.
- * 设置网络设备的细分类型
+ * 设置netdev的细分类型
  */
 #define SET_NETDEV_DEVTYPE(net, devtype)	((net)->dev.type = (devtype))
 
@@ -2334,7 +2334,7 @@ static inline u16 netdev_cap_txqueue(struct net_device *dev, u16 queue_index)
 
 /**
  *	netif_running - test if up
- *	检测该网络设备是否处于启用状态
+ *	检测该netdev是否处于启用状态
  *	@dev: network device
  *
  *	Test if the device has been brought up.
@@ -2938,9 +2938,9 @@ void ether_setup(struct net_device *dev);
 struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
 				    void (*setup)(struct net_device *),
 				    unsigned int txqs, unsigned int rxqs);
-/* 创建一个网络设备(各一个收发队列)
+/* 创建一个netdev(各一个收发队列)
  *
- * 备注：创建一个网络设备的标准套路：
+ * 备注：创建一个netdev的标准套路：
  *              alloc_netdev -> dev_net_set -> register_netdev
  */
 #define alloc_netdev(sizeof_priv, name, setup) \

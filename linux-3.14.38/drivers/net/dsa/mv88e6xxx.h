@@ -11,7 +11,7 @@
 #ifndef __MV88E6XXX_H
 #define __MV88E6XXX_H
 
-#define REG_PORT(p)		(0x10 + (p))    // mv88e6131系列端口号-端口地址映射(6097F使用该映射关系)
+#define REG_PORT(p)		(0x10 + (p))    // mv88e6131系列端口号-phy地址映射(6097F使用该映射关系，但6390X不是)
 #define REG_GLOBAL		0x1b
 #define REG_GLOBAL2		0x1c
 
@@ -21,7 +21,7 @@ struct mv88e6xxx_priv_state {
 	 * access to the indirect access registers.  (In single-chip
 	 * mode, this mutex is effectively useless.)
      *
-     * single-chip模式下这个锁没用
+     * 这个锁只有级联模式下有用
 	 */
 	struct mutex	smi_mutex;
 

@@ -412,7 +412,7 @@ static inline bool qdisc_all_tx_empty(const struct net_device *dev)
 	return true;
 }
 
-/* Are any of the TX qdiscs changing?  */
+/* Are any of the TX qdiscs changing?  判断指定netdev的tx qdisc是否发生了变化 */
 static inline bool qdisc_tx_changing(const struct net_device *dev)
 {
 	unsigned int i;

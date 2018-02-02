@@ -1,6 +1,6 @@
 /*
  * Linux network device link state notification
- * 网络设备link状态通知操作接口
+ * netdevlink状态通知操作接口
  *
  * Author:
  *     Stefan Rompf <sux@loplof.de>
@@ -26,17 +26,17 @@
 
 
 enum lw_bits {
-	LW_URGENT = 0,
+	LW_URGENT = 0,  // 标识当前正在调度的事件为紧急事件
 };
 
-static unsigned long linkwatch_flags;
+static unsigned long linkwatch_flags;       // 用于记录链路事件通知链当前正在调度的事件的一些特性，3.14.38版本就只有LW_URGENT
 static unsigned long linkwatch_nextevent;
 
 static void linkwatch_event(struct work_struct *dummy);
 static DECLARE_DELAYED_WORK(linkwatch_work, linkwatch_event);   // 创建并初始化一个延迟工作队列linkwatch_work
 
-static LIST_HEAD(lweventlist);      // 创建并初始化一个lweventlist通知链表头
-static DEFINE_SPINLOCK(lweventlist_lock);   // 创建并初始化一个linkwatch事件的原子锁
+static LIST_HEAD(lweventlist);              // 创建并初始化一个链路事件通知链表头
+static DEFINE_SPINLOCK(lweventlist_lock);   // 定义了一个自旋锁，用于维护lweventlist的操作
 
 static unsigned char default_operstate(const struct net_device *dev)
 {
@@ -84,30 +84,33 @@ void linkwatch_init_dev(struct net_device *dev)
 		rfc2863_policy(dev);
 }
 
-// 对该网络设备进行一些状态参数检查
+// 判断该netdev是否有紧急链路事件
 static bool linkwatch_urgent_event(struct net_device *dev)
 {
-    // 检查该网络设备是否处于up状态
+    // 如果该netdev处于未启用状态，则肯定没有紧急事件
 	if (!netif_running(dev))
 		return false;
 
-    // 检查设备标识符ifindex和iflink是否相等
+    // 如果该netdev的ifindex和iflink字段不等，意味着该netdev是虚拟设备，这里认为肯定有紧急事件
 	if (dev->ifindex != dev->iflink)
 		return true;
 
-    // 检查该设备是否设置了IFF_TEAM_PORT标志
+    // 如果该设备设置了IFF_TEAM_PORT标志，这里认为肯定有紧急事件
 	if (dev->priv_flags & IFF_TEAM_PORT)
 		return true;
 
+    // 如果该netdev有载波，并且其tx qdisc发生了变化，则认为有紧急事件
 	return netif_carrier_ok(dev) &&	qdisc_tx_changing(dev);
 }
 
-// 将该网络设备添加进lweventlist通知链
+// 将新的netdev添加到链路事件通知链尾部
 static void linkwatch_add_event(struct net_device *dev)
 {
 	unsigned long flags;
 
+    // 对lweventlist操作需要上锁
 	spin_lock_irqsave(&lweventlist_lock, flags);
+    // 如果该netdev尚未被插入链表则将其插入lweventlist
 	if (list_empty(&dev->link_watch_list)) {
 		list_add_tail(&dev->link_watch_list, &lweventlist);
 		dev_hold(dev);
@@ -115,28 +118,40 @@ static void linkwatch_add_event(struct net_device *dev)
 	spin_unlock_irqrestore(&lweventlist_lock, flags);
 }
 
-
+/* 链路通知链执行调度操作
+ * @urgent  标识新的调度是否加入了紧急事件
+ */
 static void linkwatch_schedule_work(int urgent)
 {
 	unsigned long delay = linkwatch_nextevent - jiffies;
 
+    // 如果当前正在调度原有的紧急事件，则直接返回(意味着新的调度操作即便存在紧急事件也会因此退化为普通事件)
 	if (test_bit(LW_URGENT, &linkwatch_flags))
 		return;
 
-	/* Minimise down-time: drop delay for up event. */
+	/* Minimise down-time: drop delay for up event. 
+     * 如果新的调度存在紧急事件，则设置LW_URGENT标志，以防为后面的紧急事件抢占
+     * */
 	if (urgent) {
+        // 这里调用原子操作test_and_set_bit，从而避免了潜在的竞争
+        // 同时还要注意到，如果已经存在了调度中的紧急事件，则直接返回(意味着新的调度操作即便存在紧急事件也会因此退化为普通事件)
 		if (test_and_set_bit(LW_URGENT, &linkwatch_flags))
 			return;
+
+        // 延时清0
 		delay = 0;
 	}
 
-	/* If we wrap around we'll delay it by at most HZ. */
+	/* If we wrap around we'll delay it by at most HZ. 
+     * 这里确保调度延时不会超过1s
+     * */
 	if (delay > HZ)
 		delay = 0;
 
 	/*
 	 * If urgent, schedule immediate execution; otherwise, don't
 	 * override the existing timer.
+     * 如果该调度是紧急事件，则立即执行;否则延时调度
 	 */
 	if (test_bit(LW_URGENT, &linkwatch_flags))
 		mod_delayed_work(system_wq, &linkwatch_work, 0);
@@ -242,18 +257,18 @@ static void linkwatch_event(struct work_struct *dummy)
 	rtnl_unlock();
 }
 
-
+// 将指定netdev加入链路事件通知链
 void linkwatch_fire_event(struct net_device *dev)
 {
-    // 首先对该网络设备进行一些状态参数检查
+    // 首先判断该netdev是否有紧急链路事件
 	bool urgent = linkwatch_urgent_event(dev);
 
-    // 置位该网络设备的__LINK_STATE_LINKWATCH_PENDING标志，并判断原先的状态
+    // 置位该netdev的__LINK_STATE_LINKWATCH_PENDING标志，并判断原先的状态
 	if (!test_and_set_bit(__LINK_STATE_LINKWATCH_PENDING, &dev->state)) {
-        // 对于原先该标志没有置位的情况，则将该设备添加进lweventlist通知链
+        // 对于原先该标志没有置位的情况，则将该设备添加进lweventlist通知链(尾部)
 		linkwatch_add_event(dev);
 	} else if (!urgent)
-        // 对于原先已经置位的情况，意味着通知链中已经添加，所以直接返回
+        // 对于原先已经置位的情况，意味着通知链中已经添加了该netdev，如果该netdev没有紧急链路事件，则直接返回，等待正常的调度即可
 		return;
 
     // 执行通知链调度

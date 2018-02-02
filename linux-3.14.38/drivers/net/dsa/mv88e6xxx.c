@@ -42,11 +42,11 @@ static int mv88e6xxx_reg_wait_ready(struct mii_bus *bus, int sw_addr)
 	return -ETIMEDOUT;
 }
 
-/* mv88e6xxx系列switch通过mdio设备读switch寄存器
+/* mv88e6xxx系列switch通过主mii-bus设备读switch寄存器
  * @bus     - 需要通过mdio设备进行读操作
  * @sw_addr - 指定了需要进行读操作的switch
- * @addr    - switch的指定端口/全局地址
- * @reg     - switch的指定端口/全局的寄存器地址序号
+ * @addr    - 指定端口
+ * @reg     - 指定端口的指定寄存器
  */
 int __mv88e6xxx_reg_read(struct mii_bus *bus, int sw_addr, int addr, int reg)
 {
@@ -78,10 +78,12 @@ int __mv88e6xxx_reg_read(struct mii_bus *bus, int sw_addr, int addr, int reg)
 	return ret & 0xffff;
 }
 
-/* mv88e6xxx系列switch读switch寄存器(显然本函数只是个封装)
+/* mv88e6xxx系列switch读指定端口上的指定寄存器(封装了相应的锁操作)
  * @ds      - 要操作的switch实例
- * @addr    - switch的指定端口/全局地址
- * @reg     - switch的指定端口/全局的寄存器地址序号
+ * @addr    - 指定端口
+ * @reg     - 指定端口上的指定寄存器
+ *
+ * 备注：这里的锁操作对于非级联方案没用
  */
 int mv88e6xxx_reg_read(struct dsa_switch *ds, int addr, int reg)
 {
@@ -89,6 +91,7 @@ int mv88e6xxx_reg_read(struct dsa_switch *ds, int addr, int reg)
 	int ret;
 
 	mutex_lock(&ps->smi_mutex);
+    // 显然读操作最终都要通过主mii-bus设备来进行
 	ret = __mv88e6xxx_reg_read(ds->master_mii_bus,
 				   ds->pd->sw_addr, addr, reg);
 	mutex_unlock(&ps->smi_mutex);
@@ -96,11 +99,11 @@ int mv88e6xxx_reg_read(struct dsa_switch *ds, int addr, int reg)
 	return ret;
 }
 
-/* mv88e6xxx系列switch通过mdio设备写switch寄存器
+/* mv88e6xxx系列switch通过主mii-bus设备写switch寄存器
  * @bus     - 需要通过mdio设备进行写操作
  * @sw_addr - 指定了需要进行读操作的switch
- * @addr    - switch的指定端口/全局地址
- * @reg     - switch的指定端口/全局的寄存器地址序号
+ * @addr    - 指定端口
+ * @reg     - 指定端口的指定寄存器
  * @val     - 要写入的16位值
  */
 int __mv88e6xxx_reg_write(struct mii_bus *bus, int sw_addr, int addr,
@@ -134,11 +137,13 @@ int __mv88e6xxx_reg_write(struct mii_bus *bus, int sw_addr, int addr,
 	return 0;
 }
 
-/* mv88e6xxx系列switch写switch寄存器(显然本函数只是个封装)
+/* mv88e6xxx系列switch写指定端口上的指定寄存器(封装了相应的锁操作)
  * @ds      - 要操作的switch实例
- * @addr    - switch的指定端口/全局地址
- * @reg     - switch的指定端口/全局的寄存器地址序号
+ * @addr    - 指定端口
+ * @reg     - 指定端口上的指定寄存器
  * @val     - 要写入的16位值
+ *
+ * 备注：这里的锁操作对于非级联方案没用
  */
 int mv88e6xxx_reg_write(struct dsa_switch *ds, int addr, int reg, u16 val)
 {
@@ -146,6 +151,7 @@ int mv88e6xxx_reg_write(struct dsa_switch *ds, int addr, int reg, u16 val)
 	int ret;
 
 	mutex_lock(&ps->smi_mutex);
+    // 显然写操作最终都要通过主mii-bus设备来进行
 	ret = __mv88e6xxx_reg_write(ds->master_mii_bus,
 				    ds->pd->sw_addr, addr, reg, val);
 	mutex_unlock(&ps->smi_mutex);
@@ -406,15 +412,17 @@ void mv88e6xxx_poll_link(struct dsa_switch *ds)
 			link = !!(port_status & 0x0800);
 		}
 
-        // 如果探测到link up -> link down，则通知内核该端口netdev的无载波
+        // 如果探测到link up -> link down，则通知内核该端口netdev无载波
 		if (!link) {
 			if (netif_carrier_ok(dev)) {
+                // 为了减少耗时，这条内核打印可以去掉
 				netdev_info(dev, "link down\n");
 				netif_carrier_off(dev);
 			}
 			continue;
 		}
 
+        // 程序运行到这里意味着探测到link up
         // 获取该端口当前的速率、双工、流控
 		switch (port_status & 0x0300) {
 		case 0x0000:
@@ -433,7 +441,9 @@ void mv88e6xxx_poll_link(struct dsa_switch *ds)
 		duplex = (port_status & 0x0400) ? 1 : 0;
 		fc = (port_status & 0x8000) ? 1 : 0;
 
+        // 如果探测到link up -> link down,则通知内核该端口netdev有载波
 		if (!netif_carrier_ok(dev)) {
+            // 为了减少耗时，这条内核打印可以去掉
 			netdev_info(dev,
 				    "link up, %d Mb/s, %s duplex, flow control %sabled\n",
 				    speed,

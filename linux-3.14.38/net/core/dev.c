@@ -6092,7 +6092,7 @@ static int netif_alloc_netdev_queues(struct net_device *dev)
 
 /**
  *	register_netdevice	- register a network device
- *	注册该网络设备到内核中
+ *  注册指定netdev到内核中，注册结果会从通知链中反馈
  *	@dev: device to register
  *
  *	Take a completed network device structure and add it to the kernel
@@ -6102,6 +6102,7 @@ static int netif_alloc_netdev_queues(struct net_device *dev)
  *
  *	Callers must hold the rtnl semaphore. You may want
  *	register_netdev() instead of this.
+ *	调用本函数时要确保已经持有rtnl锁
  *
  *	BUGS:
  *	The locking appears insufficient to guarantee two parallel registers
@@ -6131,7 +6132,7 @@ int register_netdevice(struct net_device *dev)
 	if (ret < 0)
 		goto out;
 
-	/* Init, if this function is available */
+	/* Init, if this function is available  如果该netdev配置了ndo_init回调，则在这里执行该初始化 */
 	if (dev->netdev_ops->ndo_init) {
 		ret = dev->netdev_ops->ndo_init(dev);
 		if (ret) {
@@ -6156,6 +6157,7 @@ int register_netdevice(struct net_device *dev)
 	else if (__dev_get_by_index(net, dev->ifindex))
 		goto err_uninit;
 
+    // 如果该netdev没有宿主设备，则这里从自身的ifindex同步
 	if (dev->iflink == -1)
 		dev->iflink = dev->ifindex;
 
@@ -6283,9 +6285,9 @@ EXPORT_SYMBOL_GPL(init_dummy_netdev);
 
 /**
  *	register_netdev	- register a network device
- *  注册指定网络设备到内核中，注册结果会从通知链中反馈
+ *  注册指定netdev到内核中(显然只是个封装)
  *
- *  备注：创建一个网络设备的标准套路：
+ *  备注：创建一个netdev的标准套路：
  *              alloc_netdev -> dev_net_set -> register_netdev
  *
  *	@dev: device to register
@@ -6303,6 +6305,7 @@ int register_netdev(struct net_device *dev)
 {
 	int err;
 
+    // 注册netdev过程中需要对rtnl模块上锁
 	rtnl_lock();
 	err = register_netdevice(dev);
 	rtnl_unlock();

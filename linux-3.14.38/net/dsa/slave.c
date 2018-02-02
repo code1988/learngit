@@ -15,9 +15,11 @@
 #include "dsa_priv.h"
 
 /* slave mii_bus handling ***************************************************/
-/* 从mii-bus设备读操作
- * @addr    要读的地址(就是端口号)
- * @reg     要读的端口寄存器序号
+/* 从mii-bus设备读操作的接口
+ * @addr    要读的phy地址(就是端口号)
+ * @reg     要读的phy地址上的寄存器序号
+ *
+ * 备注：调用本接口时需要持有对应的锁mdio_lock
  *
  * @返回值  成功返回实际值，失败返回0xffff
  */
@@ -32,9 +34,11 @@ static int dsa_slave_phy_read(struct mii_bus *bus, int addr, int reg)
 	return 0xffff;
 }
 
-/* 从mii-bus设备写操作
- * @addr    要写的地址(就是端口号)
- * @reg     要写的端口寄存器序号
+/* 从mii-bus设备写操作的接口
+ * @addr    要写的phy地址(就是端口号)
+ * @reg     要写的phy地址上的寄存器序号
+ *
+ * 备注：调用本接口时需要持有对应的锁mdio_lock
  *
  * @返回值  成功返回实际值，失败返回0
  */
@@ -58,15 +62,18 @@ void dsa_slave_mii_bus_init(struct dsa_switch *ds)
 	ds->slave_mii_bus->write = dsa_slave_phy_write;
 	snprintf(ds->slave_mii_bus->id, MII_BUS_ID_SIZE, "dsa-%d:%.2x",
 			ds->index, ds->pd->sw_addr);
-	ds->slave_mii_bus->parent = &ds->master_mii_bus->dev;
+	ds->slave_mii_bus->parent = &ds->master_mii_bus->dev;   // 从mii-bus设备的宿主设备就是主mii-bus设备
 }
 
 
 /* slave device handling ****************************************************/
+// 对指定的从netdev在注册到内核期间执行初始化
 static int dsa_slave_init(struct net_device *dev)
 {
+    // 获取该从netdev对应的物理端口实例
 	struct dsa_slave_priv *p = netdev_priv(dev);
 
+    // 记录该从netdev的宿主netdev的接口序号
 	dev->iflink = p->parent->dst->master_netdev->ifindex;
 
 	return 0;
@@ -176,6 +183,7 @@ out:
 	return 0;
 }
 
+// 从netdev的ioctl接口
 static int dsa_slave_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 {
 	struct dsa_slave_priv *p = netdev_priv(dev);
@@ -404,7 +412,7 @@ dsa_slave_create(struct dsa_switch *ds, struct device *parent,
 	p->port = port;
 	p->phy = ds->slave_mii_bus->phy_map[port];
 
-    // 注册该端口netdev到内核
+    // 注册该端口netdev到内核，期间会执行dsa_slave_init
 	ret = register_netdev(slave_dev);
 	if (ret) {
 		printk(KERN_ERR "%s: error %d registering interface %s\n",

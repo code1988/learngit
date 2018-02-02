@@ -301,14 +301,16 @@ static void dev_watchdog_down(struct net_device *dev)
 
 /**
  *	netif_carrier_on - set carrier
- *	通知内核链路完整
+ *	通知内核指定netdev有载波
  *	@dev: network device
  *
  * Device has detected that carrier.
+ * 显然调用本函数之前探测到了该设备有载波(link up)
  */
 void netif_carrier_on(struct net_device *dev)
 {
 	if (test_and_clear_bit(__LINK_STATE_NOCARRIER, &dev->state)) {
+        // 确保设备已经注册
 		if (dev->reg_state == NETREG_UNINITIALIZED)
 			return;
 		linkwatch_fire_event(dev);
@@ -320,7 +322,7 @@ EXPORT_SYMBOL(netif_carrier_on);
 
 /**
  *	netif_carrier_off - clear carrier
- *	通知内核设置指定netdev的无载波
+ *	通知内核指定netdev无载波
  *	@dev: network device
  *
  * Device has detected loss of carrier.
@@ -328,7 +330,9 @@ EXPORT_SYMBOL(netif_carrier_on);
  */
 void netif_carrier_off(struct net_device *dev)
 {
+    // 设置该netdev无载波，并且如果原先是有载波的，则通知内核
 	if (!test_and_set_bit(__LINK_STATE_NOCARRIER, &dev->state)) {
+        // 确保设备已经注册
 		if (dev->reg_state == NETREG_UNINITIALIZED)
 			return;
 		linkwatch_fire_event(dev);

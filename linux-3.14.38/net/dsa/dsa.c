@@ -608,7 +608,7 @@ static int dsa_probe(struct platform_device *pdev)
 		struct mii_bus *bus;
 		struct dsa_switch *ds;
 
-        // 获取对应的mii-bus设备，这里也就是mdio设备
+        // 获取对应的主mii-bus设备，这里也就是mdio设备
 		bus = dev_to_mii_bus(pd->chip[i].mii_bus);
 		if (bus == NULL) {
 			printk(KERN_ERR "%s[%d]: no mii bus found for "

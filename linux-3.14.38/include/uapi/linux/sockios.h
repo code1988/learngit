@@ -77,9 +77,9 @@
 
 #define SIOCETHTOOL	0x8946		/* Ethtool interface		IOCTL的ethool命令接口 */
 
-#define SIOCGMIIPHY	0x8947		/* Get address of MII PHY in use. */
-#define SIOCGMIIREG	0x8948		/* Read MII PHY register.	*/
-#define SIOCSMIIREG	0x8949		/* Write MII PHY register.	*/
+#define SIOCGMIIPHY	0x8947		/* Get address of MII PHY in use. 获取当前接口使用的phy id号 */
+#define SIOCGMIIREG	0x8948		/* Read MII PHY register.	读指定phy上的指定寄存器 */
+#define SIOCSMIIREG	0x8949		/* Write MII PHY register.	写指定phy上的指定寄存器 */
 
 #define SIOCWANDEV	0x894A		/* get/set netdev parameters	*/
 

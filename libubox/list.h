@@ -66,7 +66,7 @@ INIT_LIST_HEAD(struct list_head *list)
 	list->next = list->prev = list;
 }
 
-// 判断链表是否为空
+// 判断链表是否为空(也用于判断该节点是否已经被插入链表)
 static inline bool
 list_empty(const struct list_head *head)
 {

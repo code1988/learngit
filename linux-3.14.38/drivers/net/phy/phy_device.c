@@ -534,6 +534,7 @@ static int phy_poll_reset(struct phy_device *phydev)
 	return 0;
 }
 
+// 对指定phy设备执行初始化操作
 int phy_init_hw(struct phy_device *phydev)
 {
 	int ret;

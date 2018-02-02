@@ -11,7 +11,7 @@
 #include <linux/types.h>
 #include <linux/ethtool.h>
 
-/* Generic MII registers. */
+/* Generic MII registers.  定义了通用的phy上的寄存器序号 */
 #define MII_BMCR		0x00	/* Basic mode control register */
 #define MII_BMSR		0x01	/* Basic mode status register  */
 #define MII_PHYSID1		0x02	/* PHYS ID 1                   */
@@ -150,12 +150,14 @@
 #define MII_MMD_CTRL_INCR_RDWT	0x8000	/* post increment on reads & writes */
 #define MII_MMD_CTRL_INCR_ON_WT	0xC000	/* post increment on writes only */
 
-/* This structure is used in all SIOCxMIIxxx ioctl calls */
+/* This structure is used in all SIOCxMIIxxx ioctl calls 
+ * 定义了mii总线的ioctl结构
+ * */
 struct mii_ioctl_data {
-	__u16		phy_id;
-	__u16		reg_num;
-	__u16		val_in;
-	__u16		val_out;
+	__u16		phy_id;     // phy id
+	__u16		reg_num;    // 该phy上的寄存器id
+	__u16		val_in;     // 用户态传入的数据
+	__u16		val_out;    // 用户存放返回给用户态的数据
 };
 
 #endif /* _UAPI__LINUX_MII_H__ */

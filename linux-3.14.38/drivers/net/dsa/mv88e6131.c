@@ -333,18 +333,19 @@ static int mv88e6131_setup(struct dsa_switch *ds)
 	return 0;
 }
 
-// mv88e6131系列检查端口是否合法(该系列不超过11个端口)
+// mv88e6131系列返回switch物理端口对应的phy地址(该系列端口号就是phy地址)
 static int mv88e6131_port_to_phy_addr(int port)
 {
+    // 检查端口是否合法(该系列不超过11个端口)
 	if (port >= 0 && port <= 11)
 		return port;
 	return -1;
 }
 
-/* mv88e6131系列switch读指定端口寄存器操作
+/* mv88e6131系列switch读指定端口的指定寄存器的接口(将作为DSA从mii-bus设备的读操作驱动)
  * @ds      要操作的switch实例
  * @port    要操作的端口号
- * @regnum  端口寄存器地址序号
+ * @regnum  端口上的寄存器序号
  */
 static int
 mv88e6131_phy_read(struct dsa_switch *ds, int port, int regnum)
@@ -353,10 +354,10 @@ mv88e6131_phy_read(struct dsa_switch *ds, int port, int regnum)
 	return mv88e6xxx_phy_read_ppu(ds, addr, regnum);
 }
 
-/* mv88e6131系列switch写指定端口寄存器操作
+/* mv88e6131系列switch写指定端口的指定寄存器的接口(将作为DSA从mii-bus设备的写操作驱动)
  * @ds      要操作的switch实例
  * @port    要操作的端口号
- * @regnum  端口寄存器地址序号
+ * @regnum  端口上的寄存器序号
  * @val     要写入的值
  */
 static int
