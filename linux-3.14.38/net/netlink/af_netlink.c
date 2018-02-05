@@ -3223,11 +3223,13 @@ EXPORT_SYMBOL(netlink_rcv_skb);
 
 /**
  * nlmsg_notify - send a notification netlink message
- * @sk: netlink socket to use
- * @skb: notification message
- * @portid: destination netlink portid for reports or 0
- * @group: destination multicast group or 0
- * @report: 1 to report back, 0 to disable
+ * 发送指定skb中的netlink消息通知给用户空间
+ * 
+ * @sk: netlink socket to use   发送该消息使用的内核netlink接口类套接字
+ * @skb: notification message   承载了netlink消息的skb
+ * @portid: destination netlink portid for reports or 0  如果需要回显，这里传入用于回显的目的地址
+ * @group: destination multicast group or 0 使用的组播通道，0表示不走组播
+ * @report: 1 to report back, 0 to disable  标识是否需要回显
  * @flags: allocation flags
  */
 int nlmsg_notify(struct sock *sk, struct sk_buff *skb, u32 portid,
@@ -3235,9 +3237,11 @@ int nlmsg_notify(struct sock *sk, struct sk_buff *skb, u32 portid,
 {
 	int err = 0;
 
+    // 如果传入了组播通道号，则发送组播消息
 	if (group) {
 		int exclude_portid = 0;
 
+        // 组播消息需要排除回显的目的地址
 		if (report) {
 			atomic_inc(&skb->users);
 			exclude_portid = portid;
@@ -3248,6 +3252,7 @@ int nlmsg_notify(struct sock *sk, struct sk_buff *skb, u32 portid,
 		err = nlmsg_multicast(sk, skb, exclude_portid, group, flags);
 	}
 
+    // 如果需要回显，则单独发单播到目的地址
 	if (report) {
 		int err2;
 

@@ -420,6 +420,8 @@ static inline int nlmsg_validate(const struct nlmsghdr *nlh,
 
 /**
  * nlmsg_report - need to report back to application?
+ * 判断是否需要反馈给应用程序
+ *
  * @nlh: netlink message header
  *
  * Returns 1 if a report back to the application is requested.
@@ -570,8 +572,8 @@ static inline void nlmsg_free(struct sk_buff *skb)
  *
  * @sk: netlink socket to spread messages to    指向源sock结构
  * @skb: netlink message as socket buffer       指向一个承载了组播netlink消息的skb
- * @portid: own netlink portid to avoid sending to yourself 目的单播地址(英文有问题?) 
- * @group: multicast group id   目的组播地址
+ * @portid: own netlink portid to avoid sending to yourself  发送方地址，用于避免发送给自身
+ * @group: multicast group id   使用的组播通道
  * @flags: allocation flags
  */
 static inline int nlmsg_multicast(struct sock *sk, struct sk_buff *skb,

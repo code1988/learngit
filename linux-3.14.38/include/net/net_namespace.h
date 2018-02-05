@@ -70,7 +70,7 @@ struct net {
 	struct ctl_table_set	sysctls;
 #endif
 
-	struct sock 		*rtnl;			/* net命名空间只专门为NETLINK_ROUTE预留了一个sock指针，
+	struct sock 		*rtnl;			/* net命名空间专门为NETLINK_ROUTE预留了一个sock指针，
                                            注册了该协议类型的内核netlink套接字后，该net命名空间下收到任何该协议的消息，
                                            都会触发该netlink套接字中注册的input回调函数 */
 

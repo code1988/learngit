@@ -196,7 +196,7 @@ extern bool initcall_debug;
  *
  * Only for built-in code, not modules.
  */
-#define early_initcall(fn)		__define_initcall(fn, early)
+#define early_initcall(fn)		__define_initcall(fn, early)    // 包含的模块：workqueue
 
 /*
  * A "pure" initcall has no dependencies on anything else, and purely

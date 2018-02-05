@@ -99,10 +99,11 @@ enum {
 	WORKER_DESC_LEN		= 24,
 };
 
+// 定义了正常执行的工作单元实例
 struct work_struct {
-	atomic_long_t data;
-	struct list_head entry;
-	work_func_t func;
+	atomic_long_t data;         // 这个原子性字段是上面WORK_*标志的集合
+	struct list_head entry;     // 插入/退出工作队列的接口
+	work_func_t func;           // 跟该工作单元关联的工作执行函数
 #ifdef CONFIG_LOCKDEP
 	struct lockdep_map lockdep_map;
 #endif
@@ -112,6 +113,7 @@ struct work_struct {
 #define WORK_DATA_STATIC_INIT()	\
 	ATOMIC_LONG_INIT(WORK_STRUCT_NO_POOL | WORK_STRUCT_STATIC)
 
+// 定义了延迟执行的工作单元实例
 struct delayed_work {
 	struct work_struct work;
 	struct timer_list timer;
@@ -156,6 +158,9 @@ struct execute_work {
 #define __WORK_INIT_LOCKDEP_MAP(n, k)
 #endif
 
+/* 初始化一个正常执行的工作单元n，f是其工作处理函数
+ * 其中data字段被初始化为 WORK_STRUCT_NO_POOL | WORK_STRUCT_STATIC
+ */
 #define __WORK_INITIALIZER(n, f) {					\
 	.data = WORK_DATA_STATIC_INIT(),				\
 	.entry	= { &(n).entry, &(n).entry },				\
@@ -163,6 +168,10 @@ struct execute_work {
 	__WORK_INIT_LOCKDEP_MAP(#n, &(n))				\
 	}
 
+/* 初始化一个延迟执行的工作单元n，f是其工作处理函数
+ *
+ * 备注：显然只比正常执行的工作单元初始化多了定时器部分的初始化
+ */
 #define __DELAYED_WORK_INITIALIZER(n, f, tflags) {			\
 	.work = __WORK_INITIALIZER((n).work, (f)),			\
 	.timer = __TIMER_INITIALIZER(delayed_work_timer_fn,		\
@@ -170,10 +179,11 @@ struct execute_work {
 				     (tflags) | TIMER_IRQSAFE),		\
 	}
 
+// 定义并初始化一个正常执行的工作单元n，f是其工作处理函数
 #define DECLARE_WORK(n, f)						\
 	struct work_struct n = __WORK_INITIALIZER(n, f)
 
-// 定义并初始化一个延迟工作队列n
+// 定义并初始化一个延迟执行的工作单元n，f是其工作处理函数
 #define DECLARE_DELAYED_WORK(n, f)					\
 	struct delayed_work n = __DELAYED_WORK_INITIALIZER(n, f, 0)
 
@@ -232,7 +242,7 @@ static inline unsigned int work_static(struct work_struct *work) { return 0; }
 	} while (0)
 #endif
 
-// 初始化已经存在的工作队列
+// 初始化一个已经创建的正常执行的工作队列_work，_func是其工作处理函数
 #define INIT_WORK(_work, _func)						\
 	do {								\
 		__INIT_WORK((_work), (_func), 0);			\
@@ -260,6 +270,7 @@ static inline unsigned int work_static(struct work_struct *work) { return 0; }
 				       (_tflags) | TIMER_IRQSAFE);	\
 	} while (0)
 
+// 初始化一个已经创建的延迟执行的工作队列_work，_func是其工作处理函数
 #define INIT_DELAYED_WORK(_work, _func)					\
 	__INIT_DELAYED_WORK(_work, _func, 0)
 
@@ -528,11 +539,15 @@ static inline bool queue_delayed_work(struct workqueue_struct *wq,
 
 /**
  * mod_delayed_work - modify delay of or queue a delayed work
+ * 如果指定工作单元已经在指定工作队列中排队，则修改该工作单元的延迟时间；
+ * 如果指定工作单元尚未在指定工作队列中排队，则设置该工作单元延迟指定时间后排入该工作队列
+ *
  * @wq: workqueue to use
  * @dwork: work to queue
  * @delay: number of jiffies to wait before queueing
  *
  * mod_delayed_work_on() on local CPU.
+ * 备注：本接口尝试使该工作单元工作在本地CPU
  */
 static inline bool mod_delayed_work(struct workqueue_struct *wq,
 				    struct delayed_work *dwork,
@@ -555,7 +570,9 @@ static inline bool schedule_work_on(int cpu, struct work_struct *work)
 
 /**
  * schedule_work - put work task in global workqueue
- * @work: job to be done
+ * 将指定工作单元放入缺省工作队列
+ *
+ * @work: job to be done    需要被放入工作队列的工作单元
  *
  * Returns %false if @work was already on the kernel-global workqueue and
  * %true otherwise.
@@ -586,8 +603,10 @@ static inline bool schedule_delayed_work_on(int cpu, struct delayed_work *dwork,
 
 /**
  * schedule_delayed_work - put work task in global workqueue after delay
- * @dwork: job to be done
- * @delay: number of jiffies to wait or 0 for immediate execution
+ * 在经过指定延时后，再将指定工作单元放入缺省工作队列system_wq
+ *
+ * @dwork: job to be done   需要被延迟放入的工作单元
+ * @delay: number of jiffies to wait or 0 for immediate execution   需要被延迟的时间(显然0表示不延迟)
  *
  * After waiting for a given time this puts a job in the kernel-global
  * workqueue.

@@ -31,13 +31,13 @@
 /* Standard interface flags (netdevice->flags). 
  * 以下这部分标志用于设置net_device->flags，意味着对用户空间可见
  * */
-#define	IFF_UP		0x1		/* interface is up		*/
+#define	IFF_UP		0x1		/* interface is up  用于标识该设备处于启用状态(启用了的netdev只有探测到链路上有载波才会处于runing状态) */
 #define	IFF_BROADCAST	0x2		/* broadcast address valid	*/
 #define	IFF_DEBUG	0x4		/* turn on debugging		*/
 #define	IFF_LOOPBACK	0x8		/* is a loopback net		用于标示该网络设备是一个环回设备 */
 #define	IFF_POINTOPOINT	0x10		/* interface is has p-p link	*/
 #define	IFF_NOTRAILERS	0x20		/* avoid use of trailers	*/
-#define	IFF_RUNNING	0x40		/* interface RFC2863 OPER_UP	*/
+#define	IFF_RUNNING	0x40		/* interface RFC2863 OPER_UP  用于标示该设备处于运行状态(必须确保该netdev已经启用)	*/
 #define	IFF_NOARP	0x80		/* no ARP protocol		*/
 #define	IFF_PROMISC	0x100		/* receive all packets		用于标示该网络设备开启了混杂模式 */
 #define	IFF_ALLMULTI	0x200		/* receive all multicast packets*/

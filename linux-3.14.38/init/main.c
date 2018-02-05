@@ -905,6 +905,7 @@ static noinline void __init kernel_init_freeable(void)
 {
 	/*
 	 * Wait until kthreadd is all set-up.
+     * 首先等待另一个内核线程kthreadd启动完毕
 	 */
 	wait_for_completion(&kthreadd_done);
 

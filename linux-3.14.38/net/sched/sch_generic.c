@@ -748,6 +748,7 @@ static void transition_one_qdisc(struct net_device *dev,
 	}
 }
 
+// 激活指定netdev
 void dev_activate(struct net_device *dev)
 {
 	int need_watchdog;
@@ -860,6 +861,7 @@ void dev_deactivate_many(struct list_head *head)
 			yield();
 }
 
+// 使指定netdev进入非激活
 void dev_deactivate(struct net_device *dev)
 {
 	LIST_HEAD(single);

@@ -1213,7 +1213,8 @@ EXPORT_SYMBOL(netdev_features_change);
 
 /**
  *	netdev_state_change - device changes state
- *	@dev: device to cause notification
+ *	通知内核其他模块以及用户层，指定netdev的链路状态已经发生改变
+ *	@dev: device to cause notification      发生状态变化的netdev
  *
  *	Called to indicate a device has changed state. This function calls
  *	the notifier chains for netdev_chain and sends a NEWLINK message
@@ -1227,6 +1228,8 @@ void netdev_state_change(struct net_device *dev)
 		change_info.flags_changed = 0;
 		call_netdevice_notifiers_info(NETDEV_CHANGE, dev,
 					      &change_info.info);
+
+        // 通过rtnetlink接口，给用户空间发送RTM_NEWLINK组播消息
 		rtmsg_ifinfo(RTM_NEWLINK, dev, 0, GFP_KERNEL);
 	}
 }

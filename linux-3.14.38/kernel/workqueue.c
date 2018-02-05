@@ -308,7 +308,7 @@ static struct workqueue_attrs *unbound_std_wq_attrs[NR_STD_WORKER_POOLS];
 /* I: attributes used when instantiating ordered pools on demand */
 static struct workqueue_attrs *ordered_wq_attrs[NR_STD_WORKER_POOLS];
 
-struct workqueue_struct *system_wq __read_mostly;
+struct workqueue_struct *system_wq __read_mostly;   // 定义了标准的缺省工作队列
 EXPORT_SYMBOL(system_wq);
 struct workqueue_struct *system_highpri_wq __read_mostly;
 EXPORT_SYMBOL_GPL(system_highpri_wq);
@@ -5138,6 +5138,7 @@ static int __init init_workqueues(void)
 		ordered_wq_attrs[i] = attrs;
 	}
 
+    // 创建一系列系统默认工作队列
 	system_wq = alloc_workqueue("events", 0, 0);
 	system_highpri_wq = alloc_workqueue("events_highpri", WQ_HIGHPRI, 0);
 	system_long_wq = alloc_workqueue("events_long", 0, 0);

@@ -1373,7 +1373,7 @@ struct net_device {
 	/* root qdisc from userspace point of view */
 	struct Qdisc		*qdisc;
 
-	unsigned long		tx_queue_len;	/* Max frames per queue allowed */
+	unsigned long		tx_queue_len;	/* Max frames per queue allowed  每个发送队列允许的最大帧数量 */
 	spinlock_t		tx_global_lock;
 
 #ifdef CONFIG_XPS

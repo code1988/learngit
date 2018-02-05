@@ -663,6 +663,9 @@ int rtnetlink_send(struct sk_buff *skb, struct net *net, u32 pid, unsigned int g
 	return err;
 }
 
+/* 向用户进程发送rtnetlink单播消息
+ * @pid     该单播消息的目的地址
+ */
 int rtnl_unicast(struct sk_buff *skb, struct net *net, u32 pid)
 {
 	struct sock *rtnl = net->rtnl;
@@ -671,12 +674,20 @@ int rtnl_unicast(struct sk_buff *skb, struct net *net, u32 pid)
 }
 EXPORT_SYMBOL(rtnl_unicast);
 
+/* 发送指定skb中的rtnetlink消息通知
+ * @skb     承载了rtnetlink消息的skb
+ * @net     要发送该消息的net命名空间
+ * @pid     该消息的发送方，0表示由内核发出
+ * @group   如果通过组播通道发送，则这里传入组播ID，0意味着发送单播
+ * @nlh     
+ */
 void rtnl_notify(struct sk_buff *skb, struct net *net, u32 pid, u32 group,
 		 struct nlmsghdr *nlh, gfp_t flags)
 {
 	struct sock *rtnl = net->rtnl;
 	int report = 0;
 
+    // 判断是否需要回显
 	if (nlh)
 		report = nlmsg_report(nlh);
 
@@ -874,7 +885,7 @@ static size_t rtnl_port_size(const struct net_device *dev,
 		return port_self_size;
 }
 
-// rtnetlink消息长度
+// 计算rtnetlink协议使用ifinfomsg结构的消息长度
 static noinline size_t if_nlmsg_size(const struct net_device *dev,
 				     u32 ext_filter_mask)
 {
@@ -1003,6 +1014,7 @@ static int rtnl_phys_port_id_fill(struct sk_buff *skb, struct net_device *dev)
 	return 0;
 }
 
+// 填充指定skb中的完整rtnetlink消息
 static int rtnl_fill_ifinfo(struct sk_buff *skb, struct net_device *dev,
 			    int type, u32 pid, u32 seq, u32 change,
 			    unsigned int flags, u32 ext_filter_mask)
@@ -1016,12 +1028,12 @@ static int rtnl_fill_ifinfo(struct sk_buff *skb, struct net_device *dev,
 	struct net_device *upper_dev = netdev_master_upper_dev_get(dev);
 
 	ASSERT_RTNL();
-    // 填充一个netlink消息header
+    // 首先添加一个netlink消息外壳到skb
 	nlh = nlmsg_put(skb, pid, seq, type, sizeof(*ifm), flags);
 	if (nlh == NULL)
 		return -EMSGSIZE;
 
-    // 按ifinfomsg格式填充族头
+    // 接着按ifinfomsg格式填充族头
 	ifm = nlmsg_data(nlh);
 	ifm->ifi_family = AF_UNSPEC;
 	ifm->__ifi_pad = 0;
@@ -1030,6 +1042,7 @@ static int rtnl_fill_ifinfo(struct sk_buff *skb, struct net_device *dev,
 	ifm->ifi_flags = dev_get_flags(dev);
 	ifm->ifi_change = change;
 
+    // 然后填充一系列属性
 	if (nla_put_string(skb, IFLA_IFNAME, dev->name) ||
 	    nla_put_u32(skb, IFLA_TXQLEN, dev->tx_queue_len) ||
 	    nla_put_u8(skb, IFLA_OPERSTATE,
@@ -2144,6 +2157,7 @@ static int rtnl_getlink(struct sk_buff *skb, struct nlmsghdr* nlh)
 		WARN_ON(err == -EMSGSIZE);
 		kfree_skb(nskb);
 	} else
+        // 将组好的rtnetlink消息单播回发给请求的用户进程
 		err = rtnl_unicast(nskb, net, NETLINK_CB(skb).portid);
 
 	return err;
@@ -2209,6 +2223,11 @@ static int rtnl_dump_all(struct sk_buff *skb, struct netlink_callback *cb)
 	return skb->len;
 }
 
+/* 指定netdev发送网卡接口相关的rtnetlink组播消息通知到用户空间
+ * @type    rtnetlink协议支持的消息类型
+ * @dev     发送该rtnetlink消息的设备
+ * @change
+ */
 void rtmsg_ifinfo(int type, struct net_device *dev, unsigned int change,
 		  gfp_t flags)
 {
@@ -2217,10 +2236,12 @@ void rtmsg_ifinfo(int type, struct net_device *dev, unsigned int change,
 	int err = -ENOBUFS;
 	size_t if_info_size;
 
+    // 申请一个用于承载使用ifinfomsg结构的rtnetlink消息的skb
 	skb = nlmsg_new((if_info_size = if_nlmsg_size(dev, 0)), flags);
 	if (skb == NULL)
 		goto errout;
 
+    // 填充该rtnetlink消息
 	err = rtnl_fill_ifinfo(skb, dev, type, 0, 0, change, 0, 0);
 	if (err < 0) {
 		/* -EMSGSIZE implies BUG in if_nlmsg_size() */
@@ -2228,6 +2249,8 @@ void rtmsg_ifinfo(int type, struct net_device *dev, unsigned int change,
 		kfree_skb(skb);
 		goto errout;
 	}
+
+    // 通过RTNLGRP_LINK组播通道，将组装完毕的rtnetlink消息发往用户空间
 	rtnl_notify(skb, net, 0, RTNLGRP_LINK, NULL, flags);
 	return;
 errout:
