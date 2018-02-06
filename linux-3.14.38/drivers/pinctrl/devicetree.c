@@ -112,10 +112,10 @@ struct pinctrl_dev *of_pinctrl_get(struct device_node *np)
 	return pctldev;
 }
 
-/* 解析一个指定的设备节点(用来记录一条pin操作表项)
- * @p           - 指向一个需要被继续填充的pin-control句柄
- * @statename   - 指向一个pin-control状态名
- * @np_config   - 指向一个待解析的设备节点
+/* 解析一个记录了pin配置信息的dts节点
+ * @p           - 指向一个需要被继续填充的pinctrl句柄
+ * @statename   - 指向一个pinctrl状态名
+ * @np_config   - 指向一个记录了pin配置信息的dts节点
  */
 static int dt_to_map_one_config(struct pinctrl *p, const char *statename,
 				struct device_node *np_config)
@@ -152,6 +152,7 @@ static int dt_to_map_one_config(struct pinctrl *p, const char *statename,
 	/*
 	 * Call pinctrl driver to parse device tree node, and
 	 * generate mapping table entries
+     * 生成对应的映射单元
 	 */
 	ops = pctldev->desc->pctlops;
 	if (!ops->dt_node_to_map) {
@@ -221,6 +222,9 @@ static int dt_gpio_assert_pinctrl(struct pinctrl *p)
 	return 0;
 }
 
+/* 从指定device的dts节点中提取相应的pinctrl信息
+ * p    用于存放提取出来的pinctrl信息的句柄
+ */
 int pinctrl_dt_to_map(struct pinctrl *p)
 {
 	struct device_node *np = p->dev->of_node;
@@ -233,7 +237,9 @@ int pinctrl_dt_to_map(struct pinctrl *p)
 	phandle phandle;
 	struct device_node *np_config;
 
-	/* CONFIG_OF enabled, p->dev not instantiated from DT */
+	/* CONFIG_OF enabled, p->dev not instantiated from DT 
+     * 如果该device不存在对应的dts节点就没必要继续下去，直接退出
+     * */
 	if (!np) {
 		dev_dbg(p->dev, "no of_node; not parsing pinctrl DT\n");
 		return 0;
@@ -249,22 +255,22 @@ int pinctrl_dt_to_map(struct pinctrl *p)
 	of_node_get(np);
 
 	/* For each defined state ID 
-     * 遍历dts中该device定义的每个pin-control状态
+     * 遍历该dts节点中定义的每个pin/pin group状态
      * */
 	for (state = 0; ; state++) {
 		/* Retrieve the pinctrl-* property 
-         * 在该设备节点中从序号0开始检索存储了pin-control状态的属性条目
+         * 在该dts节点中检索存储了pin/pin group状态的属性条目(从属性名"pinctrl-0"开始检索)
          * */
 		propname = kasprintf(GFP_KERNEL, "pinctrl-%d", state);
 		prop = of_find_property(np, propname, &size);
 		kfree(propname);
 		if (!prop)
 			break;
-		list = prop->value;     // 每个pin-control状态中包含的pin操作表
-		size /= sizeof(*list);  // 每个pin-control状态中包含的pin操作表项数量
+		list = prop->value;     // 每个"pinctrl-x"属性中包含的属性值是一张地址表
+		size /= sizeof(*list);  // 记录每张地址表中的表项数量
 
 		/* Determine whether pinctrl-names property names the state 
-         * 在该设备节点中检索存储了pin-control状态名列表的属性条目，并从中返回当前状态对应的状态名
+         * 在该dts节点中检索存储了pin/pin group状态名列表的属性条目"pinctrl-names"，并从中获取当前状态对应的状态名
          * */
 		ret = of_property_read_string_index(np, "pinctrl-names",
 						    state, &statename);
@@ -272,7 +278,7 @@ int pinctrl_dt_to_map(struct pinctrl *p)
 		 * If not, statename is just the integer state ID. But rather
 		 * than dynamically allocate it and have to free it later,
 		 * just point part way into the property name for the string.
-         * 如果不存在跟当前pin-control状态对应的状态名，则缺省使用"pinctrl-"后面的序号作为该状态的状态名
+         * 如果不存在跟当前pin/pin group状态对应的状态名，则缺省使用"pinctrl-"后面的序号作为该状态的状态名
 		 */
 		if (ret < 0) {
 			/* strlen("pinctrl-") == 8 */
@@ -280,13 +286,13 @@ int pinctrl_dt_to_map(struct pinctrl *p)
 		}
 
 		/* For every referenced pin configuration node in it 
-         * 遍历当前pin-control状态中的每条pin操作表项
+         * 遍历当前pin/pin group状态包含的每条pin操作表项
          * */
 		for (config = 0; config < size; config++) {
 			phandle = be32_to_cpup(list++);
 
 			/* Look up the pin configuration node 
-             * 查找该phandle对应的设备节点
+             * 查找该phandle对应的dts节点
              * */
 			np_config = of_find_node_by_phandle(phandle);
 			if (!np_config) {
@@ -298,7 +304,7 @@ int pinctrl_dt_to_map(struct pinctrl *p)
 			}
 
 			/* Parse the node 
-             * 解析该phandle对应的设备节点
+             * 解析该phandle对应的dts节点，将得到的信息填充到pinctrl句柄中
              * */
 			ret = dt_to_map_one_config(p, statename, np_config);
 			of_node_put(np_config);

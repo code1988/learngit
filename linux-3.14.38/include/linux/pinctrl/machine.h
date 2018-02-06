@@ -21,25 +21,29 @@
 enum pinctrl_map_type {
 	PIN_MAP_TYPE_INVALID,
 	PIN_MAP_TYPE_DUMMY_STATE,       // dummy
-	PIN_MAP_TYPE_MUX_GROUP,         // 功能复用
+	PIN_MAP_TYPE_MUX_GROUP,         // pin group功能复用
 	PIN_MAP_TYPE_CONFIGS_PIN,       // 设置指定pin脚的电气特性
 	PIN_MAP_TYPE_CONFIGS_GROUP,     // 设置指定pin group的电气特性
 };
 
 /**
  * struct pinctrl_map_mux - mapping table content for MAP_TYPE_MUX_GROUP
+ * PIN_MAP_TYPE_MUX_GROUP映射表项的数据部分
+ *
  * @group: the name of the group whose mux function is to be configured. This
  *	field may be left NULL, and the first applicable group for the function
  *	will be used.
  * @function: the mux function to select for the group
  */
 struct pinctrl_map_mux {
-	const char *group;
-	const char *function;
+	const char *group;      // pin group名称
+	const char *function;   // 该pin group要配置成的function名称
 };
 
 /**
  * struct pinctrl_map_configs - mapping table content for MAP_TYPE_CONFIGS_*
+ * PIN_MAP_TYPE_CONFIGS_*映射表项的数据部分
+ *
  * @group_or_pin: the name of the pin or group whose configuration parameters
  *	are to be configured.
  * @configs: a pointer to an array of config parameters/values to program into
@@ -48,9 +52,9 @@ struct pinctrl_map_mux {
  * @num_configs: the number of entries in array @configs
  */
 struct pinctrl_map_configs {
-	const char *group_or_pin;
-	unsigned long *configs;
-	unsigned num_configs;
+	const char *group_or_pin;   // pin/pin group名称
+	unsigned long *configs;     // 该pin/pin group要配置的配置项数组
+	unsigned num_configs;       // 配置项数量
 };
 
 /**
@@ -70,12 +74,12 @@ struct pinctrl_map_configs {
 struct pinctrl_map {
 	const char *dev_name;   // 该映射单元关联的device的名称
 	const char *name;       // 该映射单元关联的pin/pin group状态名
-	enum pinctrl_map_type type;
+	enum pinctrl_map_type type; // 该映射单元的类型
 	const char *ctrl_dev_name;
 	union {
 		struct pinctrl_map_mux mux;
 		struct pinctrl_map_configs configs;
-	} data;
+	} data;                 // 该映射单元的数据部分，跟type字段相关
 };
 
 /* Convenience macros to create mapping table entries */

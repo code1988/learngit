@@ -41,7 +41,7 @@
 
 static bool pinctrl_dummy_state;
 
-/* Mutex taken to protect pinctrl_list */
+/* Mutex taken to protect pinctrl_list 定义了一个用于维护pinctrl_list操作的互斥锁 */
 static DEFINE_MUTEX(pinctrl_list_mutex);
 
 /* Mutex taken to protect pinctrl_maps */
@@ -54,7 +54,7 @@ static DEFINE_MUTEX(pinctrldev_list_mutex);
 static LIST_HEAD(pinctrldev_list);
 
 /* List of pin controller handles (struct pinctrl) 
- * 这张全局的链表记录了所有device对应的pin-control句柄
+ * 这张全局的链表记录了所有device对应的pinctrl句柄
  * */
 static LIST_HEAD(pinctrl_list);
 
@@ -778,11 +778,14 @@ static int add_setting(struct pinctrl *p, struct pinctrl_map const *map)
 	return 0;
 }
 
+// 查找指定device是否已经创建了对应的pinctrl句柄
 static struct pinctrl *find_pinctrl(struct device *dev)
 {
 	struct pinctrl *p;
 
+    // 操作pinctrl_list需要上锁
 	mutex_lock(&pinctrl_list_mutex);
+    // 遍历pinctrl_list，查找是否存在该device关联的pinctrl句柄
 	list_for_each_entry(p, &pinctrl_list, node)
 		if (p->dev == dev) {
 			mutex_unlock(&pinctrl_list_mutex);
@@ -795,7 +798,7 @@ static struct pinctrl *find_pinctrl(struct device *dev)
 
 static void pinctrl_free(struct pinctrl *p, bool inlist);
 
-// 为指定device创建对应的pin-control句柄
+// 为指定device创建对应的pinctrl句柄
 static struct pinctrl *create_pinctrl(struct device *dev)
 {
 	struct pinctrl *p;
@@ -819,6 +822,7 @@ static struct pinctrl *create_pinctrl(struct device *dev)
 	INIT_LIST_HEAD(&p->states);
 	INIT_LIST_HEAD(&p->dt_maps);
 
+    // 从该device的dts节点中提取相应的pinctrl信息
 	ret = pinctrl_dt_to_map(p);
 	if (ret < 0) {
 		kfree(p);
@@ -874,11 +878,12 @@ static struct pinctrl *create_pinctrl(struct device *dev)
 
 /**
  * pinctrl_get() - retrieves the pinctrl handle for a device
- * 获取指定device的pin-control句柄(第一次调用本函数时会创建对应的pin-control句柄)
+ * 获取指定device的pinctrl句柄(第一次调用本函数时会创建对应的pinctrl句柄)
  *
  * @dev: the device to obtain the handle for
  *
- * 备注：调用本函数时该pin-control句柄的引用计数会加1
+ * 备注：调用本函数时该pinctrl句柄的引用计数会加1;
+ *       在pin控制器驱动首先完成probe安装后，其他模块驱动作为消费者，通常在其probe时，会调用本函数来获取关联的pinctrl句柄
  */
 struct pinctrl *pinctrl_get(struct device *dev)
 {
@@ -894,13 +899,13 @@ struct pinctrl *pinctrl_get(struct device *dev)
 	 */
 	p = find_pinctrl(dev);
 	if (p != NULL) {
-        // 如果该device的pin-control句柄已经存在，则简单的将引用计数加1即可
+        // 如果该device的pinctrl句柄已经存在，则简单的将引用计数加1即可
 		dev_dbg(dev, "obtain a copy of previously claimed pinctrl\n");
 		kref_get(&p->users);
 		return p;
 	}
 
-    // 如果该device的pin-control句柄尚未存在，则会在这里进行创建
+    // 如果该device的pinctrl句柄尚未存在，则会在这里进行创建
 	return create_pinctrl(dev);
 }
 EXPORT_SYMBOL_GPL(pinctrl_get);
@@ -999,7 +1004,8 @@ EXPORT_SYMBOL_GPL(pinctrl_lookup_state);
 
 /**
  * pinctrl_select_state() - select/activate/program a pinctrl state to HW
- * 根据指定的pin-control状态描述信息，并通过指定的pin-control句柄，来设置对应的硬件
+ * 通过指定的pinctrl句柄来设置相关的硬件，最终实现指定的pin/pin group状态
+ *
  * @p: the pinctrl handle for the device that requests configuration
  * @state: the state handle to select/activate/program
  */
