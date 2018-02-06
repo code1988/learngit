@@ -1735,7 +1735,7 @@ static int pinctrl_check_ops(struct pinctrl_dev *pctldev)
 
 /**
  * pinctrl_register() - register a pin controller device
- * 注册一个指定的pin-control设备
+ * 注册一个指定的pin控制器到内核
  * @pctldesc: descriptor for this pin controller
  * @dev: parent device for this pin controller
  * @driver_data: private pin controller data for this pin controller

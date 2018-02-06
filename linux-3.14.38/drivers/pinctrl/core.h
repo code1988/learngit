@@ -57,7 +57,7 @@ struct pinctrl_dev {
 
 /**
  * struct pinctrl - per-device pin control state holder
- * 该结构用来管理一个device的所有pin-control状态信息，也可以理解为该device的pin-control子系统操作句柄
+ * 该结构用来管理一个device的所有pin/pin group状态信息，也可以理解为该device的pinctrl句柄
  * @node: global list node
  * @dev: the device using this pin control handle
  * @states: a list of states for this device
@@ -67,24 +67,24 @@ struct pinctrl_dev {
  * @users: reference count
  */
 struct pinctrl {
-	struct list_head node;      // 链接了系统中所有device对应的pin-control句柄
-	struct device *dev;         // 指向该pin-control句柄对应的device
-	struct list_head states;    // 该device的所有pin-control状态被挂入到这个链表中
-	struct pinctrl_state *state;// 当前该device的pin-control状态 
+	struct list_head node;      // 链接了系统中所有device对应的pinctrl句柄
+	struct device *dev;         // 指向该pinctrl句柄对应的device
+	struct list_head states;    // 该device的所有pin/pin group状态被挂入到这个链表中
+	struct pinctrl_state *state;// 当前该device所处的pin/pin group状态 
 	struct list_head dt_maps;
-	struct kref users;          // 该pin-control句柄的引用计数，调用pinctrl_get时加1,调用pinctrl_put时减1
+	struct kref users;          // 该pinctrl句柄的引用计数，调用pinctrl_get时加1,调用pinctrl_put时减1
 };
 
 /**
  * struct pinctrl_state - a pinctrl state for a device
- * 用来描述一个pin-control状态
+ * 用来描述一个pin/pin group状态(也代表了所属device的一个状态)
  *
  * @node: list node for struct pinctrl's @states field
  * @name: the name of this state
  * @settings: a list of settings for this state
  */
 struct pinctrl_state {
-	struct list_head node;      // 链接了该device的所有pin-control状态
+	struct list_head node;      // 链接了该状态所属device的其他pin/pin group状态
 	const char *name;           // 该状态的名字
 	struct list_head settings;  // 该状态包含的所有setting被挂入到这个链表中
 };

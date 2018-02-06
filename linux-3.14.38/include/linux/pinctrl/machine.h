@@ -68,8 +68,8 @@ struct pinctrl_map_configs {
  * @data: Data specific to the mapping type
  */
 struct pinctrl_map {
-	const char *dev_name;
-	const char *name;
+	const char *dev_name;   // 该映射单元关联的device的名称
+	const char *name;       // 该映射单元关联的pin/pin group状态名
 	enum pinctrl_map_type type;
 	const char *ctrl_dev_name;
 	union {

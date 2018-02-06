@@ -23,6 +23,8 @@ struct pinctrl_dev;
 /**
  * struct pinmux_ops - pinmux operations, to be implemented by pin controller
  * drivers that support pinmuxing
+ * pin控制器操作底层的接口集合(主要用于设置 pin/pin groups 管脚复用)
+ *
  * @request: called by the core to see if a certain pin can be made
  *	available for muxing. This is called by the core to acquire the pins
  *	before selecting any actual mux setting across a function. The driver
@@ -59,19 +61,19 @@ struct pinctrl_dev;
  *	to the GPIO controllers that need pin muxing.
  */
 struct pinmux_ops {
-	int (*request) (struct pinctrl_dev *pctldev, unsigned offset);
-	int (*free) (struct pinctrl_dev *pctldev, unsigned offset);
-	int (*get_functions_count) (struct pinctrl_dev *pctldev);
+	int (*request) (struct pinctrl_dev *pctldev, unsigned offset);  // 检查指定pin脚是否已经被复用(内部可能包含了持有操作)
+	int (*free) (struct pinctrl_dev *pctldev, unsigned offset);     // 跟request配对使用(内部可能包含了释放操作)
+	int (*get_functions_count) (struct pinctrl_dev *pctldev);       // 获取function个数
 	const char *(*get_function_name) (struct pinctrl_dev *pctldev,
-					  unsigned selector);
+					  unsigned selector);                           // 获取指定function的名称(由selector索引)
 	int (*get_function_groups) (struct pinctrl_dev *pctldev,
 				  unsigned selector,
 				  const char * const **groups,
-				  unsigned * const num_groups);
+				  unsigned * const num_groups);                     // 获取指定function所占用的pin groups
 	int (*enable) (struct pinctrl_dev *pctldev, unsigned func_selector,
-		       unsigned group_selector);
+		       unsigned group_selector);                            // 将指定pin group(由group_selector索引)设置为指定function(由func_selector索引)
 	void (*disable) (struct pinctrl_dev *pctldev, unsigned func_selector,
-			 unsigned group_selector);
+			 unsigned group_selector);                              // 使指定pin group不设置成指定function
 	int (*gpio_request_enable) (struct pinctrl_dev *pctldev,
 				    struct pinctrl_gpio_range *range,
 				    unsigned offset);

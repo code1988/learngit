@@ -22,6 +22,8 @@ struct seq_file;
 /**
  * struct pinconf_ops - pin config operations, to be implemented by
  * pin configuration capable drivers.
+ * pin控制器操作底层的接口集合(主要用于实现pin/pin group属性配置)
+ *
  * @is_generic: for pin controllers that want to use the generic interface,
  *	this flag tells the framework that it's generic.
  * @pin_config_get: get the config of a certain pin, if the requested config
@@ -44,18 +46,18 @@ struct pinconf_ops {
 #endif
 	int (*pin_config_get) (struct pinctrl_dev *pctldev,
 			       unsigned pin,
-			       unsigned long *config);
+			       unsigned long *config);      // 获取指定pin脚的当前配置属性
 	int (*pin_config_set) (struct pinctrl_dev *pctldev,
 			       unsigned pin,
 			       unsigned long *configs,
-			       unsigned num_configs);
+			       unsigned num_configs);       // 设置指定pin脚的属性
 	int (*pin_config_group_get) (struct pinctrl_dev *pctldev,
 				     unsigned selector,
-				     unsigned long *config);
+				     unsigned long *config);    // 获取指定pin group的当前配置属性
 	int (*pin_config_group_set) (struct pinctrl_dev *pctldev,
 				     unsigned selector,
 				     unsigned long *configs,
-				     unsigned num_configs);
+				     unsigned num_configs);     // 设置指定pin group的属性
 	int (*pin_config_dbg_parse_modify) (struct pinctrl_dev *pctldev,
 					   const char *arg,
 					   unsigned long *config);

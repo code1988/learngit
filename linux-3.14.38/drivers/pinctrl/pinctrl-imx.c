@@ -171,7 +171,7 @@ static void imx_dt_free_map(struct pinctrl_dev *pctldev,
 	kfree(map);
 }
 
-// imx系列pin-control设备操作底层驱动pin group相关功能的接口集合
+// imx系列pin控制器操作底层驱动pin group相关功能的接口集合
 static const struct pinctrl_ops imx_pctrl_ops = {
 	.get_groups_count = imx_get_groups_count,
 	.get_group_name = imx_get_group_name,
@@ -303,7 +303,7 @@ static int imx_pmx_get_groups(struct pinctrl_dev *pctldev, unsigned selector,
 	return 0;
 }
 
-// imx系列pin-control设备操作底层驱动mux相关功能的接口集合
+// imx系列pin控制器操作底层驱动mux相关功能的接口集合
 static const struct pinmux_ops imx_pmx_ops = {
 	.get_functions_count = imx_pmx_get_funcs_count,
 	.get_function_name = imx_pmx_get_func_name,
@@ -409,7 +409,7 @@ static void imx_pinconf_group_dbg_show(struct pinctrl_dev *pctldev,
 	}
 }
 
-// imx系列pin-control设备操作底层驱动drive-streng相关功能的接口集合
+// imx系列pin控制器操作底层驱动drive-streng相关功能的接口集合
 static const struct pinconf_ops imx_pinconf_ops = {
 	.pin_config_get = imx_pinconf_get,
 	.pin_config_set = imx_pinconf_set,
@@ -417,7 +417,7 @@ static const struct pinconf_ops imx_pinconf_ops = {
 	.pin_config_group_dbg_show = imx_pinconf_group_dbg_show,
 };
 
-// 定义了一个imx系列pin-control设备low-level描述符
+// 定义了一个imx系列共用的pin控制器实例
 static struct pinctrl_desc imx_pinctrl_desc = {
 	.pctlops = &imx_pctrl_ops,
 	.pmxops = &imx_pmx_ops,
@@ -583,9 +583,9 @@ static int imx_pinctrl_probe_dt(struct platform_device *pdev,
 	return 0;
 }
 
-/* imx系列通用的pin-control驱动和设备匹配成功后的回调函数
- * @pdev    - 指向已经匹配的platform设备
- * @info    - 指向预定义的imx系列通用的板卡pin-control模块的low-level描述符
+/* imx系列通用的pin控制器驱动和设备匹配成功后的回调函数，主要工作就是配置imx_pinctrl_desc并注册到内核
+ * @pdev    - 指向已经匹配的pin控制器设备
+ * @info    - 指向imx系列具体一张板卡的pin控制器信息集合
  */
 int imx_pinctrl_probe(struct platform_device *pdev,
 		      struct imx_pinctrl_soc_info *info)

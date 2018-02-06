@@ -38,7 +38,7 @@ struct device_node;
 struct pinctrl_pin_desc {
 	unsigned number;    // pin脚序号
 	const char *name;   // pin脚名
-	void *drv_data;
+	void *drv_data;     // 该pin脚的私有数据(比如可以用于保存相关的寄存器等信息)
 };
 
 /* Convenience macro to define a single named or anonymous pin descriptor 
@@ -73,6 +73,8 @@ struct pinctrl_gpio_range {
 /**
  * struct pinctrl_ops - global pin control operations, to be implemented by
  * pin controller drivers.
+ * pin控制器操作底层的接口集合(主要是pin groups功能相关)
+ *
  * @get_groups_count: Returns the count of total number of groups registered.
  * @get_group_name: return the group name of the pin group
  * @get_group_pins: return an array of pins corresponding to a certain
@@ -90,13 +92,13 @@ struct pinctrl_gpio_range {
  *	not support device tree.
  */
 struct pinctrl_ops {
-	int (*get_groups_count) (struct pinctrl_dev *pctldev);
+	int (*get_groups_count) (struct pinctrl_dev *pctldev);  // 获取已经注册的pin groups的数量
 	const char *(*get_group_name) (struct pinctrl_dev *pctldev,
-				       unsigned selector);
+				       unsigned selector);                  // 获取指定pin group的名称(根据selector进行索引)
 	int (*get_group_pins) (struct pinctrl_dev *pctldev,
 			       unsigned selector,
 			       const unsigned **pins,
-			       unsigned *num_pins);
+			       unsigned *num_pins);                     // 获取指定pin group包含的所有pins
 	void (*pin_dbg_show) (struct pinctrl_dev *pctldev, struct seq_file *s,
 			  unsigned offset);
 	int (*dt_node_to_map) (struct pinctrl_dev *pctldev,
@@ -109,7 +111,7 @@ struct pinctrl_ops {
 /**
  * struct pinctrl_desc - pin controller descriptor, register this to pin
  * control subsystem
- * 定义了pin-control设备的通用low-level描述符
+ * 定义了pin控制器描述符，显然它用于统一管理pins
  *
  * @name: name for the pin controller
  * @pins: an array of pin descriptors describing all the pins handled by
@@ -124,12 +126,12 @@ struct pinctrl_ops {
  * @owner: module providing the pin controller, used for refcounting
  */
 struct pinctrl_desc {
-	const char *name;                       // 该pin-control设备名
-	struct pinctrl_pin_desc const *pins;    // 指向一张pin脚描述符表
+	const char *name;                       // 该pin控制器名
+	struct pinctrl_pin_desc const *pins;    // 指向一张pin脚描述符表，表中的pin脚都由该pin控制器管理
 	unsigned int npins;                     // pin脚描述符表中的表项数量
-	const struct pinctrl_ops *pctlops;      // 该pin-control设备操作底层驱动的接口集合(pin group相关功能)
-	const struct pinmux_ops *pmxops;        // 该pin-control设备操作底层驱动的接口集合(mux相关功能)
-	const struct pinconf_ops *confops;      // 该pin-control设备操作底层驱动的接口集合(drive-streng等相关功能)
+	const struct pinctrl_ops *pctlops;      // 该pin控制器操作底层驱动的接口集合(pin group相关功能)
+	const struct pinmux_ops *pmxops;        // 该pin控制器操作底层驱动的接口集合(mux相关功能)
+	const struct pinconf_ops *confops;      // 该pin控制器操作底层驱动的接口集合(用于实现pin/pin group 管脚属性配置)
 	struct module *owner;
 };
 
