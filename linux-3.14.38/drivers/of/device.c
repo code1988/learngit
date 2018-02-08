@@ -12,6 +12,8 @@
 
 /**
  * of_match_device - Tell if a struct device matches an of_device_id list
+ * 检查指定device在指定device支持表中是否存在匹配项，如果存在则返回对应的匹配项
+ *
  * @ids: array of of device match structures to search in
  * @dev: the of device structure to match against
  *

@@ -80,6 +80,8 @@ EXPORT_SYMBOL_GPL(platform_get_resource);
 
 /**
  * platform_get_irq - get an IRQ for a device
+ * 获取指定platfrom设备的指定中断号
+ *
  * @dev: platform device
  * @num: IRQ number index
  */

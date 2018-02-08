@@ -25,8 +25,9 @@ struct bgpio_pdata {
 
 struct device;
 
+// 定义了基础内存映射gpio控制器模型
 struct bgpio_chip {
-	struct gpio_chip gc;
+	struct gpio_chip gc;    // 封装的gpio控制器基类
 
 	unsigned long (*read_reg)(void __iomem *reg);
 	void (*write_reg)(void __iomem *reg, unsigned long data);

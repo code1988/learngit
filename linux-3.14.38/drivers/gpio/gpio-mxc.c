@@ -35,6 +35,7 @@
 #include <linux/module.h>
 #include <asm-generic/bug.h>
 
+// 枚举了imx平台上gpio的硬件分类
 enum mxc_gpio_hwtype {
 	IMX1_GPIO,	/* runs on i.mx1 */
 	IMX21_GPIO,	/* runs on i.mx21 and i.mx27 */
@@ -42,8 +43,11 @@ enum mxc_gpio_hwtype {
 	IMX35_GPIO,	/* runs on all other i.mx */
 };
 
-/* device type dependent stuff */
+/* device type dependent stuff 
+ * 定义了imx平台gpio控制器硬件相关寄存器信息集合
+ * */
 struct mxc_gpio_hwdata {
+    // 以下这部分是gpio控制器寄存器相对基地址的偏移量
 	unsigned dr_reg;
 	unsigned gdir_reg;
 	unsigned psr_reg;
@@ -52,6 +56,8 @@ struct mxc_gpio_hwdata {
 	unsigned imr_reg;
 	unsigned isr_reg;
 	int edge_sel_reg;
+
+    // 以下这部分是gpio水平触发和沿触发的值
 	unsigned low_level;
 	unsigned high_level;
 	unsigned rise_edge;
@@ -98,6 +104,7 @@ static struct mxc_gpio_hwdata imx31_gpio_hwdata = {
 	.fall_edge	= 0x03,
 };
 
+// 定义了imx平台上其他硬件类型的gpio信息
 static struct mxc_gpio_hwdata imx35_gpio_hwdata = {
 	.dr_reg		= 0x00,
 	.gdir_reg	= 0x04,
@@ -113,8 +120,8 @@ static struct mxc_gpio_hwdata imx35_gpio_hwdata = {
 	.fall_edge	= 0x03,
 };
 
-static enum mxc_gpio_hwtype mxc_gpio_hwtype;
-static struct mxc_gpio_hwdata *mxc_gpio_hwdata;
+static enum mxc_gpio_hwtype mxc_gpio_hwtype;        // 记录了gpio控制器设备当前使用的硬件平台类型
+static struct mxc_gpio_hwdata *mxc_gpio_hwdata;     // 指向gpio控制器设备当前使用的硬件平台
 
 #define GPIO_DR			(mxc_gpio_hwdata->dr_reg)
 #define GPIO_GDIR		(mxc_gpio_hwdata->gdir_reg)
@@ -149,6 +156,7 @@ static struct platform_device_id mxc_gpio_devtype[] = {
 	}
 };
 
+// imx平台gpio控制器驱动支持的device描述列表
 static const struct of_device_id mxc_gpio_dt_ids[] = {
 	{ .compatible = "fsl,imx1-gpio", .data = &mxc_gpio_devtype[IMX1_GPIO], },
 	{ .compatible = "fsl,imx21-gpio", .data = &mxc_gpio_devtype[IMX21_GPIO], },
@@ -361,14 +369,18 @@ static void __init mxc_gpio_init_gc(struct mxc_gpio_port *port, int irq_base)
 			       IRQ_NOREQUEST, 0);
 }
 
+// 记录gpio控制器设备使用的硬件平台信息(正常情况下每个gpio控制器设备肯定使用同一套硬件平台)
 static void mxc_gpio_get_hw(struct platform_device *pdev)
 {
 	const struct of_device_id *of_id =
-			of_match_device(mxc_gpio_dt_ids, &pdev->dev);
+			of_match_device(mxc_gpio_dt_ids, &pdev->dev);   // 获取该gpio设备对应的匹配项
 	enum mxc_gpio_hwtype hwtype;
 
+    // 获取匹配项中的私有信息记录到该gpio设备的对应字段
 	if (of_id)
 		pdev->id_entry = of_id->data;
+
+    // 获取该gpio控制器设备所属的硬件平台类型
 	hwtype = pdev->id_entry->driver_data;
 
 	if (mxc_gpio_hwtype) {
@@ -381,6 +393,7 @@ static void mxc_gpio_get_hw(struct platform_device *pdev)
 		return;
 	}
 
+    // 选择gpio控制器设备当前使用的相关硬件平台信息
 	if (hwtype == IMX35_GPIO)
 		mxc_gpio_hwdata = &imx35_gpio_hwdata;
 	else if (hwtype == IMX31_GPIO)
@@ -388,6 +401,7 @@ static void mxc_gpio_get_hw(struct platform_device *pdev)
 	else
 		mxc_gpio_hwdata = &imx1_imx21_gpio_hwdata;
 
+    // 记录gpio控制器设备当前使用的硬件平台类型
 	mxc_gpio_hwtype = hwtype;
 }
 
@@ -400,6 +414,7 @@ static int mxc_gpio_to_irq(struct gpio_chip *gc, unsigned offset)
 	return irq_find_mapping(port->domain, offset);
 }
 
+// imx平台隶属于platform总线的gpio控制器驱动和设备匹配成功后的回调函数
 static int mxc_gpio_probe(struct platform_device *pdev)
 {
 	struct device_node *np = pdev->dev.of_node;
@@ -408,23 +423,28 @@ static int mxc_gpio_probe(struct platform_device *pdev)
 	int irq_base;
 	int err;
 
+    // 记录该gpio控制器设备使用的硬件平台信息
 	mxc_gpio_get_hw(pdev);
 
 	port = devm_kzalloc(&pdev->dev, sizeof(*port), GFP_KERNEL);
 	if (!port)
 		return -ENOMEM;
 
+    // 获取该gpio控制器设备拥有的0号I/O内存资源并映射到内存
 	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	port->base = devm_ioremap_resource(&pdev->dev, iores);
 	if (IS_ERR(port->base))
 		return PTR_ERR(port->base);
 
+    // 获取该gpio控制器设备拥有的0号和1号中断
 	port->irq_high = platform_get_irq(pdev, 1);
 	port->irq = platform_get_irq(pdev, 0);
 	if (port->irq < 0)
 		return port->irq;
 
-	/* disable the interrupt and clear the status */
+	/* disable the interrupt and clear the status 
+     * 禁用该gpio控制器的所有32个中断，并清除所有32个中断的状态位
+     * */
 	writel(0, port->base + GPIO_IMR);
 	writel(~0, port->base + GPIO_ISR);
 
@@ -493,6 +513,7 @@ out_bgio:
 	return err;
 }
 
+// imx平台隶属于platform总线的gpio控制器驱动描述符
 static struct platform_driver mxc_gpio_driver = {
 	.driver		= {
 		.name	= "gpio-mxc",
@@ -503,6 +524,7 @@ static struct platform_driver mxc_gpio_driver = {
 	.id_table	= mxc_gpio_devtype,
 };
 
+// imx平台隶属于platform总线的gpio控制器驱动注册接口
 static int __init gpio_mxc_init(void)
 {
 	return platform_driver_register(&mxc_gpio_driver);

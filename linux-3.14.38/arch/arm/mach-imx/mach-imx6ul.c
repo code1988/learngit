@@ -70,7 +70,7 @@ static inline void imx6ul_enet_init(void)
 	imx6_enet_mac_init("fsl,imx6ul-fec");
 }
 
-// 将imx6ul设备树中定义的各种device node加入到系统中
+// 将imx6ul设备树中定义的各种dts节点加入到系统中
 static void __init imx6ul_init_machine(void)
 {
 	struct device *parent;
@@ -83,7 +83,7 @@ static void __init imx6ul_init_machine(void)
 	if (parent == NULL)
 		pr_warn("failed to initialize soc device\n");
 
-    // 从root node开始遍历设备树device_node结构，创建对应的platform设备，并注册到platform总线上，如果匹配到驱动就要开始probe...
+    // 从root节点开始遍历每个dts节点，创建对应的platform设备，并注册到platform总线上，如果匹配到驱动就要开始probe...
 	of_platform_populate(NULL, of_default_bus_match_table,
 					NULL, parent);
 

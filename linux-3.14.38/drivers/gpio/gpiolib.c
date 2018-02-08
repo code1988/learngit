@@ -25,6 +25,8 @@
  * The GPIO programming interface allows for inlining speed-critical
  * get/set operations for common cases, so that access to SOC-integrated
  * GPIOs can sometimes cost only an instruction or two per bit.
+ *
+ * 前缀为"gpio_"的函数都是旧式的基于gpio编号的接口；前缀为"gpiod_"的函数都是新式的基于gpio描述符的接口
  */
 
 
@@ -70,7 +72,7 @@ struct gpio_desc {
 	const char		*label;
 #endif
 };
-static struct gpio_desc gpio_desc[ARCH_NR_GPIOS];
+static struct gpio_desc gpio_desc[ARCH_NR_GPIOS];       // 定义了一张gpio编号和描述符的映射表
 
 #define GPIO_OFFSET_VALID(chip, offset) (offset >= 0 && offset < chip->ngpio)
 
@@ -153,6 +155,7 @@ static int gpio_chip_hwgpio(const struct gpio_desc *desc)
 
 /**
  * Convert a GPIO number to its descriptor
+ * 返回gpio编号对应的描述符
  */
 struct gpio_desc *gpio_to_desc(unsigned gpio)
 {
@@ -785,8 +788,10 @@ static struct class gpio_class = {
 
 /**
  * gpiod_export - export a GPIO through sysfs
- * @gpio: gpio to make available, already requested
- * @direction_may_change: true if userspace may change gpio direction
+ * 导出指定gpio到用户空间的sysfs(前提是该gpio已经执行了gpiod_request)
+ *
+ * @gpio: gpio to make available, already requested 
+ * @direction_may_change: true if userspace may change gpio direction   标识是否允许用户空间改变输入/输出模式
  * Context: arch_initcall or later
  *
  * When drivers want to make a GPIO accessible to userspace after they
@@ -972,6 +977,8 @@ EXPORT_SYMBOL_GPL(gpiod_sysfs_set_active_low);
 
 /**
  * gpiod_unexport - reverse effect of gpio_export()
+ * 撤销指定gpio导出到用户空间的sysfs
+ *
  * @gpio: gpio to make unavailable
  *
  * This is implicit on gpio_free().
@@ -1156,6 +1163,8 @@ static int gpiochip_add_to_list(struct gpio_chip *chip)
 
 /**
  * gpiochip_add() - register a gpio_chip
+ * 注册一个gpio控制器
+ *
  * @chip: the chip to register, with chip->base initialized
  * Context: potentially before irqs or kmalloc will work
  *
@@ -1255,6 +1264,7 @@ EXPORT_SYMBOL_GPL(gpiochip_add);
 
 /**
  * gpiochip_remove() - unregister a gpio_chip
+ * 注销指定的gpio控制器(通常很少会这么做)
  * @chip: the chip to unregister
  *
  * A gpio_chip with any GPIOs still requested may not be removed.
@@ -1456,6 +1466,7 @@ EXPORT_SYMBOL_GPL(gpiochip_remove_pin_ranges);
 /* These "optional" allocation calls help prevent drivers from stomping
  * on each other, and help provide better diagnostics in debugfs.
  * They're called even less than the "set direction" calls.
+ * 向内核申请指定gpio，只有成功申请到后才可以使用该gpio
  */
 static int gpiod_request(struct gpio_desc *desc, const char *label)
 {
@@ -1516,12 +1527,14 @@ done:
 	return status;
 }
 
+// 向内核申请指定gpio(旧式接口)
 int gpio_request(unsigned gpio, const char *label)
 {
 	return gpiod_request(gpio_to_desc(gpio), label);
 }
 EXPORT_SYMBOL_GPL(gpio_request);
 
+// 释放由gpiod_request申请到的gpio
 static void gpiod_free(struct gpio_desc *desc)
 {
 	unsigned long		flags;
@@ -1558,6 +1571,7 @@ static void gpiod_free(struct gpio_desc *desc)
 	spin_unlock_irqrestore(&gpio_lock, flags);
 }
 
+// 释放由gpio_request申请到的gpio(旧式接口)
 void gpio_free(unsigned gpio)
 {
 	gpiod_free(gpio_to_desc(gpio));
@@ -1647,12 +1661,15 @@ EXPORT_SYMBOL_GPL(gpio_free_array);
 
 /**
  * gpiochip_is_requested - return string iff signal was requested
+ * 判断指定gpio是否已经被申请了
+ *
  * @chip: controller managing the signal
  * @offset: of signal within controller's 0..(ngpio - 1) range
  *
  * Returns NULL if the GPIO is not currently requested, else a string.
  * If debugfs support is enabled, the string returned is the label passed
  * to gpio_request(); otherwise it is a meaningless constant.
+ * 如果该gpio尚未被申请则返回NULL，否则返回已经被申请的功能
  *
  * This function is for use by GPIO controller drivers.  The label can
  * help with diagnostics, and knowing that the signal is used as a GPIO
@@ -1689,6 +1706,8 @@ EXPORT_SYMBOL_GPL(gpiochip_is_requested);
 
 /**
  * gpiod_direction_input - set the GPIO direction to input
+ * 设置指定gpio为输入模式
+ *
  * @desc:	GPIO to set to input
  *
  * Set the direction of the passed GPIO to input, such as gpiod_get_value() can
@@ -1758,6 +1777,8 @@ EXPORT_SYMBOL_GPL(gpiod_direction_input);
 
 /**
  * gpiod_direction_output - set the GPIO direction to input
+ * 设置指定gpio为输出模式
+ *
  * @desc:	GPIO to set to output
  * @value:	initial output value of the GPIO
  *
@@ -1963,6 +1984,8 @@ EXPORT_SYMBOL_GPL(gpiod_get_raw_value);
 
 /**
  * gpiod_get_value() - return a gpio's value
+ * 读指定gpio
+ *
  * @desc: gpio whose value will be returned
  *
  * Return the GPIO's logical value, i.e. taking the ACTIVE_LOW status into
@@ -2078,6 +2101,8 @@ EXPORT_SYMBOL_GPL(gpiod_set_raw_value);
 
 /**
  * gpiod_set_value() - assign a gpio's value
+ * 写指定gpio
+ *
  * @desc: gpio whose value will be assigned
  * @value: value to assign
  *
@@ -2101,6 +2126,7 @@ EXPORT_SYMBOL_GPL(gpiod_set_value);
 
 /**
  * gpiod_cansleep() - report whether gpio value access may sleep
+ * 判断指定gpio是否支持睡眠
  * @desc: gpio to check
  *
  */

@@ -226,7 +226,7 @@ struct of_device_id
 	char	name[32];
 	char	type[32];
 	char	compatible[128];
-	const void *data;
+	const void *data;   // 用于存储该device描述项的私有信息
 };
 
 /* VIO */

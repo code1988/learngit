@@ -76,14 +76,14 @@ struct pinmux_ops {
 			 unsigned group_selector);                              // 使指定pin group不设置成指定function
 	int (*gpio_request_enable) (struct pinctrl_dev *pctldev,
 				    struct pinctrl_gpio_range *range,
-				    unsigned offset);
+				    unsigned offset);                               // 将指定pin设置为GPIO功能
 	void (*gpio_disable_free) (struct pinctrl_dev *pctldev,
 				   struct pinctrl_gpio_range *range,
-				   unsigned offset);
+				   unsigned offset);                                // 使指定pin不设置成GPIO功能
 	int (*gpio_set_direction) (struct pinctrl_dev *pctldev,
 				   struct pinctrl_gpio_range *range,
 				   unsigned offset,
-				   bool input);
+				   bool input);                                     // 设置指定GPIO的方向
 };
 
 #endif /* CONFIG_PINMUX */

@@ -12,6 +12,8 @@ struct seq_file;
 
 /**
  * struct gpio_chip - abstract a GPIO controller
+ * 定义了gpio控制器的抽象(可以作为基类被封装，比如 struct bgpio_chip)
+ *
  * @label: for diagnostics
  * @dev: optional device providing the GPIOs
  * @owner: helps prevent removal of modules exporting active GPIOs
@@ -61,7 +63,7 @@ struct seq_file;
  */
 struct gpio_chip {
 	const char		*label;
-	struct device		*dev;
+	struct device		*dev;       // 指向该gpio控制器对应的device(可选)
 	struct module		*owner;
 	struct list_head        list;
 

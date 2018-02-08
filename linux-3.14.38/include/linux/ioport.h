@@ -14,12 +14,13 @@
 /*
  * Resources are tree-like, allowing
  * nesting etc..
+ * 定义了资源的抽象
  */
 struct resource {
-	resource_size_t start;
-	resource_size_t end;
+	resource_size_t start;  // 起始地址
+	resource_size_t end;    // 结束地址
 	const char *name;
-	unsigned long flags;
+	unsigned long flags;    // 一系列标志位集合，IORESOURCE_*
 	struct resource *parent, *sibling, *child;
 };
 
@@ -165,6 +166,7 @@ static inline resource_size_t resource_size(const struct resource *res)
 {
 	return res->end - res->start + 1;
 }
+// 返回指定资源的类型
 static inline unsigned long resource_type(const struct resource *res)
 {
 	return res->flags & IORESOURCE_TYPE_BITS;

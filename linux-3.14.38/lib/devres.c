@@ -88,6 +88,8 @@ EXPORT_SYMBOL(devm_iounmap);
 
 /**
  * devm_ioremap_resource() - check, request region, and ioremap resource
+ * 本接口封装了资源检查、申请、映射一系列动作
+ *
  * @dev: generic device to handle the resource for
  * @res: resource to be handled
  *

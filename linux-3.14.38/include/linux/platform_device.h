@@ -25,8 +25,8 @@ struct platform_device {
 	int		id;
 	bool		id_auto;
 	struct device	dev;    // 封装的linux基本设备结构
-	u32		num_resources;
-	struct resource	*resource;
+	u32		num_resources;      // 该设备拥有的资源数量
+	struct resource	*resource;  // 该设备拥有的资源列表
 
 	const struct platform_device_id	*id_entry;
 

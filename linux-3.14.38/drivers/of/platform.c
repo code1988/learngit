@@ -356,9 +356,9 @@ static const struct of_dev_auxdata *of_dev_lookup(const struct of_dev_auxdata *l
 
 /**
  * of_platform_bus_create() - Create a device for a node and its children.
- * 为指定node及其子node递归创建对应的platform_device结构
+ * 为指定节点创建对应的platform_device结构
  *
- * @bus: device node of the bus to instantiate 要执行递归操作的起始device_node结构
+ * @bus: device node of the bus to instantiate 指向将要被实例化的dts节点
  * @matches: match table for bus nodes  要匹配的列表
  * @lookup: auxdata table for matching id and platform_data with device nodes   附属数据
  * @parent: parent for new device, or NULL for top level.
@@ -366,6 +366,7 @@ static const struct of_dev_auxdata *of_dev_lookup(const struct of_dev_auxdata *l
  *
  * Creates a platform_device for the provided device_node, and optionally
  * recursively create devices for all the child nodes.
+ * 对于某些特殊的节点可能还会递归为其字节点创建对应的platform_device结构
  */
 static int of_platform_bus_create(struct device_node *bus,
 				  const struct of_device_id *matches,
@@ -380,7 +381,7 @@ static int of_platform_bus_create(struct device_node *bus,
 	int rc = 0;
 
 	/* Make sure it has a compatible property 
-     * 要求完全匹配时，必须确保该node中存在"compatible"属性
+     * 要求完全匹配时，必须确保该节点中存在"compatible"属性
      * */
 	if (strict && (!of_get_property(bus, "compatible", NULL))) {
 		pr_debug("%s() - skipping %s, no compatible prop\n",
@@ -388,7 +389,7 @@ static int of_platform_bus_create(struct device_node *bus,
 		return 0;
 	}
 
-    /* 基于该node，在传入的附加数据表中查找匹配的项
+    /* 基于该节点，在传入的附加数据表中查找匹配的项
      * 如果找到，那么就用附加数据中的静态定义的内容
      */
 	auxdata = of_dev_lookup(lookup, bus);
@@ -397,7 +398,7 @@ static int of_platform_bus_create(struct device_node *bus,
 		platform_data = auxdata->platform_data;
 	}
 
-    /* 判断该node的"compatible"属性中是否包含了字符串"arm,primecell"
+    /* 判断该节点的"compatible"属性中是否包含了字符串"arm,primecell"
      * 如果包含了，则在这里向AMBA总线上增加一个AMBA设备
      */
 	if (of_device_is_compatible(bus, "arm,primecell")) {
@@ -409,14 +410,14 @@ static int of_platform_bus_create(struct device_node *bus,
 		return 0;
 	}
 
-    /* 到这里意味着该node没有包含"arm,primecell"属性值
+    /* 到这里意味着该节点没有包含"arm,primecell"属性值
      * 以下就是具体往platform总线上增加一个platform设备
      */
 	dev = of_platform_device_create_pdata(bus, bus_id, platform_data, parent);
 	if (!dev || !of_match_node(matches, bus))
 		return 0;
 
-    // 该node可能是一个桥设备，所以需要执行递归操作
+    // 该节点可能是一个桥设备，所以需要执行递归操作
 	for_each_child_of_node(bus, child) {
 		pr_debug("   create child: %s\n", child->full_name);
 		rc = of_platform_bus_create(child, matches, lookup, &dev->dev, strict);
@@ -469,8 +470,8 @@ EXPORT_SYMBOL(of_platform_bus_probe);
 
 /**
  * of_platform_populate() - Populate platform_devices from device tree data
- * 从指定一级开始遍历设备树device_node结构，创建对应的platform_device结构
- * @root: parent of the first level to probe or NULL for the root of the tree 指定开始遍历的device_node,NULL表示从root node开始
+ * 从指定dts节点开始遍历其下的子dts节点，创建对应的platform_device结构
+ * @root: parent of the first level to probe or NULL for the root of the tree 指定遍历的起始dts节点,NULL表示从root节点开始
  * @matches: match table, NULL to use the default
  * @lookup: auxdata table for matching id and platform_data with device nodes
  * @parent: parent to hook devices from, NULL for toplevel
@@ -496,13 +497,14 @@ int of_platform_populate(struct device_node *root,
 	struct device_node *child;
 	int rc = 0;
 
+    // 根据入参决定到底从哪个节点开始往下遍历
 	root = root ? of_node_get(root) : of_find_node_by_path("/");
 	if (!root)
 		return -EINVAL;
 
-    // 从指定的root一级开始遍历所有的device_node
+    // 从root节点开始遍历其下所有的子dts节点
 	for_each_child_of_node(root, child) {
-        // 为每个child node创建对应的platform_device结构(使用完全匹配)
+        // 尝试为每个子dts节点创建对应的platform_device结构(使用完全匹配)
 		rc = of_platform_bus_create(child, matches, lookup, parent, true);
 		if (rc)
 			break;

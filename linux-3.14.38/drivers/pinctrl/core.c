@@ -1,6 +1,6 @@
 /*
  * Core driver for the pin control subsystem
- * pin-control子系统的核心驱动部分
+ * pinctrl子系统的核心驱动部分(其中包含了一部分GPIO子系统相关的后门接口)
  *
  * Copyright (C) 2011-2012 ST-Ericsson SA
  * Written on behalf of Linaro for ST-Ericsson
@@ -559,14 +559,14 @@ int pinctrl_get_group_selector(struct pinctrl_dev *pctldev,
 
 /**
  * pinctrl_request_gpio() - request a single pin to be used in as GPIO
- * 请求一个pin脚作为GPIO使用(通常不应该使用本接口)
+ * 请求一个pin脚作为GPIO使用
  *
  * @gpio: the GPIO pin number from the GPIO subsystem number space
  *
  * This function should *ONLY* be used from gpiolib-based GPIO drivers,
  * as part of their gpio_request() semantics, platforms and individual drivers
  * shall *NOT* request GPIO pins to be muxed in.
- * 本函数只能被基于gpiolib的GPIO驱动调用，那些隶属于platform总线的驱动以及独立的驱动不应该调用本函数
+ * 本函数是给GPIO子系统开的后门接口，只能被基于gpiolib的GPIO驱动调用，那些隶属于platform总线的驱动以及独立的驱动不应该调用本函数
  */
 int pinctrl_request_gpio(unsigned gpio)
 {
@@ -597,7 +597,7 @@ EXPORT_SYMBOL_GPL(pinctrl_request_gpio);
 
 /**
  * pinctrl_free_gpio() - free control on a single pin, currently used as GPIO
- * 取消复用为指定GPIO的pin脚(pinctrl_request_gpio的逆函数)
+ * 取消一个pin脚当前复用的GPIO功能(pinctrl_request_gpio的逆函数)
  *
  * @gpio: the GPIO pin number from the GPIO subsystem number space
  *
@@ -660,6 +660,7 @@ static int pinctrl_gpio_direction(unsigned gpio, bool input)
  * This function should *ONLY* be used from gpiolib-based GPIO drivers,
  * as part of their gpio_direction_input() semantics, platforms and individual
  * drivers shall *NOT* touch pin control GPIO calls.
+ * 本函数是给GPIO子系统开的后门接口，只能被基于gpiolib的GPIO驱动调用，那些隶属于platform总线的驱动以及独立的驱动不应该调用本函数
  */
 int pinctrl_gpio_direction_input(unsigned gpio)
 {
@@ -676,6 +677,7 @@ EXPORT_SYMBOL_GPL(pinctrl_gpio_direction_input);
  * This function should *ONLY* be used from gpiolib-based GPIO drivers,
  * as part of their gpio_direction_output() semantics, platforms and individual
  * drivers shall *NOT* touch pin control GPIO calls.
+ * 本函数是给GPIO子系统开的后门接口，只能被基于gpiolib的GPIO驱动调用，那些隶属于platform总线的驱动以及独立的驱动不应该调用本函数
  */
 int pinctrl_gpio_direction_output(unsigned gpio)
 {

@@ -62,7 +62,7 @@
 
 // 下面开始进行imx6ul板卡初始化
 @imx6ul_init_machine    ---------------> Use WDOG1 as reset source
-                                         gpiochip_add: registered GPIOs 0 to 31 on device: 209c000.gpio
+@mxc_gpio_probe         ---------------> gpiochip_add: registered GPIOs 0 to 31 on device: 209c000.gpio
                                          gpiochip_add: registered GPIOs 32 to 63 on device: 20a0000.gpio
                                          gpiochip_add: registered GPIOs 64 to 95 on device: 20a4000.gpio
                                          gpiochip_add: registered GPIOs 96 to 127 on device: 20a8000.gpio
