@@ -32,6 +32,8 @@
 
 /**
  * struct gpio - a structure describing a GPIO with configuration
+ * gpio配置单元
+ *
  * @gpio:	the GPIO number
  * @flags:	GPIO configuration as specified by GPIOF_*
  * @label:	a literal description string of this GPIO

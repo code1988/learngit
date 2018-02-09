@@ -62,7 +62,7 @@ struct seq_file;
  * is calculated by subtracting @base from the gpio number.
  */
 struct gpio_chip {
-	const char		*label;
+	const char		*label;         // 该gpio控制器标签名(比如"209c000.gpio")
 	struct device		*dev;       // 指向该gpio控制器对应的device(可选)
 	struct module		*owner;
 	struct list_head        list;
@@ -90,9 +90,9 @@ struct gpio_chip {
 
 	void			(*dbg_show)(struct seq_file *s,
 						struct gpio_chip *chip);
-	int			base;
-	u16			ngpio;
-	struct gpio_desc	*desc;
+	int			base;           // 该gpio控制器可操作的第一个gpio编号
+	u16			ngpio;          // 该gpio控制器可操作的gpio数量
+	struct gpio_desc	*desc;  // 该gpio控制器可操作的第一个gpio描述符
 	const char		*const *names;
 	bool			can_sleep;
 	bool			exported;

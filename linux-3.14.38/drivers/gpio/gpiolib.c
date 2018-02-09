@@ -48,9 +48,10 @@
  */
 static DEFINE_SPINLOCK(gpio_lock);
 
+// 定义了gpio描述符
 struct gpio_desc {
-	struct gpio_chip	*chip;
-	unsigned long		flags;
+	struct gpio_chip	*chip;  // 指向该gpio所属的gpio控制器
+	unsigned long		flags;  // 记录了该gpio配置的属性集合
 /* flag symbols are bit numbers */
 #define FLAG_REQUESTED	0
 #define FLAG_IS_OUT	1
@@ -78,7 +79,7 @@ static struct gpio_desc gpio_desc[ARCH_NR_GPIOS];       // 定义了一张gpio�
 
 static DEFINE_MUTEX(gpio_lookup_lock);
 static LIST_HEAD(gpio_lookup_list);
-static LIST_HEAD(gpio_chips);
+static LIST_HEAD(gpio_chips);           // 定义了一张全局的gpio控制器链表
 
 #ifdef CONFIG_GPIO_SYSFS
 static DEFINE_IDR(dirent_idr);
@@ -233,7 +234,9 @@ struct gpio_chip *gpiod_to_chip(const struct gpio_desc *desc)
 }
 EXPORT_SYMBOL_GPL(gpiod_to_chip);
 
-/* dynamic allocation of GPIOs, e.g. on a hotplugged device */
+/* dynamic allocation of GPIOs, e.g. on a hotplugged device 
+ * 动态分配一段gpio编号，成功返回第一个编号
+ * */
 static int gpiochip_find_base(int ngpio)
 {
 	struct gpio_chip *chip;
@@ -778,6 +781,7 @@ static struct class_attribute gpio_class_attrs[] = {
 	__ATTR_NULL,
 };
 
+// 定义了一个gpio设备类
 static struct class gpio_class = {
 	.name =		"gpio",
 	.owner =	THIS_MODULE,
@@ -1080,12 +1084,17 @@ static void gpiochip_unexport(struct gpio_chip *chip)
 		chip_dbg(chip, "%s: status %d\n", __func__, status);
 }
 
+/* 初始化用户空间sysfs中的gpio目录
+ *
+ * 备注：本函数的启动优先级需要高于arch_initcall
+ */
 static int __init gpiolib_sysfs_init(void)
 {
 	int		status;
 	unsigned long	flags;
 	struct gpio_chip *chip;
 
+    // 注册gpio设备类到内核
 	status = class_register(&gpio_class);
 	if (status < 0)
 		return status;
@@ -1095,6 +1104,7 @@ static int __init gpiolib_sysfs_init(void)
 	 *
 	 * We run before arch_initcall() so chip->dev nodes can have
 	 * registered, and so arch_initcall() can always gpio_export().
+     * 遍历启动期间那些很早就注册了的gpio控制器，将其导出到用户空间sysfs
 	 */
 	spin_lock_irqsave(&gpio_lock, flags);
 	list_for_each_entry(chip, &gpio_chips, list) {
@@ -1127,6 +1137,7 @@ static inline void gpiochip_unexport(struct gpio_chip *chip)
 /*
  * Add a new chip to the global chips list, keeping the list of chips sorted
  * by base order.
+ * 将一个新的gpio控制器插入gpio_chips链表
  *
  * Return -EBUSY if the new chip overlaps with some other chip's integer
  * space.
@@ -1163,7 +1174,7 @@ static int gpiochip_add_to_list(struct gpio_chip *chip)
 
 /**
  * gpiochip_add() - register a gpio_chip
- * 注册一个gpio控制器
+ * 注册一个gpio控制器到内核
  *
  * @chip: the chip to register, with chip->base initialized
  * Context: potentially before irqs or kmalloc will work
@@ -1187,6 +1198,7 @@ int gpiochip_add(struct gpio_chip *chip)
 	unsigned	id;
 	int		base = chip->base;
 
+    // 首先确保base字段有效
 	if ((!gpio_is_valid(base) || !gpio_is_valid(base + chip->ngpio - 1))
 			&& base >= 0) {
 		status = -EINVAL;
@@ -1195,6 +1207,7 @@ int gpiochip_add(struct gpio_chip *chip)
 
 	spin_lock_irqsave(&gpio_lock, flags);
 
+    // 如果需要则动态分配一段可用的gpio编号
 	if (base < 0) {
 		base = gpiochip_find_base(chip->ngpio);
 		if (base < 0) {
@@ -1204,6 +1217,7 @@ int gpiochip_add(struct gpio_chip *chip)
 		chip->base = base;
 	}
 
+    // 将该gpio控制器插入gpio_chips链表
 	status = gpiochip_add_to_list(chip);
 
 	if (status == 0) {
@@ -1580,8 +1594,10 @@ EXPORT_SYMBOL_GPL(gpio_free);
 
 /**
  * gpio_request_one - request a single GPIO with initial configuration
+ * 申请和配置单个gpio
+ *
  * @gpio:	the GPIO number
- * @flags:	GPIO configuration as specified by GPIOF_*
+ * @flags:	GPIO configuration as specified by GPIOF_*  
  * @label:	a literal description string of this GPIO
  */
 int gpio_request_one(unsigned gpio, unsigned long flags, const char *label)
@@ -1589,12 +1605,15 @@ int gpio_request_one(unsigned gpio, unsigned long flags, const char *label)
 	struct gpio_desc *desc;
 	int err;
 
+    // 首先获取该gpio的描述符
 	desc = gpio_to_desc(gpio);
 
+    // 向内核申请该gpio
 	err = gpiod_request(desc, label);
 	if (err)
 		return err;
 
+    // 根据传入的配置信息来配置该gpio
 	if (flags & GPIOF_OPEN_DRAIN)
 		set_bit(FLAG_OPEN_DRAIN, &desc->flags);
 
@@ -1626,6 +1645,8 @@ EXPORT_SYMBOL_GPL(gpio_request_one);
 
 /**
  * gpio_request_array - request multiple GPIOs in a single call
+ * 申请和配置一组gpio
+ *
  * @array:	array of the 'struct gpio'
  * @num:	how many GPIOs in the array
  */
@@ -1777,7 +1798,7 @@ EXPORT_SYMBOL_GPL(gpiod_direction_input);
 
 /**
  * gpiod_direction_output - set the GPIO direction to input
- * 设置指定gpio为输出模式
+ * 设置指定gpio为输出模式以及初始的输出电平
  *
  * @desc:	GPIO to set to output
  * @value:	initial output value of the GPIO
