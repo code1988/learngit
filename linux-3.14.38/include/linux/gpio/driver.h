@@ -68,7 +68,7 @@ struct gpio_chip {
 	struct list_head        list;
 
 	int			(*request)(struct gpio_chip *chip,
-						unsigned offset);
+						unsigned offset);   
 	void			(*free)(struct gpio_chip *chip,
 						unsigned offset);
 	int			(*get_direction)(struct gpio_chip *chip,
@@ -102,7 +102,7 @@ struct gpio_chip {
 	 * If CONFIG_OF is enabled, then all GPIO controllers described in the
 	 * device tree automatically may have an OF translation
 	 */
-	struct device_node *of_node;
+	struct device_node *of_node;    // 指向该gpio控制器关联的dts节点
 	int of_gpio_n_cells;
 	int (*of_xlate)(struct gpio_chip *gc,
 			const struct of_phandle_args *gpiospec, u32 *flags);

@@ -53,16 +53,16 @@ struct gpio_desc {
 	struct gpio_chip	*chip;  // 指向该gpio所属的gpio控制器
 	unsigned long		flags;  // 记录了该gpio配置的属性集合
 /* flag symbols are bit numbers */
-#define FLAG_REQUESTED	0
-#define FLAG_IS_OUT	1
+#define FLAG_REQUESTED	0       // 标识该gpio是否已经被申请
+#define FLAG_IS_OUT	1           // 标识该gpio当前是否处于输出状态
 #define FLAG_EXPORT	2	/* protected by sysfs_lock */
 #define FLAG_SYSFS	3	/* exported via /sys/class/gpio/control */
 #define FLAG_TRIG_FALL	4	/* trigger on falling edge */
 #define FLAG_TRIG_RISE	5	/* trigger on rising edge */
-#define FLAG_ACTIVE_LOW	6	/* value has active low */
-#define FLAG_OPEN_DRAIN	7	/* Gpio is open drain type */
-#define FLAG_OPEN_SOURCE 8	/* Gpio is open source type */
-#define FLAG_USED_AS_IRQ 9	/* GPIO is connected to an IRQ */
+#define FLAG_ACTIVE_LOW	6	/* value has active low  标识该gpio是否将low映射为active状态 */
+#define FLAG_OPEN_DRAIN	7	/* Gpio is open drain type  标识该gpio是否设置为开漏模式 */
+#define FLAG_OPEN_SOURCE 8	/* Gpio is open source type  标识该gpio是否设置为open source模式 */
+#define FLAG_USED_AS_IRQ 9	/* GPIO is connected to an IRQ  标识该gpio当前是否连接到一个中断号 */
 
 #define ID_SHIFT	16	/* add new flags before this one */
 
@@ -70,7 +70,7 @@ struct gpio_desc {
 #define GPIO_TRIGGER_MASK	(BIT(FLAG_TRIG_FALL) | BIT(FLAG_TRIG_RISE))
 
 #ifdef CONFIG_DEBUG_FS
-	const char		*label;
+	const char		*label;     // 可在被申请时设置
 #endif
 };
 static struct gpio_desc gpio_desc[ARCH_NR_GPIOS];       // 定义了一张gpio编号和描述符的映射表
@@ -148,6 +148,7 @@ static inline void desc_set_label(struct gpio_desc *d, const char *label)
 
 /*
  * Return the GPIO number of the passed descriptor relative to its chip
+ * 返回指定gpio在所属gpio控制器中的相对编号
  */
 static int gpio_chip_hwgpio(const struct gpio_desc *desc)
 {
@@ -226,6 +227,7 @@ static int gpio_ensure_requested(struct gpio_desc *desc)
 
 /**
  * gpiod_to_chip - Return the GPIO chip to which a GPIO descriptor belongs
+ * 返回指定gpio所属的gpio控制器
  * @desc:	descriptor to return the chip of
  */
 struct gpio_chip *gpiod_to_chip(const struct gpio_desc *desc)
@@ -262,6 +264,8 @@ static int gpiochip_find_base(int ngpio)
 
 /**
  * gpiod_get_direction - return the current direction of a GPIO
+ * 更新并返回指定gpio当前的方向
+ *
  * @desc:	GPIO to get the direction of
  *
  * Return GPIOF_DIR_IN or GPIOF_DIR_OUT, or an error code in case of error.
@@ -1220,6 +1224,7 @@ int gpiochip_add(struct gpio_chip *chip)
     // 将该gpio控制器插入gpio_chips链表
 	status = gpiochip_add_to_list(chip);
 
+    // 初始化该gpio控制器控制的所有gpio描述符
 	if (status == 0) {
 		chip->desc = &gpio_desc[chip->base];
 
@@ -1495,6 +1500,7 @@ static int gpiod_request(struct gpio_desc *desc, const char *label)
 
 	spin_lock_irqsave(&gpio_lock, flags);
 
+    // 获取该gpio所属的gpio控制器
 	chip = desc->chip;
 	if (chip == NULL)
 		goto done;
@@ -1506,6 +1512,7 @@ static int gpiod_request(struct gpio_desc *desc, const char *label)
 	 * before IRQs are enabled, for non-sleeping (SOC) GPIOs.
 	 */
 
+    // 检查该gpio是否已经被申请,如果已经被申请则直接返回,如果尚未被申请则标记为已申请
 	if (test_and_set_bit(FLAG_REQUESTED, &desc->flags) == 0) {
 		desc_set_label(desc, label ? : "?");
 		status = 0;
@@ -1515,6 +1522,7 @@ static int gpiod_request(struct gpio_desc *desc, const char *label)
 		goto done;
 	}
 
+    // 如果该gpio控制器注册了request回调,则在这里执行
 	if (chip->request) {
 		/* chip->request may sleep */
 		spin_unlock_irqrestore(&gpio_lock, flags);
@@ -1528,6 +1536,8 @@ static int gpiod_request(struct gpio_desc *desc, const char *label)
 			goto done;
 		}
 	}
+
+    // 如果该gpio控制器注册了get_direction回调,则在这里刷新该gpio的方向
 	if (chip->get_direction) {
 		/* chip->get_direction may sleep */
 		spin_unlock_irqrestore(&gpio_lock, flags);
@@ -1743,11 +1753,13 @@ int gpiod_direction_input(struct gpio_desc *desc)
 	int			status = -EINVAL;
 	int			offset;
 
+    // 首先确保该gpio以及所属gpio控制器有效
 	if (!desc || !desc->chip) {
 		pr_warn("%s: invalid GPIO\n", __func__);
 		return -EINVAL;
 	}
 
+    // 其次确保该gpio控制器至少注册了get或direction_input回调
 	chip = desc->chip;
 	if (!chip->get || !chip->direction_input) {
 		gpiod_warn(desc,
@@ -1758,6 +1770,7 @@ int gpiod_direction_input(struct gpio_desc *desc)
 
 	spin_lock_irqsave(&gpio_lock, flags);
 
+    // 然后确保该gpio已经被正确申请到
 	status = gpio_ensure_requested(desc);
 	if (status < 0)
 		goto fail;
@@ -1768,6 +1781,7 @@ int gpiod_direction_input(struct gpio_desc *desc)
 
 	might_sleep_if(chip->can_sleep);
 
+    // 如果该gpio控制器注册了request回调,则会在这里执行
 	offset = gpio_chip_hwgpio(desc);
 	if (status) {
 		status = chip->request(chip, offset);
@@ -1781,6 +1795,7 @@ int gpiod_direction_input(struct gpio_desc *desc)
 		}
 	}
 
+    // 调用硬件接口设置该gpio为输入模式,并清除输出标志
 	status = chip->direction_input(chip, offset);
 	if (status == 0)
 		clear_bit(FLAG_IS_OUT, &desc->flags);
@@ -1815,12 +1830,15 @@ int gpiod_direction_output(struct gpio_desc *desc, int value)
 	int			status = -EINVAL;
 	int offset;
 
+    // 首先确保该gpio以及所属gpio控制器有效
 	if (!desc || !desc->chip) {
 		pr_warn("%s: invalid GPIO\n", __func__);
 		return -EINVAL;
 	}
 
-	/* GPIOs used for IRQs shall not be set as output */
+	/* GPIOs used for IRQs shall not be set as output 
+     * 不能将用作中断的gpio设置为输出模式
+     * */
 	if (test_bit(FLAG_USED_AS_IRQ, &desc->flags)) {
 		gpiod_err(desc,
 			  "%s: tried to set a GPIO tied to an IRQ as output\n",
@@ -1828,14 +1846,19 @@ int gpiod_direction_output(struct gpio_desc *desc, int value)
 		return -EIO;
 	}
 
-	/* Open drain pin should not be driven to 1 */
+	/* Open drain pin should not be driven to 1 
+     * 确保Open drain输出的gpio输出值不为1
+     * */
 	if (value && test_bit(FLAG_OPEN_DRAIN,  &desc->flags))
 		return gpiod_direction_input(desc);
 
-	/* Open source pin should not be driven to 0 */
+	/* Open source pin should not be driven to 0 
+     * 确保Open source输出的gpio输出值不为0
+     * */
 	if (!value && test_bit(FLAG_OPEN_SOURCE,  &desc->flags))
 		return gpiod_direction_input(desc);
 
+    // 确保该gpio控制器至少注册了set或direction_output回调
 	chip = desc->chip;
 	if (!chip->set || !chip->direction_output) {
 		gpiod_warn(desc,
@@ -1846,6 +1869,7 @@ int gpiod_direction_output(struct gpio_desc *desc, int value)
 
 	spin_lock_irqsave(&gpio_lock, flags);
 
+    // 确保该gpio已经被正确申请到
 	status = gpio_ensure_requested(desc);
 	if (status < 0)
 		goto fail;
@@ -1856,6 +1880,7 @@ int gpiod_direction_output(struct gpio_desc *desc, int value)
 
 	might_sleep_if(chip->can_sleep);
 
+    // 如果该gpio控制器注册了request回调,则会在这里执行
 	offset = gpio_chip_hwgpio(desc);
 	if (status) {
 		status = chip->request(chip, offset);
@@ -1869,6 +1894,7 @@ int gpiod_direction_output(struct gpio_desc *desc, int value)
 		}
 	}
 
+    // 调用硬件接口设置该gpio为输出模式,并设置输出标志
 	status = chip->direction_output(chip, offset, value);
 	if (status == 0)
 		set_bit(FLAG_IS_OUT, &desc->flags);
@@ -1968,6 +1994,8 @@ EXPORT_SYMBOL_GPL(gpiod_is_active_low);
  *
  * REVISIT when debugging, consider adding some instrumentation to ensure
  * that the GPIO was actually requested.
+ *
+ * 调用硬件接口获取指定gpio的当前值
  */
 
 static int _gpiod_get_raw_value(const struct gpio_desc *desc)
@@ -2014,6 +2042,7 @@ EXPORT_SYMBOL_GPL(gpiod_get_raw_value);
  *
  * This function should be called from contexts where we cannot sleep, and will
  * complain if the GPIO chip functions potentially sleep.
+ * 本接口不能被允许睡眠的gpio调用
  */
 int gpiod_get_value(const struct gpio_desc *desc)
 {
@@ -2023,7 +2052,9 @@ int gpiod_get_value(const struct gpio_desc *desc)
 	/* Should be using gpio_get_value_cansleep() */
 	WARN_ON(desc->chip->can_sleep);
 
+    // 调用硬件接口读该gpio的值
 	value = _gpiod_get_raw_value(desc);
+    // 如果该gpio设置为low->active映射,则意味着需要进行取反
 	if (test_bit(FLAG_ACTIVE_LOW, &desc->flags))
 		value = !value;
 
@@ -2085,12 +2116,14 @@ static void _gpio_set_open_source_value(struct gpio_desc *desc, int value)
 			  __func__, err);
 }
 
+// 调用硬件接口写值到指定gpio
 static void _gpiod_set_raw_value(struct gpio_desc *desc, int value)
 {
 	struct gpio_chip	*chip;
 
 	chip = desc->chip;
 	trace_gpio_value(desc_to_gpio(desc), 0, value);
+    // 根据是否设置了open drain或open source标志分别执行对应的过程
 	if (test_bit(FLAG_OPEN_DRAIN, &desc->flags))
 		_gpio_set_open_drain_value(desc, value);
 	else if (test_bit(FLAG_OPEN_SOURCE, &desc->flags))
@@ -2139,8 +2172,10 @@ void gpiod_set_value(struct gpio_desc *desc, int value)
 		return;
 	/* Should be using gpio_set_value_cansleep() */
 	WARN_ON(desc->chip->can_sleep);
+    // 如果该gpio设置为low->active映射,则意味着需要进行取反
 	if (test_bit(FLAG_ACTIVE_LOW, &desc->flags))
 		value = !value;
+    // 调用硬件接口写该gpio的值
 	_gpiod_set_raw_value(desc, value);
 }
 EXPORT_SYMBOL_GPL(gpiod_set_value);
@@ -2161,6 +2196,8 @@ EXPORT_SYMBOL_GPL(gpiod_cansleep);
 
 /**
  * gpiod_to_irq() - return the IRQ corresponding to a GPIO
+ * 返回指定gpio关联的中断号
+ *
  * @desc: gpio whose IRQ will be returned (already requested)
  *
  * Return the IRQ corresponding to the passed GPIO, or an error code in case of
@@ -2462,8 +2499,8 @@ static struct gpio_desc *gpiod_find(struct device *dev, const char *con_id,
 
 /**
  * gpio_get - obtain a GPIO for a given GPIO function
- * @dev:	GPIO consumer, can be NULL for system-global GPIOs
- * @con_id:	function within the GPIO consumer
+ * @dev:	GPIO consumer, can be NULL for system-global GPIOs  指向gpio的消费者device
+ * @con_id:	function within the GPIO consumer   该消费者device要请求的gpio功能名称
  *
  * Return the GPIO descriptor corresponding to the function con_id of device
  * dev, -ENOENT if no GPIO has been assigned to the requested function, or
