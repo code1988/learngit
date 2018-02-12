@@ -64,11 +64,12 @@ struct mxc_gpio_hwdata {
 	unsigned fall_edge;
 };
 
+// 定义了imx平台gpio端口抽象(内部对应了一个gpio控制器)
 struct mxc_gpio_port {
 	struct list_head node;
-	void __iomem *base;
-	int irq;
-	int irq_high;
+	void __iomem *base;     // 该gpio端口可操作的I/O内存基址,也就是寄存器基址
+	int irq;                // 该gpio端口拥有的普通中断号
+	int irq_high;           // 该gpio端口拥有的高优先级中断号
 	struct irq_domain *domain;
 	struct bgpio_chip bgc;
 	u32 both_edges;
@@ -169,6 +170,7 @@ static const struct of_device_id mxc_gpio_dt_ids[] = {
  * MX2 has one interrupt *for all* gpio ports. The list is used
  * to save the references to all ports, so that mx2_gpio_irq_handler
  * can walk through all interrupt status registers.
+ * 定义了一张全局链表,用于维护所有已经注册的imx平台gpio端口实例
  */
 static LIST_HEAD(mxc_gpio_ports);
 
@@ -405,6 +407,9 @@ static void mxc_gpio_get_hw(struct platform_device *pdev)
 	mxc_gpio_hwtype = hwtype;
 }
 
+/* imx平台获取指定gpio控制器上指定gpio关联的中断号
+ * @offset  该gpio在所属控制器上的相对偏移量,显然都是从0开始
+ */
 static int mxc_gpio_to_irq(struct gpio_chip *gc, unsigned offset)
 {
 	struct bgpio_chip *bgc = to_bgpio_chip(gc);
@@ -426,11 +431,12 @@ static int mxc_gpio_probe(struct platform_device *pdev)
     // 记录该gpio控制器设备使用的硬件平台信息
 	mxc_gpio_get_hw(pdev);
 
+    // 为该gpio控制器申请一个gpio端口实例
 	port = devm_kzalloc(&pdev->dev, sizeof(*port), GFP_KERNEL);
 	if (!port)
 		return -ENOMEM;
 
-    // 获取该gpio控制器设备拥有的0号I/O内存资源并映射到内存
+    // 获取该gpio控制器可操作的I/O内存资源并映射到内存空间,后续就可以通过这段内存来操作寄存器
 	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	port->base = devm_ioremap_resource(&pdev->dev, iores);
 	if (IS_ERR(port->base))
@@ -448,6 +454,7 @@ static int mxc_gpio_probe(struct platform_device *pdev)
 	writel(0, port->base + GPIO_IMR);
 	writel(~0, port->base + GPIO_ISR);
 
+    // 根据当前使用的gpio硬件平台类型执行不同的中断设置
 	if (mxc_gpio_hwtype == IMX21_GPIO) {
 		/*
 		 * Setup one handler for all GPIO interrupts. Actually setting
@@ -467,6 +474,7 @@ static int mxc_gpio_probe(struct platform_device *pdev)
 		}
 	}
 
+    // 初始化该基础内存映射gpio控制器(其中包括了一部分底层提供的接口和寄存器的注册)
 	err = bgpio_init(&port->bgc, &pdev->dev, 4,
 			 port->base + GPIO_PSR,
 			 port->base + GPIO_DR, NULL,
@@ -474,14 +482,17 @@ static int mxc_gpio_probe(struct platform_device *pdev)
 	if (err)
 		goto out_bgio;
 
+    // 注册了gpio_chip->to_irq方法,计算该gpio控制器拥有的gpio全局编号基址
 	port->bgc.gc.to_irq = mxc_gpio_to_irq;
 	port->bgc.gc.base = (pdev->id < 0) ? of_alias_get_id(np, "gpio") * 32 :
 					     pdev->id * 32;
 
+    // 将初始化完毕的gpio控制器注册到内核
 	err = gpiochip_add(&port->bgc.gc);
 	if (err)
 		goto out_bgpio_remove;
 
+    // 分配并初始化32个中断描述符
 	irq_base = irq_alloc_descs(-1, 0, 32, numa_node_id());
 	if (irq_base < 0) {
 		err = irq_base;
@@ -498,6 +509,7 @@ static int mxc_gpio_probe(struct platform_device *pdev)
 	/* gpio-mxc can be a generic irq chip */
 	mxc_gpio_init_gc(port, irq_base);
 
+    // 最后将初始化完毕的gpio端口实例插入全局的mxc_gpio_ports链表
 	list_add_tail(&port->node, &mxc_gpio_ports);
 
 	return 0;

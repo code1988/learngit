@@ -85,6 +85,7 @@ int __weak of_node_to_nid(struct device_node *np)
 #if defined(CONFIG_OF_DYNAMIC)
 /**
  *	of_node_get - Increment refcount of a node
+ *	自增指定dts节点的引用计数
  *	@node:	Node to inc refcount, NULL is supported to
  *		simplify writing of callers
  *
@@ -1873,8 +1874,10 @@ void of_alias_scan(void * (*dt_alloc)(u64 size, u64 align))
 
 /**
  * of_alias_get_id - Get alias id for the given device_node
- * @np:		Pointer to the given device_node
- * @stem:	Alias stem of the given device_node
+ * 返回指定dts节点在alias的dts节点中对应的唯一编号
+ *
+ * @np:		Pointer to the given device_node        要查找对应别名的dts节点
+ * @stem:	Alias stem of the given device_node     别名的前缀部分
  *
  * The function travels the lookup table to get alias id for the given
  * device_node and alias stem.  It returns the alias id if find it.

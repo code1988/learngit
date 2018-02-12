@@ -796,7 +796,7 @@ static struct class gpio_class = {
 
 /**
  * gpiod_export - export a GPIO through sysfs
- * 导出指定gpio到用户空间的sysfs(前提是该gpio已经执行了gpiod_request)
+ * 导出指定gpio到用户空间的sysfs(前提是该gpio已经申请成功)
  *
  * @gpio: gpio to make available, already requested 
  * @direction_may_change: true if userspace may change gpio direction   标识是否允许用户空间改变输入/输出模式
@@ -1027,6 +1027,7 @@ void gpiod_unexport(struct gpio_desc *desc)
 }
 EXPORT_SYMBOL_GPL(gpiod_unexport);
 
+// 将指定gpio控制器导出到用户空间的sysfs
 static int gpiochip_export(struct gpio_chip *chip)
 {
 	int		status;
@@ -1257,6 +1258,7 @@ int gpiochip_add(struct gpio_chip *chip)
 	of_gpiochip_add(chip);
 	acpi_gpiochip_add(chip);
 
+    // 最后将该gpio控制器导出到用户空间的sysfs
 	status = gpiochip_export(chip);
 	if (status) {
 		acpi_gpiochip_remove(chip);
@@ -1485,7 +1487,7 @@ EXPORT_SYMBOL_GPL(gpiochip_remove_pin_ranges);
 /* These "optional" allocation calls help prevent drivers from stomping
  * on each other, and help provide better diagnostics in debugfs.
  * They're called even less than the "set direction" calls.
- * 向内核申请指定gpio，只有成功申请到后才可以使用该gpio
+ * 向内核申请指定gpio(仅供内部使用)
  */
 static int gpiod_request(struct gpio_desc *desc, const char *label)
 {
@@ -1551,14 +1553,17 @@ done:
 	return status;
 }
 
-// 向内核申请指定gpio(旧式接口)
+/* 向内核申请指定gpio，只有成功申请到后才可以使用该gpio
+ *
+ * 备注:旧式接口,实际也是通过基于描述符的接口实现
+ */
 int gpio_request(unsigned gpio, const char *label)
 {
 	return gpiod_request(gpio_to_desc(gpio), label);
 }
 EXPORT_SYMBOL_GPL(gpio_request);
 
-// 释放由gpiod_request申请到的gpio
+// 释放申请到的gpio(仅供内部使用)
 static void gpiod_free(struct gpio_desc *desc)
 {
 	unsigned long		flags;
@@ -1595,7 +1600,10 @@ static void gpiod_free(struct gpio_desc *desc)
 	spin_unlock_irqrestore(&gpio_lock, flags);
 }
 
-// 释放由gpio_request申请到的gpio(旧式接口)
+/* 释放由gpio_request申请到的gpio
+ *
+ * 备注:旧式接口,实际也是通过基于描述符的接口实现
+ */
 void gpio_free(unsigned gpio)
 {
 	gpiod_free(gpio_to_desc(gpio));
@@ -2196,7 +2204,7 @@ EXPORT_SYMBOL_GPL(gpiod_cansleep);
 
 /**
  * gpiod_to_irq() - return the IRQ corresponding to a GPIO
- * 返回指定gpio关联的中断号
+ * 返回指定gpio关联的中断号(确保该gpio已经申请成功)
  *
  * @desc: gpio whose IRQ will be returned (already requested)
  *
@@ -2499,21 +2507,28 @@ static struct gpio_desc *gpiod_find(struct device *dev, const char *con_id,
 
 /**
  * gpio_get - obtain a GPIO for a given GPIO function
- * @dev:	GPIO consumer, can be NULL for system-global GPIOs  指向gpio的消费者device
+ * 指定消费者device获取指定gpio功能对应的gpio描述符
+ *
+ * @dev:	GPIO consumer, can be NULL for system-global GPIOs  指向gpio的消费者device,可以为NULL
  * @con_id:	function within the GPIO consumer   该消费者device要请求的gpio功能名称
  *
  * Return the GPIO descriptor corresponding to the function con_id of device
  * dev, -ENOENT if no GPIO has been assigned to the requested function, or
  * another IS_ERR() code if an error occured while trying to acquire the GPIO.
+ *
+ * 备注:新式接口,跟老式的gpio_request对应
  */
 struct gpio_desc *__must_check gpiod_get(struct device *dev, const char *con_id)
 {
+    // 如果一个gpio功能对应了多个可选gpio管脚,显然这里只会获取第一个配置
 	return gpiod_get_index(dev, con_id, 0);
 }
 EXPORT_SYMBOL_GPL(gpiod_get);
 
 /**
  * gpiod_get_index - obtain a GPIO from a multi-index GPIO function
+ * 指定消费者device获取指定gpio功能对应的gpio描述符,对于有多个可选可选gpio管脚的情况,本接口可以选择具体哪个
+ *
  * @dev:	GPIO consumer, can be NULL for system-global GPIOs
  * @con_id:	function within the GPIO consumer
  * @idx:	index of the GPIO to obtain in the consumer
@@ -2558,6 +2573,7 @@ struct gpio_desc *__must_check gpiod_get_index(struct device *dev,
 		return desc;
 	}
 
+    // 和老式接口一样,最后也是在这里向内核申请
 	status = gpiod_request(desc, con_id);
 
 	if (status < 0)
@@ -2576,6 +2592,7 @@ EXPORT_SYMBOL_GPL(gpiod_get_index);
 
 /**
  * gpiod_put - dispose of a GPIO descriptor
+ * 释放指定的gpio描述符
  * @desc:	GPIO descriptor to dispose of
  *
  * No descriptor can be used after gpiod_put() has been called on it.

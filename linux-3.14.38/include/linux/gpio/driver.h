@@ -67,6 +67,7 @@ struct gpio_chip {
 	struct module		*owner;
 	struct list_head        list;
 
+    // 以下这部分底层接口由gpio控制器底层驱动提供,主要位于bgpio_init
 	int			(*request)(struct gpio_chip *chip,
 						unsigned offset);   
 	void			(*free)(struct gpio_chip *chip,
@@ -78,7 +79,7 @@ struct gpio_chip {
 	int			(*direction_output)(struct gpio_chip *chip,
 						unsigned offset, int value);
 	int			(*get)(struct gpio_chip *chip,
-						unsigned offset);
+						unsigned offset);           // 默认指向bgpio_get
 	void			(*set)(struct gpio_chip *chip,
 						unsigned offset, int value);
 	int			(*set_debounce)(struct gpio_chip *chip,
@@ -86,13 +87,13 @@ struct gpio_chip {
 						unsigned debounce);
 
 	int			(*to_irq)(struct gpio_chip *chip,
-						unsigned offset);
+						unsigned offset);           // imx平台上默认指向mxc_gpio_to_irq
 
 	void			(*dbg_show)(struct seq_file *s,
 						struct gpio_chip *chip);
-	int			base;           // 该gpio控制器可操作的第一个gpio编号
+	int			base;           // 该gpio控制器可操作的第一个gpio全局编号
 	u16			ngpio;          // 该gpio控制器可操作的gpio数量
-	struct gpio_desc	*desc;  // 该gpio控制器可操作的第一个gpio描述符
+	struct gpio_desc	*desc;  // 该gpio控制器可操作的第一个gpio描述符地址
 	const char		*const *names;
 	bool			can_sleep;
 	bool			exported;

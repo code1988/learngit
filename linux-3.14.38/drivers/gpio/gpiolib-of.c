@@ -285,6 +285,7 @@ static void of_gpiochip_add_pin_range(struct gpio_chip *chip)
 static void of_gpiochip_add_pin_range(struct gpio_chip *chip) {}
 #endif
 
+// 从指定gpio控制器关联的dts节点中获取相关配置信息(目前主要是获取了gpio-ranges属性)
 void of_gpiochip_add(struct gpio_chip *chip)
 {
     // 该gpio控制器关联的dts节点还可以从对应的device处间接获取
@@ -299,7 +300,9 @@ void of_gpiochip_add(struct gpio_chip *chip)
 		chip->of_xlate = of_gpio_simple_xlate;
 	}
 
+    // 从该gpio控制器关联的dts节点中获取"gpio-ranges"相关信息
 	of_gpiochip_add_pin_range(chip);
+    // 最后持有一下该dts节点
 	of_node_get(chip->of_node);
 }
 

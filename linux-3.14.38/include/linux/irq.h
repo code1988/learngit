@@ -452,6 +452,7 @@ extern void
 __irq_set_handler(unsigned int irq, irq_flow_handler_t handle, int is_chained,
 		  const char *name);
 
+// 为指定中断号注册中断处理函数
 static inline void
 irq_set_handler(unsigned int irq, irq_flow_handler_t handle)
 {
@@ -462,6 +463,8 @@ irq_set_handler(unsigned int irq, irq_flow_handler_t handle)
  * Set a highlevel chained flow handler for a given IRQ.
  * (a chained handler is automatically enabled and set to
  *  IRQ_NOREQUEST, IRQ_NOPROBE, and IRQ_NOTHREAD)
+ * 
+ * 为指定中断号注册中断处理函数,跟上面那个接口的区别在于该中断号会被标记为不可request,不可probe,不可线程化
  */
 static inline void
 irq_set_chained_handler(unsigned int irq, irq_flow_handler_t handle)

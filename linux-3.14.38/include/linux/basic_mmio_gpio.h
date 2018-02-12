@@ -29,20 +29,23 @@ struct device;
 struct bgpio_chip {
 	struct gpio_chip gc;    // 封装的gpio控制器基类
 
-	unsigned long (*read_reg)(void __iomem *reg);
-	void (*write_reg)(void __iomem *reg, unsigned long data);
+	unsigned long (*read_reg)(void __iomem *reg);               // 通用的读寄存器接口
+	void (*write_reg)(void __iomem *reg, unsigned long data);   // 通用的写寄存器接口
 
-	void __iomem *reg_dat;
-	void __iomem *reg_set;
-	void __iomem *reg_clr;
-	void __iomem *reg_dir;
+	void __iomem *reg_dat;  // 指向一个获取数据类寄存器,imx6ul平台指向GPIO_PSR寄存器
+	void __iomem *reg_set;  // 指向一个设置类寄存器,imx6ul平台指向GPIO_DR寄存器
+	void __iomem *reg_clr;  // 指向一个清除类寄存器,imx6ul平台没有使用
+	void __iomem *reg_dir;  // 指向一个设置方向类寄存器,imx6ul平台指向GPIO_GDR寄存器
 
-	/* Number of bits (GPIOs): <register width> * 8. */
+	/* Number of bits (GPIOs): <register width> * 8. 
+     * 每个gpio寄存器位数,32位平台下通常就是32位
+     * */
 	int bits;
 
 	/*
 	 * Some GPIO controllers work with the big-endian bits notation,
 	 * e.g. in a 8-bits register, GPIO7 is the least significant bit.
+     * 指向gpio编号到对应寄存器位的映射关系
 	 */
 	unsigned long (*pin2mask)(struct bgpio_chip *bgc, unsigned int pin);
 
@@ -52,10 +55,14 @@ struct bgpio_chip {
 	 */
 	spinlock_t lock;
 
-	/* Shadowed data register to clear/set bits safely. */
+	/* Shadowed data register to clear/set bits safely. 
+     * 跟踪记录设置类/获取数据类寄存器的数据
+     * */
 	unsigned long data;
 
-	/* Shadowed direction registers to clear/set direction safely. */
+	/* Shadowed direction registers to clear/set direction safely. 
+     * 跟踪记录设置方向类寄存器的数据
+     * */
 	unsigned long dir;
 };
 
