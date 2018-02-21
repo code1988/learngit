@@ -537,6 +537,7 @@ bufferevent_socket_get_dns_error(struct bufferevent *bev)
 	return rv;
 }
 
+#if 0   // 废弃
 /*
  * Create a new buffered event object.
  *
@@ -562,7 +563,7 @@ bufferevent_new(evutil_socket_t fd,
 
 	return bufev;
 }
-
+#endif
 
 static int
 be_socket_enable(struct bufferevent *bufev, short event)
@@ -654,7 +655,11 @@ be_socket_setfd(struct bufferevent *bufev, evutil_socket_t fd)
 	BEV_UNLOCK(bufev);
 }
 
-/* XXXX Should non-socket bufferevents support this? */
+/* XXXX Should non-socket bufferevents support this? 
+ * 设置指定bufferevent的优先级(机制类似于event优先级)
+ *
+ * 备注：目前本函数只支持基于套接字的bufferevent
+ * */
 int
 bufferevent_priority_set(struct bufferevent *bufev, int priority)
 {
@@ -675,7 +680,11 @@ done:
 	return r;
 }
 
-/* XXXX Should non-socket bufferevents support this? */
+/* XXXX Should non-socket bufferevents support this? 
+ * 设置指定bufferevent所属的event_base
+ *
+ * 备注：目前本函数只支持基于套接字的bufferevent
+ * */
 int
 bufferevent_base_set(struct event_base *base, struct bufferevent *bufev)
 {

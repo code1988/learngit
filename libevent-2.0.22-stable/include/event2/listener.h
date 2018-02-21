@@ -74,7 +74,7 @@ typedef void (*evconnlistener_errorcb)(struct evconnlistener *, void *);
 #define LEV_OPT_CLOSE_ON_EXEC		(1u<<2)
 /** Flag: Indicates that we should disable the timeout (if any) between when
  * this socket is closed and when we can listen again on the same port. 
- * 表示为连接监听器的底层套接字设置SO_REUSEPORT特性
+ * 表示为连接监听器的底层套接字设置SO_REUSEADDR特性
  * */
 #define LEV_OPT_REUSEABLE		(1u<<3)
 /** Flag: Indicates that the listener should be locked so it's safe to use

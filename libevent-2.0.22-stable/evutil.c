@@ -319,7 +319,7 @@ evutil_make_socket_nonblocking(evutil_socket_t fd)
 	return 0;
 }
 
-// libevent封装的平台无关的设置套接字的SO_REUSEADD特性
+// libevent封装的平台无关的设置套接字的SO_REUSEADDR特性
 int
 evutil_make_listen_socket_reuseable(evutil_socket_t sock)
 {

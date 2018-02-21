@@ -96,11 +96,11 @@ extern "C" {
 
     @{
 */
-#define BEV_EVENT_READING	0x01	/**< error encountered while reading    读操作时出错 */
-#define BEV_EVENT_WRITING	0x02	/**< error encountered while writing    读操作时出错 */
+#define BEV_EVENT_READING	0x01	/**< error encountered while reading    读操作时遇到问题(一般会同时设置BEV_EVENT_TIMEOUT) */
+#define BEV_EVENT_WRITING	0x02	/**< error encountered while writing    读操作时遇到问题(一般会同时设置BEV_EVENT_TIMEOUT) */
 #define BEV_EVENT_EOF		0x10	/**< eof file reached                   遇到文件结束指示 */
 #define BEV_EVENT_ERROR		0x20	/**< unrecoverable error encountered    遇到不可恢复的错误 */
-#define BEV_EVENT_TIMEOUT	0x40	/**< user-specified timeout reached     发生用户指定的超时 */
+#define BEV_EVENT_TIMEOUT	0x40	/**< user-specified timeout reached     发生用户指定的超时(一般就是读超时或写超时) */
 #define BEV_EVENT_CONNECTED	0x80	/**< connect operation finished.        connect操作完成 */
 /**@}*/
 

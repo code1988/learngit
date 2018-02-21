@@ -589,6 +589,7 @@ evbuffer_unlock(struct evbuffer *buf)
 	EVBUFFER_UNLOCK(buf);
 }
 
+// 获取指定缓冲区中的数据长度
 size_t
 evbuffer_get_length(const struct evbuffer *buffer)
 {
