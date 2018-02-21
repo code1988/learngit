@@ -2668,9 +2668,9 @@ const char *event_get_method(void)
 }
 
 #ifndef _EVENT_DISABLE_MM_REPLACEMENT
-static void *(*_mm_malloc_fn)(size_t sz) = NULL;
-static void *(*_mm_realloc_fn)(void *p, size_t sz) = NULL;
-static void (*_mm_free_fn)(void *p) = NULL;
+static void *(*_mm_malloc_fn)(size_t sz) = NULL;            // 记录libevent当前使用的malloc函数
+static void *(*_mm_realloc_fn)(void *p, size_t sz) = NULL;  // 记录libevent当前使用的realloc函数
+static void (*_mm_free_fn)(void *p) = NULL;                 // 记录libevent当前使用的free函数
 
 void *
 event_mm_malloc_(size_t sz)
@@ -2729,6 +2729,9 @@ event_mm_free_(void *ptr)
 		free(ptr);
 }
 
+/* 使用自定义的内存管理函数
+ * libevent默认使用C库的内存管理函数
+ */
 void
 event_set_mem_functions(void *(*malloc_fn)(size_t sz),
 			void *(*realloc_fn)(void *ptr, size_t sz),
