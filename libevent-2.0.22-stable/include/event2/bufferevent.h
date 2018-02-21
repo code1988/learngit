@@ -120,6 +120,7 @@ struct sockaddr;
 
 /**
    A read or write callback for a bufferevent.
+   定义了bufferevent可读/可写回调函数的格式
 
    The read callback is triggered when new data arrives in the input
    buffer and the amount of readable data exceed the low watermark

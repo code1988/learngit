@@ -340,10 +340,11 @@ bufferevent_init_common(struct bufferevent_private *bufev_private,
 	return 0;
 }
 
-/* 设置bufferevent的3个回调函数（需要禁用某个可以填NULL）
- * @readcb  已经读取足够的数据时触发回调
- * @writecb 已经写入足够的数据时触发回调
- * @eventcb 发生错误时触发回调
+/* 设置指定bufferevent的3个回调函数（需要禁用某个可以填NULL）
+ * @readcb  已经读取满足设置量的数据时触发回调
+ * @writecb 到达满足设置量的写入空间时触发回调
+ * @eventcb 发生bufferevent事件时触发回调
+ * @cbarg   传递给各个回调函数的共同参数
  */
 void bufferevent_setcb(struct bufferevent *bufev,
     bufferevent_data_cb readcb, bufferevent_data_cb writecb,
@@ -359,12 +360,14 @@ void bufferevent_setcb(struct bufferevent *bufev,
 	BEV_UNLOCK(bufev);
 }
 
+// 返回指定bufferevent的输入缓冲
 struct evbuffer *
 bufferevent_get_input(struct bufferevent *bufev)
 {
 	return bufev->input;
 }
 
+// 返回指定bufferevent的输出缓冲
 struct evbuffer *
 bufferevent_get_output(struct bufferevent *bufev)
 {
@@ -407,6 +410,11 @@ bufferevent_read_buffer(struct bufferevent *bufev, struct evbuffer *buf)
 	return (evbuffer_add_buffer(buf, bufev->input));
 }
 
+/* 使能指定bufferevent的指定触发条件
+ * @event   bufferevent的触发条件集合(EV_READ/EV_WRITE)
+ *
+ * 备注：缺省情况下，新创建的bufferevent启用了EV_WRITE，但没有启用EV_READ
+ */
 int
 bufferevent_enable(struct bufferevent *bufev, short event)
 {
@@ -515,8 +523,16 @@ bufferevent_disable(struct bufferevent *bufev, short event)
 
 /*
  * Sets the water marks
+ * 调整指定bufferevent的输入/输出缓冲区水位
+ * @events      EV_READ表示要调整读取水位   EV_WRITE表示要调整写入水位 
+ * @lowmark     设置下限水位
+ * @highmark    设置上限水位，0表示无限
+ *
+ * 备注：输入缓冲区中数据量超过读取水位下限时，bufferevent将调用读取回调(缺省读取水位下限为0，意味着底层每个读操作都会导致读取回调被调用);
+ *       输入缓冲区中数据量超过读取水位上限时，bufferevent将停止从底层读取数据;
+ *       输出缓冲区中数据量跌破写入水位下限时，bufferevent将调用写入回调(缺省写入水位下限为0，意味着只有当输出缓冲区为空时才会调用写入回调);
+ *       输出缓冲区中数据量超过写入水位上限时，bufferevent将阻止上层往其中写入数据(写入水位上限只对过滤型bufferevent有意义)
  */
-
 void
 bufferevent_setwatermark(struct bufferevent *bufev, short events,
     size_t lowmark, size_t highmark)
@@ -676,7 +692,10 @@ bufferevent_decref(struct bufferevent *bufev)
 	return _bufferevent_decref_and_unlock(bufev);
 }
 
-// 释放bufferevent
+/* 释放指定bufferevent(在内部的引用计数未清0前不会真正释放)
+ *
+ * 备注：如果该bufferevent设置了BEV_OPT_CLOSE_ON_FREE，则真正销毁时会同时释放其底层的套接字和bufferevent(如果存在)
+ */
 void bufferevent_free(struct bufferevent *bufev)
 {
 	BEV_LOCK(bufev);
@@ -769,6 +788,7 @@ _bufferevent_cancel_all(struct bufferevent *bev)
 	BEV_UNLOCK(bev);
 }
 
+// 获取指定bufferevent已经启用的触发条件
 short
 bufferevent_get_enabled(struct bufferevent *bufev)
 {
