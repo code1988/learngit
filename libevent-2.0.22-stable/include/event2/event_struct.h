@@ -59,7 +59,7 @@ extern "C" {
 #define EVLIST_SIGNAL	0x04
 #define EVLIST_ACTIVE	0x08
 #define EVLIST_INTERNAL	0x10
-#define EVLIST_INIT	0x80
+#define EVLIST_INIT	0x80        // 标识事件已经初始化
 
 /* EVLIST_X_ Private space: 0x1000-0xf000 */
 #define EVLIST_ALL	(0xf000 | 0x9f)

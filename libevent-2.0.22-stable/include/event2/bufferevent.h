@@ -90,17 +90,18 @@ extern "C" {
 #include <event2/util.h>
 
 /** @name Bufferevent event codes
+ *  bufferevent的读写以外的事件类型定义
 
     These flags are passed as arguments to a bufferevent's event callback.
 
     @{
 */
-#define BEV_EVENT_READING	0x01	/**< error encountered while reading */
-#define BEV_EVENT_WRITING	0x02	/**< error encountered while writing */
-#define BEV_EVENT_EOF		0x10	/**< eof file reached */
-#define BEV_EVENT_ERROR		0x20	/**< unrecoverable error encountered */
-#define BEV_EVENT_TIMEOUT	0x40	/**< user-specified timeout reached */
-#define BEV_EVENT_CONNECTED	0x80	/**< connect operation finished. */
+#define BEV_EVENT_READING	0x01	/**< error encountered while reading    读操作时出错 */
+#define BEV_EVENT_WRITING	0x02	/**< error encountered while writing    读操作时出错 */
+#define BEV_EVENT_EOF		0x10	/**< eof file reached                   遇到文件结束指示 */
+#define BEV_EVENT_ERROR		0x20	/**< unrecoverable error encountered    遇到不可恢复的错误 */
+#define BEV_EVENT_TIMEOUT	0x40	/**< user-specified timeout reached     发生用户指定的超时 */
+#define BEV_EVENT_CONNECTED	0x80	/**< connect operation finished.        connect操作完成 */
 /**@}*/
 
 /**
@@ -134,6 +135,7 @@ typedef void (*bufferevent_data_cb)(struct bufferevent *bev, void *ctx);
 
 /**
    An event/error callback for a bufferevent.
+   定义了bufferevent的事件回调函数的格式
 
    The event callback is triggered if either an EOF condition or another
    unrecoverable error was encountered.
@@ -152,18 +154,18 @@ typedef void (*bufferevent_event_cb)(struct bufferevent *bev, short what, void *
 enum bufferevent_options {
 	/** If set, we close the underlying file
 	 * descriptor/bufferevent/whatever when this bufferevent is freed. 
-     * 该标志表示当释放bufferevent时会同时关闭底层的fd和bufferevent
+     * 释放该bufferevent时会同时关闭其底层的套接字和bufferevent(如果存在)
      * */
 	BEV_OPT_CLOSE_ON_FREE = (1<<0),
 
 	/** If set, and threading is enabled, operations on this bufferevent
 	 * are protected by a lock 
-     * 该标志表示可以在多个线程中操作bufferevent
+     * 为该bufferevent添加锁使其线程安全
      * */
 	BEV_OPT_THREADSAFE = (1<<1),
 
 	/** If set, callbacks are run deferred in the event loop. 
-     * 该标志表示所有回调函数都将会被延迟
+     * 使该bufferevent的所有回调函数都将会被延迟
      * */
 	BEV_OPT_DEFER_CALLBACKS = (1<<2),
 
@@ -171,7 +173,7 @@ enum bufferevent_options {
 	* bufferevent.  This option currently requires that
 	* BEV_OPT_DEFER_CALLBACKS also be set; a future version of Libevent
 	* might remove the requirement.
-    * 该标志会使执行回调时不进行锁定
+    * 使该bufferevent执行回调前不进行锁定(前提是设置了BEV_OPT_THREADSAFE ?)
     * */
 	BEV_OPT_UNLOCK_CALLBACKS = (1<<3)
 };

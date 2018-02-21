@@ -89,6 +89,7 @@ extern "C" {
 /** This structure describes the interface a threading library uses for
  * locking.   It's used to tell evthread_set_lock_callbacks() how to use
  * locking on this platform.
+ * 当使用自定义的线程API时会用到该结构，该结构描述了线程锁的相关信息
  */
 struct evthread_lock_callbacks {
 	/** The current version of the locking API.  Set this to

@@ -167,6 +167,9 @@ extern int _event_debug_mode_on;
 #define EVENT_DEBUG_MODE_IS_ON() (0)
 #endif
 
+/* libevent用于描述每种事件模型(可以认为就是select/epoll/poll/kqueue等)的集合.
+ * 每个线程最多只能运行一个event_base的事件循环(也就是单线程的进程中只会存在一个event_base)
+ */
 struct event_base {
 	/** Function pointers and other data to describe this event_base's
 	 * backend. */
@@ -192,9 +195,13 @@ struct event_base {
 	int event_count_active;
 
 	/** Set if we should terminate the loop once we're done processing
-	 * events. */
+	 * events. 
+     * 通常调用了event_base_loopexit会设置该标志
+     * */
 	int event_gotterm;
-	/** Set if we should terminate the loop immediately */
+	/** Set if we should terminate the loop immediately 
+     * 通常调用了event_base_loopbreak会设置该标志
+     * */
 	int event_break;
 	/** Set if we should start a new instance of the loop immediately. */
 	int event_continue;
@@ -300,7 +307,9 @@ struct event_config_entry {
 };
 
 /** Internal structure: describes the configuration we want for an event_base
- * that we're about to allocate. */
+ * that we're about to allocate. 
+ * 该结构包含了对event_base的配置信息
+ * */
 struct event_config {
 	TAILQ_HEAD(event_configq, event_config_entry) entries;
 

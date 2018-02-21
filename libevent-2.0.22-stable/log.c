@@ -193,7 +193,7 @@ _warn_helper(int severity, const char *errstr, const char *fmt, va_list ap)
 
 static event_log_cb log_fn = NULL;
 
-/* 设置自定义的log回调函数
+/* 设置自定义的libevent内部log回调函数
  * log默认输出到stderr
  * 传入NULL可以恢复默认行为
  * 在自定义的log回调函数中调用libevent函数目前是不安全的

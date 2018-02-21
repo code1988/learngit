@@ -291,6 +291,7 @@ evutil_ersatz_socketpair(int family, int type, int protocol,
 #undef ERR
 }
 
+// libevent封装的平台无关的设置套接字为非阻塞
 int
 evutil_make_socket_nonblocking(evutil_socket_t fd)
 {
@@ -318,6 +319,7 @@ evutil_make_socket_nonblocking(evutil_socket_t fd)
 	return 0;
 }
 
+// libevent封装的平台无关的设置套接字的SO_REUSEADD特性
 int
 evutil_make_listen_socket_reuseable(evutil_socket_t sock)
 {
@@ -333,6 +335,7 @@ evutil_make_listen_socket_reuseable(evutil_socket_t sock)
 #endif
 }
 
+// libevent封装的平台无关的设置套接字的close-on-exec特性
 int
 evutil_make_socket_closeonexec(evutil_socket_t fd)
 {
@@ -350,6 +353,7 @@ evutil_make_socket_closeonexec(evutil_socket_t fd)
 	return 0;
 }
 
+// libevent封装的平台无关的关闭套接字
 int
 evutil_closesocket(evutil_socket_t sock)
 {

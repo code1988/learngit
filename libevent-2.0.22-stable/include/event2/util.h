@@ -271,7 +271,7 @@ extern "C" {
 #ifdef WIN32
 #define evutil_socket_t intptr_t
 #else
-#define evutil_socket_t int
+#define evutil_socket_t int     // 封装的套接字类型
 #endif
 
 /** Create two new sockets that are connected to each other.
@@ -370,8 +370,14 @@ const char *evutil_socket_error_to_string(int errcode);
 /**
  * @name Manipulation macros for struct timeval.
  *
+ * 以下是libevent封装的平台无关的timeval操作宏
  * We define replacements
- * for timeradd, timersub, timerclear, timercmp, and timerisset.
+ * for 
+ *      timeradd    tvp + uvp, 结果存放到vvp
+ *      timersub    tvp - uvp, 结果存放到vvp
+ *      timerclear  清空tvp
+ *      timercmp    判断 tvp tmp uvp是否成立, 成立返回1,不成立返回0,其中tmp可以是==、<、>、<=、>=
+ *      timerisset  判断tvp是否已经设置为非0值，已经设置返回1,没有设置返回0
  *
  * @{
  */
@@ -430,7 +436,9 @@ const char *evutil_socket_error_to_string(int errcode);
 /** Parse a 64-bit value from a string.  Arguments are as for strtol. */
 ev_int64_t evutil_strtoll(const char *s, char **endptr, int base);
 
-/** Replacement for gettimeofday on platforms that lack it. */
+/** Replacement for gettimeofday on platforms that lack it. 
+ *  libevent封装的平台无关的gettimeofday
+ * */
 #ifdef _EVENT_HAVE_GETTIMEOFDAY
 #define evutil_gettimeofday(tv, tz) gettimeofday((tv), (tz))
 #else
@@ -440,6 +448,7 @@ int evutil_gettimeofday(struct timeval *tv, struct timezone *tz);
 
 /** Replacement for snprintf to get consistent behavior on platforms for
     which the return value of snprintf does not conform to C99.
+    libevent封装的平台无关的snprintf
  */
 int evutil_snprintf(char *buf, size_t buflen, const char *format, ...)
 #ifdef __GNUC__

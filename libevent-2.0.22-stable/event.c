@@ -91,7 +91,9 @@ extern const struct eventop devpollops;
 extern const struct eventop win32ops;
 #endif
 
-/* Array of backends in order of preference. */
+/* Array of backends in order of preference. 
+ * libevent支持的事件模型表
+ * */
 static const struct eventop *eventops[] = {
 #ifdef _EVENT_HAVE_EVENT_PORTS
 	&evportops,
@@ -387,6 +389,12 @@ gettime(struct event_base *base, struct timeval *tp)
 	return (evutil_gettimeofday(tp, NULL));
 }
 
+/* 获取libevent内部缓存的当前时间
+ * @tv  内部缓存的当前时间将会通过tv返回
+ *
+ * 备注：如果当前正在执行事件回调，则libevent返回开始执行回调时缓存的时间值；
+ *       否则libevent实时返回真正的当前时间值
+ */
 int
 event_base_gettimeofday_cached(struct event_base *base, struct timeval *tv)
 {
@@ -428,6 +436,7 @@ update_time_cache(struct event_base *base)
 	    gettime(base, &base->tv_cache);
 }
 
+#if 0 //作废
 struct event_base *
 event_init(void)
 {
@@ -442,7 +451,9 @@ event_init(void)
 
 	return (base);
 }
+#endif
 
+// 创建并返回一个新的具有默认配置的event_base(通常情况下都只需要使用该接口就够了)
 struct event_base *
 event_base_new(void)
 {
@@ -487,6 +498,7 @@ event_is_method_disabled(const char *name)
 	return (evutil_getenv(environment) != NULL);
 }
 
+// 返回指定event_base当前支持的特征集合
 int
 event_base_get_features(const struct event_base *base)
 {
@@ -515,6 +527,13 @@ event_base_get_deferred_cb_queue(struct event_base *base)
 	return base ? &base->defer_queue : NULL;
 }
 
+/* 开启事件的调试功能，开启该功能后，当检测到以下2个典型的事件错误：
+ *      将未初始化的event结构当成已经初始化的；
+ *      试图重新初始化未决的event结构.
+ * libevent会发出报告
+ *
+ * 备注：必须在创建任何event_base之前调用该函数
+ */
 void
 event_enable_debug_mode(void)
 {
@@ -548,6 +567,15 @@ event_disable_debug_mode(void)
 }
 #endif
 
+/* 创建并返回一个新的具有自定义配置的event_base
+ * @cfg - 指向一份自定义的配置
+ *
+ * 备注：使用本函数的通常步骤是
+ *          [1]. 先调用event_config_new分配一个event_config
+ *          [2]. 对该event_config调用event_config_avoid_method/event_config_require_features/event_config_set_flag等函数，设置所需要的event_base特征
+ *          [3]. 调用本函数创建具有自定义特征的event_base
+ *          [4]. 调用event_config_free释放event_config
+ */
 struct event_base *
 event_base_new_with_config(const struct event_config *cfg)
 {
@@ -684,6 +712,7 @@ event_base_stop_iocp(struct event_base *base)
 #endif
 }
 
+// 销毁指定的event_base
 void
 event_base_free(struct event_base *base)
 {
@@ -791,7 +820,9 @@ event_base_free(struct event_base *base)
 	mm_free(base);
 }
 
-/* reinitialize the event base after a fork */
+/* reinitialize the event base after a fork 
+ * 重新初始化指定event_base(通常在fork之后调用)
+ * */
 int
 event_reinit(struct event_base *base)
 {
@@ -887,6 +918,7 @@ done:
 	return (res);
 }
 
+// 获取libevent支持的事件模型(select、poll、epoll等)列表
 const char **
 event_get_supported_methods(void)
 {
@@ -919,6 +951,7 @@ event_get_supported_methods(void)
 	return (methods);
 }
 
+// 申请一个event_config结构并返回
 struct event_config *
 event_config_new(void)
 {
@@ -940,6 +973,7 @@ event_config_entry_free(struct event_config_entry *entry)
 	mm_free(entry);
 }
 
+// 释放一个指定的event_config
 void
 event_config_free(struct event_config *cfg)
 {
@@ -952,6 +986,10 @@ event_config_free(struct event_config *cfg)
 	mm_free(cfg);
 }
 
+/* 设置event_config使创建的event_base包含指定特征
+ * @cfg     - 指向需要设置的event_config
+ * @flag    - event_base将会拥有的特征标志位集合 EVENT_BASE_FLAG_*
+ */
 int
 event_config_set_flag(struct event_config *cfg, int flag)
 {
@@ -961,6 +999,10 @@ event_config_set_flag(struct event_config *cfg, int flag)
 	return 0;
 }
 
+/* 设置event_config使创建的event_base不使用指定的事件方法(比如select/poll/queue等)
+ * @cfg     - 指向需要设置的event_config
+ * @method  - 需要避免使用的事件方法
+ */
 int
 event_config_avoid_method(struct event_config *cfg, const char *method)
 {
@@ -978,6 +1020,10 @@ event_config_avoid_method(struct event_config *cfg, const char *method)
 	return (0);
 }
 
+/* 设置event_config使创建的event_base必须使用满足指定功能的事件方法(比如select/poll/queue等)
+ * @cfg     - 指向需要设置的event_config
+ * @feature - 需要满足的功能集合 EV_FEATURE_*
+ */
 int
 event_config_require_features(struct event_config *cfg,
     int features)
@@ -997,12 +1043,19 @@ event_config_set_num_cpus_hint(struct event_config *cfg, int cpus)
 	return (0);
 }
 
+#if 0 // 作废
 int
 event_priority_init(int npriorities)
 {
 	return event_base_priority_init(current_base, npriorities);
 }
+#endif
 
+/* 设置指定event_base支持的优先级数量(缺省只支持1个，也就是不存在优先级)
+ * @npriorities     - 优先级数量，1~EVENT_MAX_PRIORITIES
+ *
+ * 备注：必须在该event_base的任何事件激活之前调用本函数，建议是创建event_base后立即调用
+ */
 int
 event_base_priority_init(struct event_base *base, int npriorities)
 {
@@ -1177,7 +1230,8 @@ common_timeout_callback(evutil_socket_t fd, short what, void *arg)
 }
 
 #define MAX_COMMON_TIMEOUTS 256
-
+/* 优化类API：为指定event_base设置一个公用超时值，返回一个不透明的timeval指针，后续可以使用该指针设置事件注册到O(1)队列
+ */
 const struct timeval *
 event_base_init_common_timeout(struct event_base *base,
     const struct timeval *duration)
@@ -1463,12 +1517,14 @@ int event_dispatch(void)
 }
 #endif
 
-// event_base_loop的flags = 0版，行为类似于设置EVLOOP_ONCE时
+// event_base_loop的flags = 0版，这种情况下指定event_base的事件循环将一直运行，直到没有注册的事件存在了
 int event_base_dispatch(struct event_base *event_base)
 {
 	return (event_base_loop(event_base, 0));
 }
 
+/* 返回指定event_base当前使用的事件模型
+ */
 const char *
 event_base_get_method(const struct event_base *base)
 {
@@ -1493,7 +1549,12 @@ int event_loopexit(const struct timeval *tv)
 }
 #endif
 
-// 让event base在给定时间后停止循环
+/* 让指定event_base在给定时间后退出循环
+ * @tv  为NULL时表示立即退出循环(但跟event_base_loopbreak的区别是，如果当前已经存在多个激活事件，本函数会等待这些激活事件全部处理完毕后才退出，
+ *      而event_base_loopbreak只会等待当前正在处理的事件结束，然后就立即退出了)
+ *
+ * 备注：不允许在执行事件循环的线程之外的其他线程中调用该event_base的该函数
+ */
 int event_base_loopexit(struct event_base *event_base, const struct timeval *tv)
 {
 	return (event_base_once(event_base, -1, EV_TIMEOUT, event_loopexit_cb,
@@ -1507,7 +1568,12 @@ int event_loopbreak(void)
 }
 #endif
 
-// 让event base立即停止循环
+/* 让指定event_base立即退出事件循环
+ * (但跟event_base_loopexit的区别是，如果当前已经存在多个激活事件，本函数只会等待当前正在处理的事件结束，然后就立即退出了，
+ *      而event_base_loopexit会等待这些激活事件全部处理完毕后才退出)
+ *
+ * 备注：不允许在执行事件循环的线程之外的其他线程中调用该event_base的该函数
+ */
 int event_base_loopbreak(struct event_base *event_base)
 {
 	int r = 0;
@@ -1526,7 +1592,7 @@ int event_base_loopbreak(struct event_base *event_base)
 	return r;
 }
 
-// 获取event base 中的break标志
+// 获取指定event_base中的break标志
 int event_base_got_break(struct event_base *event_base)
 {
 	int res;
@@ -1536,7 +1602,7 @@ int event_base_got_break(struct event_base *event_base)
 	return res;
 }
 
-// 获取event base 中的exit标志
+// 获取指定event_base中的exit标志
 int event_base_got_exit(struct event_base *event_base)
 {
 	int res;
@@ -1555,8 +1621,8 @@ int event_loop(int flags)
 }
 #endif
 
-/* 执行循环
- * flags参数决定了循环是否阻塞
+/* 指定event_base执行事件循环
+ * @flags   该标志用来设置事件循环时的行为(EVLOOP_*)，缺省为0，表示该event_base将一直运行直到其中没有了注册的事件
  */
 int event_base_loop(struct event_base *base, int flags)
 {
@@ -1682,6 +1748,7 @@ event_once_cb(evutil_socket_t fd, short events, void *arg)
 }
 
 /* not threadsafe, event scheduled once. */
+#if 0 // 作废
 int
 event_once(evutil_socket_t fd, short events,
     void (*callback)(evutil_socket_t, short, void *),
@@ -1689,8 +1756,16 @@ event_once(evutil_socket_t fd, short events,
 {
 	return event_base_once(current_base, fd, events, callback, arg, tv);
 }
+#endif
 
-/* Schedules an event once */
+/* Schedules an event once 
+ * 创建、注册"一次性"事件("一次性"意味着该事件一旦被触发，执行完相关回调后，libevent内部将会自动释放该事件)
+ * @fd      只允许设置文件描述符或-1(也就是不支持信号ID)
+ * @events  不支持EV_SIGNAL和EV_PERSIST 
+ *
+ * 备注：本函数完成了创建+注册到所属event_base的事件循环中的一条龙操作，
+ *       并且没有返回给用户事件句柄，意味着用户是无法对"一次性"事件进行注销/手动激活/设置优先级等操作的.
+ * */
 int
 event_base_once(struct event_base *base, evutil_socket_t fd, short events,
     void (*callback)(evutil_socket_t, short, void *),
@@ -1738,6 +1813,12 @@ event_base_once(struct event_base *base, evutil_socket_t fd, short events,
 	return (0);
 }
 
+/* 初始化已创建的事件，事件进入"已初始化和非未决"状态
+ * @ev  - 指向已经申请空间的event结构
+ *
+ * 备注：跟函数跟event_new的差别在于需要传入已经存在的event结构，显然该结构既可以是堆上申请的，也可以是静态分配的，甚至可以是栈上分配的
+ *       不能对已经注册到事件循环中的事件(也就是未决事件)调用本函数
+ */
 int
 event_assign(struct event *ev, struct event_base *base, evutil_socket_t fd, short events, void (*callback)(evutil_socket_t, short, void *), void *arg)
 {
@@ -1785,6 +1866,7 @@ event_assign(struct event *ev, struct event_base *base, evutil_socket_t fd, shor
 	return 0;
 }
 
+// 修改指定事件所属的event_base
 int
 event_base_set(struct event_base *base, struct event *ev)
 {
@@ -1800,6 +1882,7 @@ event_base_set(struct event_base *base, struct event *ev)
 	return (0);
 }
 
+#if 0   // 作废
 void
 event_set(struct event *ev, evutil_socket_t fd, short events,
 	  void (*callback)(evutil_socket_t, short, void *), void *arg)
@@ -1808,10 +1891,15 @@ event_set(struct event *ev, evutil_socket_t fd, short events,
 	r = event_assign(ev, current_base, fd, events, callback, arg);
 	EVUTIL_ASSERT(r == 0);
 }
+#endif
 
-/* 创建事件，事件进入"已初始化（initial）/non-pending"状态
- * 事件标志events决定了该事件的行为特性
- *
+/* 创建并初始化事件(包括分配event结构)，事件进入"已初始化和非未决"状态
+ * @base    指向事件所属的event_base
+ * @fd      如果非负，则表示文件描述符或信号ID(具体跟events参数相关);
+ *          为-1时，events通常同时不会包含EV_READ, EV_WRITE, EV_SIGNAL，这种情况下创建的事件只可能被超时或手动触发;
+ * @events  决定事件行为的标志集合，包括事件的触发条件和相关特性(比如EV_READ等)  
+ * @cb      事件触发后的回调函数
+ * @arg     传递给回调函数的参数
  */
 struct event *event_new(struct event_base *base, evutil_socket_t fd, short events, void (*cb)(evutil_socket_t, short, void *), void *arg)
 {
@@ -1827,6 +1915,7 @@ struct event *event_new(struct event_base *base, evutil_socket_t fd, short event
 	return (ev);
 }
 
+// 销毁指定事件(销毁时必须确保该事件处于非未决状态)
 void
 event_free(struct event *ev)
 {
@@ -1839,6 +1928,8 @@ event_free(struct event *ev)
 
 }
 
+/* 通知libevent指定event变成未分配(该函数只有在开启了事件调试功能的前提下才有意义)
+ */
 void
 event_debug_unassign(struct event *ev)
 {
@@ -1851,8 +1942,12 @@ event_debug_unassign(struct event *ev)
 /*
  * Set's the priority of an event - if an event is already scheduled
  * changing the priority is going to fail.
+ * 设置指定事件的优先级
+ * @pri     0～所属event_base的优先级数量-1
+ *
+ * 备注：必须确保在该事件调用event_add之前调用本函数;
+ *       如果不为事件设置优先级，则缺省设置的优先级是event_base的优先级数量除以2
  */
-
 int
 event_priority_set(struct event *ev, int pri)
 {
@@ -1870,8 +1965,11 @@ event_priority_set(struct event *ev, int pri)
 
 /*
  * Checks if a specific event is pending or scheduled.
+ * 检查指定事件是否处于未决或触发状态
+ * @event   请求检查的触发条件，可以是EV_TIMEOUT|EV_READ|EV_WRITE|EV_SIGNAL  
+ * @tv      非NULL时，并且该事件设置了超时，并且event参数中包含了EV_TIMEOUT，则从tv返回事件的超时值
+ * @返回值  如果该事件处于未决或触发状态，则返回有效的请求检查的触发条件
  */
-
 int
 event_pending(const struct event *ev, short event, struct timeval *tv)
 {
@@ -1911,6 +2009,11 @@ event_pending(const struct event *ev, short event, struct timeval *tv)
 	return (flags & event);
 }
 
+/* 特殊应用类API：检查指定事件是否已经初始化
+ * @返回值  1-已经初始化 0-未初始化
+ *
+ * 备注：通常event_new返回的事件总是已经初始化的，本函数一般没用
+ */
 int
 event_initialized(const struct event *ev)
 {
@@ -1920,6 +2023,7 @@ event_initialized(const struct event *ev)
 	return 1;
 }
 
+// 复制所有为指定事件分配的参数到传入的指针中
 void
 event_get_assignment(const struct event *event, struct event_base **base_out, evutil_socket_t *fd_out, short *events_out, event_callback_fn *callback_out, void **arg_out)
 {
@@ -1937,12 +2041,14 @@ event_get_assignment(const struct event *event, struct event_base **base_out, ev
 		*arg_out = event->ev_arg;
 }
 
+// 返回运行时event结构的大小(不建议使用本函数加event_assign来创建事件)
 size_t
 event_get_struct_event_size(void)
 {
 	return sizeof(struct event);
 }
 
+// 返回指定事件配置的fd(文件描述符/信号ID/-1)
 evutil_socket_t
 event_get_fd(const struct event *ev)
 {
@@ -1950,6 +2056,7 @@ event_get_fd(const struct event *ev)
 	return ev->ev_fd;
 }
 
+// 返回指定事件配置的event_base
 struct event_base *
 event_get_base(const struct event *ev)
 {
@@ -1957,6 +2064,7 @@ event_get_base(const struct event *ev)
 	return ev->ev_base;
 }
 
+// 返回指定事件配置的events
 short
 event_get_events(const struct event *ev)
 {
@@ -1964,6 +2072,7 @@ event_get_events(const struct event *ev)
 	return ev->ev_events;
 }
 
+// 返回指定事件配置的回调函数
 event_callback_fn
 event_get_callback(const struct event *ev)
 {
@@ -1971,6 +2080,7 @@ event_get_callback(const struct event *ev)
 	return ev->ev_callback;
 }
 
+// 返回指定事件配置的回调函数的参数
 void *
 event_get_callback_arg(const struct event *ev)
 {
@@ -1978,8 +2088,8 @@ event_get_callback_arg(const struct event *ev)
 	return ev->ev_arg;
 }
 
-/* 添加事件，事件进入"pending"状态
- * tv = NULL意味着事件不会超时
+/* 将指定事件注册到所属event_base的事件循环中
+ * @tv  指定事件的超时值(相对时间)，为NULL意味着事件不会超时
  */
 int event_add(struct event *ev, const struct timeval *tv)
 {
@@ -2202,7 +2312,10 @@ event_add_internal(struct event *ev, const struct timeval *tv,
 	return (res);
 }
 
-// 删除事件，事件进入"non-pending"状态
+/* 将指定事件从所属event_base的事件循环中注销(意味着事件将退回到非未决状态)
+ *
+ * 备注：如果在事件触发之后、回调执行之前调用本函数，则回调将不会执行
+ */
 int event_del(struct event *ev)
 {
 	int res;
@@ -2296,8 +2409,12 @@ event_del_internal(struct event *ev)
 	return (res);
 }
 
-/* 手动激活事件
- * 事件不需要已经处于pending状态
+/* 手动触发指定事件的指定触发条件
+ * @res     手动设置的触发原因(EV_READ、EV_WRITE、EV_TIMEOUT)
+ * @ncalls  作废
+ *
+ * 备注：本函数可以激活非未决和未决事件；
+ *       多线程环境下，一个线程通常会调用本函数来手动触发另一个正在进行事件循环的线程
  */
 void event_active(struct event *ev, int res, short ncalls)
 {
@@ -2644,13 +2761,13 @@ event_queue_insert(struct event_base *base, struct event *ev, int queue)
 
 /* Functions for debugging */
 
-// 获取版本号字符串
+// 获取libevent版本号字符串
 const char *event_get_version(void)
 {
 	return (_EVENT_VERSION);
 }
 
-// 获取版本号数值
+// 获取libevent版本号数值
 ev_uint32_t event_get_version_number(void)
 {
 	return (_EVENT_NUMERIC_VERSION);
@@ -2661,11 +2778,12 @@ ev_uint32_t event_get_version_number(void)
  * for all threads.
  */
 
-// 获取事件处理方法:select/poll/epoll/kqueue
+#if 0   // 作废
 const char *event_get_method(void)
 {
 	return (current_base->evsel->name);
 }
+#endif
 
 #ifndef _EVENT_DISABLE_MM_REPLACEMENT
 static void *(*_mm_malloc_fn)(size_t sz) = NULL;            // 记录libevent当前使用的malloc函数
@@ -2858,6 +2976,9 @@ evthread_make_base_notifiable(struct event_base *base)
 	return event_add(&base->th_notify, NULL);
 }
 
+/* 将指定event_base的事件及其状态的完整列表输出到指定文件
+ * @output  - 指定输出的文件句柄
+ */
 void
 event_base_dump_events(struct event_base *base, FILE *output)
 {

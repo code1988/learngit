@@ -428,15 +428,22 @@ int event_config_avoid_method(struct event_config *cfg, const char *method);
    event_base_get_features() to see which features are available.
 */
 enum event_method_feature {
-    /** Require an event method that allows edge-triggered events with EV_ET. */
+    /** Require an event method that allows edge-triggered events with EV_ET. 
+     * 要求后端必须支持边沿触发
+     * */
     EV_FEATURE_ET = 0x01,
     /** Require an event method where having one event triggered among
      * many is [approximately] an O(1) operation. This excludes (for
      * example) select and poll, which are approximately O(N) for N
-     * equal to the total number of possible events. */
+     * equal to the total number of possible events. 
+     * 要求后端必须支持添加、删除单个事件或者确定哪个事件激活的操作是O(1)复杂度
+     * 显然该要求排除了select和poll
+     * */
     EV_FEATURE_O1 = 0x02,
     /** Require an event method that allows file descriptors as well as
-     * sockets. */
+     * sockets. 
+     * 要求后端必须支持任意文件描述符而不只是套接字
+     * */
     EV_FEATURE_FDS = 0x04
 };
 
@@ -450,10 +457,12 @@ enum event_method_feature {
  */
 enum event_base_config_flag {
 	/** Do not allocate a lock for the event base, even if we have
-	    locking set up. */
+	    locking set up.     
+        不要为即将创建的event_baes分配锁(显然通常用于单线程进程) */
 	EVENT_BASE_FLAG_NOLOCK = 0x01,
 	/** Do not check the EVENT_* environment variables when configuring
-	    an event_base  */
+	    an event_base       
+        创建event_base时不要检查环境变量(用户可能会通过环境变量配置libevent) */
 	EVENT_BASE_FLAG_IGNORE_ENV = 0x02,
 	/** Windows only: enable the IOCP dispatcher at startup
 
@@ -464,6 +473,7 @@ enum event_base_config_flag {
 	EVENT_BASE_FLAG_STARTUP_IOCP = 0x04,
 	/** Instead of checking the current time every time the event loop is
 	    ready to run timeout callbacks, check after each timeout callback.
+        改在每次超时回调执行完毕后检测当前时间(这种方式会消耗更多CPU时间)
 	 */
 	EVENT_BASE_FLAG_NO_CACHE_TIME = 0x08,
 
@@ -480,6 +490,7 @@ enum event_base_config_flag {
 
 	    This flag has no effect if you wind up using a backend other than
 	    epoll.
+        通知即将创建的event_base使用epoll-changelist(显然该标志使用的前提是决定使用epoll)
 	 */
 	EVENT_BASE_FLAG_EPOLL_USE_CHANGELIST = 0x10
 };
@@ -633,12 +644,12 @@ int event_base_set(struct event_base *, struct event *);
 /**@{*/
 /** Block until we have an active event, then exit once all active events
  * have had their callbacks run. 
- * 使event_base_loop阻塞，直到出现激活的事件并执行，当全部执行完毕后，返回
+ * 使事件循环阻塞，直到出现激活的事件并执行，当激活的事件全部处理完毕后，退出循环
  * */
 #define EVLOOP_ONCE	0x01
 /** Do not block: see which events are ready now, run the callbacks
  * of the highest-priority ones, then exit. 
- * 使event_base_loop非阻塞，仅仅检查是否有事件已经就绪，有则执行，没有则返回
+ * 不会阻塞等待事件被触发，而是仅仅检查是否有事件已经就绪，有则执行，没有则退出循环
  * */
 #define EVLOOP_NONBLOCK	0x02
 /**@}*/
@@ -731,23 +742,29 @@ int event_base_got_break(struct event_base *);
  */
 /**@{*/
 /** Indicates that a timeout has occurred.  It's not necessary to pass
- * this flag to event_for new()/event_assign() to get a timeout. 
- * 该标志表示超时后相应事件会被激活
- * 构造事件时，传入该标志是被忽略的，可以在添加事件时传入
+ * this flag to event_new()/event_assign() to get a timeout. 
+ * 表示超时后相应事件被激活
+ * event_new/event_assign时，传入该标志是被忽略的，可以在调用event_add时设置
  * */
 #define EV_TIMEOUT	0x01
-/** Wait for a socket or FD to become readable */
+/** Wait for a socket or FD to become readable 
+ * 表示指定的描述符/套接字可读时相应事件被激活
+ * */
 #define EV_READ		0x02
-/** Wait for a socket or FD to become writeable */
+/** Wait for a socket or FD to become writeable 
+ * 表示指定的描述符/套接字可写时相应事件被激活
+ * */
 #define EV_WRITE	0x04
-/** Wait for a POSIX signal to be raised*/
+/** Wait for a POSIX signal to be raised
+ * 表示指定信号发生后相应事件被触发
+ * */
 #define EV_SIGNAL	0x08
 /**
  * Persistent event: won't get removed automatically when activated.
  *
  * When a persistent event with a timeout becomes activated, its timeout
  * is reset to 0.
- * 该标志表示事件是持久的，意味着即便事件被激活进而执行回调，事件本身其实还是保持为pending状态
+ * 该标志表示事件是持久的，意味着事件被触发后不会自动从事件循环中注销，也就是可以反复触发
  */
 #define EV_PERSIST	0x10
 /** Select edge-triggered behavior, if supported by the backend. 
@@ -758,31 +775,32 @@ int event_base_got_break(struct event_base *);
 
 /**
    @name evtimer_* macros
+    Aliases for working with one-shot timer events 
+    以下宏用于操作超时事件
+*/
 
-    Aliases for working with one-shot timer events */
 /**@{*/
 #define evtimer_assign(ev, b, cb, arg) \
 	event_assign((ev), (b), -1, 0, (cb), (arg))
 #define evtimer_new(b, cb, arg)	       event_new((b), -1, 0, (cb), (arg))   // 创建纯超时事件
-#define evtimer_add(ev, tv)		event_add((ev), (tv))
-#define evtimer_del(ev)			event_del(ev)
+#define evtimer_add(ev, tv)		event_add((ev), (tv))                       // 往事件循环中注册超时事件
+#define evtimer_del(ev)			event_del(ev)                               // 从事件循环中注销超时事件
 #define evtimer_pending(ev, tv)		event_pending((ev), EV_TIMEOUT, (tv))
 #define evtimer_initialized(ev)		event_initialized(ev)
 /**@}*/
 
 /**
    @name evsignal_* macros
-
    Aliases for working with signal events
+   以下宏用于操作信号事件
  */
 /**@{*/
-#define evsignal_add(ev, tv)		event_add((ev), (tv))
+#define evsignal_add(ev, tv)		event_add((ev), (tv))                   // 往事件循环中注册信号事件
 #define evsignal_assign(ev, b, x, cb, arg)			\
 	event_assign((ev), (b), (x), EV_SIGNAL|EV_PERSIST, cb, (arg))
-// 创建信号事件
 #define evsignal_new(b, x, cb, arg)				\
-	event_new((b), (x), EV_SIGNAL|EV_PERSIST, (cb), (arg))
-#define evsignal_del(ev)		event_del(ev)
+	event_new((b), (x), EV_SIGNAL|EV_PERSIST, (cb), (arg))                  // 创建纯信号事件
+#define evsignal_del(ev)		event_del(ev)                               // 从事件循环中注销信号事件
 #define evsignal_pending(ev, tv)	event_pending((ev), EV_SIGNAL, (tv))
 #define evsignal_initialized(ev)	event_initialized(ev)
 /**@}*/
@@ -1012,6 +1030,7 @@ int event_initialized(const struct event *ev);
 
 /**
    Get the signal number assigned to a signal event
+   返回指定事件配置的信号ID
 */
 #define event_get_signal(ev) ((int)event_get_fd(ev))
 
@@ -1097,7 +1116,9 @@ ev_uint32_t event_get_version_number(void);
  * headers. */
 #define LIBEVENT_VERSION_NUMBER _EVENT_NUMERIC_VERSION
 
-/** Largest number of priorities that Libevent can support. */
+/** Largest number of priorities that Libevent can support. 
+ * libevent支持的优先级数量上限
+ * */
 #define EVENT_MAX_PRIORITIES 256
 /**
   Set the number of different event priorities
