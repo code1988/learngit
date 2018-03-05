@@ -1,4 +1,4 @@
-I/O多路复用有3种具体实现方式：select、poll和epoll
+I/O多路复用有3种具体实现模型：select、poll和epoll
 
 /* int select(int nfds, fd_set *readfds, fd_set *writefds,fd_set *exceptfds, struct timeval *timeout)
  * @nfds        要监听的最大描述符编号加1，select支持的最大描述符编号为FD_SETSIZE(通常是1024)
@@ -18,6 +18,13 @@ I/O多路复用有3种具体实现方式：select、poll和epoll
  *                  FD_CLR(int fd,fd_set *fdset)    将一个描述符集合中fd对应的位清0
  *                  FD_ISSET(int fd,fd_set *fdset)  判断一个描述符集合中fd对应的位是否已置1
  *      [3]. 如果同一描述符的读、写事件都被触发，那么在select返回值中会对其记两次数
- *      [4]. 由于linux中的select在未超时时返回会修改入参timeout，所以再次调用select时需要重新设置入参timeout
- *      [4]. 由于select调用过程中可能会修改传入的描述符集合，所以再次调用select时需要重新设置3个描述符集合
+ *      [4]. 由于select调用过程中可能会修改传入的描述符集合和timeout，所以再次调用select时需要重新设置这几个入参
+ *      [5]. 异常事件主要包括网络连接上有带外数据到达等,需要注意的是异常事件不包括到达文件尾端和TCP连接断开,这两种情况下,select会认为关联的描述符可读,然后调用read系列API,返回0
+ *
+ * select模型的主要缺陷:
+ *          select会修改传入的描述符集合和timeout，导致每次调用select都需要重新初始化这些入参,这对于需要反复执行的场景显然不太合理;
+ *	        如果某个描述符监听的条件被触发，select仅仅会返回，但并不告诉用户是哪个描述符，导致用户只能逐个遍历所有已加入监听的描述符;
+ *	        支持的描述符数量太少，缺省是 FD_SETSIZE = 1024
  */
+
+
