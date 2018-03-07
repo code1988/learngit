@@ -45,9 +45,10 @@ I/O多路复用有3种具体实现模型：select、poll和epoll
  *                      short revents;  // 该描述符监听的事件集合中触发了的事件集合,或者是POLLERR/POLLHUP/POLLNVAL之一,显然是在poll返回时由内核设置
  *                  };
  *      [3]. poll支持的事件标志主要有:
- *                  POLLIN/POLLRDNORM       有普通数据可读
+ *                  POLLIN/POLLRDNORM       有普通数据可读(包括到达文件末尾和TCP连接对端正常关闭等)
  *                  POLLPRI                 有紧急数据可读
  *                  POLLOUT/POLLWRNORM      可不阻塞地写普通数据
+ *                  POLLRDHUP               通常流式套接字(比如TCP)对端关闭连接时本端会触发该事件
  *                  POLLERR                 (只会出现在返回的revents中)指定描述符上发生异常,通常会同时附加注册时的POLLIN/POLLOUT事件
  *                  POLLNVAL                (只会出现在返回的revents中)指定描述符没有打开
  *                  POLLHUP                 (只会出现在返回的revents中)指定描述符被挂断,linux平台上的典型例子就是关闭pipe的写端,然后poll pipe的读端,返回的通常就是POLLHUP
@@ -66,15 +67,49 @@ I/O多路复用有3种具体实现模型：select、poll和epoll
  * @返回值  成功则返回一个指向新建epoll实例的描述符；出错则返回-1
  *
  * int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)   // 在指定epoll实例中对一个描述符进行操作
- * @epfd    指向一个epoll实例(已经创建)的描述符
+ * @epfd    对应一个epoll实例(已经创建)的描述符
  * @op      有效的操作有3种:
- *              EPOLL_CTL_ADD   将一个描述符注册到epoll实例中,同时可以附加该描述符关联的事件集合
- *              EPOLL_CTL_MOD   修改一个已经注册的描述符关联的事件集合
+ *              EPOLL_CTL_ADD   将一个描述符注册到epoll实例中,同时附带注册了该描述符关联的事件
+ *              EPOLL_CTL_MOD   修改一个已经注册的描述符关联的事件
  *              EPOLL_CTL_DEL   注销一个已经注册的描述符
+ * @fd      需要进行操作的描述符
+ * @event   对应该描述符关联的事件(linux 2.6.9后,传入EPOLL_CTL_DEL时对应的event可以为NULL)
+ * @返回值  成功则返回0；出错则返回-1
+ *
+ * int epoll_wait(int epfd,struct epoll_event *events,int maxevents,int timeout)    // 等待epoll上监听的I/O事件触发
+ * @epfd        对应一个epoll实例(已经创建)的描述符
+ * @events      返回时用于存放触发事件的数组
+ * @maxevents   events数组可以存放的事件数量上限
+ * @timeout     超时时间,单位ms,其中-1表示永远等待,0表示立即返回(即使没有事件触发)
+ * @返回值      如果成功则返回有事件或异常上报的描述符总数;
+ *              如果超时则返回0；
+ *              如果出错则返回-1
  *
  * 备注:
  *      [1]. epoll模型属于linux平台特有
- *      [2].
- *      [3].
- *      [4].
+ *      [2]. epoll_event结构体包含了要监听描述符关联的相关信息,具体如下
+ *                  struct epoll_event{
+ *                      uint32_t events;        // 在epoll_ctl中用于设置对应描述符要监听的事件集合(显然由用户设置);在epoll_wait中用于返回对应描述符触发的事件集合(显然是由内核设置)
+ *                      epoll_data_t data;      // 在epoll_ctl中用于设置对应描述符的自定义内容(显然由用户设置)；在epoll_wait中用于返回对应描述符事先注册的自定义内容(显然是由内核设置)
+ *                  };
+ *                  typedef union epoll_data{
+ *                      void *ptr;
+ *                      int fd;
+ *                      uint32_t u32;
+ *                      uint64_t u64;
+ *                  };
+ *      [3]. epoll支持的事件标志主要有:
+ *                  EPOLLIN         类似POLLIN
+ *                  EPOLLPRI        类似POLLPRI
+ *                  EPOLLOUT        类似POLLOUT
+ *                  EPOLLRDHUP      类似POLLRDHUP
+ *                  EPOLLERR        类似POLLERR
+ *                  EPOLLHUP        类似POLLHUP
+ *                  EPOLLET         设置对应的描述符为边沿触发(缺省是水平触发)
+ *                  EPOLLONESHOT    设置对应的描述符只做一次性监听(缺省是持久生效的),意味着触发过一次后就会失效
+ *
+ * epoll模型相对select模型和poll模型的主要改进:
+ *          当某个描述符关联的事件触发时,epoll通过回调机制直接将对应的描述符通知用户,从而去掉了遍历操作,
+ *          这种改进使得epoll模型中的I/O效率基本不会随着监听的描述符数量增加而下降
+ *                    
  */
