@@ -62,7 +62,7 @@ static int poll_fd = -1;        // epoll句柄
 bool uloop_cancelled = false;   // SIGINT信号触发后的标志
 static bool do_sigchld = false; // SIGCHLD信号触发后的标志
 
-static struct uloop_fd_event cur_fds[ULOOP_MAX_EVENTS]; // 当前被触发的事件集合
+static struct uloop_fd_event cur_fds[ULOOP_MAX_EVENTS]; // 当前被触发的事件集合,可以理解为libubox库对下层events数组处理后的封装
 static int cur_fd, cur_nfds;    // cur_fd:当前正在处理的触发事件索引号  cur_nfds:当前触发的事件数量
 
 // USE_KQUEUE宏定义开关位于makefile
@@ -139,7 +139,7 @@ static int uloop_fetch_events(int timeout)
     // 等待事件触发（epoll底层库函数)
 	nfds = epoll_wait(poll_fd, events, ARRAY_SIZE(events), timeout);
 
-    // 将触发事件拷贝到cur_fds，然后对事件进行预处理
+    // 将events数组中的触发事件处理后顺序填充到cur_fds数组
 	for (n = 0; n < nfds; ++n) {
 		struct uloop_fd_event *cur = &cur_fds[n];
 		struct uloop_fd *u = events[n].data.ptr;

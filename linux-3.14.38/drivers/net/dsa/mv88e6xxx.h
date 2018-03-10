@@ -76,6 +76,7 @@ void mv88e6xxx_get_ethtool_stats(struct dsa_switch *ds,
 extern struct dsa_switch_driver mv88e6131_switch_driver;
 extern struct dsa_switch_driver mv88e6123_61_65_switch_driver;
 
+// mv88e6xxx系列switch封装的读寄存器操作
 #define REG_READ(addr, reg)						\
 	({								\
 		int __ret;						\
@@ -86,6 +87,7 @@ extern struct dsa_switch_driver mv88e6123_61_65_switch_driver;
 		__ret;							\
 	})
 
+// mv88e6xxx系列switch封装的写寄存器操作
 #define REG_WRITE(addr, reg, val)					\
 	({								\
 		int __ret;						\
