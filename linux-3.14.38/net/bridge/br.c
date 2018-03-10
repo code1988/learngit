@@ -50,14 +50,14 @@ static int __init br_init(void)
 {
 	int err;
 
-    // 注册生成树协议(stp/rstp/mstp，内核默认是stp)到LLC层，当收到BPDU时就会调用注册的br_stp_rcv接收钩子
+    // 注册生成树协议(stp/rstp/mstp，内核只实现了stp)到LLC层，当收到BPDU时就会调用注册的br_stp_rcv接收钩子
 	err = stp_proto_register(&br_stp_proto);
 	if (err < 0) {
 		pr_err("bridge: can't register sap for STP\n");
 		return err;
 	}
 
-    // 初始化以太网桥使用的转发数据库
+    // 初始化供网桥使用的二层转发表项缓存池
 	err = br_fdb_init();
 	if (err)
 		goto err_out;
@@ -67,7 +67,7 @@ static int __init br_init(void)
 	if (err)
 		goto err_out1;
 
-    // 注册网络防火墙相关的钩子函数
+    // 网桥的netfilter初始化，用于实现ebtables功能
 	err = br_netfilter_init();
 	if (err)
 		goto err_out2;
@@ -77,12 +77,12 @@ static int __init br_init(void)
 	if (err)
 		goto err_out3;
 
-    // 初始化操作网桥用的netlink接口
+    // 初始化用于操作网桥的netlink接口
 	err = br_netlink_init();
 	if (err)
 		goto err_out4;
 
-    // 设置用于网桥操作的ioctl钩子函数
+    // 设置用于操作网桥的ioctl钩子函数
 	brioctl_set(br_ioctl_deviceless_stub);
 
 #if IS_ENABLED(CONFIG_ATM_LANE)

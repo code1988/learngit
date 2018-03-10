@@ -1060,6 +1060,7 @@ static struct ctl_table brnf_table[] = {
 };
 #endif
 
+// 网桥的netfilter功能初始化
 int __init br_netfilter_init(void)
 {
 	int ret;

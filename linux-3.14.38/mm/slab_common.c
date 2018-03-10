@@ -265,7 +265,7 @@ out_free_cache:
 
 /* 创建一片新的slab缓存
  * @name    为这片缓存命名
- * @size    长度
+ * @size    单元长度
  * @align   对齐方式 默认0
  * @flag    也可以设置对其方式比如SLAB_HWCACHE_ALIGN
  */

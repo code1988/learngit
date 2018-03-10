@@ -176,12 +176,13 @@ struct f_owner_ex {
 #define __ARCH_FLOCK_PAD
 #endif
 
+// 以下定义了记录锁的结构，作为fcntl的第3个参数，用于F_GETLK、F_SETLK、F_SETLKW命令
 struct flock {
-	short	l_type;
-	short	l_whence;
-	__kernel_off_t	l_start;
-	__kernel_off_t	l_len;
-	__kernel_pid_t	l_pid;
+	short	l_type;             // 记录锁的类型:F_RDLCK、F_WRLCK、F_UNLCK
+	short	l_whence;           // 锁产生作用的起始位置:SEEK_SET、SEEK_CUR、SEEK_END
+	__kernel_off_t	l_start;    // 相对起始位置的偏移量
+	__kernel_off_t	l_len;      // 锁产生作用的范围，0表示锁的范围可以扩展到最大可能长度
+	__kernel_pid_t	l_pid;      // 该字段仅用于F_GETLK，用于存放返回的持有该锁的进程ID
 	__ARCH_FLOCK_PAD
 };
 #endif

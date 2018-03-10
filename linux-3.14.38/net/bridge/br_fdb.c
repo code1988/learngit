@@ -28,7 +28,7 @@
 #include "br_private.h"
 
 
-static struct kmem_cache *br_fdb_cache __read_mostly;   // 定义了一个转发表表项的缓存池
+static struct kmem_cache *br_fdb_cache __read_mostly;   // 定义了一个二层转发表表项的缓存池
 static struct net_bridge_fdb_entry *fdb_find(struct hlist_head *head,
 					     const unsigned char *addr,
 					     __u16 vid);
@@ -39,12 +39,12 @@ static void fdb_notify(struct net_bridge *br,
 
 static u32 fdb_salt __read_mostly;      // 这个值随机生成，用于jhash算法中
 
-/* 初始化以太网桥使用的转发数据库
- * 实际就是为其分配一个slab缓冲区
+/* 初始化供网桥使用的二层转发表项的缓存池
+ * 实际就是为其分配一块slab缓冲区
  */
 int __init br_fdb_init(void)
 {
-    // 创建一片新的slab缓存
+    // 创建一片新的slab缓存池，单元长度net_bridge_fdb_entry
 	br_fdb_cache = kmem_cache_create("bridge_fdb_cache",
 					 sizeof(struct net_bridge_fdb_entry),
 					 0,
@@ -52,7 +52,7 @@ int __init br_fdb_init(void)
 	if (!br_fdb_cache)
 		return -ENOMEM;
 
-    // 为fdb_salt生成一个随机数，将用于转发表的hash算法计算
+    // 生成一个随机数，将用于转发表的hash算法计算
 	get_random_bytes(&fdb_salt, sizeof(fdb_salt));
 	return 0;
 }
