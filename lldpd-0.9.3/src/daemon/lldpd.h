@@ -306,7 +306,7 @@ void     interfaces_update(struct lldpd *);
 struct interfaces_device {
 	TAILQ_ENTRY(interfaces_device) next;
 	int   ignore;		/* Ignore this interface */
-	int   index;		/* Index */
+	int   index;		/* Index 设备接口序号 */
 	char *name;		/* Name */
 	char *alias;		/* Alias */
 	char *address;		/* MAC address */
@@ -334,9 +334,9 @@ struct interfaces_address {
 	/* The following are OS specific. */
 	/* Nothing yet. */
 };
-// 定义接口设备的的尾队列头
+// 定义接口设备的尾队列头结构interfaces_device_list
 TAILQ_HEAD(interfaces_device_list,  interfaces_device);
-// 定义接口地址的尾队列头
+// 定义接口地址的尾队列头结构interfaces_address_list
 TAILQ_HEAD(interfaces_address_list, interfaces_address);
 
 void interfaces_free_device(struct interfaces_device *);
@@ -404,11 +404,11 @@ struct lldpd {
 
 	struct protocol		*g_protocols;   // 指向lldp细分协议列表
 	int			 g_lastrid;
-	struct event		*g_main_loop;   // 指向主循环事件
+	struct event		*g_main_loop;   // 纯手动触发事件句柄
 	struct event		*g_cleanup_timer;
 #ifdef USE_SNMP
 	int			 g_snmp;                // snmp使能标志
-	struct event		*g_snmp_timeout;// 指向snmp超时事件
+	struct event		*g_snmp_timeout;// snmp超时事件句柄
 	void			*g_snmp_fds;        // 指向snmp-fds尾队列头
 	const char		*g_snmp_agentx;     // snmp本地服务器地址 /var/agentX/master
 #endif /* USE_SNMP */
@@ -417,8 +417,8 @@ struct lldpd {
 	const char		*g_ctlname;         // lldpd cli 本地服务器地址 /var/run/lldpd.socket
 	int			 g_ctl;                 // 记录lldpd cli unix-dimain fd
 	struct event		*g_iface_event; /* Triggered when there is an interface change */
-	struct event		*g_iface_timer_event; /* Triggered one second after last interface change */
-	void(*g_iface_cb)(struct lldpd *);	      /* Called when there is an interface change */
+	struct event		*g_iface_timer_event; /* Triggered one second after last interface change 每次产生接口变化之后，隔1s触发该超时事件 */
+	void(*g_iface_cb)(struct lldpd *);	      /* Called when there is an interface change 接口变化后的回调函数 */
 
 	char			*g_lsb_release;
 

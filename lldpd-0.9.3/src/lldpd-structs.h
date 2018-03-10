@@ -383,7 +383,7 @@ struct lldpd_config {
 
 	char *c_mgmt_pattern;	/* Pattern to match a management address */
 	char *c_cid_pattern;	/* Pattern to match interfaces to use for chassis ID */
-	char *c_iface_pattern;	/* Pattern to match interfaces to use */
+	char *c_iface_pattern;	/* Pattern to match interfaces to use 包含所有接口名的字符串 */
 
 	char *c_platform;	/* Override platform description (for CDP) */
 	char *c_description;	/* Override chassis description */

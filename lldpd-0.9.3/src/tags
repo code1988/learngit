@@ -24,14 +24,14 @@ CDP_CAP_SOURCE_BRIDGE	daemon/protocols/cdp.h	54;"	d
 CDP_CAP_SWITCH	daemon/protocols/cdp.h	55;"	d
 CDP_CAP_TRANSPARENT_BRIDGE	daemon/protocols/cdp.h	53;"	d
 CDP_MULTICAST_ADDR	daemon/protocols/cdp.h	21;"	d
-CDP_TLV_ADDRESSES	daemon/protocols/cdp.h	/^	CDP_TLV_ADDRESSES		= 2,$/;"	e	enum:__anon11
-CDP_TLV_CAPABILITIES	daemon/protocols/cdp.h	/^	CDP_TLV_CAPABILITIES		= 4,$/;"	e	enum:__anon11
-CDP_TLV_CHASSIS	daemon/protocols/cdp.h	/^	CDP_TLV_CHASSIS			= 1,$/;"	e	enum:__anon11
-CDP_TLV_NATIVEVLAN	daemon/protocols/cdp.h	/^	CDP_TLV_NATIVEVLAN		= 10,$/;"	e	enum:__anon11
-CDP_TLV_PLATFORM	daemon/protocols/cdp.h	/^	CDP_TLV_PLATFORM		= 6,$/;"	e	enum:__anon11
-CDP_TLV_PORT	daemon/protocols/cdp.h	/^	CDP_TLV_PORT			= 3,$/;"	e	enum:__anon11
-CDP_TLV_POWER_CONSUMPTION	daemon/protocols/cdp.h	/^	CDP_TLV_POWER_CONSUMPTION	= 16$/;"	e	enum:__anon11
-CDP_TLV_SOFTWARE	daemon/protocols/cdp.h	/^	CDP_TLV_SOFTWARE		= 5,$/;"	e	enum:__anon11
+CDP_TLV_ADDRESSES	daemon/protocols/cdp.h	/^	CDP_TLV_ADDRESSES		= 2,$/;"	e	enum:__anon3
+CDP_TLV_CAPABILITIES	daemon/protocols/cdp.h	/^	CDP_TLV_CAPABILITIES		= 4,$/;"	e	enum:__anon3
+CDP_TLV_CHASSIS	daemon/protocols/cdp.h	/^	CDP_TLV_CHASSIS			= 1,$/;"	e	enum:__anon3
+CDP_TLV_NATIVEVLAN	daemon/protocols/cdp.h	/^	CDP_TLV_NATIVEVLAN		= 10,$/;"	e	enum:__anon3
+CDP_TLV_PLATFORM	daemon/protocols/cdp.h	/^	CDP_TLV_PLATFORM		= 6,$/;"	e	enum:__anon3
+CDP_TLV_PORT	daemon/protocols/cdp.h	/^	CDP_TLV_PORT			= 3,$/;"	e	enum:__anon3
+CDP_TLV_POWER_CONSUMPTION	daemon/protocols/cdp.h	/^	CDP_TLV_POWER_CONSUMPTION	= 16$/;"	e	enum:__anon3
+CDP_TLV_SOFTWARE	daemon/protocols/cdp.h	/^	CDP_TLV_SOFTWARE		= 5,$/;"	e	enum:__anon3
 CESC	client/lldpcli.c	100;"	d	file:
 CHANGED	daemon/client.c	66;"	d	file:
 CHANGED_STR	daemon/client.c	67;"	d	file:
@@ -64,12 +64,12 @@ DISPLAY_BRIEF	client/client.h	120;"	d
 DISPLAY_DETAILS	client/client.h	122;"	d
 DISPLAY_NORMAL	client/client.h	121;"	d
 EDP_MULTICAST_ADDR	daemon/protocols/edp.h	21;"	d
-EDP_TLV_DISPLAY	daemon/protocols/edp.h	/^	EDP_TLV_DISPLAY			= 1,$/;"	e	enum:__anon10
-EDP_TLV_ESRP	daemon/protocols/edp.h	/^	EDP_TLV_ESRP			= 8,$/;"	e	enum:__anon10
-EDP_TLV_INFO	daemon/protocols/edp.h	/^	EDP_TLV_INFO			= 2,$/;"	e	enum:__anon10
+EDP_TLV_DISPLAY	daemon/protocols/edp.h	/^	EDP_TLV_DISPLAY			= 1,$/;"	e	enum:__anon2
+EDP_TLV_ESRP	daemon/protocols/edp.h	/^	EDP_TLV_ESRP			= 8,$/;"	e	enum:__anon2
+EDP_TLV_INFO	daemon/protocols/edp.h	/^	EDP_TLV_INFO			= 2,$/;"	e	enum:__anon2
 EDP_TLV_MARKER	daemon/protocols/edp.h	27;"	d
-EDP_TLV_NULL	daemon/protocols/edp.h	/^	EDP_TLV_NULL			= 0,$/;"	e	enum:__anon10
-EDP_TLV_VLAN	daemon/protocols/edp.h	/^	EDP_TLV_VLAN			= 5,$/;"	e	enum:__anon10
+EDP_TLV_NULL	daemon/protocols/edp.h	/^	EDP_TLV_NULL			= 0,$/;"	e	enum:__anon2
+EDP_TLV_VLAN	daemon/protocols/edp.h	/^	EDP_TLV_VLAN			= 5,$/;"	e	enum:__anon2
 ESCAPED	client/tokenizer.c	72;"	d	file:
 EVENT_BUFFER	daemon/event.c	37;"	d	file:
 FDP_MULTICAST_ADDR	daemon/protocols/cdp.h	24;"	d
@@ -115,25 +115,25 @@ LLC_PID_SONMP_HELLO	daemon/protocols/sonmp.h	25;"	d
 LLC_PID_STP	daemon/protocols/cdp.h	37;"	d
 LLC_PID_UDLD	daemon/protocols/cdp.h	34;"	d
 LLC_PID_VTP	daemon/protocols/cdp.h	35;"	d
-LLDPCTL_ERR_BAD_VALUE	lib/lldpctl.h	/^	LLDPCTL_ERR_BAD_VALUE =  -509,$/;"	e	enum:__anon2
-LLDPCTL_ERR_CALLBACK_FAILURE	lib/lldpctl.h	/^	LLDPCTL_ERR_CALLBACK_FAILURE = -902$/;"	e	enum:__anon2
-LLDPCTL_ERR_CANNOT_CONNECT	lib/lldpctl.h	/^	LLDPCTL_ERR_CANNOT_CONNECT = -504,$/;"	e	enum:__anon2
-LLDPCTL_ERR_CANNOT_CREATE	lib/lldpctl.h	/^	LLDPCTL_ERR_CANNOT_CREATE =  -510,$/;"	e	enum:__anon2
-LLDPCTL_ERR_CANNOT_ITERATE	lib/lldpctl.h	/^	LLDPCTL_ERR_CANNOT_ITERATE =  -508,$/;"	e	enum:__anon2
-LLDPCTL_ERR_EOF	lib/lldpctl.h	/^	LLDPCTL_ERR_EOF = -502,$/;"	e	enum:__anon2
-LLDPCTL_ERR_FATAL	lib/lldpctl.h	/^	LLDPCTL_ERR_FATAL = -900,$/;"	e	enum:__anon2
-LLDPCTL_ERR_INCORRECT_ATOM_TYPE	lib/lldpctl.h	/^	LLDPCTL_ERR_INCORRECT_ATOM_TYPE = -505,$/;"	e	enum:__anon2
-LLDPCTL_ERR_INVALID_STATE	lib/lldpctl.h	/^	LLDPCTL_ERR_INVALID_STATE =  -507,$/;"	e	enum:__anon2
-LLDPCTL_ERR_NOMEM	lib/lldpctl.h	/^	LLDPCTL_ERR_NOMEM = -901,$/;"	e	enum:__anon2
-LLDPCTL_ERR_NOT_EXIST	lib/lldpctl.h	/^	LLDPCTL_ERR_NOT_EXIST = -503,$/;"	e	enum:__anon2
-LLDPCTL_ERR_SERIALIZATION	lib/lldpctl.h	/^	LLDPCTL_ERR_SERIALIZATION =  -506,$/;"	e	enum:__anon2
-LLDPCTL_ERR_WOULDBLOCK	lib/lldpctl.h	/^	LLDPCTL_ERR_WOULDBLOCK = -501,$/;"	e	enum:__anon2
+LLDPCTL_ERR_BAD_VALUE	lib/lldpctl.h	/^	LLDPCTL_ERR_BAD_VALUE =  -509,$/;"	e	enum:__anon5
+LLDPCTL_ERR_CALLBACK_FAILURE	lib/lldpctl.h	/^	LLDPCTL_ERR_CALLBACK_FAILURE = -902$/;"	e	enum:__anon5
+LLDPCTL_ERR_CANNOT_CONNECT	lib/lldpctl.h	/^	LLDPCTL_ERR_CANNOT_CONNECT = -504,$/;"	e	enum:__anon5
+LLDPCTL_ERR_CANNOT_CREATE	lib/lldpctl.h	/^	LLDPCTL_ERR_CANNOT_CREATE =  -510,$/;"	e	enum:__anon5
+LLDPCTL_ERR_CANNOT_ITERATE	lib/lldpctl.h	/^	LLDPCTL_ERR_CANNOT_ITERATE =  -508,$/;"	e	enum:__anon5
+LLDPCTL_ERR_EOF	lib/lldpctl.h	/^	LLDPCTL_ERR_EOF = -502,$/;"	e	enum:__anon5
+LLDPCTL_ERR_FATAL	lib/lldpctl.h	/^	LLDPCTL_ERR_FATAL = -900,$/;"	e	enum:__anon5
+LLDPCTL_ERR_INCORRECT_ATOM_TYPE	lib/lldpctl.h	/^	LLDPCTL_ERR_INCORRECT_ATOM_TYPE = -505,$/;"	e	enum:__anon5
+LLDPCTL_ERR_INVALID_STATE	lib/lldpctl.h	/^	LLDPCTL_ERR_INVALID_STATE =  -507,$/;"	e	enum:__anon5
+LLDPCTL_ERR_NOMEM	lib/lldpctl.h	/^	LLDPCTL_ERR_NOMEM = -901,$/;"	e	enum:__anon5
+LLDPCTL_ERR_NOT_EXIST	lib/lldpctl.h	/^	LLDPCTL_ERR_NOT_EXIST = -503,$/;"	e	enum:__anon5
+LLDPCTL_ERR_SERIALIZATION	lib/lldpctl.h	/^	LLDPCTL_ERR_SERIALIZATION =  -506,$/;"	e	enum:__anon5
+LLDPCTL_ERR_WOULDBLOCK	lib/lldpctl.h	/^	LLDPCTL_ERR_WOULDBLOCK = -501,$/;"	e	enum:__anon5
 LLDPCTL_H	lib/lldpctl.h	19;"	d
-LLDPCTL_NO_ERROR	lib/lldpctl.h	/^	LLDPCTL_NO_ERROR = 0,$/;"	e	enum:__anon2
-LLDPD_AF_IPV4	lldpd-structs.h	/^	LLDPD_AF_IPV4,$/;"	e	enum:__anon8
-LLDPD_AF_IPV6	lldpd-structs.h	/^	LLDPD_AF_IPV6,$/;"	e	enum:__anon8
-LLDPD_AF_LAST	lldpd-structs.h	/^	LLDPD_AF_LAST$/;"	e	enum:__anon8
-LLDPD_AF_UNSPEC	lldpd-structs.h	/^	LLDPD_AF_UNSPEC = 0,$/;"	e	enum:__anon8
+LLDPCTL_NO_ERROR	lib/lldpctl.h	/^	LLDPCTL_NO_ERROR = 0,$/;"	e	enum:__anon5
+LLDPD_AF_IPV4	lldpd-structs.h	/^	LLDPD_AF_IPV4,$/;"	e	enum:__anon4
+LLDPD_AF_IPV6	lldpd-structs.h	/^	LLDPD_AF_IPV6,$/;"	e	enum:__anon4
+LLDPD_AF_LAST	lldpd-structs.h	/^	LLDPD_AF_LAST$/;"	e	enum:__anon4
+LLDPD_AF_UNSPEC	lldpd-structs.h	/^	LLDPD_AF_UNSPEC = 0,$/;"	e	enum:__anon4
 LLDPD_FAST_INIT	daemon/lldpd.h	77;"	d
 LLDPD_FAST_TX_INTERVAL	daemon/lldpd.h	76;"	d
 LLDPD_FILTER_F	daemon/lldpd.h	267;"	d
@@ -587,11 +587,11 @@ _MARSHAL_H	marshal.h	19;"	d
 _SONMP_H	daemon/protocols/sonmp.h	19;"	d
 _WRITER_H	client/writer.h	19;"	d
 ___getdelim	compat/getline.c	/^___getdelim(char **buf, size_t *buflen,$/;"	f	file:	signature:(char **buf, size_t *buflen, int sep, FILE *fp)
-__anon3::string	lib/lldpctl.h	/^	char *string;$/;"	m	struct:__anon3	access:public
-__anon3::value	lib/lldpctl.h	/^	int   value;$/;"	m	struct:__anon3	access:public
-__anon9::f_uint16	daemon/frame.h	/^	uint16_t f_uint16;$/;"	m	union:__anon9	access:public
-__anon9::f_uint32	daemon/frame.h	/^	uint32_t f_uint32;$/;"	m	union:__anon9	access:public
-__anon9::f_uint8	daemon/frame.h	/^	uint8_t f_uint8;$/;"	m	union:__anon9	access:public
+__anon1::f_uint16	daemon/frame.h	/^	uint16_t f_uint16;$/;"	m	union:__anon1	access:public
+__anon1::f_uint32	daemon/frame.h	/^	uint32_t f_uint32;$/;"	m	union:__anon1	access:public
+__anon1::f_uint8	daemon/frame.h	/^	uint8_t f_uint8;$/;"	m	union:__anon1	access:public
+__anon6::string	lib/lldpctl.h	/^	char *string;$/;"	m	struct:__anon6	access:public
+__anon6::value	lib/lldpctl.h	/^	int   value;$/;"	m	struct:__anon6	access:public
 __lldpctl_atom_set_str_config	lib/atoms/config.c	/^__lldpctl_atom_set_str_config(struct _lldpctl_atom_config_t *c,$/;"	f	file:	signature:(struct _lldpctl_atom_config_t *c, char **local, char **global, const char *value)
 __progname	client/lldpcli.c	40;"	d	file:
 __progname	daemon/lldpd.c	75;"	d	file:
@@ -920,13 +920,13 @@ atom_builder::value	lib/atom.h	/^	lldpctl_atom_t*      (*value)(lldpctl_atom_t *
 atom_builder_list	lib/atom.c	/^static struct atom_builder atom_builder_list = {$/;"	v	typeref:struct:atom_builder	file:
 atom_builder_register	lib/atom.c	/^void atom_builder_register(struct atom_builder *builder, int prio)$/;"	f	signature:(struct atom_builder *builder, int prio)
 atom_builder_register	lib/atom.h	/^void atom_builder_register(struct atom_builder *builder, int);$/;"	p	signature:(struct atom_builder *builder, int)
-atom_chassis	lib/atom.h	/^	atom_chassis,$/;"	e	enum:__anon1
-atom_config	lib/atom.h	/^	atom_config,$/;"	e	enum:__anon1
-atom_custom	lib/atom.h	/^	atom_custom,$/;"	e	enum:__anon1
-atom_custom_list	lib/atom.h	/^	atom_custom_list,$/;"	e	enum:__anon1
-atom_dot3_power	lib/atom.h	/^	atom_dot3_power,$/;"	e	enum:__anon1
-atom_interface	lib/atom.h	/^	atom_interface,$/;"	e	enum:__anon1
-atom_interfaces_list	lib/atom.h	/^	atom_interfaces_list,$/;"	e	enum:__anon1
+atom_chassis	lib/atom.h	/^	atom_chassis,$/;"	e	enum:__anon11
+atom_config	lib/atom.h	/^	atom_config,$/;"	e	enum:__anon11
+atom_custom	lib/atom.h	/^	atom_custom,$/;"	e	enum:__anon11
+atom_custom_list	lib/atom.h	/^	atom_custom_list,$/;"	e	enum:__anon11
+atom_dot3_power	lib/atom.h	/^	atom_dot3_power,$/;"	e	enum:__anon11
+atom_interface	lib/atom.h	/^	atom_interface,$/;"	e	enum:__anon11
+atom_interfaces_list	lib/atom.h	/^	atom_interfaces_list,$/;"	e	enum:__anon11
 atom_map	lib/atom.h	/^struct atom_map {$/;"	s
 atom_map::key	lib/atom.h	/^	int key;$/;"	m	struct:atom_map	access:public
 atom_map::map	lib/atom.h	/^	lldpctl_map_t   map[];$/;"	m	struct:atom_map	access:public
@@ -934,24 +934,24 @@ atom_map::next	lib/atom.h	/^	struct atom_map *next;$/;"	m	struct:atom_map	typere
 atom_map_list	lib/atom.c	/^static struct atom_map atom_map_list = {$/;"	v	typeref:struct:atom_map	file:
 atom_map_register	lib/atom.c	/^void atom_map_register(struct atom_map *map, int prio)$/;"	f	signature:(struct atom_map *map, int prio)
 atom_map_register	lib/atom.h	/^void atom_map_register(struct atom_map *map, int);$/;"	p	signature:(struct atom_map *map, int)
-atom_med_caelement	lib/atom.h	/^	atom_med_caelement,$/;"	e	enum:__anon1
-atom_med_caelements_list	lib/atom.h	/^	atom_med_caelements_list,$/;"	e	enum:__anon1
-atom_med_location	lib/atom.h	/^	atom_med_location,$/;"	e	enum:__anon1
-atom_med_locations_list	lib/atom.h	/^	atom_med_locations_list,$/;"	e	enum:__anon1
-atom_med_policies_list	lib/atom.h	/^	atom_med_policies_list,$/;"	e	enum:__anon1
-atom_med_policy	lib/atom.h	/^	atom_med_policy,$/;"	e	enum:__anon1
-atom_med_power	lib/atom.h	/^	atom_med_power,$/;"	e	enum:__anon1
-atom_mgmt	lib/atom.h	/^	atom_mgmt,$/;"	e	enum:__anon1
-atom_mgmts_list	lib/atom.h	/^	atom_mgmts_list,$/;"	e	enum:__anon1
-atom_pi	lib/atom.h	/^	atom_pi,$/;"	e	enum:__anon1
-atom_pis_list	lib/atom.h	/^	atom_pis_list,$/;"	e	enum:__anon1
-atom_port	lib/atom.h	/^	atom_port,$/;"	e	enum:__anon1
-atom_ports_list	lib/atom.h	/^	atom_ports_list,$/;"	e	enum:__anon1
-atom_ppvid	lib/atom.h	/^	atom_ppvid,$/;"	e	enum:__anon1
-atom_ppvids_list	lib/atom.h	/^	atom_ppvids_list,$/;"	e	enum:__anon1
-atom_t	lib/atom.h	/^} atom_t;$/;"	t	typeref:enum:__anon1
-atom_vlan	lib/atom.h	/^	atom_vlan,$/;"	e	enum:__anon1
-atom_vlans_list	lib/atom.h	/^	atom_vlans_list,$/;"	e	enum:__anon1
+atom_med_caelement	lib/atom.h	/^	atom_med_caelement,$/;"	e	enum:__anon11
+atom_med_caelements_list	lib/atom.h	/^	atom_med_caelements_list,$/;"	e	enum:__anon11
+atom_med_location	lib/atom.h	/^	atom_med_location,$/;"	e	enum:__anon11
+atom_med_locations_list	lib/atom.h	/^	atom_med_locations_list,$/;"	e	enum:__anon11
+atom_med_policies_list	lib/atom.h	/^	atom_med_policies_list,$/;"	e	enum:__anon11
+atom_med_policy	lib/atom.h	/^	atom_med_policy,$/;"	e	enum:__anon11
+atom_med_power	lib/atom.h	/^	atom_med_power,$/;"	e	enum:__anon11
+atom_mgmt	lib/atom.h	/^	atom_mgmt,$/;"	e	enum:__anon11
+atom_mgmts_list	lib/atom.h	/^	atom_mgmts_list,$/;"	e	enum:__anon11
+atom_pi	lib/atom.h	/^	atom_pi,$/;"	e	enum:__anon11
+atom_pis_list	lib/atom.h	/^	atom_pis_list,$/;"	e	enum:__anon11
+atom_port	lib/atom.h	/^	atom_port,$/;"	e	enum:__anon11
+atom_ports_list	lib/atom.h	/^	atom_ports_list,$/;"	e	enum:__anon11
+atom_ppvid	lib/atom.h	/^	atom_ppvid,$/;"	e	enum:__anon11
+atom_ppvids_list	lib/atom.h	/^	atom_ppvids_list,$/;"	e	enum:__anon11
+atom_t	lib/atom.h	/^} atom_t;$/;"	t	typeref:enum:__anon11
+atom_vlan	lib/atom.h	/^	atom_vlan,$/;"	e	enum:__anon11
+atom_vlans_list	lib/atom.h	/^	atom_vlans_list,$/;"	e	enum:__anon11
 attr	client/writer.h	/^	void	(*attr)(struct writer *, const char * tag, const char * descr, const char * value);$/;"	m	struct:writer	access:public
 attrs	client/text_writer.c	/^	int	attrs;$/;"	m	struct:txt_writer_private	file:	access:public
 autoneg_advertised	lldpd-structs.h	/^	u_int16_t		 autoneg_advertised;$/;"	m	struct:lldpd_dot3_macphy	access:public
@@ -980,8 +980,8 @@ base	lib/atom.h	/^	lldpctl_atom_t base;$/;"	m	struct:_lldpctl_atom_vlan_t	access
 best	daemon/agent.c	/^	oid              best[MAX_OID_LEN]; \/* Best OID *\/$/;"	m	struct:header_index	file:	access:public
 best_len	daemon/agent.c	/^	size_t           best_len;	    \/* Best OID length *\/$/;"	m	struct:header_index	file:	access:public
 bev	daemon/event.c	/^	struct bufferevent *bev;$/;"	m	struct:lldpd_one_client	typeref:struct:lldpd_one_client::bufferevent	file:	access:public
-bits	lib/fixedpoint.h	/^		unsigned bits;$/;"	m	struct:fp_number::__anon6	access:public
-bits	lib/fixedpoint.h	/^		unsigned bits;$/;"	m	struct:fp_number::__anon7	access:public
+bits	lib/fixedpoint.h	/^		unsigned bits;$/;"	m	struct:fp_number::__anon10	access:public
+bits	lib/fixedpoint.h	/^		unsigned bits;$/;"	m	struct:fp_number::__anon9	access:public
 bond_master	daemon/interfaces-linux.c	/^struct bond_master {$/;"	s	file:
 bond_master::index	daemon/interfaces-linux.c	/^	int  index;$/;"	m	struct:bond_master	file:	access:public
 bond_master::name	daemon/interfaces-linux.c	/^	char name[IFNAMSIZ];$/;"	m	struct:bond_master	file:	access:public
@@ -1006,7 +1006,7 @@ c_hostname	lldpd-structs.h	/^	char *c_hostname;	\/* Override system name *\/$/;"
 c_id	lldpd-structs.h	/^	char			*c_id;$/;"	m	struct:lldpd_chassis	access:public
 c_id_len	lldpd-structs.h	/^	int			 c_id_len;$/;"	m	struct:lldpd_chassis	access:public
 c_id_subtype	lldpd-structs.h	/^	u_int8_t	 	 c_id_subtype;$/;"	m	struct:lldpd_chassis	access:public
-c_iface_pattern	lldpd-structs.h	/^	char *c_iface_pattern;	\/* Pattern to match interfaces to use *\/$/;"	m	struct:lldpd_config	access:public
+c_iface_pattern	lldpd-structs.h	/^	char *c_iface_pattern;	\/* Pattern to match interfaces to use 包含所有接口名的字符串 *\/$/;"	m	struct:lldpd_config	access:public
 c_index	lldpd-structs.h	/^	u_int16_t		 c_index;    \/* Monotonic index *\/$/;"	m	struct:lldpd_chassis	access:public
 c_lldp_portid_type	lldpd-structs.h	/^	int c_lldp_portid_type; \/* The PortID type *\/$/;"	m	struct:lldpd_config	access:public
 c_max_neighbors	lldpd-structs.h	/^	int c_max_neighbors;	\/* Maximum number of neighbors (per protocol) *\/$/;"	m	struct:lldpd_config	access:public
@@ -1348,9 +1348,9 @@ eth_ops	daemon/interfaces-linux.c	/^static struct lldpd_ops eth_ops = {$/;"	v	ty
 ev	daemon/event.c	/^	struct event *ev;$/;"	m	struct:lldpd_events	typeref:struct:lldpd_events::event	file:	access:public
 exact	daemon/agent.c	/^	int              exact;$/;"	m	struct:header_index	file:	access:public
 execute	client/commands.c	/^	int(*execute)(struct lldpctl_conn_t*, struct writer*,$/;"	m	struct:cmd_node	file:	access:public
-f_uint16	daemon/frame.h	/^	uint16_t f_uint16;$/;"	m	union:__anon9	access:public
-f_uint32	daemon/frame.h	/^	uint32_t f_uint32;$/;"	m	union:__anon9	access:public
-f_uint8	daemon/frame.h	/^	uint8_t f_uint8;$/;"	m	union:__anon9	access:public
+f_uint16	daemon/frame.h	/^	uint16_t f_uint16;$/;"	m	union:__anon1	access:public
+f_uint32	daemon/frame.h	/^	uint32_t f_uint32;$/;"	m	union:__anon1	access:public
+f_uint8	daemon/frame.h	/^	uint8_t f_uint8;$/;"	m	union:__anon1	access:public
 fatal	log.c	/^fatal(const char *token, const char *emsg)$/;"	f	signature:(const char *token, const char *emsg)
 fatal	log.h	/^void             fatal(const char*, const char *) __attribute__((__noreturn__));$/;"	p	signature:(const char*, const char *)
 fatalx	log.c	/^fatalx(const char *token, const char *emsg)$/;"	f	signature:(const char *token, const char *emsg)
@@ -1378,16 +1378,16 @@ fp_fptostr	lib/fixedpoint.h	/^char *fp_fptostr(struct fp_number, const char *);$
 fp_negate	lib/fixedpoint.c	/^fp_negate(struct fp_number fp)$/;"	f	signature:(struct fp_number fp)
 fp_negate	lib/fixedpoint.h	/^struct fp_number fp_negate(struct fp_number);$/;"	p	signature:(struct fp_number)
 fp_number	lib/fixedpoint.h	/^struct fp_number {$/;"	s
-fp_number::__anon6::bits	lib/fixedpoint.h	/^		unsigned bits;$/;"	m	struct:fp_number::__anon6	access:public
-fp_number::__anon6::value	lib/fixedpoint.h	/^		long long value;$/;"	m	struct:fp_number::__anon6	access:public
-fp_number::__anon7::bits	lib/fixedpoint.h	/^		unsigned bits;$/;"	m	struct:fp_number::__anon7	access:public
-fp_number::__anon7::precision	lib/fixedpoint.h	/^		unsigned precision;$/;"	m	struct:fp_number::__anon7	access:public
-fp_number::__anon7::value	lib/fixedpoint.h	/^		long long value;$/;"	m	struct:fp_number::__anon7	access:public
-fp_number::fraction	lib/fixedpoint.h	/^	} fraction;$/;"	m	struct:fp_number	typeref:struct:fp_number::__anon7	access:public
-fp_number::integer	lib/fixedpoint.h	/^	} integer;$/;"	m	struct:fp_number	typeref:struct:fp_number::__anon6	access:public
+fp_number::__anon10::bits	lib/fixedpoint.h	/^		unsigned bits;$/;"	m	struct:fp_number::__anon10	access:public
+fp_number::__anon10::precision	lib/fixedpoint.h	/^		unsigned precision;$/;"	m	struct:fp_number::__anon10	access:public
+fp_number::__anon10::value	lib/fixedpoint.h	/^		long long value;$/;"	m	struct:fp_number::__anon10	access:public
+fp_number::__anon9::bits	lib/fixedpoint.h	/^		unsigned bits;$/;"	m	struct:fp_number::__anon9	access:public
+fp_number::__anon9::value	lib/fixedpoint.h	/^		long long value;$/;"	m	struct:fp_number::__anon9	access:public
+fp_number::fraction	lib/fixedpoint.h	/^	} fraction;$/;"	m	struct:fp_number	typeref:struct:fp_number::__anon10	access:public
+fp_number::integer	lib/fixedpoint.h	/^	} integer;$/;"	m	struct:fp_number	typeref:struct:fp_number::__anon9	access:public
 fp_strtofp	lib/fixedpoint.c	/^fp_strtofp(const char *repr, char **end,$/;"	f	signature:(const char *repr, char **end, unsigned intbits, unsigned fltbits)
 fp_strtofp	lib/fixedpoint.h	/^struct fp_number fp_strtofp(const char *, char **, unsigned, unsigned);$/;"	p	signature:(const char *, char **, unsigned, unsigned)
-fraction	lib/fixedpoint.h	/^	} fraction;$/;"	m	struct:fp_number	typeref:struct:fp_number::__anon7	access:public
+fraction	lib/fixedpoint.h	/^	} fraction;$/;"	m	struct:fp_number	typeref:struct:fp_number::__anon10	access:public
 frame	lldpd-structs.h	/^	unsigned char frame[1];$/;"	m	struct:lldpd_frame	access:public
 frame_checksum	daemon/frame.c	/^frame_checksum(const u_char *cp, int len, int cisco)$/;"	f	signature:(const u_char *cp, int len, int cisco)
 frame_checksum	daemon/lldpd.h	/^u_int16_t frame_checksum(const u_int8_t *, int, int);$/;"	p	signature:(const u_int8_t *, int, int)
@@ -1402,18 +1402,18 @@ g_ctl	daemon/lldpd.h	/^	int			 g_ctl;                 \/\/ 记录lldpd cli unix-
 g_ctlname	daemon/lldpd.h	/^	const char		*g_ctlname;         \/\/ lldpd cli 本地服务器地址 \/var\/run\/lldpd.socket$/;"	m	struct:lldpd	access:public
 g_default_local_port	daemon/lldpd.h	/^	struct lldpd_port	*g_default_local_port;  \/\/ 指向一个缺省的端口控制块尾队列元素$/;"	m	struct:lldpd	typeref:struct:lldpd::lldpd_port	access:public
 g_hardware	daemon/lldpd.h	/^	TAILQ_HEAD(, lldpd_hardware) g_hardware;$/;"	m	struct:lldpd	access:public
-g_iface_cb	daemon/lldpd.h	/^	void(*g_iface_cb)(struct lldpd *);	      \/* Called when there is an interface change *\/$/;"	m	struct:lldpd	access:public
+g_iface_cb	daemon/lldpd.h	/^	void(*g_iface_cb)(struct lldpd *);	      \/* Called when there is an interface change 接口变化后的回调函数 *\/$/;"	m	struct:lldpd	access:public
 g_iface_event	daemon/lldpd.h	/^	struct event		*g_iface_event; \/* Triggered when there is an interface change *\/$/;"	m	struct:lldpd	typeref:struct:lldpd::event	access:public
 g_iface_timer_event	daemon/lldpd.h	/^	struct event		*g_iface_timer_event; \/* Triggered one second after last interface change *\/$/;"	m	struct:lldpd	typeref:struct:lldpd::event	access:public
 g_lastrid	daemon/lldpd.h	/^	int			 g_lastrid;$/;"	m	struct:lldpd	access:public
 g_lsb_release	daemon/lldpd.h	/^	char			*g_lsb_release;$/;"	m	struct:lldpd	access:public
-g_main_loop	daemon/lldpd.h	/^	struct event		*g_main_loop;   \/\/ 指向主循环事件$/;"	m	struct:lldpd	typeref:struct:lldpd::event	access:public
+g_main_loop	daemon/lldpd.h	/^	struct event		*g_main_loop;   \/\/ 纯手动触发事件句柄$/;"	m	struct:lldpd	typeref:struct:lldpd::event	access:public
 g_netlink	daemon/lldpd.h	/^	struct lldpd_netlink	*g_netlink; \/\/ netlink控制块$/;"	m	struct:lldpd	typeref:struct:lldpd::lldpd_netlink	access:public
 g_protocols	daemon/lldpd.h	/^	struct protocol		*g_protocols;   \/\/ 指向lldp细分协议列表$/;"	m	struct:lldpd	typeref:struct:lldpd::protocol	access:public
 g_snmp	daemon/lldpd.h	/^	int			 g_snmp;                \/\/ snmp使能标志$/;"	m	struct:lldpd	access:public
 g_snmp_agentx	daemon/lldpd.h	/^	const char		*g_snmp_agentx;     \/\/ snmp本地服务器地址 \/var\/agentX\/master$/;"	m	struct:lldpd	access:public
 g_snmp_fds	daemon/lldpd.h	/^	void			*g_snmp_fds;        \/\/ 指向snmp-fds尾队列头$/;"	m	struct:lldpd	access:public
-g_snmp_timeout	daemon/lldpd.h	/^	struct event		*g_snmp_timeout;\/\/ 指向snmp超时事件$/;"	m	struct:lldpd	typeref:struct:lldpd::event	access:public
+g_snmp_timeout	daemon/lldpd.h	/^	struct event		*g_snmp_timeout;\/\/ snmp超时事件句柄$/;"	m	struct:lldpd	typeref:struct:lldpd::event	access:public
 g_sock	daemon/lldpd.h	/^	int			 g_sock;                \/\/ 记录ioctl fd$/;"	m	struct:lldpd	access:public
 gc	marshal.c	/^struct gc {$/;"	s	file:
 gc::TAILQ_ENTRY	marshal.c	/^	TAILQ_ENTRY(gc) next;$/;"	p	struct:gc	file:	access:public
@@ -1557,7 +1557,7 @@ input::name	client/lldpcli.c	/^	char *name;$/;"	m	struct:input	file:	access:publ
 input_append	client/lldpcli.c	/^input_append(const char *arg, struct inputs *inputs, int acceptdir)$/;"	f	file:	signature:(const char *arg, struct inputs *inputs, int acceptdir)
 input_buffer	lib/atom.h	/^	uint8_t *input_buffer;	\/* Current input\/output buffer *\/$/;"	m	struct:lldpctl_conn_t	access:public
 input_buffer_len	lib/atom.h	/^	size_t input_buffer_len;$/;"	m	struct:lldpctl_conn_t	access:public
-integer	lib/fixedpoint.h	/^	} integer;$/;"	m	struct:fp_number	typeref:struct:fp_number::__anon6	access:public
+integer	lib/fixedpoint.h	/^	} integer;$/;"	m	struct:fp_number	typeref:struct:fp_number::__anon9	access:public
 interface	lib/atoms/interface.c	/^static struct atom_builder interface =$/;"	v	typeref:struct:atom_builder	file:
 interfaces_address	daemon/lldpd.h	/^struct interfaces_address {$/;"	s
 interfaces_address::address	daemon/lldpd.h	/^	struct sockaddr_storage address; \/* Address *\/$/;"	m	struct:interfaces_address	typeref:struct:interfaces_address::sockaddr_storage	access:public
@@ -1790,11 +1790,11 @@ lldpctl_atom_t::set_int	lib/atom.h	/^	lldpctl_atom_t *(*set_int)(lldpctl_atom_t 
 lldpctl_atom_t::set_str	lib/atom.h	/^	lldpctl_atom_t *(*set_str)(lldpctl_atom_t *, lldpctl_key_t, const char *);$/;"	m	struct:lldpctl_atom_t	access:public
 lldpctl_atom_t::type	lib/atom.h	/^	atom_t type;$/;"	m	struct:lldpctl_atom_t	access:public
 lldpctl_atom_t::value	lib/atom.h	/^	lldpctl_atom_t      *(*value)(lldpctl_atom_t *, lldpctl_atom_iter_t *);$/;"	m	struct:lldpctl_atom_t	access:public
-lldpctl_c_added	lib/lldpctl.h	/^	lldpctl_c_added,	\/**< This is a new neighbor *\/$/;"	e	enum:__anon4
-lldpctl_c_deleted	lib/lldpctl.h	/^	lldpctl_c_deleted,	\/**< The neighbor has been deleted *\/$/;"	e	enum:__anon4
-lldpctl_c_updated	lib/lldpctl.h	/^	lldpctl_c_updated,	\/**< The neighbor has been updated *\/$/;"	e	enum:__anon4
+lldpctl_c_added	lib/lldpctl.h	/^	lldpctl_c_added,	\/**< This is a new neighbor *\/$/;"	e	enum:__anon7
+lldpctl_c_deleted	lib/lldpctl.h	/^	lldpctl_c_deleted,	\/**< The neighbor has been deleted *\/$/;"	e	enum:__anon7
+lldpctl_c_updated	lib/lldpctl.h	/^	lldpctl_c_updated,	\/**< The neighbor has been updated *\/$/;"	e	enum:__anon7
 lldpctl_change_callback	lib/lldpctl.h	/^typedef void (*lldpctl_change_callback)(lldpctl_conn_t *conn,$/;"	t
-lldpctl_change_t	lib/lldpctl.h	/^} lldpctl_change_t;$/;"	t	typeref:enum:__anon4
+lldpctl_change_t	lib/lldpctl.h	/^} lldpctl_change_t;$/;"	t	typeref:enum:__anon7
 lldpctl_conn_sync_t	lib/atom.h	/^struct lldpctl_conn_sync_t {$/;"	s
 lldpctl_conn_sync_t::fd	lib/atom.h	/^	int fd;			\/* File descriptor to the socket. *\/$/;"	m	struct:lldpctl_conn_sync_t	access:public
 lldpctl_conn_t	lib/atom.h	/^struct lldpctl_conn_t {$/;"	s
@@ -1813,7 +1813,7 @@ lldpctl_conn_t::user_data	lib/atom.h	/^	void *user_data;	    \/* Callback user d
 lldpctl_conn_t::watch_cb	lib/atom.h	/^	lldpctl_change_callback watch_cb;   \/* 通知回调函数 *\/$/;"	m	struct:lldpctl_conn_t	access:public
 lldpctl_conn_t::watch_data	lib/atom.h	/^	void *watch_data;$/;"	m	struct:lldpctl_conn_t	access:public
 lldpctl_conn_t::watch_triggered	lib/atom.h	/^	int watch_triggered;$/;"	m	struct:lldpctl_conn_t	access:public
-lldpctl_error_t	lib/lldpctl.h	/^} lldpctl_error_t;$/;"	t	typeref:enum:__anon2
+lldpctl_error_t	lib/lldpctl.h	/^} lldpctl_error_t;$/;"	t	typeref:enum:__anon5
 lldpctl_get_configuration	lib/atom.c	/^lldpctl_get_configuration(lldpctl_conn_t *conn)$/;"	f	signature:(lldpctl_conn_t *conn)
 lldpctl_get_configuration	lib/lldpctl.h	/^lldpctl_atom_t *lldpctl_get_configuration(lldpctl_conn_t *conn);$/;"	p	signature:(lldpctl_conn_t *conn)
 lldpctl_get_default_port	lib/atom.c	/^lldpctl_get_default_port(lldpctl_conn_t *conn)$/;"	f	signature:(lldpctl_conn_t *conn)
@@ -1826,124 +1826,124 @@ lldpctl_get_local_chassis	lib/atom.c	/^lldpctl_get_local_chassis(lldpctl_conn_t 
 lldpctl_get_local_chassis	lib/lldpctl.h	/^lldpctl_atom_t *lldpctl_get_local_chassis(lldpctl_conn_t *conn);$/;"	p	signature:(lldpctl_conn_t *conn)
 lldpctl_get_port	lib/atom.c	/^lldpctl_get_port(lldpctl_atom_t *atom)$/;"	f	signature:(lldpctl_atom_t *atom)
 lldpctl_get_port	lib/lldpctl.h	/^lldpctl_atom_t *lldpctl_get_port(lldpctl_atom_t *port);$/;"	p	signature:(lldpctl_atom_t *port)
-lldpctl_k_ageout_cnt	lib/lldpctl.h	/^	lldpctl_k_ageout_cnt,	\/**< `(I)` ageout cnt. Only works for a local port. *\/$/;"	e	enum:__anon5
-lldpctl_k_chassis_cap_available	lib/lldpctl.h	/^	lldpctl_k_chassis_cap_available, \/**< `(I)` Available capabalities (see `LLDP_CAP_*`) *\/$/;"	e	enum:__anon5
-lldpctl_k_chassis_cap_enabled	lib/lldpctl.h	/^	lldpctl_k_chassis_cap_enabled,	 \/**< `(I)` Enabled capabilities (see `LLDP_CAP_*`) *\/$/;"	e	enum:__anon5
-lldpctl_k_chassis_descr	lib/lldpctl.h	/^	lldpctl_k_chassis_descr,      \/**< `(S)` The description of this chassis. *\/$/;"	e	enum:__anon5
-lldpctl_k_chassis_id	lib/lldpctl.h	/^	lldpctl_k_chassis_id,	      \/**< `(BS)` The ID of this chassis. *\/$/;"	e	enum:__anon5
-lldpctl_k_chassis_id_subtype	lib/lldpctl.h	/^	lldpctl_k_chassis_id_subtype, \/**< `(IS)` The subtype ID of this chassis. *\/$/;"	e	enum:__anon5
-lldpctl_k_chassis_index	lib/lldpctl.h	/^	lldpctl_k_chassis_index = 1800,   \/**< `(I)` The chassis index. *\/$/;"	e	enum:__anon5
-lldpctl_k_chassis_med_cap	lib/lldpctl.h	/^	lldpctl_k_chassis_med_cap,  \/**< `(I)` Available MED capabilitied. See `LLDP_MED_CAP_*` *\/$/;"	e	enum:__anon5
-lldpctl_k_chassis_med_inventory_asset	lib/lldpctl.h	/^	lldpctl_k_chassis_med_inventory_asset, \/**< `(S)` LLDP MED inventory "Asset ID" *\/$/;"	e	enum:__anon5
-lldpctl_k_chassis_med_inventory_fw	lib/lldpctl.h	/^	lldpctl_k_chassis_med_inventory_fw, \/**< `(S)` LLDP MED inventory "Firmware Revision" *\/$/;"	e	enum:__anon5
-lldpctl_k_chassis_med_inventory_hw	lib/lldpctl.h	/^	lldpctl_k_chassis_med_inventory_hw, \/**< `(S)` LLDP MED inventory "Hardware Revision" *\/$/;"	e	enum:__anon5
-lldpctl_k_chassis_med_inventory_manuf	lib/lldpctl.h	/^	lldpctl_k_chassis_med_inventory_manuf, \/**< `(S)` LLDP MED inventory "Manufacturer" *\/$/;"	e	enum:__anon5
-lldpctl_k_chassis_med_inventory_model	lib/lldpctl.h	/^	lldpctl_k_chassis_med_inventory_model, \/**< `(S)` LLDP MED inventory "Model" *\/$/;"	e	enum:__anon5
-lldpctl_k_chassis_med_inventory_sn	lib/lldpctl.h	/^	lldpctl_k_chassis_med_inventory_sn, \/**< `(S)` LLDP MED inventory "Serial Number" *\/$/;"	e	enum:__anon5
-lldpctl_k_chassis_med_inventory_sw	lib/lldpctl.h	/^	lldpctl_k_chassis_med_inventory_sw, \/**< `(S)` LLDP MED inventory "Software Revision" *\/$/;"	e	enum:__anon5
-lldpctl_k_chassis_med_type	lib/lldpctl.h	/^	lldpctl_k_chassis_med_type = 1900, \/**< `(IS)` Chassis MED type. See `LLDP_MED_CLASS_*` *\/$/;"	e	enum:__anon5
-lldpctl_k_chassis_mgmt	lib/lldpctl.h	/^	lldpctl_k_chassis_mgmt,		 \/**< `(AL)` List of management addresses *\/$/;"	e	enum:__anon5
-lldpctl_k_chassis_name	lib/lldpctl.h	/^	lldpctl_k_chassis_name,	      \/**< `(S)` The name of this chassis. *\/$/;"	e	enum:__anon5
-lldpctl_k_config_advertise_version	lib/lldpctl.h	/^	lldpctl_k_config_advertise_version, \/**< `(I)` Advertise version *\/$/;"	e	enum:__anon5
-lldpctl_k_config_bond_slave_src_mac_type	lib/lldpctl.h	/^	lldpctl_k_config_bond_slave_src_mac_type, \/**< `(I,WO)` bond slave src mac type. *\/$/;"	e	enum:__anon5
-lldpctl_k_config_chassis_cap_advertise	lib/lldpctl.h	/^	lldpctl_k_config_chassis_cap_advertise, \/**< `(I,WO)` Enable or disable chassis capabilities advertisement *\/$/;"	e	enum:__anon5
-lldpctl_k_config_chassis_mgmt_advertise	lib/lldpctl.h	/^	lldpctl_k_config_chassis_mgmt_advertise, \/**< `(I,WO)` Enable or disable management addresses advertisement *\/$/;"	e	enum:__anon5
-lldpctl_k_config_cid_pattern	lib/lldpctl.h	/^	lldpctl_k_config_cid_pattern,	\/**< `(S)` Interface pattern to choose the chassis ID *\/$/;"	e	enum:__anon5
-lldpctl_k_config_description	lib/lldpctl.h	/^	lldpctl_k_config_description,	\/**< `(S,WON)` Chassis description overridden *\/$/;"	e	enum:__anon5
-lldpctl_k_config_fast_start_enabled	lib/lldpctl.h	/^	lldpctl_k_config_fast_start_enabled, \/**< `(I,WO)` Is fast start enabled *\/$/;"	e	enum:__anon5
-lldpctl_k_config_fast_start_interval	lib/lldpctl.h	/^	lldpctl_k_config_fast_start_interval, \/**< `(I,WO)` Start fast transmit interval *\/$/;"	e	enum:__anon5
-lldpctl_k_config_hostname	lib/lldpctl.h	/^	lldpctl_k_config_hostname,	\/**< `(S,WON)` System name overridden *\/$/;"	e	enum:__anon5
-lldpctl_k_config_iface_pattern	lib/lldpctl.h	/^	lldpctl_k_config_iface_pattern, \/**< `(S,WON)` Pattern of enabled interfaces *\/$/;"	e	enum:__anon5
-lldpctl_k_config_iface_promisc	lib/lldpctl.h	/^	lldpctl_k_config_iface_promisc,  \/**< `(I,WO)` Enable or disable promiscuous mode on interfaces *\/$/;"	e	enum:__anon5
-lldpctl_k_config_ifdescr_update	lib/lldpctl.h	/^	lldpctl_k_config_ifdescr_update, \/**< `(I,WO)` Enable or disable setting interface description *\/$/;"	e	enum:__anon5
-lldpctl_k_config_lldp_portid_type	lib/lldpctl.h	/^	lldpctl_k_config_lldp_portid_type, \/**< `(I,WO)` LLDP PortID TLV Subtype *\/$/;"	e	enum:__anon5
-lldpctl_k_config_lldpmed_noinventory	lib/lldpctl.h	/^	lldpctl_k_config_lldpmed_noinventory, \/**< `(I)` Disable LLDP-MED inventory *\/$/;"	e	enum:__anon5
-lldpctl_k_config_mgmt_pattern	lib/lldpctl.h	/^	lldpctl_k_config_mgmt_pattern, \/**< `(S,WON)` Pattern to choose the management address *\/$/;"	e	enum:__anon5
-lldpctl_k_config_paused	lib/lldpctl.h	/^	lldpctl_k_config_paused,	      \/**< `(I)` lldpd is paused *\/$/;"	e	enum:__anon5
-lldpctl_k_config_platform	lib/lldpctl.h	/^	lldpctl_k_config_platform,	\/**< `(S,WON)` Platform description overridden (CDP) *\/$/;"	e	enum:__anon5
-lldpctl_k_config_receiveonly	lib/lldpctl.h	/^	lldpctl_k_config_receiveonly, \/**< `(I)` Receive only mode *\/$/;"	e	enum:__anon5
-lldpctl_k_config_tx_hold	lib/lldpctl.h	/^	lldpctl_k_config_tx_hold, \/**< `(I,WO)` Transmit hold interval. *\/$/;"	e	enum:__anon5
-lldpctl_k_config_tx_interval	lib/lldpctl.h	/^	lldpctl_k_config_tx_interval, \/**< `(I,WO)` Transmit interval. When set to -1, it is meant to transmit now. *\/$/;"	e	enum:__anon5
-lldpctl_k_custom_tlv	lib/lldpctl.h	/^	lldpctl_k_custom_tlv,			\/** `(AL,WO)` custom TLV **\/$/;"	e	enum:__anon5
-lldpctl_k_custom_tlv_op	lib/lldpctl.h	/^	lldpctl_k_custom_tlv_op,		\/**< `(I,WO)` custom TLV operation *\/$/;"	e	enum:__anon5
-lldpctl_k_custom_tlv_oui	lib/lldpctl.h	/^	lldpctl_k_custom_tlv_oui,		\/**< `(I,WO)` custom TLV Organizationally Unique Identifier. Default is 0 (3 bytes) *\/$/;"	e	enum:__anon5
-lldpctl_k_custom_tlv_oui_info_string	lib/lldpctl.h	/^	lldpctl_k_custom_tlv_oui_info_string,	\/**< `(I,WO)` custom TLV Organizationally Unique Identifier Information String (up to 507 bytes) *\/$/;"	e	enum:__anon5
-lldpctl_k_custom_tlv_oui_subtype	lib/lldpctl.h	/^	lldpctl_k_custom_tlv_oui_subtype,	\/**< `(I,WO)` custom TLV subtype. Default is 0 (1 byte) *\/$/;"	e	enum:__anon5
-lldpctl_k_custom_tlvs	lib/lldpctl.h	/^	lldpctl_k_custom_tlvs = 5000,		\/**< `(AL)` custom TLVs *\/$/;"	e	enum:__anon5
-lldpctl_k_custom_tlvs_clear	lib/lldpctl.h	/^	lldpctl_k_custom_tlvs_clear,		\/** `(I,WO)` clear list of custom TLVs *\/$/;"	e	enum:__anon5
-lldpctl_k_delete_cnt	lib/lldpctl.h	/^	lldpctl_k_delete_cnt,	\/**< `(I)` delete cnt. Only works for a local port. *\/$/;"	e	enum:__anon5
-lldpctl_k_dot3_power_allocated	lib/lldpctl.h	/^	lldpctl_k_dot3_power_allocated, \/**< `(I,W)` 802.3AT power allocated *\/$/;"	e	enum:__anon5
-lldpctl_k_dot3_power_class	lib/lldpctl.h	/^	lldpctl_k_dot3_power_class, \/**< `(IS,W)` Power class. *\/$/;"	e	enum:__anon5
-lldpctl_k_dot3_power_devicetype	lib/lldpctl.h	/^	lldpctl_k_dot3_power_devicetype, \/**< `(IS,W)` Device type. See `LLDP_DOT3_POWER_PSE\/PD` *\/$/;"	e	enum:__anon5
-lldpctl_k_dot3_power_enabled	lib/lldpctl.h	/^	lldpctl_k_dot3_power_enabled, \/**< `(I,W)` Is MDI power enabled. *\/$/;"	e	enum:__anon5
-lldpctl_k_dot3_power_paircontrol	lib/lldpctl.h	/^	lldpctl_k_dot3_power_paircontrol, \/**< `(I,W)` Pair-control enabled? *\/$/;"	e	enum:__anon5
-lldpctl_k_dot3_power_pairs	lib/lldpctl.h	/^	lldpctl_k_dot3_power_pairs, \/**< `(IS,W)` See `LLDP_DOT3_POWERPAIRS_*` *\/$/;"	e	enum:__anon5
-lldpctl_k_dot3_power_priority	lib/lldpctl.h	/^	lldpctl_k_dot3_power_priority, \/**< `(IS,W)` 802.3AT power priority *\/$/;"	e	enum:__anon5
-lldpctl_k_dot3_power_requested	lib/lldpctl.h	/^	lldpctl_k_dot3_power_requested, \/**< `(I,W)` 802.3AT power requested *\/$/;"	e	enum:__anon5
-lldpctl_k_dot3_power_source	lib/lldpctl.h	/^	lldpctl_k_dot3_power_source, \/**< `(IS,W)` 802.3AT power source *\/$/;"	e	enum:__anon5
-lldpctl_k_dot3_power_supported	lib/lldpctl.h	/^	lldpctl_k_dot3_power_supported, \/**< `(I,W)` Is MDI power supported. *\/$/;"	e	enum:__anon5
-lldpctl_k_dot3_power_type	lib/lldpctl.h	/^	lldpctl_k_dot3_power_type, \/**< `(I,W)` 802.3AT power type *\/$/;"	e	enum:__anon5
-lldpctl_k_insert_cnt	lib/lldpctl.h	/^	lldpctl_k_insert_cnt,	\/**< `(I)` insert cnt. Only works for a local port. *\/$/;"	e	enum:__anon5
-lldpctl_k_interface_name	lib/lldpctl.h	/^	lldpctl_k_interface_name = 1000, \/**< `(S)` The interface name. *\/$/;"	e	enum:__anon5
-lldpctl_k_med_civicaddress_type	lib/lldpctl.h	/^	lldpctl_k_med_civicaddress_type, \/**< `(IS,W)` MED civic address type. *\/$/;"	e	enum:__anon5
-lldpctl_k_med_civicaddress_value	lib/lldpctl.h	/^	lldpctl_k_med_civicaddress_value, \/**< `(S,W)` MED civic address value. *\/$/;"	e	enum:__anon5
-lldpctl_k_med_location_altitude	lib/lldpctl.h	/^	lldpctl_k_med_location_altitude,  \/**< `(S,W)` MED altitude. Only if format is COORD. *\/$/;"	e	enum:__anon5
-lldpctl_k_med_location_altitude_unit	lib/lldpctl.h	/^	lldpctl_k_med_location_altitude_unit, \/**< `(S,W)` MED altitude unit. See `LLDP_MED_LOCATION_ALTITUDE_UNIT_*`.$/;"	e	enum:__anon5
-lldpctl_k_med_location_ca_elements	lib/lldpctl.h	/^	lldpctl_k_med_location_ca_elements = 2300, \/**< `(AL,WC)` MED civic address elements. Only if format is CIVIC *\/$/;"	e	enum:__anon5
-lldpctl_k_med_location_country	lib/lldpctl.h	/^	lldpctl_k_med_location_country = 2200, \/**< `(S,W)` MED country. Only if format is CIVIC. *\/$/;"	e	enum:__anon5
-lldpctl_k_med_location_elin	lib/lldpctl.h	/^	lldpctl_k_med_location_elin, \/**< `(S,W)` MED ELIN. Only if format is ELIN. *\/$/;"	e	enum:__anon5
-lldpctl_k_med_location_format	lib/lldpctl.h	/^	lldpctl_k_med_location_format, \/**< `(IS,W)` MED location format. See$/;"	e	enum:__anon5
-lldpctl_k_med_location_geoid	lib/lldpctl.h	/^	lldpctl_k_med_location_geoid, \/**< `(IS,W)` MED geoid. See `LLDP_MED_LOCATION_GEOID_*`. Only if format is COORD. *\/$/;"	e	enum:__anon5
-lldpctl_k_med_location_latitude	lib/lldpctl.h	/^	lldpctl_k_med_location_latitude,  \/**< `(S,W)` MED latitude. Only if format is COORD. *\/$/;"	e	enum:__anon5
-lldpctl_k_med_location_longitude	lib/lldpctl.h	/^	lldpctl_k_med_location_longitude, \/**< `(S,W)` MED longitude. Only if format is COORD. *\/$/;"	e	enum:__anon5
-lldpctl_k_med_policy_dscp	lib/lldpctl.h	/^	lldpctl_k_med_policy_dscp,     \/**< `(I,W)` MED policy DSCP *\/$/;"	e	enum:__anon5
-lldpctl_k_med_policy_priority	lib/lldpctl.h	/^	lldpctl_k_med_policy_priority, \/**< `(I,W)` MED policy priority *\/$/;"	e	enum:__anon5
-lldpctl_k_med_policy_tagged	lib/lldpctl.h	/^	lldpctl_k_med_policy_tagged, \/**< `(I,W)` MED policy tagging *\/$/;"	e	enum:__anon5
-lldpctl_k_med_policy_type	lib/lldpctl.h	/^	lldpctl_k_med_policy_type, \/**< `(IS,W)` MED policy app type. See `LLDP_MED_APPTYPE_*`. 0 if a policy is not defined. *\/$/;"	e	enum:__anon5
-lldpctl_k_med_policy_unknown	lib/lldpctl.h	/^	lldpctl_k_med_policy_unknown, \/**< `(I,W)` Is MED policy defined? *\/$/;"	e	enum:__anon5
-lldpctl_k_med_policy_vid	lib/lldpctl.h	/^	lldpctl_k_med_policy_vid,    \/**< `(I,W)` MED policy VID *\/$/;"	e	enum:__anon5
-lldpctl_k_med_power_priority	lib/lldpctl.h	/^	lldpctl_k_med_power_priority, \/**< `(IS,W)` LLDP MED power priority. See `LLDP_MED_POW_PRIO_*` *\/$/;"	e	enum:__anon5
-lldpctl_k_med_power_source	lib/lldpctl.h	/^	lldpctl_k_med_power_source, \/**< `(IS,W)` LLDP MED power source. See `LLDP_MED_POW_SOURCE_*` *\/$/;"	e	enum:__anon5
-lldpctl_k_med_power_type	lib/lldpctl.h	/^	lldpctl_k_med_power_type, \/**< `(IS,W)` LLDP MED power device type. See `LLDP_MED_POW_TYPE_*` *\/$/;"	e	enum:__anon5
-lldpctl_k_med_power_val	lib/lldpctl.h	/^	lldpctl_k_med_power_val, \/**< `(I,W)` LLDP MED power value *\/$/;"	e	enum:__anon5
-lldpctl_k_mgmt_ip	lib/lldpctl.h	/^	lldpctl_k_mgmt_ip = 3000,	\/**< `(S)` IP address *\/$/;"	e	enum:__anon5
-lldpctl_k_pi_id	lib/lldpctl.h	/^	lldpctl_k_pi_id,    \/**< `(B)` PID value *\/$/;"	e	enum:__anon5
-lldpctl_k_port_age	lib/lldpctl.h	/^	lldpctl_k_port_age,	   \/**< `(I)`  Age of information, seconds from epoch. *\/$/;"	e	enum:__anon5
-lldpctl_k_port_chassis	lib/lldpctl.h	/^	lldpctl_k_port_chassis,	   \/**< `(A)` Chassis associated to the port *\/$/;"	e	enum:__anon5
-lldpctl_k_port_descr	lib/lldpctl.h	/^	lldpctl_k_port_descr,	   \/**< `(S,WO)` The description of this port. *\/$/;"	e	enum:__anon5
-lldpctl_k_port_dot3_aggregid	lib/lldpctl.h	/^	lldpctl_k_port_dot3_aggregid,   \/**< `(I)` Port aggregation ID *\/$/;"	e	enum:__anon5
-lldpctl_k_port_dot3_autoneg_advertised	lib/lldpctl.h	/^	lldpctl_k_port_dot3_autoneg_advertised, \/**< `(I)` Advertised protocols. See `LLDP_DOT3_LINK_AUTONEG_*` *\/$/;"	e	enum:__anon5
-lldpctl_k_port_dot3_autoneg_enabled	lib/lldpctl.h	/^	lldpctl_k_port_dot3_autoneg_enabled, \/**< `(I)` Autonegotiation enabled. *\/$/;"	e	enum:__anon5
-lldpctl_k_port_dot3_autoneg_support	lib/lldpctl.h	/^	lldpctl_k_port_dot3_autoneg_support, \/**< `(I)` Autonegotiation support. *\/$/;"	e	enum:__anon5
-lldpctl_k_port_dot3_mautype	lib/lldpctl.h	/^	lldpctl_k_port_dot3_mautype, \/**< `(IS)` Current MAU type. See `LLDP_DOT3_MAU_*` *\/$/;"	e	enum:__anon5
-lldpctl_k_port_dot3_mfs	lib/lldpctl.h	/^	lldpctl_k_port_dot3_mfs = 1300,	   \/**< `(I)` MFS *\/$/;"	e	enum:__anon5
-lldpctl_k_port_dot3_power	lib/lldpctl.h	/^	lldpctl_k_port_dot3_power = 1400, \/**< `(A,WO)` Dot3 power related stuff. *\/$/;"	e	enum:__anon5
-lldpctl_k_port_hidden	lib/lldpctl.h	/^	lldpctl_k_port_hidden,	   \/**< `(I)` Is this port hidden (or should it be displayed?)? *\/$/;"	e	enum:__anon5
-lldpctl_k_port_id	lib/lldpctl.h	/^	lldpctl_k_port_id,	   \/**< `(BS,WO)` The ID of this port. *\/$/;"	e	enum:__anon5
-lldpctl_k_port_id_subtype	lib/lldpctl.h	/^	lldpctl_k_port_id_subtype, \/**< `(IS)` The subtype ID of this port.  *\/$/;"	e	enum:__anon5
-lldpctl_k_port_index	lib/lldpctl.h	/^	lldpctl_k_port_index,	\/**< `(I)` The port index. Only works for a local port. *\/$/;"	e	enum:__anon5
-lldpctl_k_port_med_locations	lib/lldpctl.h	/^	lldpctl_k_port_med_locations = 2100, \/**< `(AL,WO)` MED locations attached to a port. *\/$/;"	e	enum:__anon5
-lldpctl_k_port_med_policies	lib/lldpctl.h	/^	lldpctl_k_port_med_policies = 2000, \/**< `(AL,WO)` MED policies attached to a port. *\/$/;"	e	enum:__anon5
-lldpctl_k_port_med_power	lib/lldpctl.h	/^	lldpctl_k_port_med_power = 2400, \/**< `(A,WO)` LLDP-MED power related stuff. *\/$/;"	e	enum:__anon5
-lldpctl_k_port_name	lib/lldpctl.h	/^	lldpctl_k_port_name = 1100,	\/**< `(S)` The port name. Only works for a local port. *\/$/;"	e	enum:__anon5
-lldpctl_k_port_neighbors	lib/lldpctl.h	/^	lldpctl_k_port_neighbors = 1200,$/;"	e	enum:__anon5
-lldpctl_k_port_pis	lib/lldpctl.h	/^	lldpctl_k_port_pis = 1700, \/**< `(AL)` List of PIDs *\/$/;"	e	enum:__anon5
-lldpctl_k_port_ppvids	lib/lldpctl.h	/^	lldpctl_k_port_ppvids = 1600, \/**< `(AL)` List of PPVIDs *\/$/;"	e	enum:__anon5
-lldpctl_k_port_protocol	lib/lldpctl.h	/^	lldpctl_k_port_protocol,   \/**< `(IS)` The protocol that was used to retrieve this information. *\/$/;"	e	enum:__anon5
-lldpctl_k_port_status	lib/lldpctl.h	/^	lldpctl_k_port_status,	   \/**< `(IS,WO)` Operational status of this (local) port *\/$/;"	e	enum:__anon5
-lldpctl_k_port_vlan_pvid	lib/lldpctl.h	/^	lldpctl_k_port_vlan_pvid = 1500, \/**< `(I)` Primary VLAN ID *\/$/;"	e	enum:__anon5
-lldpctl_k_port_vlans	lib/lldpctl.h	/^	lldpctl_k_port_vlans, \/**< `(AL)` List of VLAN *\/$/;"	e	enum:__anon5
-lldpctl_k_ppvid_id	lib/lldpctl.h	/^	lldpctl_k_ppvid_id, \/**< `(I)` ID of PPVID *\/$/;"	e	enum:__anon5
-lldpctl_k_ppvid_status	lib/lldpctl.h	/^	lldpctl_k_ppvid_status, \/**< `(I)` Status of PPVID (see `LLDP_PPVID_CAP_*`) *\/$/;"	e	enum:__anon5
-lldpctl_k_rx_cnt	lib/lldpctl.h	/^	lldpctl_k_rx_cnt,	\/**< `(I)` rx cnt. Only works for a local port. *\/$/;"	e	enum:__anon5
-lldpctl_k_rx_discarded_cnt	lib/lldpctl.h	/^	lldpctl_k_rx_discarded_cnt,	\/**< `(I)` discarded cnt. Only works for a local port. *\/$/;"	e	enum:__anon5
-lldpctl_k_rx_unrecognized_cnt	lib/lldpctl.h	/^	lldpctl_k_rx_unrecognized_cnt,	\/**< `(I)` unrecognized cnt. Only works for a local port. *\/$/;"	e	enum:__anon5
-lldpctl_k_tx_cnt	lib/lldpctl.h	/^	lldpctl_k_tx_cnt = 4000,	\/**< `(I)` tx cnt. Only works for a local port. *\/$/;"	e	enum:__anon5
-lldpctl_k_vlan_id	lib/lldpctl.h	/^	lldpctl_k_vlan_id, \/**< `(I)` VLAN ID *\/$/;"	e	enum:__anon5
-lldpctl_k_vlan_name	lib/lldpctl.h	/^	lldpctl_k_vlan_name, \/**< `(S)` VLAN name *\/$/;"	e	enum:__anon5
+lldpctl_k_ageout_cnt	lib/lldpctl.h	/^	lldpctl_k_ageout_cnt,	\/**< `(I)` ageout cnt. Only works for a local port. *\/$/;"	e	enum:__anon8
+lldpctl_k_chassis_cap_available	lib/lldpctl.h	/^	lldpctl_k_chassis_cap_available, \/**< `(I)` Available capabalities (see `LLDP_CAP_*`) *\/$/;"	e	enum:__anon8
+lldpctl_k_chassis_cap_enabled	lib/lldpctl.h	/^	lldpctl_k_chassis_cap_enabled,	 \/**< `(I)` Enabled capabilities (see `LLDP_CAP_*`) *\/$/;"	e	enum:__anon8
+lldpctl_k_chassis_descr	lib/lldpctl.h	/^	lldpctl_k_chassis_descr,      \/**< `(S)` The description of this chassis. *\/$/;"	e	enum:__anon8
+lldpctl_k_chassis_id	lib/lldpctl.h	/^	lldpctl_k_chassis_id,	      \/**< `(BS)` The ID of this chassis. *\/$/;"	e	enum:__anon8
+lldpctl_k_chassis_id_subtype	lib/lldpctl.h	/^	lldpctl_k_chassis_id_subtype, \/**< `(IS)` The subtype ID of this chassis. *\/$/;"	e	enum:__anon8
+lldpctl_k_chassis_index	lib/lldpctl.h	/^	lldpctl_k_chassis_index = 1800,   \/**< `(I)` The chassis index. *\/$/;"	e	enum:__anon8
+lldpctl_k_chassis_med_cap	lib/lldpctl.h	/^	lldpctl_k_chassis_med_cap,  \/**< `(I)` Available MED capabilitied. See `LLDP_MED_CAP_*` *\/$/;"	e	enum:__anon8
+lldpctl_k_chassis_med_inventory_asset	lib/lldpctl.h	/^	lldpctl_k_chassis_med_inventory_asset, \/**< `(S)` LLDP MED inventory "Asset ID" *\/$/;"	e	enum:__anon8
+lldpctl_k_chassis_med_inventory_fw	lib/lldpctl.h	/^	lldpctl_k_chassis_med_inventory_fw, \/**< `(S)` LLDP MED inventory "Firmware Revision" *\/$/;"	e	enum:__anon8
+lldpctl_k_chassis_med_inventory_hw	lib/lldpctl.h	/^	lldpctl_k_chassis_med_inventory_hw, \/**< `(S)` LLDP MED inventory "Hardware Revision" *\/$/;"	e	enum:__anon8
+lldpctl_k_chassis_med_inventory_manuf	lib/lldpctl.h	/^	lldpctl_k_chassis_med_inventory_manuf, \/**< `(S)` LLDP MED inventory "Manufacturer" *\/$/;"	e	enum:__anon8
+lldpctl_k_chassis_med_inventory_model	lib/lldpctl.h	/^	lldpctl_k_chassis_med_inventory_model, \/**< `(S)` LLDP MED inventory "Model" *\/$/;"	e	enum:__anon8
+lldpctl_k_chassis_med_inventory_sn	lib/lldpctl.h	/^	lldpctl_k_chassis_med_inventory_sn, \/**< `(S)` LLDP MED inventory "Serial Number" *\/$/;"	e	enum:__anon8
+lldpctl_k_chassis_med_inventory_sw	lib/lldpctl.h	/^	lldpctl_k_chassis_med_inventory_sw, \/**< `(S)` LLDP MED inventory "Software Revision" *\/$/;"	e	enum:__anon8
+lldpctl_k_chassis_med_type	lib/lldpctl.h	/^	lldpctl_k_chassis_med_type = 1900, \/**< `(IS)` Chassis MED type. See `LLDP_MED_CLASS_*` *\/$/;"	e	enum:__anon8
+lldpctl_k_chassis_mgmt	lib/lldpctl.h	/^	lldpctl_k_chassis_mgmt,		 \/**< `(AL)` List of management addresses *\/$/;"	e	enum:__anon8
+lldpctl_k_chassis_name	lib/lldpctl.h	/^	lldpctl_k_chassis_name,	      \/**< `(S)` The name of this chassis. *\/$/;"	e	enum:__anon8
+lldpctl_k_config_advertise_version	lib/lldpctl.h	/^	lldpctl_k_config_advertise_version, \/**< `(I)` Advertise version *\/$/;"	e	enum:__anon8
+lldpctl_k_config_bond_slave_src_mac_type	lib/lldpctl.h	/^	lldpctl_k_config_bond_slave_src_mac_type, \/**< `(I,WO)` bond slave src mac type. *\/$/;"	e	enum:__anon8
+lldpctl_k_config_chassis_cap_advertise	lib/lldpctl.h	/^	lldpctl_k_config_chassis_cap_advertise, \/**< `(I,WO)` Enable or disable chassis capabilities advertisement *\/$/;"	e	enum:__anon8
+lldpctl_k_config_chassis_mgmt_advertise	lib/lldpctl.h	/^	lldpctl_k_config_chassis_mgmt_advertise, \/**< `(I,WO)` Enable or disable management addresses advertisement *\/$/;"	e	enum:__anon8
+lldpctl_k_config_cid_pattern	lib/lldpctl.h	/^	lldpctl_k_config_cid_pattern,	\/**< `(S)` Interface pattern to choose the chassis ID *\/$/;"	e	enum:__anon8
+lldpctl_k_config_description	lib/lldpctl.h	/^	lldpctl_k_config_description,	\/**< `(S,WON)` Chassis description overridden *\/$/;"	e	enum:__anon8
+lldpctl_k_config_fast_start_enabled	lib/lldpctl.h	/^	lldpctl_k_config_fast_start_enabled, \/**< `(I,WO)` Is fast start enabled *\/$/;"	e	enum:__anon8
+lldpctl_k_config_fast_start_interval	lib/lldpctl.h	/^	lldpctl_k_config_fast_start_interval, \/**< `(I,WO)` Start fast transmit interval *\/$/;"	e	enum:__anon8
+lldpctl_k_config_hostname	lib/lldpctl.h	/^	lldpctl_k_config_hostname,	\/**< `(S,WON)` System name overridden *\/$/;"	e	enum:__anon8
+lldpctl_k_config_iface_pattern	lib/lldpctl.h	/^	lldpctl_k_config_iface_pattern, \/**< `(S,WON)` Pattern of enabled interfaces *\/$/;"	e	enum:__anon8
+lldpctl_k_config_iface_promisc	lib/lldpctl.h	/^	lldpctl_k_config_iface_promisc,  \/**< `(I,WO)` Enable or disable promiscuous mode on interfaces *\/$/;"	e	enum:__anon8
+lldpctl_k_config_ifdescr_update	lib/lldpctl.h	/^	lldpctl_k_config_ifdescr_update, \/**< `(I,WO)` Enable or disable setting interface description *\/$/;"	e	enum:__anon8
+lldpctl_k_config_lldp_portid_type	lib/lldpctl.h	/^	lldpctl_k_config_lldp_portid_type, \/**< `(I,WO)` LLDP PortID TLV Subtype *\/$/;"	e	enum:__anon8
+lldpctl_k_config_lldpmed_noinventory	lib/lldpctl.h	/^	lldpctl_k_config_lldpmed_noinventory, \/**< `(I)` Disable LLDP-MED inventory *\/$/;"	e	enum:__anon8
+lldpctl_k_config_mgmt_pattern	lib/lldpctl.h	/^	lldpctl_k_config_mgmt_pattern, \/**< `(S,WON)` Pattern to choose the management address *\/$/;"	e	enum:__anon8
+lldpctl_k_config_paused	lib/lldpctl.h	/^	lldpctl_k_config_paused,	      \/**< `(I)` lldpd is paused *\/$/;"	e	enum:__anon8
+lldpctl_k_config_platform	lib/lldpctl.h	/^	lldpctl_k_config_platform,	\/**< `(S,WON)` Platform description overridden (CDP) *\/$/;"	e	enum:__anon8
+lldpctl_k_config_receiveonly	lib/lldpctl.h	/^	lldpctl_k_config_receiveonly, \/**< `(I)` Receive only mode *\/$/;"	e	enum:__anon8
+lldpctl_k_config_tx_hold	lib/lldpctl.h	/^	lldpctl_k_config_tx_hold, \/**< `(I,WO)` Transmit hold interval. *\/$/;"	e	enum:__anon8
+lldpctl_k_config_tx_interval	lib/lldpctl.h	/^	lldpctl_k_config_tx_interval, \/**< `(I,WO)` Transmit interval. When set to -1, it is meant to transmit now. *\/$/;"	e	enum:__anon8
+lldpctl_k_custom_tlv	lib/lldpctl.h	/^	lldpctl_k_custom_tlv,			\/** `(AL,WO)` custom TLV **\/$/;"	e	enum:__anon8
+lldpctl_k_custom_tlv_op	lib/lldpctl.h	/^	lldpctl_k_custom_tlv_op,		\/**< `(I,WO)` custom TLV operation *\/$/;"	e	enum:__anon8
+lldpctl_k_custom_tlv_oui	lib/lldpctl.h	/^	lldpctl_k_custom_tlv_oui,		\/**< `(I,WO)` custom TLV Organizationally Unique Identifier. Default is 0 (3 bytes) *\/$/;"	e	enum:__anon8
+lldpctl_k_custom_tlv_oui_info_string	lib/lldpctl.h	/^	lldpctl_k_custom_tlv_oui_info_string,	\/**< `(I,WO)` custom TLV Organizationally Unique Identifier Information String (up to 507 bytes) *\/$/;"	e	enum:__anon8
+lldpctl_k_custom_tlv_oui_subtype	lib/lldpctl.h	/^	lldpctl_k_custom_tlv_oui_subtype,	\/**< `(I,WO)` custom TLV subtype. Default is 0 (1 byte) *\/$/;"	e	enum:__anon8
+lldpctl_k_custom_tlvs	lib/lldpctl.h	/^	lldpctl_k_custom_tlvs = 5000,		\/**< `(AL)` custom TLVs *\/$/;"	e	enum:__anon8
+lldpctl_k_custom_tlvs_clear	lib/lldpctl.h	/^	lldpctl_k_custom_tlvs_clear,		\/** `(I,WO)` clear list of custom TLVs *\/$/;"	e	enum:__anon8
+lldpctl_k_delete_cnt	lib/lldpctl.h	/^	lldpctl_k_delete_cnt,	\/**< `(I)` delete cnt. Only works for a local port. *\/$/;"	e	enum:__anon8
+lldpctl_k_dot3_power_allocated	lib/lldpctl.h	/^	lldpctl_k_dot3_power_allocated, \/**< `(I,W)` 802.3AT power allocated *\/$/;"	e	enum:__anon8
+lldpctl_k_dot3_power_class	lib/lldpctl.h	/^	lldpctl_k_dot3_power_class, \/**< `(IS,W)` Power class. *\/$/;"	e	enum:__anon8
+lldpctl_k_dot3_power_devicetype	lib/lldpctl.h	/^	lldpctl_k_dot3_power_devicetype, \/**< `(IS,W)` Device type. See `LLDP_DOT3_POWER_PSE\/PD` *\/$/;"	e	enum:__anon8
+lldpctl_k_dot3_power_enabled	lib/lldpctl.h	/^	lldpctl_k_dot3_power_enabled, \/**< `(I,W)` Is MDI power enabled. *\/$/;"	e	enum:__anon8
+lldpctl_k_dot3_power_paircontrol	lib/lldpctl.h	/^	lldpctl_k_dot3_power_paircontrol, \/**< `(I,W)` Pair-control enabled? *\/$/;"	e	enum:__anon8
+lldpctl_k_dot3_power_pairs	lib/lldpctl.h	/^	lldpctl_k_dot3_power_pairs, \/**< `(IS,W)` See `LLDP_DOT3_POWERPAIRS_*` *\/$/;"	e	enum:__anon8
+lldpctl_k_dot3_power_priority	lib/lldpctl.h	/^	lldpctl_k_dot3_power_priority, \/**< `(IS,W)` 802.3AT power priority *\/$/;"	e	enum:__anon8
+lldpctl_k_dot3_power_requested	lib/lldpctl.h	/^	lldpctl_k_dot3_power_requested, \/**< `(I,W)` 802.3AT power requested *\/$/;"	e	enum:__anon8
+lldpctl_k_dot3_power_source	lib/lldpctl.h	/^	lldpctl_k_dot3_power_source, \/**< `(IS,W)` 802.3AT power source *\/$/;"	e	enum:__anon8
+lldpctl_k_dot3_power_supported	lib/lldpctl.h	/^	lldpctl_k_dot3_power_supported, \/**< `(I,W)` Is MDI power supported. *\/$/;"	e	enum:__anon8
+lldpctl_k_dot3_power_type	lib/lldpctl.h	/^	lldpctl_k_dot3_power_type, \/**< `(I,W)` 802.3AT power type *\/$/;"	e	enum:__anon8
+lldpctl_k_insert_cnt	lib/lldpctl.h	/^	lldpctl_k_insert_cnt,	\/**< `(I)` insert cnt. Only works for a local port. *\/$/;"	e	enum:__anon8
+lldpctl_k_interface_name	lib/lldpctl.h	/^	lldpctl_k_interface_name = 1000, \/**< `(S)` The interface name. *\/$/;"	e	enum:__anon8
+lldpctl_k_med_civicaddress_type	lib/lldpctl.h	/^	lldpctl_k_med_civicaddress_type, \/**< `(IS,W)` MED civic address type. *\/$/;"	e	enum:__anon8
+lldpctl_k_med_civicaddress_value	lib/lldpctl.h	/^	lldpctl_k_med_civicaddress_value, \/**< `(S,W)` MED civic address value. *\/$/;"	e	enum:__anon8
+lldpctl_k_med_location_altitude	lib/lldpctl.h	/^	lldpctl_k_med_location_altitude,  \/**< `(S,W)` MED altitude. Only if format is COORD. *\/$/;"	e	enum:__anon8
+lldpctl_k_med_location_altitude_unit	lib/lldpctl.h	/^	lldpctl_k_med_location_altitude_unit, \/**< `(S,W)` MED altitude unit. See `LLDP_MED_LOCATION_ALTITUDE_UNIT_*`.$/;"	e	enum:__anon8
+lldpctl_k_med_location_ca_elements	lib/lldpctl.h	/^	lldpctl_k_med_location_ca_elements = 2300, \/**< `(AL,WC)` MED civic address elements. Only if format is CIVIC *\/$/;"	e	enum:__anon8
+lldpctl_k_med_location_country	lib/lldpctl.h	/^	lldpctl_k_med_location_country = 2200, \/**< `(S,W)` MED country. Only if format is CIVIC. *\/$/;"	e	enum:__anon8
+lldpctl_k_med_location_elin	lib/lldpctl.h	/^	lldpctl_k_med_location_elin, \/**< `(S,W)` MED ELIN. Only if format is ELIN. *\/$/;"	e	enum:__anon8
+lldpctl_k_med_location_format	lib/lldpctl.h	/^	lldpctl_k_med_location_format, \/**< `(IS,W)` MED location format. See$/;"	e	enum:__anon8
+lldpctl_k_med_location_geoid	lib/lldpctl.h	/^	lldpctl_k_med_location_geoid, \/**< `(IS,W)` MED geoid. See `LLDP_MED_LOCATION_GEOID_*`. Only if format is COORD. *\/$/;"	e	enum:__anon8
+lldpctl_k_med_location_latitude	lib/lldpctl.h	/^	lldpctl_k_med_location_latitude,  \/**< `(S,W)` MED latitude. Only if format is COORD. *\/$/;"	e	enum:__anon8
+lldpctl_k_med_location_longitude	lib/lldpctl.h	/^	lldpctl_k_med_location_longitude, \/**< `(S,W)` MED longitude. Only if format is COORD. *\/$/;"	e	enum:__anon8
+lldpctl_k_med_policy_dscp	lib/lldpctl.h	/^	lldpctl_k_med_policy_dscp,     \/**< `(I,W)` MED policy DSCP *\/$/;"	e	enum:__anon8
+lldpctl_k_med_policy_priority	lib/lldpctl.h	/^	lldpctl_k_med_policy_priority, \/**< `(I,W)` MED policy priority *\/$/;"	e	enum:__anon8
+lldpctl_k_med_policy_tagged	lib/lldpctl.h	/^	lldpctl_k_med_policy_tagged, \/**< `(I,W)` MED policy tagging *\/$/;"	e	enum:__anon8
+lldpctl_k_med_policy_type	lib/lldpctl.h	/^	lldpctl_k_med_policy_type, \/**< `(IS,W)` MED policy app type. See `LLDP_MED_APPTYPE_*`. 0 if a policy is not defined. *\/$/;"	e	enum:__anon8
+lldpctl_k_med_policy_unknown	lib/lldpctl.h	/^	lldpctl_k_med_policy_unknown, \/**< `(I,W)` Is MED policy defined? *\/$/;"	e	enum:__anon8
+lldpctl_k_med_policy_vid	lib/lldpctl.h	/^	lldpctl_k_med_policy_vid,    \/**< `(I,W)` MED policy VID *\/$/;"	e	enum:__anon8
+lldpctl_k_med_power_priority	lib/lldpctl.h	/^	lldpctl_k_med_power_priority, \/**< `(IS,W)` LLDP MED power priority. See `LLDP_MED_POW_PRIO_*` *\/$/;"	e	enum:__anon8
+lldpctl_k_med_power_source	lib/lldpctl.h	/^	lldpctl_k_med_power_source, \/**< `(IS,W)` LLDP MED power source. See `LLDP_MED_POW_SOURCE_*` *\/$/;"	e	enum:__anon8
+lldpctl_k_med_power_type	lib/lldpctl.h	/^	lldpctl_k_med_power_type, \/**< `(IS,W)` LLDP MED power device type. See `LLDP_MED_POW_TYPE_*` *\/$/;"	e	enum:__anon8
+lldpctl_k_med_power_val	lib/lldpctl.h	/^	lldpctl_k_med_power_val, \/**< `(I,W)` LLDP MED power value *\/$/;"	e	enum:__anon8
+lldpctl_k_mgmt_ip	lib/lldpctl.h	/^	lldpctl_k_mgmt_ip = 3000,	\/**< `(S)` IP address *\/$/;"	e	enum:__anon8
+lldpctl_k_pi_id	lib/lldpctl.h	/^	lldpctl_k_pi_id,    \/**< `(B)` PID value *\/$/;"	e	enum:__anon8
+lldpctl_k_port_age	lib/lldpctl.h	/^	lldpctl_k_port_age,	   \/**< `(I)`  Age of information, seconds from epoch. *\/$/;"	e	enum:__anon8
+lldpctl_k_port_chassis	lib/lldpctl.h	/^	lldpctl_k_port_chassis,	   \/**< `(A)` Chassis associated to the port *\/$/;"	e	enum:__anon8
+lldpctl_k_port_descr	lib/lldpctl.h	/^	lldpctl_k_port_descr,	   \/**< `(S,WO)` The description of this port. *\/$/;"	e	enum:__anon8
+lldpctl_k_port_dot3_aggregid	lib/lldpctl.h	/^	lldpctl_k_port_dot3_aggregid,   \/**< `(I)` Port aggregation ID *\/$/;"	e	enum:__anon8
+lldpctl_k_port_dot3_autoneg_advertised	lib/lldpctl.h	/^	lldpctl_k_port_dot3_autoneg_advertised, \/**< `(I)` Advertised protocols. See `LLDP_DOT3_LINK_AUTONEG_*` *\/$/;"	e	enum:__anon8
+lldpctl_k_port_dot3_autoneg_enabled	lib/lldpctl.h	/^	lldpctl_k_port_dot3_autoneg_enabled, \/**< `(I)` Autonegotiation enabled. *\/$/;"	e	enum:__anon8
+lldpctl_k_port_dot3_autoneg_support	lib/lldpctl.h	/^	lldpctl_k_port_dot3_autoneg_support, \/**< `(I)` Autonegotiation support. *\/$/;"	e	enum:__anon8
+lldpctl_k_port_dot3_mautype	lib/lldpctl.h	/^	lldpctl_k_port_dot3_mautype, \/**< `(IS)` Current MAU type. See `LLDP_DOT3_MAU_*` *\/$/;"	e	enum:__anon8
+lldpctl_k_port_dot3_mfs	lib/lldpctl.h	/^	lldpctl_k_port_dot3_mfs = 1300,	   \/**< `(I)` MFS *\/$/;"	e	enum:__anon8
+lldpctl_k_port_dot3_power	lib/lldpctl.h	/^	lldpctl_k_port_dot3_power = 1400, \/**< `(A,WO)` Dot3 power related stuff. *\/$/;"	e	enum:__anon8
+lldpctl_k_port_hidden	lib/lldpctl.h	/^	lldpctl_k_port_hidden,	   \/**< `(I)` Is this port hidden (or should it be displayed?)? *\/$/;"	e	enum:__anon8
+lldpctl_k_port_id	lib/lldpctl.h	/^	lldpctl_k_port_id,	   \/**< `(BS,WO)` The ID of this port. *\/$/;"	e	enum:__anon8
+lldpctl_k_port_id_subtype	lib/lldpctl.h	/^	lldpctl_k_port_id_subtype, \/**< `(IS)` The subtype ID of this port.  *\/$/;"	e	enum:__anon8
+lldpctl_k_port_index	lib/lldpctl.h	/^	lldpctl_k_port_index,	\/**< `(I)` The port index. Only works for a local port. *\/$/;"	e	enum:__anon8
+lldpctl_k_port_med_locations	lib/lldpctl.h	/^	lldpctl_k_port_med_locations = 2100, \/**< `(AL,WO)` MED locations attached to a port. *\/$/;"	e	enum:__anon8
+lldpctl_k_port_med_policies	lib/lldpctl.h	/^	lldpctl_k_port_med_policies = 2000, \/**< `(AL,WO)` MED policies attached to a port. *\/$/;"	e	enum:__anon8
+lldpctl_k_port_med_power	lib/lldpctl.h	/^	lldpctl_k_port_med_power = 2400, \/**< `(A,WO)` LLDP-MED power related stuff. *\/$/;"	e	enum:__anon8
+lldpctl_k_port_name	lib/lldpctl.h	/^	lldpctl_k_port_name = 1100,	\/**< `(S)` The port name. Only works for a local port. *\/$/;"	e	enum:__anon8
+lldpctl_k_port_neighbors	lib/lldpctl.h	/^	lldpctl_k_port_neighbors = 1200,$/;"	e	enum:__anon8
+lldpctl_k_port_pis	lib/lldpctl.h	/^	lldpctl_k_port_pis = 1700, \/**< `(AL)` List of PIDs *\/$/;"	e	enum:__anon8
+lldpctl_k_port_ppvids	lib/lldpctl.h	/^	lldpctl_k_port_ppvids = 1600, \/**< `(AL)` List of PPVIDs *\/$/;"	e	enum:__anon8
+lldpctl_k_port_protocol	lib/lldpctl.h	/^	lldpctl_k_port_protocol,   \/**< `(IS)` The protocol that was used to retrieve this information. *\/$/;"	e	enum:__anon8
+lldpctl_k_port_status	lib/lldpctl.h	/^	lldpctl_k_port_status,	   \/**< `(IS,WO)` Operational status of this (local) port *\/$/;"	e	enum:__anon8
+lldpctl_k_port_vlan_pvid	lib/lldpctl.h	/^	lldpctl_k_port_vlan_pvid = 1500, \/**< `(I)` Primary VLAN ID *\/$/;"	e	enum:__anon8
+lldpctl_k_port_vlans	lib/lldpctl.h	/^	lldpctl_k_port_vlans, \/**< `(AL)` List of VLAN *\/$/;"	e	enum:__anon8
+lldpctl_k_ppvid_id	lib/lldpctl.h	/^	lldpctl_k_ppvid_id, \/**< `(I)` ID of PPVID *\/$/;"	e	enum:__anon8
+lldpctl_k_ppvid_status	lib/lldpctl.h	/^	lldpctl_k_ppvid_status, \/**< `(I)` Status of PPVID (see `LLDP_PPVID_CAP_*`) *\/$/;"	e	enum:__anon8
+lldpctl_k_rx_cnt	lib/lldpctl.h	/^	lldpctl_k_rx_cnt,	\/**< `(I)` rx cnt. Only works for a local port. *\/$/;"	e	enum:__anon8
+lldpctl_k_rx_discarded_cnt	lib/lldpctl.h	/^	lldpctl_k_rx_discarded_cnt,	\/**< `(I)` discarded cnt. Only works for a local port. *\/$/;"	e	enum:__anon8
+lldpctl_k_rx_unrecognized_cnt	lib/lldpctl.h	/^	lldpctl_k_rx_unrecognized_cnt,	\/**< `(I)` unrecognized cnt. Only works for a local port. *\/$/;"	e	enum:__anon8
+lldpctl_k_tx_cnt	lib/lldpctl.h	/^	lldpctl_k_tx_cnt = 4000,	\/**< `(I)` tx cnt. Only works for a local port. *\/$/;"	e	enum:__anon8
+lldpctl_k_vlan_id	lib/lldpctl.h	/^	lldpctl_k_vlan_id, \/**< `(I)` VLAN ID *\/$/;"	e	enum:__anon8
+lldpctl_k_vlan_name	lib/lldpctl.h	/^	lldpctl_k_vlan_name, \/**< `(S)` VLAN name *\/$/;"	e	enum:__anon8
 lldpctl_key_get_map	lib/atom.c	/^lldpctl_key_get_map(lldpctl_key_t key)$/;"	f	signature:(lldpctl_key_t key)
 lldpctl_key_get_map	lib/lldpctl.h	/^lldpctl_map_t *lldpctl_key_get_map(lldpctl_key_t key);$/;"	p	signature:(lldpctl_key_t key)
-lldpctl_key_t	lib/lldpctl.h	/^} lldpctl_key_t;$/;"	t	typeref:enum:__anon5
+lldpctl_key_t	lib/lldpctl.h	/^} lldpctl_key_t;$/;"	t	typeref:enum:__anon8
 lldpctl_last_error	lib/errors.c	/^lldpctl_last_error(lldpctl_conn_t *lldpctl)$/;"	f	signature:(lldpctl_conn_t *lldpctl)
 lldpctl_last_error	lib/lldpctl.h	/^lldpctl_error_t lldpctl_last_error(lldpctl_conn_t *conn);$/;"	p	signature:(lldpctl_conn_t *conn)
 lldpctl_last_strerror	lib/lldpctl.h	365;"	d
@@ -1951,7 +1951,7 @@ lldpctl_log_callback	lib/errors.c	/^lldpctl_log_callback(void (*cb)(int severity
 lldpctl_log_callback	lib/lldpctl.h	/^void lldpctl_log_callback(void (*cb)(int severity, const char *msg));$/;"	p	signature:(void (*cb)(int severity, const char *msg))
 lldpctl_log_level	lib/errors.c	/^lldpctl_log_level(int level)$/;"	f	signature:(int level)
 lldpctl_log_level	lib/lldpctl.h	/^void lldpctl_log_level(int level);$/;"	p	signature:(int level)
-lldpctl_map_t	lib/lldpctl.h	/^} lldpctl_map_t;$/;"	t	typeref:struct:__anon3
+lldpctl_map_t	lib/lldpctl.h	/^} lldpctl_map_t;$/;"	t	typeref:struct:__anon6
 lldpctl_new	lib/connection.c	/^lldpctl_new(lldpctl_send_callback send, lldpctl_recv_callback recv, void *user_data)$/;"	f	signature:(lldpctl_send_callback send, lldpctl_recv_callback recv, void *user_data)
 lldpctl_new	lib/lldpctl.h	/^lldpctl_conn_t *lldpctl_new(lldpctl_send_callback send,$/;"	p	signature:(lldpctl_send_callback send, lldpctl_recv_callback recv, void *user_data)
 lldpctl_new_name	lib/connection.c	/^lldpctl_conn_t* lldpctl_new_name(const char *ctlname, lldpctl_send_callback send, lldpctl_recv_callback recv, void *user_data)$/;"	f	signature:(const char *ctlname, lldpctl_send_callback send, lldpctl_recv_callback recv, void *user_data)
@@ -1981,18 +1981,18 @@ lldpd::g_ctl	daemon/lldpd.h	/^	int			 g_ctl;                 \/\/ 记录lldpd cl
 lldpd::g_ctlname	daemon/lldpd.h	/^	const char		*g_ctlname;         \/\/ lldpd cli 本地服务器地址 \/var\/run\/lldpd.socket$/;"	m	struct:lldpd	access:public
 lldpd::g_default_local_port	daemon/lldpd.h	/^	struct lldpd_port	*g_default_local_port;  \/\/ 指向一个缺省的端口控制块尾队列元素$/;"	m	struct:lldpd	typeref:struct:lldpd::lldpd_port	access:public
 lldpd::g_hardware	daemon/lldpd.h	/^	TAILQ_HEAD(, lldpd_hardware) g_hardware;$/;"	m	struct:lldpd	access:public
-lldpd::g_iface_cb	daemon/lldpd.h	/^	void(*g_iface_cb)(struct lldpd *);	      \/* Called when there is an interface change *\/$/;"	m	struct:lldpd	access:public
+lldpd::g_iface_cb	daemon/lldpd.h	/^	void(*g_iface_cb)(struct lldpd *);	      \/* Called when there is an interface change 接口变化后的回调函数 *\/$/;"	m	struct:lldpd	access:public
 lldpd::g_iface_event	daemon/lldpd.h	/^	struct event		*g_iface_event; \/* Triggered when there is an interface change *\/$/;"	m	struct:lldpd	typeref:struct:lldpd::event	access:public
 lldpd::g_iface_timer_event	daemon/lldpd.h	/^	struct event		*g_iface_timer_event; \/* Triggered one second after last interface change *\/$/;"	m	struct:lldpd	typeref:struct:lldpd::event	access:public
 lldpd::g_lastrid	daemon/lldpd.h	/^	int			 g_lastrid;$/;"	m	struct:lldpd	access:public
 lldpd::g_lsb_release	daemon/lldpd.h	/^	char			*g_lsb_release;$/;"	m	struct:lldpd	access:public
-lldpd::g_main_loop	daemon/lldpd.h	/^	struct event		*g_main_loop;   \/\/ 指向主循环事件$/;"	m	struct:lldpd	typeref:struct:lldpd::event	access:public
+lldpd::g_main_loop	daemon/lldpd.h	/^	struct event		*g_main_loop;   \/\/ 纯手动触发事件句柄$/;"	m	struct:lldpd	typeref:struct:lldpd::event	access:public
 lldpd::g_netlink	daemon/lldpd.h	/^	struct lldpd_netlink	*g_netlink; \/\/ netlink控制块$/;"	m	struct:lldpd	typeref:struct:lldpd::lldpd_netlink	access:public
 lldpd::g_protocols	daemon/lldpd.h	/^	struct protocol		*g_protocols;   \/\/ 指向lldp细分协议列表$/;"	m	struct:lldpd	typeref:struct:lldpd::protocol	access:public
 lldpd::g_snmp	daemon/lldpd.h	/^	int			 g_snmp;                \/\/ snmp使能标志$/;"	m	struct:lldpd	access:public
 lldpd::g_snmp_agentx	daemon/lldpd.h	/^	const char		*g_snmp_agentx;     \/\/ snmp本地服务器地址 \/var\/agentX\/master$/;"	m	struct:lldpd	access:public
 lldpd::g_snmp_fds	daemon/lldpd.h	/^	void			*g_snmp_fds;        \/\/ 指向snmp-fds尾队列头$/;"	m	struct:lldpd	access:public
-lldpd::g_snmp_timeout	daemon/lldpd.h	/^	struct event		*g_snmp_timeout;\/\/ 指向snmp超时事件$/;"	m	struct:lldpd	typeref:struct:lldpd::event	access:public
+lldpd::g_snmp_timeout	daemon/lldpd.h	/^	struct event		*g_snmp_timeout;\/\/ snmp超时事件句柄$/;"	m	struct:lldpd	typeref:struct:lldpd::event	access:public
 lldpd::g_sock	daemon/lldpd.h	/^	int			 g_sock;                \/\/ 记录ioctl fd$/;"	m	struct:lldpd	access:public
 lldpd_address	lldpd-structs.h	/^union lldpd_address {$/;"	u
 lldpd_address::inet	lldpd-structs.h	/^	struct in_addr		inet;$/;"	m	union:lldpd_address	typeref:struct:lldpd_address::in_addr	access:public
@@ -2047,7 +2047,7 @@ lldpd_config::c_cid_pattern	lldpd-structs.h	/^	char *c_cid_pattern;	\/* Pattern 
 lldpd_config::c_description	lldpd-structs.h	/^	char *c_description;	\/* Override chassis description *\/$/;"	m	struct:lldpd_config	access:public
 lldpd_config::c_enable_fast_start	lldpd-structs.h	/^	int c_enable_fast_start; \/* enable fast start *\/$/;"	m	struct:lldpd_config	access:public
 lldpd_config::c_hostname	lldpd-structs.h	/^	char *c_hostname;	\/* Override system name *\/$/;"	m	struct:lldpd_config	access:public
-lldpd_config::c_iface_pattern	lldpd-structs.h	/^	char *c_iface_pattern;	\/* Pattern to match interfaces to use *\/$/;"	m	struct:lldpd_config	access:public
+lldpd_config::c_iface_pattern	lldpd-structs.h	/^	char *c_iface_pattern;	\/* Pattern to match interfaces to use 包含所有接口名的字符串 *\/$/;"	m	struct:lldpd_config	access:public
 lldpd_config::c_lldp_portid_type	lldpd-structs.h	/^	int c_lldp_portid_type; \/* The PortID type *\/$/;"	m	struct:lldpd_config	access:public
 lldpd_config::c_max_neighbors	lldpd-structs.h	/^	int c_max_neighbors;	\/* Maximum number of neighbors (per protocol) *\/$/;"	m	struct:lldpd_config	access:public
 lldpd_config::c_mgmt_advertise	lldpd-structs.h	/^	int c_mgmt_advertise;	 \/* Management addresses advertisement *\/$/;"	m	struct:lldpd_config	access:public
@@ -2530,7 +2530,7 @@ powertype	lldpd-structs.h	/^	u_int8_t		powertype; \/* If set to LLDP_DOT3_POWER_
 ppvid	lib/atom.h	/^	struct lldpd_ppvid *ppvid;$/;"	m	struct:_lldpctl_atom_ppvid_t	typeref:struct:_lldpctl_atom_ppvid_t::lldpd_ppvid	access:public
 ppvid	lib/atoms/dot1.c	/^static struct atom_builder ppvid =$/;"	v	typeref:struct:atom_builder	file:
 ppvids_list	lib/atoms/dot1.c	/^static struct atom_builder ppvids_list =$/;"	v	typeref:struct:atom_builder	file:
-precision	lib/fixedpoint.h	/^		unsigned precision;$/;"	m	struct:fp_number::__anon7	access:public
+precision	lib/fixedpoint.h	/^		unsigned precision;$/;"	m	struct:fp_number::__anon10	access:public
 prefix	client/kv_writer.c	/^	char *  prefix;$/;"	m	struct:kv_writer_private	file:	access:public
 priority	lldpd-structs.h	/^	u_int8_t		 priority;$/;"	m	struct:lldpd_med_policy	access:public
 priority	lldpd-structs.h	/^	u_int8_t		 priority;$/;"	m	struct:lldpd_med_power	access:public
@@ -2685,7 +2685,7 @@ start	client/writer.h	/^	void	(*start)(struct writer *, const char * tag, const 
 state	lib/atom.h	/^	int state;		\/* Current state *\/$/;"	m	struct:lldpctl_conn_t	access:public
 state	lldpd-structs.h	/^	int state;$/;"	m	struct:lldpd_neighbor_change	access:public
 state_data	lib/atom.h	/^	char *state_data;	\/* Data attached to the state. It is used to$/;"	m	struct:lldpctl_conn_t	access:public
-string	lib/lldpctl.h	/^	char *string;$/;"	m	struct:__anon3	access:public
+string	lib/lldpctl.h	/^	char *string;$/;"	m	struct:__anon6	access:public
 strlcpy	compat/compat.h	/^size_t	strlcpy(char *, const char *, size_t);$/;"	p	signature:(char *, const char *, size_t)
 strlcpy	compat/strlcpy.c	/^strlcpy(char *dst, const char *src, size_t siz)$/;"	f	signature:(char *dst, const char *src, size_t siz)
 strndup	compat/compat.h	/^char	*strndup(const char *, size_t);$/;"	p	signature:(const char *, size_t)
@@ -2738,7 +2738,7 @@ type	lib/atom.h	/^	atom_t type;	\/* Atom type *\/$/;"	m	struct:atom_builder	acce
 type	lib/atom.h	/^	atom_t type;$/;"	m	struct:lldpctl_atom_t	access:public
 type	lib/atom.h	/^	int type;$/;"	m	struct:_lldpctl_atom_med_caelement_t	access:public
 type	lldpd-structs.h	/^	u_int8_t		 type;$/;"	m	struct:lldpd_med_policy	access:public
-types	daemon/frame.h	/^} types;$/;"	v	typeref:union:__anon9
+types	daemon/frame.h	/^} types;$/;"	v	typeref:union:__anon1
 unixDomain	daemon/agent_priv.c	/^static netsnmp_tdomain unixDomain;$/;"	v	file:
 unknown	lldpd-structs.h	/^	u_int8_t		 unknown;$/;"	m	struct:lldpd_med_policy	access:public
 unprivileged	daemon/privsep_io.c	/^static int privileged, unprivileged;$/;"	v	file:
@@ -2759,9 +2759,9 @@ value	client/commands.c	/^	const char *value;	      \/**< Value for this element
 value	lib/atom.h	/^	lldpctl_atom_t      *(*value)(lldpctl_atom_t *, lldpctl_atom_iter_t *);$/;"	m	struct:lldpctl_atom_t	access:public
 value	lib/atom.h	/^	lldpctl_atom_t*      (*value)(lldpctl_atom_t *, lldpctl_atom_iter_t *); \/* Return the current object for the provided iterator *\/$/;"	m	struct:atom_builder	access:public
 value	lib/atom.h	/^	uint8_t *value;$/;"	m	struct:_lldpctl_atom_med_caelement_t	access:public
-value	lib/fixedpoint.h	/^		long long value;$/;"	m	struct:fp_number::__anon6	access:public
-value	lib/fixedpoint.h	/^		long long value;$/;"	m	struct:fp_number::__anon7	access:public
-value	lib/lldpctl.h	/^	int   value;$/;"	m	struct:__anon3	access:public
+value	lib/fixedpoint.h	/^		long long value;$/;"	m	struct:fp_number::__anon10	access:public
+value	lib/fixedpoint.h	/^		long long value;$/;"	m	struct:fp_number::__anon9	access:public
+value	lib/lldpctl.h	/^	int   value;$/;"	m	struct:__anon6	access:public
 vasprintf	compat/asprintf.c	/^int vasprintf(char **str, const char *fmt, va_list ap)$/;"	f	signature:(char **str, const char *fmt, va_list ap)
 vasprintf	compat/compat.h	/^int vasprintf(char **, const char *, va_list) __attribute__ ((format (printf, 2, 0)));$/;"	p	signature:(char **, const char *, va_list)
 version_check	daemon/lldpd.c	/^static void version_check(void) {}$/;"	f	file:	signature:(void)

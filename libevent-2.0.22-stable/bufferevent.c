@@ -409,6 +409,7 @@ bufferevent_write_buffer(struct bufferevent *bufev, struct evbuffer *buf)
 /* 从指定bufferevent的输入缓冲区中抽取数据(数据存放到普通的用户缓冲区)
  * @data    指向用来存放读取数据的缓冲区
  * @size    可存放读取数据的缓冲区长度
+ * @返回值  实际抽取的数据长度
  */
 size_t
 bufferevent_read(struct bufferevent *bufev, void *data, size_t size)

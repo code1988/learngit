@@ -1830,6 +1830,7 @@ agent_log_callback(int major, int minor,
   return SNMP_ERR_NOERROR;
 }
 
+// snmp子代理初始化，主要包括创建和snmp通信的unix本地客户端
 void agent_init(struct lldpd *cfg, const char *agentx)
 {
 	int rc;

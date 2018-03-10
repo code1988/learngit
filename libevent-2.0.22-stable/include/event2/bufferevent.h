@@ -96,12 +96,15 @@ extern "C" {
 
     @{
 */
-#define BEV_EVENT_READING	0x01	/**< error encountered while reading    读操作时遇到问题(一般会同时设置BEV_EVENT_TIMEOUT) */
-#define BEV_EVENT_WRITING	0x02	/**< error encountered while writing    读操作时遇到问题(一般会同时设置BEV_EVENT_TIMEOUT) */
-#define BEV_EVENT_EOF		0x10	/**< eof file reached                   遇到文件结束指示 */
-#define BEV_EVENT_ERROR		0x20	/**< unrecoverable error encountered    遇到不可恢复的错误 */
+#define BEV_EVENT_READING	0x01	/**< error encountered while reading    读操作时遇到问题，主要存在2种情况：
+                                      同时设置BEV_EVENT_TIMEOUT，表示读超时;
+                                      同时设置BEV_EVENT_EOF，表示TCP对端连接正常断开 
+                                      同时设置BEV_EVENT_ERROR，表示TCP对端链接异常断开，比如网线断开等 */
+#define BEV_EVENT_WRITING	0x02	/**< error encountered while writing    读操作时遇到问题(一般会同时设置BEV_EVENT_TIMEOUT，表示写超时) */
+#define BEV_EVENT_EOF		0x10	/**< eof file reached                   遇到文件结束指示(一般就是TCP对端链接正常断开) */
+#define BEV_EVENT_ERROR		0x20	/**< unrecoverable error encountered    遇到不可恢复的错误(比如网线断开) */
 #define BEV_EVENT_TIMEOUT	0x40	/**< user-specified timeout reached     发生用户指定的超时(一般就是读超时或写超时) */
-#define BEV_EVENT_CONNECTED	0x80	/**< connect operation finished.        connect操作完成 */
+#define BEV_EVENT_CONNECTED	0x80	/**< connect operation finished.        connect操作完成(一般TCP客户端调用bufferevent_socket_connect成功时触发) */
 /**@}*/
 
 /**
