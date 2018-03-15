@@ -359,7 +359,7 @@ static const struct net_device_ops trailer_netdev_ops = {
 /* 为指定端口创建对应的从netdev
  * @ds      switch实例
  * @parent  该switch实例所属的DSA设备
- * @port    端口号
+ * @port    物理端口号
  * @name    端口名
  */
 struct net_device *

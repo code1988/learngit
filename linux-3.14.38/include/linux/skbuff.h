@@ -156,7 +156,7 @@ struct sk_buff_head {
 	struct sk_buff	*prev;
 
 	__u32		qlen;   // 队列成员数量
-	spinlock_t	lock;
+	spinlock_t	lock;   // 该自旋锁用于维护对队列的并发访问
 };
 
 struct sk_buff;

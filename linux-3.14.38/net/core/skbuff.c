@@ -899,7 +899,7 @@ EXPORT_SYMBOL_GPL(skb_copy_ubufs);
 
 /**
  *	skb_clone	-	duplicate an sk_buff
- *	本函数仅仅复制了sk_buff结构本身，至于组成整个"网络数据包元"的另外2个部分：sk_buff承载的数据区和分片结构体、分片结构体指向的数据区，都是共享的
+ *	clone操作仅仅复制了sk_buff结构本身，至于组成整个"网络数据包元"的另外2个部分：sk_buff承载的数据区和分片结构体、分片结构体指向的数据区，都是共享的
  *	@skb: buffer to clone 指向需要被克隆的父skb
  *	@gfp_mask: allocation priority
  *	@返回值：新克隆出来的子skb

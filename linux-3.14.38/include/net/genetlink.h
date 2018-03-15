@@ -177,12 +177,12 @@ _genl_register_family_with_ops_grps(struct genl_family *family,
 	return __genl_register_family(family);
 }
 
-// 注册一个不带组播组的genetlink族
+// 注册一个不带组播组的genetlink族(ops不能为NULL)
 #define genl_register_family_with_ops(family, ops)			\
 	_genl_register_family_with_ops_grps((family),			\
 					    (ops), ARRAY_SIZE(ops),	\
 					    NULL, 0)
-// 注册一个带组播组的genetlink族
+// 注册一个带组播组的genetlink族(ops不能为NULL)
 #define genl_register_family_with_ops_groups(family, ops, grps)	\
 	_genl_register_family_with_ops_grps((family),			\
 					    (ops), ARRAY_SIZE(ops),	\
