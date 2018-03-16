@@ -596,7 +596,7 @@ static int dsa_probe(struct platform_device *pdev)
 		goto out;
 	}
 
-	platform_set_drvdata(pdev, dst);    // 将DSA实例作为私有数据记录到该DSA设备的私有数据块中
+	platform_set_drvdata(pdev, dst);    // 将DSA实例作为私有数据记录到该DSA设备底层device的私有数据块中
 
 	dst->pd = pd;
 	dst->master_netdev = dev;

@@ -207,7 +207,7 @@ static inline void *platform_get_drvdata(const struct platform_device *pdev)
 	return dev_get_drvdata(&pdev->dev);
 }
 
-// 将私有数据data记录到platform设备私有数据块中
+// 将私有数据data记录到platform设备底层device的私有数据块中
 static inline void platform_set_drvdata(struct platform_device *pdev,
 					void *data)
 {

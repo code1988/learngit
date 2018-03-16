@@ -618,7 +618,7 @@ void *dev_get_drvdata(const struct device *dev)
 }
 EXPORT_SYMBOL(dev_get_drvdata);
 
-// 设置device中的私有数据块
+// 设置device中的私有数据块(注意跟netdevice中的私有数据块做区分)
 int dev_set_drvdata(struct device *dev, void *data)
 {
 	int error;
