@@ -23,7 +23,7 @@
         __tostring  - 用于重定义各种类型的值的print输出。
                       调用print输出某个值时会检查该值是否有一个__tostring的元方法，如果有，就用这个元方法来生成输出字符串
         __metatable - 用于保护集合的元表，使用户既不能看也不能修改集合的元表
-                      设置了该字段后，调用getmetatable就会返回该字段的值，而调用setmetatable则会引发一个错误
+                      当一个集合设置定义了该字段的元表后，后续调用getmetatable就会返回该字段的值，而调用setmetatable则会引发一个错误
 
 4. __index元方法用于改变访问table中不存在的key时的行为。
    当访问一个table中不存在的key时，如果在该table的元表中定义了__index字段，那么lua就会用调用该元方法，规则如下：
@@ -85,9 +85,9 @@
    实现原理：为真正的table创建一个代理，这个代理就是一个空的table(只有将一个table永远保持为空，才能捕捉到所有对它的访问)， 
              并通过__index和__newindex将访问重定向到原来的table上。
                 
-        local tb = {1,2}    -- 构造一个需要被监控的table
+        tb = {1,2}    -- 构造一个需要被监控的table
         local _tb = tb      -- 保持对原table的一个私有访问
-        tb = {}             -- 创建代理
+        tb = {}             -- 创建全局代理,实际就是将持有原table的全局变量重定义为一个空table
         
         local mt = {
             __index = 
@@ -112,16 +112,16 @@
 
         当然这种代理方法存在2个缺点:
             [1]. 无法遍历原来的table，因为pairs只能操作代理table
-            [2]. 如果要同时监视多个table，就需要为每个table创建对应的元表，解决方法类似上面的"实现具有默认值的table"
+            [2]. 如果要同时监视多个table，就需要为每个table创建对应的元表，解决方法类似上面的"实现具有默认值的table",即将原来的table保存在代理table的一个特殊字段中
         --]]
 
 7. __index和__newindex的应用案例：实现只读的table
    实现原理：同样是为真正的table创建一个空的代理table，不同的是只需要监控所有对table的写操作，并引发一个错误就行。
              至于读操作，直接使用原table作为__index元方法即可。
 
-        local tb = {1,2}    -- 构造一个需要被监控的table
+        tb = {1,2}    -- 构造一个需要被监控的table
         local _tb = tb      -- 保持对原table的一个私有访问
-        tb = {}             -- 创建代理
+        tb = {}             -- 创建全局代理,实际就是将持有原table的全局变量重定义为一个空table
         
         local mt = {
             __index = _tb,

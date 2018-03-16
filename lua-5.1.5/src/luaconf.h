@@ -438,6 +438,7 @@
 /*
 @@ LUAI_MAXCSTACK limits the number of Lua stack slots that a C function
 @* can use.
+lua栈的槽位上限
 ** CHANGE it if you need lots of (Lua) stack space for your C
 ** functions. This limit is arbitrary; its only purpose is to stop C
 ** functions to consume unlimited stack space. (must be smaller than

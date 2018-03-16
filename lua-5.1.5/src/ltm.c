@@ -19,7 +19,7 @@
 #include "ltm.h"
 
 
-
+// 定义了一张lua数据类型名称表
 const char *const luaT_typenames[] = {
   "nil", "boolean", "userdata", "number",
   "string", "table", "function", "userdata", "thread",

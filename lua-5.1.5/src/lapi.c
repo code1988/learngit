@@ -101,7 +101,7 @@ void luaA_pushobject (lua_State *L, const TValue *o) {
   api_incr_top(L);
 }
 
-// 检查lua栈中是否有足够的空间
+// 检查lua栈中是否有size长度的剩余空间,如果不足则会自动扩展到相应尺寸(前提是不超出栈的槽位上限LUAI_MAXCSTACK)
 LUA_API int lua_checkstack (lua_State *L, int size) {
   int res = 1;
   lua_lock(L);
@@ -553,7 +553,7 @@ LUA_API const char *lua_pushfstring (lua_State *L, const char *fmt, ...) {
   return ret;
 }
 
-/* 将C函数fn压栈以创建一个新的C闭包
+/* 基于C函数fn创建一个新的C闭包,最后将其压栈
  * @fn  - 符合lua_CFunction格式的C函数
  * @n   - upvalue的数量
  *
@@ -621,6 +621,7 @@ LUA_API int lua_pushthread (lua_State *L) {
 
 /*
 ** get functions (Lua -> stack)
+lua_get*系列CAPI用于将lua环境中的变量压入栈中,以便在C环境中获取
 */
 
 /* 顾名思义，本函数用于获取table中指定元素的值，类似"t[k]"，本函数可能会触发__index元方法
@@ -752,6 +753,7 @@ LUA_API void lua_getfenv (lua_State *L, int idx) {
 
 /*
 ** set functions (stack -> Lua)
+lua_set*系列CAPI用于将栈中的值设置给lua环境中的变量
 */
 
 /* 顾名思义，本函数做了一个等价于"t[k] = v"的操作，本函数可能会触发__newindex元方法
