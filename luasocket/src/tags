@@ -1,0 +1,1055 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+AI_NUMERICSERV	wsocket.h	30;"	d
+AUXILIAR_H	auxiliar.h	2;"	d
+BUF_H	buffer.h	2;"	d
+BUF_SIZE	buffer.h	24;"	d
+CC	makefile	/^CC=$(CC_$(PLAT))$/;"	m
+CC_freebsd	makefile	/^CC_freebsd=gcc$/;"	m
+CC_linux	makefile	/^CC_linux=gcc$/;"	m
+CC_macosx	makefile	/^CC_macosx=gcc$/;"	m
+CC_mingw	makefile	/^CC_mingw=gcc$/;"	m
+CC_solaris	makefile	/^CC_solaris=gcc$/;"	m
+CC_win32	makefile	/^CC_win32=cl$/;"	m
+CDIR	makefile	/^CDIR?=$(CDIR_$(PLAT))$/;"	m
+CDIR_freebsd	makefile	/^CDIR_freebsd?=lib\/lua\/$(LUAV)$/;"	m
+CDIR_linux	makefile	/^CDIR_linux?=lib\/lua\/$(LUAV)$/;"	m
+CDIR_macosx	makefile	/^CDIR_macosx?=lib\/lua\/$(LUAV)$/;"	m
+CDIR_mingw	makefile	/^CDIR_mingw?=lua\/$(LUAV)$/;"	m
+CDIR_solaris	makefile	/^CDIR_solaris?=lib\/lua\/$(LUAV)$/;"	m
+CDIR_win32	makefile	/^CDIR_win32?=bin\/lua\/$(LUAV)\/$(PLATFORM_win32)$/;"	m
+CFLAGS	makefile	/^CFLAGS=$(MYCFLAGS) $(CFLAGS_$(PLAT))$/;"	m
+CFLAGS_freebsd	makefile	/^CFLAGS_freebsd= -I$(LUAINC) $(DEF) -Wall -Wshadow -Wextra \\$/;"	m
+CFLAGS_linux	makefile	/^CFLAGS_linux= -I$(LUAINC) $(DEF) -Wall -Wshadow -Wextra \\$/;"	m
+CFLAGS_macosx	makefile	/^CFLAGS_macosx= -I$(LUAINC) $(DEF) -Wall -O2 -fno-common \\$/;"	m
+CFLAGS_mingw	makefile	/^CFLAGS_mingw= -I$(LUAINC) $(DEF) -Wall -O2 -fno-common \\$/;"	m
+CFLAGS_solaris	makefile	/^CFLAGS_solaris=-I$(LUAINC) $(DEF) -Wall -Wshadow -Wextra \\$/;"	m
+CFLAGS_win32	makefile	/^CFLAGS_win32=\/\/I "$(LUAINC)" $(DEF) \/\/O2 \/\/Ot \/\/MD \/\/W3 \/\/nologo$/;"	m
+COMPAT_H	compat.h	2;"	d
+CRLF	mime.c	/^static const char CRLF[] = "\\r\\n";$/;"	v	file:
+DEBUG	makefile	/^DEBUG?=NODEBUG$/;"	m
+DEF	makefile	/^DEF=$(DEF_$(PLAT))$/;"	m
+DEF_freebsd	makefile	/^DEF_freebsd=-DLUASOCKET_$(DEBUG) \\$/;"	m
+DEF_linux	makefile	/^DEF_linux=-DLUASOCKET_$(DEBUG) \\$/;"	m
+DEF_macosx	makefile	/^DEF_macosx= -DLUASOCKET_$(DEBUG) -DUNIX_HAS_SUN_LEN \\$/;"	m
+DEF_mingw	makefile	/^DEF_mingw= -DLUASOCKET_INET_PTON -DLUASOCKET_$(DEBUG) \\$/;"	m
+DEF_solaris	makefile	/^DEF_solaris=-DLUASOCKET_$(DEBUG) \\$/;"	m
+DEF_win32	makefile	/^DEF_win32= \/\/D "WIN32" \/\/D "NDEBUG" \/\/D "_WINDOWS" \/\/D "_USRDLL" \\$/;"	m
+DESTDIR	makefile	/^DESTDIR?=$/;"	m
+EQCRLF	mime.c	/^static const char EQCRLF[] = "=\\r\\n";$/;"	v	file:
+EXCEPT_H	except.h	2;"	d
+INET_H	inet.h	2;"	d
+INSTALL_DATA	makefile	/^INSTALL_DATA=install -m644$/;"	m
+INSTALL_DIR	makefile	/^INSTALL_DIR=install -d$/;"	m
+INSTALL_EXEC	makefile	/^INSTALL_EXEC=install$/;"	m
+INSTALL_MIME_CDIR	makefile	/^INSTALL_MIME_CDIR=$(INSTALL_TOP_CDIR)\/mime$/;"	m
+INSTALL_MIME_LDIR	makefile	/^INSTALL_MIME_LDIR=$(INSTALL_TOP_LDIR)\/mime$/;"	m
+INSTALL_SOCKET_CDIR	makefile	/^INSTALL_SOCKET_CDIR=$(INSTALL_TOP_CDIR)\/socket$/;"	m
+INSTALL_SOCKET_LDIR	makefile	/^INSTALL_SOCKET_LDIR=$(INSTALL_TOP_LDIR)\/socket$/;"	m
+INSTALL_TOP	makefile	/^INSTALL_TOP=$(DESTDIR)$(prefix)$/;"	m
+INSTALL_TOP_CDIR	makefile	/^INSTALL_TOP_CDIR=$(INSTALL_TOP)\/$(CDIR)$/;"	m
+INSTALL_TOP_LDIR	makefile	/^INSTALL_TOP_LDIR=$(INSTALL_TOP)\/$(LDIR)$/;"	m
+IO_CLOSED	io.h	/^    IO_CLOSED = -2,     \/* the connection has been closed *\/$/;"	e	enum:__anon2
+IO_DONE	io.h	/^    IO_DONE = 0,        \/* operation completed successfully *\/$/;"	e	enum:__anon2
+IO_H	io.h	2;"	d
+IO_TIMEOUT	io.h	/^    IO_TIMEOUT = -1,    \/* operation timed out *\/$/;"	e	enum:__anon2
+IO_UNKNOWN	io.h	/^	IO_UNKNOWN = -3$/;"	e	enum:__anon2
+IPV6_ADD_MEMBERSHIP	usocket.h	42;"	d
+IPV6_DROP_MEMBERSHIP	usocket.h	49;"	d
+IPV6_V6ONLY	wsocket.h	20;"	d
+LD	makefile	/^LD=$(LD_$(PLAT))$/;"	m
+LDFLAGS	makefile	/^LDFLAGS=$(MYLDFLAGS) $(LDFLAGS_$(PLAT))$/;"	m
+LDFLAGS_freebsd	makefile	/^LDFLAGS_freebsd=-O -shared -fpic -o $/;"	m
+LDFLAGS_linux	makefile	/^LDFLAGS_linux=-O -shared -fpic -o $/;"	m
+LDFLAGS_macosx	makefile	/^LDFLAGS_macosx= -bundle -undefined dynamic_lookup -o $/;"	m
+LDFLAGS_mingw	makefile	/^LDFLAGS_mingw= $(LUALIB) -shared -Wl,-s -lws2_32 -o $/;"	m
+LDFLAGS_solaris	makefile	/^LDFLAGS_solaris=-lnsl -lsocket -lresolv -O -shared -fpic -o $/;"	m
+LDFLAGS_win32	makefile	/^LDFLAGS_win32= \/\/nologo \/\/link \/\/NOLOGO \/\/DLL \/\/INCREMENTAL:NO \\$/;"	m
+LDIR	makefile	/^LDIR?=$(LDIR_$(PLAT))$/;"	m
+LDIR_freebsd	makefile	/^LDIR_freebsd?=share\/lua\/$(LUAV)$/;"	m
+LDIR_linux	makefile	/^LDIR_linux?=share\/lua\/$(LUAV)$/;"	m
+LDIR_macosx	makefile	/^LDIR_macosx?=share\/lua\/$(LUAV)$/;"	m
+LDIR_mingw	makefile	/^LDIR_mingw?=lua\/$(LUAV)\/lua$/;"	m
+LDIR_solaris	makefile	/^LDIR_solaris?=share\/lua\/$(LUAV)$/;"	m
+LDIR_win32	makefile	/^LDIR_win32?=bin\/lua\/$(LUAV)\/$(PLATFORM_win32)\/lua$/;"	m
+LD_freebsd	makefile	/^LD_freebsd=gcc$/;"	m
+LD_linux	makefile	/^LD_linux=gcc$/;"	m
+LD_macosx	makefile	/^LD_macosx= export MACOSX_DEPLOYMENT_TARGET="10.3"; gcc$/;"	m
+LD_mingw	makefile	/^LD_mingw=gcc$/;"	m
+LD_solaris	makefile	/^LD_solaris=gcc$/;"	m
+LD_win32	makefile	/^LD_win32=cl$/;"	m
+LUAINC	makefile	/^LUAINC= $(LUAINC_$(PLAT))$/;"	m
+LUAINC_freebsd	makefile	/^LUAINC_freebsd?=$(LUAINC_freebsd_base)\/lua$(LUAV)$/;"	m
+LUAINC_freebsd_base	makefile	/^LUAINC_freebsd_base?=\/usr\/local\/include\/$/;"	m
+LUAINC_linux	makefile	/^LUAINC_linux?=$(LUAINC_linux_base)\/lua\/$(LUAV)$/;"	m
+LUAINC_linux_base	makefile	/^LUAINC_linux_base?=\/usr\/include$/;"	m
+LUAINC_macosx	makefile	/^LUAINC_macosx?=$(LUAINC_macosx_base)\/lua\/$(LUAV)$/;"	m
+LUAINC_macosx_base	makefile	/^LUAINC_macosx_base?=\/opt\/local\/include$/;"	m
+LUAINC_mingw	makefile	/^LUAINC_mingw?=$(LUAINC_mingw_base)\/lua\/$(LUAV)$/;"	m
+LUAINC_mingw_base	makefile	/^LUAINC_mingw_base?=\/usr\/include$/;"	m
+LUAINC_solaris	makefile	/^LUAINC_solaris?=$(LUAINC_solaris_base)\/lua\/$(LUAV)$/;"	m
+LUAINC_solaris_base	makefile	/^LUAINC_solaris_base?=\/usr\/include$/;"	m
+LUAINC_win32	makefile	/^LUAINC_win32?=$(LUAPREFIX_win32)\/include\/lua\/$(LUAV)$/;"	m
+LUALIB	makefile	/^LUALIB= $(LUALIB_$(PLAT))$/;"	m
+LUALIBNAME_win32	makefile	/^LUALIBNAME_win32?=lua$(subst .,,$(LUAV)).lib $/;"	m
+LUALIB_mingw	makefile	/^LUALIB_mingw?=$(LUALIB_mingw_base)\/lua\/$(LUAV)\/lua$(subst .,,$(LUAV)).dll$/;"	m
+LUALIB_mingw_base	makefile	/^LUALIB_mingw_base?=\/usr\/bin$/;"	m
+LUALIB_win32	makefile	/^LUALIB_win32?=$(LUAPREFIX_win32)\/lib\/lua\/$(LUAV)\/$(PLATFORM_win32)$/;"	m
+LUAPREFIX_freebsd	makefile	/^LUAPREFIX_freebsd?=\/usr\/local\/$/;"	m
+LUAPREFIX_linux	makefile	/^LUAPREFIX_linux?=\/usr\/local$/;"	m
+LUAPREFIX_macosx	makefile	/^LUAPREFIX_macosx?=\/opt\/local$/;"	m
+LUAPREFIX_mingw	makefile	/^LUAPREFIX_mingw?=\/usr$/;"	m
+LUAPREFIX_solaris	makefile	/^LUAPREFIX_solaris?=\/usr\/local$/;"	m
+LUAPREFIX_win32	makefile	/^LUAPREFIX_win32?=$/;"	m
+LUASOCKET_API	luasocket.h	21;"	d
+LUASOCKET_COPYRIGHT	luasocket.h	15;"	d
+LUASOCKET_H	luasocket.h	2;"	d
+LUASOCKET_INET_ATON	inet.h	22;"	d
+LUASOCKET_VERSION	luasocket.h	14;"	d
+LUAV	makefile	/^LUAV?=5.1$/;"	m
+MAX	buffer.c	26;"	d	file:
+MAX	timeout.c	28;"	d	file:
+MAX	udp.c	23;"	d	file:
+MIME_API	mime.h	24;"	d
+MIME_AUTHORS	mime.h	18;"	d
+MIME_COPYRIGHT	mime.h	17;"	d
+MIME_H	mime.h	2;"	d
+MIME_OBJS	makefile	/^MIME_OBJS= \\$/;"	m
+MIME_SO	makefile	/^MIME_SO=mime-$(MIME_V).$(SO)$/;"	m
+MIME_V	makefile	/^MIME_V=1.0.3$/;"	m
+MIME_VERSION	mime.h	16;"	d
+MIN	buffer.c	23;"	d	file:
+MIN	timeout.c	25;"	d	file:
+MIN	udp.c	20;"	d	file:
+MYCFLAGS	makefile	/^MYCFLAGS?=$/;"	m
+MYLDFLAGS	makefile	/^MYLDFLAGS?=$/;"	m
+O	makefile	/^O=$(O_$(PLAT))$/;"	m
+OPTIONS_H	options.h	2;"	d
+O_freebsd	makefile	/^O_freebsd=o$/;"	m
+O_linux	makefile	/^O_linux=o$/;"	m
+O_macosx	makefile	/^O_macosx=o$/;"	m
+O_mingw	makefile	/^O_mingw=o$/;"	m
+O_solaris	makefile	/^O_solaris=o$/;"	m
+O_win32	makefile	/^O_win32=obj$/;"	m
+PIERROR_H	pierror.h	2;"	d
+PIE_ACCESS	pierror.h	11;"	d
+PIE_ADDRINUSE	pierror.h	9;"	d
+PIE_AGAIN	pierror.h	16;"	d
+PIE_BADFLAGS	pierror.h	17;"	d
+PIE_BADHINTS	pierror.h	18;"	d
+PIE_CONNABORTED	pierror.h	13;"	d
+PIE_CONNREFUSED	pierror.h	12;"	d
+PIE_CONNRESET	pierror.h	14;"	d
+PIE_FAIL	pierror.h	19;"	d
+PIE_FAMILY	pierror.h	20;"	d
+PIE_HOST_NOT_FOUND	pierror.h	8;"	d
+PIE_ISCONN	pierror.h	10;"	d
+PIE_MEMORY	pierror.h	21;"	d
+PIE_NONAME	pierror.h	22;"	d
+PIE_OVERFLOW	pierror.h	23;"	d
+PIE_PROTOCOL	pierror.h	24;"	d
+PIE_SERVICE	pierror.h	25;"	d
+PIE_SOCKTYPE	pierror.h	26;"	d
+PIE_TIMEDOUT	pierror.h	15;"	d
+PLAT	makefile	/^PLAT?=linux$/;"	m
+PLATFORM_win32	makefile	/^PLATFORM_win32?=Release$/;"	m
+PLATS	makefile	/^PLATS= macosx linux win32 mingw solaris$/;"	m
+QP_CR	mime.c	/^enum {QP_PLAIN, QP_QUOTED, QP_CR, QP_IF_LAST};$/;"	e	enum:__anon1	file:
+QP_IF_LAST	mime.c	/^enum {QP_PLAIN, QP_QUOTED, QP_CR, QP_IF_LAST};$/;"	e	enum:__anon1	file:
+QP_PLAIN	mime.c	/^enum {QP_PLAIN, QP_QUOTED, QP_CR, QP_IF_LAST};$/;"	e	enum:__anon1	file:
+QP_QUOTED	mime.c	/^enum {QP_PLAIN, QP_QUOTED, QP_CR, QP_IF_LAST};$/;"	e	enum:__anon1	file:
+SA	socket.h	/^typedef struct sockaddr SA;$/;"	t	typeref:struct:sockaddr
+SELECT_H	select.h	2;"	d
+SERIAL_OBJS	makefile	/^SERIAL_OBJS=\\$/;"	m
+SERIAL_SO	makefile	/^SERIAL_SO=serial.$(SO)$/;"	m
+SO	makefile	/^SO=$(SO_$(PLAT))$/;"	m
+SOCKET	makefile	/^SOCKET=$(SOCKET_$(PLAT))$/;"	m
+SOCKET_H	socket.h	2;"	d
+SOCKET_INVALID	usocket.h	57;"	d
+SOCKET_INVALID	wsocket.h	23;"	d
+SOCKET_OBJS	makefile	/^SOCKET_OBJS= \\$/;"	m
+SOCKET_SO	makefile	/^SOCKET_SO=socket-$(SOCKET_V).$(SO)$/;"	m
+SOCKET_V	makefile	/^SOCKET_V=3.0-rc1$/;"	m
+SOCKET_freebsd	makefile	/^SOCKET_freebsd=usocket.o$/;"	m
+SOCKET_linux	makefile	/^SOCKET_linux=usocket.o$/;"	m
+SOCKET_macosx	makefile	/^SOCKET_macosx=usocket.o$/;"	m
+SOCKET_mingw	makefile	/^SOCKET_mingw=wsocket.o$/;"	m
+SOCKET_solaris	makefile	/^SOCKET_solaris=usocket.o$/;"	m
+SOCKET_win32	makefile	/^SOCKET_win32=wsocket.obj$/;"	m
+SO_REUSEPORT	usocket.h	35;"	d
+SO_REUSEPORT	wsocket.h	26;"	d
+SO_freebsd	makefile	/^SO_freebsd=so$/;"	m
+SO_linux	makefile	/^SO_linux=so$/;"	m
+SO_macosx	makefile	/^SO_macosx=so$/;"	m
+SO_mingw	makefile	/^SO_mingw=dll$/;"	m
+SO_solaris	makefile	/^SO_solaris=so$/;"	m
+SO_win32	makefile	/^SO_win32=dll$/;"	m
+STEPSIZE	buffer.c	167;"	d	file:
+TCP_H	tcp.h	2;"	d
+TIMEOUT_H	timeout.h	2;"	d
+TO_SOCKET_LDIR	makefile	/^TO_SOCKET_LDIR= \\$/;"	m
+TO_TOP_LDIR	makefile	/^TO_TOP_LDIR= \\$/;"	m
+UC	mime.c	/^typedef unsigned char UC;$/;"	t	file:
+UDP_DATAGRAMSIZE	udp.h	20;"	d
+UDP_H	udp.h	2;"	d
+UNIXDGRAM_DATAGRAMSIZE	unixdgram.c	18;"	d	file:
+UNIXDGRAM_H	unixdgram.h	2;"	d
+UNIXSTREAM_H	unixstream.h	2;"	d
+UNIX_API	unix.h	17;"	d
+UNIX_H	unix.h	2;"	d
+UNIX_OBJS	makefile	/^UNIX_OBJS=\\$/;"	m
+UNIX_SO	makefile	/^UNIX_SO=unix.$(SO)$/;"	m
+USOCKET_H	usocket.h	2;"	d
+WAITFD_C	usocket.c	23;"	d	file:
+WAITFD_C	usocket.c	44;"	d	file:
+WAITFD_C	wsocket.c	46;"	d	file:
+WAITFD_E	wsocket.c	45;"	d	file:
+WAITFD_R	usocket.c	21;"	d	file:
+WAITFD_R	usocket.c	42;"	d	file:
+WAITFD_R	wsocket.c	43;"	d	file:
+WAITFD_W	usocket.c	22;"	d	file:
+WAITFD_W	usocket.c	43;"	d	file:
+WAITFD_W	wsocket.c	44;"	d	file:
+WSOCKET_H	wsocket.h	2;"	d
+_M.absolute	url.lua	/^function _M.absolute(base_url, relative_url)$/;"	f
+_M.bind	socket.lua	/^function _M.bind(host, port, backlog)$/;"	f
+_M.build	url.lua	/^function _M.build(parsed)$/;"	f
+_M.build_path	url.lua	/^function _M.build_path(parsed, unsafe)$/;"	f
+_M.choose	socket.lua	/^function _M.choose(table)$/;"	f
+_M.command 	ftp.lua	/^_M.command = socket.protect(function(cmdt)$/;"	f
+_M.connect	tp.lua	/^function _M.connect(host, port, timeout, create)$/;"	f
+_M.connect4	socket.lua	/^function _M.connect4(address, port, laddress, lport)$/;"	f
+_M.connect6	socket.lua	/^function _M.connect6(address, port, laddress, lport)$/;"	f
+_M.escape	url.lua	/^function _M.escape(s)$/;"	f
+_M.get 	ftp.lua	/^_M.get = socket.protect(function(gett)$/;"	f
+_M.message	smtp.lua	/^function _M.message(mesgt)$/;"	f
+_M.normalize	mime.lua	/^function _M.normalize(marker)$/;"	f
+_M.open	ftp.lua	/^function _M.open(server, port, create)$/;"	f
+_M.open	http.lua	/^function _M.open(host, port, create)$/;"	f
+_M.open	smtp.lua	/^function _M.open(server, port, create)$/;"	f
+_M.parse	mbox.lua	/^function _M.parse(mbox_s)$/;"	f
+_M.parse	url.lua	/^function _M.parse(url, default)$/;"	f
+_M.parse_from	mbox.lua	/^function _M.parse_from(from)$/;"	f
+_M.parse_header	mbox.lua	/^function _M.parse_header(header_s)$/;"	f
+_M.parse_headers	mbox.lua	/^function _M.parse_headers(headers_s)$/;"	f
+_M.parse_message	mbox.lua	/^function _M.parse_message(message_s)$/;"	f
+_M.parse_path	url.lua	/^function _M.parse_path(path)$/;"	f
+_M.put 	ftp.lua	/^_M.put = socket.protect(function(putt, body)$/;"	f
+_M.request 	http.lua	/^_M.request = socket.protect(function(reqt, body)$/;"	f
+_M.send 	smtp.lua	/^_M.send = socket.protect(function(mailt)$/;"	f
+_M.split_headers	mbox.lua	/^function _M.split_headers(headers_s)$/;"	f
+_M.split_mbox	mbox.lua	/^function _M.split_mbox(mbox_s)$/;"	f
+_M.split_message	mbox.lua	/^function _M.split_message(message_s)$/;"	f
+_M.stuff	mime.lua	/^function _M.stuff()$/;"	f
+_M.unescape	url.lua	/^function _M.unescape(s)$/;"	f
+__call 	http.lua	/^        __call = function()$/;"	f
+__call 	http.lua	/^        __call = function(self, chunk, err)$/;"	f
+__call 	socket.lua	/^        __call = function()$/;"	f
+__call 	socket.lua	/^        __call = function(self, chunk, err)$/;"	f
+absolute_path	url.lua	/^local function absolute_path(base_path, relative_path)$/;"	f
+add_alias	unix.c	/^static void add_alias(lua_State *L, int index, const char *name, const char *target)$/;"	f	file:	signature:(lua_State *L, int index, const char *name, const char *target)
+adjust_headers	smtp.lua	/^local function adjust_headers(mesgt)$/;"	f
+adjustheaders	http.lua	/^local function adjustheaders(reqt)$/;"	f
+adjustproxy	http.lua	/^local function adjustproxy(reqt)$/;"	f
+adjustrequest	http.lua	/^local function adjustrequest(reqt)$/;"	f
+adjusturi	http.lua	/^local function adjusturi(reqt)$/;"	f
+auxiliar_add2group	auxiliar.c	/^void auxiliar_add2group(lua_State *L, const char *classname, const char *groupname) {$/;"	f	signature:(lua_State *L, const char *classname, const char *groupname)
+auxiliar_add2group	auxiliar.h	/^void auxiliar_add2group(lua_State *L, const char *classname, const char *group);$/;"	p	signature:(lua_State *L, const char *classname, const char *group)
+auxiliar_checkboolean	auxiliar.c	/^int auxiliar_checkboolean(lua_State *L, int objidx) {$/;"	f	signature:(lua_State *L, int objidx)
+auxiliar_checkboolean	auxiliar.h	/^int auxiliar_checkboolean(lua_State *L, int objidx);$/;"	p	signature:(lua_State *L, int objidx)
+auxiliar_checkclass	auxiliar.c	/^void *auxiliar_checkclass(lua_State *L, const char *classname, int objidx) {$/;"	f	signature:(lua_State *L, const char *classname, int objidx)
+auxiliar_checkclass	auxiliar.h	/^void *auxiliar_checkclass(lua_State *L, const char *classname, int objidx);$/;"	p	signature:(lua_State *L, const char *classname, int objidx)
+auxiliar_checkgroup	auxiliar.c	/^void *auxiliar_checkgroup(lua_State *L, const char *groupname, int objidx) {$/;"	f	signature:(lua_State *L, const char *groupname, int objidx)
+auxiliar_checkgroup	auxiliar.h	/^void *auxiliar_checkgroup(lua_State *L, const char *groupname, int objidx);$/;"	p	signature:(lua_State *L, const char *groupname, int objidx)
+auxiliar_getclassudata	auxiliar.c	/^void *auxiliar_getclassudata(lua_State *L, const char *classname, int objidx) {$/;"	f	signature:(lua_State *L, const char *classname, int objidx)
+auxiliar_getclassudata	auxiliar.h	/^void *auxiliar_getclassudata(lua_State *L, const char *groupname, int objidx);$/;"	p	signature:(lua_State *L, const char *groupname, int objidx)
+auxiliar_getgroupudata	auxiliar.c	/^void *auxiliar_getgroupudata(lua_State *L, const char *groupname, int objidx) {$/;"	f	signature:(lua_State *L, const char *groupname, int objidx)
+auxiliar_getgroupudata	auxiliar.h	/^void *auxiliar_getgroupudata(lua_State *L, const char *groupname, int objidx);$/;"	p	signature:(lua_State *L, const char *groupname, int objidx)
+auxiliar_newclass	auxiliar.c	/^void auxiliar_newclass(lua_State *L, const char *classname, luaL_Reg *func) {$/;"	f	signature:(lua_State *L, const char *classname, luaL_Reg *func)
+auxiliar_newclass	auxiliar.h	/^void auxiliar_newclass(lua_State *L, const char *classname, luaL_Reg *func);$/;"	p	signature:(lua_State *L, const char *classname, luaL_Reg *func)
+auxiliar_open	auxiliar.c	/^int auxiliar_open(lua_State *L) {$/;"	f	signature:(lua_State *L)
+auxiliar_open	auxiliar.h	/^int auxiliar_open(lua_State *L);$/;"	p	signature:(lua_State *L)
+auxiliar_setclass	auxiliar.c	/^void auxiliar_setclass(lua_State *L, const char *classname, int objidx) {$/;"	f	signature:(lua_State *L, const char *classname, int objidx)
+auxiliar_setclass	auxiliar.h	/^void auxiliar_setclass(lua_State *L, const char *classname, int objidx);$/;"	p	signature:(lua_State *L, const char *classname, int objidx)
+auxiliar_tostring	auxiliar.c	/^int auxiliar_tostring(lua_State *L) {$/;"	f	signature:(lua_State *L)
+auxiliar_tostring	auxiliar.h	/^int auxiliar_tostring(lua_State *L);$/;"	p	signature:(lua_State *L)
+auxiliar_typeerror	auxiliar.c	/^int auxiliar_typeerror (lua_State *L, int narg, const char *tname) {$/;"	f	signature:(lua_State *L, int narg, const char *tname)
+auxiliar_typeerror	auxiliar.h	/^int auxiliar_typeerror(lua_State *L, int narg, const char *tname);$/;"	p	signature:(lua_State *L, int narg, const char *tname)
+b64base	mime.c	/^static const UC b64base[] =$/;"	v	file:
+b64decode	mime.c	/^static size_t b64decode(UC c, UC *input, size_t size, luaL_Buffer *buffer);$/;"	p	file:	signature:(UC c, UC *input, size_t size, luaL_Buffer *buffer)
+b64decode	mime.c	/^static size_t b64decode(UC c, UC *input, size_t size,$/;"	f	file:	signature:(UC c, UC *input, size_t size, luaL_Buffer *buffer)
+b64encode	mime.c	/^static size_t b64encode(UC c, UC *input, size_t size, luaL_Buffer *buffer);$/;"	p	file:	signature:(UC c, UC *input, size_t size, luaL_Buffer *buffer)
+b64encode	mime.c	/^static size_t b64encode(UC c, UC *input, size_t size,$/;"	f	file:	signature:(UC c, UC *input, size_t size, luaL_Buffer *buffer)
+b64pad	mime.c	/^static size_t b64pad(const UC *input, size_t size, luaL_Buffer *buffer);$/;"	p	file:	signature:(const UC *input, size_t size, luaL_Buffer *buffer)
+b64pad	mime.c	/^static size_t b64pad(const UC *input, size_t size,$/;"	f	file:	signature:(const UC *input, size_t size, luaL_Buffer *buffer)
+b64setup	mime.c	/^static void b64setup(UC *base);$/;"	p	file:	signature:(UC *base)
+b64setup	mime.c	/^static void b64setup(UC *unbase)$/;"	f	file:	signature:(UC *unbase)
+b64unbase	mime.c	/^static UC b64unbase[256];$/;"	v	file:
+base_open	luasocket.c	/^static int base_open(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+base_open	luasocket.c	/^static int base_open(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+birthday	buffer.h	/^    double birthday;        \/* throttle support info: creation time, *\/$/;"	m	struct:t_buffer_	access:public
+block	timeout.h	/^    double block;          \/* maximum time for blocking calls *\/$/;"	m	struct:t_timeout_	access:public
+buf	tcp.h	/^    t_buffer buf;$/;"	m	struct:t_tcp_	access:public
+buf	unix.h	/^    t_buffer buf;$/;"	m	struct:t_unix_	access:public
+buffer_get	buffer.c	/^static int buffer_get(p_buffer buf, const char **data, size_t *count) {$/;"	f	file:	signature:(p_buffer buf, const char **data, size_t *count)
+buffer_get	buffer.c	/^static int buffer_get(p_buffer buf, const char **data, size_t *count);$/;"	p	file:	signature:(p_buffer buf, const char **data, size_t *count)
+buffer_init	buffer.c	/^void buffer_init(p_buffer buf, p_io io, p_timeout tm) {$/;"	f	signature:(p_buffer buf, p_io io, p_timeout tm)
+buffer_init	buffer.h	/^void buffer_init(p_buffer buf, p_io io, p_timeout tm);$/;"	p	signature:(p_buffer buf, p_io io, p_timeout tm)
+buffer_isempty	buffer.c	/^int buffer_isempty(p_buffer buf) {$/;"	f	signature:(p_buffer buf)
+buffer_isempty	buffer.h	/^int buffer_isempty(p_buffer buf);$/;"	p	signature:(p_buffer buf)
+buffer_meth_getstats	buffer.c	/^int buffer_meth_getstats(lua_State *L, p_buffer buf) {$/;"	f	signature:(lua_State *L, p_buffer buf)
+buffer_meth_getstats	buffer.h	/^int buffer_meth_getstats(lua_State *L, p_buffer buf);$/;"	p	signature:(lua_State *L, p_buffer buf)
+buffer_meth_receive	buffer.c	/^int buffer_meth_receive(lua_State *L, p_buffer buf) {$/;"	f	signature:(lua_State *L, p_buffer buf)
+buffer_meth_receive	buffer.h	/^int buffer_meth_receive(lua_State *L, p_buffer buf);$/;"	p	signature:(lua_State *L, p_buffer buf)
+buffer_meth_send	buffer.c	/^int buffer_meth_send(lua_State *L, p_buffer buf) {$/;"	f	signature:(lua_State *L, p_buffer buf)
+buffer_meth_send	buffer.h	/^int buffer_meth_send(lua_State *L, p_buffer buf);$/;"	p	signature:(lua_State *L, p_buffer buf)
+buffer_meth_setstats	buffer.c	/^int buffer_meth_setstats(lua_State *L, p_buffer buf) {$/;"	f	signature:(lua_State *L, p_buffer buf)
+buffer_meth_setstats	buffer.h	/^int buffer_meth_setstats(lua_State *L, p_buffer buf);$/;"	p	signature:(lua_State *L, p_buffer buf)
+buffer_open	buffer.c	/^int buffer_open(lua_State *L) {$/;"	f	signature:(lua_State *L)
+buffer_open	buffer.h	/^int buffer_open(lua_State *L);$/;"	p	signature:(lua_State *L)
+buffer_skip	buffer.c	/^static void buffer_skip(p_buffer buf, size_t count) {$/;"	f	file:	signature:(p_buffer buf, size_t count)
+buffer_skip	buffer.c	/^static void buffer_skip(p_buffer buf, size_t count);$/;"	p	file:	signature:(p_buffer buf, size_t count)
+check_dirty	select.c	/^static int check_dirty(lua_State *L, int tab, int dtab, fd_set *set) {$/;"	f	file:	signature:(lua_State *L, int tab, int dtab, fd_set *set)
+check_dirty	select.c	/^static int check_dirty(lua_State *L, int tab, int dtab, fd_set *set);$/;"	p	file:	signature:(lua_State *L, int tab, int dtab, fd_set *set)
+choose	mime.lua	/^local function choose(table)$/;"	f
+collect_fd	select.c	/^static void collect_fd(lua_State *L, int tab, int itab,$/;"	f	file:	signature:(lua_State *L, int tab, int itab, fd_set *set, t_socket *max_fd)
+collect_fd	select.c	/^static void collect_fd(lua_State *L, int tab, int itab,$/;"	p	file:	signature:(lua_State *L, int tab, int itab, fd_set *set, t_socket *max_fd)
+compat_socket_unix_call	unix.c	/^static int compat_socket_unix_call(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+ctx	io.h	/^    void *ctx;          \/* context needed by send\/recv *\/$/;"	m	struct:t_io_	access:public
+data	buffer.h	/^    char data[BUF_SIZE];    \/* storage space for buffer data *\/$/;"	m	struct:t_buffer_	access:public
+decodet['base64'] 	mime.lua	/^decodet['base64'] = function()$/;"	f
+decodet['quoted-printable'] 	mime.lua	/^decodet['quoted-printable'] = function()$/;"	f
+dirty	select.c	/^static int dirty(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+dirty	select.c	/^static int dirty(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+dirty 	http.lua	/^        dirty = function() return sock:dirty() end$/;"	f
+dirty 	socket.lua	/^        dirty = function() return sock:dirty() end$/;"	f
+do_nothing	except.c	/^static int do_nothing(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+do_nothing	except.c	/^static int do_nothing(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+dot	mime.c	/^static size_t dot(int c, size_t state, luaL_Buffer *buffer)$/;"	f	file:	signature:(int c, size_t state, luaL_Buffer *buffer)
+dot	mime.c	/^static size_t dot(int c, size_t state, luaL_Buffer *buffer);$/;"	p	file:	signature:(int c, size_t state, luaL_Buffer *buffer)
+elseif base.type(mesgt.body) 	smtp.lua	/^    elseif base.type(mesgt.body) == "function" then send_source(mesgt)$/;"	f
+empty	ltn12.lua	/^local function empty()$/;"	f
+encodet['base64'] 	mime.lua	/^encodet['base64'] = function()$/;"	f
+encodet['quoted-printable'] 	mime.lua	/^encodet['quoted-printable'] = function(mode)$/;"	f
+eolcandidate	mime.c	630;"	d	file:
+eolprocess	mime.c	/^static int eolprocess(int c, int last, const char *marker,$/;"	f	file:	signature:(int c, int last, const char *marker, luaL_Buffer *buffer)
+error	io.h	/^    p_error error;      \/* strerror function *\/$/;"	m	struct:t_io_	access:public
+except_open	except.c	/^int except_open(lua_State *L) {$/;"	f	signature:(lua_State *L)
+except_open	except.h	/^int except_open(lua_State *L);$/;"	p	signature:(lua_State *L)
+f.try 	ftp.lua	/^    f.try = socket.newtry(function() f:close() end)$/;"	f
+family	tcp.h	/^    int family;$/;"	m	struct:t_tcp_	access:public
+family	udp.h	/^    int family;$/;"	m	struct:t_udp_	access:public
+filter.chain	ltn12.lua	/^function filter.chain(...)$/;"	f
+filter.cycle	ltn12.lua	/^function filter.cycle(low, ctx, extra)$/;"	f
+finalize	except.c	/^static int finalize(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+finalize	except.c	/^static int finalize(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+first	buffer.h	/^    size_t first, last;     \/* index of first and last bytes of stored data *\/$/;"	m	struct:t_buffer_	access:public
+format	mime.lua	/^local function format(chunk)$/;"	f
+func	except.c	/^static luaL_Reg func[] = {$/;"	v	file:
+func	inet.c	/^static luaL_Reg func[] = {$/;"	v	file:
+func	luasocket.c	/^static luaL_Reg func[] = {$/;"	v	file:
+func	mime.c	/^static luaL_Reg func[] = {$/;"	v	file:
+func	options.h	/^  int (*func)(lua_State *L, p_socket ps);$/;"	m	struct:t_opt	access:public
+func	select.c	/^static luaL_Reg func[] = {$/;"	v	file:
+func	tcp.c	/^static luaL_Reg func[] = {$/;"	v	file:
+func	timeout.c	/^static luaL_Reg func[] = {$/;"	v	file:
+func	udp.c	/^static luaL_Reg func[] = {$/;"	v	file:
+func	unixdgram.c	/^static luaL_Reg func[] = {$/;"	v	file:
+func	unixstream.c	/^static luaL_Reg func[] = {$/;"	v	file:
+function(p) parsed.password 	url.lua	/^        function(p) parsed.password = p; return "" end)$/;"	f
+function(p) parsed.port 	url.lua	/^        function(p) parsed.port = p; return "" end)$/;"	f
+function(s) parsed.scheme 	url.lua	/^        function(s) parsed.scheme = s; return "" end)$/;"	f
+function(u) parsed.userinfo 	url.lua	/^        function(u) parsed.userinfo = u; return "" end)$/;"	f
+genericform	ftp.lua	/^local function genericform(u)$/;"	f
+genericform	http.lua	/^local function genericform(u, b)$/;"	f
+get_reply	tp.lua	/^local function get_reply(c)$/;"	f
+getfd	select.c	/^static t_socket getfd(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+getfd	select.c	/^static t_socket getfd(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+getfd 	http.lua	/^        getfd = function() return sock:getfd() end,$/;"	f
+getfd 	socket.lua	/^        getfd = function() return sock:getfd() end,$/;"	f
+global_connect	tcp.c	/^static int global_connect(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+global_connect	tcp.c	/^static int global_connect(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+global_create	serial.c	/^static int global_create(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+global_create	serial.c	/^static int global_create(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+global_create	tcp.c	/^static int global_create(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+global_create	tcp.c	/^static int global_create(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+global_create	udp.c	/^static int global_create(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+global_create	udp.c	/^static int global_create(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+global_create	unixdgram.c	/^static int global_create(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+global_create	unixdgram.c	/^static int global_create(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+global_create	unixstream.c	/^static int global_create(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+global_create	unixstream.c	/^static int global_create(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+global_create4	tcp.c	/^static int global_create4(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+global_create4	tcp.c	/^static int global_create4(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+global_create4	udp.c	/^static int global_create4(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+global_create4	udp.c	/^static int global_create4(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+global_create6	tcp.c	/^static int global_create6(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+global_create6	tcp.c	/^static int global_create6(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+global_create6	udp.c	/^static int global_create6(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+global_create6	udp.c	/^static int global_create6(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+global_newtry	except.c	/^static int global_newtry(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+global_newtry	except.c	/^static int global_newtry(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+global_protect	except.c	/^static int global_protect(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+global_protect	except.c	/^static int global_protect(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+global_select	select.c	/^static int global_select(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+global_select	select.c	/^static int global_select(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+global_skip	luasocket.c	/^static int global_skip(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+global_skip	luasocket.c	/^static int global_skip(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+global_unload	luasocket.c	/^static int global_unload(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+global_unload	luasocket.c	/^static int global_unload(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+h.try 	http.lua	/^    h.try = socket.newtry(function() h:close() end)$/;"	f
+if base.type(ok) ~	tp.lua	/^    if base.type(ok) ~= "function" then$/;"	f
+inet_aton	inet.c	/^int inet_aton(const char *cp, struct in_addr *inp)$/;"	f	signature:(const char *cp, struct in_addr *inp)
+inet_aton	inet.h	/^int inet_aton(const char *cp, struct in_addr *inp);$/;"	p	signature:(const char *cp, struct in_addr *inp)
+inet_gethost	inet.c	/^static int inet_gethost(const char *address, struct hostent **hp) {$/;"	f	file:	signature:(const char *address, struct hostent **hp)
+inet_global_getaddrinfo	inet.c	/^static int inet_global_getaddrinfo(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+inet_global_getaddrinfo	inet.c	/^static int inet_global_getaddrinfo(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+inet_global_gethostname	inet.c	/^static int inet_global_gethostname(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+inet_global_gethostname	inet.c	/^static int inet_global_gethostname(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+inet_global_getnameinfo	inet.c	/^static int inet_global_getnameinfo(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+inet_global_getnameinfo	inet.c	/^static int inet_global_getnameinfo(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+inet_global_tohostname	inet.c	/^static int inet_global_tohostname(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+inet_global_tohostname	inet.c	/^static int inet_global_tohostname(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+inet_global_toip	inet.c	/^static int inet_global_toip(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+inet_global_toip	inet.c	/^static int inet_global_toip(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+inet_meth_getpeername	inet.c	/^int inet_meth_getpeername(lua_State *L, p_socket ps, int family)$/;"	f	signature:(lua_State *L, p_socket ps, int family)
+inet_meth_getpeername	inet.h	/^int inet_meth_getpeername(lua_State *L, p_socket ps, int family);$/;"	p	signature:(lua_State *L, p_socket ps, int family)
+inet_meth_getsockname	inet.c	/^int inet_meth_getsockname(lua_State *L, p_socket ps, int family)$/;"	f	signature:(lua_State *L, p_socket ps, int family)
+inet_meth_getsockname	inet.h	/^int inet_meth_getsockname(lua_State *L, p_socket ps, int family);$/;"	p	signature:(lua_State *L, p_socket ps, int family)
+inet_ntop	inet.h	/^const char *inet_ntop(int af, const void *src, char *dst, socklen_t cnt);$/;"	p	signature:(int af, const void *src, char *dst, socklen_t cnt)
+inet_open	inet.c	/^int inet_open(lua_State *L)$/;"	f	signature:(lua_State *L)
+inet_open	inet.h	/^int inet_open(lua_State *L);$/;"	p	signature:(lua_State *L)
+inet_optfamily	inet.c	/^int inet_optfamily(lua_State* L, int narg, const char* def)$/;"	f	signature:(lua_State* L, int narg, const char* def)
+inet_optfamily	inet.h	/^int inet_optfamily(lua_State* L, int narg, const char* def);$/;"	p	signature:(lua_State* L, int narg, const char* def)
+inet_optsocktype	inet.c	/^int inet_optsocktype(lua_State* L, int narg, const char* def)$/;"	f	signature:(lua_State* L, int narg, const char* def)
+inet_optsocktype	inet.h	/^int inet_optsocktype(lua_State* L, int narg, const char* def);$/;"	p	signature:(lua_State* L, int narg, const char* def)
+inet_pton	inet.c	/^int inet_pton(int af, const char *src, void *dst)$/;"	f	signature:(int af, const char *src, void *dst)
+inet_pton	inet.h	/^int inet_pton(int af, const char *src, void *dst);$/;"	p	signature:(int af, const char *src, void *dst)
+inet_pushresolved	inet.c	/^static void inet_pushresolved(lua_State *L, struct hostent *hp)$/;"	f	file:	signature:(lua_State *L, struct hostent *hp)
+inet_pushresolved	inet.c	/^static void inet_pushresolved(lua_State *L, struct hostent *hp);$/;"	p	file:	signature:(lua_State *L, struct hostent *hp)
+inet_tryaccept	inet.c	/^const char *inet_tryaccept(p_socket server, int family, p_socket client,$/;"	f	signature:(p_socket server, int family, p_socket client, p_timeout tm)
+inet_tryaccept	inet.h	/^const char *inet_tryaccept(p_socket server, int family, p_socket client, p_timeout tm);$/;"	p	signature:(p_socket server, int family, p_socket client, p_timeout tm)
+inet_trybind	inet.c	/^const char *inet_trybind(p_socket ps, int *family, const char *address,$/;"	f	signature:(p_socket ps, int *family, const char *address, const char *serv, struct addrinfo *bindhints)
+inet_trybind	inet.h	/^const char *inet_trybind(p_socket ps, int *family, const char *address,$/;"	p	signature:(p_socket ps, int *family, const char *address, const char *serv, struct addrinfo *bindhints)
+inet_tryconnect	inet.c	/^const char *inet_tryconnect(p_socket ps, int *family, const char *address,$/;"	f	signature:(p_socket ps, int *family, const char *address, const char *serv, p_timeout tm, struct addrinfo *connecthints)
+inet_tryconnect	inet.h	/^const char *inet_tryconnect(p_socket ps, int *family, const char *address,$/;"	p	signature:(p_socket ps, int *family, const char *address, const char *serv, p_timeout tm, struct addrinfo *connecthints)
+inet_trycreate	inet.c	/^const char *inet_trycreate(p_socket ps, int family, int type, int protocol) {$/;"	f	signature:(p_socket ps, int family, int type, int protocol)
+inet_trycreate	inet.h	/^const char *inet_trycreate(p_socket ps, int family, int type, int protocol);$/;"	p	signature:(p_socket ps, int family, int type, int protocol)
+inet_trydisconnect	inet.c	/^const char *inet_trydisconnect(p_socket ps, int family, p_timeout tm)$/;"	f	signature:(p_socket ps, int family, p_timeout tm)
+inet_trydisconnect	inet.h	/^const char *inet_trydisconnect(p_socket ps, int family, p_timeout tm);$/;"	p	signature:(p_socket ps, int family, p_timeout tm)
+io	buffer.h	/^    p_io io;                \/* IO driver used for this buffer *\/$/;"	m	struct:t_buffer_	access:public
+io	tcp.h	/^    t_io io;$/;"	m	struct:t_tcp_	access:public
+io	unix.h	/^    t_io io;$/;"	m	struct:t_unix_	access:public
+io_init	io.c	/^void io_init(p_io io, p_send send, p_recv recv, p_error error, void *ctx) {$/;"	f	signature:(p_io io, p_send send, p_recv recv, p_error error, void *ctx)
+io_init	io.h	/^void io_init(p_io io, p_send send, p_recv recv, p_error error, void *ctx);$/;"	p	signature:(p_io io, p_send send, p_recv recv, p_error error, void *ctx)
+io_strerror	io.c	/^const char *io_strerror(int err) {$/;"	f	signature:(int err)
+io_strerror	io.h	/^const char *io_strerror(int err);$/;"	p	signature:(int err)
+last	buffer.h	/^    size_t first, last;     \/* index of first and last bytes of stored data *\/$/;"	m	struct:t_buffer_	access:public
+local checkstep 	ftp.lua	/^    local checkstep = function(src, snk)$/;"	f
+local co 	smtp.lua	/^    local co = coroutine.create(function() send_message(mesgt) end)$/;"	f
+local f 	ltn12.lua	/^    local f = function(chunk, err)$/;"	f
+lower_headers	smtp.lua	/^local function lower_headers(headers)$/;"	f
+luaL_setfuncs	compat.c	/^void luaL_setfuncs (lua_State *L, const luaL_Reg *l, int nup) {$/;"	f	signature:(lua_State *L, const luaL_Reg *l, int nup)
+luaL_setfuncs	compat.h	/^void luaL_setfuncs (lua_State *L, const luaL_Reg *l, int nup);$/;"	p	signature:(lua_State *L, const luaL_Reg *l, int nup)
+lua_KContext	except.c	/^typedef int lua_KContext;$/;"	t	file:
+lua_pcallk	except.c	14;"	d	file:
+luaopen_mime_core	mime.c	/^MIME_API int luaopen_mime_core(lua_State *L)$/;"	f	signature:(lua_State *L)
+luaopen_mime_core	mime.h	/^MIME_API int luaopen_mime_core(lua_State *L);$/;"	p	signature:(lua_State *L)
+luaopen_socket_core	luasocket.c	/^LUASOCKET_API int luaopen_socket_core(lua_State *L) {$/;"	f	signature:(lua_State *L)
+luaopen_socket_core	luasocket.h	/^LUASOCKET_API int luaopen_socket_core(lua_State *L);$/;"	p	signature:(lua_State *L)
+luaopen_socket_serial	serial.c	/^LUASOCKET_API int luaopen_socket_serial(lua_State *L) {$/;"	f	signature:(lua_State *L)
+luaopen_socket_unix	unix.c	/^int luaopen_socket_unix(lua_State *L)$/;"	f	signature:(lua_State *L)
+luaopen_socket_unix	unix.h	/^UNIX_API int luaopen_socket_unix(lua_State *L);$/;"	p	signature:(lua_State *L)
+make_assoc	select.c	/^static void make_assoc(lua_State *L, int tab) {$/;"	f	file:	signature:(lua_State *L, int tab)
+make_assoc	select.c	/^static void make_assoc(lua_State *L, int tab);$/;"	p	file:	signature:(lua_State *L, int tab)
+make_set	url.lua	/^local function make_set(t)$/;"	f
+metat.__index:auth	smtp.lua	/^function metat.__index:auth(user, password, ext)$/;"	f
+metat.__index:check	tp.lua	/^function metat.__index:check(ok)$/;"	f
+metat.__index:close	ftp.lua	/^function metat.__index:close()$/;"	f
+metat.__index:close	http.lua	/^function metat.__index:close()$/;"	f
+metat.__index:close	smtp.lua	/^function metat.__index:close()$/;"	f
+metat.__index:close	tp.lua	/^function metat.__index:close()$/;"	f
+metat.__index:command	tp.lua	/^function metat.__index:command(cmd, arg)$/;"	f
+metat.__index:cwd	ftp.lua	/^function metat.__index:cwd(dir)$/;"	f
+metat.__index:data	smtp.lua	/^function metat.__index:data(src, step)$/;"	f
+metat.__index:dirty	tp.lua	/^function metat.__index:dirty()$/;"	f
+metat.__index:eprt	ftp.lua	/^function metat.__index:eprt(family, address, port)$/;"	f
+metat.__index:epsv	ftp.lua	/^function metat.__index:epsv()$/;"	f
+metat.__index:getcontrol	tp.lua	/^function metat.__index:getcontrol()$/;"	f
+metat.__index:getfd	tp.lua	/^function metat.__index:getfd()$/;"	f
+metat.__index:getpeername	tp.lua	/^function metat.__index:getpeername()$/;"	f
+metat.__index:getsockname	tp.lua	/^function metat.__index:getsockname()$/;"	f
+metat.__index:greet	ftp.lua	/^function metat.__index:greet()$/;"	f
+metat.__index:greet	smtp.lua	/^function metat.__index:greet(domain)$/;"	f
+metat.__index:login	ftp.lua	/^function metat.__index:login(user, password)$/;"	f
+metat.__index:login	smtp.lua	/^function metat.__index:login(user, password)$/;"	f
+metat.__index:mail	smtp.lua	/^function metat.__index:mail(from)$/;"	f
+metat.__index:pasv	ftp.lua	/^function metat.__index:pasv()$/;"	f
+metat.__index:pasvconnect	ftp.lua	/^function metat.__index:pasvconnect()$/;"	f
+metat.__index:plain	smtp.lua	/^function metat.__index:plain(user, password)$/;"	f
+metat.__index:port	ftp.lua	/^function metat.__index:port(address, port)$/;"	f
+metat.__index:portconnect	ftp.lua	/^function metat.__index:portconnect()$/;"	f
+metat.__index:quit	ftp.lua	/^function metat.__index:quit()$/;"	f
+metat.__index:quit	smtp.lua	/^function metat.__index:quit()$/;"	f
+metat.__index:rcpt	smtp.lua	/^function metat.__index:rcpt(to)$/;"	f
+metat.__index:receive	ftp.lua	/^function metat.__index:receive(recvt)$/;"	f
+metat.__index:receive	tp.lua	/^function metat.__index:receive(pat)$/;"	f
+metat.__index:receive09body	http.lua	/^function metat.__index:receive09body(status, sink, step)$/;"	f
+metat.__index:receivebody	http.lua	/^function metat.__index:receivebody(headers, sink, step)$/;"	f
+metat.__index:receiveheaders	http.lua	/^function metat.__index:receiveheaders()$/;"	f
+metat.__index:receivestatusline	http.lua	/^function metat.__index:receivestatusline()$/;"	f
+metat.__index:send	ftp.lua	/^function metat.__index:send(sendt)$/;"	f
+metat.__index:send	smtp.lua	/^function metat.__index:send(mailt)$/;"	f
+metat.__index:send	tp.lua	/^function metat.__index:send(data)$/;"	f
+metat.__index:sendbody	http.lua	/^function metat.__index:sendbody(headers, source, step)$/;"	f
+metat.__index:sendheaders	http.lua	/^function metat.__index:sendheaders(tosend)$/;"	f
+metat.__index:sendrequestline	http.lua	/^function metat.__index:sendrequestline(method, uri)$/;"	f
+metat.__index:sink	tp.lua	/^function metat.__index:sink(snk, pat)$/;"	f
+metat.__index:source	tp.lua	/^function metat.__index:source(source, step)$/;"	f
+metat.__index:type	ftp.lua	/^function metat.__index:type(type)$/;"	f
+meth_accept	tcp.c	/^static int meth_accept(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_accept	tcp.c	/^static int meth_accept(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_accept	unixstream.c	/^static int meth_accept(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_accept	unixstream.c	/^static int meth_accept(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_bind	tcp.c	/^static int meth_bind(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_bind	tcp.c	/^static int meth_bind(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_bind	unixdgram.c	/^static int meth_bind(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_bind	unixdgram.c	/^static int meth_bind(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_bind	unixstream.c	/^static int meth_bind(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_bind	unixstream.c	/^static int meth_bind(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_close	serial.c	/^static int meth_close(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_close	serial.c	/^static int meth_close(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_close	tcp.c	/^static int meth_close(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_close	tcp.c	/^static int meth_close(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_close	udp.c	/^static int meth_close(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_close	udp.c	/^static int meth_close(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_close	unixdgram.c	/^static int meth_close(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_close	unixdgram.c	/^static int meth_close(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_close	unixstream.c	/^static int meth_close(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_close	unixstream.c	/^static int meth_close(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_connect	tcp.c	/^static int meth_connect(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_connect	tcp.c	/^static int meth_connect(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_connect	unixdgram.c	/^static int meth_connect(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_connect	unixdgram.c	/^static int meth_connect(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_connect	unixstream.c	/^static int meth_connect(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_connect	unixstream.c	/^static int meth_connect(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_dirty	serial.c	/^static int meth_dirty(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_dirty	serial.c	/^static int meth_dirty(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_dirty	tcp.c	/^static int meth_dirty(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_dirty	tcp.c	/^static int meth_dirty(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_dirty	udp.c	/^static int meth_dirty(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_dirty	udp.c	/^static int meth_dirty(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_dirty	unixdgram.c	/^static int meth_dirty(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_dirty	unixdgram.c	/^static int meth_dirty(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_dirty	unixstream.c	/^static int meth_dirty(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_dirty	unixstream.c	/^static int meth_dirty(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_getfamily	tcp.c	/^static int meth_getfamily(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_getfamily	tcp.c	/^static int meth_getfamily(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_getfamily	udp.c	/^static int meth_getfamily(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_getfamily	udp.c	/^static int meth_getfamily(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_getfd	serial.c	/^static int meth_getfd(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_getfd	serial.c	/^static int meth_getfd(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_getfd	tcp.c	/^static int meth_getfd(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_getfd	tcp.c	/^static int meth_getfd(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_getfd	udp.c	/^static int meth_getfd(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_getfd	udp.c	/^static int meth_getfd(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_getfd	unixdgram.c	/^static int meth_getfd(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_getfd	unixdgram.c	/^static int meth_getfd(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_getfd	unixstream.c	/^static int meth_getfd(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_getfd	unixstream.c	/^static int meth_getfd(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_getoption	tcp.c	/^static int meth_getoption(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_getoption	tcp.c	/^static int meth_getoption(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_getoption	udp.c	/^static int meth_getoption(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_getoption	udp.c	/^static int meth_getoption(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_getpeername	tcp.c	/^static int meth_getpeername(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_getpeername	tcp.c	/^static int meth_getpeername(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_getpeername	udp.c	/^static int meth_getpeername(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_getpeername	udp.c	/^static int meth_getpeername(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_getsockname	tcp.c	/^static int meth_getsockname(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_getsockname	tcp.c	/^static int meth_getsockname(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_getsockname	udp.c	/^static int meth_getsockname(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_getsockname	udp.c	/^static int meth_getsockname(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_getsockname	unixdgram.c	/^static int meth_getsockname(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_getsockname	unixdgram.c	/^static int meth_getsockname(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_getsockname	unixstream.c	/^static int meth_getsockname(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_getsockname	unixstream.c	/^static int meth_getsockname(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_getstats	serial.c	/^static int meth_getstats(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_getstats	serial.c	/^static int meth_getstats(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_getstats	tcp.c	/^static int meth_getstats(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_getstats	tcp.c	/^static int meth_getstats(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_getstats	unixstream.c	/^static int meth_getstats(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_getstats	unixstream.c	/^static int meth_getstats(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_gettimeout	tcp.c	/^static int meth_gettimeout(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_gettimeout	tcp.c	/^static int meth_gettimeout(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_gettimeout	udp.c	/^static int meth_gettimeout(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_gettimeout	udp.c	/^static int meth_gettimeout(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_gettimeout	unixdgram.c	/^static int meth_gettimeout(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_gettimeout	unixdgram.c	/^static int meth_gettimeout(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_listen	tcp.c	/^static int meth_listen(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_listen	tcp.c	/^static int meth_listen(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_listen	unixstream.c	/^static int meth_listen(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_listen	unixstream.c	/^static int meth_listen(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_receive	serial.c	/^static int meth_receive(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_receive	serial.c	/^static int meth_receive(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_receive	tcp.c	/^static int meth_receive(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_receive	tcp.c	/^static int meth_receive(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_receive	udp.c	/^static int meth_receive(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_receive	udp.c	/^static int meth_receive(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_receive	unixdgram.c	/^static int meth_receive(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_receive	unixdgram.c	/^static int meth_receive(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_receive	unixstream.c	/^static int meth_receive(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_receive	unixstream.c	/^static int meth_receive(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_receivefrom	udp.c	/^static int meth_receivefrom(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_receivefrom	udp.c	/^static int meth_receivefrom(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_receivefrom	unixdgram.c	/^static int meth_receivefrom(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_receivefrom	unixdgram.c	/^static int meth_receivefrom(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_send	serial.c	/^static int meth_send(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_send	serial.c	/^static int meth_send(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_send	tcp.c	/^static int meth_send(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_send	tcp.c	/^static int meth_send(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_send	udp.c	/^static int meth_send(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_send	udp.c	/^static int meth_send(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_send	unixdgram.c	/^static int meth_send(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_send	unixdgram.c	/^static int meth_send(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_send	unixstream.c	/^static int meth_send(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_send	unixstream.c	/^static int meth_send(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_sendto	udp.c	/^static int meth_sendto(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_sendto	udp.c	/^static int meth_sendto(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_sendto	unixdgram.c	/^static int meth_sendto(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_sendto	unixdgram.c	/^static int meth_sendto(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_setfd	serial.c	/^static int meth_setfd(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_setfd	serial.c	/^static int meth_setfd(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_setfd	tcp.c	/^static int meth_setfd(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_setfd	tcp.c	/^static int meth_setfd(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_setfd	udp.c	/^static int meth_setfd(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_setfd	udp.c	/^static int meth_setfd(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_setfd	unixdgram.c	/^static int meth_setfd(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_setfd	unixdgram.c	/^static int meth_setfd(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_setfd	unixstream.c	/^static int meth_setfd(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_setfd	unixstream.c	/^static int meth_setfd(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_setoption	tcp.c	/^static int meth_setoption(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_setoption	tcp.c	/^static int meth_setoption(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_setoption	udp.c	/^static int meth_setoption(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_setoption	udp.c	/^static int meth_setoption(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_setoption	unixdgram.c	/^static int meth_setoption(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_setoption	unixdgram.c	/^static int meth_setoption(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_setoption	unixstream.c	/^static int meth_setoption(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_setoption	unixstream.c	/^static int meth_setoption(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_setpeername	udp.c	/^static int meth_setpeername(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_setpeername	udp.c	/^static int meth_setpeername(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_setsockname	udp.c	/^static int meth_setsockname(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_setsockname	udp.c	/^static int meth_setsockname(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_setstats	serial.c	/^static int meth_setstats(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_setstats	serial.c	/^static int meth_setstats(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_setstats	tcp.c	/^static int meth_setstats(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_setstats	tcp.c	/^static int meth_setstats(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_setstats	unixstream.c	/^static int meth_setstats(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_setstats	unixstream.c	/^static int meth_setstats(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_settimeout	serial.c	/^static int meth_settimeout(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_settimeout	serial.c	/^static int meth_settimeout(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_settimeout	tcp.c	/^static int meth_settimeout(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_settimeout	tcp.c	/^static int meth_settimeout(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_settimeout	udp.c	/^static int meth_settimeout(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_settimeout	udp.c	/^static int meth_settimeout(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_settimeout	unixdgram.c	/^static int meth_settimeout(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_settimeout	unixdgram.c	/^static int meth_settimeout(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_settimeout	unixstream.c	/^static int meth_settimeout(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+meth_settimeout	unixstream.c	/^static int meth_settimeout(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_shutdown	tcp.c	/^static int meth_shutdown(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_shutdown	tcp.c	/^static int meth_shutdown(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+meth_shutdown	unixstream.c	/^static int meth_shutdown(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+meth_shutdown	unixstream.c	/^static int meth_shutdown(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+mime_global_b64	mime.c	/^static int mime_global_b64(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+mime_global_b64	mime.c	/^static int mime_global_b64(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+mime_global_dot	mime.c	/^static int mime_global_dot(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+mime_global_dot	mime.c	/^static int mime_global_dot(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+mime_global_eol	mime.c	/^static int mime_global_eol(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+mime_global_eol	mime.c	/^static int mime_global_eol(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+mime_global_qp	mime.c	/^static int mime_global_qp(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+mime_global_qp	mime.c	/^static int mime_global_qp(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+mime_global_qpwrp	mime.c	/^static int mime_global_qpwrp(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+mime_global_qpwrp	mime.c	/^static int mime_global_qpwrp(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+mime_global_unb64	mime.c	/^static int mime_global_unb64(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+mime_global_unb64	mime.c	/^static int mime_global_unb64(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+mime_global_unqp	mime.c	/^static int mime_global_unqp(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+mime_global_unqp	mime.c	/^static int mime_global_unqp(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+mime_global_wrp	mime.c	/^static int mime_global_wrp(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+mime_global_wrp	mime.c	/^static int mime_global_wrp(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+mod	luasocket.c	/^static const luaL_Reg mod[] = {$/;"	v	file:
+mod	unix.c	/^static const luaL_Reg mod[] = {$/;"	v	file:
+name	options.h	/^  const char *name;$/;"	m	struct:t_opt	access:public
+newboundary	smtp.lua	/^local function newboundary()$/;"	f
+null	ltn12.lua	/^local function null()$/;"	f
+opt_get	options.c	/^int opt_get(lua_State *L, p_socket ps, int level, int name, void *val, int* len)$/;"	f	file:	signature:(lua_State *L, p_socket ps, int level, int name, void *val, int* len)
+opt_get	options.c	/^static int opt_get(lua_State *L, p_socket ps, int level, int name,$/;"	p	file:	signature:(lua_State *L, p_socket ps, int level, int name, void *val, int* len)
+opt_get_broadcast	options.c	/^int opt_get_broadcast(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_get_broadcast	options.h	/^int opt_get_broadcast(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_get_dontroute	options.c	/^int opt_get_dontroute(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_get_dontroute	options.h	/^int opt_get_dontroute(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_get_error	options.c	/^int opt_get_error(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_get_error	options.h	/^int opt_get_error(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_get_ip6_multicast_hops	options.c	/^int opt_get_ip6_multicast_hops(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_get_ip6_multicast_hops	options.h	/^int opt_get_ip6_multicast_hops(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_get_ip6_multicast_loop	options.c	/^int opt_get_ip6_multicast_loop(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_get_ip6_multicast_loop	options.h	/^int opt_get_ip6_multicast_loop(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_get_ip6_unicast_hops	options.c	/^int opt_get_ip6_unicast_hops(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_get_ip6_unicast_hops	options.h	/^int opt_get_ip6_unicast_hops(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_get_ip6_v6only	options.c	/^int opt_get_ip6_v6only(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_get_ip6_v6only	options.h	/^int opt_get_ip6_v6only(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_get_ip_multicast_if	options.c	/^int opt_get_ip_multicast_if(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_get_ip_multicast_if	options.h	/^int opt_get_ip_multicast_if(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_get_ip_multicast_loop	options.c	/^int opt_get_ip_multicast_loop(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_get_ip_multicast_loop	options.h	/^int opt_get_ip_multicast_loop(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_get_keepalive	options.c	/^int opt_get_keepalive(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_get_keepalive	options.h	/^int opt_get_keepalive(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_get_linger	options.c	/^int opt_get_linger(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_get_linger	options.h	/^int opt_get_linger(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_get_reuseaddr	options.c	/^int opt_get_reuseaddr(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_get_reuseaddr	options.h	/^int opt_get_reuseaddr(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_get_reuseport	options.c	/^int opt_get_reuseport(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_get_reuseport	options.h	/^int opt_get_reuseport(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_get_tcp_nodelay	options.c	/^int opt_get_tcp_nodelay(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_get_tcp_nodelay	options.h	/^int opt_get_tcp_nodelay(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_getboolean	options.c	/^static int opt_getboolean(lua_State *L, p_socket ps, int level, int name)$/;"	f	file:	signature:(lua_State *L, p_socket ps, int level, int name)
+opt_getboolean	options.c	/^static int opt_getboolean(lua_State *L, p_socket ps, int level, int name);$/;"	p	file:	signature:(lua_State *L, p_socket ps, int level, int name)
+opt_getint	options.c	/^static int opt_getint(lua_State *L, p_socket ps, int level, int name)$/;"	f	file:	signature:(lua_State *L, p_socket ps, int level, int name)
+opt_getint	options.c	/^static int opt_getint(lua_State *L, p_socket ps, int level, int name);$/;"	p	file:	signature:(lua_State *L, p_socket ps, int level, int name)
+opt_ip6_setmembership	options.c	/^static int opt_ip6_setmembership(lua_State *L, p_socket ps, int level, int name)$/;"	f	file:	signature:(lua_State *L, p_socket ps, int level, int name)
+opt_ip6_setmembership	options.c	/^static int opt_ip6_setmembership(lua_State *L, p_socket ps, int level, int name);$/;"	p	file:	signature:(lua_State *L, p_socket ps, int level, int name)
+opt_meth_getoption	options.c	/^int opt_meth_getoption(lua_State *L, p_opt opt, p_socket ps)$/;"	f	signature:(lua_State *L, p_opt opt, p_socket ps)
+opt_meth_getoption	options.h	/^int opt_meth_getoption(lua_State *L, p_opt opt, p_socket ps);$/;"	p	signature:(lua_State *L, p_opt opt, p_socket ps)
+opt_meth_setoption	options.c	/^int opt_meth_setoption(lua_State *L, p_opt opt, p_socket ps)$/;"	f	signature:(lua_State *L, p_opt opt, p_socket ps)
+opt_meth_setoption	options.h	/^int opt_meth_setoption(lua_State *L, p_opt opt, p_socket ps);$/;"	p	signature:(lua_State *L, p_opt opt, p_socket ps)
+opt_set	options.c	/^int opt_set(lua_State *L, p_socket ps, int level, int name, void *val, int len)$/;"	f	file:	signature:(lua_State *L, p_socket ps, int level, int name, void *val, int len)
+opt_set	options.c	/^static int opt_set(lua_State *L, p_socket ps, int level, int name,$/;"	p	file:	signature:(lua_State *L, p_socket ps, int level, int name, void *val, int len)
+opt_set_broadcast	options.c	/^int opt_set_broadcast(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_set_broadcast	options.h	/^int opt_set_broadcast(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_set_dontroute	options.c	/^int opt_set_dontroute(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_set_dontroute	options.h	/^int opt_set_dontroute(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_set_ip6_add_membership	options.c	/^int opt_set_ip6_add_membership(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_set_ip6_add_membership	options.h	/^int opt_set_ip6_add_membership(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_set_ip6_drop_membersip	options.c	/^int opt_set_ip6_drop_membersip(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_set_ip6_drop_membersip	options.h	/^int opt_set_ip6_drop_membersip(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_set_ip6_multicast_hops	options.c	/^int opt_set_ip6_multicast_hops(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_set_ip6_multicast_hops	options.h	/^int opt_set_ip6_multicast_hops(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_set_ip6_multicast_loop	options.c	/^int opt_set_ip6_multicast_loop(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_set_ip6_multicast_loop	options.h	/^int opt_set_ip6_multicast_loop(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_set_ip6_unicast_hops	options.c	/^int opt_set_ip6_unicast_hops(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_set_ip6_unicast_hops	options.h	/^int opt_set_ip6_unicast_hops(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_set_ip6_v6only	options.c	/^int opt_set_ip6_v6only(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_set_ip6_v6only	options.h	/^int opt_set_ip6_v6only(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_set_ip_add_membership	options.c	/^int opt_set_ip_add_membership(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_set_ip_add_membership	options.h	/^int opt_set_ip_add_membership(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_set_ip_drop_membersip	options.c	/^int opt_set_ip_drop_membersip(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_set_ip_drop_membersip	options.h	/^int opt_set_ip_drop_membersip(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_set_ip_multicast_if	options.c	/^int opt_set_ip_multicast_if(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_set_ip_multicast_if	options.h	/^int opt_set_ip_multicast_if(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_set_ip_multicast_loop	options.c	/^int opt_set_ip_multicast_loop(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_set_ip_multicast_loop	options.h	/^int opt_set_ip_multicast_loop(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_set_ip_multicast_ttl	options.c	/^int opt_set_ip_multicast_ttl(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_set_ip_multicast_ttl	options.h	/^int opt_set_ip_multicast_ttl(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_set_keepalive	options.c	/^int opt_set_keepalive(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_set_keepalive	options.h	/^int opt_set_keepalive(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_set_linger	options.c	/^int opt_set_linger(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_set_linger	options.h	/^int opt_set_linger(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_set_reuseaddr	options.c	/^int opt_set_reuseaddr(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_set_reuseaddr	options.h	/^int opt_set_reuseaddr(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_set_reuseport	options.c	/^int opt_set_reuseport(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_set_reuseport	options.h	/^int opt_set_reuseport(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_set_tcp_nodelay	options.c	/^int opt_set_tcp_nodelay(lua_State *L, p_socket ps)$/;"	f	signature:(lua_State *L, p_socket ps)
+opt_set_tcp_nodelay	options.h	/^int opt_set_tcp_nodelay(lua_State *L, p_socket ps);$/;"	p	signature:(lua_State *L, p_socket ps)
+opt_setboolean	options.c	/^static int opt_setboolean(lua_State *L, p_socket ps, int level, int name)$/;"	f	file:	signature:(lua_State *L, p_socket ps, int level, int name)
+opt_setboolean	options.c	/^static int opt_setboolean(lua_State *L, p_socket ps, int level, int name);$/;"	p	file:	signature:(lua_State *L, p_socket ps, int level, int name)
+opt_setint	options.c	/^static int opt_setint(lua_State *L, p_socket ps, int level, int name)$/;"	f	file:	signature:(lua_State *L, p_socket ps, int level, int name)
+opt_setint	options.c	/^static int opt_setint(lua_State *L, p_socket ps, int level, int name);$/;"	p	file:	signature:(lua_State *L, p_socket ps, int level, int name)
+opt_setmembership	options.c	/^static int opt_setmembership(lua_State *L, p_socket ps, int level, int name)$/;"	f	file:	signature:(lua_State *L, p_socket ps, int level, int name)
+opt_setmembership	options.c	/^static int opt_setmembership(lua_State *L, p_socket ps, int level, int name);$/;"	p	file:	signature:(lua_State *L, p_socket ps, int level, int name)
+optget	tcp.c	/^static t_opt optget[] = {$/;"	v	file:
+optget	udp.c	/^static t_opt optget[] = {$/;"	v	file:
+optset	tcp.c	/^static t_opt optset[] = {$/;"	v	file:
+optset	udp.c	/^static t_opt optset[] = {$/;"	v	file:
+optset	unixdgram.c	/^static t_opt optset[] = {$/;"	v	file:
+optset	unixstream.c	/^static t_opt optset[] = {$/;"	v	file:
+override	ftp.lua	/^local function override(t)$/;"	f
+p_buffer	buffer.h	/^typedef t_buffer *p_buffer;$/;"	t
+p_error	io.h	/^typedef const char *(*p_error) ($/;"	t
+p_io	io.h	/^typedef t_io *p_io;$/;"	t
+p_opt	options.h	/^typedef t_opt *p_opt;$/;"	t
+p_recv	io.h	/^typedef int (*p_recv) ($/;"	t
+p_send	io.h	/^typedef int (*p_send) ($/;"	t
+p_socket	usocket.h	/^typedef t_socket *p_socket;$/;"	t
+p_socket	wsocket.h	/^typedef t_socket *p_socket;$/;"	t
+p_tcp	tcp.h	/^typedef t_tcp *p_tcp;$/;"	t
+p_timeout	timeout.h	/^typedef t_timeout *p_timeout;$/;"	t
+p_udp	udp.h	/^typedef t_udp *p_udp;$/;"	t
+p_unix	unix.h	/^typedef t_unix *p_unix;$/;"	t
+path 	url.lua	/^        path = string.gsub(reduced, "([^\/]*\/%.%.\/)", function (s)$/;"	f
+path 	url.lua	/^    path = string.gsub(path, "([^\/]*%.\/)", function (s)$/;"	f
+path 	url.lua	/^    path = string.gsub(reduced, "([^\/]*\/%.%.)$", function (s)$/;"	f
+prefix	makefile	/^prefix?=$(LUAPREFIX_$(PLAT))$/;"	m
+protect_segment	url.lua	/^local function protect_segment(s)$/;"	f
+protected_	except.c	/^static int protected_(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+protected_	except.c	/^static int protected_(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+protected_cont	except.c	/^static int protected_cont(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+protected_cont	except.c	105;"	d	file:
+protected_finish	except.c	/^static int protected_finish(lua_State *L, int status, lua_KContext ctx) {$/;"	f	file:	signature:(lua_State *L, int status, lua_KContext ctx)
+pump.all	ltn12.lua	/^function pump.all(src, snk, step)$/;"	f
+pump.step	ltn12.lua	/^function pump.step(src, snk)$/;"	f
+qpbase	mime.c	/^static UC qpbase[] = "0123456789ABCDEF";$/;"	v	file:
+qpclass	mime.c	/^static UC qpclass[256];$/;"	v	file:
+qpdecode	mime.c	/^static size_t qpdecode(UC c, UC *input, size_t size, luaL_Buffer *buffer) {$/;"	f	file:	signature:(UC c, UC *input, size_t size, luaL_Buffer *buffer)
+qpdecode	mime.c	/^static size_t qpdecode(UC c, UC *input, size_t size, luaL_Buffer *buffer);$/;"	p	file:	signature:(UC c, UC *input, size_t size, luaL_Buffer *buffer)
+qpencode	mime.c	/^static size_t qpencode(UC c, UC *input, size_t size,$/;"	f	file:	signature:(UC c, UC *input, size_t size, const char *marker, luaL_Buffer *buffer)
+qpencode	mime.c	/^static size_t qpencode(UC c, UC *input, size_t size,$/;"	p	file:	signature:(UC c, UC *input, size_t size, const char *marker, luaL_Buffer *buffer)
+qppad	mime.c	/^static size_t qppad(UC *input, size_t size, luaL_Buffer *buffer)$/;"	f	file:	signature:(UC *input, size_t size, luaL_Buffer *buffer)
+qppad	mime.c	/^static size_t qppad(UC *input, size_t size, luaL_Buffer *buffer);$/;"	p	file:	signature:(UC *input, size_t size, luaL_Buffer *buffer)
+qpquote	mime.c	/^static void qpquote(UC c, luaL_Buffer *buffer)$/;"	f	file:	signature:(UC c, luaL_Buffer *buffer)
+qpquote	mime.c	/^static void qpquote(UC c, luaL_Buffer *buffer);$/;"	p	file:	signature:(UC c, luaL_Buffer *buffer)
+qpsetup	mime.c	/^static void qpsetup(UC *cl, UC *unbase)$/;"	f	file:	signature:(UC *cl, UC *unbase)
+qpsetup	mime.c	/^static void qpsetup(UC *class, UC *unbase);$/;"	p	file:	signature:(UC *class, UC *unbase)
+qpunbase	mime.c	/^static UC qpunbase[256];$/;"	v	file:
+received	buffer.h	/^    size_t sent, received;  \/* bytes sent, and bytes received *\/$/;"	m	struct:t_buffer_	access:public
+receiveheaders	http.lua	/^local function receiveheaders(sock, headers)$/;"	f
+recv	io.h	/^    p_recv recv;        \/* receive function pointer *\/$/;"	m	struct:t_io_	access:public
+recvall	buffer.c	/^static int recvall(p_buffer buf, luaL_Buffer *b) {$/;"	f	file:	signature:(p_buffer buf, luaL_Buffer *b)
+recvall	buffer.c	/^static int recvall(p_buffer buf, luaL_Buffer *b);$/;"	p	file:	signature:(p_buffer buf, luaL_Buffer *b)
+recvline	buffer.c	/^static int recvline(p_buffer buf, luaL_Buffer *b) {$/;"	f	file:	signature:(p_buffer buf, luaL_Buffer *b)
+recvline	buffer.c	/^static int recvline(p_buffer buf, luaL_Buffer *b);$/;"	p	file:	signature:(p_buffer buf, luaL_Buffer *b)
+recvraw	buffer.c	/^static int recvraw(p_buffer buf, size_t wanted, luaL_Buffer *b) {$/;"	f	file:	signature:(p_buffer buf, size_t wanted, luaL_Buffer *b)
+recvraw	buffer.c	/^static int recvraw(p_buffer buf, size_t wanted, luaL_Buffer *b);$/;"	p	file:	signature:(p_buffer buf, size_t wanted, luaL_Buffer *b)
+return_fd	select.c	/^static void return_fd(lua_State *L, fd_set *set, t_socket max_fd,$/;"	f	file:	signature:(lua_State *L, fd_set *set, t_socket max_fd, int itab, int tab, int start)
+return_fd	select.c	/^static void return_fd(lua_State *L, fd_set *set, t_socket max_fd,$/;"	p	file:	signature:(lua_State *L, fd_set *set, t_socket max_fd, int itab, int tab, int start)
+s.try 	smtp.lua	/^    s.try = socket.newtry(function()$/;"	f
+select_open	select.c	/^int select_open(lua_State *L) {$/;"	f	signature:(lua_State *L)
+select_open	select.h	/^int select_open(lua_State *L);$/;"	p	signature:(lua_State *L)
+send	io.h	/^    p_send send;        \/* send function pointer *\/$/;"	m	struct:t_io_	access:public
+send_headers	smtp.lua	/^local function send_headers(tosend)$/;"	f
+send_message	smtp.lua	/^function send_message(mesgt)$/;"	f
+send_multipart	smtp.lua	/^local function send_multipart(mesgt)$/;"	f
+send_source	smtp.lua	/^local function send_source(mesgt)$/;"	f
+send_string	smtp.lua	/^local function send_string(mesgt)$/;"	f
+sendraw	buffer.c	/^static int sendraw(p_buffer buf, const char *data, size_t count, size_t *sent) {$/;"	f	file:	signature:(p_buffer buf, const char *data, size_t count, size_t *sent)
+sendraw	buffer.c	/^static int sendraw(p_buffer buf, const char *data, size_t count, size_t *sent);$/;"	p	file:	signature:(p_buffer buf, const char *data, size_t count, size_t *sent)
+sent	buffer.h	/^    size_t sent, received;  \/* bytes sent, and bytes received *\/$/;"	m	struct:t_buffer_	access:public
+serial_methods	serial.c	/^static luaL_Reg serial_methods[] = {$/;"	v	file:
+sget	ftp.lua	/^local function sget(u)$/;"	f
+shouldreceivebody	http.lua	/^local function shouldreceivebody(reqt, code)$/;"	f
+shouldredirect	http.lua	/^local function shouldredirect(reqt, code, headers)$/;"	f
+sink.chain	ltn12.lua	/^function sink.chain(f, snk, ...)$/;"	f
+sink.error	ltn12.lua	/^function sink.error(err)$/;"	f
+sink.file	ltn12.lua	/^function sink.file(handle, io_err)$/;"	f
+sink.null	ltn12.lua	/^function sink.null()$/;"	f
+sink.simplify	ltn12.lua	/^function sink.simplify(snk)$/;"	f
+sink.table	ltn12.lua	/^function sink.table(t)$/;"	f
+sinkt["close-when-done"] 	socket.lua	/^sinkt["close-when-done"] = function(sock)$/;"	f
+sinkt["keep-open"] 	socket.lua	/^sinkt["keep-open"] = function(sock)$/;"	f
+sock	tcp.h	/^    t_socket sock;$/;"	m	struct:t_tcp_	access:public
+sock	udp.h	/^    t_socket sock;$/;"	m	struct:t_udp_	access:public
+sock	unix.h	/^    t_socket sock;$/;"	m	struct:t_unix_	access:public
+socket.sinkt["http-chunked"] 	http.lua	/^socket.sinkt["http-chunked"] = function(sock)$/;"	f
+socket.sourcet["http-chunked"] 	http.lua	/^socket.sourcet["http-chunked"] = function(sock, headers)$/;"	f
+socket_accept	socket.h	/^int socket_accept(p_socket ps, p_socket pa, SA *addr, $/;"	p	signature:(p_socket ps, p_socket pa, SA *addr, socklen_t *addr_len, p_timeout tm)
+socket_accept	usocket.c	/^int socket_accept(p_socket ps, p_socket pa, SA *addr, socklen_t *len, p_timeout tm) {$/;"	f	signature:(p_socket ps, p_socket pa, SA *addr, socklen_t *len, p_timeout tm)
+socket_accept	wsocket.c	/^int socket_accept(p_socket ps, p_socket pa, SA *addr, socklen_t *len,$/;"	f	signature:(p_socket ps, p_socket pa, SA *addr, socklen_t *len, p_timeout tm)
+socket_bind	socket.h	/^int socket_bind(p_socket ps, SA *addr, socklen_t addr_len); $/;"	p	signature:(p_socket ps, SA *addr, socklen_t addr_len)
+socket_bind	usocket.c	/^int socket_bind(p_socket ps, SA *addr, socklen_t len) {$/;"	f	signature:(p_socket ps, SA *addr, socklen_t len)
+socket_bind	wsocket.c	/^int socket_bind(p_socket ps, SA *addr, socklen_t len) {$/;"	f	signature:(p_socket ps, SA *addr, socklen_t len)
+socket_close	socket.h	/^int socket_close(void);$/;"	p	signature:(void)
+socket_close	usocket.c	/^int socket_close(void) {$/;"	f	signature:(void)
+socket_close	wsocket.c	/^int socket_close(void) {$/;"	f	signature:(void)
+socket_connect	socket.h	/^int socket_connect(p_socket ps, SA *addr, socklen_t addr_len, p_timeout tm); $/;"	p	signature:(p_socket ps, SA *addr, socklen_t addr_len, p_timeout tm)
+socket_connect	usocket.c	/^int socket_connect(p_socket ps, SA *addr, socklen_t len, p_timeout tm) {$/;"	f	signature:(p_socket ps, SA *addr, socklen_t len, p_timeout tm)
+socket_connect	wsocket.c	/^int socket_connect(p_socket ps, SA *addr, socklen_t len, p_timeout tm) {$/;"	f	signature:(p_socket ps, SA *addr, socklen_t len, p_timeout tm)
+socket_create	socket.h	/^int socket_create(p_socket ps, int domain, int type, int protocol);$/;"	p	signature:(p_socket ps, int domain, int type, int protocol)
+socket_create	usocket.c	/^int socket_create(p_socket ps, int domain, int type, int protocol) {$/;"	f	signature:(p_socket ps, int domain, int type, int protocol)
+socket_create	wsocket.c	/^int socket_create(p_socket ps, int domain, int type, int protocol) {$/;"	f	signature:(p_socket ps, int domain, int type, int protocol)
+socket_destroy	socket.h	/^void socket_destroy(p_socket ps);$/;"	p	signature:(p_socket ps)
+socket_destroy	usocket.c	/^void socket_destroy(p_socket ps) {$/;"	f	signature:(p_socket ps)
+socket_destroy	wsocket.c	/^void socket_destroy(p_socket ps) {$/;"	f	signature:(p_socket ps)
+socket_gaistrerror	socket.h	/^const char *socket_gaistrerror(int err);$/;"	p	signature:(int err)
+socket_gaistrerror	usocket.c	/^const char *socket_gaistrerror(int err) {$/;"	f	signature:(int err)
+socket_gaistrerror	wsocket.c	/^const char *socket_gaistrerror(int err) {$/;"	f	signature:(int err)
+socket_gethostbyaddr	socket.h	/^int socket_gethostbyaddr(const char *addr, socklen_t len, struct hostent **hp);$/;"	p	signature:(const char *addr, socklen_t len, struct hostent **hp)
+socket_gethostbyaddr	usocket.c	/^int socket_gethostbyaddr(const char *addr, socklen_t len, struct hostent **hp) {$/;"	f	signature:(const char *addr, socklen_t len, struct hostent **hp)
+socket_gethostbyaddr	wsocket.c	/^int socket_gethostbyaddr(const char *addr, socklen_t len, struct hostent **hp) {$/;"	f	signature:(const char *addr, socklen_t len, struct hostent **hp)
+socket_gethostbyname	socket.h	/^int socket_gethostbyname(const char *addr, struct hostent **hp);$/;"	p	signature:(const char *addr, struct hostent **hp)
+socket_gethostbyname	usocket.c	/^int socket_gethostbyname(const char *addr, struct hostent **hp) {$/;"	f	signature:(const char *addr, struct hostent **hp)
+socket_gethostbyname	wsocket.c	/^int socket_gethostbyname(const char *addr, struct hostent **hp) {$/;"	f	signature:(const char *addr, struct hostent **hp)
+socket_hoststrerror	socket.h	/^const char *socket_hoststrerror(int err);$/;"	p	signature:(int err)
+socket_hoststrerror	usocket.c	/^const char *socket_hoststrerror(int err) {$/;"	f	signature:(int err)
+socket_hoststrerror	wsocket.c	/^const char *socket_hoststrerror(int err) {$/;"	f	signature:(int err)
+socket_ioerror	socket.h	/^const char *socket_ioerror(p_socket ps, int err);$/;"	p	signature:(p_socket ps, int err)
+socket_ioerror	usocket.c	/^const char *socket_ioerror(p_socket ps, int err) {$/;"	f	signature:(p_socket ps, int err)
+socket_ioerror	wsocket.c	/^const char *socket_ioerror(p_socket ps, int err) {$/;"	f	signature:(p_socket ps, int err)
+socket_listen	socket.h	/^int socket_listen(p_socket ps, int backlog);$/;"	p	signature:(p_socket ps, int backlog)
+socket_listen	usocket.c	/^int socket_listen(p_socket ps, int backlog) {$/;"	f	signature:(p_socket ps, int backlog)
+socket_listen	wsocket.c	/^int socket_listen(p_socket ps, int backlog) {$/;"	f	signature:(p_socket ps, int backlog)
+socket_open	socket.h	/^int socket_open(void);$/;"	p	signature:(void)
+socket_open	usocket.c	/^int socket_open(void) {$/;"	f	signature:(void)
+socket_open	wsocket.c	/^int socket_open(void) {$/;"	f	signature:(void)
+socket_read	socket.h	/^int socket_read(p_socket ps, char *data, size_t count, size_t *got, p_timeout tm);$/;"	p	signature:(p_socket ps, char *data, size_t count, size_t *got, p_timeout tm)
+socket_read	usocket.c	/^int socket_read(p_socket ps, char *data, size_t count, size_t *got, p_timeout tm) {$/;"	f	signature:(p_socket ps, char *data, size_t count, size_t *got, p_timeout tm)
+socket_recv	socket.h	/^int socket_recv(p_socket ps, char *data, size_t count, size_t *got, p_timeout tm);$/;"	p	signature:(p_socket ps, char *data, size_t count, size_t *got, p_timeout tm)
+socket_recv	usocket.c	/^int socket_recv(p_socket ps, char *data, size_t count, size_t *got, p_timeout tm) {$/;"	f	signature:(p_socket ps, char *data, size_t count, size_t *got, p_timeout tm)
+socket_recv	wsocket.c	/^int socket_recv(p_socket ps, char *data, size_t count, size_t *got,$/;"	f	signature:(p_socket ps, char *data, size_t count, size_t *got, p_timeout tm)
+socket_recvfrom	socket.h	/^int socket_recvfrom(p_socket ps, char *data, size_t count, $/;"	p	signature:(p_socket ps, char *data, size_t count, size_t *got, SA *addr, socklen_t *addr_len, p_timeout tm)
+socket_recvfrom	usocket.c	/^int socket_recvfrom(p_socket ps, char *data, size_t count, size_t *got,$/;"	f	signature:(p_socket ps, char *data, size_t count, size_t *got, SA *addr, socklen_t *len, p_timeout tm)
+socket_recvfrom	wsocket.c	/^int socket_recvfrom(p_socket ps, char *data, size_t count, size_t *got,$/;"	f	signature:(p_socket ps, char *data, size_t count, size_t *got, SA *addr, socklen_t *len, p_timeout tm)
+socket_select	socket.h	/^int socket_select(t_socket n, fd_set *rfds, fd_set *wfds, fd_set *efds, $/;"	p	signature:(t_socket n, fd_set *rfds, fd_set *wfds, fd_set *efds, p_timeout tm)
+socket_select	usocket.c	/^int socket_select(t_socket n, fd_set *rfds, fd_set *wfds, fd_set *efds,$/;"	f	signature:(t_socket n, fd_set *rfds, fd_set *wfds, fd_set *efds, p_timeout tm)
+socket_select	wsocket.c	/^int socket_select(t_socket n, fd_set *rfds, fd_set *wfds, fd_set *efds,$/;"	f	signature:(t_socket n, fd_set *rfds, fd_set *wfds, fd_set *efds, p_timeout tm)
+socket_send	socket.h	/^int socket_send(p_socket ps, const char *data, size_t count, $/;"	p	signature:(p_socket ps, const char *data, size_t count, size_t *sent, p_timeout tm)
+socket_send	usocket.c	/^int socket_send(p_socket ps, const char *data, size_t count,$/;"	f	signature:(p_socket ps, const char *data, size_t count, size_t *sent, p_timeout tm)
+socket_send	wsocket.c	/^int socket_send(p_socket ps, const char *data, size_t count,$/;"	f	signature:(p_socket ps, const char *data, size_t count, size_t *sent, p_timeout tm)
+socket_sendto	socket.h	/^int socket_sendto(p_socket ps, const char *data, size_t count, $/;"	p	signature:(p_socket ps, const char *data, size_t count, size_t *sent, SA *addr, socklen_t addr_len, p_timeout tm)
+socket_sendto	usocket.c	/^int socket_sendto(p_socket ps, const char *data, size_t count, size_t *sent,$/;"	f	signature:(p_socket ps, const char *data, size_t count, size_t *sent, SA *addr, socklen_t len, p_timeout tm)
+socket_sendto	wsocket.c	/^int socket_sendto(p_socket ps, const char *data, size_t count, size_t *sent,$/;"	f	signature:(p_socket ps, const char *data, size_t count, size_t *sent, SA *addr, socklen_t len, p_timeout tm)
+socket_setblocking	socket.h	/^void socket_setblocking(p_socket ps);$/;"	p	signature:(p_socket ps)
+socket_setblocking	usocket.c	/^void socket_setblocking(p_socket ps) {$/;"	f	signature:(p_socket ps)
+socket_setblocking	wsocket.c	/^void socket_setblocking(p_socket ps) {$/;"	f	signature:(p_socket ps)
+socket_setnonblocking	socket.h	/^void socket_setnonblocking(p_socket ps);$/;"	p	signature:(p_socket ps)
+socket_setnonblocking	usocket.c	/^void socket_setnonblocking(p_socket ps) {$/;"	f	signature:(p_socket ps)
+socket_setnonblocking	wsocket.c	/^void socket_setnonblocking(p_socket ps) {$/;"	f	signature:(p_socket ps)
+socket_shutdown	socket.h	/^void socket_shutdown(p_socket ps, int how); $/;"	p	signature:(p_socket ps, int how)
+socket_shutdown	usocket.c	/^void socket_shutdown(p_socket ps, int how) {$/;"	f	signature:(p_socket ps, int how)
+socket_shutdown	wsocket.c	/^void socket_shutdown(p_socket ps, int how) {$/;"	f	signature:(p_socket ps, int how)
+socket_strerror	socket.h	/^const char *socket_strerror(int err);$/;"	p	signature:(int err)
+socket_strerror	usocket.c	/^const char *socket_strerror(int err) {$/;"	f	signature:(int err)
+socket_strerror	wsocket.c	/^const char *socket_strerror(int err) {$/;"	f	signature:(int err)
+socket_waitfd	socket.h	/^int socket_waitfd(p_socket ps, int sw, p_timeout tm);$/;"	p	signature:(p_socket ps, int sw, p_timeout tm)
+socket_waitfd	usocket.c	/^int socket_waitfd(p_socket ps, int sw, p_timeout tm) {$/;"	f	signature:(p_socket ps, int sw, p_timeout tm)
+socket_waitfd	wsocket.c	/^int socket_waitfd(p_socket ps, int sw, p_timeout tm) {$/;"	f	signature:(p_socket ps, int sw, p_timeout tm)
+socket_write	socket.h	/^int socket_write(p_socket ps, const char *data, size_t count, $/;"	p	signature:(p_socket ps, const char *data, size_t count, size_t *sent, p_timeout tm)
+socket_write	usocket.c	/^int socket_write(p_socket ps, const char *data, size_t count,$/;"	f	signature:(p_socket ps, const char *data, size_t count, size_t *sent, p_timeout tm)
+socklen_t	wsocket.h	/^typedef int socklen_t;$/;"	t
+source.cat	ltn12.lua	/^function source.cat(...)$/;"	f
+source.chain	ltn12.lua	/^function source.chain(src, f, ...)$/;"	f
+source.empty	ltn12.lua	/^function source.empty()$/;"	f
+source.error	ltn12.lua	/^function source.error(err)$/;"	f
+source.file	ltn12.lua	/^function source.file(handle, io_err)$/;"	f
+source.rewind	ltn12.lua	/^function source.rewind(src)$/;"	f
+source.simplify	ltn12.lua	/^function source.simplify(src)$/;"	f
+source.string	ltn12.lua	/^function source.string(s)$/;"	f
+sourcet["by-length"] 	socket.lua	/^sourcet["by-length"] = function(sock, length)$/;"	f
+sourcet["until-closed"] 	socket.lua	/^sourcet["until-closed"] = function(sock)$/;"	f
+sput	ftp.lua	/^local function sput(u, body)$/;"	f
+srequest	http.lua	/^local function srequest(u, b)$/;"	f
+start	timeout.h	/^    double start;          \/* time of start of operation *\/$/;"	m	struct:t_timeout_	access:public
+string.gsub(message_s, "^(.-\n)\n", function (h) message.headers 	mbox.lua	/^    string.gsub(message_s, "^(.-\\n)\\n", function (h) message.headers = h end)$/;"	f
+string.gsub(message_s, "^.-\n\n(.*)", function (b) message.body 	mbox.lua	/^    string.gsub(message_s, "^.-\\n\\n(.*)", function (b) message.body = b end)$/;"	f
+string.gsub(message_s, "^\n(.*)", function (b) message.body 	mbox.lua	/^        string.gsub(message_s, "^\\n(.*)", function (b) message.body = b end)$/;"	f
+t_buffer	buffer.h	/^} t_buffer;$/;"	t	typeref:struct:t_buffer_
+t_buffer_	buffer.h	/^typedef struct t_buffer_ {$/;"	s
+t_buffer_::birthday	buffer.h	/^    double birthday;        \/* throttle support info: creation time, *\/$/;"	m	struct:t_buffer_	access:public
+t_buffer_::data	buffer.h	/^    char data[BUF_SIZE];    \/* storage space for buffer data *\/$/;"	m	struct:t_buffer_	access:public
+t_buffer_::first	buffer.h	/^    size_t first, last;     \/* index of first and last bytes of stored data *\/$/;"	m	struct:t_buffer_	access:public
+t_buffer_::io	buffer.h	/^    p_io io;                \/* IO driver used for this buffer *\/$/;"	m	struct:t_buffer_	access:public
+t_buffer_::last	buffer.h	/^    size_t first, last;     \/* index of first and last bytes of stored data *\/$/;"	m	struct:t_buffer_	access:public
+t_buffer_::received	buffer.h	/^    size_t sent, received;  \/* bytes sent, and bytes received *\/$/;"	m	struct:t_buffer_	access:public
+t_buffer_::sent	buffer.h	/^    size_t sent, received;  \/* bytes sent, and bytes received *\/$/;"	m	struct:t_buffer_	access:public
+t_buffer_::tm	buffer.h	/^    p_timeout tm;           \/* timeout management for this buffer *\/$/;"	m	struct:t_buffer_	access:public
+t_io	io.h	/^} t_io;$/;"	t	typeref:struct:t_io_
+t_io_	io.h	/^typedef struct t_io_ {$/;"	s
+t_io_::ctx	io.h	/^    void *ctx;          \/* context needed by send\/recv *\/$/;"	m	struct:t_io_	access:public
+t_io_::error	io.h	/^    p_error error;      \/* strerror function *\/$/;"	m	struct:t_io_	access:public
+t_io_::recv	io.h	/^    p_recv recv;        \/* receive function pointer *\/$/;"	m	struct:t_io_	access:public
+t_io_::send	io.h	/^    p_send send;        \/* send function pointer *\/$/;"	m	struct:t_io_	access:public
+t_opt	options.h	/^typedef struct t_opt {$/;"	s
+t_opt	options.h	/^} t_opt;$/;"	t	typeref:struct:t_opt
+t_opt::func	options.h	/^  int (*func)(lua_State *L, p_socket ps);$/;"	m	struct:t_opt	access:public
+t_opt::name	options.h	/^  const char *name;$/;"	m	struct:t_opt	access:public
+t_sockaddr_storage	usocket.h	/^typedef struct sockaddr_storage t_sockaddr_storage;$/;"	t	typeref:struct:sockaddr_storage
+t_sockaddr_storage	wsocket.h	/^typedef SOCKADDR_STORAGE t_sockaddr_storage;$/;"	t
+t_socket	usocket.h	/^typedef int t_socket;$/;"	t
+t_socket	wsocket.h	/^typedef SOCKET t_socket;$/;"	t
+t_tcp	tcp.h	/^} t_tcp;$/;"	t	typeref:struct:t_tcp_
+t_tcp_	tcp.h	/^typedef struct t_tcp_ {$/;"	s
+t_tcp_::buf	tcp.h	/^    t_buffer buf;$/;"	m	struct:t_tcp_	access:public
+t_tcp_::family	tcp.h	/^    int family;$/;"	m	struct:t_tcp_	access:public
+t_tcp_::io	tcp.h	/^    t_io io;$/;"	m	struct:t_tcp_	access:public
+t_tcp_::sock	tcp.h	/^    t_socket sock;$/;"	m	struct:t_tcp_	access:public
+t_tcp_::tm	tcp.h	/^    t_timeout tm;$/;"	m	struct:t_tcp_	access:public
+t_timeout	timeout.h	/^} t_timeout;$/;"	t	typeref:struct:t_timeout_
+t_timeout_	timeout.h	/^typedef struct t_timeout_ {$/;"	s
+t_timeout_::block	timeout.h	/^    double block;          \/* maximum time for blocking calls *\/$/;"	m	struct:t_timeout_	access:public
+t_timeout_::start	timeout.h	/^    double start;          \/* time of start of operation *\/$/;"	m	struct:t_timeout_	access:public
+t_timeout_::total	timeout.h	/^    double total;          \/* total number of miliseconds for operation *\/$/;"	m	struct:t_timeout_	access:public
+t_udp	udp.h	/^} t_udp;$/;"	t	typeref:struct:t_udp_
+t_udp_	udp.h	/^typedef struct t_udp_ {$/;"	s
+t_udp_::family	udp.h	/^    int family;$/;"	m	struct:t_udp_	access:public
+t_udp_::sock	udp.h	/^    t_socket sock;$/;"	m	struct:t_udp_	access:public
+t_udp_::tm	udp.h	/^    t_timeout tm;$/;"	m	struct:t_udp_	access:public
+t_unix	unix.h	/^} t_unix;$/;"	t	typeref:struct:t_unix_
+t_unix_	unix.h	/^typedef struct t_unix_ {$/;"	s
+t_unix_::buf	unix.h	/^    t_buffer buf;$/;"	m	struct:t_unix_	access:public
+t_unix_::io	unix.h	/^    t_io io;$/;"	m	struct:t_unix_	access:public
+t_unix_::sock	unix.h	/^    t_socket sock;$/;"	m	struct:t_unix_	access:public
+t_unix_::tm	unix.h	/^    t_timeout tm;$/;"	m	struct:t_unix_	access:public
+tcp_create	tcp.c	/^static int tcp_create(lua_State *L, int family) {$/;"	f	file:	signature:(lua_State *L, int family)
+tcp_methods	tcp.c	/^static luaL_Reg tcp_methods[] = {$/;"	v	file:
+tcp_open	tcp.c	/^int tcp_open(lua_State *L)$/;"	f	signature:(lua_State *L)
+tcp_open	tcp.h	/^int tcp_open(lua_State *L);$/;"	p	signature:(lua_State *L)
+tget	ftp.lua	/^local function tget(gett)$/;"	f
+timeout_get	timeout.c	/^double timeout_get(p_timeout tm) {$/;"	f	signature:(p_timeout tm)
+timeout_get	timeout.h	/^double timeout_get(p_timeout tm);$/;"	p	signature:(p_timeout tm)
+timeout_getretry	timeout.c	/^double timeout_getretry(p_timeout tm) {$/;"	f	signature:(p_timeout tm)
+timeout_getretry	timeout.h	/^double timeout_getretry(p_timeout tm);$/;"	p	signature:(p_timeout tm)
+timeout_getstart	timeout.c	/^double timeout_getstart(p_timeout tm) {$/;"	f	signature:(p_timeout tm)
+timeout_getstart	timeout.h	/^double timeout_getstart(p_timeout tm);$/;"	p	signature:(p_timeout tm)
+timeout_gettime	timeout.c	/^double timeout_gettime(void) {$/;"	f	signature:(void)
+timeout_gettime	timeout.h	/^double timeout_gettime(void);$/;"	p	signature:(void)
+timeout_init	timeout.c	/^void timeout_init(p_timeout tm, double block, double total) {$/;"	f	signature:(p_timeout tm, double block, double total)
+timeout_init	timeout.h	/^void timeout_init(p_timeout tm, double block, double total);$/;"	p	signature:(p_timeout tm, double block, double total)
+timeout_iszero	timeout.h	27;"	d
+timeout_lua_gettime	timeout.c	/^static int timeout_lua_gettime(lua_State *L)$/;"	f	file:	signature:(lua_State *L)
+timeout_lua_gettime	timeout.c	/^static int timeout_lua_gettime(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+timeout_lua_sleep	timeout.c	/^int timeout_lua_sleep(lua_State *L)$/;"	f	signature:(lua_State *L)
+timeout_lua_sleep	timeout.c	/^static int timeout_lua_sleep(lua_State *L);$/;"	p	file:	signature:(lua_State *L)
+timeout_markstart	timeout.c	/^p_timeout timeout_markstart(p_timeout tm) {$/;"	f	signature:(p_timeout tm)
+timeout_markstart	timeout.h	/^p_timeout timeout_markstart(p_timeout tm);$/;"	p	signature:(p_timeout tm)
+timeout_meth_gettimeout	timeout.c	/^int timeout_meth_gettimeout(lua_State *L, p_timeout tm) {$/;"	f	signature:(lua_State *L, p_timeout tm)
+timeout_meth_gettimeout	timeout.h	/^int timeout_meth_gettimeout(lua_State *L, p_timeout tm);$/;"	p	signature:(lua_State *L, p_timeout tm)
+timeout_meth_settimeout	timeout.c	/^int timeout_meth_settimeout(lua_State *L, p_timeout tm) {$/;"	f	signature:(lua_State *L, p_timeout tm)
+timeout_meth_settimeout	timeout.h	/^int timeout_meth_settimeout(lua_State *L, p_timeout tm);$/;"	p	signature:(lua_State *L, p_timeout tm)
+timeout_open	timeout.c	/^int timeout_open(lua_State *L) {$/;"	f	signature:(lua_State *L)
+timeout_open	timeout.h	/^int timeout_open(lua_State *L);$/;"	p	signature:(lua_State *L)
+tm	buffer.h	/^    p_timeout tm;           \/* timeout management for this buffer *\/$/;"	m	struct:t_buffer_	access:public
+tm	tcp.h	/^    t_timeout tm;$/;"	m	struct:t_tcp_	access:public
+tm	udp.h	/^    t_timeout tm;$/;"	m	struct:t_udp_	access:public
+tm	unix.h	/^    t_timeout tm;$/;"	m	struct:t_unix_	access:public
+total	timeout.h	/^    double total;          \/* total number of miliseconds for operation *\/$/;"	m	struct:t_timeout_	access:public
+tput	ftp.lua	/^local function tput(putt)$/;"	f
+udp_create	udp.c	/^static int udp_create(lua_State *L, int family) {$/;"	f	file:	signature:(lua_State *L, int family)
+udp_methods	udp.c	/^static luaL_Reg udp_methods[] = {$/;"	v	file:
+udp_open	udp.c	/^int udp_open(lua_State *L) {$/;"	f	signature:(lua_State *L)
+udp_open	udp.h	/^int udp_open(lua_State *L);$/;"	p	signature:(lua_State *L)
+udp_strerror	udp.c	/^static const char *udp_strerror(int err) {$/;"	f	file:	signature:(int err)
+unixdgram_methods	unixdgram.c	/^static luaL_Reg unixdgram_methods[] = {$/;"	v	file:
+unixdgram_open	unixdgram.c	/^int unixdgram_open(lua_State *L)$/;"	f	signature:(lua_State *L)
+unixdgram_open	unixdgram.h	/^int unixdgram_open(lua_State *L);$/;"	p	signature:(lua_State *L)
+unixdgram_strerror	unixdgram.c	/^static const char *unixdgram_strerror(int err)$/;"	f	file:	signature:(int err)
+unixdgram_trybind	unixdgram.c	/^static const char *unixdgram_trybind(p_unix un, const char *path) {$/;"	f	file:	signature:(p_unix un, const char *path)
+unixdgram_trybind	unixdgram.c	/^static const char *unixdgram_trybind(p_unix un, const char *path);$/;"	p	file:	signature:(p_unix un, const char *path)
+unixdgram_tryconnect	unixdgram.c	/^static const char *unixdgram_tryconnect(p_unix un, const char *path)$/;"	f	file:	signature:(p_unix un, const char *path)
+unixdgram_tryconnect	unixdgram.c	/^static const char *unixdgram_tryconnect(p_unix un, const char *path);$/;"	p	file:	signature:(p_unix un, const char *path)
+unixstream_methods	unixstream.c	/^static luaL_Reg unixstream_methods[] = {$/;"	v	file:
+unixstream_open	unixstream.c	/^int unixstream_open(lua_State *L)$/;"	f	signature:(lua_State *L)
+unixstream_open	unixstream.h	/^int unixstream_open(lua_State *L);$/;"	p	signature:(lua_State *L)
+unixstream_trybind	unixstream.c	/^static const char *unixstream_trybind(p_unix un, const char *path) {$/;"	f	file:	signature:(p_unix un, const char *path)
+unixstream_trybind	unixstream.c	/^static const char *unixstream_trybind(p_unix un, const char *path);$/;"	p	file:	signature:(p_unix un, const char *path)
+unixstream_tryconnect	unixstream.c	/^static const char *unixstream_tryconnect(p_unix un, const char *path)$/;"	f	file:	signature:(p_unix un, const char *path)
+unixstream_tryconnect	unixstream.c	/^static const char *unixstream_tryconnect(p_unix un, const char *path);$/;"	p	file:	signature:(p_unix un, const char *path)
+unwrap	except.c	/^static int unwrap(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+url 	url.lua	/^    url = string.gsub(url, "#(.*)$", function(f)$/;"	f
+url 	url.lua	/^    url = string.gsub(url, "%;(.*)", function(p)$/;"	f
+url 	url.lua	/^    url = string.gsub(url, "%?(.*)", function(q)$/;"	f
+url 	url.lua	/^    url = string.gsub(url, "^\/\/([^\/]*)", function(n)$/;"	f
+wrap	except.c	/^static void wrap(lua_State *L) {$/;"	f	file:	signature:(lua_State *L)
+wrapt['quoted-printable'] 	mime.lua	/^wrapt['quoted-printable'] = function()$/;"	f
+wrapt['text'] 	mime.lua	/^wrapt['text'] = function(length)$/;"	f
+wstrerror	wsocket.c	/^static const char *wstrerror(int err) {$/;"	f	file:	signature:(int err)
+wstrerror	wsocket.c	/^static const char *wstrerror(int err);$/;"	p	file:	signature:(int err)

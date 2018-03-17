@@ -1,11 +1,10 @@
 #!/usr/bin/env lua
 
 local socket = require "socket"
-
 local uloop = require("uloop")
-uloop.init()
+uloop.init()        -- 创建epoll对象
 
-local udp = socket.udp()
+local udp = socket.udp()    -- 创建一个udp对象
 udp:settimeout(0)
 udp:setsockname('*', 8080)
 

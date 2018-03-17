@@ -306,7 +306,7 @@ LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud);
 #define lua_pushliteral(L, s)	\
 	lua_pushlstring(L, "" s, (sizeof(s)/sizeof(char))-1)
 
-// 从堆栈上弹出一个值，并将其赋给全局table中的元素s
+// 从栈上弹出一个值，并将其赋给全局table中的元素s
 #define lua_setglobal(L,s)	lua_setfield(L, LUA_GLOBALSINDEX, (s))
 
 // 获取全局table中指定元素s的值(值被压入栈顶)

@@ -759,7 +759,7 @@ lua_set*系列CAPI用于将栈中的值设置给lua环境中的变量
 /* 顾名思义，本函数做了一个等价于"t[k] = v"的操作，本函数可能会触发__newindex元方法
  *
  * 备注：t是指定索引idx处的值，v是栈顶(-1)处的值，k是栈顶之下(-2)那个值
- *       本函数执行过程中会弹出栈中的v和k值
+ *       本函数执行过程中会弹出栈中的v和k值,但索引idx处的t不会弹出
  */
 LUA_API void lua_settable (lua_State *L, int idx) {
   StkId t;
@@ -777,7 +777,7 @@ LUA_API void lua_settable (lua_State *L, int idx) {
  * @k   - 传入了"t[k]"的值k
  *
  * 备注：t是指定索引idx处的值，v是栈顶(-1)处的值
- *       本函数运行中会弹出栈中的v值
+ *       本函数运行中会弹出栈中的v值,但索引idx处的t不会弹出
  */
 LUA_API void lua_setfield (lua_State *L, int idx, const char *k) {
   StkId t;

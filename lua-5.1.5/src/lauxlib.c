@@ -259,9 +259,10 @@ static int libsize (const luaL_Reg *l) {
   return size;
 }
 
-/* 创建一个名为libname的table，并将模块内的C函数注册到该table中
+/* 创建一个名为libname的table，并将模块内的C函数注册到该table中,本函数返回后该table仍旧位于栈顶
  *
- * 5.1.5之后的版本中被废除
+ * 备注:本函数别名为luaL_openlib
+ *      本函数5.1.5之后的版本中被废除
  */
 LUALIB_API void luaI_openlib (lua_State *L, const char *libname,
                               const luaL_Reg *l, int nup) {

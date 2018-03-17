@@ -492,6 +492,7 @@ static luaL_reg uloop_func[] = {
 int luaopen_uloop(lua_State *L);
 int luaclose_uloop(lua_State *L);
 
+// uloop模块注册到lua环境的入口函数
 int luaopen_uloop(lua_State *L)
 {
 	state = L;
