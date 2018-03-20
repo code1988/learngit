@@ -14,22 +14,22 @@ function t()                -- 定义一个定时器回调函数(间隔1000ms)
 	print("1000 ms timer run");
 	timer:set(1000)
 end
-timer = uloop.timer(t)
-timer:set(1000)
+timer = uloop.timer(t)      -- 创建一个定时器1
+timer:set(1000)             -- 设置该定时器1000ms后超时(注意":"意味着会传入该定时器对象本身作为第一个入参)
 
 -- timer example 2
-uloop.timer(function() print("2000 ms timer run"); end, 2000)
+uloop.timer(function() print("2000 ms timer run"); end, 2000)   -- 创建一个定时器2,同时设置该定时器2000ms后超时
 
 -- timer example 3
-uloop.timer(function() print("3000 ms timer run"); end, 3000):cancel()
+uloop.timer(function() print("3000 ms timer run"); end, 3000):cancel()  -- 创建一个定时器3,同时设置该定时器3000ms后超时,紧接着取消该定时器的超时设置
 
 -- process
-function p1(r)
+function p1(r)      -- 定义一个进程1回调函数
 	print("Process 1 completed")
 	print(r)
 end
 
-function p2(r)
+function p2(r)      -- 定义一个进程2回调函数
 	print("Process 2 completed")
 	print(r)
 end

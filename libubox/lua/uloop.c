@@ -31,17 +31,44 @@ struct lua_uloop_fd {
 	int fd_r;
 };
 
+// 进一步封装的定时器管理块
 struct lua_uloop_timeout {
-	struct uloop_timeout t;
-	int r;
+	struct uloop_timeout t; // 面向C环境的定时器管理块
+	int r;                  // lua环境中该定时器的超时回调
 };
 
+// 进一步封装的进程管理块
 struct lua_uloop_process {
-	struct uloop_process p;
-	int r;
+	struct uloop_process p; // 面向C环境的进程管理块
+	int r;                  // lua环境中该进程的回调
 };
 
 static lua_State *state;
+
+static void stack_dump(lua_State *L)
+{
+    int size = lua_gettop(L);
+    printf("stack size = %d\n",size);
+    int idx;
+    for(idx = 1;idx <= size;idx++){
+        int type = lua_type(L,idx);
+        switch(type){
+        case LUA_TBOOLEAN:
+            printf("%d.boolean[%s]\n",idx,lua_toboolean(L,idx)?"true":"false");
+            break;
+        case LUA_TNUMBER:
+            printf("%d.number[%d]\n",idx,(int)lua_tonumber(L,idx));
+            break;
+        case LUA_TSTRING:
+            printf("%d.string[%s]\n",idx,lua_tostring(L,idx));
+            break;
+        default:
+            printf("%d.%s\n",idx,lua_typename(L,type));
+            break;
+        }
+    }
+    printf("\n");
+}
 
 // 定时器回调函数
 static void ul_timer_cb(struct uloop_timeout *t)
@@ -59,7 +86,11 @@ static void ul_timer_cb(struct uloop_timeout *t)
 	lua_call(state, 0, 0);
 }
 
-// 开启/更新定时器
+/* 开启/修改定时器超时值
+ * 参数入栈情况：
+ *          -1  指定了该定时器的超时值
+ *          1   指定了该定时器userdata对象
+ */
 static int ul_timer_set(lua_State *L)
 {
 	struct lua_uloop_timeout *tout;
@@ -84,11 +115,16 @@ static int ul_timer_set(lua_State *L)
 	return 1;
 }
 
-// 销毁定时器
+/* 关闭定时器超时
+ * 参数入栈情况：
+ *          1  指定了该定时器userdata对象
+ */
 static int ul_timer_free(lua_State *L)
 {
+    // 获取栈底的lua_uloop_timeout结构
 	struct lua_uloop_timeout *tout = lua_touserdata(L, 1);
 	
+    // 关闭定时器超时
 	uloop_timeout_cancel(&tout->t);
 	
 	/* obj.__index.__gc = nil , make sure executing only once*/
@@ -112,8 +148,10 @@ static const luaL_Reg timer_m[] = {
 
 /* 创建一个定时器
  * lua函数"uloop.timer"参数入栈情况：
- *          -2  指定了该定时器的lua超时回调(必须)
- *          -1  指定了该定时器的超时值(可选)
+ *          2  指定了该定时器的超时值(可选)
+ *          1  指定了该定时器的lua超时回调(必须)
+ *
+ * 最后返回给lua环境的是一个struct lua_uloop_timeout结构的userdata对象,该对象同时关联了元表
  */
 static int ul_timer(lua_State *L)
 {
@@ -230,25 +268,33 @@ static int ul_timer(lua_State *L)
      *          -5 lua超时回调
      */
 	lua_pushvalue(L, -2);
-    /* 向userdata对象中注册定时器操作接口
+    /* 向元表中注册C闭包形式的定时器操作接口(upvalue就是userdata)
      * 此时的栈：
-     *          -1 userdata(lua_uloop_timeout结构，关联了元表、包含定时器操作接口)
-     *          -2 元表(有成员__index = 空table;__gc = ul_timer_free)
+     *          -1 元表(有成员__index = 空table;__gc = ul_timer_free;C闭包形式的定时器操作接口)
+     *          -2 userdata(lua_uloop_timeout结构，关联了元表)
+     *          -3 "_uloop_cb"的值
+     *          -4 lua超时回调
+     */
+	luaI_openlib(L, NULL, timer_m, 1);
+    /* 拷贝一份userdata对象压栈(将作为返回值返回给lua环境)
+     * 此时的栈:
+     *          -1 userdata(lua_uloop_timeout结构，关联了元表)
+     *          -2 元表(有成员__index = 空table;__gc = ul_timer_free;C闭包形式的定时器操作接口)
      *          -3 userdata(lua_uloop_timeout结构，关联了元表)
      *          -4 "_uloop_cb"的值
      *          -5 lua超时回调
      */
-	luaI_openlib(L, NULL, timer_m, 1);
 	lua_pushvalue(L, -2);
 
 	memset(tout, 0, sizeof(*tout));
 
-	tout->r = ref;  // 记录"引用"值，指向lua函数超时回调
-	tout->t.cb = ul_timer_cb;   // 注册C函数超时回调
+	tout->r = ref;  // 记录lua环境中该定时器超时回调的"引用"值
+	tout->t.cb = ul_timer_cb;   // 注册C环境中的超时回调
     // 如果设置了超时值，则开启该定时器
 	if (set)
 		uloop_timeout_set(&tout->t, set);
 
+    // 返回给lua环境1个返回值(位于栈顶)
 	return 1;
 }
 
