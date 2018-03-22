@@ -548,8 +548,8 @@ LUALIB_API int luaL_ref (lua_State *L, int t) {
   return ref;
 }
 
-/* "引用系统"的成员函数，本函数用于释放一个C变量中保存的指向lua对象的引用
- * @t   - 索引号t处的table中存放了该引用的lua值
+/* "引用系统"的成员函数，用于释放由luaL_ref创建的一个指向lua对象的引用
+ * @t   - 索引号t处的table中存放了该ref对应的lua对象
  * @ref - 需要被释放的lua对象的"引用"
  */
 LUALIB_API void luaL_unref (lua_State *L, int t, int ref) {

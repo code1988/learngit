@@ -24,28 +24,31 @@ uloop.timer(function() print("2000 ms timer run"); end, 2000)   -- 创建一个�
 uloop.timer(function() print("3000 ms timer run"); end, 3000):cancel()  -- 创建一个定时器3,同时设置该定时器3000ms后超时,紧接着取消该定时器的超时设置
 
 -- process
-function p1(r)      -- 定义一个进程1回调函数
+function p1(r)      -- 定义进程1终止时的回调函数
 	print("Process 1 completed")
 	print(r)
 end
 
-function p2(r)      -- 定义一个进程2回调函数
+function p2(r)      -- 定义进程2终止时的回调函数
 	print("Process 2 completed")
 	print(r)
 end
 
+-- 创建一个定时器4,同时设置该定时器1000ms后超时
 uloop.timer(
-	function()
+	function()  -- 定义了定时器4的超时回调函数:超时后创建一个进程并执行uloop_pid_test.sh
 		uloop.process("uloop_pid_test.sh", {"foo", "bar"}, {"PROCESS=1"}, p1)
 	end, 1000
 )
+-- 创建一个定时器5,同时设置该定时器2000ms后超时
 uloop.timer(
-	function()
+	function()  -- 定义了定时器5的超时回调函数:超时后创建一个进程并执行uloop_pid_test.sh
 		uloop.process("uloop_pid_test.sh", {"foo", "bar"}, {"PROCESS=2"}, p2)
 	end, 2000
 )
 
-udp_ev = uloop.fd_add(udp, function(ufd, events)
+-- 将udp对象加入监听池,监听其读事件
+udp_ev = uloop.fd_add(udp, function(ufd, events)    -- udp对象上有读事件时的回调函数
 	local words, msg_or_ip, port_or_nil = ufd:receivefrom()
 	print('Recv UDP packet from '..msg_or_ip..':'..port_or_nil..' : '..words)
 	if words == "Stop!" then

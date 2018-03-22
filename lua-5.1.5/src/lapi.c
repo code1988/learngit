@@ -1118,7 +1118,7 @@ LUA_API int lua_gc (lua_State *L, int what, int data) {
 ** miscellaneous functions
 */
 
-
+// 以栈顶的值作为出错信息返回给lua环境
 LUA_API int lua_error (lua_State *L) {
   lua_lock(L);
   api_checknelems(L, 1);
