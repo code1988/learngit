@@ -24,6 +24,7 @@ function _M.connect6(address, port, laddress, lport)
     return socket.connect(address, port, laddress, lport, "inet6")
 end
 
+-- 针对inet的套接字在bind过程中附带了listen操作
 function _M.bind(host, port, backlog)
     if host == "*" then host = "0.0.0.0" end
     local addrinfo, err = socket.dns.getaddrinfo(host);

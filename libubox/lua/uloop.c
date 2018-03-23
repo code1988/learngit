@@ -129,7 +129,9 @@ static int ul_timer_free(lua_State *L)
 	uloop_timeout_cancel(&tout->t);
 	
 	/* obj.__index.__gc = nil , make sure executing only once*/
+    // 将该userdata对象中索引为"__index"的值压栈,显然这会触发该userdata对象的元方法,最后实际压栈的就是元表自身
 	lua_getfield(L, -1, "__index");
+    // 以下3步操作其实就是清除元表中的"__gc"字段
 	lua_pushstring(L, "__gc");
 	lua_pushnil(L);
 	lua_settable(L, -3);
@@ -222,7 +224,7 @@ static int ul_timer(lua_State *L)
 	lua_pushvalue(L, -1);
     /* 弹出栈顶的空table，赋给自身中的"__index"
      * 此时的栈：
-     *          -1 元表(有成员__index = 空table)
+     *          -1 元表(有成员__index = 自身table)
      *          -2 userdata(lua_uloop_timeout结构)
      *          -3 名为"__uloop_cb"的table
      *          -4 lua超时回调
@@ -353,25 +355,38 @@ static int get_sock_fd(lua_State* L, int idx) {
 	return fd;
 }
 
-// 销毁被监听的fd
+/* 移除监听池中的指定fd
+ * 参数入栈情况：
+ *          1  指定了该fd监听事件的userdata对象
+ */
 static int ul_ufd_delete(lua_State *L)
 {
+    // 获取栈底的lua_uloop_fd结构
 	struct lua_uloop_fd *ufd = lua_touserdata(L, 1);
 	
+    // 删除该fd控制块
 	uloop_fd_delete(&ufd->fd);
 
 	/* obj.__index.__gc = nil , make sure executing only once*/
+    // 将该userdata对象中索引为"__index"的值压栈,显然这会触发该userdata对象的元方法,最后实际压栈的就是元表自身
 	lua_getfield(L, -1, "__index");
+    // 以下3步操作其实就是清除元表中的"__gc"字段
 	lua_pushstring(L, "__gc");
 	lua_pushnil(L);
 	lua_settable(L, -3);
 
+    // 将全局table中名为"__uloop_cb"的table压栈
 	lua_getglobal(state, "__uloop_cb");
+    // 释放之前在名为"__uloop_cb"的table中创建的lua环境下该fd事件触发回调
 	luaL_unref(state, -1, ufd->r);
+    // 移除栈中名为"__uloop_cb"的table
 	lua_remove(state, -1);
 
+    // 将全局table中名为"__uloop_fds"的table压栈
 	lua_getglobal(state, "__uloop_fds");
+    // 释放之前在名为"__uloop_cb"的table中创建的自定义的包含该fd的lua对象
 	luaL_unref(state, -1, ufd->fd_r);
+    // 移除栈中名为"__uloop_fds"的table
 	lua_remove(state, -1);
 
 	return 1;

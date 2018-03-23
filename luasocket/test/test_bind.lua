@@ -1,3 +1,4 @@
+#!/usr/local/bin/lua
 local socket = require "socket"
 local u = socket.udp() assert(u:setsockname("*", 5088)) u:close()
 local u = socket.udp() assert(u:setsockname("*", 0)) u:close()

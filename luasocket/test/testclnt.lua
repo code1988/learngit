@@ -1,3 +1,4 @@
+#!/usr/local/bin/lua
 local socket = require"socket"
 
 host = host or "localhost"

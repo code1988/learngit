@@ -48,7 +48,7 @@ uloop.timer(
 )
 
 -- 将udp对象加入监听池,监听其读事件
-udp_ev = uloop.fd_add(udp, function(ufd, events)    -- udp对象上有读事件时的回调函数
+udp_ev = uloop.fd_add(udp, function(ufd, events)    -- 定义了udp对象上有读事件时的回调函数
 	local words, msg_or_ip, port_or_nil = ufd:receivefrom()
 	print('Recv UDP packet from '..msg_or_ip..':'..port_or_nil..' : '..words)
 	if words == "Stop!" then
@@ -57,17 +57,19 @@ udp_ev = uloop.fd_add(udp, function(ufd, events)    -- udp对象上有读事件�
 end, uloop.ULOOP_READ)
 
 udp_count = 0
+-- 创建一个定时器6,同时设置该定时器3000ms后超时
 udp_send_timer = uloop.timer(
-	function()
-		local s = socket.udp()
+	function()      -- 定义了定时器6的超时回调函数
+		local s = socket.udp()  -- 动态创建一个udp对象
 		local words
-		if udp_count > 3 then
+		if udp_count > 3 then   -- 第4次关闭定时器
 			words = "Stop!"
 			udp_send_timer:cancel()
-		else
+		else                    -- 前3次设置定时器1000间隔超时
 			words = 'Hello!'
 			udp_send_timer:set(1000)
 		end
+        -- 往环回接口上的8080端口发udp包
 		print('Send UDP packet to 127.0.0.1:8080 :'..words)
 		s:sendto(words, '127.0.0.1', 8080)
 		s:close()

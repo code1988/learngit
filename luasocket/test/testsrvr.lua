@@ -1,3 +1,4 @@
+#!/usr/local/bin/lua
 socket = require("socket");
 host = host or "localhost";
 port = port or "8383";
@@ -7,8 +8,10 @@ while 1 do
     print("server: waiting for client connection...");
     control = assert(server:accept());
     while 1 do
+        print("receive...")
         command, emsg = control:receive();
         if emsg == "closed" then
+            print("receive close")
             control:close()
             break
         end

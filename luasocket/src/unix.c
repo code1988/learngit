@@ -44,6 +44,7 @@ static int compat_socket_unix_call(lua_State *L)
 
 /*-------------------------------------------------------------------------*\
 * Initializes module
+* UNIX-DOMAIN模块初始化入口
 \*-------------------------------------------------------------------------*/
 int luaopen_socket_unix(lua_State *L)
 {
@@ -51,6 +52,7 @@ int luaopen_socket_unix(lua_State *L)
     lua_newtable(L);
     int socket_unix_table = lua_gettop(L);
 
+    // 对每个unix-domain子模块进行初始化
     for (i = 0; mod[i].name; i++)
         mod[i].func(L);
 
