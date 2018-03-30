@@ -1,0 +1,1464 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+"Failed to execute " .. (type(c.target) 	lua/luci/dispatcher.lua	/^		       "Failed to execute " .. (type(c.target) == "function" and "function" or c.target.type or "unknown") ..$/;"	f
+AbstractSection.__init__	lua/luci/cbi.lua	/^function AbstractSection.__init__(self, map, sectiontype, ...)$/;"	f
+AbstractSection.add_dynamic	lua/luci/cbi.lua	/^function AbstractSection.add_dynamic(self, field, optional)$/;"	f
+AbstractSection.cfgvalue	lua/luci/cbi.lua	/^function AbstractSection.cfgvalue(self, section)$/;"	f
+AbstractSection.create	lua/luci/cbi.lua	/^function AbstractSection.create(self, section)$/;"	f
+AbstractSection.has_tabs	lua/luci/cbi.lua	/^function AbstractSection.has_tabs(self)$/;"	f
+AbstractSection.option	lua/luci/cbi.lua	/^function AbstractSection.option(self, class, option, ...)$/;"	f
+AbstractSection.parse_dynamic	lua/luci/cbi.lua	/^function AbstractSection.parse_dynamic(self, section)$/;"	f
+AbstractSection.parse_optionals	lua/luci/cbi.lua	/^function AbstractSection.parse_optionals(self, section)$/;"	f
+AbstractSection.push_events	lua/luci/cbi.lua	/^function AbstractSection.push_events(self)$/;"	f
+AbstractSection.remove	lua/luci/cbi.lua	/^function AbstractSection.remove(self, section)$/;"	f
+AbstractSection.render_tab	lua/luci/cbi.lua	/^function AbstractSection.render_tab(self, tab, ...)$/;"	f
+AbstractSection.tab	lua/luci/cbi.lua	/^function AbstractSection.tab(self, tab, title, desc)$/;"	f
+AbstractSection.taboption	lua/luci/cbi.lua	/^function AbstractSection.taboption(self, tab, ...)$/;"	f
+AbstractValue.__init__	lua/luci/cbi.lua	/^function AbstractValue.__init__(self, map, section, option, ...)$/;"	f
+AbstractValue.add_error	lua/luci/cbi.lua	/^function AbstractValue.add_error(self, section, type, msg)$/;"	f
+AbstractValue.additional	lua/luci/cbi.lua	/^function AbstractValue.additional(self, value)$/;"	f
+AbstractValue.cbid	lua/luci/cbi.lua	/^function AbstractValue.cbid(self, section)$/;"	f
+AbstractValue.cfgvalue	lua/luci/cbi.lua	/^function AbstractValue.cfgvalue(self, section)$/;"	f
+AbstractValue.depends	lua/luci/cbi.lua	/^function AbstractValue.depends(self, field, value)$/;"	f
+AbstractValue.formcreated	lua/luci/cbi.lua	/^function AbstractValue.formcreated(self, section)$/;"	f
+AbstractValue.formvalue	lua/luci/cbi.lua	/^function AbstractValue.formvalue(self, section)$/;"	f
+AbstractValue.mandatory	lua/luci/cbi.lua	/^function AbstractValue.mandatory(self, value)$/;"	f
+AbstractValue.parse	lua/luci/cbi.lua	/^function AbstractValue.parse(self, section, novld)$/;"	f
+AbstractValue.prepare	lua/luci/cbi.lua	/^function AbstractValue.prepare(self)$/;"	f
+AbstractValue.remove	lua/luci/cbi.lua	/^function AbstractValue.remove(self, section)$/;"	f
+AbstractValue.render	lua/luci/cbi.lua	/^function AbstractValue.render(self, s, scope)$/;"	f
+AbstractValue.validate	lua/luci/cbi.lua	/^function AbstractValue.validate(self, value)$/;"	f
+AbstractValue.write	lua/luci/cbi.lua	/^function AbstractValue.write(self, section, value)$/;"	f
+Button.__init__	lua/luci/cbi.lua	/^function Button.__init__(self, ...)$/;"	f
+Compound.__init__	lua/luci/cbi.lua	/^function Compound.__init__(self, ...)$/;"	f
+Compound.parse	lua/luci/cbi.lua	/^function Compound.parse(self, ...)$/;"	f
+Compound.populate_delegator	lua/luci/cbi.lua	/^function Compound.populate_delegator(self, delegator)$/;"	f
+Cursor._affected	lua/luci/model/uci.lua	/^function Cursor._affected(self, configlist)$/;"	f
+Cursor.apply	lua/luci/model/uci.lua	/^function Cursor.apply(self, configlist, command)$/;"	f
+Cursor.delete_all	lua/luci/model/uci.lua	/^function Cursor.delete_all(self, config, stype, comparator)$/;"	f
+Cursor.get_bool	lua/luci/model/uci.lua	/^function Cursor.get_bool(self, ...)$/;"	f
+Cursor.get_first	lua/luci/model/uci.lua	/^function Cursor.get_first(self, conf, stype, opt, def)$/;"	f
+Cursor.get_list	lua/luci/model/uci.lua	/^function Cursor.get_list(self, config, section, option)$/;"	f
+Cursor.load	lua/luci/model/uci.lua	/^function Cursor.load(self, ...)$/;"	f
+Cursor.section	lua/luci/model/uci.lua	/^function Cursor.section(self, config, type, name, values)$/;"	f
+Cursor.set_list	lua/luci/model/uci.lua	/^function Cursor.set_list(self, config, section, option, value)$/;"	f
+Cursor.substate	lua/luci/model/uci.lua	/^function Cursor.substate(self)$/;"	f
+Cursor.tset	lua/luci/model/uci.lua	/^function Cursor.tset(self, config, section, values)$/;"	f
+Cursor.unload	lua/luci/model/uci.lua	/^function Cursor.unload(self, ...)$/;"	f
+Delegator.__init__	lua/luci/cbi.lua	/^function Delegator.__init__(self, ...)$/;"	f
+Delegator.add	lua/luci/cbi.lua	/^function Delegator.add(self, name, node)$/;"	f
+Delegator.get	lua/luci/cbi.lua	/^function Delegator.get(self, name)$/;"	f
+Delegator.get_active	lua/luci/cbi.lua	/^function Delegator.get_active(self)$/;"	f
+Delegator.get_chain	lua/luci/cbi.lua	/^function Delegator.get_chain(self)$/;"	f
+Delegator.get_next	lua/luci/cbi.lua	/^function Delegator.get_next(self, state)$/;"	f
+Delegator.get_prev	lua/luci/cbi.lua	/^function Delegator.get_prev(self, state)$/;"	f
+Delegator.insert_after	lua/luci/cbi.lua	/^function Delegator.insert_after(self, name, after)$/;"	f
+Delegator.parse	lua/luci/cbi.lua	/^function Delegator.parse(self, ...)$/;"	f
+Delegator.set	lua/luci/cbi.lua	/^function Delegator.set(self, name, node)$/;"	f
+Delegator.set_route	lua/luci/cbi.lua	/^function Delegator.set_route(self, ...)$/;"	f
+DummyValue.__init__	lua/luci/cbi.lua	/^function DummyValue.__init__(self, ...)$/;"	f
+DummyValue.cfgvalue	lua/luci/cbi.lua	/^function DummyValue.cfgvalue(self, section)$/;"	f
+DummyValue.parse	lua/luci/cbi.lua	/^function DummyValue.parse(self)$/;"	f
+DynamicList.__init__	lua/luci/cbi.lua	/^function DynamicList.__init__(self, ...)$/;"	f
+DynamicList.cfgvalue	lua/luci/cbi.lua	/^function DynamicList.cfgvalue(self, section)$/;"	f
+DynamicList.formvalue	lua/luci/cbi.lua	/^function DynamicList.formvalue(self, section)$/;"	f
+DynamicList.reset_values	lua/luci/cbi.lua	/^function DynamicList.reset_values(self)$/;"	f
+DynamicList.value	lua/luci/cbi.lua	/^function DynamicList.value(self, key, val)$/;"	f
+DynamicList.write	lua/luci/cbi.lua	/^function DynamicList.write(self, section, value)$/;"	f
+FileBrowser.__init__	lua/luci/cbi.lua	/^function FileBrowser.__init__(self, ...)$/;"	f
+FileUpload.__init__	lua/luci/cbi.lua	/^function FileUpload.__init__(self, ...)$/;"	f
+FileUpload.cfgvalue	lua/luci/cbi.lua	/^function FileUpload.cfgvalue(self, section)$/;"	f
+FileUpload.formcreated	lua/luci/cbi.lua	/^function FileUpload.formcreated(self, section)$/;"	f
+FileUpload.formvalue	lua/luci/cbi.lua	/^function FileUpload.formvalue(self, section)$/;"	f
+FileUpload.remove	lua/luci/cbi.lua	/^function FileUpload.remove(self, section)$/;"	f
+Flag.__init__	lua/luci/cbi.lua	/^function Flag.__init__(self, ...)$/;"	f
+Flag.cfgvalue	lua/luci/cbi.lua	/^function Flag.cfgvalue(self, section)$/;"	f
+Flag.parse	lua/luci/cbi.lua	/^function Flag.parse(self, section)$/;"	f
+Form.__init__	lua/luci/cbi.lua	/^function Form.__init__(self, ...)$/;"	f
+Hex	lua/luci/ip.lua	/^function Hex( hex, prefix, family, swap )$/;"	f
+IPv4	lua/luci/ip.lua	/^function IPv4(address, netmask)$/;"	f
+IPv6	lua/luci/ip.lua	/^function IPv6(address, netmask)$/;"	f
+IptParser.__init__	lua/luci/sys/iptparser.lua	/^function IptParser.__init__( self, family )$/;"	f
+IptParser._match_options	lua/luci/sys/iptparser.lua	/^function IptParser._match_options( self, o1, o2 )$/;"	f
+IptParser._parse_addr	lua/luci/sys/iptparser.lua	/^function IptParser._parse_addr( self, addr )$/;"	f
+IptParser._parse_rules	lua/luci/sys/iptparser.lua	/^function IptParser._parse_rules( self )$/;"	f
+IptParser.chain	lua/luci/sys/iptparser.lua	/^function IptParser.chain( self, table, chain )$/;"	f
+IptParser.chains	lua/luci/sys/iptparser.lua	/^function IptParser.chains( self, table )$/;"	f
+IptParser.find	lua/luci/sys/iptparser.lua	/^function IptParser.find( self, args )$/;"	f
+IptParser.is_custom_target	lua/luci/sys/iptparser.lua	/^function IptParser.is_custom_target( self, target )$/;"	f
+IptParser.resync	lua/luci/sys/iptparser.lua	/^function IptParser.resync( self )$/;"	f
+IptParser.tables	lua/luci/sys/iptparser.lua	/^function IptParser.tables( self )$/;"	f
+ListValue.__init__	lua/luci/cbi.lua	/^function ListValue.__init__(self, ...)$/;"	f
+ListValue.reset_values	lua/luci/cbi.lua	/^function ListValue.reset_values(self)$/;"	f
+ListValue.validate	lua/luci/cbi.lua	/^function ListValue.validate(self, val)$/;"	f
+ListValue.value	lua/luci/cbi.lua	/^function ListValue.value(self, key, val, ...)$/;"	f
+Map.__init__	lua/luci/cbi.lua	/^function Map.__init__(self, config, ...)$/;"	f
+Map.add	lua/luci/cbi.lua	/^function Map.add(self, sectiontype)$/;"	f
+Map.chain	lua/luci/cbi.lua	/^function Map.chain(self, config)$/;"	f
+Map.del	lua/luci/cbi.lua	/^function Map.del(self, section, option)$/;"	f
+Map.formvalue	lua/luci/cbi.lua	/^function Map.formvalue(self, key)$/;"	f
+Map.formvaluetable	lua/luci/cbi.lua	/^function Map.formvaluetable(self, key)$/;"	f
+Map.get	lua/luci/cbi.lua	/^function Map.get(self, section, option)$/;"	f
+Map.get_scheme	lua/luci/cbi.lua	/^function Map.get_scheme(self, sectiontype, option)$/;"	f
+Map.parse	lua/luci/cbi.lua	/^function Map.parse(self, readinput, ...)$/;"	f
+Map.render	lua/luci/cbi.lua	/^function Map.render(self, ...)$/;"	f
+Map.section	lua/luci/cbi.lua	/^function Map.section(self, class, ...)$/;"	f
+Map.set	lua/luci/cbi.lua	/^function Map.set(self, section, option, value)$/;"	f
+Map.state_handler	lua/luci/cbi.lua	/^function Map.state_handler(self, state)$/;"	f
+Map.submitstate	lua/luci/cbi.lua	/^function Map.submitstate(self)$/;"	f
+MultiValue.__init__	lua/luci/cbi.lua	/^function MultiValue.__init__(self, ...)$/;"	f
+MultiValue.render	lua/luci/cbi.lua	/^function MultiValue.render(self, ...)$/;"	f
+MultiValue.reset_values	lua/luci/cbi.lua	/^function MultiValue.reset_values(self)$/;"	f
+MultiValue.validate	lua/luci/cbi.lua	/^function MultiValue.validate(self, val)$/;"	f
+MultiValue.value	lua/luci/cbi.lua	/^function MultiValue.value(self, key, val)$/;"	f
+MultiValue.valuelist	lua/luci/cbi.lua	/^function MultiValue.valuelist(self, section)$/;"	f
+NamedSection.__init__	lua/luci/cbi.lua	/^function NamedSection.__init__(self, map, section, stype, ...)$/;"	f
+NamedSection.parse	lua/luci/cbi.lua	/^function NamedSection.parse(self, novld)$/;"	f
+Node.__init__	lua/luci/cbi.lua	/^function Node.__init__(self, title, description)$/;"	f
+Node._run_hook	lua/luci/cbi.lua	/^function Node._run_hook(self, hook)$/;"	f
+Node._run_hooks	lua/luci/cbi.lua	/^function Node._run_hooks(self, ...)$/;"	f
+Node.append	lua/luci/cbi.lua	/^function Node.append(self, obj)$/;"	f
+Node.parse	lua/luci/cbi.lua	/^function Node.parse(self, ...)$/;"	f
+Node.prepare	lua/luci/cbi.lua	/^function Node.prepare(self, ...)$/;"	f
+Node.render	lua/luci/cbi.lua	/^function Node.render(self, scope)$/;"	f
+Node.render_children	lua/luci/cbi.lua	/^function Node.render_children(self, ...)$/;"	f
+Page.parse    	lua/luci/cbi.lua	/^Page.parse    = function() end$/;"	f
+Request.__init__	lua/luci/http.lua	/^function Request.__init__(self, env, sourcein, sinkerr)$/;"	f
+Request._parse_input	lua/luci/http.lua	/^function Request._parse_input(self)$/;"	f
+Request.content	lua/luci/http.lua	/^function Request.content(self)$/;"	f
+Request.formvalue	lua/luci/http.lua	/^function Request.formvalue(self, name, noparse)$/;"	f
+Request.formvaluetable	lua/luci/http.lua	/^function Request.formvaluetable(self, prefix)$/;"	f
+Request.getcookie	lua/luci/http.lua	/^function Request.getcookie(self, name)$/;"	f
+Request.getenv	lua/luci/http.lua	/^function Request.getenv(self, name)$/;"	f
+Request.setfilehandler	lua/luci/http.lua	/^function Request.setfilehandler(self, callback)$/;"	f
+SimpleForm.__init__	lua/luci/cbi.lua	/^function SimpleForm.__init__(self, config, title, description, data)$/;"	f
+SimpleForm.del	lua/luci/cbi.lua	/^function SimpleForm.del(self, section, option)$/;"	f
+SimpleForm.field	lua/luci/cbi.lua	/^function SimpleForm.field(self, class, ...)$/;"	f
+SimpleForm.get	lua/luci/cbi.lua	/^function SimpleForm.get(self, section, option)$/;"	f
+SimpleForm.get_scheme	lua/luci/cbi.lua	/^function SimpleForm.get_scheme()$/;"	f
+SimpleForm.parse	lua/luci/cbi.lua	/^function SimpleForm.parse(self, readinput, ...)$/;"	f
+SimpleForm.render	lua/luci/cbi.lua	/^function SimpleForm.render(self, ...)$/;"	f
+SimpleForm.section	lua/luci/cbi.lua	/^function SimpleForm.section(self, class, ...)$/;"	f
+SimpleForm.set	lua/luci/cbi.lua	/^function SimpleForm.set(self, section, option, value)$/;"	f
+SimpleForm.submitstate	lua/luci/cbi.lua	/^function SimpleForm.submitstate(self)$/;"	f
+SimpleSection.__init__	lua/luci/cbi.lua	/^function SimpleSection.__init__(self, form, ...)$/;"	f
+StaticList.__init__	lua/luci/cbi.lua	/^function StaticList.__init__(self, ...)$/;"	f
+StaticList.validate	lua/luci/cbi.lua	/^function StaticList.validate(self, value)$/;"	f
+Table.__init__	lua/luci/cbi.lua	/^function Table.__init__(self, form, data, ...)$/;"	f
+Table.cfgsections	lua/luci/cbi.lua	/^function Table.cfgsections(self)$/;"	f
+Table.parse	lua/luci/cbi.lua	/^function Table.parse(self, readinput)$/;"	f
+Table.update	lua/luci/cbi.lua	/^function Table.update(self, data)$/;"	f
+Template.__init__	lua/luci/cbi.lua	/^function Template.__init__(self, template)$/;"	f
+Template.__init__	lua/luci/template.lua	/^function Template.__init__(self, name)	$/;"	f
+Template.parse	lua/luci/cbi.lua	/^function Template.parse(self, readinput)$/;"	f
+Template.render	lua/luci/cbi.lua	/^function Template.render(self)$/;"	f
+Template.render	lua/luci/template.lua	/^function Template.render(self, scope)$/;"	f
+TextValue.__init__	lua/luci/cbi.lua	/^function TextValue.__init__(self, ...)$/;"	f
+TypedSection.__init__	lua/luci/cbi.lua	/^function TypedSection.__init__(self, map, type, ...)$/;"	f
+TypedSection.cfgsections	lua/luci/cbi.lua	/^function TypedSection.cfgsections(self)$/;"	f
+TypedSection.checkscope	lua/luci/cbi.lua	/^function TypedSection.checkscope(self, section)$/;"	f
+TypedSection.depends	lua/luci/cbi.lua	/^function TypedSection.depends(self, option, value)$/;"	f
+TypedSection.parse	lua/luci/cbi.lua	/^function TypedSection.parse(self, novld)$/;"	f
+TypedSection.validate	lua/luci/cbi.lua	/^function TypedSection.validate(self, section)$/;"	f
+Value.__init__	lua/luci/cbi.lua	/^function Value.__init__(self, ...)$/;"	f
+Value.reset_values	lua/luci/cbi.lua	/^function Value.reset_values(self)$/;"	f
+Value.value	lua/luci/cbi.lua	/^function Value.value(self, key, val)$/;"	f
+XHR	www/luci-static/resources/xhr.js	/^XHR = function()$/;"	c
+XHR._r	www/luci-static/resources/xhr.js	/^		XHR._r = function() {$/;"	f
+XHR.get	www/luci-static/resources/xhr.js	/^XHR.get = function(url, data, callback)$/;"	f
+XHR.halt	www/luci-static/resources/xhr.js	/^XHR.halt = function()$/;"	f
+XHR.poll	www/luci-static/resources/xhr.js	/^XHR.poll = function(interval, url, data, callback)$/;"	f
+XHR.run	www/luci-static/resources/xhr.js	/^XHR.run = function()$/;"	f
+XHR.running	www/luci-static/resources/xhr.js	/^XHR.running = function()$/;"	f
+_	lua/luci/dispatcher.lua	/^function _(text)$/;"	f
+_M['and'] 	lua/luci/cbi/datatypes.lua	/^_M['and'] = function(v, ...)$/;"	f
+_M['or'] 	lua/luci/cbi/datatypes.lua	/^_M['or'] = function(v, ...)$/;"	f
+__appendval	lua/luci/http/protocol.lua	/^local function __appendval( tbl, key, chunk )$/;"	f
+__array16	lua/luci/ip.lua	/^local function __array16( x, family )$/;"	f
+__bless	lua/luci/ip.lua	/^local function __bless(x)$/;"	f
+__chrdec	lua/luci/http/protocol.lua	/^	local function __chrdec( hex )$/;"	f
+__chrenc	lua/luci/http/protocol.lua	/^	local function __chrenc( chr )$/;"	f
+__finishval	lua/luci/http/protocol.lua	/^local function __finishval( tbl, key, handler )$/;"	f
+__index 	lua/luci/config.lua	/^					__index = function(tbl, key)$/;"	f
+__index 	lua/luci/sys.lua	/^			__index = function(t, k)$/;"	f
+__index 	lua/luci/sys/zoneinfo.lua	/^	__index = function(t, k)$/;"	f
+__index 	lua/luci/util.lua	/^	__index = function(self, key)$/;"	f
+__initval	lua/luci/http/protocol.lua	/^local function __initval( tbl, key )$/;"	f
+__mask16	lua/luci/ip.lua	/^local function __mask16(bits)$/;"	f
+__maxlen	lua/luci/ip.lua	/^local function __maxlen(family)$/;"	f
+__network_ifstatus	lib/functions/network.sh	/^__network_ifstatus() {$/;"	f
+__network_wan	lib/functions/network.sh	/^__network_wan()$/;"	f
+__newindex 	lua/luci/util.lua	/^	__newindex = function(self, key, value)$/;"	f
+__not16	lua/luci/ip.lua	/^local function __not16(bits)$/;"	f
+__sublen	lua/luci/ip.lua	/^local function __sublen(family)$/;"	f
+_action	lua/luci/model/ipkg.lua	/^local function _action(cmd, ...)$/;"	f
+_add	lua/luci/sys.lua	/^	local function _add(i, ...)$/;"	f
+_append	lua/luci/model/network.lua	/^function _append(c, s, o, a)$/;"	f
+_arcombine	lua/luci/dispatcher.lua	/^local function _arcombine(self, ...)$/;"	f
+_call	lua/luci/dispatcher.lua	/^local function _call(self, ...)$/;"	f
+_cbi	lua/luci/dispatcher.lua	/^local function _cbi(self, ...)$/;"	f
+_checkid	lua/luci/sauth.lua	/^local function _checkid(id)$/;"	f
+_config_add_generic	lib/netifd/utils.sh	/^_config_add_generic() {$/;"	f
+_create_node	lua/luci/dispatcher.lua	/^function _create_node(path)$/;"	f
+_encode	www/luci-static/resources/xhr.js	/^	this._encode = function(obj)$/;"	f
+_encode_filename	lua/luci/ccache.lua	/^	local function _encode_filename(name)$/;"	f
+_filter	lua/luci/model/network.lua	/^function _filter(c, s, o, r)$/;"	f
+_firstchild	lua/luci/dispatcher.lua	/^function _firstchild()$/;"	f
+_form	lua/luci/dispatcher.lua	/^local function _form(self, ...)$/;"	f
+_get	lua/luci/model/firewall.lua	/^function _get(c, s, o)$/;"	f
+_get	lua/luci/model/network.lua	/^function _get(c, s, o)$/;"	f
+_iface_ignore	lua/luci/model/network.lua	/^function _iface_ignore(x)$/;"	f
+_iface_virtual	lua/luci/model/network.lua	/^function _iface_virtual(x)$/;"	f
+_ifattr	lua/luci/dispatcher.lua	/^		local function _ifattr(cond, key, val)$/;"	f
+_instantiate	lua/luci/util.lua	/^local function _instantiate(class, ...)$/;"	f
+_list	lua/luci/model/ipkg.lua	/^function _list(action, pat, cb)$/;"	f
+_load_sane	lua/luci/ccache.lua	/^	local function _load_sane(file)$/;"	f
+_lookup	lua/luci/model/ipkg.lua	/^local function _lookup(act, pkg)$/;"	f
+_nethints	lua/luci/sys.lua	/^local function _nethints(what, callback)$/;"	f
+_parse_mixed_record	lua/luci/sys.lua	/^function _parse_mixed_record(cnt, delimiter)$/;"	f
+_parselist	lua/luci/model/ipkg.lua	/^local function _parselist(rawdata)$/;"	f
+_procd_add_array	lib/functions/procd.sh	/^_procd_add_array() {$/;"	f
+_procd_add_array_data	lib/functions/procd.sh	/^_procd_add_array_data() {$/;"	f
+_procd_add_config_trigger	lib/functions/procd.sh	/^_procd_add_config_trigger() {$/;"	f
+_procd_add_instance	lib/functions/procd.sh	/^_procd_add_instance() {$/;"	f
+_procd_add_interface_trigger	lib/functions/procd.sh	/^_procd_add_interface_trigger() {$/;"	f
+_procd_add_jail	lib/functions/procd.sh	/^_procd_add_jail() {$/;"	f
+_procd_add_jail_mount	lib/functions/procd.sh	/^_procd_add_jail_mount() {$/;"	f
+_procd_add_jail_mount_rw	lib/functions/procd.sh	/^_procd_add_jail_mount_rw() {$/;"	f
+_procd_add_raw_trigger	lib/functions/procd.sh	/^_procd_add_raw_trigger() {$/;"	f
+_procd_add_reload_interface_trigger	lib/functions/procd.sh	/^_procd_add_reload_interface_trigger() {$/;"	f
+_procd_add_reload_trigger	lib/functions/procd.sh	/^_procd_add_reload_trigger() {$/;"	f
+_procd_add_table	lib/functions/procd.sh	/^_procd_add_table() {$/;"	f
+_procd_add_table_data	lib/functions/procd.sh	/^_procd_add_table_data() {$/;"	f
+_procd_add_validation	lib/functions/procd.sh	/^_procd_add_validation() {$/;"	f
+_procd_append_param	lib/functions/procd.sh	/^_procd_append_param() {$/;"	f
+_procd_call	lib/functions/procd.sh	/^_procd_call() {$/;"	f
+_procd_close_instance	lib/functions/procd.sh	/^_procd_close_instance() {$/;"	f
+_procd_close_service	lib/functions/procd.sh	/^_procd_close_service() {$/;"	f
+_procd_close_trigger	lib/functions/procd.sh	/^_procd_close_trigger() {$/;"	f
+_procd_close_validate	lib/functions/procd.sh	/^_procd_close_validate() {$/;"	f
+_procd_kill	lib/functions/procd.sh	/^_procd_kill() {$/;"	f
+_procd_open_instance	lib/functions/procd.sh	/^_procd_open_instance() {$/;"	f
+_procd_open_service	lib/functions/procd.sh	/^_procd_open_service() {$/;"	f
+_procd_open_trigger	lib/functions/procd.sh	/^_procd_open_trigger() {$/;"	f
+_procd_open_validate	lib/functions/procd.sh	/^_procd_open_validate() {$/;"	f
+_procd_set_config_changed	lib/functions/procd.sh	/^_procd_set_config_changed() {$/;"	f
+_procd_set_param	lib/functions/procd.sh	/^_procd_set_param() {$/;"	f
+_procd_ubus_call	lib/functions/procd.sh	/^_procd_ubus_call() {$/;"	f
+_procd_wrapper	lib/functions/procd.sh	/^_procd_wrapper() {$/;"	f
+_proto_do_renew	lib/netifd/netifd-proto.sh	/^_proto_do_renew() {$/;"	f
+_proto_do_setup	lib/netifd/netifd-proto.sh	/^_proto_do_setup() {$/;"	f
+_proto_do_teardown	lib/netifd/netifd-proto.sh	/^_proto_do_teardown() {$/;"	f
+_proto_notify	lib/netifd/netifd-proto.sh	/^_proto_notify() {$/;"	f
+_proto_push_array	lib/netifd/netifd-proto.sh	/^_proto_push_array() {$/;"	f
+_proto_push_ipv4_addr	lib/netifd/netifd-proto.sh	/^_proto_push_ipv4_addr() {$/;"	f
+_proto_push_ipv6_addr	lib/netifd/netifd-proto.sh	/^_proto_push_ipv6_addr() {$/;"	f
+_proto_push_route	lib/netifd/netifd-proto.sh	/^_proto_push_route() {$/;"	f
+_proto_push_string	lib/netifd/netifd-proto.sh	/^_proto_push_string() {$/;"	f
+_read	lua/luci/sauth.lua	/^local function _read(id)$/;"	f
+_recurse	lua/nixio/fs.lua	/^local function _recurse(cb, src, dest)$/;"	f
+_resolve_deps	lua/luci/model/uci.lua	/^	local function _resolve_deps(name)$/;"	f
+_resolve_path	lua/luci/dispatcher.lua	/^	local function _resolve_path(path)$/;"	f
+_serialize_table	lua/luci/util.lua	/^function _serialize_table(t, seen)$/;"	f
+_set	lua/luci/model/firewall.lua	/^function _set(c, s, o, v)$/;"	f
+_set	lua/luci/model/network.lua	/^function _set(c, s, o, v)$/;"	f
+_sortiter	lua/luci/util.lua	/^function _sortiter( t, f )$/;"	f
+_stror	lua/luci/model/network.lua	/^function _stror(s1, s2)$/;"	f
+_ucidef_set_interface	lib/functions/uci-defaults-new.sh	/^_ucidef_set_interface() {$/;"	f
+_valid_id	lua/luci/model/firewall.lua	/^function _valid_id(x)$/;"	f
+_wdev_add_variables	lib/netifd/netifd-wireless.sh	/^_wdev_add_variables() {$/;"	f
+_wdev_common_device_config	lib/netifd/netifd-wireless.sh	/^_wdev_common_device_config() {$/;"	f
+_wdev_common_iface_config	lib/netifd/netifd-wireless.sh	/^_wdev_common_iface_config() {$/;"	f
+_wdev_handler	lib/netifd/netifd-wireless.sh	/^_wdev_handler() {$/;"	f
+_wdev_msg_call	lib/netifd/netifd-wireless.sh	/^_wdev_msg_call() {$/;"	f
+_wdev_notify	lib/netifd/netifd-wireless.sh	/^_wdev_notify() {$/;"	f
+_wdev_notify_init	lib/netifd/netifd-wireless.sh	/^_wdev_notify_init() {$/;"	f
+_wdev_prepare_channel	lib/netifd/netifd-wireless.sh	/^_wdev_prepare_channel() {$/;"	f
+_wdev_wrapper	lib/netifd/netifd-wireless.sh	/^_wdev_wrapper() {$/;"	f
+_wifi_iface	lua/luci/model/network.lua	/^function _wifi_iface(x)$/;"	f
+_wifi_lookup	lua/luci/model/network.lua	/^function _wifi_lookup(ifn)$/;"	f
+_wifi_state	lua/luci/model/network.lua	/^function _wifi_state(key, val, field)$/;"	f
+_wireless_add_process	lib/netifd/netifd-wireless.sh	/^_wireless_add_process() {$/;"	f
+_wireless_add_vif	lib/netifd/netifd-wireless.sh	/^_wireless_add_vif() {$/;"	f
+_wireless_process_kill_all	lib/netifd/netifd-wireless.sh	/^_wireless_process_kill_all() {$/;"	f
+_wireless_set_brsnoop_isolation	lib/netifd/netifd-wireless.sh	/^_wireless_set_brsnoop_isolation() {$/;"	f
+_wireless_set_data	lib/netifd/netifd-wireless.sh	/^_wireless_set_data() {$/;"	f
+_wireless_set_retry	lib/netifd/netifd-wireless.sh	/^_wireless_set_retry() {$/;"	f
+_wireless_set_up	lib/netifd/netifd-wireless.sh	/^_wireless_set_up() {$/;"	f
+_write	lua/luci/sauth.lua	/^local function _write(id, data)$/;"	f
+_write_sane	lua/luci/ccache.lua	/^	local function _write_sane(file, func)$/;"	f
+_xmlHttp	www/luci-static/resources/xhr.js	/^		this._xmlHttp.onreadystatechange = function(){};$/;"	m	class:cancel
+abort	www/luci-static/resources/xhr.js	/^	this.abort = function() {$/;"	f
+action_apply	lua/luci/controller/admin/uci.lua	/^function action_apply()$/;"	f
+action_bandwidth	lua/luci/controller/admin/status.lua	/^function action_bandwidth(iface)$/;"	f
+action_changes	lua/luci/controller/admin/uci.lua	/^function action_changes()$/;"	f
+action_clock_status	lua/luci/controller/admin/system.lua	/^function action_clock_status()$/;"	f
+action_connections	lua/luci/controller/admin/status.lua	/^function action_connections()$/;"	f
+action_dmesg	lua/luci/controller/admin/status.lua	/^function action_dmesg()$/;"	f
+action_flashops	lua/luci/controller/admin/system.lua	/^function action_flashops()$/;"	f
+action_iptables	lua/luci/controller/admin/status.lua	/^function action_iptables()$/;"	f
+action_load	lua/luci/controller/admin/status.lua	/^function action_load()$/;"	f
+action_logout	lua/luci/controller/admin/index.lua	/^function action_logout()$/;"	f
+action_nameinfo	lua/luci/controller/admin/status.lua	/^function action_nameinfo(...)$/;"	f
+action_packages	lua/luci/controller/admin/system.lua	/^function action_packages()$/;"	f
+action_passwd	lua/luci/controller/admin/system.lua	/^function action_passwd()$/;"	f
+action_reboot	lua/luci/controller/admin/system.lua	/^function action_reboot()$/;"	f
+action_restart	lua/luci/controller/admin/servicectl.lua	/^function action_restart(args)$/;"	f
+action_revert	lua/luci/controller/admin/uci.lua	/^function action_revert()$/;"	f
+action_status	lua/luci/controller/admin/servicectl.lua	/^function action_status()$/;"	f
+action_syslog	lua/luci/controller/admin/status.lua	/^function action_syslog()$/;"	f
+action_wireless	lua/luci/controller/admin/status.lua	/^function action_wireless(iface)$/;"	f
+add_default_handler	lib/netifd/utils.sh	/^add_default_handler() {$/;"	f
+add_driver	lib/netifd/netifd-wireless.sh	/^			add_driver() {$/;"	f
+add_driver	lib/netifd/netifd-wireless.sh	/^add_driver() {$/;"	f
+add_luci_conffiles	lib/upgrade/luci-add-conffiles.sh	/^add_luci_conffiles()$/;"	f
+add_network	lua/luci/model/network.lua	/^function add_network(self, n, options)$/;"	f
+add_protocol	lib/netifd/netifd-proto.sh	/^			add_protocol() {$/;"	f
+add_wifinet	lua/luci/model/network.lua	/^function add_wifinet(self, net, options)$/;"	f
+add_zone	lua/luci/model/firewall.lua	/^function add_zone(self, n)$/;"	f
+alias	lua/luci/dispatcher.lua	/^function alias(...)$/;"	f
+and	www/luci-static/resources/cbi.js	/^	'and': function()$/;"	m	class:cbi_validators
+append	lib/functions.sh	/^append() {$/;"	f
+append	lib/netifd/utils.sh	/^append() {$/;"	f
+append	lua/luci/util.lua	/^function append(src, ...)$/;"	f
+arcombine	lua/luci/dispatcher.lua	/^function arcombine(trg1, trg2)$/;"	f
+ask_bool	lib/upgrade/common.sh	/^ask_bool() {$/;"	f
+assert(type(func) 	lua/luci/dispatcher.lua	/^	assert(type(func) == "function",$/;"	f
+assert(type(idx) 	lua/luci/dispatcher.lua	/^		assert(type(idx) == "function",$/;"	f
+assign	lua/luci/dispatcher.lua	/^function assign(path, clone, title, order)$/;"	f
+atm.create 	lua/luci/model/cbi/admin_network/network.lua	/^	atm.create = function(self, section)$/;"	f
+attr        	lua/luci/dispatcher.lua	/^		   attr        = function(...) return _ifattr(true, ...) end;$/;"	f
+authen 	lua/luci/dispatcher.lua	/^				authen = function() return eu end$/;"	f
+authenticator.htmlauth	lua/luci/dispatcher.lua	/^function authenticator.htmlauth(validator, accs, default)$/;"	f
+avail.cfgvalue	lua/luci/model/cbi/admin_system/fstab.lua	/^function avail.cfgvalue(self, section)$/;"	f
+backup_ifnames	lua/luci/model/cbi/admin_network/ifaces.lua	/^local function backup_ifnames(is_bridge)$/;"	f
+bandwidth_label	lua/luci/view/admin_status/bandwidth.htm	/^	function bandwidth_label(bytes, br)$/;"	f
+bigendian	lua/luci/util.lua	/^function bigendian()$/;"	f
+board_config_flush	lib/functions/uci-defaults-new.sh	/^board_config_flush() {$/;"	f
+board_config_update	lib/functions/uci-defaults-new.sh	/^board_config_update() {$/;"	f
+bool	lua/luci/cbi/datatypes.lua	/^function bool(val)$/;"	f
+boot	etc/rc.common	/^boot() {$/;"	f
+boot_hook_add	lib/functions/preinit.sh	/^boot_hook_add() {$/;"	f
+boot_hook_init	lib/functions/preinit.sh	/^boot_hook_init() {$/;"	f
+boot_hook_shift	lib/functions/preinit.sh	/^boot_hook_shift() {$/;"	f
+boot_hook_splice_finish	lib/functions/preinit.sh	/^boot_hook_splice_finish() {$/;"	f
+boot_hook_splice_start	lib/functions/preinit.sh	/^boot_hook_splice_start() {$/;"	f
+boot_run_hook	lib/functions/preinit.sh	/^boot_run_hook() {$/;"	f
+build_querystring	lua/luci/http.lua	/^function build_querystring(q)$/;"	f
+build_url	lua/luci/dispatcher.lua	/^function build_url(...)$/;"	f
+busy	www/luci-static/resources/xhr.js	/^	this.busy = function() {$/;"	m	class:XHR
+byte_format	lua/luci/tools/webadmin.lua	/^function byte_format(byte)$/;"	f
+c.cfgvalue 	lua/luci/model/cbi/admin_system/backupfiles.lua	/^	c.cfgvalue = function(self, section)$/;"	f
+c.write 	lua/luci/model/cbi/admin_system/backupfiles.lua	/^	c.write = function(self, section, value)$/;"	f
+cache_enable	lua/luci/ccache.lua	/^function cache_enable(cachepath, mode)$/;"	f
+cache_ondemand	lua/luci/ccache.lua	/^function cache_ondemand(...)$/;"	f
+call	lua/luci/dispatcher.lua	/^function call(name, ...)$/;"	f
+call	lua/luci/sys.lua	/^function call(...)$/;"	f
+callback	lua/luci/view/cbi/filebrowser.htm	/^		function callback(path) {$/;"	f
+cancel	www/luci-static/resources/xhr.js	/^	this.cancel = function()$/;"	c
+cbi	lua/luci/dispatcher.lua	/^function cbi(model, config)$/;"	f
+cbi_add_knownips	lua/luci/tools/webadmin.lua	/^function cbi_add_knownips(field)$/;"	f
+cbi_add_networks	lua/luci/tools/webadmin.lua	/^function cbi_add_networks(field)$/;"	f
+cbi_bind	www/luci-static/resources/cbi.js	/^function cbi_bind(obj, type, callback, mode) {$/;"	f	function:cbi_d_check
+cbi_browser_btnclick	www/luci-static/resources/cbi.js	/^	function cbi_browser_btnclick(e) {$/;"	f	function:cbi_browser_init
+cbi_browser_init	www/luci-static/resources/cbi.js	/^function cbi_browser_init(id, respath, url, defpath)$/;"	f
+cbi_c	www/luci-static/resources/cbi.js	/^var cbi_c = [];$/;"	v
+cbi_combobox	www/luci-static/resources/cbi.js	/^function cbi_combobox(id, values, def, man) {$/;"	f	function:cbi_d_check
+cbi_combobox_init	www/luci-static/resources/cbi.js	/^function cbi_combobox_init(id, values, def, man) {$/;"	f
+cbi_d	www/luci-static/resources/cbi.js	/^var cbi_d = [];$/;"	v
+cbi_d_add	www/luci-static/resources/cbi.js	/^function cbi_d_add(field, dep, next) {$/;"	f
+cbi_d_check	www/luci-static/resources/cbi.js	/^function cbi_d_check(deps) {$/;"	f
+cbi_d_checkvalue	www/luci-static/resources/cbi.js	/^function cbi_d_checkvalue(target, ref) {$/;"	f
+cbi_d_update	www/luci-static/resources/cbi.js	/^function cbi_d_update() {$/;"	f	function:cbi_d_check
+cbi_dynlist_btnclick	www/luci-static/resources/cbi.js	/^	function cbi_dynlist_btnclick(ev)$/;"	f
+cbi_dynlist_init	www/luci-static/resources/cbi.js	/^function cbi_dynlist_init(name, respath, datatype, optional, choices)$/;"	f
+cbi_dynlist_keydown	www/luci-static/resources/cbi.js	/^	function cbi_dynlist_keydown(ev)$/;"	f
+cbi_dynlist_keypress	www/luci-static/resources/cbi.js	/^	function cbi_dynlist_keypress(ev)$/;"	f	function:cbi_dynlist_init
+cbi_dynlist_redraw	www/luci-static/resources/cbi.js	/^	function cbi_dynlist_redraw(focus, add, del)$/;"	f	function:cbi_dynlist_init
+cbi_filebrowser	www/luci-static/resources/cbi.js	/^function cbi_filebrowser(id, url, defpath) {$/;"	f
+cbi_hijack_forms	www/luci-static/resources/cbi.js	/^function cbi_hijack_forms(layer, win, fail, load) {$/;"	f
+cbi_t	www/luci-static/resources/cbi.js	/^var cbi_t = [];$/;"	v
+cbi_t_add	www/luci-static/resources/cbi.js	/^function cbi_t_add(section, tab) {$/;"	f
+cbi_t_switch	www/luci-static/resources/cbi.js	/^function cbi_t_switch(section, tab) {$/;"	f
+cbi_t_update	www/luci-static/resources/cbi.js	/^function cbi_t_update() {$/;"	f
+cbi_validate_form	www/luci-static/resources/cbi.js	/^function cbi_validate_form(form, errmsg)$/;"	f
+cbi_validate_reset	www/luci-static/resources/cbi.js	/^function cbi_validate_reset(form)$/;"	f
+cid	www/luci-static/resources/cbi.js	/^		cbi_t[section][tab] = { 'tab': t, 'container': c, 'cid': c.id };$/;"	p	class:cbi_t
+cidr.add	lua/luci/ip.lua	/^function cidr.add( self, amount, inplace )$/;"	f
+cidr.broadcast	lua/luci/ip.lua	/^function cidr.broadcast( self )$/;"	f
+cidr.contains	lua/luci/ip.lua	/^function cidr.contains( self, addr )$/;"	f
+cidr.equal	lua/luci/ip.lua	/^function cidr.equal( self, addr )$/;"	f
+cidr.higher	lua/luci/ip.lua	/^function cidr.higher( self, addr )$/;"	f
+cidr.host	lua/luci/ip.lua	/^function cidr.host( self )$/;"	f
+cidr.is4	lua/luci/ip.lua	/^function cidr.is4( self )$/;"	f
+cidr.is4linklocal	lua/luci/ip.lua	/^function cidr.is4linklocal( self )$/;"	f
+cidr.is4rfc1918	lua/luci/ip.lua	/^function cidr.is4rfc1918( self )$/;"	f
+cidr.is6	lua/luci/ip.lua	/^function cidr.is6( self )$/;"	f
+cidr.is6linklocal	lua/luci/ip.lua	/^function cidr.is6linklocal( self )$/;"	f
+cidr.lower	lua/luci/ip.lua	/^function cidr.lower( self, addr )$/;"	f
+cidr.mask	lua/luci/ip.lua	/^function cidr.mask( self, bits )$/;"	f
+cidr.maxhost	lua/luci/ip.lua	/^function cidr.maxhost( self )$/;"	f
+cidr.minhost	lua/luci/ip.lua	/^function cidr.minhost( self )$/;"	f
+cidr.network	lua/luci/ip.lua	/^function cidr.network( self, bits )$/;"	f
+cidr.prefix	lua/luci/ip.lua	/^function cidr.prefix( self, mask )$/;"	f
+cidr.string	lua/luci/ip.lua	/^function cidr.string( self )$/;"	f
+cidr.sub	lua/luci/ip.lua	/^function cidr.sub( self, amount, inplace )$/;"	f
+cipher.cfgvalue	lua/luci/model/cbi/admin_network/wifi.lua	/^function cipher.cfgvalue(self, section)$/;"	f
+cipher.write	lua/luci/model/cbi/admin_network/wifi.lua	/^function cipher.write(self, section)$/;"	f
+ck.cfgvalue 	lua/luci/model/cbi/admin_system/fstab.lua	/^ck.cfgvalue = function(self, section)$/;"	f
+class	lua/luci/util.lua	/^function class(base)$/;"	f
+clear	lua/luci/i18n.lua	/^function clear()$/;"	f
+clone	lua/luci/util.lua	/^function clone(object, deep)$/;"	f
+close	lua/luci/http.lua	/^function close()$/;"	f
+cmatch	lua/luci/util.lua	/^function cmatch(str, pat)$/;"	f
+code:sub	lua/luci/util.lua	/^	return code:sub(1,12) .. strip_function(code:sub(13,-1))$/;"	f
+combine	lua/luci/util.lua	/^function combine(...)$/;"	f
+commit	lua/luci/model/firewall.lua	/^function commit(self, ...)$/;"	f
+commit	lua/luci/model/network.lua	/^function commit(self, ...)$/;"	f
+comparator 	lua/luci/model/uci.lua	/^		comparator = function(section)$/;"	f
+compare	lua/luci/http/protocol/date.lua	/^function compare(d1, d2)$/;"	f
+compile_datatype	lua/luci/cbi.lua	/^function compile_datatype(code)$/;"	f
+config	lib/functions.sh	/^config () {$/;"	f
+config_add_array	lib/netifd/utils.sh	/^config_add_array() {$/;"	f
+config_add_boolean	lib/netifd/utils.sh	/^config_add_boolean() {$/;"	f
+config_add_int	lib/netifd/utils.sh	/^config_add_int() {$/;"	f
+config_add_string	lib/netifd/utils.sh	/^config_add_string() {$/;"	f
+config_cb	lib/functions.sh	/^	config_cb() { return 0; }$/;"	f
+config_foreach	lib/functions.sh	/^config_foreach() {$/;"	f
+config_get	lib/functions.sh	/^config_get() {$/;"	f
+config_get_bool	lib/functions.sh	/^config_get_bool() {$/;"	f
+config_list_foreach	lib/functions.sh	/^config_list_foreach() {$/;"	f
+config_load	lib/functions.sh	/^config_load() {$/;"	f
+config_set	lib/functions.sh	/^config_set() {$/;"	f
+config_unset	lib/functions.sh	/^config_unset() {$/;"	f
+consume	lua/nixio/util.lua	/^function consume(iter, append)$/;"	f
+container	www/luci-static/resources/cbi.js	/^		cbi_t[section][tab] = { 'tab': t, 'container': c, 'cid': c.id };$/;"	p	class:cbi_t
+contains	lua/luci/util.lua	/^function contains(table, value)$/;"	f
+content	lua/luci/http.lua	/^function content()$/;"	f
+content	lua/luci/view/admin_network/diagnostics.htm	/^		<h2><a id="content" name="content"><%:Diagnostics%><\/a><\/h2>$/;"	a
+content	lua/luci/view/admin_network/wifi_join.htm	/^<h2><a id="content" name="content"><%:Join Network: Wireless Scan%><\/a><\/h2>$/;"	a
+content	lua/luci/view/admin_network/wifi_overview.htm	/^	<h2><a id="content" name="content"><%:Associated Stations%><\/a><\/h2>$/;"	a
+content	lua/luci/view/admin_network/wifi_overview.htm	/^<h2><a id="content" name="content"><%:Wireless Overview%><\/a><\/h2>$/;"	a
+content	lua/luci/view/admin_status/bandwidth.htm	/^<h2><a id="content" name="content"><%:Realtime Traffic%><\/a><\/h2>$/;"	a
+content	lua/luci/view/admin_status/connections.htm	/^<h2><a id="content" name="content"><%:Realtime Connections%><\/a><\/h2>$/;"	a
+content	lua/luci/view/admin_status/dmesg.htm	/^<h2><a id="content" name="content"><%:Kernel Log%><\/a><\/h2>$/;"	a
+content	lua/luci/view/admin_status/index.htm	/^<h2><a id="content" name="content"><%:Status%><\/a><\/h2>$/;"	a
+content	lua/luci/view/admin_status/iptables.htm	/^<h2><a id="content" name="content"><%:Firewall Status%><\/a><\/h2>$/;"	a
+content	lua/luci/view/admin_status/load.htm	/^<h2><a id="content" name="content"><%:Realtime Load%><\/a><\/h2>$/;"	a
+content	lua/luci/view/admin_status/routes.htm	/^	<h2><a id="content" name="content"><%:Routes%><\/a><\/h2>$/;"	a
+content	lua/luci/view/admin_status/syslog.htm	/^<h2><a id="content" name="content"><%:System Log%><\/a><\/h2>$/;"	a
+content	lua/luci/view/admin_status/wireless.htm	/^<h2><a id="content" name="content"><%:Realtime Wireless%><\/a><\/h2>$/;"	a
+content	lua/luci/view/admin_system/applyreboot.htm	/^				<h2><a id="content" name="content"><%:System%> - <% if title then %><%=title%><% else %><%:Rebooting...%><% end %><\/a><\/h2>$/;"	a
+content	lua/luci/view/admin_system/flashops.htm	/^<h2><a id="content" name="content"><%:Flash operations%><\/a><\/h2>$/;"	a
+content	lua/luci/view/admin_system/packages.htm	/^<h2><a id="content" name="content"><%:Software%><\/a><\/h2>$/;"	a
+content	lua/luci/view/admin_system/reboot.htm	/^<h2><a id="content" name="content"><%:System%><\/a><\/h2>$/;"	a
+content	lua/luci/view/admin_system/upgrade.htm	/^<h2><a id="content" name="content"><%:Flash Firmware%> - <%:Verify%><\/a><\/h2>$/;"	a
+content	lua/luci/view/admin_uci/apply.htm	/^<h2><a id="content" name="content"><%:Configuration%> \/ <%:Apply%><\/a><\/h2>$/;"	a
+content	lua/luci/view/admin_uci/changes.htm	/^<h2><a id="content" name="content"><%:Configuration%> \/ <%:Changes%><\/a><\/h2>$/;"	a
+content	lua/luci/view/admin_uci/revert.htm	/^<h2><a id="content" name="content"><%:Configuration%> \/ <%:Revert%><\/a><\/h2>$/;"	a
+content	lua/luci/view/cbi/map.htm	/^	<% if self.title and #self.title > 0 then %><h2><a id="content" name="content"><%=self.title%><\/a><\/h2><% end %>$/;"	a
+content	lua/luci/view/cbi/simpleform.htm	/^		<% if self.title and #self.title > 0 then %><h2><a id="content" name="content"><%=self.title%><\/a><\/h2><% end %>$/;"	a
+content	lua/luci/view/error404.htm	/^<h2><a id="content" name="content">404 <%:Not Found%><\/a><\/h2>$/;"	a
+content	lua/luci/view/error500.htm	/^<h2><a id="content" name="content">500 <%:Internal Server Error%><\/a><\/h2>$/;"	a
+content	lua/luci/view/sysauth.htm	/^		<h2><a id="content" name="content"><%:Authorization Required%><\/a><\/h2>$/;"	a
+copcall	lua/luci/util.lua	/^function copcall(f, ...)$/;"	f
+copcall_id	lua/luci/util.lua	/^local function copcall_id(trace, ...)$/;"	f
+copy	lua/nixio/fs.lua	/^function copy(src, dest)$/;"	f
+copyr	lua/nixio/fs.lua	/^function copyr(src, dest)$/;"	f
+coxpcall	lua/luci/util.lua	/^function coxpcall(f, err, ...)$/;"	f
+createElement	www/luci-static/bootstrap/html5.js	/^(function(a,b){function f(a){var c,d,e,f;b.documentMode>7?(c=b.createElement("font"),c.setAttribute("data-html5shiv",a.nodeName.toLowerCase())):c=b.createElement("shiv:"+a.nodeName);while(a.firstChild)c.appendChild(a.childNodes[0]);for(d=a.attributes,e=d.length,f=0;f<e;++f)d[f].specified&&c.setAttribute(d[f].nodeName,d[f].nodeValue);c.style.cssText=a.style.cssText,a.parentNode.replaceChild(c,a),c.originalElement=a}function g(a){var b=a.originalElement;while(a.childNodes.length)b.appendChild(a.childNodes[0]);a.parentNode.replaceChild(b,a)}function h(a,b){b=b||"all";var c=-1,d=[],e=a.length,f,g;while(++c<e){f=a[c],g=f.media||b;if(f.disabled||!\/print|all\/.test(g))continue;d.push(h(f.imports,g),f.cssText)}return d.join("")}function i(c){var d=new RegExp("(^|[\\\\s,{}])("+a.html5.elements.join("|")+")","gi"),e=c.split("{"),f=e.length,g=-1;while(++g<f)e[g]=e[g].split("}"),b.documentMode>7?e[g][e[g].length-1]=e[g][e[g].length-1].replace(d,'$1font[data-html5shiv="$2"]'):e[g][e[g].length-1]=e[g][e[g].length-1].replace(d,"$1shiv\\\\:$2"),e[g]=e[g].join("}");return e.join("{")}var c=function(a){return a.innerHTML="<x-element><\/x-element>",a.childNodes.length===1}(b.createElement("a")),d=function(a,b,c){return b.appendChild(a),(c=(c?c(a):a.currentStyle).display)&&b.removeChild(a)&&c==="block"}(b.createElement("nav"),b.documentElement,a.getComputedStyle),e={elements:"abbr article aside audio bdi canvas data datalist details figcaption figure footer header hgroup mark meter nav output progress section summary time video".split(" "),shivDocument:function(a){a=a||b;if(a.documentShived)return;a.documentShived=!0;var f=a.createElement,g=a.createDocumentFragment,h=a.getElementsByTagName("head")[0],i=function(a){f(a)};c||(e.elements.join(" ").replace(\/\\w+\/g,i),a.createElement=function(a){var b=f(a);return b.canHaveChildren&&e.shivDocument(b.document),b},a.createDocumentFragment=function(){return e.shivDocument(g())});if(!d&&h){var j=f("div");j.innerHTML=["x<style>","article,aside,details,figcaption,figure,footer,header,hgroup,nav,section{display:block}","audio{display:none}","canvas,video{display:inline-block;*display:inline;*zoom:1}","[hidden]{display:none}audio[controls]{display:inline-block;*display:inline;*zoom:1}","mark{background:#FF0;color:#000}","<\/style>"].join(""),h.insertBefore(j.lastChild,h.firstChild)}return a}};e.shivDocument(b),a.html5=e;if(c||!a.attachEvent)return;a.attachEvent("onbeforeprint",function(){if(a.html5.supportsXElement||!b.namespaces)return;b.namespaces.shiv||b.namespaces.add("shiv");var c=-1,d=new RegExp("^("+a.html5.elements.join("|")+")$","i"),e=b.getElementsByTagName("*"),g=e.length,j,k=i(h(function(a,b){var c=[],d=a.length;while(d)c.unshift(a[--d]);d=b.length;while(d)c.unshift(b[--d]);c.sort(function(a,b){return a.sourceIndex-b.sourceIndex}),d=c.length;while(d)c[--d]=c[d].styleSheet;return c}(b.getElementsByTagName("style"),b.getElementsByTagName("link"))));while(++c<g)j=e[c],d.test(j.nodeName)&&f(j);b.appendChild(b._shivedStyleSheet=b.createElement("style")).styleSheet.cssText=k}),a.attachEvent("onafterprint",function(){if(a.html5.supportsXElement||!b.namespaces)return;var c=-1,d=b.getElementsByTagName("*"),e=d.length,f;while(++c<e)f=d[c],f.originalElement&&g(f);b._shivedStyleSheet&&b._shivedStyleSheet.parentNode.removeChild(b._shivedStyleSheet)})})(this,document)/;"	f
+createindex	lua/luci/dispatcher.lua	/^function createindex()$/;"	f
+createindex_fastindex	lua/luci/dispatcher.lua	/^function createindex_fastindex(path, suffixes)$/;"	f
+createindex_plain	lua/luci/dispatcher.lua	/^function createindex_plain(path, suffixes)$/;"	f
+createtree	lua/luci/dispatcher.lua	/^function createtree()$/;"	f
+cursor_state	lua/luci/model/uci.lua	/^function cursor_state()$/;"	f
+d.cfgvalue 	lua/luci/model/cbi/admin_system/backupfiles.lua	/^	d.cfgvalue = function(s)$/;"	f
+datacopy	lua/nixio/fs.lua	/^function datacopy(src, dest, size)$/;"	f
+datasource.del	lua/luci/cbi.lua	/^	function datasource.del(...)$/;"	f
+datasource.get	lua/luci/cbi.lua	/^	function datasource.get(self, section, option)$/;"	f
+datasource.get_scheme	lua/luci/cbi.lua	/^	function datasource.get_scheme()$/;"	f
+datasource.submitstate	lua/luci/cbi.lua	/^	function datasource.submitstate(self)$/;"	f
+date_format	lua/luci/tools/webadmin.lua	/^function date_format(secs)$/;"	f
+debug	lib/functions.sh	/^debug () {$/;"	f
+default_do_upgrade	lib/upgrade/common.sh	/^default_do_upgrade() {$/;"	f
+default_postinst	lib/functions.sh	/^default_postinst() {$/;"	f
+default_prerm	lib/functions.sh	/^default_prerm() {$/;"	f
+defaults.__init__	lua/luci/model/firewall.lua	/^function defaults.__init__(self)$/;"	f
+defaults.drop_invalid	lua/luci/model/firewall.lua	/^function defaults.drop_invalid(self)$/;"	f
+defaults.forward	lua/luci/model/firewall.lua	/^function defaults.forward(self)$/;"	f
+defaults.get	lua/luci/model/firewall.lua	/^function defaults.get(self, opt)$/;"	f
+defaults.input	lua/luci/model/firewall.lua	/^function defaults.input(self)$/;"	f
+defaults.output	lua/luci/model/firewall.lua	/^function defaults.output(self)$/;"	f
+defaults.set	lua/luci/model/firewall.lua	/^function defaults.set(self, opt, val)$/;"	f
+defaults.syn_flood	lua/luci/model/firewall.lua	/^function defaults.syn_flood(self)$/;"	f
+del_network	lua/luci/model/firewall.lua	/^function del_network(self, net)$/;"	f
+del_network	lua/luci/model/network.lua	/^function del_network(self, n)$/;"	f
+del_wifinet	lua/luci/model/network.lua	/^function del_wifinet(self, net)$/;"	f
+del_zone	lua/luci/model/firewall.lua	/^function del_zone(self, n)$/;"	f
+depends	etc/rc.common	/^depends() {$/;"	f
+dest.cfgvalue	lua/luci/model/cbi/firewall/forwards.lua	/^function dest.cfgvalue(self, s)$/;"	f
+dev.cfgvalue	lua/luci/model/cbi/admin_system/leds.lua	/^function dev.cfgvalue(self, section)$/;"	f
+dev.cfgvalue 	lua/luci/model/cbi/admin_system/fstab.lua	/^dev.cfgvalue = function(self, section)$/;"	f
+dev.remove	lua/luci/model/cbi/admin_system/leds.lua	/^function dev.remove(self, section)$/;"	f
+dev.write	lua/luci/model/cbi/admin_system/leds.lua	/^function dev.write(self, section, value)$/;"	f
+device	lua/luci/cbi/datatypes.lua	/^function device( val, seen )$/;"	f
+dhcp6_leases	lua/luci/tools/status.lua	/^function dhcp6_leases()$/;"	f
+dhcp_leases	lua/luci/tools/status.lua	/^function dhcp_leases()$/;"	f
+dhcp_leases_common	lua/luci/tools/status.lua	/^local function dhcp_leases_common(family)$/;"	f
+diag_command	lua/luci/controller/admin/network.lua	/^function diag_command(cmd, addr)$/;"	f
+diag_nslookup	lua/luci/controller/admin/network.lua	/^function diag_nslookup(addr)$/;"	f
+diag_ping	lua/luci/controller/admin/network.lua	/^function diag_ping(addr)$/;"	f
+diag_ping6	lua/luci/controller/admin/network.lua	/^function diag_ping6(addr)$/;"	f
+diag_traceroute	lua/luci/controller/admin/network.lua	/^function diag_traceroute(addr)$/;"	f
+diag_traceroute6	lua/luci/controller/admin/network.lua	/^function diag_traceroute6(addr)$/;"	f
+dir	lua/luci/fs.lua	/^function dir(...)$/;"	f
+directory	lua/luci/cbi/datatypes.lua	/^function directory( val, seen )$/;"	f
+disable	etc/rc.common	/^disable() {$/;"	f
+dispatch	lua/luci/dispatcher.lua	/^function dispatch(request)$/;"	f
+dmesg	lua/luci/sys.lua	/^function dmesg()$/;"	f
+do_sysctl	lib/network/config.sh	/^do_sysctl() {$/;"	f
+do_upgrade	lib/upgrade/common.sh	/^do_upgrade() {$/;"	f
+dtable	lua/luci/util.lua	/^function dtable()$/;"	f
+dumptable	lua/luci/util.lua	/^function dumptable(t, maxdepth, i, seen)$/;"	f
+e.render 	lua/luci/model/cbi/admin_system/startup.lua	/^e.render = function(self, section, scope)$/;"	f
+e.write 	lua/luci/model/cbi/admin_system/startup.lua	/^e.write = function(self, section)$/;"	f
+elements	www/luci-static/bootstrap/html5.js	/^(function(a,b){function f(a){var c,d,e,f;b.documentMode>7?(c=b.createElement("font"),c.setAttribute("data-html5shiv",a.nodeName.toLowerCase())):c=b.createElement("shiv:"+a.nodeName);while(a.firstChild)c.appendChild(a.childNodes[0]);for(d=a.attributes,e=d.length,f=0;f<e;++f)d[f].specified&&c.setAttribute(d[f].nodeName,d[f].nodeValue);c.style.cssText=a.style.cssText,a.parentNode.replaceChild(c,a),c.originalElement=a}function g(a){var b=a.originalElement;while(a.childNodes.length)b.appendChild(a.childNodes[0]);a.parentNode.replaceChild(b,a)}function h(a,b){b=b||"all";var c=-1,d=[],e=a.length,f,g;while(++c<e){f=a[c],g=f.media||b;if(f.disabled||!\/print|all\/.test(g))continue;d.push(h(f.imports,g),f.cssText)}return d.join("")}function i(c){var d=new RegExp("(^|[\\\\s,{}])("+a.html5.elements.join("|")+")","gi"),e=c.split("{"),f=e.length,g=-1;while(++g<f)e[g]=e[g].split("}"),b.documentMode>7?e[g][e[g].length-1]=e[g][e[g].length-1].replace(d,'$1font[data-html5shiv="$2"]'):e[g][e[g].length-1]=e[g][e[g].length-1].replace(d,"$1shiv\\\\:$2"),e[g]=e[g].join("}");return e.join("{")}var c=function(a){return a.innerHTML="<x-element><\/x-element>",a.childNodes.length===1}(b.createElement("a")),d=function(a,b,c){return b.appendChild(a),(c=(c?c(a):a.currentStyle).display)&&b.removeChild(a)&&c==="block"}(b.createElement("nav"),b.documentElement,a.getComputedStyle),e={elements:"abbr article aside audio bdi canvas data datalist details figcaption figure footer header hgroup mark meter nav output progress section summary time video".split(" "),shivDocument:function(a){a=a||b;if(a.documentShived)return;a.documentShived=!0;var f=a.createElement,g=a.createDocumentFragment,h=a.getElementsByTagName("head")[0],i=function(a){f(a)};c||(e.elements.join(" ").replace(\/\\w+\/g,i),a.createElement=function(a){var b=f(a);return b.canHaveChildren&&e.shivDocument(b.document),b},a.createDocumentFragment=function(){return e.shivDocument(g())});if(!d&&h){var j=f("div");j.innerHTML=["x<style>","article,aside,details,figcaption,figure,footer,header,hgroup,nav,section{display:block}","audio{display:none}","canvas,video{display:inline-block;*display:inline;*zoom:1}","[hidden]{display:none}audio[controls]{display:inline-block;*display:inline;*zoom:1}","mark{background:#FF0;color:#000}","<\/style>"].join(""),h.insertBefore(j.lastChild,h.firstChild)}return a}};e.shivDocument(b),a.html5=e;if(c||!a.attachEvent)return;a.attachEvent("onbeforeprint",function(){if(a.html5.supportsXElement||!b.namespaces)return;b.namespaces.shiv||b.namespaces.add("shiv");var c=-1,d=new RegExp("^("+a.html5.elements.join("|")+")$","i"),e=b.getElementsByTagName("*"),g=e.length,j,k=i(h(function(a,b){var c=[],d=a.length;while(d)c.unshift(a[--d]);d=b.length;while(d)c.unshift(b[--d]);c.sort(function(a,b){return a.sourceIndex-b.sourceIndex}),d=c.length;while(d)c[--d]=c[d].styleSheet;return c}(b.getElementsByTagName("style"),b.getElementsByTagName("link"))));while(++c<g)j=e[c],d.test(j.nodeName)&&f(j);b.appendChild(b._shivedStyleSheet=b.createElement("style")).styleSheet.cssText=k}),a.attachEvent("onafterprint",function(){if(a.html5.supportsXElement||!b.namespaces)return;var c=-1,d=b.getElementsByTagName("*"),e=d.length,f;while(++c<e)f=d[c],f.originalElement&&g(f);b._shivedStyleSheet&&b._shivedStyleSheet.parentNode.removeChild(b._shivedStyleSheet)})})(this,document)/;"	p	class:createElement.documentElement.getComputedStyle
+elseif type(datatypes[label]) 	lua/luci/cbi.lua	/^					elseif type(datatypes[label]) == "function" then$/;"	f
+elseif type(val) 	lua/luci/util.lua	/^	elseif type(val) == "function" then$/;"	f
+empty	lua/luci/ltn12.lua	/^local function empty()$/;"	f
+enable	etc/rc.common	/^enable() {$/;"	f
+enabled	etc/rc.common	/^enabled() {$/;"	f
+encr.cfgvalue	lua/luci/model/cbi/admin_network/wifi.lua	/^function encr.cfgvalue(self, section)$/;"	f
+encr.write	lua/luci/model/cbi/admin_network/wifi.lua	/^function encr.write(self, section, value)$/;"	f
+entry	lua/luci/dispatcher.lua	/^function entry(path, target, title, order)$/;"	f
+error404	lua/luci/dispatcher.lua	/^function error404(message)$/;"	f
+error500	lua/luci/dispatcher.lua	/^function error500(message)$/;"	f
+exec	lua/luci/util.lua	/^function exec(command)$/;"	f
+execi	lua/luci/util.lua	/^function execi(command)$/;"	f
+execl	lua/luci/util.lua	/^function execl(command)$/;"	f
+export      	lua/luci/dispatcher.lua	/^		   export      = function(k, v) if tpl.context.viewns[k] == nil then tpl.context.viewns[k] = v end end;$/;"	f
+f.handle	lua/luci/model/cbi/admin_system/crontab.lua	/^function f.handle(self, state, data)$/;"	f
+f.handle	lua/luci/model/cbi/admin_system/ipkg.lua	/^function f.handle(self, state, data)$/;"	f
+f.handle	lua/luci/model/cbi/admin_system/startup.lua	/^function f.handle(self, state, data)$/;"	f
+fam.cfgvalue	lua/luci/model/cbi/admin_network/proto_ahcp.lua	/^function fam.cfgvalue(self, section)$/;"	f
+fam.remove	lua/luci/model/cbi/admin_network/proto_ahcp.lua	/^function fam.remove(self, section)$/;"	f
+fam.write	lua/luci/model/cbi/admin_network/proto_ahcp.lua	/^function fam.write(self, section, value)$/;"	f
+file	lua/luci/cbi/datatypes.lua	/^function file( val, seen )$/;"	f
+filter.chain	lua/luci/ltn12.lua	/^function filter.chain(...)$/;"	f
+filter.cycle	lua/luci/ltn12.lua	/^function filter.cycle(low, ctx, extra)$/;"	f
+find	lua/luci/model/ipkg.lua	/^function find(pat, cb)$/;"	f
+find_config	lib/network/config.sh	/^find_config() {$/;"	f
+find_mtd_chardev	lib/functions/system.sh	/^find_mtd_chardev() {$/;"	f
+find_mtd_index	lib/functions.sh	/^find_mtd_index() {$/;"	f
+find_mtd_part	lib/functions.sh	/^find_mtd_part() {$/;"	f
+firewall_find_zone	lua/luci/tools/webadmin.lua	/^function firewall_find_zone(name)$/;"	f
+firstchild	lua/luci/dispatcher.lua	/^function firstchild()$/;"	f
+fixup_interface	lib/network/config.sh	/^fixup_interface() {$/;"	f
+float	lua/luci/cbi/datatypes.lua	/^function float(val)$/;"	f
+float	www/luci-static/resources/cbi.js	/^	'float': function()$/;"	m	class:cbi_validators
+fmt_icmp_type	lua/luci/tools/firewall.lua	/^function fmt_icmp_type(x)$/;"	f
+fmt_ip	lua/luci/tools/firewall.lua	/^function fmt_ip(x, d)$/;"	f
+fmt_limit	lua/luci/tools/firewall.lua	/^function fmt_limit(limit, burst)$/;"	f
+fmt_mac	lua/luci/tools/firewall.lua	/^function fmt_mac(x)$/;"	f
+fmt_neg	lua/luci/tools/firewall.lua	/^function fmt_neg(x)$/;"	f
+fmt_port	lua/luci/tools/firewall.lua	/^function fmt_port(x, d)$/;"	f
+fmt_proto	lua/luci/tools/firewall.lua	/^function fmt_proto(x, icmp_types)$/;"	f
+fmt_target	lua/luci/tools/firewall.lua	/^function fmt_target(x, dest)$/;"	f
+fmt_zone	lua/luci/tools/firewall.lua	/^function fmt_zone(x, d)$/;"	f
+fopivot	lib/functions/preinit.sh	/^fopivot() { # <rw_root> <ro_root> <dupe?>$/;"	f
+for_each_interface	lib/netifd/netifd-wireless.sh	/^for_each_interface() {$/;"	f
+fork_exec	lua/luci/controller/admin/system.lua	/^function fork_exec(command)$/;"	f
+form	lua/luci/dispatcher.lua	/^function form(model)$/;"	f
+format_wifi_encryption	lua/luci/view/admin_network/wifi_join.htm	/^	function format_wifi_encryption(info)$/;"	f
+formvalue	lua/luci/http.lua	/^function formvalue(name, noparse)$/;"	f
+formvaluetable	lua/luci/http.lua	/^function formvaluetable(prefix)$/;"	f
+forward_proto_txt	lua/luci/model/cbi/firewall/forwards.lua	/^local function forward_proto_txt(self, s)$/;"	f
+forward_src_txt	lua/luci/model/cbi/firewall/forwards.lua	/^local function forward_src_txt(self, s)$/;"	f
+forward_via_txt	lua/luci/model/cbi/firewall/forwards.lua	/^local function forward_via_txt(self, s)$/;"	f
+forwarding.__init__	lua/luci/model/firewall.lua	/^function forwarding.__init__(self, f)$/;"	f
+forwarding.dest	lua/luci/model/firewall.lua	/^function forwarding.dest(self)$/;"	f
+forwarding.dest_zone	lua/luci/model/firewall.lua	/^function forwarding.dest_zone(self)$/;"	f
+forwarding.src	lua/luci/model/firewall.lua	/^function forwarding.src(self)$/;"	f
+forwarding.src_zone	lua/luci/model/firewall.lua	/^function forwarding.src_zone(self)$/;"	f
+fs.cfgvalue 	lua/luci/model/cbi/admin_system/fstab.lua	/^fs.cfgvalue = function(self, section)$/;"	f
+function(s) return (s.interface 	lua/luci/model/network.lua	/^			function(s) return (s.interface == n) end)$/;"	f
+function(s) wfd[#wfd+1] 	lua/luci/model/network.lua	/^		function(s) wfd[#wfd+1] = s['.name'] end)$/;"	f
+fwzone.cfgvalue	lua/luci/model/cbi/admin_network/ifaces.lua	/^	function fwzone.cfgvalue(self, section)$/;"	f
+fwzone.cfgvalue	lua/luci/model/cbi/admin_network/wifi_add.lua	/^	function fwzone.cfgvalue(self, section)$/;"	f
+fwzone.write	lua/luci/model/cbi/admin_network/ifaces.lua	/^	function fwzone.write(self, section, value)$/;"	f
+g	www/luci-static/bootstrap/html5.js	/^(function(a,b){function f(a){var c,d,e,f;b.documentMode>7?(c=b.createElement("font"),c.setAttribute("data-html5shiv",a.nodeName.toLowerCase())):c=b.createElement("shiv:"+a.nodeName);while(a.firstChild)c.appendChild(a.childNodes[0]);for(d=a.attributes,e=d.length,f=0;f<e;++f)d[f].specified&&c.setAttribute(d[f].nodeName,d[f].nodeValue);c.style.cssText=a.style.cssText,a.parentNode.replaceChild(c,a),c.originalElement=a}function g(a){var b=a.originalElement;while(a.childNodes.length)b.appendChild(a.childNodes[0]);a.parentNode.replaceChild(b,a)}function h(a,b){b=b||"all";var c=-1,d=[],e=a.length,f,g;while(++c<e){f=a[c],g=f.media||b;if(f.disabled||!\/print|all\/.test(g))continue;d.push(h(f.imports,g),f.cssText)}return d.join("")}function i(c){var d=new RegExp("(^|[\\\\s,{}])("+a.html5.elements.join("|")+")","gi"),e=c.split("{"),f=e.length,g=-1;while(++g<f)e[g]=e[g].split("}"),b.documentMode>7?e[g][e[g].length-1]=e[g][e[g].length-1].replace(d,'$1font[data-html5shiv="$2"]'):e[g][e[g].length-1]=e[g][e[g].length-1].replace(d,"$1shiv\\\\:$2"),e[g]=e[g].join("}");return e.join("{")}var c=function(a){return a.innerHTML="<x-element><\/x-element>",a.childNodes.length===1}(b.createElement("a")),d=function(a,b,c){return b.appendChild(a),(c=(c?c(a):a.currentStyle).display)&&b.removeChild(a)&&c==="block"}(b.createElement("nav"),b.documentElement,a.getComputedStyle),e={elements:"abbr article aside audio bdi canvas data datalist details figcaption figure footer header hgroup mark meter nav output progress section summary time video".split(" "),shivDocument:function(a){a=a||b;if(a.documentShived)return;a.documentShived=!0;var f=a.createElement,g=a.createDocumentFragment,h=a.getElementsByTagName("head")[0],i=function(a){f(a)};c||(e.elements.join(" ").replace(\/\\w+\/g,i),a.createElement=function(a){var b=f(a);return b.canHaveChildren&&e.shivDocument(b.document),b},a.createDocumentFragment=function(){return e.shivDocument(g())});if(!d&&h){var j=f("div");j.innerHTML=["x<style>","article,aside,details,figcaption,figure,footer,header,hgroup,nav,section{display:block}","audio{display:none}","canvas,video{display:inline-block;*display:inline;*zoom:1}","[hidden]{display:none}audio[controls]{display:inline-block;*display:inline;*zoom:1}","mark{background:#FF0;color:#000}","<\/style>"].join(""),h.insertBefore(j.lastChild,h.firstChild)}return a}};e.shivDocument(b),a.html5=e;if(c||!a.attachEvent)return;a.attachEvent("onbeforeprint",function(){if(a.html5.supportsXElement||!b.namespaces)return;b.namespaces.shiv||b.namespaces.add("shiv");var c=-1,d=new RegExp("^("+a.html5.elements.join("|")+")$","i"),e=b.getElementsByTagName("*"),g=e.length,j,k=i(h(function(a,b){var c=[],d=a.length;while(d)c.unshift(a[--d]);d=b.length;while(d)c.unshift(b[--d]);c.sort(function(a,b){return a.sourceIndex-b.sourceIndex}),d=c.length;while(d)c[--d]=c[d].styleSheet;return c}(b.getElementsByTagName("style"),b.getElementsByTagName("link"))));while(++c<g)j=e[c],d.test(j.nodeName)&&f(j);b.appendChild(b._shivedStyleSheet=b.createElement("style")).styleSheet.cssText=k}),a.attachEvent("onafterprint",function(){if(a.html5.supportsXElement||!b.namespaces)return;var c=-1,d=b.getElementsByTagName("*"),e=d.length,f;while(++c<e)f=d[c],f.originalElement&&g(f);b._shivedStyleSheet&&b._shivedStyleSheet.parentNode.removeChild(b._shivedStyleSheet)})})(this,document)/;"	f
+get	lua/luci/dispatcher.lua	/^function get(...)$/;"	f
+get	www/luci-static/resources/xhr.js	/^	this.get = function(url,data,callback)$/;"	c
+get_bytecode	lua/luci/util.lua	/^function get_bytecode(val)$/;"	f
+get_defaults	lua/luci/model/firewall.lua	/^function get_defaults()$/;"	f
+get_image	lib/upgrade/common.sh	/^get_image() { # <source> [ <command> ]$/;"	f
+get_interface	lua/luci/model/network.lua	/^function get_interface(self, i)$/;"	f
+get_interfaces	lua/luci/model/network.lua	/^function get_interfaces(self)$/;"	f
+get_magic_long	lib/upgrade/common.sh	/^get_magic_long() {$/;"	f
+get_magic_long_tar	lib/upgrade/nand.sh	/^get_magic_long_tar() {$/;"	f
+get_magic_word	lib/upgrade/common.sh	/^get_magic_word() {$/;"	f
+get_network	lua/luci/model/network.lua	/^function get_network(self, n)$/;"	f
+get_networks	lua/luci/model/network.lua	/^function get_networks(self)$/;"	f
+get_protocol	lua/luci/model/network.lua	/^function get_protocol(self, protoname, netname)$/;"	f
+get_protocols	lua/luci/model/network.lua	/^function get_protocols(self)$/;"	f
+get_status_by_address	lua/luci/model/network.lua	/^function get_status_by_address(self, addr)$/;"	f
+get_status_by_route	lua/luci/model/network.lua	/^function get_status_by_route(self, addr, mask)$/;"	f
+get_wan6dev	lua/luci/model/network.lua	/^function get_wan6dev(self)$/;"	f
+get_wan6net	lua/luci/model/network.lua	/^function get_wan6net(self)$/;"	f
+get_wandev	lua/luci/model/network.lua	/^function get_wandev(self)$/;"	f
+get_wannet	lua/luci/model/network.lua	/^function get_wannet(self)$/;"	f
+get_wifidev	lua/luci/model/network.lua	/^function get_wifidev(self, dev)$/;"	f
+get_wifidevs	lua/luci/model/network.lua	/^function get_wifidevs(self)$/;"	f
+get_wifinet	lua/luci/model/network.lua	/^function get_wifinet(self, net)$/;"	f
+get_zone	lua/luci/model/firewall.lua	/^function get_zone(self, n)$/;"	f
+get_zone_by_network	lua/luci/model/firewall.lua	/^function get_zone_by_network(self, net)$/;"	f
+get_zones	lua/luci/model/firewall.lua	/^function get_zones(self)$/;"	f
+getcookie	lua/luci/http.lua	/^function getcookie(name)$/;"	f
+getenv	lua/luci/http.lua	/^function getenv(name)$/;"	f
+getmetatable("").__mod 	lua/luci/util.lua	/^getmetatable("").__mod = function(a, b)$/;"	f
+glob	lua/luci/fs.lua	/^function glob(...)$/;"	f
+group_add	lib/functions.sh	/^group_add() {$/;"	f
+group_add_next	lib/functions.sh	/^group_add_next() {$/;"	f
+group_add_user	lib/functions.sh	/^group_add_user() {$/;"	f
+group_exists	lib/functions.sh	/^group_exists() {$/;"	f
+guess_wifi_hw	lua/luci/view/admin_network/wifi_overview.htm	/^	function guess_wifi_hw(dev)$/;"	f
+guess_wifi_signal	lua/luci/view/admin_network/wifi_join.htm	/^	function guess_wifi_signal(info)$/;"	f
+h	www/luci-static/bootstrap/html5.js	/^(function(a,b){function f(a){var c,d,e,f;b.documentMode>7?(c=b.createElement("font"),c.setAttribute("data-html5shiv",a.nodeName.toLowerCase())):c=b.createElement("shiv:"+a.nodeName);while(a.firstChild)c.appendChild(a.childNodes[0]);for(d=a.attributes,e=d.length,f=0;f<e;++f)d[f].specified&&c.setAttribute(d[f].nodeName,d[f].nodeValue);c.style.cssText=a.style.cssText,a.parentNode.replaceChild(c,a),c.originalElement=a}function g(a){var b=a.originalElement;while(a.childNodes.length)b.appendChild(a.childNodes[0]);a.parentNode.replaceChild(b,a)}function h(a,b){b=b||"all";var c=-1,d=[],e=a.length,f,g;while(++c<e){f=a[c],g=f.media||b;if(f.disabled||!\/print|all\/.test(g))continue;d.push(h(f.imports,g),f.cssText)}return d.join("")}function i(c){var d=new RegExp("(^|[\\\\s,{}])("+a.html5.elements.join("|")+")","gi"),e=c.split("{"),f=e.length,g=-1;while(++g<f)e[g]=e[g].split("}"),b.documentMode>7?e[g][e[g].length-1]=e[g][e[g].length-1].replace(d,'$1font[data-html5shiv="$2"]'):e[g][e[g].length-1]=e[g][e[g].length-1].replace(d,"$1shiv\\\\:$2"),e[g]=e[g].join("}");return e.join("{")}var c=function(a){return a.innerHTML="<x-element><\/x-element>",a.childNodes.length===1}(b.createElement("a")),d=function(a,b,c){return b.appendChild(a),(c=(c?c(a):a.currentStyle).display)&&b.removeChild(a)&&c==="block"}(b.createElement("nav"),b.documentElement,a.getComputedStyle),e={elements:"abbr article aside audio bdi canvas data datalist details figcaption figure footer header hgroup mark meter nav output progress section summary time video".split(" "),shivDocument:function(a){a=a||b;if(a.documentShived)return;a.documentShived=!0;var f=a.createElement,g=a.createDocumentFragment,h=a.getElementsByTagName("head")[0],i=function(a){f(a)};c||(e.elements.join(" ").replace(\/\\w+\/g,i),a.createElement=function(a){var b=f(a);return b.canHaveChildren&&e.shivDocument(b.document),b},a.createDocumentFragment=function(){return e.shivDocument(g())});if(!d&&h){var j=f("div");j.innerHTML=["x<style>","article,aside,details,figcaption,figure,footer,header,hgroup,nav,section{display:block}","audio{display:none}","canvas,video{display:inline-block;*display:inline;*zoom:1}","[hidden]{display:none}audio[controls]{display:inline-block;*display:inline;*zoom:1}","mark{background:#FF0;color:#000}","<\/style>"].join(""),h.insertBefore(j.lastChild,h.firstChild)}return a}};e.shivDocument(b),a.html5=e;if(c||!a.attachEvent)return;a.attachEvent("onbeforeprint",function(){if(a.html5.supportsXElement||!b.namespaces)return;b.namespaces.shiv||b.namespaces.add("shiv");var c=-1,d=new RegExp("^("+a.html5.elements.join("|")+")$","i"),e=b.getElementsByTagName("*"),g=e.length,j,k=i(h(function(a,b){var c=[],d=a.length;while(d)c.unshift(a[--d]);d=b.length;while(d)c.unshift(b[--d]);c.sort(function(a,b){return a.sourceIndex-b.sourceIndex}),d=c.length;while(d)c[--d]=c[d].styleSheet;return c}(b.getElementsByTagName("style"),b.getElementsByTagName("link"))));while(++c<g)j=e[c],d.test(j.nodeName)&&f(j);b.appendChild(b._shivedStyleSheet=b.createElement("style")).styleSheet.cssText=k}),a.attachEvent("onafterprint",function(){if(a.html5.supportsXElement||!b.namespaces)return;var c=-1,d=b.getElementsByTagName("*"),e=d.length,f;while(++c<e)f=d[c],f.originalElement&&g(f);b._shivedStyleSheet&&b._shivedStyleSheet.parentNode.removeChild(b._shivedStyleSheet)})})(this,document)/;"	f
+handleReturnValue	lua/luci/util.lua	/^function handleReturnValue(err, co, status, ...)$/;"	f
+handle_request	lua/luci/sgi/uhttpd.lua	/^function handle_request(env)$/;"	f
+has_ipv6	lua/luci/model/network.lua	/^function has_ipv6(self)$/;"	f
+header	lua/luci/http.lua	/^function header(key, value)$/;"	f
+header_source	lua/luci/http/protocol.lua	/^function header_source( sock )$/;"	f
+help	etc/rc.common	/^help() {$/;"	f
+helper 	lua/luci/model/uci.lua	/^	local function helper (section)$/;"	f
+host	lua/luci/cbi/datatypes.lua	/^function host(val)$/;"	f
+host	www/luci-static/resources/cbi.js	/^	'host': function()$/;"	m	class:cbi_validators
+hostname	lua/luci/cbi/datatypes.lua	/^function hostname(val)$/;"	f
+hostname	lua/luci/sys.lua	/^function hostname(newname)$/;"	f
+hostname	www/luci-static/resources/cbi.js	/^	'hostname': function()$/;"	m	class:cbi_validators
+htonl	lua/luci/ip.lua	/^function htonl(x)$/;"	f
+htons	lua/luci/ip.lua	/^function htons(x)$/;"	f
+httpdispatch	lua/luci/dispatcher.lua	/^function httpdispatch(request, prefix)$/;"	f
+httpget	lua/luci/sys.lua	/^function httpget(url, stream, target)$/;"	f
+hup.write	lua/luci/model/cbi/admin_status/processes.lua	/^function hup.write(self, section)$/;"	f
+i	www/luci-static/bootstrap/html5.js	/^(function(a,b){function f(a){var c,d,e,f;b.documentMode>7?(c=b.createElement("font"),c.setAttribute("data-html5shiv",a.nodeName.toLowerCase())):c=b.createElement("shiv:"+a.nodeName);while(a.firstChild)c.appendChild(a.childNodes[0]);for(d=a.attributes,e=d.length,f=0;f<e;++f)d[f].specified&&c.setAttribute(d[f].nodeName,d[f].nodeValue);c.style.cssText=a.style.cssText,a.parentNode.replaceChild(c,a),c.originalElement=a}function g(a){var b=a.originalElement;while(a.childNodes.length)b.appendChild(a.childNodes[0]);a.parentNode.replaceChild(b,a)}function h(a,b){b=b||"all";var c=-1,d=[],e=a.length,f,g;while(++c<e){f=a[c],g=f.media||b;if(f.disabled||!\/print|all\/.test(g))continue;d.push(h(f.imports,g),f.cssText)}return d.join("")}function i(c){var d=new RegExp("(^|[\\\\s,{}])("+a.html5.elements.join("|")+")","gi"),e=c.split("{"),f=e.length,g=-1;while(++g<f)e[g]=e[g].split("}"),b.documentMode>7?e[g][e[g].length-1]=e[g][e[g].length-1].replace(d,'$1font[data-html5shiv="$2"]'):e[g][e[g].length-1]=e[g][e[g].length-1].replace(d,"$1shiv\\\\:$2"),e[g]=e[g].join("}");return e.join("{")}var c=function(a){return a.innerHTML="<x-element><\/x-element>",a.childNodes.length===1}(b.createElement("a")),d=function(a,b,c){return b.appendChild(a),(c=(c?c(a):a.currentStyle).display)&&b.removeChild(a)&&c==="block"}(b.createElement("nav"),b.documentElement,a.getComputedStyle),e={elements:"abbr article aside audio bdi canvas data datalist details figcaption figure footer header hgroup mark meter nav output progress section summary time video".split(" "),shivDocument:function(a){a=a||b;if(a.documentShived)return;a.documentShived=!0;var f=a.createElement,g=a.createDocumentFragment,h=a.getElementsByTagName("head")[0],i=function(a){f(a)};c||(e.elements.join(" ").replace(\/\\w+\/g,i),a.createElement=function(a){var b=f(a);return b.canHaveChildren&&e.shivDocument(b.document),b},a.createDocumentFragment=function(){return e.shivDocument(g())});if(!d&&h){var j=f("div");j.innerHTML=["x<style>","article,aside,details,figcaption,figure,footer,header,hgroup,nav,section{display:block}","audio{display:none}","canvas,video{display:inline-block;*display:inline;*zoom:1}","[hidden]{display:none}audio[controls]{display:inline-block;*display:inline;*zoom:1}","mark{background:#FF0;color:#000}","<\/style>"].join(""),h.insertBefore(j.lastChild,h.firstChild)}return a}};e.shivDocument(b),a.html5=e;if(c||!a.attachEvent)return;a.attachEvent("onbeforeprint",function(){if(a.html5.supportsXElement||!b.namespaces)return;b.namespaces.shiv||b.namespaces.add("shiv");var c=-1,d=new RegExp("^("+a.html5.elements.join("|")+")$","i"),e=b.getElementsByTagName("*"),g=e.length,j,k=i(h(function(a,b){var c=[],d=a.length;while(d)c.unshift(a[--d]);d=b.length;while(d)c.unshift(b[--d]);c.sort(function(a,b){return a.sourceIndex-b.sourceIndex}),d=c.length;while(d)c[--d]=c[d].styleSheet;return c}(b.getElementsByTagName("style"),b.getElementsByTagName("link"))));while(++c<g)j=e[c],d.test(j.nodeName)&&f(j);b.appendChild(b._shivedStyleSheet=b.createElement("style")).styleSheet.cssText=k}),a.attachEvent("onafterprint",function(){if(a.html5.supportsXElement||!b.namespaces)return;var c=-1,d=b.getElementsByTagName("*"),e=d.length,f;while(++c<e)f=d[c],f.originalElement&&g(f);b._shivedStyleSheet&&b._shivedStyleSheet.parentNode.removeChild(b._shivedStyleSheet)})})(this,document)/;"	f
+id	www/luci-static/resources/cbi.js	/^				"id": field,$/;"	p	class:entry
+identify	lib/upgrade/nand.sh	/^identify() {$/;"	f
+identify_magic	lib/upgrade/nand.sh	/^identify_magic() {$/;"	f
+identify_tar	lib/upgrade/nand.sh	/^identify_tar() {$/;"	f
+if c and (c.index or type(target) 	lua/luci/dispatcher.lua	/^	if c and (c.index or type(target) == "function") then$/;"	f
+if c and type(c[1]) 	lua/luci/cbi.lua	/^			if c and type(c[1]) == "function" then$/;"	f
+if type(c.target) 	lua/luci/dispatcher.lua	/^		if type(c.target) == "function" then$/;"	f
+if type(f) ~	lua/luci/cbi/datatypes.lua	/^		if type(f) ~= "function" then$/;"	f
+if type(filecb) 	lua/luci/http/protocol.lua	/^		if type(filecb) == "function" then$/;"	f
+if type(modcons) 	lua/luci/ccache.lua	/^		if type(modcons) == "function" then$/;"	f
+if type(rawdata) ~	lua/luci/model/ipkg.lua	/^	if type(rawdata) ~= "function" then$/;"	f
+if type(self.active) ~	lua/luci/cbi.lua	/^		if type(self.active) ~= "function" then$/;"	f
+if type(self.active) ~	lua/luci/cbi.lua	/^	if type(self.active) ~= "function" then$/;"	f
+if type(self.commit_handler) 	lua/luci/cbi.lua	/^		if type(self.commit_handler) == "function" then$/;"	f
+if type(self.value) 	lua/luci/cbi.lua	/^		if type(self.value) == "function" then$/;"	f
+if type(self[f]) 	lua/luci/cbi.lua	/^		if type(self[f]) == "function" then$/;"	f
+if type(self[hook]) 	lua/luci/cbi.lua	/^	if type(self[hook]) == "function" then$/;"	f
+if type(stack[#stack-1]) ~	lua/luci/cbi.lua	/^				if type(stack[#stack-1]) ~= "function" then$/;"	f
+if type(subvalidator) ~	lua/luci/cbi/datatypes.lua	/^	if type(subvalidator) ~= "function" then$/;"	f
+if type(target) 	lua/luci/dispatcher.lua	/^	if type(target) == "function" then$/;"	f
+if type(val) 	lua/luci/util.lua	/^	if type(val) == "function" then$/;"	f
+if_match	lua/luci/http/protocol/conditionals.lua	/^function if_match( req, stat )$/;"	f
+if_modified_since	lua/luci/http/protocol/conditionals.lua	/^function if_modified_since( req, stat )$/;"	f
+if_none_match	lua/luci/http/protocol/conditionals.lua	/^function if_none_match( req, stat )$/;"	f
+if_range	lua/luci/http/protocol/conditionals.lua	/^function if_range( req, stat )$/;"	f
+if_unmodified_since	lua/luci/http/protocol/conditionals.lua	/^function if_unmodified_since( req, stat )$/;"	f
+iface_delete	lua/luci/controller/admin/network.lua	/^function iface_delete(iface)$/;"	f
+iface_get_network	lua/luci/tools/webadmin.lua	/^function iface_get_network(iface)$/;"	f
+iface_reconnect	lua/luci/controller/admin/network.lua	/^function iface_reconnect(iface)$/;"	f
+iface_shutdown	lua/luci/controller/admin/network.lua	/^function iface_shutdown(iface)$/;"	f
+iface_shutdown	lua/luci/view/admin_network/iface_overview.htm	/^	function iface_shutdown(id, reconnect) {$/;"	f
+iface_status	lua/luci/controller/admin/network.lua	/^function iface_status(ifaces)$/;"	f
+ifattr      	lua/luci/dispatcher.lua	/^		   ifattr      = function(...) return _ifattr(...) end;$/;"	f
+ifname_single.cfgvalue	lua/luci/model/cbi/admin_network/ifaces.lua	/^	function ifname_single.cfgvalue(self, s)$/;"	f
+ifname_single.write	lua/luci/model/cbi/admin_network/ifaces.lua	/^	function ifname_single.write(self, s, val)$/;"	f
+ifnameof	lua/luci/model/network.lua	/^function ifnameof(self, x)$/;"	f
+ignore_interface	lua/luci/model/network.lua	/^function ignore_interface(self, x)$/;"	f
+image_checksum	lua/luci/controller/admin/system.lua	/^	local function image_checksum()$/;"	f
+image_supported	lua/luci/controller/admin/system.lua	/^	local function image_supported()$/;"	f
+imatch	lua/luci/util.lua	/^function imatch(v)$/;"	f
+imx6_board_detect	lib/imx6.sh	/^imx6_board_detect() {$/;"	f
+imx6_board_name	lib/imx6.sh	/^imx6_board_name() {$/;"	f
+include	lib/functions.sh	/^include() {$/;"	f
+include     	lua/luci/dispatcher.lua	/^		   include     = function(name) tpl.Template(name):render(getfenv(2)) end;$/;"	f
+index	lua/luci/controller/admin/filebrowser.lua	/^function index()$/;"	f
+index	lua/luci/controller/admin/index.lua	/^function index()$/;"	f
+index	lua/luci/controller/admin/network.lua	/^function index()$/;"	f
+index	lua/luci/controller/admin/servicectl.lua	/^function index()$/;"	f
+index	lua/luci/controller/admin/status.lua	/^function index()$/;"	f
+index	lua/luci/controller/admin/system.lua	/^function index()$/;"	f
+index	lua/luci/controller/admin/uci.lua	/^function index()$/;"	f
+index	lua/luci/controller/firewall.lua	/^function index()$/;"	f
+info	lua/luci/model/ipkg.lua	/^function info(pkg)$/;"	f
+init	lua/luci/model/firewall.lua	/^function init(cursor)$/;"	f
+init	lua/luci/model/network.lua	/^function init(cursor)$/;"	f
+init.disable	lua/luci/sys.lua	/^function init.disable(name)$/;"	f
+init.enable	lua/luci/sys.lua	/^function init.enable(name)$/;"	f
+init.enabled	lua/luci/sys.lua	/^function init.enabled(name)$/;"	f
+init.index	lua/luci/sys.lua	/^function init.index(name)$/;"	f
+init.names	lua/luci/sys.lua	/^function init.names()$/;"	f
+init.start	lua/luci/sys.lua	/^function init.start(name)$/;"	f
+init.stop	lua/luci/sys.lua	/^function init.stop(name)$/;"	f
+init_action	lua/luci/sys.lua	/^local function init_action(action, name)$/;"	f
+init_proto	lib/netifd/netifd-proto.sh	/^init_proto() {$/;"	f
+init_wireless_driver	lib/netifd/netifd-wireless.sh	/^init_wireless_driver() {$/;"	f
+inp.cfgvalue	lua/luci/model/cbi/firewall/zone-details.lua	/^function inp.cfgvalue(self, section)$/;"	f
+inp.formvalue	lua/luci/model/cbi/firewall/zone-details.lua	/^function inp.formvalue(self, section)$/;"	f
+inp.write	lua/luci/model/cbi/firewall/zone-details.lua	/^function inp.write(self, section, value)$/;"	f
+insert_modules	lib/functions.sh	/^insert_modules() {$/;"	f
+install	lua/luci/model/ipkg.lua	/^function install(...)$/;"	f
+install_bin	lib/upgrade/common.sh	/^install_bin() { # <file> [ <symlink> ... ]$/;"	f
+install_file	lib/upgrade/common.sh	/^install_file() { # <file> [ <file> ... ]$/;"	f
+installed	lua/luci/model/ipkg.lua	/^function installed(pkg)$/;"	f
+instanceof	lua/luci/util.lua	/^function instanceof(object, class)$/;"	f
+integer	lua/luci/cbi/datatypes.lua	/^function integer(val)$/;"	f
+integer	www/luci-static/resources/cbi.js	/^	'integer': function()$/;"	m	class:cbi_validators
+interface.__init__	lua/luci/model/network.lua	/^function interface.__init__(self, ifname, network)$/;"	f
+interface._ubus	lua/luci/model/network.lua	/^function interface._ubus(self, field)$/;"	f
+interface.adminlink	lua/luci/model/network.lua	/^function interface.adminlink(self)$/;"	f
+interface.bridge_id	lua/luci/model/network.lua	/^function interface.bridge_id(self)$/;"	f
+interface.bridge_stp	lua/luci/model/network.lua	/^function interface.bridge_stp(self)$/;"	f
+interface.get_i18n	lua/luci/model/network.lua	/^function interface.get_i18n(self)$/;"	f
+interface.get_network	lua/luci/model/network.lua	/^function interface.get_network(self)$/;"	f
+interface.get_networks	lua/luci/model/network.lua	/^function interface.get_networks(self)$/;"	f
+interface.get_type_i18n	lua/luci/model/network.lua	/^function interface.get_type_i18n(self)$/;"	f
+interface.get_wifinet	lua/luci/model/network.lua	/^function interface.get_wifinet(self)$/;"	f
+interface.ip6addrs	lua/luci/model/network.lua	/^function interface.ip6addrs(self)$/;"	f
+interface.ipaddrs	lua/luci/model/network.lua	/^function interface.ipaddrs(self)$/;"	f
+interface.is_bridge	lua/luci/model/network.lua	/^function interface.is_bridge(self)$/;"	f
+interface.is_bridgeport	lua/luci/model/network.lua	/^function interface.is_bridgeport(self)$/;"	f
+interface.is_up	lua/luci/model/network.lua	/^function interface.is_up(self)$/;"	f
+interface.mac	lua/luci/model/network.lua	/^function interface.mac(self)$/;"	f
+interface.name	lua/luci/model/network.lua	/^function interface.name(self)$/;"	f
+interface.ports	lua/luci/model/network.lua	/^function interface.ports(self)$/;"	f
+interface.rx_bytes	lua/luci/model/network.lua	/^function interface.rx_bytes(self)$/;"	f
+interface.rx_packets	lua/luci/model/network.lua	/^function interface.rx_packets(self)$/;"	f
+interface.shortname	lua/luci/model/network.lua	/^function interface.shortname(self)$/;"	f
+interface.tx_bytes	lua/luci/model/network.lua	/^function interface.tx_bytes(self)$/;"	f
+interface.tx_packets	lua/luci/model/network.lua	/^function interface.tx_packets(self)$/;"	f
+interface.type	lua/luci/model/network.lua	/^function interface.type(self)$/;"	f
+ip.validate	lua/luci/model/cbi/admin_network/dhcp.lua	/^function ip.validate(self, value, section)$/;"	f
+ip4addr	lua/luci/cbi/datatypes.lua	/^function ip4addr(val)$/;"	f
+ip4addr	www/luci-static/resources/cbi.js	/^	'ip4addr': function()$/;"	m	class:cbi_validators
+ip4prefix	lua/luci/cbi/datatypes.lua	/^function ip4prefix(val)$/;"	f
+ip6addr	lua/luci/cbi/datatypes.lua	/^function ip6addr(val)$/;"	f
+ip6addr	www/luci-static/resources/cbi.js	/^	'ip6addr': function()$/;"	m	class:cbi_validators
+ip6prefix	lua/luci/cbi/datatypes.lua	/^function ip6prefix(val)$/;"	f
+ipaddr	lua/luci/cbi/datatypes.lua	/^function ipaddr(val)$/;"	f
+ipaddr	www/luci-static/resources/cbi.js	/^	'ipaddr': function()$/;"	m	class:cbi_validators
+isdirectory	lua/luci/fs.lua	/^function isdirectory(dirname)$/;"	f
+isfile	lua/luci/fs.lua	/^function isfile(filename)$/;"	f
+jffs2_copy_config	lib/upgrade/common.sh	/^jffs2_copy_config() {$/;"	f
+json_select_array	lib/functions/uci-defaults-new.sh	/^json_select_array() {$/;"	f
+json_select_object	lib/functions/uci-defaults-new.sh	/^json_select_object() {$/;"	f
+keepalive_failure.cfgvalue	lua/luci/model/cbi/admin_network/proto_ppp.lua	/^function keepalive_failure.cfgvalue(self, section)$/;"	f
+keepalive_failure.cfgvalue	lua/luci/model/cbi/admin_network/proto_pppoa.lua	/^function keepalive_failure.cfgvalue(self, section)$/;"	f
+keepalive_failure.cfgvalue	lua/luci/model/cbi/admin_network/proto_pppoe.lua	/^function keepalive_failure.cfgvalue(self, section)$/;"	f
+keepalive_failure.cfgvalue	lua/luci/model/cbi/admin_network/proto_pptp.lua	/^function keepalive_failure.cfgvalue(self, section)$/;"	f
+keepalive_failure.remove	lua/luci/model/cbi/admin_network/proto_ppp.lua	/^function keepalive_failure.remove() end$/;"	f
+keepalive_failure.remove	lua/luci/model/cbi/admin_network/proto_pppoa.lua	/^function keepalive_failure.remove() end$/;"	f
+keepalive_failure.remove	lua/luci/model/cbi/admin_network/proto_pppoe.lua	/^function keepalive_failure.remove() end$/;"	f
+keepalive_failure.remove	lua/luci/model/cbi/admin_network/proto_pptp.lua	/^function keepalive_failure.remove() end$/;"	f
+keepalive_failure.write	lua/luci/model/cbi/admin_network/proto_ppp.lua	/^function keepalive_failure.write() end$/;"	f
+keepalive_failure.write	lua/luci/model/cbi/admin_network/proto_pppoa.lua	/^function keepalive_failure.write() end$/;"	f
+keepalive_failure.write	lua/luci/model/cbi/admin_network/proto_pppoe.lua	/^function keepalive_failure.write() end$/;"	f
+keepalive_failure.write	lua/luci/model/cbi/admin_network/proto_pptp.lua	/^function keepalive_failure.write() end$/;"	f
+keepalive_interval.cfgvalue	lua/luci/model/cbi/admin_network/proto_ppp.lua	/^function keepalive_interval.cfgvalue(self, section)$/;"	f
+keepalive_interval.cfgvalue	lua/luci/model/cbi/admin_network/proto_pppoa.lua	/^function keepalive_interval.cfgvalue(self, section)$/;"	f
+keepalive_interval.cfgvalue	lua/luci/model/cbi/admin_network/proto_pppoe.lua	/^function keepalive_interval.cfgvalue(self, section)$/;"	f
+keepalive_interval.cfgvalue	lua/luci/model/cbi/admin_network/proto_pptp.lua	/^function keepalive_interval.cfgvalue(self, section)$/;"	f
+keepalive_interval.write	lua/luci/model/cbi/admin_network/proto_ppp.lua	/^function keepalive_interval.write(self, section, value)$/;"	f
+keepalive_interval.write	lua/luci/model/cbi/admin_network/proto_pppoa.lua	/^function keepalive_interval.write(self, section, value)$/;"	f
+keepalive_interval.write	lua/luci/model/cbi/admin_network/proto_pppoe.lua	/^function keepalive_interval.write(self, section, value)$/;"	f
+keepalive_interval.write	lua/luci/model/cbi/admin_network/proto_pptp.lua	/^function keepalive_interval.write(self, section, value)$/;"	f
+keys	lua/luci/util.lua	/^function keys(t)$/;"	f
+keys.cfgvalue	lua/luci/model/cbi/admin_system/admin.lua	/^function keys.cfgvalue()$/;"	f
+keys.write	lua/luci/model/cbi/admin_system/admin.lua	/^function keys.write(self, section, value)$/;"	f
+kill	lua/luci/sauth.lua	/^function kill(id)$/;"	f
+kill.write	lua/luci/model/cbi/admin_status/processes.lua	/^function kill.write(self, section)$/;"	f
+kill_remaining	lib/upgrade/common.sh	/^kill_remaining() { # [ <signal> ]$/;"	f
+kspairs	lua/luci/util.lua	/^function kspairs(t)$/;"	f
+lease_status	lua/luci/controller/admin/network.lua	/^function lease_status()$/;"	f
+led_morse	lib/functions/leds.sh	/^led_morse() {$/;"	f
+led_off	lib/functions/leds.sh	/^led_off() {$/;"	f
+led_on	lib/functions/leds.sh	/^led_on() {$/;"	f
+led_set_attr	lib/functions/leds.sh	/^led_set_attr() {$/;"	f
+led_timer	lib/functions/leds.sh	/^led_timer() {$/;"	f
+libpath	lua/luci/util.lua	/^function libpath()$/;"	f
+libs	lib/upgrade/common.sh	/^libs() { ldd $* 2>\/dev\/null | sed -r 's\/(.* => )?(.*) .*\/\\2\/'; }$/;"	f
+limitsource	lua/luci/sgi/cgi.lua	/^local function limitsource(handle, limit)$/;"	f
+link	lua/luci/fs.lua	/^function link(src, dest, sym)$/;"	f
+link_iface	lua/luci/view/admin_status/iptables.htm	/^	function link_iface(i)$/;"	f
+link_target	lua/luci/view/admin_status/iptables.htm	/^	function link_target(t,c)$/;"	f
+list	lib/functions.sh	/^list() {$/;"	f
+list	lua/luci/cbi/datatypes.lua	/^function list(v, subvalidator, subargs)$/;"	f
+list	www/luci-static/resources/cbi.js	/^	'list': function(subvalidator, subargs)$/;"	m	class:cbi_validators
+list_all	lua/luci/model/ipkg.lua	/^function list_all(pat, cb)$/;"	f
+list_cb	lib/functions.sh	/^	list_cb() { return 0; }$/;"	f
+list_contains	lib/functions.sh	/^list_contains() {$/;"	f
+list_installed	lua/luci/model/ipkg.lua	/^function list_installed(pat, cb)$/;"	f
+load	lua/luci/cbi.lua	/^function load(cbimap, ...)$/;"	f
+load	lua/luci/i18n.lua	/^function load(file, lang, force)$/;"	f
+loadavg	lua/luci/sys.lua	/^function loadavg()$/;"	f
+loadc	lua/luci/i18n.lua	/^function loadc(file, force)$/;"	f
+local _template 	lua/luci/dispatcher.lua	/^local _template = function(self, ...)$/;"	f
+local authen 	lua/luci/dispatcher.lua	/^		local authen = type(track.sysauth_authenticator) == "function"$/;"	f
+local f 	lua/luci/ltn12.lua	/^    local f = function(chunk, err)$/;"	f
+local newf 	lua/luci/util.lua	/^		local newf = function() return f(unpack(params)) end$/;"	f
+local portvalidate 	lua/luci/model/cbi/admin_network/vlan.lua	/^		local portvalidate = function(self, value, section)$/;"	f
+local portvalue 	lua/luci/model/cbi/admin_network/vlan.lua	/^		local portvalue = function(self, section)$/;"	f
+local proto, off 	lua/luci/util.lua	/^			local proto, off = strip_function(code:sub(offset, -1))$/;"	f
+local stat, err 	lua/luci/dispatcher.lua	/^	local stat, err = util.coxpcall(function()$/;"	f
+lookup_zone	lua/luci/model/cbi/admin_system/system.lua	/^	local function lookup_zone(title)$/;"	f
+ltn12_popen	lua/luci/controller/admin/system.lua	/^function ltn12_popen(command)$/;"	f
+m.on_cancel	lua/luci/model/cbi/admin_network/wifi_add.lua	/^function m.on_cancel()$/;"	f
+m.on_commit	lua/luci/model/cbi/admin_network/wifi.lua	/^function m.on_commit(map)$/;"	f
+m.on_commit	lua/luci/model/cbi/admin_system/admin.lua	/^function m.on_commit(map)$/;"	f
+m.on_commit 	lua/luci/model/cbi/firewall/zone-details.lua	/^m.on_commit = function(map)$/;"	f
+m.parse	lua/luci/model/cbi/admin_network/wifi.lua	/^function m.parse(map)$/;"	f
+mac, name) ml:value	lua/luci/model/cbi/admin_network/wifi.lua	/^	nt.mac_hints(function(mac, name) ml:value(mac, "%s (%s)" %{ mac, name }) end)$/;"	f
+macaddr	lua/luci/cbi/datatypes.lua	/^function macaddr(val)$/;"	f
+macaddr	www/luci-static/resources/cbi.js	/^	'macaddr': function()$/;"	m	class:cbi_validators
+macaddr_2bin	lib/functions/system.sh	/^macaddr_2bin()$/;"	f
+macaddr_add	lib/functions/system.sh	/^macaddr_add() {$/;"	f
+macaddr_canonicalize	lib/functions/system.sh	/^macaddr_canonicalize()$/;"	f
+macaddr_setbit_la	lib/functions/system.sh	/^macaddr_setbit_la()$/;"	f
+match.cfgvalue	lua/luci/model/cbi/firewall/forwards.lua	/^function match.cfgvalue(self, s)$/;"	f
+match.cfgvalue	lua/luci/model/cbi/firewall/rules.lua	/^function match.cfgvalue(self, s)$/;"	f
+max	lua/luci/cbi/datatypes.lua	/^function max(val, max)$/;"	f
+max	www/luci-static/resources/cbi.js	/^	'max': function(max)$/;"	m	class:cbi_validators
+maxlength	lua/luci/cbi/datatypes.lua	/^function maxlength(val, max)$/;"	f
+maxlength	www/luci-static/resources/cbi.js	/^	'maxlength': function(max)$/;"	m	class:cbi_validators
+meta.blocksource	lua/nixio/util.lua	/^function meta.blocksource(self, bs, limit)$/;"	f
+meta.copy	lua/nixio/util.lua	/^function meta.copy(self, fdout, size)$/;"	f
+meta.copyz	lua/nixio/util.lua	/^function meta.copyz(self, fd, size)$/;"	f
+meta.is_file	lua/nixio/util.lua	/^function meta.is_file(self)$/;"	f
+meta.is_socket	lua/nixio/util.lua	/^function meta.is_socket(self)$/;"	f
+meta.is_tls_socket	lua/nixio/util.lua	/^function meta.is_tls_socket(self)$/;"	f
+meta.linesource	lua/nixio/util.lua	/^function meta.linesource(self, limit)$/;"	f
+meta.readall	lua/nixio/util.lua	/^function meta.readall(self, len)$/;"	f
+meta.sink	lua/nixio/util.lua	/^function meta.sink(self, close)$/;"	f
+meta.writeall	lua/nixio/util.lua	/^function meta.writeall(self, data)$/;"	f
+mimedecode_message_body	lua/luci/http/protocol.lua	/^function mimedecode_message_body( src, msg, filecb )$/;"	f
+min	lua/luci/cbi/datatypes.lua	/^function min(val, min)$/;"	f
+min	www/luci-static/resources/cbi.js	/^	'min': function(min)$/;"	m	class:cbi_validators
+minlength	lua/luci/cbi/datatypes.lua	/^function minlength(val, min)$/;"	f
+minlength	www/luci-static/resources/cbi.js	/^	'minlength': function(min)$/;"	m	class:cbi_validators
+mk_etag	lua/luci/http/protocol/conditionals.lua	/^function mk_etag( stat )$/;"	f
+mkdir	lua/luci/fs.lua	/^function mkdir(path, recursive)$/;"	f
+mkdirr	lua/nixio/fs.lua	/^function mkdirr(dest, mode)$/;"	f
+mode.cfgvalue	lua/luci/model/cbi/admin_network/wifi.lua	/^		function mode.cfgvalue(...)$/;"	f
+mode.cfgvalue	lua/luci/model/cbi/admin_network/wifi.lua	/^	function mode.cfgvalue(self, section)$/;"	f
+mode.write	lua/luci/model/cbi/admin_network/wifi.lua	/^	function mode.write(self, section, value)$/;"	f
+modifier	lua/luci/dispatcher.lua	/^function modifier(func, order)$/;"	f
+modisort	lua/luci/dispatcher.lua	/^	local function modisort(a,b)$/;"	f
+module ("nixio.fs", function(m) setmetatable(m, {__index 	lua/nixio/fs.lua	/^module ("nixio.fs", function(m) setmetatable(m, {__index = nixio.fs}) end)$/;"	f
+mount.create 	lua/luci/model/cbi/admin_system/fstab.lua	/^mount.create = function(...)$/;"	f
+mounts	lua/luci/sys.lua	/^function mounts()$/;"	f
+move	lua/nixio/fs.lua	/^function move(src, dest)$/;"	f
+mover	lua/nixio/fs.lua	/^function mover(src, dest)$/;"	f
+mp.cfgvalue 	lua/luci/model/cbi/admin_system/fstab.lua	/^mp.cfgvalue = function(self, section)$/;"	f
+mtd_get_mac_ascii	lib/functions/system.sh	/^mtd_get_mac_ascii()$/;"	f
+mtd_get_mac_binary	lib/functions/system.sh	/^mtd_get_mac_binary() {$/;"	f
+mtd_get_part_size	lib/functions/system.sh	/^mtd_get_part_size() {$/;"	f
+mtime	lua/luci/fs.lua	/^function mtime(path)$/;"	f
+name.write	lua/luci/model/cbi/firewall/zone-details.lua	/^function name.write(self, section, value)$/;"	f
+nand_do_platform_check	lib/upgrade/nand.sh	/^nand_do_platform_check() {$/;"	f
+nand_do_upgrade	lib/upgrade/nand.sh	/^nand_do_upgrade() {$/;"	f
+nand_do_upgrade_stage2	lib/upgrade/nand.sh	/^nand_do_upgrade_stage2() {$/;"	f
+nand_do_upgrade_success	lib/upgrade/nand.sh	/^nand_do_upgrade_success() {$/;"	f
+nand_find_ubi	lib/upgrade/nand.sh	/^nand_find_ubi() {$/;"	f
+nand_find_volume	lib/upgrade/nand.sh	/^nand_find_volume() {$/;"	f
+nand_get_magic_long	lib/upgrade/nand.sh	/^nand_get_magic_long() {$/;"	f
+nand_restore_config	lib/upgrade/nand.sh	/^nand_restore_config() {$/;"	f
+nand_upgrade_prepare_ubi	lib/upgrade/nand.sh	/^nand_upgrade_prepare_ubi() {$/;"	f
+nand_upgrade_stage1	lib/upgrade/nand.sh	/^nand_upgrade_stage1() {$/;"	f
+nand_upgrade_stage2	lib/upgrade/nand.sh	/^nand_upgrade_stage2() {$/;"	f
+nand_upgrade_tar	lib/upgrade/nand.sh	/^nand_upgrade_tar() {$/;"	f
+nand_upgrade_ubifs	lib/upgrade/nand.sh	/^nand_upgrade_ubifs() {$/;"	f
+nand_upgrade_ubinized	lib/upgrade/nand.sh	/^nand_upgrade_ubinized() {$/;"	f
+neg	lua/luci/cbi/datatypes.lua	/^function neg(v, ...)$/;"	f
+neg	www/luci-static/resources/cbi.js	/^	'neg': function()$/;"	m	class:cbi_validators
+net.arptable	lua/luci/sys.lua	/^function net.arptable(callback)$/;"	f
+net.cfgvalue	lua/luci/model/cbi/firewall/zone-details.lua	/^function net.cfgvalue(self, section)$/;"	f
+net.conntrack	lua/luci/sys.lua	/^function net.conntrack(callback)$/;"	f
+net.defaultroute	lua/luci/sys.lua	/^function net.defaultroute()$/;"	f
+net.defaultroute6	lua/luci/sys.lua	/^function net.defaultroute6()$/;"	f
+net.deviceinfo	lua/luci/sys.lua	/^function net.deviceinfo()$/;"	f
+net.devices	lua/luci/sys.lua	/^function net.devices()$/;"	f
+net.formvalue	lua/luci/model/cbi/firewall/zone-details.lua	/^function net.formvalue(self, section)$/;"	f
+net.ip4mac	lua/luci/sys.lua	/^function net.ip4mac(ip)$/;"	f
+net.ipv4_hints	lua/luci/sys.lua	/^function net.ipv4_hints(callback)$/;"	f
+net.ipv6_hints	lua/luci/sys.lua	/^function net.ipv6_hints(callback)$/;"	f
+net.mac_hints	lua/luci/sys.lua	/^function net.mac_hints(callback)$/;"	f
+net.pingtest	lua/luci/sys.lua	/^function net.pingtest(host)$/;"	f
+net.routes	lua/luci/sys.lua	/^function net.routes(callback)$/;"	f
+net.routes6	lua/luci/sys.lua	/^function net.routes6(callback)$/;"	f
+net.write	lua/luci/model/cbi/firewall/zone-details.lua	/^function net.write(self, section, value)$/;"	f
+network	lua/luci/cbi/datatypes.lua	/^function network(val)$/;"	f
+network	lua/luci/model/network.lua	/^function network(name, proto)$/;"	f
+network	www/luci-static/resources/cbi.js	/^	'network': function()$/;"	m	class:cbi_validators
+network.write	lua/luci/model/cbi/admin_network/wifi.lua	/^function network.write(self, section, value)$/;"	f
+network_defer_device	lib/functions/network.sh	/^network_defer_device()$/;"	f
+network_find_wan	lib/functions/network.sh	/^network_find_wan() { __network_wan "$1" "0.0.0.0" "$2"; }$/;"	f
+network_find_wan6	lib/functions/network.sh	/^network_find_wan6() { __network_wan "$1" "::" "$2"; }$/;"	f
+network_flush_cache	lib/functions/network.sh	/^network_flush_cache() { unset __NETWORK_CACHE; }$/;"	f
+network_get_addresses	lua/luci/tools/webadmin.lua	/^function network_get_addresses(net)$/;"	f
+network_get_device	lib/functions/network.sh	/^network_get_device() { __network_ifstatus "$1" "$2" ".l3_device"; }$/;"	f
+network_get_dnssearch	lib/functions/network.sh	/^network_get_dnssearch() {$/;"	f
+network_get_dnsserver	lib/functions/network.sh	/^network_get_dnsserver() {$/;"	f
+network_get_gateway	lib/functions/network.sh	/^network_get_gateway() {$/;"	f
+network_get_gateway6	lib/functions/network.sh	/^network_get_gateway6() {$/;"	f
+network_get_ipaddr	lib/functions/network.sh	/^network_get_ipaddr() {$/;"	f
+network_get_ipaddr6	lib/functions/network.sh	/^network_get_ipaddr6() {$/;"	f
+network_get_ipaddrs	lib/functions/network.sh	/^network_get_ipaddrs() {$/;"	f
+network_get_ipaddrs6	lib/functions/network.sh	/^network_get_ipaddrs6() {$/;"	f
+network_get_ipaddrs_all	lib/functions/network.sh	/^network_get_ipaddrs_all() {$/;"	f
+network_get_physdev	lib/functions/network.sh	/^network_get_physdev() { __network_ifstatus "$1" "$2" ".device"; }$/;"	f
+network_get_prefix6	lib/functions/network.sh	/^network_get_prefix6() {$/;"	f
+network_get_prefixes6	lib/functions/network.sh	/^network_get_prefixes6() {$/;"	f
+network_get_protocol	lib/functions/network.sh	/^network_get_protocol() { __network_ifstatus "$1" "$2" ".proto"; }$/;"	f
+network_get_subnet	lib/functions/network.sh	/^network_get_subnet() {$/;"	f
+network_get_subnet6	lib/functions/network.sh	/^network_get_subnet6() {$/;"	f
+network_get_subnets	lib/functions/network.sh	/^network_get_subnets() {$/;"	f
+network_get_subnets6	lib/functions/network.sh	/^network_get_subnets6() {$/;"	f
+network_get_zones	lua/luci/tools/webadmin.lua	/^function network_get_zones(net)$/;"	f
+network_is_up	lib/functions/network.sh	/^network_is_up()$/;"	f
+network_ready_device	lib/functions/network.sh	/^network_ready_device()$/;"	f
+new_zone	lua/luci/model/firewall.lua	/^function new_zone(self)$/;"	f
+newnet.parse	lua/luci/model/cbi/admin_network/wifi_add.lua	/^function newnet.parse(self, section)$/;"	f
+newproto.validate	lua/luci/model/cbi/admin_network/iface_add.lua	/^function newproto.validate(self, value, section)$/;"	f
+newproto.write	lua/luci/model/cbi/admin_network/iface_add.lua	/^function newproto.write(self, section, value)$/;"	f
+node	lua/luci/dispatcher.lua	/^function node(...)$/;"	f
+node	www/luci-static/resources/cbi.js	/^				"node": obj,$/;"	p	class:entry
+node_childs	lua/luci/dispatcher.lua	/^function node_childs(node)$/;"	f
+node_visible	lua/luci/dispatcher.lua	/^function node_visible(node)$/;"	f
+nowrap	lua/luci/view/admin_network/wifi_overview.htm	/^	function nowrap(s) {$/;"	f
+null	lua/luci/ltn12.lua	/^local function null()$/;"	f
+o.cfgvalue	lua/luci/model/cbi/admin_system/system.lua	/^		function o.cfgvalue(self)$/;"	f
+o.cfgvalue	lua/luci/model/cbi/admin_system/system.lua	/^function o.cfgvalue(...)$/;"	f
+o.cfgvalue	lua/luci/model/cbi/firewall/custom.lua	/^function o.cfgvalue(self, section)$/;"	f
+o.cfgvalue	lua/luci/model/cbi/firewall/forward-details.lua	/^function o.cfgvalue(...)$/;"	f
+o.cfgvalue	lua/luci/model/cbi/firewall/rule-details.lua	/^	function o.cfgvalue(...)$/;"	f
+o.cfgvalue	lua/luci/tools/firewall.lua	/^	function o.cfgvalue(self, section)$/;"	f
+o.cfgvalue	lua/luci/tools/proto.lua	/^	function o.cfgvalue(self, section)$/;"	f
+o.cfgvalue 	lua/luci/model/cbi/firewall/forward-details.lua	/^o.cfgvalue = function(...)$/;"	f
+o.cfgvalue 	lua/luci/model/cbi/firewall/zones.lua	/^o.cfgvalue = function(self, section)$/;"	f
+o.remove	lua/luci/model/cbi/admin_system/system.lua	/^		function o.remove() end$/;"	f
+o.remove	lua/luci/tools/firewall.lua	/^	function o.remove(self, section)$/;"	f
+o.remove	lua/luci/tools/proto.lua	/^	function o.remove(self, section)$/;"	f
+o.render	lua/luci/tools/firewall.lua	/^		function o.render(self, section)$/;"	f
+o.write	lua/luci/model/cbi/admin_system/system.lua	/^		function o.write(self, section, value)$/;"	f
+o.write	lua/luci/model/cbi/admin_system/system.lua	/^function o.write(self, section, value)$/;"	f
+o.write	lua/luci/model/cbi/firewall/custom.lua	/^function o.write(self, section, value)$/;"	f
+o.write	lua/luci/tools/firewall.lua	/^		function o.write(self, section, value)$/;"	f
+o.write	lua/luci/tools/firewall.lua	/^	function o.write(self, section, value)$/;"	f
+o.write	lua/luci/tools/proto.lua	/^	function o.write(self, section, value)$/;"	f
+op.cfgvalue 	lua/luci/model/cbi/admin_system/fstab.lua	/^op.cfgvalue = function(self, section)$/;"	f
+opt_enabled	lua/luci/tools/firewall.lua	/^function opt_enabled(s, t, ...)$/;"	f
+opt_macaddr	lua/luci/tools/proto.lua	/^function opt_macaddr(s, ifc, ...)$/;"	f
+opt_name	lua/luci/tools/firewall.lua	/^function opt_name(s, t, ...)$/;"	f
+option	lib/functions.sh	/^option () {$/;"	f
+option_cb	lib/functions.sh	/^	option_cb() { return 0; }$/;"	f
+optman	www/luci-static/resources/cbi.js	/^	var optman = document.createElement("option");$/;"	v
+or	www/luci-static/resources/cbi.js	/^	'or': function()$/;"	m	class:cbi_validators
+or (scope and type(scope[key]) ~	lua/luci/dispatcher.lua	/^					 or (scope and type(scope[key]) ~= "function" and scope[key])$/;"	f
+or (type(env[key]) ~	lua/luci/dispatcher.lua	/^					 or (type(env[key]) ~= "function" and env[key])$/;"	f
+out.cfgvalue	lua/luci/model/cbi/firewall/zone-details.lua	/^function out.cfgvalue(self, section)$/;"	f
+out.formvalue	lua/luci/model/cbi/firewall/zone-details.lua	/^function out.formvalue(self, section)$/;"	f
+out.write	lua/luci/model/cbi/firewall/zone-details.lua	/^function out.write(self, section, value)$/;"	f
+overlay_root	lua/luci/model/ipkg.lua	/^function overlay_root()$/;"	f
+p.remove	lua/luci/model/cbi/admin_network/ifaces.lua	/^function p.remove() end$/;"	f
+p.validate	lua/luci/model/cbi/admin_network/ifaces.lua	/^function p.validate(self, value, section)$/;"	f
+p.write	lua/luci/model/cbi/admin_network/ifaces.lua	/^function p.write() end$/;"	f
+p_install.write	lua/luci/model/cbi/admin_network/ifaces.lua	/^	function p_install.write()$/;"	f
+package	lib/functions.sh	/^package() {$/;"	f
+package.loaders[2] 	lua/luci/ccache.lua	/^	package.loaders[2] = function(mod)$/;"	f
+param	lua/luci/controller/admin/network.lua	/^	local function param(x)$/;"	f
+parent	www/luci-static/resources/cbi.js	/^				"parent": obj.parentNode.id,$/;"	p	class:entry
+parse_headers	lua/luci/http/protocol.lua	/^	local function parse_headers( chunk, field )$/;"	f
+parse_message_body	lua/luci/http/protocol.lua	/^function parse_message_body( src, msg, filecb )$/;"	f
+parse_message_header	lua/luci/http/protocol.lua	/^function parse_message_header( src )$/;"	f
+parse_units	lua/luci/util.lua	/^function parse_units(ustr)$/;"	f
+pcdata	lua/luci/util.lua	/^function pcdata(value)$/;"	f
+percent_wifi_signal	lua/luci/view/admin_network/wifi_join.htm	/^	function percent_wifi_signal(info)$/;"	f
+performResume	lua/luci/util.lua	/^function performResume(err, co, ...)$/;"	f
+perror	lua/luci/util.lua	/^function perror(obj)$/;"	f
+phonedigit	lua/luci/cbi/datatypes.lua	/^function phonedigit(val)$/;"	f
+phonedigit	www/luci-static/resources/cbi.js	/^	'phonedigit': function()$/;"	m	class:cbi_validators
+pivot	lib/functions/preinit.sh	/^pivot() { # <new_root> <old_root>$/;"	f
+platform_check_image	lib/upgrade/platform.sh	/^platform_check_image() {$/;"	f
+platform_do_upgrade	lib/upgrade/platform.sh	/^platform_do_upgrade() {$/;"	f
+platform_pre_upgrade	lib/upgrade/platform.sh	/^platform_pre_upgrade() {$/;"	f
+po.write    	lua/luci/model/cbi/admin_network/vlan.lua	/^			po.write    = function() end$/;"	f
+port	lua/luci/cbi/datatypes.lua	/^function port(val)$/;"	f
+port	www/luci-static/resources/cbi.js	/^	'port': function()$/;"	m	class:cbi_validators
+portrange	lua/luci/cbi/datatypes.lua	/^function portrange(val)$/;"	f
+portrange	www/luci-static/resources/cbi.js	/^	'portrange': function()$/;"	m	class:cbi_validators
+post	www/luci-static/resources/xhr.js	/^	this.post = function(url,data,callback)$/;"	c
+prepare	lua/luci/sauth.lua	/^function prepare()$/;"	f
+prepare_content	lua/luci/http.lua	/^function prepare_content(mime)$/;"	f
+prepare_interface_bridge	lib/network/config.sh	/^prepare_interface_bridge() {$/;"	f
+prepare_key_wep	lib/netifd/netifd-wireless.sh	/^prepare_key_wep() {$/;"	f
+procd_add_mdns	lib/functions/procd.sh	/^procd_add_mdns() {$/;"	f
+procd_add_mdns_service	lib/functions/procd.sh	/^procd_add_mdns_service() {$/;"	f
+procd_close_data	lib/functions/procd.sh	/^procd_close_data() {$/;"	f
+procd_open_data	lib/functions/procd.sh	/^procd_open_data() {$/;"	f
+process.info	lua/luci/sys.lua	/^function process.info(key)$/;"	f
+process.list	lua/luci/sys.lua	/^function process.list()$/;"	f
+process.setgroup	lua/luci/sys.lua	/^function process.setgroup(gid)$/;"	f
+process.setuser	lua/luci/sys.lua	/^function process.setuser(uid)$/;"	f
+process_states['headers'] 	lua/luci/http/protocol.lua	/^process_states['headers'] = function( msg, chunk )$/;"	f
+process_states['magic'] 	lua/luci/http/protocol.lua	/^process_states['magic'] = function( msg, chunk, err )$/;"	f
+progressbar	lua/luci/view/admin_status/index.htm	/^	function progressbar(v, m)$/;"	f
+proto.__init__	lua/luci/model/network.lua	/^	function proto.__init__(self, name)$/;"	f
+proto.contains_interface	lua/luci/model/network/proto_ppp.lua	/^	function proto.contains_interface(self, ifc)$/;"	f
+proto.get_i18n	lua/luci/model/network/proto_ppp.lua	/^	function proto.get_i18n(self)$/;"	f
+proto.get_interfaces	lua/luci/model/network/proto_ppp.lua	/^	function proto.get_interfaces(self)$/;"	f
+proto.ifname	lua/luci/model/network/proto_ppp.lua	/^	function proto.ifname(self)$/;"	f
+proto.is_floating	lua/luci/model/network/proto_ppp.lua	/^	function proto.is_floating(self)$/;"	f
+proto.is_installed	lua/luci/model/network/proto_ppp.lua	/^	function proto.is_installed(self)$/;"	f
+proto.is_virtual	lua/luci/model/network/proto_ppp.lua	/^	function proto.is_virtual(self)$/;"	f
+proto.opkg_package	lua/luci/model/network/proto_ppp.lua	/^	function proto.opkg_package(self)$/;"	f
+proto.proto	lua/luci/model/network.lua	/^	function proto.proto(self)$/;"	f
+proto_add_data	lib/netifd/netifd-proto.sh	/^proto_add_data() {$/;"	f
+proto_add_dns_search	lib/netifd/netifd-proto.sh	/^proto_add_dns_search() {$/;"	f
+proto_add_dns_server	lib/netifd/netifd-proto.sh	/^proto_add_dns_server() {$/;"	f
+proto_add_host_dependency	lib/netifd/netifd-proto.sh	/^proto_add_host_dependency() {$/;"	f
+proto_add_ipv4_address	lib/netifd/netifd-proto.sh	/^proto_add_ipv4_address() {$/;"	f
+proto_add_ipv4_route	lib/netifd/netifd-proto.sh	/^proto_add_ipv4_route() {$/;"	f
+proto_add_ipv6_address	lib/netifd/netifd-proto.sh	/^proto_add_ipv6_address() {$/;"	f
+proto_add_ipv6_prefix	lib/netifd/netifd-proto.sh	/^proto_add_ipv6_prefix() {$/;"	f
+proto_add_ipv6_route	lib/netifd/netifd-proto.sh	/^proto_add_ipv6_route() {$/;"	f
+proto_add_nested	lib/netifd/netifd-proto.sh	/^proto_add_nested() {$/;"	f
+proto_add_tunnel	lib/netifd/netifd-proto.sh	/^proto_add_tunnel() {$/;"	f
+proto_block_restart	lib/netifd/netifd-proto.sh	/^proto_block_restart() {$/;"	f
+proto_close_data	lib/netifd/netifd-proto.sh	/^proto_close_data() {$/;"	f
+proto_close_nested	lib/netifd/netifd-proto.sh	/^proto_close_nested() {$/;"	f
+proto_close_tunnel	lib/netifd/netifd-proto.sh	/^proto_close_tunnel() {$/;"	f
+proto_config_add_boolean	lib/netifd/netifd-proto.sh	/^proto_config_add_boolean() {$/;"	f
+proto_config_add_int	lib/netifd/netifd-proto.sh	/^proto_config_add_int() {$/;"	f
+proto_config_add_string	lib/netifd/netifd-proto.sh	/^proto_config_add_string() {$/;"	f
+proto_dhcp_init_config	lib/netifd/proto/dhcp.sh	/^proto_dhcp_init_config() {$/;"	f
+proto_dhcp_renew	lib/netifd/proto/dhcp.sh	/^proto_dhcp_renew() {$/;"	f
+proto_dhcp_setup	lib/netifd/proto/dhcp.sh	/^proto_dhcp_setup() {$/;"	f
+proto_dhcp_teardown	lib/netifd/proto/dhcp.sh	/^proto_dhcp_teardown() {$/;"	f
+proto_export	lib/netifd/netifd-proto.sh	/^proto_export() {$/;"	f
+proto_init_update	lib/netifd/netifd-proto.sh	/^proto_init_update() {$/;"	f
+proto_kill_command	lib/netifd/netifd-proto.sh	/^proto_kill_command() {$/;"	f
+proto_notify_error	lib/netifd/netifd-proto.sh	/^proto_notify_error() {$/;"	f
+proto_run_command	lib/netifd/netifd-proto.sh	/^proto_run_command() {$/;"	f
+proto_send_update	lib/netifd/netifd-proto.sh	/^proto_send_update() {$/;"	f
+proto_set_available	lib/netifd/netifd-proto.sh	/^proto_set_available() {$/;"	f
+proto_set_keep	lib/netifd/netifd-proto.sh	/^proto_set_keep() {$/;"	f
+proto_setup_failed	lib/netifd/netifd-proto.sh	/^proto_setup_failed() {$/;"	f
+protocol.__init__	lua/luci/model/network.lua	/^function protocol.__init__(self, name)$/;"	f
+protocol._get	lua/luci/model/network.lua	/^function protocol._get(self, opt)$/;"	f
+protocol._ubus	lua/luci/model/network.lua	/^function protocol._ubus(self, field)$/;"	f
+protocol.add_interface	lua/luci/model/network.lua	/^function protocol.add_interface(self, ifname)$/;"	f
+protocol.adminlink	lua/luci/model/network.lua	/^function protocol.adminlink(self)$/;"	f
+protocol.contains_interface	lua/luci/model/network.lua	/^function protocol.contains_interface(self, ifname)$/;"	f
+protocol.del_interface	lua/luci/model/network.lua	/^function protocol.del_interface(self, ifname)$/;"	f
+protocol.dns6addrs	lua/luci/model/network.lua	/^function protocol.dns6addrs(self)$/;"	f
+protocol.dnsaddrs	lua/luci/model/network.lua	/^function protocol.dnsaddrs(self)$/;"	f
+protocol.expires	lua/luci/model/network.lua	/^function protocol.expires(self)$/;"	f
+protocol.get	lua/luci/model/network.lua	/^function protocol.get(self, opt)$/;"	f
+protocol.get_i18n	lua/luci/model/network.lua	/^function protocol.get_i18n(self)$/;"	f
+protocol.get_interface	lua/luci/model/network.lua	/^function protocol.get_interface(self)$/;"	f
+protocol.get_interfaces	lua/luci/model/network.lua	/^function protocol.get_interfaces(self)$/;"	f
+protocol.gw6addr	lua/luci/model/network.lua	/^function protocol.gw6addr(self)$/;"	f
+protocol.gwaddr	lua/luci/model/network.lua	/^function protocol.gwaddr(self)$/;"	f
+protocol.ifname	lua/luci/model/network.lua	/^function protocol.ifname(self)$/;"	f
+protocol.ip6addr	lua/luci/model/network.lua	/^function protocol.ip6addr(self)$/;"	f
+protocol.ipaddr	lua/luci/model/network.lua	/^function protocol.ipaddr(self)$/;"	f
+protocol.is_bridge	lua/luci/model/network.lua	/^function protocol.is_bridge(self)$/;"	f
+protocol.is_empty	lua/luci/model/network.lua	/^function protocol.is_empty(self)$/;"	f
+protocol.is_floating	lua/luci/model/network.lua	/^function protocol.is_floating(self)$/;"	f
+protocol.is_installed	lua/luci/model/network.lua	/^function protocol.is_installed(self)$/;"	f
+protocol.is_virtual	lua/luci/model/network.lua	/^function protocol.is_virtual(self)$/;"	f
+protocol.metric	lua/luci/model/network.lua	/^function protocol.metric(self)$/;"	f
+protocol.name	lua/luci/model/network.lua	/^function protocol.name(self)$/;"	f
+protocol.netmask	lua/luci/model/network.lua	/^function protocol.netmask(self)$/;"	f
+protocol.opkg_package	lua/luci/model/network.lua	/^function protocol.opkg_package(self)$/;"	f
+protocol.proto	lua/luci/model/network.lua	/^function protocol.proto(self)$/;"	f
+protocol.set	lua/luci/model/network.lua	/^function protocol.set(self, opt, val)$/;"	f
+protocol.type	lua/luci/model/network.lua	/^function protocol.type(self)$/;"	f
+protocol.uptime	lua/luci/model/network.lua	/^function protocol.uptime(self)$/;"	f
+ptable	lua/luci/controller/admin/network.lua	/^	local function ptable(x)$/;"	f
+pump.all	lua/luci/ltn12.lua	/^function pump.all(src, snk, step)$/;"	f
+pump.step	lua/luci/ltn12.lua	/^function pump.step(src, snk)$/;"	f
+ramoverlay	lib/functions/preinit.sh	/^ramoverlay() {$/;"	f
+range	lua/luci/cbi/datatypes.lua	/^function range(val, min, max)$/;"	f
+range	www/luci-static/resources/cbi.js	/^	'range': function(min, max)$/;"	m	class:cbi_validators
+rangelength	lua/luci/cbi/datatypes.lua	/^function rangelength(val, min, max)$/;"	f
+rangelength	www/luci-static/resources/cbi.js	/^	'rangelength': function(min, max)$/;"	m	class:cbi_validators
+rate_label	lua/luci/view/admin_status/wireless.htm	/^						function rate_label(mbit)$/;"	f
+rc_procd	etc/rc.common	/^	rc_procd() {$/;"	f
+read	lua/luci/sauth.lua	/^function read(id)$/;"	f
+readfile	lua/nixio/fs.lua	/^function readfile(path, limit)$/;"	f
+reap	lua/luci/sauth.lua	/^function reap()$/;"	f
+reboot	lua/luci/sys.lua	/^function reboot()$/;"	f
+recv	lua/luci/sgi/uhttpd.lua	/^	local function recv()$/;"	f
+redirect	lua/luci/http.lua	/^function redirect(url)$/;"	f
+redirect.__init__	lua/luci/model/firewall.lua	/^function redirect.__init__(self, f)$/;"	f
+redirect.dest	lua/luci/model/firewall.lua	/^function redirect.dest(self)$/;"	f
+redirect.dest_zone	lua/luci/model/firewall.lua	/^function redirect.dest_zone(self)$/;"	f
+redirect.get	lua/luci/model/firewall.lua	/^function redirect.get(self, opt)$/;"	f
+redirect.set	lua/luci/model/firewall.lua	/^function redirect.set(self, opt, val)$/;"	f
+redirect.src	lua/luci/model/firewall.lua	/^function redirect.src(self)$/;"	f
+redirect.src_zone	lua/luci/model/firewall.lua	/^function redirect.src_zone(self)$/;"	f
+register_pattern_virtual	lua/luci/model/network.lua	/^function register_pattern_virtual(self, pat)$/;"	f
+register_protocol	lua/luci/model/network.lua	/^function register_protocol(self, protoname)$/;"	f
+reinit	www/luci-static/resources/xhr.js	/^	this.reinit = function()$/;"	m	class:XHR
+reload	etc/rc.common	/^	reload() {$/;"	f
+reload	etc/rc.common	/^reload() {$/;"	f
+remove	lua/luci/model/ipkg.lua	/^function remove(...)$/;"	f
+remover	lua/nixio/fs.lua	/^function remover(src)$/;"	f
+rename_network	lua/luci/model/network.lua	/^function rename_network(self, old, new)$/;"	f
+rename_zone	lua/luci/model/firewall.lua	/^function rename_zone(self, old, new)$/;"	f
+render	lua/luci/template.lua	/^function render(name, scope)$/;"	f
+replace.cfgvalue	lua/luci/model/cbi/admin_network/wifi_add.lua	/^	function replace.cfgvalue() return "1" end$/;"	f
+replace.formvalue	lua/luci/model/cbi/admin_network/wifi_add.lua	/^	function replace.formvalue() return "1" end$/;"	f
+reset_cb	lib/functions.sh	/^reset_cb() {$/;"	f
+restart	etc/rc.common	/^restart() {$/;"	f
+restore_data	lua/luci/util.lua	/^function restore_data(str)$/;"	f
+return string.byte(string.dump(function() end), 7) 	lua/luci/util.lua	/^	return string.byte(string.dump(function() end), 7) == 0$/;"	f
+rewrite	lua/luci/dispatcher.lua	/^function rewrite(n, ...)$/;"	f
+rf.cfgvalue 	lua/luci/model/cbi/admin_system/fstab.lua	/^rf.cfgvalue = function(self, section)$/;"	f
+rootfs_type	lib/upgrade/common.sh	/^rootfs_type() {$/;"	f
+rowstyle	lua/luci/view/admin_status/iptables.htm	/^	function rowstyle()$/;"	f
+rowstyle	lua/luci/view/admin_system/packages.htm	/^function rowstyle()$/;"	f
+rowstyle	lua/luci/view/cbi/tblsection.htm	/^function rowstyle()$/;"	f
+rule.__init__	lua/luci/model/firewall.lua	/^function rule.__init__(self, f)$/;"	f
+rule.dest	lua/luci/model/firewall.lua	/^function rule.dest(self)$/;"	f
+rule.dest_zone	lua/luci/model/firewall.lua	/^function rule.dest_zone(self)$/;"	f
+rule.get	lua/luci/model/firewall.lua	/^function rule.get(self, opt)$/;"	f
+rule.set	lua/luci/model/firewall.lua	/^function rule.set(self, opt, val)$/;"	f
+rule.src	lua/luci/model/firewall.lua	/^function rule.src(self)$/;"	f
+rule.src_zone	lua/luci/model/firewall.lua	/^function rule.src_zone(self)$/;"	f
+rule_dest_txt	lua/luci/model/cbi/firewall/rules.lua	/^local function rule_dest_txt(self, s)$/;"	f
+rule_proto_txt	lua/luci/model/cbi/firewall/rules.lua	/^local function rule_proto_txt(self, s)$/;"	f
+rule_src_txt	lua/luci/model/cbi/firewall/rules.lua	/^local function rule_src_txt(self, s)$/;"	f
+run	lua/luci/sgi/cgi.lua	/^function run()$/;"	f
+run_hooks	lib/upgrade/common.sh	/^run_hooks() {$/;"	f
+run_ramfs	lib/upgrade/common.sh	/^run_ramfs() { # <command> [...]$/;"	f
+running	etc/rc.common	/^	running() {$/;"	f
+s.cfgsections	lua/luci/model/cbi/admin_system/admin.lua	/^function s.cfgsections()$/;"	f
+s.cfgsections 	lua/luci/model/cbi/admin_network/ifaces.lua	/^		s.cfgsections = function() return { "_enable" } end$/;"	f
+s.cfgsections 	lua/luci/model/cbi/admin_network/vlan.lua	/^		s.cfgsections = function(self)$/;"	f
+s.cfgsections 	lua/luci/model/cbi/admin_system/system.lua	/^		s.cfgsections = function() return { "_timeserver" } end$/;"	f
+s.create	lua/luci/model/cbi/firewall/forwards.lua	/^function s.create(self, section)$/;"	f
+s.create	lua/luci/model/cbi/firewall/rules.lua	/^function s.create(self, section)$/;"	f
+s.create	lua/luci/model/cbi/firewall/zones.lua	/^function s.create(self)$/;"	f
+s.create 	lua/luci/model/cbi/admin_network/vlan.lua	/^		s.create = function(self, section, origin)$/;"	f
+s.filter	lua/luci/model/cbi/admin_network/ifaces.lua	/^		function s.filter(self, section)$/;"	f
+s.filter	lua/luci/model/cbi/firewall/forwards.lua	/^function s.filter(self, sid)$/;"	f
+s.filter	lua/luci/model/cbi/firewall/rules.lua	/^function s.filter(self, sid)$/;"	f
+s.filter 	lua/luci/model/cbi/admin_network/vlan.lua	/^		s.filter = function(self, section)$/;"	f
+s.parse	lua/luci/model/cbi/admin_system/leds.lua	/^function s.parse(self, ...)$/;"	f
+s.parse	lua/luci/model/cbi/firewall/forwards.lua	/^function s.parse(self, ...)$/;"	f
+s.parse	lua/luci/model/cbi/firewall/rules.lua	/^function s.parse(self, ...)$/;"	f
+s.remove	lua/luci/model/cbi/firewall/zones.lua	/^function s.remove(self, section)$/;"	f
+s2.cfgsections	lua/luci/model/cbi/admin_system/admin.lua	/^function s2.cfgsections()$/;"	f
+sane	lua/luci/sauth.lua	/^function sane(file)$/;"	f
+save	lua/luci/model/firewall.lua	/^function save(self, ...)$/;"	f
+save	lua/luci/model/network.lua	/^function save(self, ...)$/;"	f
+scan_interfaces	lib/network/config.sh	/^scan_interfaces() {$/;"	f
+scanlist	lua/luci/view/admin_network/wifi_join.htm	/^	function scanlist(times)$/;"	f
+send_form	www/luci-static/resources/xhr.js	/^	this.send_form = function(form,callback,extra_values)$/;"	f
+serialize_data	lua/luci/util.lua	/^function serialize_data(val, seen)$/;"	f
+service	lib/functions/service.sh	/^service() {$/;"	f
+service_check	lib/functions/service.sh	/^service_check() {$/;"	f
+service_reload	lib/functions/service.sh	/^service_reload() {$/;"	f
+service_running	etc/rc.common	/^service_running() {$/;"	f
+service_signal	lib/functions/service.sh	/^service_signal() {$/;"	f
+service_start	lib/functions/service.sh	/^service_start() {$/;"	f
+service_stop	lib/functions/service.sh	/^service_stop() {$/;"	f
+service_triggers	etc/rc.common	/^service_triggers() {$/;"	f
+set_default	lib/netifd/utils.sh	/^set_default() {$/;"	f
+set_state	etc/diag.sh	/^set_state() { :; }$/;"	f
+set_status	lua/luci/model/cbi/admin_network/ifaces.lua	/^local function set_status()$/;"	f
+setfilehandler	lua/luci/http.lua	/^function setfilehandler(callback)$/;"	f
+setlanguage	lua/luci/i18n.lua	/^function setlanguage(lang)$/;"	f
+setup_interface	lib/network/config.sh	/^setup_interface() {$/;"	f
+shutdown	etc/rc.common	/^shutdown() {$/;"	f
+sink 	lua/luci/http/protocol.lua	/^			sink = function( chunk, err )$/;"	f
+sink.chain	lua/luci/ltn12.lua	/^function sink.chain(f, snk)$/;"	f
+sink.error	lua/luci/ltn12.lua	/^function sink.error(err)$/;"	f
+sink.file	lua/luci/ltn12.lua	/^function sink.file(handle, io_err)$/;"	f
+sink.null	lua/luci/ltn12.lua	/^function sink.null()$/;"	f
+sink.simplify	lua/luci/ltn12.lua	/^function sink.simplify(snk)$/;"	f
+sink.table	lua/luci/ltn12.lua	/^function sink.table(t)$/;"	f
+snat.cfgvalue	lua/luci/model/cbi/firewall/rules.lua	/^function snat.cfgvalue(self, s)$/;"	f
+snat_dest_txt	lua/luci/model/cbi/firewall/rules.lua	/^local function snat_dest_txt(self, s)$/;"	f
+snk	lua/luci/http/protocol.lua	/^	local function snk( chunk )$/;"	f
+source	lua/luci/http.lua	/^function source()$/;"	f
+source.cat	lua/luci/ltn12.lua	/^function source.cat(...)$/;"	f
+source.chain	lua/luci/ltn12.lua	/^function source.chain(src, f)$/;"	f
+source.empty	lua/luci/ltn12.lua	/^function source.empty()$/;"	f
+source.error	lua/luci/ltn12.lua	/^function source.error(err)$/;"	f
+source.file	lua/luci/ltn12.lua	/^function source.file(handle, io_err)$/;"	f
+source.rewind	lua/luci/ltn12.lua	/^function source.rewind(src)$/;"	f
+source.simplify	lua/luci/ltn12.lua	/^function source.simplify(src)$/;"	f
+source.string	lua/luci/ltn12.lua	/^function source.string(s)$/;"	f
+spairs	lua/luci/util.lua	/^function spairs(t,f)$/;"	f
+splice	lua/luci/http.lua	/^function splice(fd, size)$/;"	f
+split	lua/luci/util.lua	/^function split(str, pat, max, regex)$/;"	f
+start	etc/rc.common	/^	start() {$/;"	f
+start	etc/rc.common	/^start() {$/;"	f
+start.write 	lua/luci/model/cbi/admin_system/startup.lua	/^start.write = function(self, section)$/;"	f
+start_service	etc/rc.common	/^start_service() {$/;"	f
+stat	lua/luci/fs.lua	/^function stat(path, key)$/;"	f
+status	lua/luci/http.lua	/^function status(code, message)$/;"	f
+status	lua/luci/model/ipkg.lua	/^function status(pkg)$/;"	f
+status_led_blink_failsafe	lib/functions/leds.sh	/^status_led_blink_failsafe() {$/;"	f
+status_led_blink_fast	lib/functions/leds.sh	/^status_led_blink_fast() {$/;"	f
+status_led_blink_preinit	lib/functions/leds.sh	/^status_led_blink_preinit() {$/;"	f
+status_led_blink_preinit_regular	lib/functions/leds.sh	/^status_led_blink_preinit_regular() {$/;"	f
+status_led_blink_slow	lib/functions/leds.sh	/^status_led_blink_slow() {$/;"	f
+status_led_off	lib/functions/leds.sh	/^status_led_off() {$/;"	f
+status_led_on	lib/functions/leds.sh	/^status_led_on() {$/;"	f
+status_led_set_heartbeat	lib/functions/leds.sh	/^status_led_set_heartbeat() {$/;"	f
+status_led_set_morse	lib/functions/leds.sh	/^status_led_set_morse() {$/;"	f
+status_led_set_timer	lib/functions/leds.sh	/^status_led_set_timer() {$/;"	f
+stop	etc/rc.common	/^	stop() {$/;"	f
+stop	etc/rc.common	/^stop() {$/;"	f
+stop_service	etc/rc.common	/^stop_service() {$/;"	f
+storage_size	lua/luci/controller/admin/system.lua	/^	local function storage_size()$/;"	f
+store 	lua/luci/http/protocol.lua	/^				store = function( hdr, buf, eof )$/;"	f
+string	lua/luci/cbi/datatypes.lua	/^function string(val)$/;"	f
+string	lua/luci/i18n.lua	/^function string(key)$/;"	f
+stringf	lua/luci/i18n.lua	/^function stringf(key, ...)$/;"	f
+strip_bytecode	lua/luci/util.lua	/^function strip_bytecode(code)$/;"	f
+strip_function	lua/luci/util.lua	/^	local function strip_function(code)$/;"	f
+striptags	lua/luci/util.lua	/^function striptags(value)$/;"	f
+subint 	lua/luci/util.lua	/^		subint = function(code, i, l)$/;"	f
+supivot	lib/upgrade/common.sh	/^supivot() { # <new_root> <old_root>$/;"	f
+swap.create 	lua/luci/model/cbi/admin_system/fstab.lua	/^swap.create = function(...)$/;"	f
+switch_status	lua/luci/controller/admin/network.lua	/^function switch_status(switches)$/;"	f
+switch_status	lua/luci/tools/status.lua	/^function switch_status(devs)$/;"	f
+sync_clock	lua/luci/view/admin_system/clock_status.htm	/^	function sync_clock(btn)$/;"	f
+sysinfo	lua/luci/sys.lua	/^function sysinfo()$/;"	f
+syslog	lua/luci/sys.lua	/^function syslog()$/;"	f
+t.cfgvalue	lua/luci/model/cbi/admin_system/crontab.lua	/^function t.cfgvalue()$/;"	f
+t.cfgvalue	lua/luci/model/cbi/admin_system/ipkg.lua	/^function t.cfgvalue()$/;"	f
+t.cfgvalue	lua/luci/model/cbi/admin_system/startup.lua	/^function t.cfgvalue()$/;"	f
+t.write	lua/luci/model/cbi/admin_system/ipkg.lua	/^function t.write(self, section, data)$/;"	f
+tab	www/luci-static/resources/cbi.js	/^		cbi_t[section][tab] = { 'tab': t, 'container': c, 'cid': c.id };$/;"	p	class:cbi_t
+target.cfgvalue	lua/luci/model/cbi/firewall/rules.lua	/^function target.cfgvalue(self, s)$/;"	f
+template	lua/luci/dispatcher.lua	/^function template(name)$/;"	f
+term.write	lua/luci/model/cbi/admin_status/processes.lua	/^function term.write(self, section)$/;"	f
+threadlocal	lua/luci/util.lua	/^function threadlocal(tbl)$/;"	f
+tls_socket.close	lua/nixio/util.lua	/^	function tls_socket.close(self)$/;"	f
+tls_socket.getpeername	lua/nixio/util.lua	/^	function tls_socket.getpeername(self)$/;"	f
+tls_socket.getsockname	lua/nixio/util.lua	/^	function tls_socket.getsockname(self)$/;"	f
+tls_socket.getsockopt	lua/nixio/util.lua	/^	function tls_socket.getsockopt(self, ...)$/;"	f
+tls_socket.setsockopt	lua/nixio/util.lua	/^	function tls_socket.setsockopt(self, ...)$/;"	f
+to_ext	lua/luci/http/protocol/mime.lua	/^function to_ext(mimetype)$/;"	f
+to_http	lua/luci/http/protocol/date.lua	/^function to_http(time)$/;"	f
+to_mime	lua/luci/http/protocol/mime.lua	/^function to_mime(filename)$/;"	f
+to_unix	lua/luci/http/protocol/date.lua	/^function to_unix(date)$/;"	f
+tp.cfgvalue	lua/luci/model/cbi/admin_network/wifi.lua	/^		function tp.cfgvalue(...)$/;"	f
+tp.cfgvalue	lua/luci/model/cbi/admin_network/wifi.lua	/^	function tp.cfgvalue(...)$/;"	f
+tr	lua/luci/tools/firewall.lua	/^local function tr(...)$/;"	f
+trace	etc/rc.common	/^	trace() {$/;"	f
+translate	lua/luci/i18n.lua	/^function translate(key)$/;"	f
+translatef	lua/luci/i18n.lua	/^function translatef(key, ...)$/;"	f
+trap	lua/luci/debug.lua	/^	local function trap(what, line)$/;"	f
+trap_memtrace	lua/luci/debug.lua	/^function trap_memtrace(flags, dest)$/;"	f
+trim	lua/luci/util.lua	/^function trim(str)$/;"	f
+txpower_current	lua/luci/model/cbi/admin_network/wifi.lua	/^local function txpower_current(pwr, list)$/;"	f
+txpower_list	lua/luci/model/cbi/admin_network/wifi.lua	/^local function txpower_list(iw)$/;"	f
+tz_offset	lua/luci/http/protocol/date.lua	/^function tz_offset(tz)$/;"	f
+ubi_mknod	lib/upgrade/nand.sh	/^ubi_mknod() {$/;"	f
+ubus_call	lib/network/config.sh	/^ubus_call() {$/;"	f
+uci_add	lib/config/uci.sh	/^uci_add() {$/;"	f
+uci_commit	lib/config/uci.sh	/^uci_commit() {$/;"	f
+uci_get	lib/config/uci.sh	/^uci_get() {$/;"	f
+uci_get_state	lib/config/uci.sh	/^uci_get_state() {$/;"	f
+uci_load	lib/config/uci.sh	/^uci_load() {$/;"	f
+uci_remove	lib/config/uci.sh	/^uci_remove() {$/;"	f
+uci_rename	lib/config/uci.sh	/^uci_rename() {$/;"	f
+uci_revert_state	lib/config/uci.sh	/^uci_revert_state() {$/;"	f
+uci_set	lib/config/uci.sh	/^uci_set() {$/;"	f
+uci_set_default	lib/config/uci.sh	/^uci_set_default() {$/;"	f
+uci_set_state	lib/config/uci.sh	/^uci_set_state() {$/;"	f
+uci_toggle_state	lib/config/uci.sh	/^uci_toggle_state() {$/;"	f
+uci_validate_section	lib/functions/procd.sh	/^uci_validate_section()$/;"	f
+ucidef_add_switch	lib/functions/uci-defaults-new.sh	/^ucidef_add_switch() {$/;"	f
+ucidef_add_switch	lib/functions/uci-defaults.sh	/^ucidef_add_switch() {$/;"	f
+ucidef_add_switch_attr	lib/functions/uci-defaults-new.sh	/^ucidef_add_switch_attr() {$/;"	f
+ucidef_add_switch_port	lib/functions/uci-defaults.sh	/^ucidef_add_switch_port() {$/;"	f
+ucidef_add_switch_vlan	lib/functions/uci-defaults-new.sh	/^ucidef_add_switch_vlan() {$/;"	f
+ucidef_add_switch_vlan	lib/functions/uci-defaults.sh	/^ucidef_add_switch_vlan() {$/;"	f
+ucidef_commit_gpio_switches	lib/functions/uci-defaults.sh	/^ucidef_commit_gpio_switches()$/;"	f
+ucidef_commit_leds	lib/functions/uci-defaults.sh	/^ucidef_commit_leds()$/;"	f
+ucidef_set_gpio_switch	lib/functions/uci-defaults.sh	/^ucidef_set_gpio_switch() {$/;"	f
+ucidef_set_interface_lan	lib/functions/uci-defaults-new.sh	/^ucidef_set_interface_lan() {$/;"	f
+ucidef_set_interface_lan	lib/functions/uci-defaults.sh	/^ucidef_set_interface_lan() {$/;"	f
+ucidef_set_interface_loopback	lib/functions/uci-defaults-new.sh	/^ucidef_set_interface_loopback()$/;"	f
+ucidef_set_interface_loopback	lib/functions/uci-defaults.sh	/^ucidef_set_interface_loopback() {$/;"	f
+ucidef_set_interface_macaddr	lib/functions/uci-defaults-new.sh	/^ucidef_set_interface_macaddr() {$/;"	f
+ucidef_set_interface_macaddr	lib/functions/uci-defaults.sh	/^ucidef_set_interface_macaddr() {$/;"	f
+ucidef_set_interface_raw	lib/functions/uci-defaults.sh	/^ucidef_set_interface_raw() {$/;"	f
+ucidef_set_interface_wan	lib/functions/uci-defaults.sh	/^ucidef_set_interface_wan() {$/;"	f
+ucidef_set_interfaces_lan_wan	lib/functions/uci-defaults-new.sh	/^ucidef_set_interfaces_lan_wan() {$/;"	f
+ucidef_set_interfaces_lan_wan	lib/functions/uci-defaults.sh	/^ucidef_set_interfaces_lan_wan() {$/;"	f
+ucidef_set_led_default	lib/functions/uci-defaults-new.sh	/^ucidef_set_led_default() {$/;"	f
+ucidef_set_led_default	lib/functions/uci-defaults.sh	/^ucidef_set_led_default() {$/;"	f
+ucidef_set_led_ide_disk	lib/functions/uci-defaults.sh	/^ucidef_set_led_ide_disk() {$/;"	f
+ucidef_set_led_interface	lib/functions/uci-defaults-new.sh	/^ucidef_set_led_interface() {$/;"	f
+ucidef_set_led_mmc	lib/functions/uci-defaults.sh	/^ucidef_set_led_mmc() {$/;"	f
+ucidef_set_led_netdev	lib/functions/uci-defaults-new.sh	/^ucidef_set_led_netdev() {$/;"	f
+ucidef_set_led_netdev	lib/functions/uci-defaults.sh	/^ucidef_set_led_netdev() {$/;"	f
+ucidef_set_led_rssi	lib/functions/uci-defaults-new.sh	/^ucidef_set_led_rssi() {$/;"	f
+ucidef_set_led_rssi	lib/functions/uci-defaults.sh	/^ucidef_set_led_rssi() {$/;"	f
+ucidef_set_led_switch	lib/functions/uci-defaults-new.sh	/^ucidef_set_led_switch() {$/;"	f
+ucidef_set_led_switch	lib/functions/uci-defaults.sh	/^ucidef_set_led_switch() {$/;"	f
+ucidef_set_led_timer	lib/functions/uci-defaults.sh	/^ucidef_set_led_timer() {$/;"	f
+ucidef_set_led_trigger_gpio	lib/functions/uci-defaults.sh	/^ucidef_set_led_trigger_gpio() {$/;"	f
+ucidef_set_led_usbdev	lib/functions/uci-defaults-new.sh	/^ucidef_set_led_usbdev() {$/;"	f
+ucidef_set_led_usbdev	lib/functions/uci-defaults.sh	/^ucidef_set_led_usbdev() {$/;"	f
+ucidef_set_led_wlan	lib/functions/uci-defaults-new.sh	/^ucidef_set_led_wlan() {$/;"	f
+ucidef_set_led_wlan	lib/functions/uci-defaults.sh	/^ucidef_set_led_wlan() {$/;"	f
+ucidef_set_rssimon	lib/functions/uci-defaults-new.sh	/^ucidef_set_rssimon() {$/;"	f
+ucidef_set_rssimon	lib/functions/uci-defaults.sh	/^ucidef_set_rssimon() {$/;"	f
+uciname	lua/luci/cbi/datatypes.lua	/^function uciname(val)$/;"	f
+uciname	www/luci-static/resources/cbi.js	/^	'uciname': function()$/;"	m	class:cbi_validators
+ufloat	lua/luci/cbi/datatypes.lua	/^function ufloat(val)$/;"	f
+ufloat	www/luci-static/resources/cbi.js	/^	'ufloat': function()$/;"	m	class:cbi_validators
+uinteger	lua/luci/cbi/datatypes.lua	/^function uinteger(val)$/;"	f
+uinteger	www/luci-static/resources/cbi.js	/^	'uinteger': function()$/;"	m	class:cbi_validators
+unbridge	lib/network/config.sh	/^unbridge() {$/;"	f
+uniqueid	lua/luci/sys.lua	/^function uniqueid(bytes)$/;"	f
+update	lua/luci/model/ipkg.lua	/^function update()$/;"	f
+update	lua/luci/util.lua	/^function update(t, updates)$/;"	f
+update_status	lua/luci/view/admin_network/diagnostics.htm	/^	function update_status(field, proto)$/;"	f
+upgrade	lua/luci/model/ipkg.lua	/^function upgrade()$/;"	f
+uptime	lua/luci/sys.lua	/^function uptime()$/;"	f
+urldecode	lua/luci/http/protocol.lua	/^function urldecode( str, no_plus )$/;"	f
+urldecode_message_body	lua/luci/http/protocol.lua	/^function urldecode_message_body( src, msg )$/;"	f
+urldecode_params	lua/luci/http/protocol.lua	/^function urldecode_params( url, tbl )$/;"	f
+urlencode	lua/luci/http/protocol.lua	/^function urlencode( str )$/;"	f
+urlencode_params	lua/luci/http/protocol.lua	/^function urlencode_params( tbl )$/;"	f
+usbdev.cfgvalue	lua/luci/model/cbi/admin_system/leds.lua	/^function usbdev.cfgvalue(self, section)$/;"	f
+usbdev.remove	lua/luci/model/cbi/admin_system/leds.lua	/^function usbdev.remove(self, section)$/;"	f
+usbdev.write	lua/luci/model/cbi/admin_system/leds.lua	/^function usbdev.write(self, section, value)$/;"	f
+used.cfgvalue	lua/luci/model/cbi/admin_system/fstab.lua	/^function used.cfgvalue(self, section)$/;"	f
+user.checkpasswd	lua/luci/sys.lua	/^function user.checkpasswd(username, pass)$/;"	f
+user.getpasswd	lua/luci/sys.lua	/^function user.getpasswd(username)$/;"	f
+user.setpasswd	lua/luci/sys.lua	/^function user.setpasswd(username, password)$/;"	f
+user_add	lib/functions.sh	/^user_add() {$/;"	f
+user_exists	lib/functions.sh	/^user_exists() {$/;"	f
+utime	lua/luci/fs.lua	/^function utime(path, mtime, atime)$/;"	f
+v	lib/upgrade/common.sh	/^v() {$/;"	f
+verify_datatype	lua/luci/cbi.lua	/^function verify_datatype(dt, value)$/;"	f
+vid.cfgvalue 	lua/luci/model/cbi/admin_network/vlan.lua	/^		vid.cfgvalue = function(self, section)$/;"	f
+vid.validate 	lua/luci/model/cbi/admin_network/vlan.lua	/^		vid.validate = function(self, value, section)$/;"	f
+vid.write 	lua/luci/model/cbi/admin_network/vlan.lua	/^		vid.write = function(self, section, value)$/;"	f
+vspairs	lua/luci/util.lua	/^function vspairs(t)$/;"	f
+wepkey	lua/luci/cbi/datatypes.lua	/^function wepkey(val)$/;"	f
+wepkey	www/luci-static/resources/cbi.js	/^	'wepkey': function()$/;"	m	class:cbi_validators
+wepkey.write	lua/luci/model/cbi/admin_network/wifi.lua	/^	function wepkey.write(self, section, value)$/;"	f
+wepslot.cfgvalue 	lua/luci/model/cbi/admin_network/wifi.lua	/^wepslot.cfgvalue = function(self, section)$/;"	f
+wepslot.write 	lua/luci/model/cbi/admin_network/wifi.lua	/^wepslot.write = function(self, section, value)$/;"	f
+width	lua/luci/view/cbi/tblsection.htm	/^function width(o)$/;"	f
+wifi.getiwinfo	lua/luci/sys.lua	/^function wifi.getiwinfo(ifname)$/;"	f
+wifi_add	lua/luci/controller/admin/network.lua	/^function wifi_add()$/;"	f
+wifi_delete	lua/luci/controller/admin/network.lua	/^function wifi_delete(network)$/;"	f
+wifi_join	lua/luci/controller/admin/network.lua	/^function wifi_join()$/;"	f
+wifi_network	lua/luci/tools/status.lua	/^function wifi_network(id)$/;"	f
+wifi_networks	lua/luci/tools/status.lua	/^function wifi_networks()$/;"	f
+wifi_reconnect	lua/luci/controller/admin/network.lua	/^function wifi_reconnect(wnet)$/;"	f
+wifi_reconnect_shutdown	lua/luci/controller/admin/network.lua	/^local function wifi_reconnect_shutdown(shutdown, wnet)$/;"	f
+wifi_shutdown	lua/luci/controller/admin/network.lua	/^function wifi_shutdown(wnet)$/;"	f
+wifi_shutdown	lua/luci/view/admin_network/wifi_overview.htm	/^	function wifi_shutdown(id, toggle) {$/;"	f
+wifi_status	lua/luci/controller/admin/network.lua	/^function wifi_status(devs)$/;"	f
+wifidev.__init__	lua/luci/model/network.lua	/^function wifidev.__init__(self, dev)$/;"	f
+wifidev.add_wifinet	lua/luci/model/network.lua	/^function wifidev.add_wifinet(self, options)$/;"	f
+wifidev.del_wifinet	lua/luci/model/network.lua	/^function wifidev.del_wifinet(self, net)$/;"	f
+wifidev.get	lua/luci/model/network.lua	/^function wifidev.get(self, opt)$/;"	f
+wifidev.get_i18n	lua/luci/model/network.lua	/^function wifidev.get_i18n(self)$/;"	f
+wifidev.get_wifinet	lua/luci/model/network.lua	/^function wifidev.get_wifinet(self, net)$/;"	f
+wifidev.get_wifinets	lua/luci/model/network.lua	/^function wifidev.get_wifinets(self)$/;"	f
+wifidev.hwmodes	lua/luci/model/network.lua	/^function wifidev.hwmodes(self)$/;"	f
+wifidev.is_up	lua/luci/model/network.lua	/^function wifidev.is_up(self)$/;"	f
+wifidev.name	lua/luci/model/network.lua	/^function wifidev.name(self)$/;"	f
+wifidev.set	lua/luci/model/network.lua	/^function wifidev.set(self, opt, val)$/;"	f
+wifinet.__init__	lua/luci/model/network.lua	/^function wifinet.__init__(self, net, data)$/;"	f
+wifinet.active_bssid	lua/luci/model/network.lua	/^function wifinet.active_bssid(self)$/;"	f
+wifinet.active_encryption	lua/luci/model/network.lua	/^function wifinet.active_encryption(self)$/;"	f
+wifinet.active_mode	lua/luci/model/network.lua	/^function wifinet.active_mode(self)$/;"	f
+wifinet.active_mode_i18n	lua/luci/model/network.lua	/^function wifinet.active_mode_i18n(self)$/;"	f
+wifinet.active_ssid	lua/luci/model/network.lua	/^function wifinet.active_ssid(self)$/;"	f
+wifinet.adminlink	lua/luci/model/network.lua	/^function wifinet.adminlink(self)$/;"	f
+wifinet.assoclist	lua/luci/model/network.lua	/^function wifinet.assoclist(self)$/;"	f
+wifinet.bitrate	lua/luci/model/network.lua	/^function wifinet.bitrate(self)$/;"	f
+wifinet.bssid	lua/luci/model/network.lua	/^function wifinet.bssid(self)$/;"	f
+wifinet.channel	lua/luci/model/network.lua	/^function wifinet.channel(self)$/;"	f
+wifinet.country	lua/luci/model/network.lua	/^function wifinet.country(self)$/;"	f
+wifinet.frequency	lua/luci/model/network.lua	/^function wifinet.frequency(self)$/;"	f
+wifinet.get	lua/luci/model/network.lua	/^function wifinet.get(self, opt)$/;"	f
+wifinet.get_device	lua/luci/model/network.lua	/^function wifinet.get_device(self)$/;"	f
+wifinet.get_i18n	lua/luci/model/network.lua	/^function wifinet.get_i18n(self)$/;"	f
+wifinet.get_interface	lua/luci/model/network.lua	/^function wifinet.get_interface(self)$/;"	f
+wifinet.get_network	lua/luci/model/network.lua	/^function wifinet.get_network(self)$/;"	f
+wifinet.get_networks	lua/luci/model/network.lua	/^function wifinet.get_networks(self)$/;"	f
+wifinet.id	lua/luci/model/network.lua	/^function wifinet.id(self)$/;"	f
+wifinet.ifname	lua/luci/model/network.lua	/^function wifinet.ifname(self)$/;"	f
+wifinet.is_up	lua/luci/model/network.lua	/^function wifinet.is_up(self)$/;"	f
+wifinet.mode	lua/luci/model/network.lua	/^function wifinet.mode(self)$/;"	f
+wifinet.name	lua/luci/model/network.lua	/^function wifinet.name(self)$/;"	f
+wifinet.network	lua/luci/model/network.lua	/^function wifinet.network(self)$/;"	f
+wifinet.noise	lua/luci/model/network.lua	/^function wifinet.noise(self)$/;"	f
+wifinet.set	lua/luci/model/network.lua	/^function wifinet.set(self, opt, val)$/;"	f
+wifinet.shortname	lua/luci/model/network.lua	/^function wifinet.shortname(self)$/;"	f
+wifinet.signal	lua/luci/model/network.lua	/^function wifinet.signal(self)$/;"	f
+wifinet.signal_level	lua/luci/model/network.lua	/^function wifinet.signal_level(self, s, n)$/;"	f
+wifinet.signal_percent	lua/luci/model/network.lua	/^function wifinet.signal_percent(self)$/;"	f
+wifinet.ssid	lua/luci/model/network.lua	/^function wifinet.ssid(self)$/;"	f
+wifinet.txpower	lua/luci/model/network.lua	/^function wifinet.txpower(self)$/;"	f
+wifinet.txpower_offset	lua/luci/model/network.lua	/^function wifinet.txpower_offset(self)$/;"	f
+wireless_label	lua/luci/view/admin_status/wireless.htm	/^						function wireless_label(dbm, noise)$/;"	f
+wireless_setup_failed	lib/netifd/netifd-wireless.sh	/^wireless_setup_failed() {$/;"	f
+wireless_setup_vif_failed	lib/netifd/netifd-wireless.sh	/^wireless_setup_vif_failed() {$/;"	f
+wireless_vif_parse_encryption	lib/netifd/netifd-wireless.sh	/^wireless_vif_parse_encryption() {$/;"	f
+wpakey	lua/luci/cbi/datatypes.lua	/^function wpakey(val)$/;"	f
+wpakey	www/luci-static/resources/cbi.js	/^	'wpakey': function()$/;"	m	class:cbi_validators
+wpakey.cfgvalue 	lua/luci/model/cbi/admin_network/wifi.lua	/^wpakey.cfgvalue = function(self, section, value)$/;"	f
+wpakey.write 	lua/luci/model/cbi/admin_network/wifi.lua	/^wpakey.write = function(self, section, value)$/;"	f
+write	lua/luci/http.lua	/^function write(content, src_err)$/;"	f
+write	lua/luci/sauth.lua	/^function write(id, data)$/;"	f
+write_json	lua/luci/http.lua	/^function write_json(x)$/;"	f
+writefile	lua/nixio/fs.lua	/^function writefile(path, data)$/;"	f
+xhr	www/luci-static/resources/xhr.js	/^		xhr.onreadystatechange = function()$/;"	m
+zone.__init__	lua/luci/model/firewall.lua	/^function zone.__init__(self, z)$/;"	f
+zone.add_forwarding_from	lua/luci/model/firewall.lua	/^function zone.add_forwarding_from(self, src)$/;"	f
+zone.add_forwarding_to	lua/luci/model/firewall.lua	/^function zone.add_forwarding_to(self, dest)$/;"	f
+zone.add_network	lua/luci/model/firewall.lua	/^function zone.add_network(self, net)$/;"	f
+zone.add_redirect	lua/luci/model/firewall.lua	/^function zone.add_redirect(self, options)$/;"	f
+zone.add_rule	lua/luci/model/firewall.lua	/^function zone.add_rule(self, options)$/;"	f
+zone.clear_networks	lua/luci/model/firewall.lua	/^function zone.clear_networks(self)$/;"	f
+zone.del_forwardings_by	lua/luci/model/firewall.lua	/^function zone.del_forwardings_by(self, what)$/;"	f
+zone.del_network	lua/luci/model/firewall.lua	/^function zone.del_network(self, net)$/;"	f
+zone.forward	lua/luci/model/firewall.lua	/^function zone.forward(self)$/;"	f
+zone.get	lua/luci/model/firewall.lua	/^function zone.get(self, opt)$/;"	f
+zone.get_color	lua/luci/model/firewall.lua	/^function zone.get_color(self)$/;"	f
+zone.get_forwardings_by	lua/luci/model/firewall.lua	/^function zone.get_forwardings_by(self, what)$/;"	f
+zone.get_networks	lua/luci/model/firewall.lua	/^function zone.get_networks(self)$/;"	f
+zone.input	lua/luci/model/firewall.lua	/^function zone.input(self)$/;"	f
+zone.masq	lua/luci/model/firewall.lua	/^function zone.masq(self)$/;"	f
+zone.name	lua/luci/model/firewall.lua	/^function zone.name(self)$/;"	f
+zone.network	lua/luci/model/firewall.lua	/^function zone.network(self)$/;"	f
+zone.output	lua/luci/model/firewall.lua	/^function zone.output(self)$/;"	f
+zone.set	lua/luci/model/firewall.lua	/^function zone.set(self, opt, val)$/;"	f
+}, {__index	lua/luci/dispatcher.lua	/^		}, {__index=function(table, key)$/;"	f
