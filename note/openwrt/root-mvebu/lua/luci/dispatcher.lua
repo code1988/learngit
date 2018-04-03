@@ -33,6 +33,7 @@ local http = require "luci.http"
 local nixio = require "nixio", require "nixio.util"
 
 module("luci.dispatcher", package.seeall)
+-- 为dispatcher模块创建线程管理对象
 context = util.threadlocal()
 uci = require "luci.model.uci"
 i18n = require "luci.i18n"
@@ -161,15 +162,16 @@ function authenticator.htmlauth(validator, accs, default)
 end
 
 --- Dispatch an HTTP request.
--- @param request	LuCI HTTP Request object
+-- 调度一个http的request
+-- @param request	LuCI HTTP Request object    实例化的http request对象
 function httpdispatch(request, prefix)
-	luci.http.context.request = request
+	luci.http.context.request = request     -- 将该http request对象记录到http模块的线程管理对象中
 
 	local r = {}
 	context.request = r
 	context.urltoken = {}
 
-	local pathinfo = http.urldecode(request:getenv("PATH_INFO") or "", true)
+	local pathinfo = http.urldecode(request:getenv("PATH_INFO") or "", true)    -- 从环境变量中获取url路径
 
 	if prefix then
 		for _, node in ipairs(prefix) do
@@ -201,16 +203,20 @@ function httpdispatch(request, prefix)
 end
 
 --- Dispatches a LuCI virtual path.
+-- 调度一个luci虚拟路径
 -- @param request	Virtual path
 function dispatch(request)
 	--context._disable_memtrace = require "luci.debug".trap_memtrace("l")
 	local ctx = context
-	ctx.path = request
+	ctx.path = request      -- 将传入的luci虚拟路径记录到dispatcher模块的线程管理块中
 
+    -- 加载luci的UCI配置模块
 	local conf = require "luci.config"
+    -- 确保luci的UCI文件中存在名为main的section
 	assert(conf.main,
 		"/etc/config/luci seems to be corrupt, unable to find section 'main'")
 
+    -- 获取luci配置的语言
 	local lang = conf.main.lang or "auto"
 	if lang == "auto" then
 		local aclang = http.getenv("HTTP_ACCEPT_LANGUAGE") or ""
@@ -222,10 +228,12 @@ function dispatch(request)
 			end
 		end
 	end
+    -- 加载语言库并设置成配置的语言
 	require "luci.i18n".setlanguage(lang)
 
 	local c = ctx.tree
 	local stat
+    -- 如果节点树还未创建过,则首先需要创建这棵节点树
 	if not c then
 		c = createtree()
 	end
@@ -464,10 +472,12 @@ function dispatch(request)
 end
 
 --- Generate the dispatching index using the best possible strategy.
+-- 根据luci的controller目录下的所有lua文件,生成一张index的table
 function createindex()
 	local path = luci.util.libpath() .. "/controller/"
 	local suff = { ".lua", ".lua.gz" }
 
+    -- 遍历luci的controller目录下的lua文件,生成一张index的table,如果支持fastindex则优先使用该算法,否则使用plain算法
 	if luci.util.copcall(require, "luci.fastindex") then
 		createindex_fastindex(path, suff)
 	else
@@ -560,8 +570,10 @@ function createindex_plain(path, suffixes)
 end
 
 --- Create the dispatching tree from the index.
+-- 创建一棵节点树
 -- Build the index before if it does not exist yet.
 function createtree()
+    -- 如果index表还未创建过,则首先需要创建这张表
 	if not index then
 		createindex()
 	end
@@ -579,6 +591,7 @@ function createtree()
 
 	local scope = setmetatable({}, {__index = luci.dispatcher})
 
+    -- 调用controller目录下每个lua文件中的index函数,来创建树的每个节点
 	for k, v in pairs(index) do
 		scope._NAME = k
 		setfenv(v, scope)
@@ -595,6 +608,7 @@ function createtree()
 		v.func()
 	end
 
+    -- 最后返回创建完毕的节点树
 	return tree
 end
 

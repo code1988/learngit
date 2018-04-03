@@ -24,14 +24,17 @@ limitations under the License.
 
 ]]--
 exectime = os.clock()
+
+-- 创建了luci的服务器网关接口模块
 module("luci.sgi.cgi", package.seeall)
-local ltn12 = require("luci.ltn12")
-require("nixio.util")
-require("luci.http")
-require("luci.sys")
-require("luci.dispatcher")
+local ltn12 = require("luci.ltn12")     -- 加载luci的网络库(其实就是luasocket库)
+require("nixio.util")                   -- 加载lua在linux平台上的I/O库
+require("luci.http")                    -- 加载luci的http库
+require("luci.sys")                     -- 加载luci在linux平台上的系统库
+require("luci.dispatcher")              -- 加载luci的调度库
 
 -- Limited source to avoid endless blocking
+-- 创建一个指定对象的受限的读操作(限制了读取的长度)
 local function limitsource(handle, limit)
 	limit = limit or 0
 	local BLOCKSIZE = ltn12.BLOCKSIZE
@@ -52,17 +55,21 @@ local function limitsource(handle, limit)
 end
 
 function run()
+    -- 首先实例化一个http的request对象
 	local r = luci.http.Request(
-		luci.sys.getenv(),
-		limitsource(io.stdin, tonumber(luci.sys.getenv("CONTENT_LENGTH"))),
-		ltn12.sink.file(io.stderr)
+		luci.sys.getenv(),      -- 传入环境变量表
+		limitsource(io.stdin, tonumber(luci.sys.getenv("CONTENT_LENGTH"))),     -- 创建对标准输入受限的读操作
+		ltn12.sink.file(io.stderr)      -- 创建对标准出错的输出/结束封装
 	)
 	
+    -- 接着创建一个协程,用作http服务调度
 	local x = coroutine.create(luci.dispatcher.httpdispatch)
 	local hcache = ""
 	local active = true
 	
+    -- 最后进入循环,直到协程结束
 	while coroutine.status(x) ~= "dead" do
+        -- 唤醒协程,用于调度一次http的request
 		local res, id, data1, data2 = coroutine.resume(x, r)
 
 		if not res then

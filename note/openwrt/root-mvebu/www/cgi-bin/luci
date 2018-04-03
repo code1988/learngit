@@ -1,4 +1,4 @@
-#!/usr/bin/lua
+#!/usr/local/bin/lua
 require "luci.cacheloader"
 require "luci.sgi.cgi"
 luci.dispatcher.indexcache = "/tmp/luci-indexcache"

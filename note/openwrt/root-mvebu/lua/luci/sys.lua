@@ -110,6 +110,7 @@ end
 -- containing the whole environment is returned otherwise this function returns
 -- the corresponding string value for the given name or nil if no such variable
 -- exists.
+-- 有变量名传入时用于获取对应的环境变量值；没有变量名传入时返回整个环境变量表
 -- @class		function
 -- @name		getenv
 -- @param var	Name of the environment variable to retrieve (optional)

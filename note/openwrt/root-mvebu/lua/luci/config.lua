@@ -3,6 +3,7 @@ LuCI - Configuration
 
 Description:
 Some LuCI configuration values read from uci file "luci"
+读取UCI格式的luci配置
 
 
 FileId:
@@ -26,12 +27,18 @@ limitations under the License.
 ]]--
 
 local util = require "luci.util"
+
+--[[ 创建luci配置模块
+--   该模块table设置了一个携带__index元方法的元表
+--   当访问该模块中的luci配置参数key时都会触发__index元方法
+]]--
 module("luci.config",
 		function(m)
 			if pcall(require, "luci.model.uci") then
 				local config = util.threadlocal()
 				setmetatable(m, {
 					__index = function(tbl, key)
+                        -- 如果config中已经存在对应的参数值,则直接就可以返回；否则需要从相应的UCI文件中获取
 						if not config[key] then
 							config[key] = luci.model.uci.cursor():get_all("luci", key)
 						end

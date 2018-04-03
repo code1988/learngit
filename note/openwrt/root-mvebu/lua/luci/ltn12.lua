@@ -297,6 +297,7 @@ function sink.simplify(snk)
 end
 
 --- Create a file sink.
+-- 创建指定文件句柄的写/结束操作封装
 -- @param handle file handle to write to
 -- @param io_err IO error
 -- @return LTN12 sink

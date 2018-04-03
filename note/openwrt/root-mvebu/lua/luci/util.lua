@@ -61,17 +61,22 @@ end
 --
 
 -- Instantiates a class
+-- 实例化一个指定的类对象
 local function _instantiate(class, ...)
+    -- 显然,实例化的实质就是创建一个空table,并将这个类对象作为其__index的元方法
 	local inst = setmetatable({}, {__index = class})
 
+    -- 如果这个类对象定义了init方法,则会在这里被调用
 	if inst.__init__ then
 		inst:__init__(...)
 	end
 
+    -- 最后返回完成实例化的类对象
 	return inst
 end
 
 --- Create a Class object (Python-style object model).
+-- 创建一个类的对象
 -- The class object can be instantiated by calling itself.
 -- Any class functions or shared parameters can be attached to this object.
 -- Attaching a table to the class object makes this table shared between
@@ -81,14 +86,14 @@ end
 -- to the __init__ function of this class - if such a function exists.
 -- The __init__ function must be used to set any object parameters that are not shared
 -- with other objects of this class. Any return values will be ignored.
--- @param base	The base class to inherit from (optional)
+-- @param base	The base class to inherit from (optional)   可以为需要创建的类指定一个基类
 -- @return		A class object
 -- @see			instanceof
 -- @see			clone
 function class(base)
 	return setmetatable({}, {
-		__call  = _instantiate,
-		__index = base
+		__call  = _instantiate,     -- 这个类对象通过调用自身可以完成实例化
+		__index = base              -- 如果指定了基类,则访问这个类对象中不存在的元素时都会重定向去访问基类
 	})
 end
 
@@ -134,10 +139,12 @@ local tl_meta = {
 }
 
 --- Create a new or get an already existing thread local store associated with
+-- 创建一个线程管理对象,如果传入的table有效则基于该table进行创建；否则先创建一个空table
 -- the current active coroutine. A thread local store is private a table object
 -- whose values can't be accessed from outside of the running coroutine.
 -- @return	Table value representing the corresponding thread local store
 function threadlocal(tbl)
+    -- 线程管理对象的实质是通过tl_meta元表来实现
 	return setmetatable(tbl or {}, tl_meta)
 end
 
@@ -745,6 +752,7 @@ local function copcall_id(trace, ...)
 end
 
 --- This is a coroutine-safe drop-in replacement for Lua's "xpcall"-function
+-- 这是一个xpcall的替代函数,特点是协程间安全
 -- @param f		Lua function to be called protected
 -- @param err	Custom error handler
 -- @param ...	Parameters passed to the function

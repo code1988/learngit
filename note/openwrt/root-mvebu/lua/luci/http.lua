@@ -34,10 +34,19 @@ local ipairs, pairs, next, type, tostring, error =
 --- LuCI Web Framework high-level HTTP functions.
 module "luci.http"
 
+-- 为http模块创建线程管理对象
 context = util.threadlocal()
 
+-- 创建一个request类对象
 Request = util.class()
+
+-- 定义了request类通用的init方法,在类的实例化过程中将被调用
+-- @self    实例化的request对象    
+-- @env     环境变量表
+-- @sourcein    数据输入方法
+-- @sinkerr     错误输出方法
 function Request.__init__(self, env, sourcein, sinkerr)
+    -- 设置该实例化的request对象的数据输入和错误输出方法
 	self.input = sourcein
 	self.error = sinkerr
 
@@ -100,7 +109,11 @@ function Request.getcookie(self, name)
   return value and urldecode(value)
 end
 
+-- 定义了Request类的获取环境变量的方法
+-- @self    实例化的request对象    
+-- @name    要获取的环境变量名
 function Request.getenv(self, name)
+    -- 如果环境变量名有效则返回对应的值,否则返回整个环境变量
 	if name then
 		return self.message.env[name]
 	else
