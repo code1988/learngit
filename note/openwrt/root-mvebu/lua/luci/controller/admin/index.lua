@@ -14,13 +14,17 @@ $Id$
 
 module("luci.controller.admin.index", package.seeall)
 
+-- 创建admin/index节点(在createtree时被调用,本函数运行在一个特殊的环境)
 function index()
+    -- 首先创建一个root节点
 	local root = node()
+    -- 创建一个将root节点重定向到admin节点的函数
 	if not root.target then
 		root.target = alias("admin")
 		root.index = true
 	end
 
+    -- 接着创建一个admin节点
 	local page   = node("admin")
 	page.target  = firstchild()
 	page.title   = _("Administration")

@@ -162,8 +162,9 @@ function authenticator.htmlauth(validator, accs, default)
 end
 
 --- Dispatch an HTTP request.
--- 调度一个http的request
+-- 协程主程序,用于调度一个http的request
 -- @param request	LuCI HTTP Request object    实例化的http request对象
+-- @prefix(可选)      记录了路径前缀的数组
 function httpdispatch(request, prefix)
 	luci.http.context.request = request     -- 将该http request对象记录到http模块的线程管理对象中
 
@@ -171,14 +172,16 @@ function httpdispatch(request, prefix)
 	context.request = r
 	context.urltoken = {}
 
-	local pathinfo = http.urldecode(request:getenv("PATH_INFO") or "", true)    -- 从环境变量中获取url路径
+	local pathinfo = http.urldecode(request:getenv("PATH_INFO") or "", true)    -- 从环境变量中获取路径名
 
+    -- 如果传入了路径前缀,则拷贝到r中
 	if prefix then
 		for _, node in ipairs(prefix) do
 			r[#r+1] = node
 		end
 	end
 
+    -- 解析从环境变量中获取的路径名,将目录部分拷贝到r中,将剩余部分拷贝到context.urltoken中
 	local tokensok = true
 	for node in pathinfo:gmatch("[^/]+") do
 		local tkey, tval
@@ -589,11 +592,13 @@ function createtree()
 	-- Load default translation
 	require "luci.i18n".loadc("base")
 
+    -- 创建一个环境table,访问该环境的行为都会重定向到dispatcher模块
 	local scope = setmetatable({}, {__index = luci.dispatcher})
 
     -- 调用controller目录下每个lua文件中的index函数,来创建树的每个节点
 	for k, v in pairs(index) do
 		scope._NAME = k
+        -- 调用每个index函数前,都会先修改该index函数的环境
 		setfenv(v, scope)
 		v()
 	end
@@ -669,6 +674,7 @@ function get(...)
 end
 
 --- Fetch or create a new dispatching node.
+-- 获取或创建一个新的节点
 -- @param	...		Virtual path
 -- @return			Dispatching tree node
 function node(...)
@@ -736,6 +742,7 @@ function firstchild()
 end
 
 --- Create a redirect to another dispatching node.
+-- 创建一个重定向到指定节点的函数
 -- @param	...		Virtual path destination
 function alias(...)
 	local req = {...}

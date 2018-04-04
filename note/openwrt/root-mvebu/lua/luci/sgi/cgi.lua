@@ -62,16 +62,18 @@ function run()
 		ltn12.sink.file(io.stderr)      -- 创建对标准出错的输出/结束封装
 	)
 	
-    -- 接着创建一个协程,用作http服务调度
+    -- 接着创建一个协程,用于调度http的request
 	local x = coroutine.create(luci.dispatcher.httpdispatch)
 	local hcache = ""
 	local active = true
 	
     -- 最后进入循环,直到协程结束
 	while coroutine.status(x) ~= "dead" do
-        -- 唤醒协程,用于调度一次http的request
+        -- 唤醒协程,也就是处理http的request
 		local res, id, data1, data2 = coroutine.resume(x, r)
 
+        -- 调度http request的协程在处理过程中会多次返回,下面是根据每次返回的结果生成对应的http response字段,最终组成一个完整的http response
+        -- 如果协程返回的res为false,意味着服务器自身处理本次http request时发生错误
 		if not res then
 			print("Status: 500 Internal Server Error")
 			print("Content-Type: text/plain\n")
@@ -79,6 +81,7 @@ function run()
 			break;
 		end
 
+        -- 以下就是根据http request的处理结果来生成htpp response的内容
 		if active then
 			if id == 1 then
 				io.write("Status: " .. tostring(data1) .. " " .. data2 .. "\r\n")
