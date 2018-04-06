@@ -28,6 +28,7 @@
           [4]. 如果该进程并未使用malloc相关，则maps文件中就没有heap那行；
                只有进程使用了malloc相关，maps文件中才会存在heap行，当然有时并不会显式标注
           [5]. 系统对每个进程的stack大小一般有8MB的上限，可以通过命令 "#ulimit -S XXX" 修改
+          [6]. 每个进程拥有3G虚拟地址空间，所以虚拟地址上限是0xC0000000
 
 2. /proc/$PID/status | /proc/$PID/stat
     记录了进程的整体状态信息，status和stat包含的内容相同，只是status展现的信息更具有可读性，以下基于status文件进行分析
