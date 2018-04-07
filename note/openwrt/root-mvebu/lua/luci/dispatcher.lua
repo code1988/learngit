@@ -42,7 +42,7 @@ _M.fs = fs
 authenticator = {}
 
 -- Index table
-local index = nil
+local index = nil   -- 这张index表中记录了所有controller目录下的lua文件中的index函数
 
 -- Fastindex
 local fi
@@ -280,7 +280,7 @@ function dispatch(request)
 		i18n.loadc(track.i18n)
 	end
 
-	-- Init template engine
+	-- Init template engine     以下部分主要是在初始化模板引擎
 	if (c and c.index) or not track.notemplate then
 		local tpl = require("luci.template")
 		local media = track.mediaurlbase or luci.config.main.mediaurlbase
@@ -343,6 +343,7 @@ function dispatch(request)
 		"http://luci.subsignal.org/trac/newticket"
 	)
 
+    -- 以下这部分主要是认证环节
 	if track.sysauth then
 		local sauth = require "luci.sauth"
 
@@ -415,11 +416,12 @@ function dispatch(request)
 		luci.sys.process.setuser(track.setuser)
 	end
 
+    -- 最后部分主要是在处理该节点的target字段
 	local target = nil
 	if c then
-		if type(c.target) == "function" then
+		if type(c.target) == "function" then    -- 如果该节点target字段类型为function,则局部变量target就赋值为该节点的target字段
 			target = c.target
-		elseif type(c.target) == "table" then
+		elseif type(c.target) == "table" then   -- 如果该节点target字段类型为table,则局部变量target就赋值为该table中的target字段
 			target = c.target.target
 		end
 	end
@@ -437,19 +439,22 @@ function dispatch(request)
 		end
 	end
 
-	if type(target) == "function" then
+	if type(target) == "function" then  -- target字段类型为function的情况
+        -- 首先是修改target函数的环境
 		util.copcall(function()
-			local oldenv = getfenv(target)
-			local module = require(c.module)
+			local oldenv = getfenv(target)          -- 记录下原本的环境
+			local module = require(c.module)        -- 加载该节点moudle字段记录的模块
+            -- 创建一个target函数要使用的临时环境,实际就是创建一张有__index元方法的空table
+            -- 这个__index元方法就是,依次从临时环境->module->原环境中去获取变量值
 			local env = setmetatable({}, {__index=
-
 			function(tbl, key)
 				return rawget(tbl, key) or module[key] or oldenv[key]
 			end})
-
+            -- 临时修改target函数的环境
 			setfenv(target, env)
 		end)
 
+        -- 执行target函数
 		local ok, err
 		if type(c.target) == "table" then
 			ok, err = util.copcall(target, c.target, unpack(args))
@@ -460,7 +465,7 @@ function dispatch(request)
 		       "Failed to execute " .. (type(c.target) == "function" and "function" or c.target.type or "unknown") ..
 		       " dispatcher target for entry '/" .. table.concat(request, "/") .. "'.\n" ..
 		       "The called action terminated with an exception:\n" .. tostring(err or "(unknown)"))
-	else
+	else                                -- target字段类型除了function的情况
 		local root = node()
 		if not root or not root.target then
 			error404("No root node was registered, this usually happens if no module was installed.\n" ..
@@ -475,7 +480,7 @@ function dispatch(request)
 end
 
 --- Generate the dispatching index using the best possible strategy.
--- 根据luci的controller目录下的所有lua文件,生成一张index的table
+-- 生成一张名为index的table,table中记录了所有controller目录下lua文件中的index函数
 function createindex()
 	local path = luci.util.libpath() .. "/controller/"
 	local suff = { ".lua", ".lua.gz" }
@@ -597,6 +602,7 @@ function createtree()
 
     -- 调用controller目录下每个lua文件中的index函数,来创建树的每个节点
 	for k, v in pairs(index) do
+        -- 环境中额外附加了_NAME字段
 		scope._NAME = k
         -- 调用每个index函数前,都会先修改该index函数的环境
 		setfenv(v, scope)
@@ -649,10 +655,11 @@ function assign(path, clone, title, order)
 end
 
 --- Create a new dispatching node and define common parameters.
--- @param	path	Virtual path
--- @param	target	Target function to call when dispatched.
--- @param	title	Destination node title
--- @param	order	Destination node order value (optional)
+-- 创建一个新的节点,并初始化一些基础参数
+-- @param	path	Virtual path    文件路径名
+-- @param	target	Target function to call when dispatched.    进入该节点时会执行到的回调函数 
+-- @param	title	Destination node title                      节点标题
+-- @param	order	Destination node order value (optional)     节点序号(可选)
 -- @return			Dispatching tree node
 function entry(path, target, title, order)
 	local c = node(unpack(path))
@@ -660,13 +667,14 @@ function entry(path, target, title, order)
 	c.target = target
 	c.title  = title
 	c.order  = order
-	c.module = getfenv(2)._NAME
+	c.module = getfenv(2)._NAME     -- 记录下该节点关联的模块路径名(在createtree中创建每个index函数的环境时设置)
 
 	return c
 end
 
 --- Fetch or create a dispatching node without setting the target module or
 -- enabling the node.
+-- 获取或创建一个新的节点(不做额外操作)
 -- @param	...		Virtual path
 -- @return			Dispatching tree node
 function get(...)
@@ -674,8 +682,8 @@ function get(...)
 end
 
 --- Fetch or create a new dispatching node.
--- 获取或创建一个新的节点
--- @param	...		Virtual path
+-- 获取或创建一个新的节点(附加了额外操作)
+-- @param	...		Virtual path    文件路径名
 -- @return			Dispatching tree node
 function node(...)
 	local c = _create_node({...})
@@ -711,7 +719,7 @@ function _create_node(path)
 end
 
 -- Subdispatchers --
-
+-- 自动跳转到最低序号页面
 function _firstchild()
    local path = { unpack(context.path) }
    local name = table.concat(path, ".")
@@ -737,6 +745,7 @@ function _firstchild()
 end
 
 --- Alias the first (lowest order) page automatically
+-- 返回一张table,预示跳转到最低序号页面
 function firstchild()
    return { type = "firstchild", target = _firstchild }
 end

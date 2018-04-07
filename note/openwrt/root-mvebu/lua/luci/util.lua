@@ -772,6 +772,8 @@ function coxpcall(f, err, ...)
 end
 
 --- This is a coroutine-safe drop-in replacement for Lua's "pcall"-function
+-- 这是一个pcall的替代函数,特点是协程间安全
+-- @param f		Lua function to be called protected
 -- @param f		Lua function to be called protected
 -- @param ...	Parameters passed to the function
 -- @return		A boolean whether the function call succeeded and the returns
