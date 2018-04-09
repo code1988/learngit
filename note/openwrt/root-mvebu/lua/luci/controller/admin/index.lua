@@ -14,7 +14,7 @@ $Id$
 
 module("luci.controller.admin.index", package.seeall)
 
--- 创建admin/index节点(在createtree时被调用,本函数运行在一个特殊的环境)
+-- 创建root节点和admin系列节点(在createtree时被调用,本函数运行在一个特殊的环境)
 function index()
     -- 首先创建一个root节点
 	local root = node()
@@ -26,7 +26,7 @@ function index()
 
     -- 接着创建一个admin节点
 	local page   = node("admin")
-	page.target  = firstchild()
+	page.target  = firstchild()     -- 进入admin节点时的行为是自动跳转到第一个子页面
 	page.title   = _("Administration")
 	page.order   = 10
 	page.sysauth = "root"
@@ -35,8 +35,9 @@ function index()
 	page.index = true
 
 	-- Empty services menu to be populated by addons
+    -- 创建admin/services菜单,进入该菜单时的行为是自动跳转到第一个子页面
 	entry({"admin", "services"}, firstchild(), _("Services"), 40).index = true
-
+    -- 创建admin/logout菜单,进入该菜单时的行为是调用action_logout函数
 	entry({"admin", "logout"}, call("action_logout"), _("Logout"), 90)
 end
 

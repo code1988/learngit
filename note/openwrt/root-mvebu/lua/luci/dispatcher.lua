@@ -33,7 +33,13 @@ local http = require "luci.http"
 local nixio = require "nixio", require "nixio.util"
 
 module("luci.dispatcher", package.seeall)
--- 为dispatcher模块创建线程管理对象
+--[[ 为dispatcher模块创建线程管理对象
+-- 已知成员:
+--      .request    记录了http request路径的目录部分的table
+--      .path       等同于.request
+--      .urltoken   记录了http request路径的目录除外部分的table 
+--      .tree       记录了节点树的root节点,也可以看作表整棵节点树
+]]--
 context = util.threadlocal()
 uci = require "luci.model.uci"
 i18n = require "luci.i18n"
@@ -207,7 +213,7 @@ end
 
 --- Dispatches a LuCI virtual path.
 -- 调度一个luci虚拟路径
--- @param request	Virtual path
+-- @param request	Virtual path    显然该虚拟路径只是目录部分
 function dispatch(request)
 	--context._disable_memtrace = require "luci.debug".trap_memtrace("l")
 	local ctx = context
@@ -236,7 +242,7 @@ function dispatch(request)
 
 	local c = ctx.tree
 	local stat
-    -- 如果节点树还未创建过,则首先需要创建这棵节点树
+    -- 如果节点树还未创建过,则首先需要创建整棵节点树
 	if not c then
 		c = createtree()
 	end
@@ -656,7 +662,7 @@ end
 
 --- Create a new dispatching node and define common parameters.
 -- 创建一个新的节点,并初始化一些基础参数
--- @param	path	Virtual path    文件路径名
+-- @param	path	Virtual path    文件路径名的table(也就是菜单入口)
 -- @param	target	Target function to call when dispatched.    进入该节点时会执行到的回调函数 
 -- @param	title	Destination node title                      节点标题
 -- @param	order	Destination node order value (optional)     节点序号(可选)
