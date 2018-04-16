@@ -65,6 +65,15 @@ enum vlog_level vlog_get_level_val(const char *name);
     VLOG_DESTINATION(SYSLOG, "ovs|%05N|%c%T|%p|%m")                        \
     VLOG_DESTINATION(CONSOLE, "%D{%Y-%m-%dT%H:%M:%SZ}|%05N|%c%T|%p|%m")    \
     VLOG_DESTINATION(FILE, "%D{%Y-%m-%dT%H:%M:%S.###Z}|%05N|%c%T|%p|%m")
+
+/* 枚举了vlog支持的输出对象
+ * 宏定义展开后实际就是:
+ *      VLF_SYSLOG
+ *      VLF_CONSOLE
+ *      VLF_FILE
+ *      VLF_N_DESTINATIONS
+ *      VLF_ANY_DESTINATION = -1
+ */
 enum vlog_destination {
 #define VLOG_DESTINATION(NAME, PATTERN) VLF_##NAME,
     VLOG_DESTINATIONS
@@ -172,7 +181,11 @@ void vlog_rate_limit(const struct vlog_module *, enum vlog_level,
 
 /* Defines a logging module whose name is MODULE, which should generally be
  * roughly the name of the source file, and makes it the module used by the
- * logging convenience macros defined below. */
+ * logging convenience macros defined below. 
+ * 定义了一个名为MODULE的vlog模块
+ * 实际就是定义并初始化了一个全局的this_module变量,并且定义了对应的构造函数,意味着在main之前就会执行该函数,
+ * 也就是事先将该vlog模块插入了全局的vlog_modules链表
+ * */
 #define VLOG_DEFINE_THIS_MODULE(MODULE)                                 \
         static struct vlog_module this_module = {                       \
             OVS_LIST_INITIALIZER(&this_module.list),                    \

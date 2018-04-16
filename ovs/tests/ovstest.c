@@ -26,20 +26,23 @@
 #include "ovstest.h"
 #include "util.h"
 
-static struct ovs_cmdl_command *commands = NULL;
-static size_t n_commands = 0;
-static size_t allocated_commands = 0;
+static struct ovs_cmdl_command *commands = NULL;    // 已经分配的命令空间,用来存储已经注册的命令
+static size_t n_commands = 0;   // 已经注册的命令数量
+static size_t allocated_commands = 0;   // 已分配的commands中可以存放的命令数量
 
+// 注册一条命令
 static void
 add_command(struct ovs_cmdl_command *cmd)
 {
     const struct ovs_cmdl_command nil = {NULL, NULL, 0, 0, NULL, OVS_RO};
 
+    // 如果命令空间已满则进行扩增
     while (n_commands + 1 >= allocated_commands) {
         commands = x2nrealloc(commands, &allocated_commands,
                               sizeof *cmd);
     }
 
+    // 将该命令注册到全局的commands表中
     commands[n_commands] = *cmd;
     commands[n_commands + 1] = nil;
     n_commands++;
@@ -83,6 +86,7 @@ help(struct ovs_cmdl_context *ctx OVS_UNUSED)
     ds_destroy(&test_names);
 }
 
+// 注册一条help命令
 static void
 add_top_level_commands(void)
 {
@@ -91,6 +95,12 @@ add_top_level_commands(void)
     add_command(&help_cmd);
 }
 
+/* 注册一条测试命令
+ * @test_name   命令名
+ * @f           命令的执行回调
+ *
+ * 备注:测试命令都只有只读权限
+ */
 void
 ovstest_register(const char *test_name, ovs_cmdl_handler f)
 {
@@ -114,6 +124,7 @@ cleanup(void)
     }
 }
 
+// ovs的测试模块总入口
 int
 main(int argc, char *argv[])
 {
@@ -124,6 +135,7 @@ main(int argc, char *argv[])
                   "use --help for usage");
     }
 
+    // 首先注册一条help命令
     add_top_level_commands();
     if (argc > 1) {
         struct ovs_cmdl_context ctx = {

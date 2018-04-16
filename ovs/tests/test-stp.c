@@ -435,6 +435,7 @@ must_match(const char *want)
     }
 }
 
+// stp模块的测试命令入口
 static void
 test_stp_main(int argc, char *argv[])
 {

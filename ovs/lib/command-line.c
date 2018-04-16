@@ -138,6 +138,7 @@ ovs_cmdl_run_command__(struct ovs_cmdl_context *ctx,
  *        .argv = argv + optind,
  *    };
  *    ovs_cmdl_run_command(&ctx, my_commands);
+ * 执行命令的总入口
  * */
 void
 ovs_cmdl_run_command(struct ovs_cmdl_context *ctx,

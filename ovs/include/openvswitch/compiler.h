@@ -208,6 +208,8 @@
  *     OVS_CONSTRUCTOR(my_constructor) {
  *         ...some code...
  *     }
+ * 
+ * OVS_CONSTRUCTOR利用GCC特性来定义构造函数f(将会在main函数之前执行)
  */
 #ifdef _MSC_VER
 #define CCALL __cdecl

@@ -48,6 +48,10 @@ void ovstest_register(const char *test_name, ovs_cmdl_handler f);
 
 /* Usage
  * =====
+ * 这个宏用于定义每个子模块的测试用入口函数
+ * 实际定义了2个函数:
+ *          一个是每个子模块主函数的统一封装函数；
+ *          另一个是每个子模块构造函数,会在mian之前执行,主要用于注册前一个统一封装函数
  *
  * For each sub test program, its 'main' program should be named as
  * '<test_name>_main()'.

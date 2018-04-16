@@ -23,11 +23,13 @@
 
 struct option;
 
-/* Command handler context */
+/* Command handler context 
+ * 定义了待解析命令的完整信息结构
+ * */
 struct ovs_cmdl_context {
-    /* number of command line arguments */
+    /* number of command line arguments  命令行参数数量(除程序名) */
     int argc;
-    /* array of command line arguments */
+    /* array of command line arguments 命令行参数表(除程序名) */
     char **argv;
     /* private context data defined by the API user */
     void *pvt;
@@ -35,13 +37,14 @@ struct ovs_cmdl_context {
 
 typedef void (*ovs_cmdl_handler)(struct ovs_cmdl_context *);
 
+// 定义了一条通用的命令抽象
 struct ovs_cmdl_command {
-    const char *name;
-    const char *usage;
-    int min_args;
-    int max_args;
-    ovs_cmdl_handler handler;
-    enum { OVS_RO, OVS_RW } mode;    /* Does this command modify things? */
+    const char *name;   // 命令名(test中就是子模块名)
+    const char *usage;  // 该命令用法
+    int min_args;       // 该命令最少参数
+    int max_args;       // 该命令最大参数
+    ovs_cmdl_handler handler;   // 该命令的操作回调
+    enum { OVS_RO, OVS_RW } mode;    /* Does this command modify things?  该命令的权限:只读/可读可写 */
 };
 
 char *ovs_cmdl_long_options_to_short_options(const struct option *options);

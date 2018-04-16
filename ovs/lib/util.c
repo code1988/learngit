@@ -48,6 +48,7 @@ VLOG_DEFINE_THIS_MODULE(util);
 #define LINUX 0
 #endif
 
+// 定义一个用于统计堆分配的计数器
 COVERAGE_DEFINE(util_xalloc);
 
 /* argv[0] without directory names. */
@@ -125,6 +126,7 @@ xmalloc(size_t size)
     return p;
 }
 
+// ovs封装的realloc接口
 void *
 xrealloc(void *p, size_t size)
 {
@@ -189,9 +191,15 @@ xvasprintf(const char *format, va_list args)
     return s;
 }
 
+/* ovs封装的内存分配/扩增接口
+ * @p 用于存放内存首地址 
+ * @n 用于指定要分配/扩增的内存单元数量
+ * @s 用于制定要分配/扩增的内存单元大小
+ */
 void *
 x2nrealloc(void *p, size_t *n, size_t s)
 {
+    // 初次分配时分配1个单元内存,后续每次扩增2倍的已分配单元数量
     *n = *n == 0 ? 1 : 2 * *n;
     return xrealloc(p, *n * s);
 }

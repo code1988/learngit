@@ -121,7 +121,7 @@ ovs_list_poison(struct ovs_list *list)
     *list = OVS_LIST_POISON;
 }
 
-/* Inserts 'elem' just before 'before'. */
+/* Inserts 'elem' just before 'before'. 将elem节点插入before节点前 */
 static inline void
 ovs_list_insert(struct ovs_list *before, struct ovs_list *elem)
 {

@@ -44,6 +44,7 @@
 #include "unixctl.h"
 #include "util.h"
 
+// 定义了一个名为vlog的vlog模块(也就是一个链表节点)
 VLOG_DEFINE_THIS_MODULE(vlog);
 
 /* ovs_assert() logs the assertion message, so using ovs_assert() in this
@@ -102,7 +103,7 @@ DEFINE_STATIC_PER_THREAD_DATA(unsigned int, msg_num, 0);
  * All of the following is protected by 'log_file_mutex', which nests inside
  * pattern_rwlock. */
 static struct ovs_mutex log_file_mutex OVS_ACQ_AFTER(pattern_rwlock)
-    = OVS_MUTEX_INITIALIZER;
+    = OVS_MUTEX_INITIALIZER;    // 定义了用于维护vlog模块链表的互斥锁
 static char *log_file_name OVS_GUARDED_BY(log_file_mutex) = NULL;
 static int log_fd OVS_GUARDED_BY(log_file_mutex) = -1;
 static struct async_append *log_writer OVS_GUARDED_BY(log_file_mutex);
@@ -111,7 +112,7 @@ static struct syslogger *syslogger = NULL;
 
 /* The log modules. */
 static struct ovs_list vlog_modules OVS_GUARDED_BY(log_file_mutex)
-    = OVS_LIST_INITIALIZER(&vlog_modules);
+    = OVS_LIST_INITIALIZER(&vlog_modules);  // 定义了一个vlog模块链表头,用于记录所有的vlog模块
 
 /* Syslog export configuration. */
 static int syslog_fd OVS_GUARDED_BY(pattern_rwlock) = -1;
@@ -211,6 +212,7 @@ vlog_get_destination_val(const char *name)
     return i;
 }
 
+// 将指定vlog模块插入全局的vlog_modules链表尾部
 void
 vlog_insert_module(struct ovs_list *vlog)
 {
