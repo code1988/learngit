@@ -80,15 +80,27 @@ BUILD_ASSERT_DECL(LOG_LOCAL0 == (16 << 3));
 
 /* Protects the 'pattern' in all "struct destination"s, so that a race between
  * changing and reading the pattern does not cause an access to freed
- * memory. */
+ * memory. 
+ * 定义并初始化一个用于维护vlog输出对象集合的读写锁
+ * */
 static struct ovs_rwlock pattern_rwlock = OVS_RWLOCK_INITIALIZER;
 
-/* Information about each destination. */
+/* Information about each destination. 
+ * 定义了每个vlog输出对象结构
+ * */
 struct destination {
-    const char *name;           /* Name. */
-    char *pattern OVS_GUARDED_BY(pattern_rwlock); /* Current pattern. */
-    bool default_pattern;       /* Whether current pattern is the default. */
+    const char *name;           /* Name.  输出对象名 */
+    char *pattern OVS_GUARDED_BY(pattern_rwlock); /* Current pattern.  输出格式 */
+    bool default_pattern;       /* Whether current pattern is the default.  标识当前的输出格式是否是缺省的 */
 };
+/* 定义并初始化了一个vlog输出对象的信息集合
+ * 宏定义展开之后实际就是:
+ *      {"SYSLOG",  "ovs|%05N|%c%T|%p|%m",                          true},
+ *      {"CONSOLE", "%D{%Y-%m-%dT%H:%M:%SZ}|%05N|%c%T|%p|%m",       true},
+ *      {"FILE",    "%D{%Y-%m-%dT%H:%M:%S.###Z}|%05N|%c%T|%p|%m",   true}
+ *
+ * 备注: 显然该集合中的vlog输出对象设置统一作用于所有vlog模块
+ */
 static struct destination destinations[VLF_N_DESTINATIONS] = {
 #define VLOG_DESTINATION(NAME, PATTERN) {#NAME, PATTERN, true},
     VLOG_DESTINATIONS
@@ -273,6 +285,7 @@ update_min_level(struct vlog_module *module) OVS_REQUIRES(&log_file_mutex)
     }
 }
 
+// 设置指定vlog模块在指定输出对象中的日志输出阈值
 static void
 set_destination_level(enum vlog_destination destination,
                       struct vlog_module *module, enum vlog_level level)
@@ -280,7 +293,9 @@ set_destination_level(enum vlog_destination destination,
     assert(destination >= 0 && destination < VLF_N_DESTINATIONS);
     assert(level < VLL_N_LEVELS);
 
+    // 修改操作期间必须确保互斥锁上锁
     ovs_mutex_lock(&log_file_mutex);
+    // 如果没有指定vlog模块,则对每个vlog模块都进行设置；否则只需要对指定vlog模块设置即可
     if (!module) {
         struct vlog_module *mp;
         LIST_FOR_EACH (mp, list, &vlog_modules) {
@@ -296,13 +311,19 @@ set_destination_level(enum vlog_destination destination,
 
 /* Sets the logging level for the given 'module' and 'destination' to 'level'.
  * A null 'module' or a 'destination' of VLF_ANY_DESTINATION is treated as a
- * wildcard across all modules or destinations, respectively. */
+ * wildcard across all modules or destinations, respectively. 
+ * 设置指定vlog模块在指定输出对象中的日志输出阈值(封装的对外接口)
+ * @module  要进行设置的vlog模块
+ * @destination 该vlog模块中要进行设置的输出对象
+ * @level   日志输出阈值
+ * */
 void
 vlog_set_levels(struct vlog_module *module, enum vlog_destination destination,
                 enum vlog_level level)
 {
     assert(destination < VLF_N_DESTINATIONS ||
            destination == VLF_ANY_DESTINATION);
+    // 如果指定的是所有输出对象,则对每个输出对象都设置日志输出阈值;否则只需要在指定的输出对象上设置即可
     if (destination == VLF_ANY_DESTINATION) {
         for (destination = 0; destination < VLF_N_DESTINATIONS;
              destination++) {
@@ -313,11 +334,13 @@ vlog_set_levels(struct vlog_module *module, enum vlog_destination destination,
     }
 }
 
+// 设置vlog在指定输出对象中的输出格式
 static void
 do_set_pattern(enum vlog_destination destination, const char *pattern)
 {
     struct destination *f = &destinations[destination];
 
+    // 修改操作期间必须确保写模式上锁
     ovs_rwlock_wrlock(&pattern_rwlock);
     if (!f->default_pattern) {
         free(f->pattern);
@@ -328,12 +351,15 @@ do_set_pattern(enum vlog_destination destination, const char *pattern)
     ovs_rwlock_unlock(&pattern_rwlock);
 }
 
-/* Sets the pattern for the given 'destination' to 'pattern'. */
+/* Sets the pattern for the given 'destination' to 'pattern'. 
+ * 设置vlog在指定输出对象中的输出格式(封装的对外接口)
+ * */
 void
 vlog_set_pattern(enum vlog_destination destination, const char *pattern)
 {
     assert(destination < VLF_N_DESTINATIONS ||
            destination == VLF_ANY_DESTINATION);
+    // 如果指定的是所有输出对象,则在所有输出对象中都设置一下;否则只需要设置指定的输出对象
     if (destination == VLF_ANY_DESTINATION) {
         for (destination = 0; destination < VLF_N_DESTINATIONS;
              destination++) {

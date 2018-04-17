@@ -85,12 +85,12 @@ enum vlog_destination {
 const char *vlog_get_destination_name(enum vlog_destination);
 enum vlog_destination vlog_get_destination_val(const char *name);
 
-/* A log module. */
+/* A log module. 定义了通用的vlog模块结构 */
 struct vlog_module {
-    struct ovs_list list;
-    const char *name;             /* User-visible name. */
+    struct ovs_list list;       // 用来链接其他的vlog模块
+    const char *name;             /* User-visible name. 该vlog模块名 */
     int levels[VLF_N_DESTINATIONS]; /* Minimum log level for each
-                                       destination. */
+                                       destination.  该vlog模块在每个输出对象上的输出阈值 */
     int min_level;                /* Minimum log level for any destination. */
     bool honor_rate_limits;       /* Set false to ignore rate limits. */
 };

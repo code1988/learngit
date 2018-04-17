@@ -45,6 +45,7 @@ void xpthread_mutexattr_settype(pthread_mutexattr_t *, int type);
 void xpthread_mutexattr_gettype(pthread_mutexattr_t *, int *typep);
 
 /* Read-write lock.
+ * ovs封装的读写锁
  *
  * An ovs_rwlock does not support recursive readers, because POSIX allows
  * taking the reader lock recursively to deadlock when a thread is waiting on
@@ -61,7 +62,7 @@ struct OVS_LOCKABLE ovs_rwlock {
     const char *where;          /* NULL if and only if uninitialized. */
 };
 
-/* Initializer. */
+/* Initializer.  定义了读写锁静态初始化宏 */
 #ifdef PTHREAD_RWLOCK_WRITER_NONRECURSIVE_INITIALIZER_NP
 #define OVS_RWLOCK_INITIALIZER \
         { PTHREAD_RWLOCK_WRITER_NONRECURSIVE_INITIALIZER_NP, "<unlocked>" }
@@ -87,16 +88,19 @@ void xpthread_rwlockattr_setkind_np(pthread_rwlockattr_t *, int kind);
 
 void ovs_rwlock_wrlock_at(const struct ovs_rwlock *rwlock, const char *where)
     OVS_ACQ_WRLOCK(rwlock);
+// ovs封装的读写锁上写锁
 #define ovs_rwlock_wrlock(rwlock) \
         ovs_rwlock_wrlock_at(rwlock, OVS_SOURCE_LOCATOR)
 
 int ovs_rwlock_trywrlock_at(const struct ovs_rwlock *rwlock, const char *where)
     OVS_TRY_WRLOCK(0, rwlock);
+// ovs封装的读写锁上写锁(try)
 #define ovs_rwlock_trywrlock(rwlock) \
     ovs_rwlock_trywrlock_at(rwlock, OVS_SOURCE_LOCATOR)
 
 void ovs_rwlock_rdlock_at(const struct ovs_rwlock *rwlock, const char *where)
     OVS_ACQ_RDLOCK(rwlock);
+// ovs封装的读写锁上读锁(try)
 #define ovs_rwlock_rdlock(rwlock) \
         ovs_rwlock_rdlock_at(rwlock, OVS_SOURCE_LOCATOR)
 

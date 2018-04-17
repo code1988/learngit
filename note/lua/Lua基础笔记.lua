@@ -42,7 +42,7 @@
     repeat...until循环 - 语法格式 - repeat  执行体  while(条件)
                        - 备注     - 类C，略
     
-6. lua流程控制语句 if...then...end
+6. lua流程控制语句 if...then...elseif...then...else...end
    lua中0为true，这点跟C不同，if语句要注意then这个关键词不能丢
 
 7. lua中函数默认为全局函数，头部加local表示为局部函数

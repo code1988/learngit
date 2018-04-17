@@ -443,12 +443,15 @@ test_stp_main(int argc, char *argv[])
     FILE *input_file;
     int i;
 
+    // 设置在控制终端中的日志输出格式
     vlog_set_pattern(VLF_CONSOLE, "%c|%p|%m");
+    // 关闭所有vlog模块在syslog中的日志输出阈值
     vlog_set_levels(NULL, VLF_SYSLOG, VLL_OFF);
 
     if (argc != 2) {
         ovs_fatal(0, "usage: test-stp INPUT.STP\n");
     }
+    // 获取并打开传入的stp文件
     file_name = argv[1];
 
     input_file = fopen(file_name, "r");

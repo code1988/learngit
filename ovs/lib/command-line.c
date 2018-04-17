@@ -87,6 +87,9 @@ ovs_cmdl_print_options(const struct option options[])
     ds_destroy(&ds);
 }
 
+/* 解析并执行命令
+ * @read_only   标识命令是否只读
+ */
 static void
 ovs_cmdl_run_command__(struct ovs_cmdl_context *ctx,
                        const struct ovs_cmdl_command commands[],
@@ -98,6 +101,7 @@ ovs_cmdl_run_command__(struct ovs_cmdl_context *ctx,
         ovs_fatal(0, "missing command name; use --help for help");
     }
 
+    // 遍历支持的命令列表,根据命令名进行匹配
     for (p = commands; p->name != NULL; p++) {
         if (!strcmp(p->name, ctx->argv[0])) {
             int n_arg = ctx->argc - 1;
@@ -138,7 +142,9 @@ ovs_cmdl_run_command__(struct ovs_cmdl_context *ctx,
  *        .argv = argv + optind,
  *    };
  *    ovs_cmdl_run_command(&ctx, my_commands);
- * 执行命令的总入口
+ * 解析执行命令的总入口
+ * @ctx 包含了要解析执行的命令信息
+ * @comands 支持的命令列表
  * */
 void
 ovs_cmdl_run_command(struct ovs_cmdl_context *ctx,
