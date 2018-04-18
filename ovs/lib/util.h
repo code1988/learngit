@@ -112,6 +112,7 @@ typedef uint32_t HANDLE;
 extern "C" {
 #endif
 
+// 记录当前程序名和程序版本号
 #define set_program_name(name) \
         ovs_set_program_name(name, OVS_PACKAGE_VERSION)
 

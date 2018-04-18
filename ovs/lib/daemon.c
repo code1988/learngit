@@ -57,7 +57,10 @@ daemonize(void)
  * as an absolute path. Otherwise, it is taken relative to RUNDIR,
  * which is $(prefix)/var/run by default.
  *
- * If 'name' is null, then program_name followed by ".pid" is used. */
+ * If 'name' is null, then program_name followed by ".pid" is used. 
+ * 生成程序用于记录pid值的文件名
+ * @name    用于记录pid值的文件名,传入NULL则按缺省规则生成文件名
+ * */
 void
 set_pidfile(const char *name)
 {

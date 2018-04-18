@@ -247,7 +247,9 @@ void vlog_rate_limit(const struct vlog_module *, enum vlog_level,
 #define VLOG_INFO_ONCE(...) VLOG_ONCE(VLL_INFO, __VA_ARGS__)
 #define VLOG_DBG_ONCE(...) VLOG_ONCE(VLL_DBG, __VA_ARGS__)
 
-/* Command line processing. */
+/* Command line processing. 
+ * 枚举了vlog相关的入参选项
+ * */
 #define VLOG_OPTION_ENUMS                       \
         OPT_LOG_FILE,                           \
         OPT_SYSLOG_IMPL,                        \
@@ -259,6 +261,7 @@ void vlog_rate_limit(const struct vlog_module *, enum vlog_level,
         {"syslog-method", required_argument, NULL, OPT_SYSLOG_IMPL},    \
         {"syslog-target", required_argument, NULL, OPT_SYSLOG_TARGET}
 
+// 定义了vlog相关的入参处理集合
 #define VLOG_OPTION_HANDLERS                    \
         case 'v':                               \
             vlog_set_verbosity(optarg);         \

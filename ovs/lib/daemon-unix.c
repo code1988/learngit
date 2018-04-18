@@ -56,9 +56,9 @@ VLOG_DEFINE_THIS_MODULE(daemon_unix);
 #define LIBCAPNG 0
 #endif
 
-/* --detach: Should we run in the background? */
+/* --detach: Should we run in the background?  标识程序是否需要成为守护进程 */
 bool detach;                    /* Was --detach specified? */
-static bool detached;           /* Have we already detached? */
+static bool detached;           /* Have we already detached?  标识程序是否已经运行在后台 */
 
 /* --pidfile: Name of pidfile (null if none). */
 char *pidfile;
@@ -71,14 +71,14 @@ static ino_t pidfile_ino;
    locked? */
 static bool overwrite_pidfile;
 
-/* --no-chdir: Should we chdir to "/"? */
+/* --no-chdir: Should we chdir to "/"?  标识是否需要修改程序的根路径 */
 static bool chdir_ = true;
 
 /* File descriptor used by daemonize_start() and daemonize_complete(). */
 static int daemonize_fd = -1;
 
 /* --monitor: Should a supervisory process monitor the daemon and restart it if
- * it dies due to an error signal? */
+ * it dies due to an error signal?  标识是否需要一个监控进程来监控守护进程ovs-vswitch */
 static bool monitor;
 
 /* --user: Only root can use this option. Switch to new uid:gid after
@@ -104,7 +104,7 @@ make_pidfile_name(const char *name)
             : abs_file_name(ovs_rundir(), name));
 }
 
-/* Sets that we do not chdir to "/". */
+/* Sets that we do not chdir to "/".  不修改程序的根路径 */
 void
 set_no_chdir(void)
 {
@@ -121,7 +121,9 @@ ignore_existing_pidfile(void)
 }
 
 /* Sets up a following call to daemonize() to detach from the foreground
- * session, running this process in the background.  */
+ * session, running this process in the background.  
+ * 程序将设为守护进程
+ * */
 void
 set_detach(void)
 {
@@ -129,7 +131,9 @@ set_detach(void)
 }
 
 /* Sets up a following call to daemonize() to fork a supervisory process to
- * monitor the daemon and restart it if it dies due to an error signal.  */
+ * monitor the daemon and restart it if it dies due to an error signal.  
+ * 程序将设置一个监控进程
+ * */
 void
 daemon_set_monitor(void)
 {

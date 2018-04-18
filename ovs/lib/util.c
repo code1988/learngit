@@ -51,14 +51,14 @@ VLOG_DEFINE_THIS_MODULE(util);
 // 定义一个用于统计堆分配的计数器
 COVERAGE_DEFINE(util_xalloc);
 
-/* argv[0] without directory names. */
+/* argv[0] without directory names.  用来记录当前的程序名(不带目录) */
 char *program_name;
 
 /* Name for the currently running thread or process, for log messages, process
  * listings, and debuggers. */
 DEFINE_PER_THREAD_MALLOCED_DATA(char *, subprogram_name);
 
-/* --version option output. */
+/* --version option output.  用来记录当前程序的版本 */
 static char *program_version;
 
 /* Buffer used by ovs_strerror() and ovs_format_message(). */
@@ -115,6 +115,7 @@ xzalloc(size_t size)
     return xcalloc(1, size);
 }
 
+// ovs封装的malloc接口
 void *
 xmalloc(size_t size)
 {
@@ -155,6 +156,7 @@ xmemdup0(const char *p_, size_t length)
     return p;
 }
 
+// ovs封装的strdup接口
 char *
 xstrdup(const char *s)
 {
@@ -488,7 +490,7 @@ ovs_strerror(int error)
  * is the same as the VERSION #define, the caller is assumed to be part of Open
  * vSwitch.  Otherwise, it is assumed to be an external program linking against
  * the Open vSwitch libraries.
- *
+ * 记录程序名和程序版本号
  */
 void
 ovs_set_program_name(const char *argv0, const char *version)
@@ -503,10 +505,12 @@ ovs_set_program_name(const char *argv0, const char *version)
     basename = xmalloc(max_len);
     _splitpath_s(argv0, NULL, 0, NULL, 0, basename, max_len, NULL, 0);
 #else
+    // 拷贝不带目录的程序名
     const char *slash = strrchr(argv0, '/');
     basename = xstrdup(slash ? slash + 1 : argv0);
 #endif
 
+    // 确保当前程序处于单线程模式
     assert_single_threaded();
     free(program_name);
     /* Remove libtool prefix, if it is there */

@@ -37,6 +37,7 @@
  */
 
 #ifndef _WIN32
+// 枚举了daemon相关的命令行选项
 #define DAEMON_OPTION_ENUMS                     \
     OPT_DETACH,                                 \
     OPT_NO_SELF_CONFINEMENT,                    \
@@ -55,6 +56,7 @@
         {"monitor",           no_argument, NULL, OPT_MONITOR},           \
         {"user",              required_argument, NULL, OPT_USER_GROUP}
 
+// daemon相关的命令行选项处理宏
 #define DAEMON_OPTION_HANDLERS                  \
         case OPT_DETACH:                        \
             set_detach();                       \

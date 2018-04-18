@@ -514,6 +514,7 @@ size_t ovs_thread_stats_next_bucket(const struct ovsthread_stats *, size_t);
 bool single_threaded(void);
 
 void assert_single_threaded_at(const char *where);
+// 检查当前程序是否处于单线程模式
 #define assert_single_threaded() assert_single_threaded_at(OVS_SOURCE_LOCATOR)
 
 #ifndef _WIN32

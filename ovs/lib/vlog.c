@@ -313,7 +313,7 @@ set_destination_level(enum vlog_destination destination,
  * A null 'module' or a 'destination' of VLF_ANY_DESTINATION is treated as a
  * wildcard across all modules or destinations, respectively. 
  * 设置指定vlog模块在指定输出对象中的日志输出阈值(封装的对外接口)
- * @module  要进行设置的vlog模块
+ * @module  要进行设置的vlog模块,传入NULL表示对所有vlog模块都进行设置
  * @destination 该vlog模块中要进行设置的输出对象
  * @level   日志输出阈值
  * */
@@ -372,7 +372,10 @@ vlog_set_pattern(enum vlog_destination destination, const char *pattern)
 
 /* Sets the name of the log file used by VLF_FILE to 'file_name', or to the
  * default file name if 'file_name' is null.  Returns 0 if successful,
- * otherwise a positive errno value. */
+ * otherwise a positive errno value. 
+ * 设置输出对象为VLF_FILE时的日志输出文件
+ * @file_name   日志输出文件名,传入NULL时表示设置为默认文件
+ * */
 int
 vlog_set_log_file(const char *file_name)
 {
@@ -589,7 +592,10 @@ vlog_set_levels_from_string_assert(const char *s)
 }
 
 /* If 'arg' is null, configure maximum verbosity.  Otherwise, sets
- * configuration according to 'arg' (see vlog_set_levels_from_string()). */
+ * configuration according to 'arg' (see vlog_set_levels_from_string()). 
+ * 设置vlog相关信息
+ * @arg     "xxx:xxx"格式,如果传入NULL则将所有输出对象的输出阈值设为最低(最大程度输出)
+ * */
 void
 vlog_set_verbosity(const char *arg)
 {

@@ -225,6 +225,7 @@ fatal_signal_wait(void)
 #endif
 }
 
+// 忽略SIGPIPE信号
 void
 fatal_ignore_sigpipe(void)
 {

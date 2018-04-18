@@ -449,6 +449,7 @@ single_threaded(void)
 
 /* Asserts that the process has not yet created any threads (beyond the initial
  * thread).
+ * 判断当前程序是否创建了超过1个线程
  *
  * ('where' is used in logging.  Commonly one would use
  * assert_single_threaded() to automatically provide the caller's source file

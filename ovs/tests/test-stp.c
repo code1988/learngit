@@ -35,6 +35,7 @@ struct bpdu {
     size_t size;
 };
 
+// 网桥结构
 struct bridge {
     struct test_case *tc;
     int id;
@@ -55,19 +56,21 @@ struct lan_conn {
     int port_no;
 };
 
+// lan接口结构
 struct lan {
-    struct test_case *tc;
-    const char *name;
+    struct test_case *tc;   // 指向所属的stp测试用例
+    const char *name;       // lan接口名
     bool reached;
     struct lan_conn conns[16];
     int n_conns;
 };
 
+// stp的测试用例结构
 struct test_case {
-    struct bridge *bridges[16];
-    int n_bridges;
-    struct lan *lans[26];
-    int n_lans;
+    struct bridge *bridges[16]; // 一张网桥表
+    int n_bridges;          // 网桥数量
+    struct lan *lans[26];   // 一张lan接口表
+    int n_lans;             // lan接口数量
 };
 
 static const char *file_name;
@@ -76,6 +79,7 @@ static char line[128];
 static char *pos, *token;
 static int n_warnings;
 
+// 创建一个stp的测试用例对象
 static struct test_case *
 new_test_case(void)
 {
@@ -129,6 +133,7 @@ new_bridge(struct test_case *tc, int id)
     return b;
 }
 
+// 为指定stp测试用例tc创建一个名为name的lan接口
 static struct lan *
 new_lan(struct test_case *tc, const char *name)
 {
@@ -459,7 +464,9 @@ test_stp_main(int argc, char *argv[])
         ovs_fatal(errno, "error opening \"%s\"", file_name);
     }
 
+    // 创建一个stp测试用例对象
     tc = new_test_case();
+    // 为该stp测试用例创建"a"~"z"共26个lan接口
     for (i = 0; i < 26; i++) {
         char name[2];
         name[0] = 'a' + i;

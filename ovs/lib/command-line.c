@@ -28,7 +28,9 @@ VLOG_DEFINE_THIS_MODULE(command_line);
 
 /* Given the GNU-style long options in 'options', returns a string that may be
  * passed to getopt() with the corresponding short options.  The caller is
- * responsible for freeing the string. */
+ * responsible for freeing the string. 
+ * 根据传入的GNU风格的命令行长选项表得到对应的短选项集合
+ * */
 char *
 ovs_cmdl_long_options_to_short_options(const struct option options[])
 {
@@ -163,18 +165,19 @@ ovs_cmdl_run_command_read_only(struct ovs_cmdl_context *ctx,
 /* Process title. */
 
 #ifdef __linux__
-static struct ovs_mutex proctitle_mutex = OVS_MUTEX_INITIALIZER;
+static struct ovs_mutex proctitle_mutex = OVS_MUTEX_INITIALIZER;    // 定义并初始化一个用于维护以下3个静态变量的互斥锁
 
-/* Start of command-line arguments in memory. */
+/* Start of command-line arguments in memory. 记录了命令行参数在进程内存空间中的起始低地址 */
 static char *argv_start OVS_GUARDED_BY(proctitle_mutex);
 
-/* Number of bytes of command-line arguments. */
+/* Number of bytes of command-line arguments. 记录了命令行中的参数总长度 */
 static size_t argv_size OVS_GUARDED_BY(proctitle_mutex);
 
 /* Saved command-line arguments. */
 static char *saved_proctitle OVS_GUARDED_BY(proctitle_mutex);
 
 /* Prepares the process so that proctitle_set() can later succeed.
+ * 预先处理一下程序的命令行参数(显然本函数应该尽可能早地在main函数头部调用),调用本函数后argv表中记录的都是拷贝的参数
  *
  * This modifies the argv[] array so that it no longer points into the memory
  * that it originally does.  Later, proctitle_set() might overwrite that
@@ -187,14 +190,18 @@ ovs_cmdl_proctitle_init(int argc, char **argv)
 {
     int i;
 
+    // 确保此时处于单线程模式
     assert_single_threaded();
     if (!argc || !argv[0]) {
         /* This situation should never occur, but... */
         return;
     }
 
+    // 上面已经确保此时处于单线程模式,这里没必要上锁
     ovs_mutex_lock(&proctitle_mutex);
-    /* Specialized version of first loop iteration below. */
+    /* Specialized version of first loop iteration below. 
+     * 记录命令行参数在进程内存中的起始低地址以及总长,并对所有入参依次进行拷贝
+     * */
     argv_start = argv[0];
     argv_size = strlen(argv[0]) + 1;
     argv[0] = xstrdup(argv[0]);

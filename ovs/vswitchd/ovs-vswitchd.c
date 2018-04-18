@@ -52,7 +52,9 @@
 VLOG_DEFINE_THIS_MODULE(vswitchd);
 
 /* --mlockall: If set, locks all process memory into physical RAM, preventing
- * the kernel from paging any of its memory to disk. */
+ * the kernel from paging any of its memory to disk. 
+ * 标识是否将进程的所有内存锁在物理RAM中,以阻止kernel将其交换到磁盘中
+ * */
 static bool want_mlockall;
 
 static unixctl_cb_func ovs_vswitchd_exit;
@@ -65,6 +67,7 @@ struct ovs_vswitchd_exit_args {
     bool *cleanup;
 };
 
+// ovs-vswitchd守护进程起始入口
 int
 main(int argc, char *argv[])
 {
@@ -75,11 +78,16 @@ main(int argc, char *argv[])
     struct ovs_vswitchd_exit_args exit_args = {&exiting, &cleanup};
     int retval;
 
+    // 首先记录当前程序名和程序版本号
     set_program_name(argv[0]);
 
+    // 预先对命令行参数进行处理,之后argv表中记录的都是拷贝的参数
     ovs_cmdl_proctitle_init(argc, argv);
+    // linux平台直接跳过这函数
     service_start(&argc, &argv);
+    // 解析程序传入的命令行参数
     remote = parse_options(argc, argv, &unixctl_path);
+    // 忽略SIGPIPE信号
     fatal_ignore_sigpipe();
 
     daemonize_start(true);
@@ -139,6 +147,10 @@ main(int argc, char *argv[])
     return 0;
 }
 
+/* 解析ovs-vswitchd程序传入的命令行参数
+ * @unixctl_pathp   用于存放ovs-vswitchd的本地套接字地址
+ * @返回值  ovsdb-server的本地套接字服务端地址
+ */
 static char *
 parse_options(int argc, char *argv[], char **unixctl_pathp)
 {
@@ -155,6 +167,7 @@ parse_options(int argc, char *argv[], char **unixctl_pathp)
         SSL_OPTION_ENUMS,
         OPT_DUMMY_NUMA,
     };
+    // 定义了支持的长选项
     static const struct option long_options[] = {
         {"help",        no_argument, NULL, 'h'},
         {"version",     no_argument, NULL, 'V'},
@@ -171,8 +184,10 @@ parse_options(int argc, char *argv[], char **unixctl_pathp)
         {"dummy-numa", required_argument, NULL, OPT_DUMMY_NUMA},
         {NULL, 0, NULL, 0},
     };
+    // 根据支持的长选项得到对应的短选项
     char *short_options = ovs_cmdl_long_options_to_short_options(long_options);
 
+    // 命令行长选项和短选项参数解析
     for (;;) {
         int c;
 
@@ -189,7 +204,7 @@ parse_options(int argc, char *argv[], char **unixctl_pathp)
             ovs_print_version(0, 0);
             exit(EXIT_SUCCESS);
 
-        case OPT_MLOCKALL:
+        case OPT_MLOCKALL:      // 将进程的内存全部锁在RAM中
             want_mlockall = true;
             break;
 
@@ -237,6 +252,7 @@ parse_options(int argc, char *argv[], char **unixctl_pathp)
     argc -= optind;
     argv += optind;
 
+    // 计算得到ovsdb-server的本地套接字服务端地址
     switch (argc) {
     case 0:
         return xasprintf("unix:%s/db.sock", ovs_rundir());

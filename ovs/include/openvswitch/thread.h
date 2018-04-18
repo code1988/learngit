@@ -27,13 +27,17 @@
 extern "C" {
 #endif
 
-/* Mutex. */
+/* Mutex. 
+ * ovs封装的互斥锁
+ * */
 struct OVS_LOCKABLE ovs_mutex {
     pthread_mutex_t lock;
     const char *where;          /* NULL if and only if uninitialized. */
 };
 
-/* "struct ovs_mutex" initializer. */
+/* "struct ovs_mutex" initializer. 
+ * 定义了ovs互斥锁的初始化宏
+ * */
 #ifdef PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP
 #define OVS_MUTEX_INITIALIZER { PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP, \
                                 "<unlocked>" }
