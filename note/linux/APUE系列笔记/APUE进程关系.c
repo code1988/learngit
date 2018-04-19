@@ -46,7 +46,7 @@
     后台进程和前台进程的本质区别在于是否关闭了标准输入。
 
 3. 守护进程
-    守护进程的唯一特性是没有控制终端，除此之外，以下2点并不对守护进程构成约束：
+    守护进程的唯一特性是没有控制终端(需要特别注意的是,没有控制终端不意味着关闭了标准输出)，除此之外，以下2点并不对守护进程构成约束：
             大部分用户层守护进程都是进程组的组长进程;
             大部分用户层守护进程都是会话的首进程.
     /* API  : int daemon(int nochdir,int noclose)
@@ -63,3 +63,27 @@
      *              将进程标准输入、标准输出、标准错误都重定向到/dev/null(通常的守护进程都会这么做)
      */
 
+4. 例子(验证没有控制终端情况下仍然继承了标准输出)
+    #include <stdio.h>
+    #include <string.h>
+    #include <unistd.h>
+
+    int main(int argc,char *argv[])
+    {
+        if(daemon(0,1) < 0){
+            perror("daemon");
+            return -1;
+        }
+        printf("current working dir : %s\n",getcwd(NULL,0));
+
+        return 0;
+    }
+
+    操作步骤:
+    [1]. 进入例子test.c所在目录,执行编译
+            $ gcc -Wall test.c
+    [2]. 编译成功后,在当前目录下生成对应的可执行文件a.out,执行该程序
+            $ ./a.out
+    [3]. 该程序创建一个守护进程(意味着没有控制终端),并输出打印,终端屏幕打印如下
+                current working dir : /
+    结论:显然该守护进程从父进程处继承了标准输出 

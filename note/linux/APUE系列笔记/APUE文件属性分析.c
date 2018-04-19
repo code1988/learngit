@@ -62,7 +62,7 @@ struct stat {
 
     默认情况下，当执行一个程序文件时，进程的有效用户ID就是真实用户ID；
     但如果程序文件的st_mode字段中设置了set-user-ID位，当执行该文件时，进程的有效用户ID就会变成文件所有者的用户ID（st_uid）
-    设置方法为"chmod u+x filename"或"chmod 4777 filename"
+    设置方法为"chmod +s filename"或"chmod 4755 filename"
 
     注意： 拥有超级用户特权,意味着其有效用户ID必为0,其余两个用户ID随意!!!
 
@@ -106,3 +106,39 @@ struct stat {
     @作用   ： 删除一个现有的目录项（目录项并不特指目录文件），并将由pathname所引用文件的链接计数减1
     @规则   ： 只有当链接计数为0并且不再有进程打开了该文件，其文件内容才可被删除，
                这种性质通常被程序用来确保即使在该程序崩溃时，它所创建的临时文件也不会遗留下来(open创建临时文件之后，立即调用unlink)
+
+5. 例子(验证set-user-ID位)
+    #define _GNU_SOURCE
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include <unistd.h>
+
+    int main(int argc,char *argv[])
+    {
+        uid_t uid,euid,suid;
+        if(getresuid(&uid,&euid,&suid) < 0){
+            perror("getresuid");
+            return -1;
+        }
+        printf("uid = %d,euid = %d,suid = %d\n",uid,euid,suid);
+        return 0;
+    }
+    操作步骤:
+    [1]. 进入例子test.c所在目录,查看当前shell下的用户ID
+            $ id
+            uid=1000(code5) gid=1000(code5) 组=1000(code5) ...
+    [2]. 执行编译
+            $ gcc -Wall test.c
+    [3]. 编译成功后,在当前目录下生成对应的可执行文件a.out,执行该程序
+            $ ./a.out
+            uid = 1000,euid = 1000,suid = 1000       
+    [4]. 以root权限再次执行该程序
+            $ sudo ./a.out
+            uid = 0,euid = 0,suid = 0
+    [5]. 为可执行文件a.out设置set-user-ID位
+            $ chmod +s a.out
+    [6]. 以root权限再次执行该程序
+            $ sudo ./a.out
+            uid = 0,euid = 1000,suid = 1000
+    小结:可执行文件设置了set-user-ID位后,执行时进程的有效用户ID和保存的设置用户ID都会被设置为该可执行文件的所有者ID

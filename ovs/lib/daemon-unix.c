@@ -82,7 +82,7 @@ static int daemonize_fd = -1;
 static bool monitor;
 
 /* --user: Only root can use this option. Switch to new uid:gid after
- * initially running as root.  */
+ * initially running as root.  标识是否为程序启用一个新的用户(该标识只对root用户有效) */
 static bool switch_user = false;
 static uid_t uid;
 static gid_t gid;
@@ -443,6 +443,7 @@ monitor_daemon(pid_t daemon_pid)
 void
 daemonize_start(bool access_datapath)
 {
+    // 确保此时处于单线程模式
     assert_single_threaded();
     daemonize_fd = -1;
 
@@ -934,6 +935,7 @@ enlarge_buffer(char **buf, size_t *sizep)
 }
 
 /* Parse and sanity check user_spec.
+ * 解析传入的字符串,并设置程序的用户ID和组ID
  *
  * If successful, set global variables 'uid' and 'gid'
  * with the parsed results. Global variable 'user'

@@ -36,7 +36,7 @@
     [7]. SIGHUP
         两种情况下会产生该信号：
                 终端控制断开时，跟该终端相关连的进程(必然是会话首进程)会收到该信号(前提是该进程事先没有对其选择忽略);
-                会话首进程终止时，前台进程组中的每个进程都会收到该信号(前提同上)，至于后台进程是否收到跟shell的huponexit选项设置有关
+                会话首进程终止时，前台进程组中的每个进程都会收到该信号(前提同上)(例子见文末)，至于后台进程是否收到跟shell的huponexit选项设置有关
 
 3. 可靠信号和不可靠信号
     linux支持1～31号非实时信号(也就是不可靠信号)，以及SIGRTMIN(通常就是32)～SIGRTMAX(通常就是64)的实时信号(也就是可靠信号)，需要注意的是，不存在编号为0的信号
@@ -138,3 +138,47 @@
         @set    需要临时屏蔽的信号集
         @返回值 总是-1,同时errno设置为EINTR
 
+7. SIGHUP 例子
+    #include <stdio.h>
+    #include <string.h>
+    #include <unistd.h>
+    #include <signal.h>
+    #include <fcntl.h>
+
+    int fd = -1;
+    void hup_handler(int sig)
+    {
+        write(fd,"SIGHUP",7);
+        exit(0);
+    }
+
+    int main(int argc,char *argv[])
+    {
+        fd = open("./logfile",O_RDWR | O_CREAT);
+        if(fd < 0){
+            perror("open");
+            return -1;
+        }
+        signal(SIGHUP,hup_handler);
+        while(1) sleep(1);
+
+        return 0;
+    }
+    
+    操作步骤:
+    [1]. 进入例子test.c所在目录,执行编译
+            $ gcc -Wall test.c
+    [2]. 编译成功后,在当前目录下生成对应的可执行文件a.out,执行该程序
+            $ ./a.out
+    [3]. 程序运行后会进入睡眠状态(显然该程序属于前台进程组一员)
+    [4]. 当前终端被程序占用,所以另起一个终端,查询程序的进程信息
+            $ ps -axj
+                PPID   PID  PGID   SID TTY      TPGID STAT   UID   TIME COMMAND
+                2584  3166  3166  3166 pts/9     3648 Ss    1000   0:00 bash
+                3166  3648  3648  3166 pts/9     3648 S+    1000   0:00 ./a.out
+                ...
+    [5]. 由进程信息可知,该程序所属会话ID为3166,对应的会话首进程也就是所在终端,杀死该会话首进程
+            $kill -9 3166
+    [6]. 杀死后该程序所在终端被关闭,该程序收到会话首进程发来的 SIGHUP 信号,查看当前目录下的"logfile"文件
+            $cat logfile
+                SIGHUP

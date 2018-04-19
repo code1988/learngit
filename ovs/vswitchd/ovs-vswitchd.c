@@ -90,6 +90,7 @@ main(int argc, char *argv[])
     // 忽略SIGPIPE信号
     fatal_ignore_sigpipe();
 
+    // 启动守护进程
     daemonize_start(true);
 
     if (want_mlockall) {
