@@ -59,9 +59,9 @@ struct net;
  * overrides this enum for binary compat reasons.
  */
 enum sock_type {
-	SOCK_STREAM	= 1,
-	SOCK_DGRAM	= 2,        // 这种套接字类型意味着收到的是数据包(不带链路层头)
-	SOCK_RAW	= 3,
+	SOCK_STREAM	= 1,        // 这种套接字类型的主要特点是面向连接
+	SOCK_DGRAM	= 2,        // 这种套接字类型的主要特点是无连接。另外，如果配合AF_PACKET使用，意味着收到的报文不带l2层头
+	SOCK_RAW	= 3,        // 这种套接字类型主要配合AF_PACKET、AF_NETLINK使用(也可以配合AF_INET编写IP报文)
 	SOCK_RDM	= 4,
 	SOCK_SEQPACKET	= 5,
 	SOCK_DCCP	= 6,
