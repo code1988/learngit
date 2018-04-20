@@ -47,7 +47,7 @@ static const int fatal_signals[] = { SIGTERM, SIGINT, SIGHUP, SIGALRM };
 static const int fatal_signals[] = { SIGTERM };
 #endif
 
-/* Hooks to call upon catching a signal */
+/* Hooks to call upon catching a signal 定义了信号钩子结构 */
 struct hook {
     void (*hook_cb)(void *aux);
     void (*cancel_cb)(void *aux);
@@ -55,11 +55,11 @@ struct hook {
     bool run_at_exit;
 };
 #define MAX_HOOKS 32
-static struct hook hooks[MAX_HOOKS];
-static size_t n_hooks;
+static struct hook hooks[MAX_HOOKS];    // 定义了一张信号钩子表
+static size_t n_hooks;      // 记录了已经注册的信号钩子数量
 
 static int signal_fds[2];
-static volatile sig_atomic_t stored_sig_nr = SIG_ATOMIC_MAX;
+static volatile sig_atomic_t stored_sig_nr = SIG_ATOMIC_MAX;    // 记录了尚未处理的信号ID
 
 #ifdef _WIN32
 static HANDLE wevent;
@@ -360,14 +360,18 @@ do_unlink_files(void)
  * Following a fork, one of the resulting processes can call this function to
  * allow it to terminate without calling the hooks registered before calling
  * this function.  New hooks registered after calling this function will take
- * effect normally. */
+ * effect normally. 
+ * 将所有已经注册的信号注销
+ * */
 void
 fatal_signal_fork(void)
 {
     size_t i;
 
+    // 确保当前进程处于单线程模式
     assert_single_threaded();
 
+    // 遍历已经注册了的信号,执行注销钩子
     for (i = 0; i < n_hooks; i++) {
         struct hook *h = &hooks[i];
         if (h->cancel_cb) {
@@ -377,7 +381,9 @@ fatal_signal_fork(void)
     n_hooks = 0;
 
     /* Raise any signals that we have already received with the default
-     * handler. */
+     * handler. 
+     * 如果存在尚未处理的信号,则在这里手动再次触发
+     * */
     if (stored_sig_nr != SIG_ATOMIC_MAX) {
         raise(stored_sig_nr);
     }

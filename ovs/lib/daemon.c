@@ -58,7 +58,7 @@ daemonize(void)
  * which is $(prefix)/var/run by default.
  *
  * If 'name' is null, then program_name followed by ".pid" is used. 
- * 生成程序用于记录pid值的文件名
+ * 生成程序用于记录pid值的文件名,以便后续创建该pid文件
  * @name    用于记录pid值的文件名,传入NULL则按缺省规则生成文件名
  * */
 void
@@ -127,7 +127,9 @@ get_null_fd(void)
 
 /* Close standard file descriptors (except any that the client has requested we
  * leave open by calling daemon_save_fd()).  If we're started from e.g. an SSH
- * session, then this keeps us from holding that session open artificially. */
+ * session, then this keeps us from holding that session open artificially. 
+ * 关闭标准输入,标准输出,标准错误输出
+ * */
 void
 close_standard_fds(void)
 {

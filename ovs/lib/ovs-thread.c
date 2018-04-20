@@ -46,7 +46,9 @@ VLOG_DEFINE_THIS_MODULE(ovs_thread);
 
 /* If there is a reason that we cannot fork anymore (unless the fork will be
  * immediately followed by an exec), then this points to a string that
- * explains why. */
+ * explains why. 
+ * 用来记录不在允许程序执行fork的原因
+ * */
 static const char *must_not_fork;
 
 /* True if we created any threads beyond the main initial thread. */
@@ -491,7 +493,9 @@ xfork_at(const char *where)
 
 /* Notes that the process must not call fork() from now on, for the specified
  * 'reason'.  (The process may still fork() if it execs itself immediately
- * afterward.) */
+ * afterward.) 
+ * 设置程序至此之后不允许再执行fork操作
+ * */
 void
 forbid_forking(const char *reason)
 {

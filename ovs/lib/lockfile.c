@@ -164,7 +164,11 @@ lockfile_unlock(struct lockfile *lockfile)
 
 /* Marks all the currently locked lockfiles as no longer locked.  It makes
  * sense to call this function after fork(), because a child created by fork()
- * does not hold its parents' locks. */
+ * does not hold its parents' locks. 
+ * 对当前进程中所有已经上锁的锁进行解锁
+ *
+ * 备注:子进程紧接着fork后调用本函数,以确保不被父进程的锁状态影响
+ * */
 void
 lockfile_postfork(void)
 {

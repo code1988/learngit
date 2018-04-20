@@ -173,7 +173,7 @@ static char *argv_start OVS_GUARDED_BY(proctitle_mutex);
 /* Number of bytes of command-line arguments. 记录了命令行中的参数总长度 */
 static size_t argv_size OVS_GUARDED_BY(proctitle_mutex);
 
-/* Saved command-line arguments. */
+/* Saved command-line arguments. 保存了原命令行参数 */
 static char *saved_proctitle OVS_GUARDED_BY(proctitle_mutex);
 
 /* Prepares the process so that proctitle_set() can later succeed.
@@ -228,22 +228,28 @@ ovs_cmdl_proctitle_init(int argc, char **argv)
 }
 
 /* Changes the name of the process, as shown by "ps", to the program name
- * followed by 'format', which is formatted as if by printf(). */
+ * followed by 'format', which is formatted as if by printf(). 
+ * 修改当前进程的命令行参数
+ * */
 void
 ovs_cmdl_proctitle_set(const char *format, ...)
 {
     va_list args;
     int n;
 
+    // 命令行参数修改必须上锁
     ovs_mutex_lock(&proctitle_mutex);
+    // 首先检查原命令行参数是否有效
     if (!argv_start || argv_size < 8) {
         goto out;
     }
 
+    // 对原命令行参数进行转储
     if (!saved_proctitle) {
         saved_proctitle = xmemdup(argv_start, argv_size);
     }
 
+    // 生成新的命令行参数表
     va_start(args, format);
     n = snprintf(argv_start, argv_size, "%s: ", program_name);
     if (n < argv_size) {

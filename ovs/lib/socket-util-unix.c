@@ -49,6 +49,7 @@ VLOG_DEFINE_THIS_MODULE(socket_util_unix);
  * space for a null terminator. */
 #define MAX_UN_LEN (sizeof(((struct sockaddr_un *) 0)->sun_path) - 1)
 
+// ovs封装的pipe接口
 void
 xpipe(int fds[2])
 {

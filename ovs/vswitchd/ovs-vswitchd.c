@@ -93,8 +93,10 @@ main(int argc, char *argv[])
     // 启动守护进程
     daemonize_start(true);
 
+    // 如果配置了将进程所有内存锁在物理RAM中选项,则在这里进行设置
     if (want_mlockall) {
 #ifdef HAVE_MLOCKALL
+        // 对所有已经或者将要映射到当前进程地址空间的内存页上锁
         if (mlockall(MCL_CURRENT | MCL_FUTURE)) {
             VLOG_ERR("mlockall failed: %s", ovs_strerror(errno));
         }
@@ -103,6 +105,7 @@ main(int argc, char *argv[])
 #endif
     }
 
+    // 如果配置了ovs-vswitchd本地套接字设置,则创建本地套接字服务端并监听该套接字,该套接字将作为ovs-appctl控制ovs-vswitchd的通道
     retval = unixctl_server_create(unixctl_path, &unixctl);
     if (retval) {
         exit(EXIT_FAILURE);
@@ -149,7 +152,7 @@ main(int argc, char *argv[])
 }
 
 /* 解析ovs-vswitchd程序传入的命令行参数
- * @unixctl_pathp   用于存放ovs-vswitchd的本地套接字地址
+ * @unixctl_pathp   用于存放ovs-vswitchd的本地套接字服务端地址
  * @返回值  ovsdb-server的本地套接字服务端地址
  */
 static char *

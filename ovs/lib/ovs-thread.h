@@ -519,6 +519,7 @@ void assert_single_threaded_at(const char *where);
 
 #ifndef _WIN32
 pid_t xfork_at(const char *where);
+// ovs封装的fork接口
 #define xfork() xfork_at(OVS_SOURCE_LOCATOR)
 #endif
 

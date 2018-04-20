@@ -690,6 +690,11 @@ error:
     return -error;
 }
 
+/* 从指定fd中最多读取size长度数据
+ * @返回值  如果成功读取size长度数据则返回0；
+ *          如果写端关闭则返回EOF；
+ *          如果出错(非EINTR情况)则返回错误ID
+ */
 int
 read_fully(int fd, void *p_, size_t size, size_t *bytes_read)
 {

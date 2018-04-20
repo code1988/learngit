@@ -60,7 +60,7 @@ VLOG_DEFINE_THIS_MODULE(daemon_unix);
 bool detach;                    /* Was --detach specified? */
 static bool detached;           /* Have we already detached?  标识程序是否已经运行在后台 */
 
-/* --pidfile: Name of pidfile (null if none). */
+/* --pidfile: Name of pidfile (null if none).  指向程序的pid文件名 */
 char *pidfile;
 
 /* Device and inode of pidfile, so we can avoid reopening it. */
@@ -82,11 +82,11 @@ static int daemonize_fd = -1;
 static bool monitor;
 
 /* --user: Only root can use this option. Switch to new uid:gid after
- * initially running as root.  标识是否为程序启用一个新的用户(该标识只对root用户有效) */
+ * initially running as root.  标识是否需要为程序启用一个新的用户(该标识只对root用户有效) */
 static bool switch_user = false;
-static uid_t uid;
-static gid_t gid;
-static char *user = NULL;
+static uid_t uid;           // 记录了新的用户ID
+static gid_t gid;           // 记录了新的组ID
+static char *user = NULL;   // 指向新的用户名
 static void daemon_become_new_user__(bool access_datapath);
 
 static void check_already_running(void);
@@ -142,7 +142,9 @@ daemon_set_monitor(void)
 
 /* If a pidfile has been configured, creates it and stores the running
  * process's pid in it.  Ensures that the pidfile will be deleted when the
- * process exits. */
+ * process exits. 
+ * 创建程序的pid文件,并将程序的pid写入该文件
+ * */
 static void
 make_pidfile(void)
 {
@@ -225,16 +227,20 @@ make_pidfile(void)
  *
  * Post-fork, but before returning, this function calls a few other functions
  * that are generally useful if the child isn't planning to exec a new
- * process. */
+ * process. 
+ * 创建子进程,并且父子进程分别做了一些清理工作
+ * */
 static pid_t
 fork_and_clean_up(void)
 {
     pid_t pid = xfork();
     if (pid > 0) {
         /* Running in parent process. */
+        // 父进程将所有已经注册的信号注销
         fatal_signal_fork();
     } else if (!pid) {
         /* Running in child process. */
+        // 子进程中对所有已经上锁的锁进行解锁
         lockfile_postfork();
     }
     return pid;
@@ -253,7 +259,11 @@ fork_and_clean_up(void)
  * Returns 0 on success.  If something goes wrong and child process was not
  * able to signal its readiness by calling fork_notify_startup(), then this
  * function returns -1. However, even in case of failure it still sets child
- * process id in '*child_pid'. */
+ * process id in '*child_pid'. 
+ * 创建子进程,然后父进程等待子进程执行初始化完毕
+ * @fdp         子进程用来存放管道写端
+ * @child_pid   父/子进程用来存放pid
+ * */
 static int
 fork_and_wait_for_startup(int *fdp, pid_t *child_pid)
 {
@@ -261,23 +271,28 @@ fork_and_wait_for_startup(int *fdp, pid_t *child_pid)
     pid_t pid;
     int ret = 0;
 
+    // 创建管道
     xpipe(fds);
 
+    // 创建子进程,并且父子进程分别做了一些清理工作
     pid = fork_and_clean_up();
     if (pid > 0) {
         /* Running in parent process. */
         size_t bytes_read;
         char c;
 
+        // 父进程关闭管道写端,阻塞读读端
         close(fds[1]);
         if (read_fully(fds[0], &c, 1, &bytes_read) != 0) {
             int retval;
             int status;
 
+            // 返回非0意味着写端关闭或出错,需要在这等待子进程终止
             do {
                 retval = waitpid(pid, &status, 0);
             } while (retval == -1 && errno == EINTR);
 
+            // 分析子进程终止原因
             if (retval == pid) {
                 if (WIFEXITED(status) && WEXITSTATUS(status)) {
                     /* Child exited with an error.  Convey the same error
@@ -295,10 +310,12 @@ fork_and_wait_for_startup(int *fdp, pid_t *child_pid)
                 OVS_NOT_REACHED();
             }
         }
+        // 最后父进程关闭管道读端
         close(fds[0]);
         *fdp = -1;
     } else if (!pid) {
         /* Running in child process. */
+        // 子进程关闭管道读端
         close(fds[0]);
         *fdp = fds[1];
     }
@@ -344,6 +361,9 @@ should_restart(int status)
     return false;
 }
 
+/* 监控进程在这里进入死循环,开始监控ovs-vswitchd工作进程的运行状态
+ * @daemon_pid  子进程pid(即ovs-vswitchd工作进程)
+ */
 static void
 monitor_daemon(pid_t daemon_pid)
 {
@@ -353,6 +373,7 @@ monitor_daemon(pid_t daemon_pid)
     int crashes;
     bool child_ready = true;
 
+    // 设置监控进程的子程序名
     set_subprogram_name("monitor");
     status_msg = xstrdup("healthy");
     last_restart = TIME_MIN;
@@ -361,9 +382,11 @@ monitor_daemon(pid_t daemon_pid)
         int retval;
         int status;
 
+        // 修改监控进程的命令行参数
         ovs_cmdl_proctitle_set("monitoring pid %lu (%s)",
                                (unsigned long int) daemon_pid, status_msg);
 
+        // 监控进程阻塞在waitpid等待子进程终止
         if (child_ready) {
             int error;
             do {
@@ -447,50 +470,71 @@ daemonize_start(bool access_datapath)
     assert_single_threaded();
     daemonize_fd = -1;
 
+    // 如果配置了为程序设置新的uid和gid的选项,则在这里进行设置
     if (switch_user) {
         daemon_become_new_user__(access_datapath);
         switch_user = false;
     }
 
+    // 如果配置了守护进程选项,则在这里进行设置
     if (detach) {
         pid_t pid;
 
+        // 创建子进程,然后父进程等待子进程执行初始化完毕
         if (fork_and_wait_for_startup(&daemonize_fd, &pid)) {
             VLOG_FATAL("could not detach from foreground session");
         }
+        // 父进程确认子进程初始化完毕后退出
         if (pid > 0) {
             /* Running in parent process. */
             exit(0);
         }
 
         /* Running in daemon or monitor process. */
+        // 子进程创建一个新的会话
         setsid();
     }
 
+    /* 程序运行到这里分为2种情况:
+     *      一种是没有配置守护进程选项的原进程;
+     *      另一种是配置守护进程选项时的子进程
+     */
+
+    // 如果配置了监控进程选项,则当前进程将作为监控进程,以下是具体设置
     if (monitor) {
         int saved_daemonize_fd = daemonize_fd;
         pid_t daemon_pid;
 
+        // 监控进程创建子进程,然后等待其子进程执行初始化完毕
         if (fork_and_wait_for_startup(&daemonize_fd, &daemon_pid)) {
             VLOG_FATAL("could not initiate process monitoring");
         }
+        // 监控进程确认子进程初始化完毕后的处理流程
         if (daemon_pid > 0) {
             /* Running in monitor process. */
+            // 如果之前配置了守护进程,则监控进程在这里通知其父进程启动完毕(父进程收到通知后终止);如果没有配置守护进程,则略过这步 
             fork_notify_startup(saved_daemonize_fd);
+            // 监控进程关闭标准输入,标准输出,标准错误输出
             close_standard_fds();
+            // 监控进程在这里进入死循环,开始监控ovs-vswitchd工作进程的运行状态
             monitor_daemon(daemon_pid);
         }
         /* Running in daemon process. */
     }
 
+    // 程序运行到这里意味着当前进程就是ovs-vswitchd工作进程
+    // 设置程序至此之后不允许再执行fork操作
     forbid_forking("running in daemon process");
 
+    // 如果配置了pid文件选项,则在这里创建该pid文件
     if (pidfile) {
         make_pidfile();
     }
 
     /* Make sure that the unixctl commands for vlog get registered in a
-     * daemon, even before the first log message. */
+     * daemon, even before the first log message. 
+     * 初始化日志系统
+     * */
     vlog_init();
 }
 
@@ -801,7 +845,9 @@ daemon_become_new_user_unix(void)
 }
 
 /* Linux specific implementation of daemon_become_new_user()
- * using libcap-ng.   */
+ * using libcap-ng.   
+ * Linux平台上修改程序的用户ID和组ID
+ * */
 static void
 daemon_become_new_user_linux(bool access_datapath OVS_UNUSED)
 {
@@ -848,11 +894,14 @@ daemon_become_new_user_linux(bool access_datapath OVS_UNUSED)
 #endif
 }
 
+// 修改程序的用户ID和组ID
 static void
 daemon_become_new_user__(bool access_datapath)
 {
     /* If vlog file has been created, change its owner to the non-root user
-     * as specifed by the --user option.  */
+     * as specifed by the --user option.  
+     * 如果之前已经创建了日志文件,则同时修改该文件的所有者信息
+     * */
     vlog_change_owner_unix(uid, gid);
 
     if (LINUX) {
@@ -935,7 +984,7 @@ enlarge_buffer(char **buf, size_t *sizep)
 }
 
 /* Parse and sanity check user_spec.
- * 解析传入的字符串,并设置程序的用户ID和组ID
+ * 解析传入的字符串,获取程序的新用户和组,用于后续真正进行设置
  *
  * If successful, set global variables 'uid' and 'gid'
  * with the parsed results. Global variable 'user'
@@ -945,7 +994,9 @@ enlarge_buffer(char **buf, size_t *sizep)
  * Also set 'switch_to_new_user' to true, The actual
  * user switching is done as soon as daemonize_start()
  * is called. I/O access before calling daemonize_start()
- * will still be with root's credential.  */
+ * will still be with root's credential.  
+ * 备注: 只有root用户才允许修改程序的新用户ID和组ID
+ * */
 void
 daemon_set_new_user(const char *user_spec)
 {
@@ -956,6 +1007,7 @@ daemon_set_new_user(const char *user_spec)
     uid = getuid();
     gid = getgid();
 
+    // 确保只有root用户可以修改用户ID
     if (geteuid() || uid) {
         VLOG_FATAL("%s: only root can use --user option", pidfile);
     }

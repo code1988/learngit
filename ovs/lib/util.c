@@ -542,7 +542,9 @@ get_subprogram_name(void)
 
 /* Sets 'subprogram_name' as the name of the currently running thread or
  * process.  (This appears in log messages and may also be visible in system
- * process listings and debuggers.) */
+ * process listings and debuggers.) 
+ * 设置当前运行线程/进程的子程序名
+ * */
 void
 set_subprogram_name(const char *subprogram_name)
 {
