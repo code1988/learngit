@@ -103,6 +103,7 @@ static int ul_timer_free(lua_State *L)
 	return 1;
 }
 
+// 定义了操作定时器对象的 C<-->lua 接口映射表
 static const luaL_Reg timer_m[] = {
 	{ "set", ul_timer_set },
 	{ "cancel", ul_timer_free },
@@ -111,7 +112,7 @@ static const luaL_Reg timer_m[] = {
 
 /* 创建一个定时器
  * lua函数"uloop.timer"参数入栈情况：
- *          -2  指定了该定时器的超时回调(必须)
+ *          -2  指定了该定时器的lua超时回调(必须)
  *          -1  指定了该定时器的超时值(可选)
  */
 static int ul_timer(lua_State *L)
@@ -126,7 +127,7 @@ static int ul_timer(lua_State *L)
 		lua_pop(L, 1);
 	}
 
-    // 超时回调函数必须传入
+    // lua超时回调函数必须传入
 	if (!lua_isfunction(L, -1)) {
 		lua_pushstring(L, "invalid arg list");
 		lua_error(L);
@@ -137,20 +138,20 @@ static int ul_timer(lua_State *L)
     /* 将全局table中名为"__uloop_cb"的table压栈
      * 此时的栈：   
      *          -1 名为"_uloop_cb"的table
-     *          -2 超时回调
+     *          -2 lua超时回调
      */
 	lua_getglobal(L, "__uloop_cb");
-    /* 拷贝一份超时回调函数压栈
+    /* 拷贝一份lua超时回调函数压栈
      * 此时的栈：
-     *          -1 超时回调
+     *          -1 lua超时回调
      *          -2 "_uloop_cb"的值
-     *          -3 超时回调
+     *          -3 lua超时回调
      */
 	lua_pushvalue(L, -2);
-    /* 弹出栈顶的值（即超时回调），创建一个对该值的引用，并将其记录在名为"__uloop_cb"的table中
+    /* 在名为"__uloop_cb"的table中创建一个对超时回调的引用(这个过程中会弹出栈顶的超时回调)
      * 此时的栈：
      *          -1 "_uloop_cb"的值
-     *          -2 超时回调
+     *          -2 lua超时回调
      */
 	ref = luaL_ref(L, -2);
 
@@ -158,24 +159,24 @@ static int ul_timer(lua_State *L)
      * 此时的栈：
      *          -1 userdata(lua_uloop_timeout结构)
      *          -2 "_uloop_cb"的值
-     *          -3 超时回调
+     *          -3 lua超时回调
      */
 	tout = lua_newuserdata(L, sizeof(*tout));
     /* 创建一个新的空table(实际就是元表)并压栈，同时为该table预分配了2个元素的非数组空间
      * 此时的栈：
-     *          -1 元表
+     *          -1 空table(后续用作元表)
      *          -2 userdata(lua_uloop_timeout结构)
      *          -3 "_uloop_cb"的值
-     *          -4 超时回调
+     *          -4 lua超时回调
      */
 	lua_createtable(L, 0, 2);
     /* 拷贝一份刚创建的table压栈
      * 此时的栈：
      *          -1 空table
-     *          -2 元表
+     *          -2 空table(后续用作元表)
      *          -3 userdata(lua_uloop_timeout结构)
      *          -4 "_uloop_cb"的值
-     *          -5 超时回调
+     *          -5 lua超时回调
      */
 	lua_pushvalue(L, -1);
     /* 弹出栈顶的空table，赋给元表中的"__index"
@@ -183,7 +184,7 @@ static int ul_timer(lua_State *L)
      *          -1 元表(有成员__index = 空table)
      *          -2 userdata(lua_uloop_timeout结构)
      *          -3 "_uloop_cb"的值
-     *          -4 超时回调
+     *          -4 lua超时回调
      */
 	lua_setfield(L, -2, "__index");
     /* 将C函数ul_timer_free压栈
@@ -192,7 +193,7 @@ static int ul_timer(lua_State *L)
      *          -2 元表(有成员__index = 空table)
      *          -3 userdata(lua_uloop_timeout结构)
      *          -4 "_uloop_cb"的值
-     *          -5 超时回调
+     *          -5 lua超时回调
      */
 	lua_pushcfunction(L, ul_timer_free);
     /* 弹出栈顶的ul_timer_free，赋给元表中的"__gc"
@@ -200,7 +201,7 @@ static int ul_timer(lua_State *L)
      *          -1 元表(有成员__index = 空table;__gc = ul_timer_free)
      *          -2 userdata(lua_uloop_timeout结构)
      *          -3 "_uloop_cb"的值
-     *          -4 超时回调
+     *          -4 lua超时回调
      */
 	lua_setfield(L, -2, "__gc");
     /* 拷贝一份元表压栈
@@ -209,33 +210,33 @@ static int ul_timer(lua_State *L)
      *          -2 元表(有成员__index = 空table;__gc = ul_timer_free)
      *          -3 userdata(lua_uloop_timeout结构)
      *          -4 "_uloop_cb"的值
-     *          -5 超时回调
+     *          -5 lua超时回调
      */
 	lua_pushvalue(L, -1);
     /* 弹出栈顶的元表，然后将其设置为userdata的元表
      * 此时的栈：
      *          -1 元表(有成员__index = 空table;__gc = ul_timer_free)
-     *          -2 userdata(lua_uloop_timeout结构，有元表)
+     *          -2 userdata(lua_uloop_timeout结构，关联了元表)
      *          -3 "_uloop_cb"的值
-     *          -4 超时回调
+     *          -4 lua超时回调
      */
 	lua_setmetatable(L, -3);
-    /* 拷贝一份userdata压栈
+    /* 拷贝一份userdata对象压栈
      * 此时的栈：
-     *          -1 userdata(lua_uloop_timeout结构，有元表)
+     *          -1 userdata(lua_uloop_timeout结构，关联了元表)
      *          -2 元表(有成员__index = 空table;__gc = ul_timer_free)
-     *          -3 userdata(lua_uloop_timeout结构，有元表)
+     *          -3 userdata(lua_uloop_timeout结构，关联了元表)
      *          -4 "_uloop_cb"的值
-     *          -5 超时回调
+     *          -5 lua超时回调
      */
 	lua_pushvalue(L, -2);
-    /* 向userdata中注册timer_m包含的函数
+    /* 向userdata对象中注册定时器操作接口
      * 此时的栈：
-     *          -1 userdata(lua_uloop_timeout结构，有元表、有timer_m中的函数)
+     *          -1 userdata(lua_uloop_timeout结构，关联了元表、包含定时器操作接口)
      *          -2 元表(有成员__index = 空table;__gc = ul_timer_free)
-     *          -3 userdata(lua_uloop_timeout结构，有元表)
+     *          -3 userdata(lua_uloop_timeout结构，关联了元表)
      *          -4 "_uloop_cb"的值
-     *          -5 超时回调
+     *          -5 lua超时回调
      */
 	luaI_openlib(L, NULL, timer_m, 1);
 	lua_pushvalue(L, -2);

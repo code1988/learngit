@@ -452,6 +452,7 @@ const char *inet_tryaccept(p_socket server, int family, p_socket client,
 
 /*-------------------------------------------------------------------------*\
 * Tries to bind socket to (address, port)
+* 将套接字绑定到指定的inet地址上
 \*-------------------------------------------------------------------------*/
 const char *inet_trybind(p_socket ps, int *family, const char *address,
     const char *serv, struct addrinfo *bindhints) {
@@ -462,6 +463,7 @@ const char *inet_trybind(p_socket ps, int *family, const char *address,
     if (strcmp(address, "*") == 0) address = NULL;
     if (!serv) serv = "0";
     /* try resolving */
+    // 首先需要根据传入的ip地址和端口寻找到合适的inet地址
     err = socket_gaistrerror(getaddrinfo(address, serv, bindhints, &resolved));
     if (err) {
         if (resolved) freeaddrinfo(resolved);
@@ -477,6 +479,7 @@ const char *inet_trybind(p_socket ps, int *family, const char *address,
             current_family = iterator->ai_family;
         }
         /* try binding to local address */
+        // 只有找到合适的inet地址才会真正进行绑定
         err = socket_strerror(socket_bind(ps, (SA *) iterator->ai_addr,
             (socklen_t) iterator->ai_addrlen));
         /* keep trying unless bind succeeded */

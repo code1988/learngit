@@ -6,7 +6,7 @@ uloop.init()        -- 创建epoll对象
 
 local udp = socket.udp()    -- 创建一个udp对象
 udp:settimeout(0)
-udp:setsockname('*', 8080)
+udp:setsockname('*', 8080)  -- 将该udp对象绑定在8080端口上
 
 -- timer example 1
 local timer

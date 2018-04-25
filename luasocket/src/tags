@@ -53,11 +53,11 @@ INSTALL_SOCKET_LDIR	makefile	/^INSTALL_SOCKET_LDIR=$(INSTALL_TOP_LDIR)\/socket$/
 INSTALL_TOP	makefile	/^INSTALL_TOP=$(DESTDIR)$(prefix)$/;"	m
 INSTALL_TOP_CDIR	makefile	/^INSTALL_TOP_CDIR=$(INSTALL_TOP)\/$(CDIR)$/;"	m
 INSTALL_TOP_LDIR	makefile	/^INSTALL_TOP_LDIR=$(INSTALL_TOP)\/$(LDIR)$/;"	m
-IO_CLOSED	io.h	/^    IO_CLOSED = -2,     \/* the connection has been closed *\/$/;"	e	enum:__anon2
-IO_DONE	io.h	/^    IO_DONE = 0,        \/* operation completed successfully *\/$/;"	e	enum:__anon2
+IO_CLOSED	io.h	/^    IO_CLOSED = -2,     \/* the connection has been closed *\/$/;"	e	enum:__anon1
+IO_DONE	io.h	/^    IO_DONE = 0,        \/* operation completed successfully *\/$/;"	e	enum:__anon1
 IO_H	io.h	2;"	d
-IO_TIMEOUT	io.h	/^    IO_TIMEOUT = -1,    \/* operation timed out *\/$/;"	e	enum:__anon2
-IO_UNKNOWN	io.h	/^	IO_UNKNOWN = -3$/;"	e	enum:__anon2
+IO_TIMEOUT	io.h	/^    IO_TIMEOUT = -1,    \/* operation timed out *\/$/;"	e	enum:__anon1
+IO_UNKNOWN	io.h	/^	IO_UNKNOWN = -3$/;"	e	enum:__anon1
 IPV6_ADD_MEMBERSHIP	usocket.h	42;"	d
 IPV6_DROP_MEMBERSHIP	usocket.h	49;"	d
 IPV6_V6ONLY	wsocket.h	20;"	d
@@ -158,10 +158,10 @@ PIE_TIMEDOUT	pierror.h	15;"	d
 PLAT	makefile	/^PLAT?=linux$/;"	m
 PLATFORM_win32	makefile	/^PLATFORM_win32?=Release$/;"	m
 PLATS	makefile	/^PLATS= macosx linux win32 mingw solaris$/;"	m
-QP_CR	mime.c	/^enum {QP_PLAIN, QP_QUOTED, QP_CR, QP_IF_LAST};$/;"	e	enum:__anon1	file:
-QP_IF_LAST	mime.c	/^enum {QP_PLAIN, QP_QUOTED, QP_CR, QP_IF_LAST};$/;"	e	enum:__anon1	file:
-QP_PLAIN	mime.c	/^enum {QP_PLAIN, QP_QUOTED, QP_CR, QP_IF_LAST};$/;"	e	enum:__anon1	file:
-QP_QUOTED	mime.c	/^enum {QP_PLAIN, QP_QUOTED, QP_CR, QP_IF_LAST};$/;"	e	enum:__anon1	file:
+QP_CR	mime.c	/^enum {QP_PLAIN, QP_QUOTED, QP_CR, QP_IF_LAST};$/;"	e	enum:__anon2	file:
+QP_IF_LAST	mime.c	/^enum {QP_PLAIN, QP_QUOTED, QP_CR, QP_IF_LAST};$/;"	e	enum:__anon2	file:
+QP_PLAIN	mime.c	/^enum {QP_PLAIN, QP_QUOTED, QP_CR, QP_IF_LAST};$/;"	e	enum:__anon2	file:
+QP_QUOTED	mime.c	/^enum {QP_PLAIN, QP_QUOTED, QP_CR, QP_IF_LAST};$/;"	e	enum:__anon2	file:
 SA	socket.h	/^typedef struct sockaddr SA;$/;"	t	typeref:struct:sockaddr
 SELECT_H	select.h	2;"	d
 SERIAL_OBJS	makefile	/^SERIAL_OBJS=\\$/;"	m

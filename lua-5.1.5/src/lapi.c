@@ -555,7 +555,7 @@ LUA_API const char *lua_pushfstring (lua_State *L, const char *fmt, ...) {
 
 /* 基于C函数fn创建一个新的C闭包,最后将其压栈
  * @fn  - 符合lua_CFunction格式的C函数
- * @n   - upvalue的数量
+ * @n   - upvalue的数量,为0表示不需要创建闭包
  *
  * 备注：创建C闭包的步骤：
  *      [1].将需要关联的任意数量upvalue依次压栈
@@ -828,7 +828,7 @@ LUA_API void lua_rawseti (lua_State *L, int idx, int n) {
   lua_unlock(L);
 }
 
-/* 将栈顶的table弹出，然后将其设置为指定索引objindex的值的元表
+/* 将栈顶的table弹出，然后将其设置为指定索引objindex处的lua对象的元表
  */
 LUA_API int lua_setmetatable (lua_State *L, int objindex) {
   TValue *obj;

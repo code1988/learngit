@@ -239,9 +239,10 @@ LUALIB_API int luaL_callmeta (lua_State *L, int obj, const char *event) {
   return 1;
 }
 
-/* 用于注册模块内的所有C函数到lua中一个名为libname的值中(通常这些C函数的集合就是一个库)
+/* 用于注册模块内的所有C函数到lua中一个名为libname的lua对象中(通常这些C函数的集合就是一个库)
  *
- * @libname - 模块名/库名，NULL时表示将表l中的所有C函数注册到栈顶的值中;非NULL时表示将首先创建一个名为libname的全局table，然后将表l中的所有C函数注册到该table中
+ * @libname - 模块名/库名，NULL时表示将表l中的所有C函数注册到栈顶的lua对象中(通常是一个table);
+ *            非NULL时表示将首先创建一个名为libname的全局table，然后将表l中的所有C函数注册到该table中
  * @l       - 需要注册的C函数表
  *
  * 备注: 由于通过这种方式注册的C函数会成为lua全局环境中的变量，这种污染全局环境的方式并不合理
@@ -249,6 +250,7 @@ LUALIB_API int luaL_callmeta (lua_State *L, int obj, const char *event) {
  */
 LUALIB_API void (luaL_register) (lua_State *L, const char *libname,
                                 const luaL_Reg *l) {
+    // 显然这些C函数都不会以闭包的形式注册到lua中
   luaI_openlib(L, libname, l, 0);
 }
 
@@ -259,14 +261,15 @@ static int libsize (const luaL_Reg *l) {
   return size;
 }
 
-/* 创建一个名为libname的table，并将模块内的C函数注册到该table中,本函数返回后该table仍旧位于栈顶
+/* 将表l中的C函数注册到名为libname的lua对象中(通常是一个table),本函数返回后位于栈顶的是该lua对象
+ * @nup 每个C函数关联的upvalue的数量，0表示不以闭包的形式注册
  *
  * 备注:本函数别名为luaL_openlib
  *      本函数5.1.5之后的版本中被废除
  */
 LUALIB_API void luaI_openlib (lua_State *L, const char *libname,
                               const luaL_Reg *l, int nup) {
-  // 根据传入的libname创建/复用一个table
+  // 如果传入的libname有效，则首先创建一个对应的lua对象
   if (libname) {
     int size = libsize(l);
     /* check whether lib already exists */
@@ -284,17 +287,24 @@ LUALIB_API void luaI_openlib (lua_State *L, const char *libname,
     lua_insert(L, -(nup+1));  /* move library table to below upvalues */
   }
 
-  // 为每个C函数创建对应的C闭包
+  /* 程序运行到这里时的栈
+   *        -1          upvalue
+   *        ...         upvalue
+   *        -nup        upvalue
+   *        -(nup + 1)  lua对象
+   */
+  // 依次将每个C函数注册到该lua对象中
   for (; l->name; l++) 
   {
     int i;
+    // 依次拷贝一份upvalue到栈顶
     for (i=0; i<nup; i++)  /* copy upvalues to the top */
       lua_pushvalue(L, -nup);
 
     // 创建对应的C闭包，并把C闭包压栈
     lua_pushcclosure(L, l->func, nup);
 
-    // 给table中的元素l->name赋值
+    // 将栈顶的C闭包赋给该lua对象中的元素l->name
     lua_setfield(L, -(nup+2), l->name);
   }
   lua_pop(L, nup);  /* remove upvalues */
@@ -510,9 +520,10 @@ LUALIB_API void luaL_buffinit (lua_State *L, luaL_Buffer *B) {
 
 /* }====================================================== */
 
-/* "引用系统"的成员函数，本函数用于创建一个指向lua值的整数key(即"引用")
+/* "引用系统"的成员函数，本函数用于创建一个指向lua对象的整数key(即"引用")，
+ * 这个key用于在索引t处的table中唯一标识该lua对象
  *
- * 备注：本函数首先从栈中弹出一个值，然后用一个新分配的整数key来将这个值保存到索引t处的table中，最后返回这个整数key.
+ * 备注：本函数首先从栈顶弹出一个lua对象，然后用一个新分配的整数key来将这个值保存到索引t处的table中，最后返回这个整数key.
  *       C中无法通过指针来指向lua对象，只能通过这种引用的方式
  */
 LUALIB_API int luaL_ref (lua_State *L, int t) {
@@ -537,9 +548,9 @@ LUALIB_API int luaL_ref (lua_State *L, int t) {
   return ref;
 }
 
-/* "引用系统"的成员函数，本函数用于释放一个C变量中保存的指向lua值的引用
+/* "引用系统"的成员函数，本函数用于释放一个C变量中保存的指向lua对象的引用
  * @t   - 索引号t处的table中存放了该引用的lua值
- * @ref - 需要被释放的"引用
+ * @ref - 需要被释放的lua对象的"引用"
  */
 LUALIB_API void luaL_unref (lua_State *L, int t, int ref) {
   if (ref >= 0) {

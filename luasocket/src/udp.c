@@ -377,6 +377,7 @@ static int meth_gettimeout(lua_State *L) {
 
 /*-------------------------------------------------------------------------*\
 * Turns a master udp object into a client object.
+* 将udp套接字跟另一个udp套接字相连
 \*-------------------------------------------------------------------------*/
 static int meth_setpeername(lua_State *L) {
     p_udp udp = (p_udp) auxiliar_checkgroup(L, "udp{any}", 1);
@@ -421,6 +422,7 @@ static int meth_close(lua_State *L) {
 
 /*-------------------------------------------------------------------------*\
 * Turns a master object into a server object
+* 为udp套接字绑定一个指定的本地地址
 \*-------------------------------------------------------------------------*/
 static int meth_setsockname(lua_State *L) {
     p_udp udp = (p_udp) auxiliar_checkclass(L, "udp{unconnected}", 1);
@@ -432,6 +434,7 @@ static int meth_setsockname(lua_State *L) {
     bindhints.ai_socktype = SOCK_DGRAM;
     bindhints.ai_family = udp->family;
     bindhints.ai_flags = AI_PASSIVE;
+    // 将udp套接字绑定到指定地址
     err = inet_trybind(&udp->sock, &udp->family, address, port, &bindhints);
     if (err) {
         lua_pushnil(L);
