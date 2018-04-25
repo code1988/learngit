@@ -10,7 +10,7 @@ udp:setsockname('*', 8080)  -- 将该udp对象绑定在8080端口上
 
 -- timer example 1
 local timer
-function t()
+function t()                -- 定义一个定时器回调函数(间隔1000ms)
 	print("1000 ms timer run");
 	timer:set(1000)
 end
