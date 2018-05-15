@@ -20,8 +20,8 @@
 #include <linux/uaccess.h>
 #include <trace/events/sched.h>
 
-static DEFINE_SPINLOCK(kthread_create_lock);
-static LIST_HEAD(kthread_create_list);
+static DEFINE_SPINLOCK(kthread_create_lock);// 用于维护kthread_create_list链表的自旋锁
+static LIST_HEAD(kthread_create_list);      // 这张全局链表维护了kthreadd之后所有的内核线程
 struct task_struct *kthreadd_task;
 
 struct kthread_create_info
@@ -499,6 +499,8 @@ int kthread_stop(struct task_struct *k)
 }
 EXPORT_SYMBOL(kthread_stop);
 
+/* 内核创建的第二个线程,它的主要任务是管理和调度其他的内核线程
+ */
 int kthreadd(void *unused)
 {
 	struct task_struct *tsk = current;
@@ -517,6 +519,7 @@ int kthreadd(void *unused)
 			schedule();
 		__set_current_state(TASK_RUNNING);
 
+        // 确保对kthread_create_list的操作处于kthread_create_lock的保护范围内
 		spin_lock(&kthread_create_lock);
 		while (!list_empty(&kthread_create_list)) {
 			struct kthread_create_info *create;

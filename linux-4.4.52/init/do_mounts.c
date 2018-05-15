@@ -545,6 +545,7 @@ void __init mount_root(void)
 
 /*
  * Prepare the namespace - decide what/where to mount, load ramdisks, etc.
+ * 尝试挂载一个根文件系统
  */
 void __init prepare_namespace(void)
 {

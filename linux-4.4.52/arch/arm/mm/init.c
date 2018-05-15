@@ -748,6 +748,7 @@ void free_tcmmem(void)
 #endif
 }
 
+// 释放__init_begin到 __init_end之间的内存
 void free_initmem(void)
 {
 	fix_kernmem_perms();

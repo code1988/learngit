@@ -75,6 +75,7 @@ extern void cleanup_module(void);
 #ifndef MODULE
 /**
  * module_init() - driver initialization entry point
+ * 每个模块驱动初始化入口点，当模块内建在内核代码中时则会在do_initcalls时被调用
  * @x: function to be run at kernel boot time or module insertion
  *
  * module_init() will either be called during do_initcalls() (if
@@ -85,6 +86,7 @@ extern void cleanup_module(void);
 
 /**
  * module_exit() - driver exit entry point
+ * 每个模块驱动卸载时入口点，内建在内核中的模块实际无效
  * @x: function to be run when driver is removed
  *
  * module_exit() will wrap the driver clean-up code
@@ -103,6 +105,7 @@ extern void cleanup_module(void);
  * a driver may be needed early if built in, and does not
  * matter when built as a loadable module. Like bus
  * snooping debug drivers.
+ * 可加载模块中理论上不需要用到这些initcall
  */
 #define early_initcall(fn)		module_init(fn)
 #define core_initcall(fn)		module_init(fn)
@@ -123,13 +126,17 @@ extern void cleanup_module(void);
 #define console_initcall(fn)		module_init(fn)
 #define security_initcall(fn)		module_init(fn)
 
-/* Each module must use one module_init(). */
+/* Each module must use one module_init(). 
+ * 每个模块驱动初始化入口点，可加载模块则会在加载时被调用
+ * */
 #define module_init(initfn)					\
 	static inline initcall_t __inittest(void)		\
 	{ return initfn; }					\
 	int init_module(void) __attribute__((alias(#initfn)));
 
-/* This is only required if you want to be unloadable. */
+/* This is only required if you want to be unloadable. 
+ * 每个模块驱动卸载时入口点，只对可加载模块有效
+ * */
 #define module_exit(exitfn)					\
 	static inline exitcall_t __exittest(void)		\
 	{ return exitfn; }					\

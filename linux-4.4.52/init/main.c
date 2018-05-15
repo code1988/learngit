@@ -106,7 +106,7 @@ static inline void mark_rodata_ro(void) { }
  */
 bool early_boot_irqs_disabled __read_mostly;
 
-enum system_states system_state __read_mostly;
+enum system_states system_state __read_mostly;  // 记录了整个系统的运行状态
 EXPORT_SYMBOL(system_state);
 
 /*
@@ -129,7 +129,7 @@ static char *static_command_line;
 static char *initcall_command_line;
 
 static char *execute_command;
-static char *ramdisk_execute_command;
+static char *ramdisk_execute_command;   // 记录了早期用户空间的init程序(默认是/init)
 
 /*
  * Used to generate warnings if static_key manipulation functions are used
@@ -377,38 +377,56 @@ static void __init setup_command_line(char *command_line)
  * between the root thread and the init thread may cause start_kernel to
  * be reaped by free_initmem before the root thread has proceeded to
  * cpu_idle.
+ * 我们需要在一个non-__init函数中完成最后的初始化,否则root线程和init线程之间的竟态条件
+ * 可能会导致这么一种后果:
+ *          在root线程进入cpu_idle之前,start_kernel的内存空间就已经被free_initmem收回了
  *
  * gcc-3.4 accidentally inlines this function, so use noinline.
  */
 
+// 这个变量用于通知kernel_init线程kthreadd线程创建完毕
 static __initdata DECLARE_COMPLETION(kthreadd_done);
 
+/* 完成剩下的初始化
+ * 备注: 这个函数其实包含了很多内容,主要是创建了2个内核线程kernel_init和kthreadd
+ */
 static noinline void __init_refok rest_init(void)
 {
 	int pid;
 
+    // 启动内核的rcu锁机制
 	rcu_scheduler_starting();
 	smpboot_thread_init();
 	/*
 	 * We need to spawn init first so that it obtains pid 1, however
 	 * the init task will end up wanting to create kthreads, which, if
 	 * we schedule it before we create kthreadd, will OOPS.
+     * 必须先创建kernel_init线程,这样确保了它的pid值为1.
+     * 当然kernel_init线程将会挂起等待创建kthreadd线程,如果在创建kthreadd线程前调度它,就会导致oops
 	 */
 	kernel_thread(kernel_init, NULL, CLONE_FS);
+    // 设置NUMA系统默认的内存访问策略
 	numa_default_policy();
+    // 创建用于管理和调度其他内核线程的kthreadd线程
 	pid = kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);
+    // 获取kthreadd线程信息,获取完成说明kthreadd已经创建完毕
 	rcu_read_lock();
 	kthreadd_task = find_task_by_pid_ns(pid, &init_pid_ns);
 	rcu_read_unlock();
+    // 通知kernel_init线程: kthreadd线程创建完毕
 	complete(&kthreadd_done);
 
 	/*
 	 * The boot idle thread must execute schedule()
 	 * at least once to get things moving:
 	 */
+    // 设置当前进程为idle进程类
 	init_idle_bootup_task(current);
+    // 执行调度
 	schedule_preempt_disabled();
-	/* Call into cpu_idle with preempt disabled */
+	/* Call into cpu_idle with preempt disabled 
+     * 在抢占禁用期间调用cpu_idle
+     * */
 	cpu_startup_entry(CPUHP_ONLINE);
 }
 
@@ -834,7 +852,9 @@ static initcall_t *initcall_levels[] __initdata = {
 	__initcall_end,
 };
 
-/* Keep these in sync with initcalls in include/linux/init.h */
+/* Keep these in sync with initcalls in include/linux/init.h 
+ * 这里的8个名字依次对应.initcall的8个优先级
+ * */
 static char *initcall_level_names[] __initdata = {
 	"early",
 	"core",
@@ -846,6 +866,7 @@ static char *initcall_level_names[] __initdata = {
 	"late",
 };
 
+// 执行.initcall段中优先级为level区域注册的函数指针
 static void __init do_initcall_level(int level)
 {
 	initcall_t *fn;
@@ -857,10 +878,12 @@ static void __init do_initcall_level(int level)
 		   level, level,
 		   NULL, &repair_env_string);
 
+    // 遍历level优先级区域注册的所有函数指针并执行
 	for (fn = initcall_levels[level]; fn < initcall_levels[level+1]; fn++)
 		do_one_initcall(*fn);
 }
 
+// 按优先级顺序执行.initcall段中注册的函数指针，完成板卡上所有设备的初始化
 static void __init do_initcalls(void)
 {
 	int level;
@@ -869,10 +892,11 @@ static void __init do_initcalls(void)
 		do_initcall_level(level);
 }
 
-/*
+/* 正式开始对板卡上的设备执行初始化操作
  * Ok, the machine is now initialized. None of the devices
  * have been touched yet, but the CPU subsystem is up and
  * running, and memory and process management works.
+ * 在此之前，CPU、内存、进程调度已经初始化完毕并开始运行，运行板卡具体初始化的环境已经具备
  *
  * Now we can finally start doing some real work..
  */
@@ -884,6 +908,7 @@ static void __init do_basic_setup(void)
 	init_irq_proc();
 	do_ctors();
 	usermodehelper_enable();
+    // 执行.initcall段中注册的函数指针，完成板卡上所有设备的初始化
 	do_initcalls();
 	random_int_secret_init();
 }
@@ -931,20 +956,29 @@ static int try_to_run_init_process(const char *init_filename)
 
 static noinline void __init kernel_init_freeable(void);
 
+/* 内核第一个创建的线程,它最后将成为用户态的第一个进程,整个系统的初始化流程也就在这里从内核态切换到用户态
+ */
 static int __ref kernel_init(void *unused)
 {
 	int ret;
 
+    // 这里包含了板卡上所有设备的初始化,以及文件系统挂载等
 	kernel_init_freeable();
 	/* need to finish all async __init code before freeing the memory */
 	async_synchronize_full();
+    // 释放__init_begin到 __init_end之间的内存
 	free_initmem();
 	mark_rodata_ro();
+    // 系统进入running状态
 	system_state = SYSTEM_RUNNING;
+    // 再次设置NUMA系统默认的内存访问策略
 	numa_default_policy();
 
 	flush_delayed_fput();
 
+    // 程序运行到这里意味着内核初始化流程已经全部执行完毕,下面就是加载init程序,正式切换到用户空间
+    
+    // 如果存在用户设置的init程序,则在这里执行它进入用户空间
 	if (ramdisk_execute_command) {
 		ret = run_init_process(ramdisk_execute_command);
 		if (!ret)
@@ -966,6 +1000,7 @@ static int __ref kernel_init(void *unused)
 		panic("Requested init %s failed (error %d).",
 		      execute_command, ret);
 	}
+    // 尝试打开以下这些文件，只要找到任何一个，就会去执行它进入用户空间
 	if (!try_to_run_init_process("/sbin/init") ||
 	    !try_to_run_init_process("/etc/init") ||
 	    !try_to_run_init_process("/bin/init") ||
@@ -976,10 +1011,13 @@ static int __ref kernel_init(void *unused)
 	      "See Linux Documentation/init.txt for guidance.");
 }
 
+/* 这里包含了板卡上所有设备的初始化,以及文件系统挂载
+ */
 static noinline void __init kernel_init_freeable(void)
 {
 	/*
 	 * Wait until kthreadd is all set-up.
+     * kernel_init线程首先会在这里挂起以等待kthreadd线程创建完毕
 	 */
 	wait_for_completion(&kthreadd_done);
 
@@ -988,15 +1026,19 @@ static noinline void __init kernel_init_freeable(void)
 
 	/*
 	 * init can allocate pages on any node
+     * kernel_init线程可以在任何节点分配到内存页
 	 */
 	set_mems_allowed(node_states[N_MEMORY]);
 	/*
 	 * init can run on any cpu.
+     * kernel_init进程可以运行在任一个cpu上 
 	 */
 	set_cpus_allowed_ptr(current, cpu_all_mask);
 
+    // 获取kernel_init进程的pid信息
 	cad_pid = task_pid(current);
 
+    // 以下这部分是在激活所有cpu,并开始SMP系统的调度
 	smp_prepare_cpus(setup_max_cpus);
 
 	do_pre_smp_initcalls();
@@ -1007,23 +1049,30 @@ static noinline void __init kernel_init_freeable(void)
 
 	page_alloc_init_late();
 
+    // 至此,板卡架构相关的部分已经初始化完毕,这里正式开始对板卡上的设备执行初始化操作
 	do_basic_setup();
 
-	/* Open the /dev/console on the rootfs, this should never fail */
+	/* Open the /dev/console on the rootfs, this should never fail 
+     * 打开rootfs中的/dev/console
+     * 显然这是kernel_init进程打开的第一个文件(fd为0),它也就成为了标准输入
+     * */
 	if (sys_open((const char __user *) "/dev/console", O_RDWR, 0) < 0)
 		pr_err("Warning: unable to open an initial console.\n");
 
+    // dup两次标准输入描述符,分别作为标准输出(fd为1)和标准出错(fd为2)
 	(void) sys_dup(0);
 	(void) sys_dup(0);
 	/*
 	 * check if there is an early userspace init.  If yes, let it do all
 	 * the work
+     * 检查是否存在早期用户空间的init程序(默认是/init)
 	 */
 
 	if (!ramdisk_execute_command)
 		ramdisk_execute_command = "/init";
 
 	if (sys_access((const char __user *) ramdisk_execute_command, 0) != 0) {
+        // 如果不存在则在这里尝试挂载其他的根文件系统
 		ramdisk_execute_command = NULL;
 		prepare_namespace();
 	}
@@ -1035,8 +1084,10 @@ static noinline void __init kernel_init_freeable(void)
 	 *
 	 * rootfs is available now, try loading the public keys
 	 * and default modules
+     * 程序运行到这里意味着根文件系统已经挂载
 	 */
 
 	integrity_load_keys();
+    // 加载缺省的模块
 	load_default_modules();
 }

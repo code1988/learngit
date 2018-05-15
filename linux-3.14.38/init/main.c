@@ -778,7 +778,7 @@ static void __init do_initcall_level(int level)
 		do_one_initcall(*fn);
 }
 
-// 按优先级顺序执行.initcall段中注册的函数指针，包含了具体板卡的初始化
+// 按优先级顺序执行.initcall段中注册的函数指针，完成板卡上所有设备的初始化
 static void __init do_initcalls(void)
 {
 	int level;
@@ -787,11 +787,11 @@ static void __init do_initcalls(void)
 		do_initcall_level(level);
 }
 
-/* 执行具体的板卡初始化操作
+/* 正式开始对板卡上的设备执行初始化操作
  * Ok, the machine is now initialized. None of the devices
  * have been touched yet, but the CPU subsystem is up and
  * running, and memory and process management works.
- * 在此之前，CPU、内存、进程调度已经初始化完毕并开始运行，运行板卡具体初始化的环境已经具备
+ * 在此之前，CPU、内存、进程调度已经初始化完毕并开始运行，运行板卡设备初始化的环境已经具备
  *
  * Now we can finally start doing some real work..
  */
@@ -804,7 +804,7 @@ static void __init do_basic_setup(void)
 	init_irq_proc();
 	do_ctors();
 	usermodehelper_enable();
-    // 执行.initcall段中注册的函数指针，包含了具体板卡的初始化
+    // 执行.initcall段中注册的函数指针，完成板卡上所有设备的初始化
 	do_initcalls();
 	random_int_secret_init();
 }
@@ -857,7 +857,7 @@ static int __ref kernel_init(void *unused)
 {
 	int ret;
 
-    // 在创建init进程前做一些准备操作
+    // 在切换到用户态之前做一些准备操作
 	kernel_init_freeable();
 	/* need to finish all async __init code before freeing the memory */
 	async_synchronize_full();
@@ -931,7 +931,7 @@ static noinline void __init kernel_init_freeable(void)
 	smp_init();
 	sched_init_smp();
 
-    // 执行具体的板卡初始化操作
+    // 正式开始对板卡上的设备执行初始化操作
 	do_basic_setup();
 
 	/* Open the /dev/console on the rootfs, this should never fail */

@@ -1261,6 +1261,10 @@ out:
 	return ret;
 }
 
+/* 为指定进程设置cpu亲和性
+ * @p           指向要设置的进程
+ * @new_mask    cpu掩码
+ */
 int set_cpus_allowed_ptr(struct task_struct *p, const struct cpumask *new_mask)
 {
 	return __set_cpus_allowed_ptr(p, new_mask, false);
@@ -3259,7 +3263,7 @@ asmlinkage __visible void __sched schedule_user(void)
 
 /**
  * schedule_preempt_disabled - called with preemption disabled
- *
+ * 执行调度,调度期间抢占会被使能,调度结束后抢占又会被禁止
  * Returns with preemption disabled. Note: preempt_count must be 1
  */
 void __sched schedule_preempt_disabled(void)
@@ -4997,6 +5001,7 @@ void show_state_filter(unsigned long state_filter)
 		debug_show_all_locks();
 }
 
+// 设置指定进程为idle进程类
 void init_idle_bootup_task(struct task_struct *idle)
 {
 	idle->sched_class = &idle_sched_class;

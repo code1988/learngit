@@ -1870,6 +1870,7 @@ static inline bool should_numa_migrate_memory(struct task_struct *p,
 }
 #endif
 
+// 获取指定进程的pid信息
 static inline struct pid *task_pid(struct task_struct *task)
 {
 	return task->pids[PIDTYPE_PID].pid;

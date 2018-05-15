@@ -35,6 +35,7 @@ struct completion {
 
 /**
  * DECLARE_COMPLETION - declare and initialize a completion structure
+ * 创建并初始化一个completion结构变量
  * @work:  identifier for the completion structure
  *
  * This macro declares and initializes a completion structure. Generally used

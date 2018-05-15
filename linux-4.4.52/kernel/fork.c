@@ -1801,6 +1801,7 @@ long do_fork(unsigned long clone_flags,
 
 /*
  * Create a kernel thread.
+ * 创建一个内核线程
  */
 pid_t kernel_thread(int (*fn)(void *), void *arg, unsigned long flags)
 {

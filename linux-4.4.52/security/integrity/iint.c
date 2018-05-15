@@ -247,6 +247,7 @@ out:
 
 /*
  * integrity_load_keys - load integrity keys hook
+ * 导入key检查完整性?
  *
  * Hooks is called from init/main.c:kernel_init_freeable()
  * when rootfs is ready
