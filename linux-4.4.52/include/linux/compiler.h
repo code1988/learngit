@@ -410,7 +410,7 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
 
 /* Simple shorthand for a section definition */
 #ifndef __section
-# define __section(S) __attribute__ ((__section__(#S)))
+# define __section(S) __attribute__ ((__section__(#S)))     // 将修饰的函数或数据放入名为"S"的段
 #endif
 
 #ifndef __visible

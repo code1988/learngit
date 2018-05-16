@@ -40,16 +40,12 @@
 /* These are for everybody (although not all archs will actually
    discard it in modules) 
 
-   ".init.text"段是".text"段中的一块细分区域
-   ".init.data"段是".data"段中的一块细分区域
-   ".init.rodata"段是".rodata"段中的一块细分区域
-   ".exit.data"段是".data"段中的一块细分区域
    ".init"或".exit"前缀的段只会在启动阶段被调用到，当初始化结束后就会释放这部分内存
 */
-#define __init		__section(.init.text) __cold notrace
-#define __initdata	__section(.init.data)
-#define __initconst	__constsection(.init.rodata)
-#define __exitdata	__section(.exit.data)
+#define __init		__section(.init.text) __cold notrace    // 将__init修饰的函数放入名为".init.text"的段(".text"段中的一块细分区域)
+#define __initdata	__section(.init.data)                   // 将__initdata修饰的数据放入名为".init.data"的段(".data"段中的一块细分区域)
+#define __initconst	__constsection(.init.rodata)            // 将__initconst修饰的数据放入名为".init.rodata"的段(".rodata"段中的一块细分区域)
+#define __exitdata	__section(.exit.data)                   // 将__exitdata修饰的数据放入名为".exit.data"的段(".data"段中的一块细分区域)
 #define __exit_call	__used __section(.exitcall.exit)
 
 /*
