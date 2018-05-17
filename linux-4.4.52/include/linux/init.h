@@ -40,12 +40,12 @@
 /* These are for everybody (although not all archs will actually
    discard it in modules) 
 
-   ".init"或".exit"前缀的段只会在启动阶段被调用到，当初始化结束后就会释放这部分内存
+   ".init"或".exit"前缀的段都属于".init"段,只会在启动阶段被调用到，当初始化结束后就会释放这部分内存
 */
-#define __init		__section(.init.text) __cold notrace    // 将__init修饰的函数放入名为".init.text"的段(".text"段中的一块细分区域)
-#define __initdata	__section(.init.data)                   // 将__initdata修饰的数据放入名为".init.data"的段(".data"段中的一块细分区域)
-#define __initconst	__constsection(.init.rodata)            // 将__initconst修饰的数据放入名为".init.rodata"的段(".rodata"段中的一块细分区域)
-#define __exitdata	__section(.exit.data)                   // 将__exitdata修饰的数据放入名为".exit.data"的段(".data"段中的一块细分区域)
+#define __init		__section(.init.text) __cold notrace    // 将__init修饰的函数放入名为".init.text"的段(".init"段中的一块细分区域)
+#define __initdata	__section(.init.data)                   // 将__initdata修饰的数据放入名为".init.data"的段(".init"段中的一块细分区域)
+#define __initconst	__constsection(.init.rodata)            // 将__initconst修饰的数据放入名为".init.rodata"的段(".init.data"段中的一块进一步细分区域)
+#define __exitdata	__section(.exit.data)                   // 将__exitdata修饰的数据放入名为".exit.data"的段(".init"段中的一块细分区域)
 #define __exit_call	__used __section(.exitcall.exit)
 
 /*
@@ -92,7 +92,7 @@
 #define __exitused  __used
 #endif
 
-#define __exit          __section(.exit.text) __exitused __cold notrace
+#define __exit          __section(.exit.text) __exitused __cold notrace	// 将__exit修饰的函数放入名为".exit.text"的段(".init"段中的一块细分区域)
 
 /* Used for MEMORY_HOTPLUG */
 #define __meminit        __section(.meminit.text) __cold notrace
@@ -177,9 +177,12 @@ extern bool initcall_debug;
  * by link order. 
  * For backwards compatibility, initcall() puts the call in 
  * the device init subsection.
- * 可以看出，.initcall段是.init段的一块细分区域，区域中存放的是函数指针;
- * linux初始化阶段调用do_initcalls会依次执行该段中存放的函数;
- * .initcall段分为0～7这8个优先级，其中0号优先级最高，7号的最低，初始化时便按照优先级从高到底执行
+ *
+ * ".initcallearly.init"段和一系列".initcallx(0~7/rootfs)(s).init"段是".init.data"段的细分区域，区域中存放的是函数指针;
+ * kernel初始化时会调用do_initcalls依次执行这些段中存放的函数;
+ * ".initcallx(0~7)(s)"段分为0～7这8个主优先级以及对应的8个副优先级，其中0号优先级最高，7号的最低，初始化时便按照优先级从高到低执行
+ * ".initcallearly.init"段的优先级比0号高
+ * ".initcallrootfs(s).init"段的优先级位于5号和6号之间
  *
  * The `id' arg to __define_initcall() is needed so that multiple initcalls
  * can point at the same handler without causing duplicate-symbol build errors.
@@ -199,6 +202,7 @@ extern bool initcall_debug;
  * Early initcalls run before initializing SMP.
  *
  * Only for built-in code, not modules.
+ * 将函数fn放入".initearly.init"段中
  */
 #define early_initcall(fn)		__define_initcall(fn, early)    // 包含的模块：workqueue
 
@@ -260,6 +264,10 @@ struct obs_kernel_param {
 		__attribute__((aligned((sizeof(long)))))		\
 		= { __setup_str_##unique_id, fn, early }
 
+/* 这个宏用来定义处理kernel启动参数的函数
+ * @str	传入要处理的kernel启动参数名,比如"root="等
+ * @fn	传入针对该启动参数的处理函数
+ */
 #define __setup(str, fn)						\
 	__setup_param(str, fn, fn, 0)
 
@@ -296,7 +304,7 @@ void __init parse_early_options(char *cmdline);
 #else /* MODULE */      // 以下的内容都是针对模块(即不会被编译进内核image中)的定义
 
 #define __setup_param(str, unique_id, fn)	/* nothing */
-#define __setup(str, func) 			/* nothing */
+#define __setup(str, func) 			/* nothing  该宏在编译可加载模块时无效 */
 #endif
 
 /* Data marked not to be saved by software suspend */

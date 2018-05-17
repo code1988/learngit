@@ -2582,7 +2582,6 @@ netdev_features_t netif_skb_dev_features(struct sk_buff *skb,
 EXPORT_SYMBOL(netif_skb_dev_features);
 
 /*
- *
  * 备注：本函数开始处，该skb的数据包缓冲区中是一个普通的以太网帧，同时该skb->data指向mac地址字段
  *       如果该skb携带了vlan标志，那么
  *       本函数结束处，普通的以太网帧变成了vlan帧，该skb->data指向vlan帧 [12字节的mac地址 + 2字节vlan协议类型ID] 之后的位置

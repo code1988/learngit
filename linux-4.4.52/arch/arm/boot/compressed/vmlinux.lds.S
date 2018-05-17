@@ -70,7 +70,7 @@ SECTIONS
   _magic_end = ZIMAGE_MAGIC(_edata);
 
   . = BSS_START;
-  __bss_start = .;
+  __bss_start = .;      /* 这里定义了".bss"段的起始地址 */
   .bss			: { *(.bss) }
   _end = .;
 

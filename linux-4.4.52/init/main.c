@@ -128,7 +128,7 @@ static char *static_command_line;
 /* Command line for per-initcall parameter parsing */
 static char *initcall_command_line;
 
-static char *execute_command;
+static char *execute_command;           // 记录了kernel启动参数"init="对应的值
 static char *ramdisk_execute_command;   // 记录了早期用户空间的init程序(默认是/init)
 
 /*
@@ -320,6 +320,9 @@ static int __init unknown_bootoption(char *param, char *val,
 	return 0;
 }
 
+/* 对kernel启动参数"init="的处理函数
+ * @str     kernel启动参数"init="后面紧跟的字符串
+ */
 static int __init init_setup(char *str)
 {
 	unsigned int i;
@@ -425,7 +428,7 @@ static noinline void __init_refok rest_init(void)
     // 执行调度
 	schedule_preempt_disabled();
 	/* Call into cpu_idle with preempt disabled 
-     * 在抢占禁用期间调用cpu_idle
+     * 在抢占禁用期间调用cpu_idle进入死循环,负责进程调度
      * */
 	cpu_startup_entry(CPUHP_ONLINE);
 }
@@ -496,6 +499,7 @@ void __init __weak thread_info_cache_init(void)
 
 /*
  * Set up kernel memory allocators
+ * 建立kernel下的各种内存分配器
  */
 static void __init mm_init(void)
 {
@@ -504,6 +508,7 @@ static void __init mm_init(void)
 	 * bigger than MAX_ORDER unless SPARSEMEM.
 	 */
 	page_ext_init_flatmem();
+    // 打印kernel下的内存布局
 	mem_init();
 	kmem_cache_init();
 	percpu_init_late();
@@ -576,6 +581,7 @@ asmlinkage __visible void __init start_kernel(void)
 	vfs_caches_init_early();
 	sort_main_extable();
 	trap_init();
+    // 建立kernel下的各种内存分配器
 	mm_init();
 
 	/*
@@ -699,7 +705,9 @@ asmlinkage __visible void __init start_kernel(void)
 
 	ftrace_init();
 
-	/* Do the rest non-__init'ed, we're now alive */
+	/* Do the rest non-__init'ed, we're now alive 
+     * 完成剩下部分的初始化(这里其实包括了很多内容)
+     * */
 	rest_init();
 }
 

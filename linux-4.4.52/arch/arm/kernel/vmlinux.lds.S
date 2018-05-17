@@ -1,6 +1,7 @@
 /* ld script to make ARM Linux kernel
  * taken from the i386 version by Russell King
  * Written by Martin Mares <mj@atrey.karlin.mff.cuni.cz>
+ * ARM架构中的内存布局,具体的数值需要参看生成后的vmlinux.lds文件
  */
 
 #include <asm-generic/vmlinux.lds.h>
@@ -84,10 +85,11 @@ SECTIONS
 		*(.discard.*)
 	}
 
+/* 下面定义了广义的".text"段 */
 #ifdef CONFIG_XIP_KERNEL
 	. = XIP_VIRT_ADDR(CONFIG_XIP_PHYS_ADDR);
 #else
-	. = PAGE_OFFSET + TEXT_OFFSET;
+	. = PAGE_OFFSET + TEXT_OFFSET;  /* 广义".text"段的起始地址 */
 #endif
 	.head.text : {
 		_text = .;
@@ -98,8 +100,8 @@ SECTIONS
 	. = ALIGN(1<<SECTION_SHIFT);
 #endif
 
-	.text : {			/* Real text segment		*/
-		_stext = .;		/* Text and read-only data	*/
+	.text : {			/* Real text segment    这里定义了真正的".text"段 */
+		_stext = .;		/* Text and read-only data	定义了真正".text"段的起始地址,显然就是广义".text"段的其实地址 */
 			IDMAP_TEXT
 			__exception_text_start = .;
 			*(.exception.text)
@@ -120,6 +122,7 @@ SECTIONS
 #ifdef CONFIG_DEBUG_RODATA
 	. = ALIGN(1<<SECTION_SHIFT);
 #endif
+    /* 这里定义了".rodata"段,显然包含在了广义".text"段内 */
 	RO_DATA(PAGE_SIZE)
 
 	. = ALIGN(4);
@@ -150,15 +153,16 @@ SECTIONS
 
 	NOTES
 
-	_etext = .;			/* End of text and rodata section */
+	_etext = .;			/* End of text and rodata section  广义".text"段的结束地址 */
 
+/* 下面定义了".init"段,这块内存会在内核初始化结束后调用free_initmem释放 */
 #ifndef CONFIG_XIP_KERNEL
 # ifdef CONFIG_ARM_KERNMEM_PERMS
 	. = ALIGN(1<<SECTION_SHIFT);
 # else
 	. = ALIGN(PAGE_SIZE);
 # endif
-	__init_begin = .;
+	__init_begin = .;   /* 这里定义了".init"段的起始地址
 #endif
 	/*
 	 * The vectors and stubs are relocatable code, and the
@@ -178,13 +182,16 @@ SECTIONS
 	. = __stubs_start + SIZEOF(.stubs);
 	__stubs_end = .;
 
+    /* 定义了".init"段的细分区域: ".init.text"段.这个段记录了"__init"修饰的函数 */
 	INIT_TEXT_SECTION(8)
+    /* 定义了".init"段的细分区域: ".exit.text"段.这个段记录了"__exit"修饰的函数 */
 	.exit.text : {
 		ARM_EXIT_KEEP(EXIT_TEXT)
 	}
 	.init.proc.info : {
 		ARM_CPU_DISCARD(PROC_INFO)
 	}
+    /* 定义了".init"段的细分区域: ".init.arch.info"段. 这个段记录了一张machine描述符列表 */
 	.init.arch.info : {
 		__arch_info_begin = .;
 		*(.arch.info.init)
@@ -207,17 +214,23 @@ SECTIONS
 		*(.pv_table)
 		__pv_table_end = .;
 	}
+    /* 定义了".init"段的细分区域: ".init.data"段.这个段记录了"__initdata"修饰的变量 */
 	.init.data : {
 #ifndef CONFIG_XIP_KERNEL
+        /* 进一步定义了".init.data"段的细分区域: ".meminit.data"段,".init.rodata"段等 */
 		INIT_DATA
 #endif
+        /* 进一步定义了".init.data"段的细分区域: ".init.setup"段 */
 		INIT_SETUP(16)
+        /* 进一步定义了".init.data"段的细分区域: ".initcallearly.init"段,".initcallx(0~7)(s).init"段等.这些段中存放了各种模块初始化函数 */
 		INIT_CALLS
 		CON_INITCALL
 		SECURITY_INITCALL
+        /* 进一步定义了".init.data"段的细分区域: ".init.ramfs"段和".init.ramfs.info"段.这两个段中存放了initramfs */
 		INIT_RAM_FS
 	}
 #ifndef CONFIG_XIP_KERNEL
+    /* 定义了".init"段的细分区域: ".exit.data"段.这个段记录了"__exitdata"修饰的变量 */
 	.exit.data : {
 		ARM_EXIT_KEEP(EXIT_DATA)
 	}
@@ -236,13 +249,14 @@ SECTIONS
 #else
 	. = ALIGN(THREAD_SIZE);
 #endif
-	__init_end = .;
+	__init_end = .;     /* 这里定义了".init"段的结束地址 */
 	__data_loc = .;
 #endif
 
+    /* 下面定义了".data"段 */
 	.data : AT(__data_loc) {
 		_data = .;		/* address in memory */
-		_sdata = .;
+		_sdata = .;     /* 这里定义了".data"段的起始地址 */
 
 		/*
 		 * first, the init task union, aligned
@@ -269,7 +283,7 @@ SECTIONS
 		DATA_DATA
 		CONSTRUCTORS
 
-		_edata = .;
+		_edata = .;     /* 这里定义了".data"段的结束地址 */
 	}
 	_edata_loc = __data_loc + SIZEOF(.data);
 
@@ -330,6 +344,7 @@ SECTIONS
 	}
 #endif
 
+    /* 下面定义了".bss"段 */
 	BSS_SECTION(0, 0, 0)
 	_end = .;
 

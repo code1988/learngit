@@ -470,6 +470,7 @@ static void __init free_highpages(void)
  * mem_init() marks the free areas in the mem_map and tells us how much
  * memory is free.  This is done after various parts of the system have
  * claimed their memory after the kernel image.
+ * 内核完成内存初始化后,调用本函数打印内核中的内存布局
  */
 void __init mem_init(void)
 {
@@ -499,22 +500,25 @@ void __init mem_init(void)
 #define MLK_ROUNDUP(b, t) b, t, DIV_ROUND_UP(((t) - (b)), SZ_1K)
 
 	pr_notice("Virtual kernel memory layout:\n"
-			"    vector  : 0x%08lx - 0x%08lx   (%4ld kB)\n"
+			"    vector  : 0x%08lx - 0x%08lx   (%4ld kB)\n"     // vector区域存放了cpu的向量表,固定占用1个page
 #ifdef CONFIG_HAVE_TCM
 			"    DTCM    : 0x%08lx - 0x%08lx   (%4ld kB)\n"
 			"    ITCM    : 0x%08lx - 0x%08lx   (%4ld kB)\n"
 #endif
-			"    fixmap  : 0x%08lx - 0x%08lx   (%4ld kB)\n"
-			"    vmalloc : 0x%08lx - 0x%08lx   (%4ld MB)\n"
-			"    lowmem  : 0x%08lx - 0x%08lx   (%4ld MB)\n"
+			"    fixmap  : 0x%08lx - 0x%08lx   (%4ld kB)\n"     // fixmap代表固定映射空间,通常固定3M
+			"    vmalloc : 0x%08lx - 0x%08lx   (%4ld MB)\n"     // vmalloc区域用于给vmalloc/ioremap动态分配内存
+			"    lowmem  : 0x%08lx - 0x%08lx   (%4ld MB)\n"     // lowmem代表线性映射区,对应了一段连续的物理地址. 
+                                                                // ".text",".init",".data",".bss"都属于lowmem的子区域 
 #ifdef CONFIG_HIGHMEM
-			"    pkmap   : 0x%08lx - 0x%08lx   (%4ld MB)\n"
+			"    pkmap   : 0x%08lx - 0x%08lx   (%4ld MB)\n"     // pkmap代表永久内存映射空间
 #endif
 #ifdef CONFIG_MODULES
 			"    modules : 0x%08lx - 0x%08lx   (%4ld MB)\n"
 #endif
-			"      .text : 0x%p" " - 0x%p" "   (%4td kB)\n"
-			"      .init : 0x%p" " - 0x%p" "   (%4td kB)\n"
+			"      .text : 0x%p" " - 0x%p" "   (%4td kB)\n"     // .text代表广义的".text"段,存储了内核image代码
+                                                                // 广义的".text"段中包含了多个细分区域,主要有真正的".text"段,".rodata"段等
+			"      .init : 0x%p" " - 0x%p" "   (%4td kB)\n"     // ".init"段代表一片内核初始化完毕后会被释放的内存区域
+                                                                // ".init"段中包含了多个细分区域,主要有".init.text"段,".exit.text"段,".init.data"段,".exit.data"段等
 			"      .data : 0x%p" " - 0x%p" "   (%4td kB)\n"
 			"       .bss : 0x%p" " - 0x%p" "   (%4td kB)\n",
 

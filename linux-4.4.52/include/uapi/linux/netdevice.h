@@ -55,11 +55,13 @@ enum {
         IF_PORT_100BASEFX
 };
 
-/* hardware address assignment types */
+/* hardware address assignment types 
+ * 定义了MAC的来源，用于设置net_device->addr_assign_type
+ * */
 #define NET_ADDR_PERM		0	/* address is permanent (default) */
-#define NET_ADDR_RANDOM		1	/* address is generated randomly */
+#define NET_ADDR_RANDOM		1	/* address is generated randomly  意味着MAC地址随机生成 */
 #define NET_ADDR_STOLEN		2	/* address is stolen from other device */
 #define NET_ADDR_SET		3	/* address is set using
-					 * dev_set_mac_address() */
+					 * dev_set_mac_address()  意味着MAC地址来自手动修改 */
 
 #endif /* _UAPI_LINUX_NETDEVICE_H */

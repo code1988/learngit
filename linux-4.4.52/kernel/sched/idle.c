@@ -205,6 +205,7 @@ DEFINE_PER_CPU(bool, cpu_dead_idle);
  * Generic idle loop implementation
  *
  * Called with polling cleared.
+ * 内核的idle进程最后在这里进入死循环,负责进程调度
  */
 static void cpu_idle_loop(void)
 {
@@ -278,6 +279,7 @@ static void cpu_idle_loop(void)
 	}
 }
 
+// 内核idle完成启动任务,会在这里进入死循环
 void cpu_startup_entry(enum cpuhp_state state)
 {
 	/*
@@ -296,5 +298,6 @@ void cpu_startup_entry(enum cpuhp_state state)
 	boot_init_stack_canary();
 #endif
 	arch_cpu_idle_prepare();
+    // 内核的idle进程最后在这里进入死循环,负责进程调度
 	cpu_idle_loop();
 }

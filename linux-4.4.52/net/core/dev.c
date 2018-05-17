@@ -1,5 +1,6 @@
 /*
  * 	NET3	Protocol independent device support routines.
+ * 	协议无关的netdev操作接口
  *
  *		This program is free software; you can redistribute it and/or
  *		modify it under the terms of the GNU General Public License
@@ -146,10 +147,11 @@
 /* This should be increased if a protocol with a bigger head is added. */
 #define GRO_MAX_HEAD (MAX_HEADER + 128)
 
-static DEFINE_SPINLOCK(ptype_lock);
+static DEFINE_SPINLOCK(ptype_lock);     // 定义了一个用于保护ptype_base和ptype_all的自旋锁
 static DEFINE_SPINLOCK(offload_lock);
-struct list_head ptype_base[PTYPE_HASH_SIZE] __read_mostly;
-struct list_head ptype_all __read_mostly;	/* Taps */
+struct list_head ptype_base[PTYPE_HASH_SIZE] __read_mostly; //除了ETH_P_ALL 之外的以太网协议管理块都会注册到这张hash表中
+struct list_head ptype_all __read_mostly;	    /* Taps 这张链表中的协议管理块会接收所有协议类型的报文
+                                                   (比如基于原始套接字的网络嗅探器会使用这种类型的协议管理块) */
 static struct list_head offload_base __read_mostly;
 
 static int netif_rx_internal(struct sk_buff *skb);
@@ -256,6 +258,7 @@ static void unlist_netdevice(struct net_device *dev)
  *	Our notifier list
  */
 
+// 定义并初始化一个网络设备通知链头(采用原始通知链类型，该通知链用于通知设备注册、状态变化)
 static RAW_NOTIFIER_HEAD(netdev_chain);
 
 /*
@@ -351,6 +354,7 @@ static inline void netdev_set_addr_lockdep_class(struct net_device *dev)
 /*******************************************************************************
 
 		Protocol management and registration routines
+        以下是通用的以太网协议管理和注册程序
 
 *******************************************************************************/
 
@@ -358,6 +362,7 @@ static inline void netdev_set_addr_lockdep_class(struct net_device *dev)
  *	Add a protocol ID to the list. Now that the input handler is
  *	smarter we can dispense with all the messy stuff that used to be
  *	here.
+ *	判断该以太网协议管理块是加入到ptype_all还是ptype_base中
  *
  *	BEWARE!!! Protocol handlers, mangling input packets,
  *	MUST BE last in hash buckets and checking protocol handlers
@@ -381,6 +386,7 @@ static inline struct list_head *ptype_head(const struct packet_type *pt)
 
 /**
  *	dev_add_pack - add packet handler
+ *	注册一个指定的以太网协议到内核
  *	@pt: packet type declaration
  *
  *	Add a protocol handler to the networking stack. The passed &packet_type
@@ -394,9 +400,11 @@ static inline struct list_head *ptype_head(const struct packet_type *pt)
 
 void dev_add_pack(struct packet_type *pt)
 {
+    // 先确定将要注册到哪张表中
 	struct list_head *head = ptype_head(pt);
 
 	spin_lock(&ptype_lock);
+    // 完成注册
 	list_add_rcu(&pt->list, head);
 	spin_unlock(&ptype_lock);
 }
@@ -437,6 +445,7 @@ EXPORT_SYMBOL(__dev_remove_pack);
 
 /**
  *	dev_remove_pack	 - remove packet handler
+ *	从内核中注销一个指定的以太网协议
  *	@pt: packet type declaration
  *
  *	Remove a protocol handler that was previously added to the kernel
@@ -537,6 +546,7 @@ EXPORT_SYMBOL(dev_remove_offload);
 /******************************************************************************
 
 		      Device Boot-time Settings Routines
+以下是设备启动时的设置程序
 
 *******************************************************************************/
 
@@ -662,6 +672,7 @@ __setup("netdev=", netdev_boot_setup);
 /*******************************************************************************
 
 			    Device Interface Subroutines
+以下是设备接口子程序
 
 *******************************************************************************/
 
@@ -710,6 +721,7 @@ EXPORT_SYMBOL_GPL(dev_fill_metadata_dst);
 
 /**
  *	__dev_get_by_name	- find a device by its name
+ *	根据设备名查找对应的网络设备
  *	@net: the applicable net namespace
  *	@name: name to find
  *
@@ -785,6 +797,7 @@ EXPORT_SYMBOL(dev_get_by_name);
 
 /**
  *	__dev_get_by_index - find a device by its ifindex
+ *	通过接口序号查找对应的网络设备
  *	@net: the applicable net namespace
  *	@ifindex: index of device
  *
@@ -1266,7 +1279,8 @@ EXPORT_SYMBOL(netdev_features_change);
 
 /**
  *	netdev_state_change - device changes state
- *	@dev: device to cause notification
+ *	通知内核其他模块以及用户层，指定netdev的链路状态已经发生改变
+ *	@dev: device to cause notification  发生状态变化的netdev
  *
  *	Called to indicate a device has changed state. This function calls
  *	the notifier chains for netdev_chain and sends a NEWLINK message
@@ -1280,6 +1294,7 @@ void netdev_state_change(struct net_device *dev)
 		change_info.flags_changed = 0;
 		call_netdevice_notifiers_info(NETDEV_CHANGE, dev,
 					      &change_info.info);
+        // 通过rtnetlink接口，给用户空间发送RTM_NEWLINK组播消息
 		rtmsg_ifinfo(RTM_NEWLINK, dev, 0, GFP_KERNEL);
 	}
 }
@@ -1481,11 +1496,14 @@ EXPORT_SYMBOL(dev_close);
 
 /**
  *	dev_disable_lro - disable Large Receive Offload on a device
+ *	禁用指定设备的LRO功能
  *	@dev: device
  *
  *	Disable Large Receive Offload (LRO) on a net device.  Must be
  *	called under RTNL.  This is needed if received packets may be
  *	forwarded to another interface.
+ *
+ *	备注：如果该设备上接收到的包会可能会转发到其他设备，那么就需要禁用该设备的LRO功能
  */
 void dev_disable_lro(struct net_device *dev)
 {
@@ -1516,12 +1534,15 @@ static int dev_boot_phase = 1;
 
 /**
  *	register_netdevice_notifier - register a network notifier block
+ *	网络子系统中注册一个网络设备事件上报通知块
  *	@nb: notifier
  *
  *	Register a notifier to be called when network device events occur.
  *	The notifier passed is linked into the kernel structures and must
  *	not be reused until it has been unregistered. A negative errno code
  *	is returned on a failure.
+ *	当网络设备有事件被触发时，该通知块中的回调函数将被调用
+ *	成功调用的条件是通知块已经被注册并且一旦通知块被调用后必须重新注册
  *
  * 	When registered all registration and up events are replayed
  *	to the new notifier to allow device to have a race free
@@ -1536,11 +1557,13 @@ int register_netdevice_notifier(struct notifier_block *nb)
 	int err;
 
 	rtnl_lock();
+    // 在netdev_chain通知链上注册该通知块
 	err = raw_notifier_chain_register(&netdev_chain, nb);
 	if (err)
 		goto unlock;
 	if (dev_boot_phase)
 		goto unlock;
+    // 遍历每个网络命名空间中的每个网络功能模块
 	for_each_net(net) {
 		for_each_netdev(net, dev) {
 			err = call_netdevice_notifier(nb, NETDEV_REGISTER, dev);
@@ -1643,6 +1666,7 @@ static int call_netdevice_notifiers_info(unsigned long val,
 
 /**
  *	call_netdevice_notifiers - call all network notifier blocks
+ *	调用指定设备关联的所有网络通知块
  *      @val: value passed unmodified to notifier function
  *      @dev: net_device pointer passed unmodified to notifier function
  *
@@ -1781,12 +1805,17 @@ int dev_forward_skb(struct net_device *dev, struct sk_buff *skb)
 }
 EXPORT_SYMBOL_GPL(dev_forward_skb);
 
+/* 将skb传递给指定协议管理块进行处理，其中就包括了L3层的入口
+ * @pt_prev     该协议管理块将获得该skb进行处理
+ * @orig_dev    该skb绑定的netdev
+ */
 static inline int deliver_skb(struct sk_buff *skb,
 			      struct packet_type *pt_prev,
 			      struct net_device *orig_dev)
 {
 	if (unlikely(skb_orphan_frags(skb, GFP_ATOMIC)))
 		return -ENOMEM;
+    // 通过本函数执行具体协议的接收函数之前要先对该skb的引用计数加1，以防止正在使用时被释放
 	atomic_inc(&skb->users);
 	return pt_prev->func(skb, skb->dev, pt_prev, orig_dev);
 }
@@ -2716,6 +2745,11 @@ static int xmit_one(struct sk_buff *skb, struct net_device *dev,
 	return rc;
 }
 
+/* TODO: 以下备注来自3.14.38,4.4.52版本本函数存在差别,待确认
+ * 备注：本函数开始处，该skb的数据包缓冲区中是一个普通的以太网帧，同时该skb->data指向mac地址字段
+ *       如果该skb携带了vlan标志，那么
+ *       本函数结束处，普通的以太网帧变成了vlan帧，该skb->data指向vlan帧 [12字节的mac地址 + 2字节vlan协议类型ID] 之后的位置
+ */
 struct sk_buff *dev_hard_start_xmit(struct sk_buff *first, struct net_device *dev,
 				    struct netdev_queue *txq, int *ret)
 {
@@ -3177,6 +3211,7 @@ out:
 	return rc;
 }
 
+//	网络设备发送数据的总入口函数(显然只是个封装)
 int dev_queue_xmit(struct sk_buff *skb)
 {
 	return __dev_queue_xmit(skb, NULL);
@@ -3735,9 +3770,10 @@ EXPORT_SYMBOL_GPL(netdev_is_rx_handler_busy);
 
 /**
  *	netdev_rx_handler_register - register receive handler
- *	@dev: device to register a handler for
- *	@rx_handler: receive handler to register
- *	@rx_handler_data: data pointer that is used by rx handler
+ *	注册设备的rx_handler钩子函数，用于处理具体设备类型相关的数据包接收事项(比如网桥设备)
+ *	@dev: device to register a handler for      指向需要注册rx_handler钩子的设备
+ *	@rx_handler: receive handler to register    指向需要注册的rx_handler钩子函数
+ *	@rx_handler_data: data pointer that is used by rx handler   指向需要注册的用于rx_handler钩子函数的附加数据
  *
  *	Register a receive handler for a device. This handler will then be
  *	called from __netif_receive_skb. A negative errno code is returned
@@ -3753,6 +3789,7 @@ int netdev_rx_handler_register(struct net_device *dev,
 {
 	ASSERT_RTNL();
 
+    // 确保该设备之前没有注册过rx_handler钩子
 	if (dev->rx_handler)
 		return -EBUSY;
 
@@ -3766,6 +3803,7 @@ EXPORT_SYMBOL_GPL(netdev_rx_handler_register);
 
 /**
  *	netdev_rx_handler_unregister - unregister receive handler
+ *	注销设备的rx_handler钩子函数
  *	@dev: device to unregister a handler from
  *
  *	Unregister a receive handler from a device.
@@ -3820,6 +3858,10 @@ static inline int nf_ingress(struct sk_buff *skb, struct packet_type **pt_prev,
 	return 0;
 }
 
+/* 网络设备真正执行数据接收流程的地方
+ *
+ * 备注：需要注意进入本函数时，skb中的读指针已经跳过了标准以太网长度
+ */
 static int __netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc)
 {
 	struct packet_type *ptype, *pt_prev;
@@ -3829,12 +3871,15 @@ static int __netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc)
 	int ret = NET_RX_DROP;
 	__be16 type;
 
+    // 时间戳检查
 	net_timestamp_check(!netdev_tstamp_prequeue, skb);
 
 	trace_netif_receive_skb(skb);
 
+    // 首先记录下进入本函数时skb绑定的初始netdev
 	orig_dev = skb->dev;
 
+    // 显然这里将network header、transport header初始化为同一位置
 	skb_reset_network_header(skb);
 	if (!skb_transport_header_was_set(skb))
 		skb_reset_transport_header(skb);
@@ -3843,10 +3888,12 @@ static int __netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc)
 	pt_prev = NULL;
 
 another_round:
+    // 更新该skb当前关联的netdev接口序号
 	skb->skb_iif = skb->dev->ifindex;
 
 	__this_cpu_inc(softnet_data.processed);
 
+    // 如果接收到的skb是ETH_P_8021Q/ETH_P_8021AD协议的，则在这里脱掉tag，从而实现对上层的透明
 	if (skb->protocol == cpu_to_be16(ETH_P_8021Q) ||
 	    skb->protocol == cpu_to_be16(ETH_P_8021AD)) {
 		skb = skb_vlan_untag(skb);
@@ -3854,6 +3901,7 @@ another_round:
 			goto out;
 	}
 
+    // 流控相关
 #ifdef CONFIG_NET_CLS_ACT
 	if (skb->tc_verd & TC_NCLS) {
 		skb->tc_verd = CLR_TC_NCLS(skb->tc_verd);
@@ -3864,7 +3912,17 @@ another_round:
 	if (pfmemalloc)
 		goto skip_taps;
 
+    // 将该skb传递给ptype_all中注册的符合条件的协议管理块(通常就是网络嗅探器)
 	list_for_each_entry_rcu(ptype, &ptype_all, list) {
+#if 0   // TODO: 这段注释来自3.14.38, 4.4.52这里存在差异,待确认
+        /* 至少需要满足以下1个条件：
+         *      该协议管理块没有绑定netdev;
+         *      该协议管理块绑定的netdev就是收到该skb的netdev
+         *
+         * 备注：显然最后一个符合条件的协议管理块(被记录在pt_prev)并不会在这里获得该skb
+         */
+#endif
+        // 符合条件的协议管理块终于获取到该skb，进而会执行协议相关的处理
 		if (pt_prev)
 			ret = deliver_skb(skb, pt_prev, orig_dev);
 		pt_prev = ptype;
@@ -3894,38 +3952,49 @@ ncls:
 	if (pfmemalloc && !skb_pfmemalloc_protocol(skb))
 		goto drop;
 
+    // 如果该skb携带了vlan标志，意味着携带了vlan信息，这里就进行相关处理
 	if (skb_vlan_tag_present(skb)) {
+        // 携带vlan信息的skb会首先交给残留的最后一个协议管理块进行处理
 		if (pt_prev) {
 			ret = deliver_skb(skb, pt_prev, orig_dev);
 			pt_prev = NULL;
 		}
+        /* 执行vlan模块特有的接收处理，实际就是将该skb重新关联到对应的vlan设备，并重新执行设备接收流程，
+         * 显然，这跟下面执行rx_handler上注册的bridge模块特有的接收处理的目的基本一样,
+         * 所以，理论上将vlan_do_receive注册到rx_handler中，做成统一的接口，才是最合理的
+         */
 		if (vlan_do_receive(&skb))
 			goto another_round;
 		else if (unlikely(!skb))
 			goto out;
 	}
 
+    // 程序运行到这里，意味着该skb已经不再携带vlan信息
+    // 这里尝试获取该skb关联的设备rx_handler钩子
 	rx_handler = rcu_dereference(skb->dev->rx_handler);
 	if (rx_handler) {
+        // 如果还残留最后一个协议管理块待获取该skb，则在这里处理掉
 		if (pt_prev) {
 			ret = deliver_skb(skb, pt_prev, orig_dev);
 			pt_prev = NULL;
 		}
+        // 执行该设备特有的接收处理函数，并对返回值做相应处理
 		switch (rx_handler(&skb)) {
-		case RX_HANDLER_CONSUMED:
-			ret = NET_RX_SUCCESS;
-			goto out;
-		case RX_HANDLER_ANOTHER:
-			goto another_round;
-		case RX_HANDLER_EXACT:
-			deliver_exact = true;
-		case RX_HANDLER_PASS:
+		case RX_HANDLER_CONSUMED:   // 这种情况意味着skb已经在rx_handler过程中被释放，所以处理完后直接可以返回了
+			ret = NET_RX_SUCCESS;                                                                                                                 
+			goto out;                                                                                                                             
+		case RX_HANDLER_ANOTHER:    // 这种情况意味着该skb关联的netdev在rx_handler过程中发生变化，需要重新跑一遍another_round
+			goto another_round;                                                                                                                   
+		case RX_HANDLER_EXACT:                                                                                                                    
+			deliver_exact = true;                                                                                                                 
+		case RX_HANDLER_PASS:       // 这种情况意味着skb->dev并没有在rx_handler过程中被重定向(也就是正常情况)，所以处理完后又回来继续走下面的流程
 			break;
 		default:
 			BUG();
 		}
 	}
 
+    // vlan信息在上面已经处理掉，通常不应该会进入这里
 	if (unlikely(skb_vlan_tag_present(skb))) {
 		if (skb_vlan_tag_get_id(skb))
 			skb->pkt_type = PACKET_OTHERHOST;
@@ -3936,6 +4005,8 @@ ncls:
 		skb->vlan_tci = 0;
 	}
 
+    // 正常情况下skb接收流程都会运行到这里(包括带DSA-tag的报文)
+    // 这里开始在ptype_base表中寻找跟该skb协议类型匹配的协议管理块，然后进行相关处理
 	type = skb->protocol;
 
 	/* deliver only exact match when indicated */
@@ -3953,14 +4024,17 @@ ncls:
 				       &skb->dev->ptype_specific);
 	}
 
+    // 判断最后是否还存在一个尚未执行的协议管理块
 	if (pt_prev) {
 		if (unlikely(skb_orphan_frags(skb, GFP_ATOMIC)))
 			goto drop;
 		else
+            // 最后一个协议管理块执行接收时不需要对该skb的引用计数加1了，因为必然由它负责释放该skb
 			ret = pt_prev->func(skb, skb->dev, pt_prev, orig_dev);
 	} else {
 drop:
 		atomic_long_inc(&skb->dev->rx_dropped);
+        // 如果最后已经不存在尚未执行的协议管理块，则在这里手动释放该skb
 		kfree_skb(skb);
 		/* Jamal, now you will not able to escape explaining
 		 * me how you were going to use this. :-)
@@ -3972,6 +4046,7 @@ out:
 	return ret;
 }
 
+// 网络设备执行数据接收流程(主要就是额外封装了对skb分配方式的判断处理)
 static int __netif_receive_skb(struct sk_buff *skb)
 {
 	int ret;
@@ -3997,6 +4072,7 @@ static int __netif_receive_skb(struct sk_buff *skb)
 	return ret;
 }
 
+// 网络设备执行数据接收流程(主要就是额外封装了数据包RPS处理)
 static int netif_receive_skb_internal(struct sk_buff *skb)
 {
 	int ret;
@@ -4009,6 +4085,7 @@ static int netif_receive_skb_internal(struct sk_buff *skb)
 	rcu_read_lock();
 
 #ifdef CONFIG_RPS
+    // 如果内核配置了RPS机制，则在这里对数据包进行RPS处理，也就是将报文分散到各个CPU的接收队列中进行负载均衡处理
 	if (static_key_false(&rps_needed)) {
 		struct rps_dev_flow voidflow, *rflow = &voidflow;
 		int cpu = get_rps_cpu(skb->dev, skb, &rflow);
@@ -4027,18 +4104,26 @@ static int netif_receive_skb_internal(struct sk_buff *skb)
 
 /**
  *	netif_receive_skb - process receive buffer from network
+ *	设备层接收数据的总入口函数(显然只是个封装)，通常在设备驱动中被调用
  *	@skb: buffer to process
  *
  *	netif_receive_skb() is the main receive data processing function.
  *	It always succeeds. The buffer may be dropped during processing
  *	for congestion control or by the protocol layers.
+ *	本函数在处理过程中可能会丢弃该skb，主要是因为发生了拥塞或者协议层自己的行为。
+ *	但是通常不会对本函数的返回值做处理
  *
  *	This function may only be called from softirq context and interrupts
  *	should be enabled.
+ *	本函数只能在软中断上下文中被调用，并且中断必须被开启
  *
  *	Return values (usually ignored):
  *	NET_RX_SUCCESS: no congestion
  *	NET_RX_DROP: packet was dropped
+ *
+ *	备注：
+ *	        当调用过程中skb关联的设备发生了变化，本函数可能被递归调用到;
+ *	        skb进入本函数时其中的读指针已经跳过了标准的以太网头长度
  */
 int netif_receive_skb(struct sk_buff *skb)
 {
@@ -4905,11 +4990,12 @@ static void net_rx_action(struct softirq_action *h)
 	net_rps_action_and_irq_enable(sd);
 }
 
+// 定义网络设备关联的邻接表节点
 struct netdev_adjacent {
-	struct net_device *dev;
+	struct net_device *dev; // 指向该节点对应的网络设备
 
 	/* upper master flag, there can only be one master device per list */
-	bool master;
+	bool master;    // 每个upper链表中只允许存在一个master设备(通常就是首节点)
 
 	/* counter for the number of times this device was added to us */
 	u16 ref_nr;
@@ -4917,15 +5003,21 @@ struct netdev_adjacent {
 	/* private field for the users */
 	void *private;
 
-	struct list_head list;
+	struct list_head list;  // 用于链接所在链表的其他netdev_adjacent节点
 	struct rcu_head rcu;
 };
 
+/* 从指定链表中查找匹配的节点
+ * @dev     - 毛都没用
+ * @adj_dev - 指向一个要匹配的通用网络设备结构net_device
+ * @adj_list    - 指向一个需要遍历的链表头
+ */
 static struct netdev_adjacent *__netdev_find_adj(struct net_device *adj_dev,
 						 struct list_head *adj_list)
 {
 	struct netdev_adjacent *adj;
 
+    // 遍历链表节点netdev_adjacent结构，根据节点对应的net_device进行匹配，返回匹配到的节点
 	list_for_each_entry(adj, adj_list, list) {
 		if (adj->dev == adj_dev)
 			return adj;
@@ -4935,6 +5027,7 @@ static struct netdev_adjacent *__netdev_find_adj(struct net_device *adj_dev,
 
 /**
  * netdev_has_upper_dev - Check if device is linked to an upper device
+ * 检查dev的所有上级设备链表中是否存在upper_dev，存在则返回true，不存在则返回false
  * @dev: device
  * @upper_dev: upper device to check
  *
@@ -4953,6 +5046,7 @@ EXPORT_SYMBOL(netdev_has_upper_dev);
 
 /**
  * netdev_has_any_upper_dev - Check if device is linked to some device
+ * 检查指定dev的上级设备链表是否为空，非空返回true，空返回false
  * @dev: device
  *
  * Find out if a device is linked to an upper device and return true in case
@@ -4967,10 +5061,13 @@ static bool netdev_has_any_upper_dev(struct net_device *dev)
 
 /**
  * netdev_master_upper_dev_get - Get master upper device
+ * 从该dev的直接上级设备链表中获取其master节点关联的net_device
  * @dev: device
  *
  * Find a master upper device and return pointer to it or NULL in case
  * it's not there. The caller must hold the RTNL lock.
+ *
+ * 备注：一个例子就是根据桥端口设备获取它所属的upper设备---桥设备
  */
 struct net_device *netdev_master_upper_dev_get(struct net_device *dev)
 {
@@ -4978,11 +5075,14 @@ struct net_device *netdev_master_upper_dev_get(struct net_device *dev)
 
 	ASSERT_RTNL();
 
+    // 如果该dev的直接上级设备链表为空，则直接返回NULL
 	if (list_empty(&dev->adj_list.upper))
 		return NULL;
 
+    // 获取该dev的直接上级设备链表的首节点
 	upper = list_first_entry(&dev->adj_list.upper,
 				 struct netdev_adjacent, list);
+    // 通常就是首节点就是master节点
 	if (likely(upper->master))
 		return upper->dev;
 	return NULL;
@@ -5378,6 +5478,9 @@ static void __netdev_adjacent_dev_unlink_neighbour(struct net_device *dev,
 					   &upper_dev->adj_list.lower);
 }
 
+/* 将upper_dev加入到dev的直接上级设备中(实际加入adj_list和all_adj_list两张表)
+ * @master  - 是否作为master节点加入
+ */
 static int __netdev_upper_dev_link(struct net_device *dev,
 				   struct net_device *upper_dev, bool master,
 				   void *private)
@@ -5391,13 +5494,17 @@ static int __netdev_upper_dev_link(struct net_device *dev,
 	if (dev == upper_dev)
 		return -EBUSY;
 
-	/* To prevent loops, check if dev is not upper device to upper_dev. */
+	/* To prevent loops, check if dev is not upper device to upper_dev. 
+     * 确保upper_dev的所有上级设备中不存在dev，并且dev的所有上级设备中不存在upper_dev
+     * 这么做的目的是为了避免陷入死循环
+     * */
 	if (__netdev_find_adj(dev, &upper_dev->all_adj_list.upper))
 		return -EBUSY;
 
 	if (__netdev_find_adj(upper_dev, &dev->adj_list.upper))
 		return -EEXIST;
 
+    // 如果upper_dev将作为master节点加入，则必须确保dev当前的直接上级设备中不存在master节点
 	if (master && netdev_master_upper_dev_get(dev))
 		return -EBUSY;
 
@@ -5493,6 +5600,7 @@ rollback_mesh:
 
 /**
  * netdev_upper_dev_link - Add a link to the upper device
+ * 将upper_dev加入dev的upper邻接链表中
  * @dev: device
  * @upper_dev: new upper device
  *
@@ -5510,6 +5618,7 @@ EXPORT_SYMBOL(netdev_upper_dev_link);
 
 /**
  * netdev_master_upper_dev_link - Add a master link to the upper device
+ * 将upper_dev作为master节点加入到dev的直接上级设备中(实际加入adj_list和all_adj_list两张表)
  * @dev: device
  * @upper_dev: new upper device
  *
@@ -5691,6 +5800,7 @@ void *netdev_lower_dev_get_private(struct net_device *dev,
 EXPORT_SYMBOL(netdev_lower_dev_get_private);
 
 
+// 递归获取该网络设备的嵌套级别
 int dev_get_nest_level(struct net_device *dev,
 		       bool (*type_check)(struct net_device *dev))
 {
@@ -5722,6 +5832,10 @@ static void dev_change_rx_flags(struct net_device *dev, int flags)
 		ops->ndo_change_rx_flags(dev, flags);
 }
 
+/* 更新指定网络设备中的混杂模式计数器值
+ * @dev     - 指向一个网络设备
+ * @inc     - 请求进入混杂模式则传入+1,请求退出混杂模式则传入-1 
+ */
 static int __dev_set_promiscuity(struct net_device *dev, int inc, bool notify)
 {
 	unsigned int old_flags = dev->flags;
@@ -5732,6 +5846,7 @@ static int __dev_set_promiscuity(struct net_device *dev, int inc, bool notify)
 
 	dev->flags |= IFF_PROMISC;
 	dev->promiscuity += inc;
+    // 如果更新之后的混杂模式计数器为0,意味着要退出混杂模式
 	if (dev->promiscuity == 0) {
 		/*
 		 * Avoid overflow.
@@ -5772,14 +5887,18 @@ static int __dev_set_promiscuity(struct net_device *dev, int inc, bool notify)
 
 /**
  *	dev_set_promiscuity	- update promiscuity count on a device
+ *	更新指定网络设备中的混杂模式计数器值
  *	@dev: device
- *	@inc: modifier
+ *	@inc: modifier  请求进入混杂模式则传入+1,请求退出混杂模式则传入-1
  *
  *	Add or remove promiscuity from a device. While the count in the device
  *	remains above zero the interface remains promiscuous. Once it hits zero
  *	the device reverts back to normal filtering operation. A negative inc
  *	value is used to drop promiscuity on the device.
  *	Return 0 if successful or a negative errno code on error.
+ *
+ *	备注：除非该网络设备的混杂模式计数器为0,否则该设备不会退出混杂模式;
+ *	      进入混杂模式的网络设备会设置net_device->flags |= IFF_PROMISC
  */
 int dev_set_promiscuity(struct net_device *dev, int inc)
 {
@@ -6040,6 +6159,7 @@ static int __dev_set_mtu(struct net_device *dev, int new_mtu)
 
 /**
  *	dev_set_mtu - Change maximum transfer unit
+ *	设置指定网络设备的MTU
  *	@dev: device
  *	@new_mtu: new transfer unit
  *
@@ -6049,6 +6169,7 @@ int dev_set_mtu(struct net_device *dev, int new_mtu)
 {
 	int err, orig_mtu;
 
+    // 如果新值跟旧值相同就直接返回了
 	if (new_mtu == dev->mtu)
 		return 0;
 
@@ -6095,6 +6216,7 @@ EXPORT_SYMBOL(dev_set_group);
 
 /**
  *	dev_set_mac_address - Change Media Access Control Address
+ *	修改设备MAC地址
  *	@dev: device
  *	@sa: new address
  *
@@ -6429,6 +6551,7 @@ static netdev_features_t netdev_fix_features(struct net_device *dev,
 	return features;
 }
 
+// 重新计算指定设备的features字段
 int __netdev_update_features(struct net_device *dev)
 {
 	struct net_device *upper, *lower;
@@ -6486,11 +6609,14 @@ sync_lower:
 
 /**
  *	netdev_update_features - recalculate device features
+ *	重新计算指定设备的features字段，如果有变化还将发送通知
  *	@dev: the device to check
  *
  *	Recalculate dev->features set and send notifications if it
  *	has changed. Should be called after driver or hardware dependent
  *	conditions might have changed that influence the features.
+ *
+ *	备注：当该设备的那些会影响features字段的驱动或者硬件发生变化之后，需要调用本接口
  */
 void netdev_update_features(struct net_device *dev)
 {
@@ -6518,6 +6644,7 @@ EXPORT_SYMBOL(netdev_change_features);
 
 /**
  *	netif_stacked_transfer_operstate -	transfer operstate
+ *	状态继承
  *	@rootdev: the root or lower level device to transfer state from
  *	@dev: the device to transfer operstate to
  *
@@ -6528,11 +6655,13 @@ EXPORT_SYMBOL(netdev_change_features);
 void netif_stacked_transfer_operstate(const struct net_device *rootdev,
 					struct net_device *dev)
 {
+    // 从源设备继承operstate状态
 	if (rootdev->operstate == IF_OPER_DORMANT)
 		netif_dormant_on(dev);
 	else
 		netif_dormant_off(dev);
 
+    // 从源设备继承链路状态
 	if (netif_carrier_ok(rootdev)) {
 		if (!netif_carrier_ok(dev))
 			netif_carrier_on(dev);
@@ -6621,6 +6750,7 @@ EXPORT_SYMBOL(netif_tx_stop_all_queues);
 
 /**
  *	register_netdevice	- register a network device
+ *  注册指定netdev到内核中，注册结果会从通知链中反馈
  *	@dev: device to register
  *
  *	Take a completed network device structure and add it to the kernel
@@ -6630,6 +6760,7 @@ EXPORT_SYMBOL(netif_tx_stop_all_queues);
  *
  *	Callers must hold the rtnl semaphore. You may want
  *	register_netdev() instead of this.
+ *	调用本函数时要确保已经持有rtnl锁
  *
  *	BUGS:
  *	The locking appears insufficient to guarantee two parallel registers
@@ -6657,7 +6788,7 @@ int register_netdevice(struct net_device *dev)
 	if (ret < 0)
 		goto out;
 
-	/* Init, if this function is available */
+	/* Init, if this function is available  如果该netdev配置了ndo_init回调，则在这里执行该初始化 */
 	if (dev->netdev_ops->ndo_init) {
 		ret = dev->netdev_ops->ndo_init(dev);
 		if (ret) {
@@ -6806,6 +6937,11 @@ EXPORT_SYMBOL_GPL(init_dummy_netdev);
 
 /**
  *	register_netdev	- register a network device
+ *  注册指定netdev到内核中(显然只是个封装)
+ *
+ *  备注：创建一个netdev的标准套路：
+ *              alloc_netdev -> dev_net_set -> register_netdev
+ *
  *	@dev: device to register
  *
  *	Take a completed network device structure and add it to the kernel
@@ -6821,6 +6957,7 @@ int register_netdev(struct net_device *dev)
 {
 	int err;
 
+    // 注册netdev过程中需要对rtnl模块上锁
 	rtnl_lock();
 	err = register_netdevice(dev);
 	rtnl_unlock();
@@ -7068,10 +7205,11 @@ void netdev_freemem(struct net_device *dev)
 
 /**
  *	alloc_netdev_mqs - allocate network device
- *	@sizeof_priv:		size of private data to allocate space for
- *	@name:			device name format string
+ *	创建一个网络设备以及附属的私有空间，并完成基本初始化操作
+ *	@sizeof_priv:		size of private data to allocate space for  该网络设备附属的私有空间大小 
+ *	@name:			device name format string       设备名
  *	@name_assign_type: 	origin of device name
- *	@setup:			callback to initialize device
+ *	@setup:			callback to initialize device   设备创建后的初始化回调函数
  *	@txqs:			the number of TX subqueues to allocate
  *	@rxqs:			the number of RX subqueues to allocate
  *
@@ -7102,6 +7240,7 @@ struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
 	}
 #endif
 
+    // 计算需要为该设备申请的空间大小
 	alloc_size = sizeof(struct net_device);
 	if (sizeof_priv) {
 		/* ensure 32-byte alignment of private area */
@@ -7147,6 +7286,7 @@ struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
 	INIT_LIST_HEAD(&dev->ptype_all);
 	INIT_LIST_HEAD(&dev->ptype_specific);
 	dev->priv_flags = IFF_XMIT_DST_RELEASE | IFF_XMIT_DST_RELEASE_PERM;
+    // 调用传入的初始化回调函数，对新创建的网络设备执行基本的初始化
 	setup(dev);
 
 	if (!dev->tx_queue_len) {
@@ -7248,6 +7388,7 @@ EXPORT_SYMBOL(synchronize_net);
 
 /**
  *	unregister_netdevice_queue - remove device from the kernel
+ *	缺省的将指定设备从内核中注销函数
  *	@dev: device
  *	@head: list
  *

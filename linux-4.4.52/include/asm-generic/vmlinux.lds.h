@@ -505,7 +505,9 @@
 #define KERNEL_CTORS()
 #endif
 
-/* init and exit section handling */
+/* init and exit section handling 
+ * 进一步定义了".init.data"段的细分区域: ".meminit.data"段,".init.rodata"段等
+ * */
 #define INIT_DATA							\
 	*(.init.data)							\
 	MEM_DISCARD(init.data)						\
@@ -649,6 +651,7 @@
 		VMLINUX_SYMBOL(__stop_notes) = .;			\
 	}
 
+/* 进一步定义了".init.data"段的细分区域: ".init.setup"段 */
 #define INIT_SETUP(initsetup_align)					\
 		. = ALIGN(initsetup_align);				\
 		VMLINUX_SYMBOL(__setup_start) = .;			\
@@ -660,6 +663,7 @@
 		*(.initcall##level##.init)				\
 		*(.initcall##level##s.init)				\
 
+/* 进一步定义了".init.data"段的细分区域: ".initcallearly.init"段,".initcallx(0~7)(s).init"段等 */
 #define INIT_CALLS							\
 		VMLINUX_SYMBOL(__initcall_start) = .;			\
 		*(.initcallearly.init)					\
@@ -685,6 +689,7 @@
 		VMLINUX_SYMBOL(__security_initcall_end) = .;
 
 #ifdef CONFIG_BLK_DEV_INITRD
+/* 进一步定义了".init.data"段的细分区域: ".init.ramfs"段和".init.ramfs.info"段 */
 #define INIT_RAM_FS							\
 	. = ALIGN(4);							\
 	VMLINUX_SYMBOL(__initramfs_start) = .;				\
@@ -835,6 +840,7 @@
 		INIT_RAM_FS						\
 	}
 
+// 定义了".bss"段
 #define BSS_SECTION(sbss_align, bss_align, stop_align)			\
 	. = ALIGN(sbss_align);						\
 	VMLINUX_SYMBOL(__bss_start) = .;				\

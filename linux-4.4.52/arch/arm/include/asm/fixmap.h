@@ -1,8 +1,8 @@
 #ifndef _ASM_FIXMAP_H
 #define _ASM_FIXMAP_H
 
-#define FIXADDR_START		0xffc00000UL
-#define FIXADDR_END		0xfff00000UL
+#define FIXADDR_START		0xffc00000UL		// 固定映射空间起始地址
+#define FIXADDR_END		0xfff00000UL			// 固定映射空间结束地址
 #define FIXADDR_TOP		(FIXADDR_END - PAGE_SIZE)
 
 #include <asm/kmap_types.h>

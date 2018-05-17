@@ -1215,7 +1215,7 @@ struct net_device {
 
 
 	/* currently active device features */
-	netdev_features_t	features;   // 当前在该netdev上已经使能的功能集合(定义在include/linux/netdevice_features.h中，取值NETIF_F_*)
+	netdev_features_t	features;       // 当前在该netdev上已经使能的功能集合(定义在include/linux/netdevice_features.h中，取值NETIF_F_*)
 	/* user-changeable features */
 	netdev_features_t	hw_features;    // 用户态可修改的功能集合
 	/* user-requested features */

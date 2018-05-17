@@ -41,9 +41,9 @@
  * The vmalloc() routines leaves a hole of 4kB between each vmalloced
  * area for the same reason. ;)
  */
-#define VMALLOC_OFFSET		(8*1024*1024)
-#define VMALLOC_START		(((unsigned long)high_memory + VMALLOC_OFFSET) & ~(VMALLOC_OFFSET-1))
-#define VMALLOC_END		0xff800000UL
+#define VMALLOC_OFFSET		(8*1024*1024)		// vmalloc空间相对和lowmem区域之间有8M的"hole",目的是捕获lowmem区域的越界访问异常
+#define VMALLOC_START		(((unsigned long)high_memory + VMALLOC_OFFSET) & ~(VMALLOC_OFFSET-1))		// vmalloc空间起始地址
+#define VMALLOC_END		0xff800000UL			// vmalloc空间结束地址
 
 #define LIBRARY_TEXT_START	0x0c000000
 

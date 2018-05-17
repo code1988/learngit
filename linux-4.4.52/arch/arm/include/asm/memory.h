@@ -28,7 +28,9 @@
  */
 #define UL(x) _AC(x, UL)
 
-/* PAGE_OFFSET - the virtual address of the start of the kernel image */
+/* PAGE_OFFSET - the virtual address of the start of the kernel image 
+ * 内核空间和用户空间的分界值,这也是内核image的起始地址
+ * */
 #define PAGE_OFFSET		UL(CONFIG_PAGE_OFFSET)
 
 #ifdef CONFIG_MMU

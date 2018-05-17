@@ -605,6 +605,9 @@ static void __init clean_rootfs(void)
 }
 #endif
 
+/* 建立虚拟rootfs
+ * 
+ */
 static int __init populate_rootfs(void)
 {
 	char *err = unpack_to_rootfs(__initramfs_start, __initramfs_size);
