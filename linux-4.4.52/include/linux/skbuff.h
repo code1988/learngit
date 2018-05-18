@@ -631,7 +631,7 @@ struct sk_buff {
 #define PKT_TYPE_OFFSET()	offsetof(struct sk_buff, __pkt_type_offset)
 
 	__u8			__pkt_type_offset[0];
-	__u8			pkt_type:3;     // 标识该skb中承载的数据包类型(比如PACKET_MULTICAST)，取值 PACKET_*
+	__u8			pkt_type:3;     // 标识该skb中承载的包类型(比如PACKET_MULTICAST)，取值 PACKET_*
 	__u8			pfmemalloc:1;
 	__u8			ignore_df:1;
 	__u8			nfctinfo:3;
@@ -915,7 +915,7 @@ int skb_to_sgvec(struct sk_buff *skb, struct scatterlist *sg, int offset,
 		 int len);
 int skb_cow_data(struct sk_buff *skb, int tailbits, struct sk_buff **trailer);
 int skb_pad(struct sk_buff *skb, int pad);
-#define dev_kfree_skb(a)	consume_skb(a)  // 释放skb，跟dev_alloc_skb对应，通常用于驱动中
+#define dev_kfree_skb(a)	consume_skb(a)  // 释放skb，跟dev_alloc_skb对应(同样是旧式接口)，通常用于驱动中
 
 int skb_append_datato_frags(struct sock *sk, struct sk_buff *skb,
 			    int getfrag(void *from, char *to, int offset,
@@ -2077,6 +2077,7 @@ static inline bool skb_transport_header_was_set(const struct sk_buff *skb)
 	return skb->transport_header != (typeof(skb->transport_header))~0U;
 }
 
+// 获取缓冲区中transport layer字段(L4层头)的位置
 static inline unsigned char *skb_transport_header(const struct sk_buff *skb)
 {
 	return skb->head + skb->transport_header;
@@ -2095,7 +2096,7 @@ static inline void skb_set_transport_header(struct sk_buff *skb,
 	skb->transport_header += offset;
 }
 
-// 获取缓冲区中network layer字段的位置(如果存在LLC字段则返回LLC的位置)
+// 获取缓冲区中network layer字段(L3层头)的位置(如果存在LLC字段则返回LLC的位置)
 static inline unsigned char *skb_network_header(const struct sk_buff *skb)
 {
 	return skb->head + skb->network_header;
@@ -2113,7 +2114,7 @@ static inline void skb_set_network_header(struct sk_buff *skb, const int offset)
 	skb->network_header += offset;
 }
 
-// 获取缓冲区中mac地址字段的位置
+// 获取缓冲区中mac地址字段(L3层头)的位置
 static inline unsigned char *skb_mac_header(const struct sk_buff *skb)
 {
 	return skb->head + skb->mac_header;
@@ -2367,7 +2368,11 @@ static inline struct sk_buff *netdev_alloc_skb(struct net_device *dev,
 	return __netdev_alloc_skb(dev, length, GFP_ATOMIC);
 }
 
-/* legacy helper around __netdev_alloc_skb() */
+/* legacy helper around __netdev_alloc_skb() 
+ * 分配一个无主的skb(旧式的分配skb接口)
+ *
+ * 备注：显然，本函数不可以在中断中被调用
+ * */
 static inline struct sk_buff *__dev_alloc_skb(unsigned int length,
 					      gfp_t gfp_mask)
 {
@@ -2375,7 +2380,9 @@ static inline struct sk_buff *__dev_alloc_skb(unsigned int length,
 }
 
 /* legacy helper around netdev_alloc_skb() 
- * 分配一个无主的skb
+ * 分配一个无主的skb(旧式的分配skb接口)
+ *
+ * 备注：显然，本函数可以在中断中被调用
  * */
 static inline struct sk_buff *dev_alloc_skb(unsigned int length)
 {

@@ -25,10 +25,10 @@ struct sockaddr_ll {
  *
  * 备注： 只对接收到的数据包有意义
  * */
-#define PACKET_HOST		0		/* To us		标示目标地址是本机的数据包 */
+#define PACKET_HOST		0		    /* To us		标示目标地址是本机的数据包 */
 #define PACKET_BROADCAST	1		/* To all		标示物理层广播包 */
 #define PACKET_MULTICAST	2		/* To group		标示物理层组播包 */
-#define PACKET_OTHERHOST	3		/* To someone else 	标示目标地址是其他主机的数据包 */
+#define PACKET_OTHERHOST	3		/* To someone else 	    标示目标地址是其他主机的数据包 */
 #define PACKET_OUTGOING		4		/* Outgoing of any type 标示本地主机的环回包(这个似乎是发送时的包类型) */
 #define PACKET_LOOPBACK		5		/* MC/BRD frame looped back 标示这是个loopback包 */
 #define PACKET_USER		6		/* To user space	*/

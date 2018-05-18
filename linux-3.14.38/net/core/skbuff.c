@@ -202,7 +202,7 @@ out:
  *	备注：由本函数衍生出来以下几个封装API：
  *	        alloc_skb           - 缺省的skb分配函数，skb来自skbuff_head_cache缓冲池
  *	        alloc_skb_fclone    - 带克隆结构的的skb分配函数，skb来自skbuff_fclone_cache缓冲池
- *          dev_alloc_skb       - 分配一个接收数据包用的无主的skb，并且分配过程是原子的，通常用于驱动的中断中(该API中还封装了另一条平行分支build_skb)
+ *          __netdev_alloc_skb  - 给指定netdev分配一个接收数据包用的skb
  */
 struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
 			    int flags, int node)
@@ -435,7 +435,7 @@ EXPORT_SYMBOL(netdev_alloc_frag);
 
 /**
  *	__netdev_alloc_skb - allocate an skbuff for rx on a specific device
- *	给指定网络设备分配一个接收数据包用的skb
+ *	给指定netdev分配一个接收数据包用的skb
  *	@dev: network device to receive on  指向该skb所属的网络设备，可以为NULL，意味着无主
  *	@length: length to allocate         需要分配的数据长度
  *	@gfp_mask: get_free_pages mask, passed to alloc_skb
