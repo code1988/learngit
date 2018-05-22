@@ -47,13 +47,19 @@ VLOG_DEFINE_THIS_MODULE(ovs_thread);
 /* If there is a reason that we cannot fork anymore (unless the fork will be
  * immediately followed by an exec), then this points to a string that
  * explains why. 
- * 用来记录不在允许程序执行fork的原因
+ * 用来记录不再允许程序执行fork的原因
  * */
 static const char *must_not_fork;
 
-/* True if we created any threads beyond the main initial thread. */
+/* True if we created any threads beyond the main initial thread. 
+ * 标识程序是否处于多线程状态
+ * */
 static bool multithreaded;
 
+/* 这个宏用于构造ovs封装的ovs互斥锁或ovs读写锁上锁函数
+ *
+ * 备注:这类ovs封装的上锁函数最大特点是附加了上锁的位置信息
+ */
 #define LOCK_FUNCTION(TYPE, FUN) \
     void \
     ovs_##TYPE##_##FUN##_at(const struct ovs_##TYPE *l_, \
@@ -75,10 +81,14 @@ static bool multithreaded;
         } \
         l->where = where; \
  }
-LOCK_FUNCTION(mutex, lock);
-LOCK_FUNCTION(rwlock, rdlock);
-LOCK_FUNCTION(rwlock, wrlock);
+LOCK_FUNCTION(mutex, lock);     // 定义了ovs封装的ovs互斥锁上锁接口: ovs_mutex_lock_at
+LOCK_FUNCTION(rwlock, rdlock);  // 定义了ovs封装的ovs读写锁上读锁接口: ovs_rwlock_rdlock_at
+LOCK_FUNCTION(rwlock, wrlock);  // 定义了ovs封装的ovs读写锁上写锁接口: ovs_rwlock_wrlock_at
 
+/* 这个宏用于构造ovs封装的ovs互斥锁或ovs读写锁try上锁函数
+ *
+ * 备注:这类ovs封装的上锁函数最大特点是附加了上锁的位置信息
+ */
 #define TRY_LOCK_FUNCTION(TYPE, FUN) \
     int \
     ovs_##TYPE##_##FUN##_at(const struct ovs_##TYPE *l_, \
@@ -103,10 +113,12 @@ LOCK_FUNCTION(rwlock, wrlock);
         } \
         return error; \
     }
-TRY_LOCK_FUNCTION(mutex, trylock);
-TRY_LOCK_FUNCTION(rwlock, tryrdlock);
-TRY_LOCK_FUNCTION(rwlock, trywrlock);
+TRY_LOCK_FUNCTION(mutex, trylock);      // 定义了ovs封装的ovs互斥锁try上锁接口: ovs_mutex_trylock_at
+TRY_LOCK_FUNCTION(rwlock, tryrdlock);   // 定义了ovs封装的ovs读写锁try上读锁接口: ovs_rwlock_tryrdlock_at
+TRY_LOCK_FUNCTION(rwlock, trywrlock);   // 定义了ovs封装的ovs读写锁try上写锁接口: ovs_rwlock_trywrlock_at
 
+/* 这个宏用于构造ovs封装的ovs互斥锁或ovs读写锁解锁/销毁函数
+ */
 #define UNLOCK_FUNCTION(TYPE, FUN, WHERE) \
     void \
     ovs_##TYPE##_##FUN(const struct ovs_##TYPE *l_) \
@@ -124,11 +136,12 @@ TRY_LOCK_FUNCTION(rwlock, trywrlock);
             ovs_abort(error, "pthread_%s_%s failed", #TYPE, #FUN); \
         } \
     }
-UNLOCK_FUNCTION(mutex, unlock, "<unlocked>");
-UNLOCK_FUNCTION(mutex, destroy, NULL);
-UNLOCK_FUNCTION(rwlock, unlock, "<unlocked>");
-UNLOCK_FUNCTION(rwlock, destroy, NULL);
+UNLOCK_FUNCTION(mutex, unlock, "<unlocked>");   // 定义了ovs封装的ovs互斥锁解锁接口: ovs_mutex_unlock
+UNLOCK_FUNCTION(mutex, destroy, NULL);          // 定义了ovs封装的ovs互斥锁销毁接口: ovs_mutex_destroy
+UNLOCK_FUNCTION(rwlock, unlock, "<unlocked>");  // 定义了ovs封装的ovs读写锁解锁接口: ovs_rwlock_unlock
+UNLOCK_FUNCTION(rwlock, destroy, NULL);         // 定义了ovs封装的ovs读写锁销毁接口: ovs_rwlock_destroy
 
+// 这个宏用于构造带1个参数的pthread函数
 #define XPTHREAD_FUNC1(FUNCTION, PARAM1)                \
     void                                                \
     x##FUNCTION(PARAM1 arg1)                            \
@@ -138,6 +151,7 @@ UNLOCK_FUNCTION(rwlock, destroy, NULL);
             ovs_abort(error, "%s failed", #FUNCTION);   \
         }                                               \
     }
+// 这个宏用于构造带2个参数的pthread函数
 #define XPTHREAD_FUNC2(FUNCTION, PARAM1, PARAM2)        \
     void                                                \
     x##FUNCTION(PARAM1 arg1, PARAM2 arg2)               \
@@ -147,6 +161,7 @@ UNLOCK_FUNCTION(rwlock, destroy, NULL);
             ovs_abort(error, "%s failed", #FUNCTION);   \
         }                                               \
     }
+// 这个宏用于构造带3个参数的pthread函数
 #define XPTHREAD_FUNC3(FUNCTION, PARAM1, PARAM2, PARAM3)\
     void                                                \
     x##FUNCTION(PARAM1 arg1, PARAM2 arg2, PARAM3 arg3)  \
@@ -157,6 +172,7 @@ UNLOCK_FUNCTION(rwlock, destroy, NULL);
         }                                               \
     }
 
+// 定义了一系列ovs封装的互斥锁API
 XPTHREAD_FUNC1(pthread_mutex_lock, pthread_mutex_t *);
 XPTHREAD_FUNC1(pthread_mutex_unlock, pthread_mutex_t *);
 XPTHREAD_FUNC1(pthread_mutexattr_init, pthread_mutexattr_t *);
@@ -164,12 +180,14 @@ XPTHREAD_FUNC1(pthread_mutexattr_destroy, pthread_mutexattr_t *);
 XPTHREAD_FUNC2(pthread_mutexattr_settype, pthread_mutexattr_t *, int);
 XPTHREAD_FUNC2(pthread_mutexattr_gettype, pthread_mutexattr_t *, int *);
 
+// 定义了一系列ovs封装的读写锁API
 XPTHREAD_FUNC1(pthread_rwlockattr_init, pthread_rwlockattr_t *);
 XPTHREAD_FUNC1(pthread_rwlockattr_destroy, pthread_rwlockattr_t *);
 #ifdef PTHREAD_RWLOCK_WRITER_NONRECURSIVE_INITIALIZER_NP
 XPTHREAD_FUNC2(pthread_rwlockattr_setkind_np, pthread_rwlockattr_t *, int);
 #endif
 
+// 定义了一系列ovs封装条件变量API
 XPTHREAD_FUNC2(pthread_cond_init, pthread_cond_t *, pthread_condattr_t *);
 XPTHREAD_FUNC1(pthread_cond_destroy, pthread_cond_t *);
 XPTHREAD_FUNC1(pthread_cond_signal, pthread_cond_t *);
@@ -186,6 +204,9 @@ XPTHREAD_FUNC2(pthread_setspecific, pthread_key_t, const void *);
 XPTHREAD_FUNC3(pthread_sigmask, int, const sigset_t *, sigset_t *);
 #endif
 
+/* ovs封装的初始化互斥锁
+ * @type    互斥锁类型
+ */
 static void
 ovs_mutex_init__(const struct ovs_mutex *l_, int type)
 {
@@ -194,23 +215,32 @@ ovs_mutex_init__(const struct ovs_mutex *l_, int type)
     int error;
 
     l->where = "<unlocked>";
+    // 初始化互斥锁的属性对象attr
     xpthread_mutexattr_init(&attr);
+    // 修改互斥锁类型属性
     xpthread_mutexattr_settype(&attr, type);
+    // 最终执行初始化该互斥锁
     error = pthread_mutex_init(&l->lock, &attr);
     if (OVS_UNLIKELY(error)) {
         ovs_abort(error, "pthread_mutex_init failed");
     }
+    // 属性对象使用完之后需要销毁
     xpthread_mutexattr_destroy(&attr);
 }
 
-/* Initializes 'mutex' as a normal (non-recursive) mutex. */
+/* Initializes 'mutex' as a normal (non-recursive) mutex. 
+ * ovs封装的初始化一个普通型(非递归型)互斥锁接口 
+ * 
+ * 备注:事实上在linux中,默认的互斥量为PTHREAD_MUTEX_DEFAULT,它又映射为真正的PTHREAD_MUTEX_NORMAL类型
+ * */
 void
 ovs_mutex_init(const struct ovs_mutex *mutex)
 {
     ovs_mutex_init__(mutex, PTHREAD_MUTEX_ERRORCHECK);
 }
 
-/* Initializes 'mutex' as a recursive mutex. */
+/* Initializes 'mutex' as a recursive mutex. 
+ * ovs封装的初始化一个递归型互斥锁接口 */
 void
 ovs_mutex_init_recursive(const struct ovs_mutex *mutex)
 {
@@ -228,6 +258,7 @@ ovs_mutex_init_adaptive(const struct ovs_mutex *mutex)
 #endif
 }
 
+// ovs封装的初始化读写锁接口
 void
 ovs_rwlock_init(const struct ovs_rwlock *l_)
 {

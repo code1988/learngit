@@ -127,7 +127,7 @@ struct stream_class {
 };
 
 /* Passive listener for incoming stream connections.
- *
+ * 定义了被动监听管理块结构,用于管理远端流的连接请求
  * This structure should be treated as opaque by stream implementations. */
 struct pstream {
     const struct pstream_class *class;
@@ -143,8 +143,11 @@ static inline void pstream_assert_class(const struct pstream *pstream,
     ovs_assert(pstream->class == class);
 }
 
+// 定义了pstream的类描述
 struct pstream_class {
-    /* Prefix for connection names, e.g. "ptcp", "pssl", "punix". */
+    /* Prefix for connection names, e.g. "ptcp", "pssl", "punix". 
+     * 类名
+     * */
     const char *name;
 
     /* True if this pstream needs periodic probes to verify connectivity.  For

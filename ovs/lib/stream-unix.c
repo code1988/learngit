@@ -79,6 +79,7 @@ const struct stream_class unix_stream_class = {
 static int punix_accept(int fd, const struct sockaddr_storage *ss,
                         size_t ss_len, struct stream **streamp);
 
+// 创建UNIX域服务端套接字
 static int
 punix_open(const char *name OVS_UNUSED, char *suffix,
            struct pstream **pstreamp, uint8_t dscp OVS_UNUSED)
@@ -86,6 +87,7 @@ punix_open(const char *name OVS_UNUSED, char *suffix,
     char *bind_path;
     int fd, error;
 
+    // 计算套接字绝对地址
     bind_path = abs_file_name(ovs_rundir(), suffix);
     fd = make_unix_socket(SOCK_STREAM, true, bind_path, NULL);
     if (fd < 0) {
@@ -118,6 +120,7 @@ punix_accept(int fd, const struct sockaddr_storage *ss, size_t ss_len,
     return new_fd_stream(bound_name, fd, 0, AF_UNIX, streamp);
 }
 
+// 定义了属于pstream的UNIX域类
 const struct pstream_class punix_pstream_class = {
     "punix",
     false,

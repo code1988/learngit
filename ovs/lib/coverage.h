@@ -58,7 +58,7 @@ void coverage_counter_register(struct coverage_counter*);
 
 /* Defines COUNTER.  There must be exactly one such definition at file scope
  * within a program. 
- * 定义一个计数模块
+ * 定义一个计数器模块
  * */
 #define COVERAGE_DEFINE(COUNTER)                                        \
         DEFINE_STATIC_PER_THREAD_DATA(unsigned int,                     \

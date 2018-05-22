@@ -53,7 +53,9 @@ static int getsockopt_int(int fd, int level, int option, const char *optname,
                           int *valuep);
 
 /* Sets 'fd' to non-blocking mode.  Returns 0 if successful, otherwise a
- * positive errno value. */
+ * positive errno value. 
+ * 将fd设置为非阻塞模式
+ * */
 int
 set_nonblocking(int fd)
 {
@@ -81,6 +83,7 @@ set_nonblocking(int fd)
 #endif
 }
 
+// ovs封装的设置非阻塞fd接口
 void
 xset_nonblocking(int fd)
 {

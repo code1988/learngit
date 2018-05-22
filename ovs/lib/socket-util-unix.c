@@ -58,6 +58,7 @@ xpipe(int fds[2])
     }
 }
 
+// 创建一对非阻塞pipe
 void
 xpipe_nonblocking(int fds[2])
 {
@@ -307,6 +308,11 @@ static int bind_unix_socket(int fd, struct sockaddr *sun, socklen_t sun_len)
  * SOCK_STREAM) that is bound to '*bind_path' (if 'bind_path' is non-null) and
  * connected to '*connect_path' (if 'connect_path' is non-null).  If 'nonblock'
  * is true, the socket is made non-blocking.
+ * 基于传入的配置选项创建UNIX域套接字
+ * @style       套接字类型,SOCK_DGRAM/SOCK_STREAM
+ * @nonblock    标识是否将套接字设置为非阻塞    
+ * @bind_path   套接字绑定地址,NULL表示不进行绑定
+ * @connect_path    要连接的对端套接字地址,NULL表示不进行连接
  *
  * Returns the socket's fd if successful, otherwise a negative errno value. */
 int
@@ -316,6 +322,7 @@ make_unix_socket(int style, bool nonblock,
     int error;
     int fd;
 
+    // 首先是创建该UNIX域套接字
     fd = socket(PF_UNIX, style, 0);
     if (fd < 0) {
         return -errno;
@@ -325,6 +332,7 @@ make_unix_socket(int style, bool nonblock,
      * in connect(), if connect_path != NULL.  (In turn, that's a corner case:
      * it will only happen if style is SOCK_STREAM or SOCK_SEQPACKET, and only
      * if a backlog of un-accepted connections has built up in the kernel.)  */
+    // 紧接着将该fd设置为非阻塞(如果需要)
     if (nonblock) {
         error = set_nonblocking(fd);
         if (error) {
@@ -332,12 +340,14 @@ make_unix_socket(int style, bool nonblock,
         }
     }
 
+    // 然后将该套接字绑定到指定地址(如果指定了有效的绑定地址)
     if (bind_path) {
         char linkname[MAX_UN_LEN + 1];
         struct sockaddr_un un;
         socklen_t un_len;
         int dirfd;
 
+        // 确保将要绑定的套接字文件不存在
         if (unlink(bind_path) && errno != ENOENT) {
             VLOG_WARN("unlinking \"%s\": %s\n",
                       bind_path, ovs_strerror(errno));

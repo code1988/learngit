@@ -62,6 +62,7 @@ signal_name(int signum, char *namebuf, size_t bufsize)
     return namebuf;
 }
 
+// ovs封装的sigaction接口
 void
 xsigaction(int signum, const struct sigaction *new, struct sigaction *old)
 {

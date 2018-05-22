@@ -40,7 +40,9 @@
 
 VLOG_DEFINE_THIS_MODULE(fatal_signal);
 
-/* Signals to catch. */
+/* Signals to catch. 
+ * 定义了一张致命信号列表
+ * */
 #ifndef _WIN32
 static const int fatal_signals[] = { SIGTERM, SIGINT, SIGHUP, SIGALRM };
 #else
@@ -58,14 +60,14 @@ struct hook {
 static struct hook hooks[MAX_HOOKS];    // 定义了一张信号钩子表
 static size_t n_hooks;      // 记录了已经注册的信号钩子数量
 
-static int signal_fds[2];
+static int signal_fds[2];   // 定义了一对用于处理致命信号的管道fd
 static volatile sig_atomic_t stored_sig_nr = SIG_ATOMIC_MAX;    // 记录了尚未处理的信号ID
 
 #ifdef _WIN32
 static HANDLE wevent;
 #endif
 
-static struct ovs_mutex mutex;
+static struct ovs_mutex mutex;      // 这个互斥锁用于维护致命信号处理模块
 
 static void call_hooks(int sig_nr);
 #ifdef _WIN32
@@ -75,20 +77,29 @@ static BOOL WINAPI ConsoleHandlerRoutine(DWORD dwCtrlType);
 /* Initializes the fatal signal handling module.  Calling this function is
  * optional, because calling any other function in the module will also
  * initialize it.  However, in a multithreaded program, the module must be
- * initialized while the process is still single-threaded. */
+ * initialized while the process is still single-threaded. 
+ * 初始化致命信号处理模块
+ *
+ * 备注: 由于本模块的每个其他API内部都调用了本函数,所以本函数是可选的；
+ *       但在多线程程序中,本函数必须确保在一开始仍旧处于单线程时被调用一次
+ * */
 void
 fatal_signal_init(void)
 {
-    static bool inited = false;
+    static bool inited = false;     // 这个静态变量用于标识致命信号处理模块是否进行过初始化
 
+    // 如果没有初始化过,则进行初始化,显然只会初始化一次
     if (!inited) {
         size_t i;
 
+        // 确保处于单线程模式
         assert_single_threaded();
         inited = true;
 
+        // 初始化为递归型互斥锁
         ovs_mutex_init_recursive(&mutex);
 #ifndef _WIN32
+        // 创建一对非阻塞pipe
         xpipe_nonblocking(signal_fds);
 #else
         wevent = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -106,7 +117,9 @@ fatal_signal_init(void)
 #ifndef _WIN32
             struct sigaction old_sa;
 
+            // 获取每个致命信号的当前处理动作
             xsigaction(sig_nr, NULL, &old_sa);
+            // 为每个使用缺省处理动作的致命信号注册统一的处理函数
             if (old_sa.sa_handler == SIG_DFL
                 && signal(sig_nr, fatal_signal_handler) == SIG_ERR) {
                 VLOG_FATAL("signal failed (%s)", ovs_strerror(errno));
@@ -152,6 +165,7 @@ fatal_signal_add_hook(void (*hook_cb)(void *aux), void (*cancel_cb)(void *aux),
 }
 
 /* Handles fatal signal number 'sig_nr'.
+ * 致命信号的统一处理函数
  *
  * Ordinarily this is the actual signal handler.  When other code needs to
  * handle one of our signals, however, it can register for that signal and, if
