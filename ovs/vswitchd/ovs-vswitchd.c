@@ -105,11 +105,12 @@ main(int argc, char *argv[])
 #endif
     }
 
-    // 如果配置了ovs-vswitchd本地套接字设置,则创建本地套接字服务端并监听该套接字,该套接字将作为ovs-appctl控制ovs-vswitchd的通道
+    // 如果配置了ovs-vswitchd本地套接字设置,则创建UNIX域套接字服务端并开启监听,该套接字将作为ovs-appctl控制ovs-vswitchd的接口
     retval = unixctl_server_create(unixctl_path, &unixctl);
     if (retval) {
         exit(EXIT_FAILURE);
     }
+    // 为该UNIX域服务端套接字注册"exit"命令
     unixctl_command_register("exit", "[--cleanup]", 0, 1,
                              ovs_vswitchd_exit, &exit_args);
 
@@ -292,6 +293,7 @@ usage(void)
     exit(EXIT_SUCCESS);
 }
 
+// "exit"命令的回调函数
 static void
 ovs_vswitchd_exit(struct unixctl_conn *conn, int argc,
                   const char *argv[], void *exit_args_)

@@ -78,7 +78,9 @@ lost_communication(DWORD last_err)
 }
 #endif
 
-/* Netlink sockets. */
+/* Netlink sockets. 
+ * 定义了netlink套接字控制块结构
+ * */
 
 struct nl_sock {
 #ifdef _WIN32
@@ -86,11 +88,11 @@ struct nl_sock {
     OVERLAPPED overlapped;
     DWORD read_ioctl;
 #else
-    int fd;
+    int fd;             // netlink套接字
 #endif
     uint32_t next_seq;
     uint32_t pid;
-    int protocol;
+    int protocol;       // 该netlink套接字使用的netlink协议
     unsigned int rcvbuf;        /* Receive buffer size (SO_RCVBUF). */
 };
 
@@ -109,7 +111,9 @@ static void nl_pool_release(struct nl_sock *);
 
 /* Creates a new netlink socket for the given netlink 'protocol'
  * (NETLINK_ROUTE, NETLINK_GENERIC, ...).  Returns 0 and sets '*sockp' to the
- * new socket if successful, otherwise returns a positive errno value. */
+ * new socket if successful, otherwise returns a positive errno value. 
+ * 创建指定协议的netlink套接字控制块
+ * */
 int
 nl_sock_create(int protocol, struct nl_sock **sockp)
 {

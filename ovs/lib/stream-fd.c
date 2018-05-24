@@ -175,15 +175,16 @@ static const struct stream_class stream_fd_class = {
     fd_wait,                    /* wait */
 };
 
-/* Passive file descriptor stream. */
-
+/* Passive file descriptor stream. 
+ * 定义了文件描述符风格的pstream管理块
+ * */
 struct fd_pstream
 {
-    struct pstream pstream;
-    int fd;
+    struct pstream pstream; // 封装的pstream基类结构
+    int fd;                 // 该pstream关联的fd
     int (*accept_cb)(int fd, const struct sockaddr_storage *, size_t ss_len,
-                     struct stream **);
-    char *unlink_path;
+                     struct stream **); // 该pstream接受远端连接请求时的回调函数
+    char *unlink_path;      // 通常就是该pstream关联fd的绑定地址
 };
 
 static const struct pstream_class fd_pstream_class;
@@ -197,6 +198,12 @@ fd_pstream_cast(struct pstream *pstream)
 
 /* Creates a new pstream named 'name' that will accept new socket connections
  * on 'fd' and stores a pointer to the stream in '*pstreamp'.
+ * 创建一个pstream管理块,实际上这里创建的是一个进一步封装过的fd_pstream
+ * @name        "punix:$ADDR"格式,其中"$ADDR"代表该UNIX域服务端套接字要绑定的地址
+ * @fd          该pstream管理块关联的fd
+ * @accept_cb   该pstream接受远端连接请求时的回调函数
+ * @unlink_path 该pstream管理块关联fd的绑定地址 
+ * @pstreamp    用于存放创建的pstream管理块
  *
  * When a connection has been accepted, 'accept_cb' will be called with the new
  * socket fd 'fd' and the remote address of the connection 'sa' and 'sa_len'.
@@ -274,6 +281,7 @@ pfd_wait(struct pstream *pstream)
     poll_fd_wait(ps->fd, POLLIN);
 }
 
+// 定义了属于pstream的通用文件类(显然pstream的TCP套接字类和UNIX域套接字类都属于通用文件类)
 static const struct pstream_class fd_pstream_class = {
     "pstream",
     false,

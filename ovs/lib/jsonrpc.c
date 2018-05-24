@@ -750,7 +750,9 @@ jsonrpc_msg_to_json(struct jsonrpc_msg *m)
     return json;
 }
 
-/* A JSON-RPC session with reconnection. */
+/* A JSON-RPC session with reconnection. 
+ * JSON-RPC格式的连接session
+ * */
 
 struct jsonrpc_session {
     struct reconnect *reconnect;
@@ -764,6 +766,9 @@ struct jsonrpc_session {
 
 /* Creates and returns a jsonrpc_session to 'name', which should be a string
  * acceptable to stream_open() or pstream_open().
+ * 创建一个使用JSON-RPC格式的服务端或客户端
+ * @name    "TYPE:ARGS"格式,其中"TYPE"字段不仅表示协议类型,还用于区分C/S
+ * @retry   标识是否支持重连
  *
  * If 'name' is an active connection method, e.g. "tcp:127.1.2.3", the new
  * jsonrpc_session connects to 'name'.  If 'retry' is true, then the new

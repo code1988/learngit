@@ -86,31 +86,35 @@ struct ovsdb_idl_row {
     unsigned long int *updated; /* Bitmap of columns updated by IDL */
 };
 
+// 用于描述ovsdb数据库table中的一个column
 struct ovsdb_idl_column {
-    char *name;
+    char *name;     // column名,作为键值索引用
     struct ovsdb_type type;
     bool mutable;
     void (*parse)(struct ovsdb_idl_row *, const struct ovsdb_datum *);
     void (*unparse)(struct ovsdb_idl_row *);
 };
 
+// 用于描述ovsdb数据库中一个table所属的类
 struct ovsdb_idl_table_class {
-    char *name;
+    char *name;     // 类名,作为键值索引用
     bool is_root;
-    const struct ovsdb_idl_column *columns;
-    size_t n_columns;
+    const struct ovsdb_idl_column *columns; // 指向一const数组,记录了该类table包含的columns
+    size_t n_columns;                       // 数组中的column数量,显然也是个固定值
     size_t allocation_size;
     void (*row_init)(struct ovsdb_idl_row *);
 };
 
+// 用于描述ovsdb数据库中一个table
 struct ovsdb_idl_table {
-    const struct ovsdb_idl_table_class *class;
-    unsigned char *modes;    /* OVSDB_IDL_* bitmasks, indexed by column. */
+    const struct ovsdb_idl_table_class *class;  // 指向该table所属的类
+    unsigned char *modes;    /* OVSDB_IDL_* bitmasks, indexed by column.  指向一个数组,数组长度跟该table所属类包含的column数量有关,
+                                每个元素依次记录了对应column的mode */
     bool need_table;         /* Monitor table even if no columns are selected
                               * for replication. */
     struct shash columns;    /* Contains "const struct ovsdb_idl_column *"s. */
     struct hmap rows;        /* Contains "struct ovsdb_idl_row"s. */
-    struct ovsdb_idl *idl;   /* Containing idl. */
+    struct ovsdb_idl *idl;   /* Containing idl.  指向该table所属的ovsdb操作句柄 */
     unsigned int change_seqno[OVSDB_IDL_CHANGE_MAX];
     struct shash indexes;    /* Contains "struct ovsdb_idl_index"s */
     struct ovs_list track_list; /* Tracked rows (ovsdb_idl_row.track_node). */
@@ -119,9 +123,9 @@ struct ovsdb_idl_table {
 };
 
 struct ovsdb_idl_class {
-    const char *database;       /* <db-name> for this database. */
-    const struct ovsdb_idl_table_class *tables;
-    size_t n_tables;
+    const char *database;       /* <db-name> for this database.  数据库名 */
+    const struct ovsdb_idl_table_class *tables;     // 指向一张数据库的数据列表
+    size_t n_tables;                                // 该数据列表中的数据条目数量
 };
 
 /*

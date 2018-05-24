@@ -79,7 +79,12 @@ const struct stream_class unix_stream_class = {
 static int punix_accept(int fd, const struct sockaddr_storage *ss,
                         size_t ss_len, struct stream **streamp);
 
-// 创建UNIX域服务端套接字
+/* pstream创建UNIX域服务端套接字
+ * @name        "punix:$ADDR"格式,其中"$ADDR"代表该UNIX域服务端套接字要绑定的地址
+ * @suffix      就是"$ADDR"
+ * @pstreamp    用于存放创建的pstream管理块
+ * @dscp        UNIX域套接字忽略该参数
+ */
 static int
 punix_open(const char *name OVS_UNUSED, char *suffix,
            struct pstream **pstreamp, uint8_t dscp OVS_UNUSED)
@@ -89,6 +94,7 @@ punix_open(const char *name OVS_UNUSED, char *suffix,
 
     // 计算套接字绝对地址
     bind_path = abs_file_name(ovs_rundir(), suffix);
+    // 创建非阻塞的UNIX域套接字,并将套接字绑定到指定地址
     fd = make_unix_socket(SOCK_STREAM, true, bind_path, NULL);
     if (fd < 0) {
         VLOG_ERR("%s: binding failed: %s", bind_path, ovs_strerror(errno));
@@ -96,6 +102,7 @@ punix_open(const char *name OVS_UNUSED, char *suffix,
         return errno;
     }
 
+    // 在创建的UNIX域套接字上开启监听,连接上限64路
     if (listen(fd, 64) < 0) {
         error = errno;
         VLOG_ERR("%s: listen: %s", name, ovs_strerror(error));
@@ -104,6 +111,7 @@ punix_open(const char *name OVS_UNUSED, char *suffix,
         return error;
     }
 
+    // 为该UNIX域套接字创建一个pstream管理块
     return new_fd_pstream(xstrdup(name), fd,
                           punix_accept, bind_path, pstreamp);
 }
@@ -120,7 +128,7 @@ punix_accept(int fd, const struct sockaddr_storage *ss, size_t ss_len,
     return new_fd_stream(bound_name, fd, 0, AF_UNIX, streamp);
 }
 
-// 定义了属于pstream的UNIX域类
+// 定义了属于pstream的UNIX域套接字类
 const struct pstream_class punix_pstream_class = {
     "punix",
     false,

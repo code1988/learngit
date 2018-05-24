@@ -209,6 +209,7 @@ shorten_name_via_symlink(const char *name, char short_name[MAX_UN_LEN + 1],
 
 /* Stores in '*un' a sockaddr_un that refers to file 'name'.  Stores in
  * '*un_len' the size of the sockaddr_un.
+ * 根据传入的配置参数填充UNIX域套接字地址
  *
  * Returns 0 on success, otherwise a positive errno value.
  *
@@ -248,7 +249,9 @@ make_sockaddr_un(const char *name, struct sockaddr_un *un, socklen_t *un_len,
     return 0;
 }
 
-/* Clean up after make_sockaddr_un(). */
+/* Clean up after make_sockaddr_un(). 
+ * 释放make_sockaddr_un操作申请的内存
+ * */
 static void
 free_sockaddr_un(int dirfd, const char *linkname)
 {
@@ -340,7 +343,7 @@ make_unix_socket(int style, bool nonblock,
         }
     }
 
-    // 然后将该套接字绑定到指定地址(如果指定了有效的绑定地址)
+    // 如果指定了有效的绑定地址,就将该套接字绑定到指定地址
     if (bind_path) {
         char linkname[MAX_UN_LEN + 1];
         struct sockaddr_un un;
@@ -365,13 +368,16 @@ make_unix_socket(int style, bool nonblock,
         }
     }
 
+    // 如果指定了有效的对端套接字地址,就进行connect
     if (connect_path) {
         char linkname[MAX_UN_LEN + 1];
         struct sockaddr_un un;
         socklen_t un_len;
         int dirfd;
 
+        // 填充UNIX域套接字地址
         error = make_sockaddr_un(connect_path, &un, &un_len, &dirfd, linkname);
+        // 向对端发起连接请求
         if (!error
             && connect(fd, (struct sockaddr*) &un, un_len)
             && errno != EINPROGRESS) {

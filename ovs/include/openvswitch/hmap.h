@@ -64,7 +64,9 @@ struct hmap {
     size_t n;
 };
 
-/* Initializer for an empty hash map. */
+/* Initializer for an empty hash map. 
+ * 初始化一个空的hash表
+ * */
 #define HMAP_INITIALIZER(HMAP) \
     { (struct hmap_node **const) &(HMAP)->one, NULL, 0, 0 }
 

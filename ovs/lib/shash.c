@@ -28,6 +28,7 @@ hash_name(const char *name)
     return hash_string(name, 0);
 }
 
+// 初始化hash表
 void
 shash_init(struct shash *sh)
 {
@@ -122,13 +123,19 @@ shash_add_nocopy(struct shash *sh, char *name, const void *data)
 }
 
 /* It is the caller's responsibility to avoid duplicate names, if that is
- * desirable. */
+ * desirable. 
+ * 将用户数据插入hash表(该接口需要调用者自己确保键值不重复)
+ * @sh      hash表
+ * @name    该用户数据在hash表中的索引键值
+ * @data    用户数据
+ * */
 struct shash_node *
 shash_add(struct shash *sh, const char *name, const void *data)
 {
     return shash_add_nocopy(sh, xstrdup(name), data);
 }
 
+// 将用户数据插入hash表(该接口内部确保键值不重复)
 bool
 shash_add_once(struct shash *sh, const char *name, const void *data)
 {
@@ -140,6 +147,7 @@ shash_add_once(struct shash *sh, const char *name, const void *data)
     }
 }
 
+// 将用户数据插入hash表(assert版本)
 void
 shash_add_assert(struct shash *sh, const char *name, const void *data)
 {
@@ -217,6 +225,7 @@ shash_find_len(const struct shash *sh, const char *name, size_t len)
     return shash_find__(sh, name, len, hash_bytes(name, len, 0));
 }
 
+// 根据name从hash表中索引关联的节点,并返回该节点的data字段
 void *
 shash_find_data(const struct shash *sh, const char *name)
 {

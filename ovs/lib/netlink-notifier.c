@@ -34,31 +34,35 @@ COVERAGE_DEFINE(nln_changed);
 
 static void nln_report(const struct nln *nln, void *change, int group);
 
+// 用于描述netlink通知链的操作句柄结构
 struct nln {
-    struct nl_sock *notify_sock; /* Netlink socket. */
-    struct ovs_list all_notifiers;   /* All nln notifiers. */
+    struct nl_sock *notify_sock; /* Netlink socket. 指向该netlink句柄关联的netlink套接字管理块 */
+    struct ovs_list all_notifiers;   /* All nln notifiers.  这张链表记录了该netlink通知链管理的所有阅订单元 */
     bool has_run;                /* Guard for run and wait functions. */
 
     /* Passed in by nln_create(). */
-    int protocol;                /* Protocol passed to nl_sock_create(). */
-    nln_parse_func *parse;       /* Message parsing function. */
-    void *change;                /* Change passed to parse. */
+    int protocol;                /* Protocol passed to nl_sock_create().  该netlink句柄关联的netlink协议 */
+    nln_parse_func *parse;       /* Message parsing function. 该netlink句柄关联的消息解析函数 */
+    void *change;                /* Change passed to parse. 记录了传递给parse回调函数的参数 */
 };
 
+// 用于描述netlink组播消息的阅订单元结构
 struct nln_notifier {
     struct ovs_list node;        /* In struct nln's 'all_notifiers' list. */
-    struct nln *nln;             /* Parent nln. */
+    struct nln *nln;             /* Parent nln.  指向该阅订单元所属的netlink通知链句柄 */
 
-    int multicast_group;         /* Multicast group we listen on. */
-    nln_notify_func *cb;
-    void *aux;
+    int multicast_group;         /* Multicast group we listen on. 该阅订单元监听的组播通道 */
+    nln_notify_func *cb;        // 该阅订单元收到通知后的回调函数
+    void *aux;                  // 记录了传递给回调函数的参数
 };
 
 /* Creates an nln handle which may be used to manage change notifications.  The
  * created handle will listen for netlink messages on 'multicast_group' using
  * netlink protocol 'protocol' (e.g. NETLINK_ROUTE, NETLINK_GENERIC, ...).
  * Incoming messages will be parsed with 'parse' which will be passed 'change'
- * as an argument. */
+ * as an argument. 
+ * 根据传入的配置参数创建并初始化一个netlink通知链的操作句柄
+ * */
 struct nln *
 nln_create(int protocol, nln_parse_func *parse, void *change)
 {
@@ -93,6 +97,11 @@ nln_destroy(struct nln *nln)
 /* Registers 'cb' to be called with auxiliary data 'aux' with change
  * notifications.  The notifier is stored in 'notifier', which the caller must
  * not modify or free.
+ * 注册一组阅订需求
+ * @nln             指向接受注册的netlink通知链句柄
+ * @multicast_group 要阅订的组播通道
+ * @cb              收到组播消息后的回调函数
+ * @aux             用户自定义的附加数据,用作回调函数的参数
  *
  * This is probably not the function you want.  You should probably be using
  * message specific notifiers like rtnetlink_link_notifier_register().
@@ -105,9 +114,11 @@ nln_notifier_create(struct nln *nln, int multicast_group, nln_notify_func *cb,
     struct nln_notifier *notifier;
     int error;
 
+    // netlink通知链在第一次接受阅订注册时会创建netlink套接字控制块
     if (!nln->notify_sock) {
         struct nl_sock *sock;
 
+        // 创建netlink套接字控制块
         error = nl_sock_create(nln->protocol, &sock);
         if (error) {
             VLOG_WARN("could not create netlink socket: %s",

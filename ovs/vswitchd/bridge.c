@@ -155,7 +155,9 @@ struct aa_mapping {
 /* All bridges, indexed by name. */
 static struct hmap all_bridges = HMAP_INITIALIZER(&all_bridges);
 
-/* OVSDB IDL used to obtain configuration. */
+/* OVSDB IDL used to obtain configuration. 
+ * 指向一个全局的ovsdb操作句柄,ovs-vswitchd将通过该句柄来从ovsdb-server获取配置信息
+ * */
 static struct ovsdb_idl *idl;
 
 /* We want to complete daemonization, fully detaching from our parent process,
@@ -390,16 +392,26 @@ if_notifier_changed(struct if_notifier *notifier OVS_UNUSED)
 
 /* Initializes the bridge module, configuring it to obtain its configuration
  * from an OVSDB server accessed over 'remote', which should be a string in a
- * form acceptable to ovsdb_idl_create(). */
+ * form acceptable to ovsdb_idl_create(). 
+ * bridge的初始化入口
+ * @remote ovsdb-server的服务端地址
+ * */
 void
 bridge_init(const char *remote)
 {
-    /* Create connection to database. */
+    /* Create connection to database. 
+     * 创建一个ovsdb操作句柄,后续都将通过该句柄从ovsdb获取配置信息
+     * */
     idl = ovsdb_idl_create(remote, &ovsrec_idl_class, true, true);
     idl_seqno = ovsdb_idl_get_seqno(idl);
+    // 向ovsdb请求获取名为"ovs_vswitchd"的锁
     ovsdb_idl_set_lock(idl, "ovs_vswitchd");
+    // 配置当前ovsdb操作句柄只会进行写操作
     ovsdb_idl_verify_write_only(idl);
 
+    /* 关闭ovsdb中表open_vswitch中 cur_cfg & statistics & datapath_types & iface_types 的OVSDB_IDL_ALERT标志 
+     * 清空ovsdb中表open_vswitch中 external_ids & ovs_version & db_version & system_type & system_version 的mode 
+     */
     ovsdb_idl_omit_alert(idl, &ovsrec_open_vswitch_col_cur_cfg);
     ovsdb_idl_omit_alert(idl, &ovsrec_open_vswitch_col_statistics);
     ovsdb_idl_omit_alert(idl, &ovsrec_open_vswitch_col_datapath_types);
@@ -409,7 +421,9 @@ bridge_init(const char *remote)
     ovsdb_idl_omit(idl, &ovsrec_open_vswitch_col_db_version);
     ovsdb_idl_omit(idl, &ovsrec_open_vswitch_col_system_type);
     ovsdb_idl_omit(idl, &ovsrec_open_vswitch_col_system_version);
-
+    /* 关闭ovsdb中表bridge中 datapath_id & datapath_version & status & rstp_status & stp_enable & rstp_enable & ids 的OVSDB_IDL_ALERT标志
+     * 清空ovsdb中表bridge中 external_ids 的mode 
+     */
     ovsdb_idl_omit_alert(idl, &ovsrec_bridge_col_datapath_id);
     ovsdb_idl_omit_alert(idl, &ovsrec_bridge_col_datapath_version);
     ovsdb_idl_omit_alert(idl, &ovsrec_bridge_col_status);
@@ -417,15 +431,24 @@ bridge_init(const char *remote)
     ovsdb_idl_omit_alert(idl, &ovsrec_bridge_col_stp_enable);
     ovsdb_idl_omit_alert(idl, &ovsrec_bridge_col_rstp_enable);
     ovsdb_idl_omit(idl, &ovsrec_bridge_col_external_ids);
-
+    /* 关闭ovsdb中表port中 status & rstp_status & rstp_statistics & statistics & bond_active_slave & trunks & vlan_mode 的OVSDB_IDL_ALERT标志
+     * 清空ovsdb中表port中 external_ids 的mode
+     */
     ovsdb_idl_omit_alert(idl, &ovsrec_port_col_status);
     ovsdb_idl_omit_alert(idl, &ovsrec_port_col_rstp_status);
     ovsdb_idl_omit_alert(idl, &ovsrec_port_col_rstp_statistics);
     ovsdb_idl_omit_alert(idl, &ovsrec_port_col_statistics);
     ovsdb_idl_omit_alert(idl, &ovsrec_port_col_bond_active_slave);
-    ovsdb_idl_omit(idl, &ovsrec_port_col_external_ids);
     ovsdb_idl_omit_alert(idl, &ovsrec_port_col_trunks);
     ovsdb_idl_omit_alert(idl, &ovsrec_port_col_vlan_mode);
+    ovsdb_idl_omit(idl, &ovsrec_port_col_external_ids);
+    /* 关闭ovsdb中表interface中 
+     *              admin_state     & duplex        & link_speed            & link_state    & link_resets   & mac_in_use        & ifindex & 
+     *              mtu             & ofport        & statistics            & status        & cfm_fault     & cfm_fault_status  & cfm_remote_mpids & 
+     *              cfm_flap_count  & cfm_health    & cfm_remote_opstate    & bfd_status    & lacp_current  & error 
+     * 的OVSDB_IDL_ALERT标志
+     * 清空ovsdb中表interface中 external_ids 的mode 
+     */
     ovsdb_idl_omit_alert(idl, &ovsrec_interface_col_admin_state);
     ovsdb_idl_omit_alert(idl, &ovsrec_interface_col_duplex);
     ovsdb_idl_omit_alert(idl, &ovsrec_interface_col_link_speed);
@@ -447,19 +470,30 @@ bridge_init(const char *remote)
     ovsdb_idl_omit_alert(idl, &ovsrec_interface_col_lacp_current);
     ovsdb_idl_omit_alert(idl, &ovsrec_interface_col_error);
     ovsdb_idl_omit(idl, &ovsrec_interface_col_external_ids);
-
+    /* 关闭ovsdb中表controller中 is_connected & col_role & col_status 的OVSDB_IDL_ALERT标志
+     * 清空ovsdb中表controller中 external_ids 的mode 
+     */
     ovsdb_idl_omit_alert(idl, &ovsrec_controller_col_is_connected);
     ovsdb_idl_omit_alert(idl, &ovsrec_controller_col_role);
     ovsdb_idl_omit_alert(idl, &ovsrec_controller_col_status);
     ovsdb_idl_omit(idl, &ovsrec_controller_col_external_ids);
-
+    // 清空ovsdb中表qos中 external_ids 的mode
     ovsdb_idl_omit(idl, &ovsrec_qos_col_external_ids);
-
+    // 清空ovsdb中表queue中 external_ids 的mode
     ovsdb_idl_omit(idl, &ovsrec_queue_col_external_ids);
 
+    /* 清空ovsdb中表mirror中 external_ids 的mode
+     * 关闭ovsdb中表mirror中 statistics 的OVSDB_IDL_ALERT标志
+     */
     ovsdb_idl_omit(idl, &ovsrec_mirror_col_external_ids);
     ovsdb_idl_omit_alert(idl, &ovsrec_mirror_col_statistics);
-
+    /* 清空ovsdb中表netflow中 external_ids 的mode
+     * 清空ovsdb中表sflow中 external_ids 的mode
+     * 清空ovsdb中表ipfix中 external_ids 的mode
+     * 清空ovsdb中表flow_sample_collector_set中 external_ids 的mode
+     * 清空ovsdb中表manager中 external_ids & inactivity_probe & is_connected & max_backoff & status 的mode
+     * 清空ovsdb中表ssl中 external_ids 的mode
+     */
     ovsdb_idl_omit(idl, &ovsrec_netflow_col_external_ids);
     ovsdb_idl_omit(idl, &ovsrec_sflow_col_external_ids);
     ovsdb_idl_omit(idl, &ovsrec_ipfix_col_external_ids);
@@ -473,7 +507,13 @@ bridge_init(const char *remote)
 
     ovsdb_idl_omit(idl, &ovsrec_ssl_col_external_ids);
 
-    /* Register unixctl commands. */
+    /* Register unixctl commands. 
+     * 为unixctl注册以下命令:
+     *      "qos/show-types"
+     *      "qos/show" 
+     *      "bridge/dump-flows"
+     *      "bridge/reconnect"
+     * */
     unixctl_command_register("qos/show-types", "interface", 1, 1,
                              qos_unixctl_show_types, NULL);
     unixctl_command_register("qos/show", "interface", 1, 1,
@@ -482,13 +522,21 @@ bridge_init(const char *remote)
                              bridge_unixctl_dump_flows, NULL);
     unixctl_command_register("bridge/reconnect", "[bridge]", 0, 1,
                              bridge_unixctl_reconnect, NULL);
+    // 初始化LACP模块
     lacp_init();
+    // 初始化bond模块
     bond_init();
+    // 初始化cfm模块
     cfm_init();
+    // 初始化bfd模块
     bfd_init();
+    // 初始化numa模块
     ovs_numa_init();
+    // 初始化stp模块
     stp_init();
+    // 初始化lldp模块
     lldp_init();
+    // 初始化rstp模块
     rstp_init();
     ifaces_changed = seq_create();
     last_ifaces_changed = seq_read(ifaces_changed);
@@ -3133,6 +3181,7 @@ qos_unixctl_show_queue(unsigned int queue_id,
     }
 }
 
+// 收到unixctl命令"qos/show-types"的回调函数
 static void
 qos_unixctl_show_types(struct unixctl_conn *conn, int argc OVS_UNUSED,
                        const char *argv[], void *aux OVS_UNUSED)
@@ -3171,6 +3220,7 @@ qos_unixctl_show_types(struct unixctl_conn *conn, int argc OVS_UNUSED,
     ds_destroy(&ds);
 }
 
+// 收到unixctl命令"qos/show"的回调函数
 static void
 qos_unixctl_show(struct unixctl_conn *conn, int argc OVS_UNUSED,
                  const char *argv[], void *aux OVS_UNUSED)
@@ -3290,7 +3340,10 @@ bridge_lookup(const char *name)
 }
 
 /* Handle requests for a listing of all flows known by the OpenFlow
- * stack, including those normally hidden. */
+ * stack, including those normally hidden. 
+ * 
+ * 收到unixctl命令"bridge/dump-flows"的回调函数
+ * */
 static void
 bridge_unixctl_dump_flows(struct unixctl_conn *conn, int argc OVS_UNUSED,
                           const char *argv[], void *aux OVS_UNUSED)
@@ -3313,7 +3366,10 @@ bridge_unixctl_dump_flows(struct unixctl_conn *conn, int argc OVS_UNUSED,
 
 /* "bridge/reconnect [BRIDGE]": makes BRIDGE drop all of its controller
  * connections and reconnect.  If BRIDGE is not specified, then all bridges
- * drop their controller connections and reconnect. */
+ * drop their controller connections and reconnect. 
+ * 
+ * 收到unixctl命令"bridge/reconnect"的回调函数
+ * */
 static void
 bridge_unixctl_reconnect(struct unixctl_conn *conn, int argc,
                          const char *argv[], void *aux OVS_UNUSED)

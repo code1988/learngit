@@ -63,11 +63,11 @@ static const struct stream_class *stream_classes[] = {
 #endif
 };
 
-// 这张全局表记录了所有支持的pstream类
+// 这张全局表记录了支持索引的pstream类(不包括通用文件类)
 static const struct pstream_class *pstream_classes[] = {
-    &ptcp_pstream_class,        // TCP类
+    &ptcp_pstream_class,        // TCP套接字类
 #ifndef _WIN32
-    &punix_pstream_class,       // UNIX域类
+    &punix_pstream_class,       // UNIX域套接字类
 #else
     &pwindows_pstream_class,
 #endif
@@ -453,7 +453,7 @@ stream_get_peer_id(const struct stream *stream)
  * named "TYPE" into '*classp' and returns 0.  Returns EAFNOSUPPORT and stores
  * a null pointer into '*classp' if 'name' is in the wrong form or if no such
  * class exists. 
- * 根据类名查找对应的类描述实例
+ * 根据ptream类名查找对应的ptream类描述实例
  * @name    "TYPE:ARGS"格式，其中"TYPE"就是要查找的类名
  * @classp  用于存放对应的类描述实例
  * */
@@ -512,9 +512,9 @@ stream_or_pstream_needs_probes(const char *name)
 /* Attempts to start listening for remote stream connections.  'name' is a
  * connection name in the form "TYPE:ARGS", where TYPE is an passive stream
  * class's name and ARGS are stream class-specific.
- * 尝试开启对远端流连接请求的被动监听.
+ * 根据传入的配置参数创建一个pstream,并开启监听.
  * @name        "TYPE:ARGS"格式,其中"TYPE"代表流的类名,"ARGS"含义跟流所属的类有关
- * @pstreamp    用于存放创建的被动监听管理块
+ * @pstreamp    用于存放创建的pstream结构
  * @dscp        标识是否开启这条流的流控
  *
  * Returns 0 if successful, otherwise a positive errno value.  If successful,
@@ -531,7 +531,7 @@ pstream_open(const char *name, struct pstream **pstreamp, uint8_t dscp)
     COVERAGE_INC(pstream_open);
 
     /* Look up the class. 
-     * 根据类名查找对应的pstream类描述
+     * 根据pstream类名查找对应的pstream类描述实例
      * */
     error = pstream_lookup_class(name, &class);
     if (!class) {
@@ -540,6 +540,7 @@ pstream_open(const char *name, struct pstream **pstreamp, uint8_t dscp)
 
     /* Call class's "open" function. */
     suffix_copy = xstrdup(strchr(name, ':') + 1);
+    // 调用对应的pstream类的listen方法
     error = class->listen(name, suffix_copy, &pstream, dscp);
     free(suffix_copy);
     if (error) {

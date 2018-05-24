@@ -98,17 +98,18 @@ const struct ovsdb_idl_table_class *ovsdb_idl_table_class_from_column(
  *
  * The possible mode combinations are:
  *
- *   - 0, for a column that a client doesn't care about.
+ *   - 0, for a column that a client doesn't care about.    该模式下ovsdb客户端不关心任何列或表
  *
  *   - (OVSDB_IDL_MONITOR | OVSDB_IDL_ALERT), for a column that a client wants
- *     to track and possibly update.
+ *     to track and possibly update.                        该模式下数据库中每个列或表的变化都会被客户端监控
  *
  *   - OVSDB_IDL_MONITOR, for columns that a client treats as "write-only",
  *     that is, it updates them but doesn't want to get alerted about its own
  *     updates.  It also won't be alerted about other clients' updates, so this
  *     is suitable only for use by a client that "owns" a particular column.
+ *     该模式下客户端只会往数据库写,而对数据库中数据变化不关心
  *
- *   - OVDSB_IDL_ALERT without OVSDB_IDL_MONITOR is not valid.
+ *   - OVDSB_IDL_ALERT without OVSDB_IDL_MONITOR is not valid.      这种是无效模式
  *
  *   - (OVSDB_IDL_MONITOR | OVSDB_IDL_ALERT | OVSDB_IDL_TRACK), for a column
  *     that a client wants to track using the change tracking

@@ -88,14 +88,15 @@ enum ovsdb_idl_state {
     IDL_S_NO_SCHEMA
 };
 
+// 定义了一个ovsdb操作句柄结构
 struct ovsdb_idl {
-    const struct ovsdb_idl_class *class;
-    struct jsonrpc_session *session;
+    const struct ovsdb_idl_class *class;    // 该句柄所属的类
+    struct jsonrpc_session *session;        // 该句柄关联的JSON-RPC格式的连接session
     struct uuid uuid;
-    struct shash table_by_name; /* Contains "struct ovsdb_idl_table *"s.*/
-    struct ovsdb_idl_table *tables; /* Array of ->class->n_tables elements. */
-    unsigned int change_seqno;
-    bool verify_write_only;
+    struct shash table_by_name; /* Contains "struct ovsdb_idl_table *"s. 这个hash表用于管理该句柄缓存的所有table */
+    struct ovsdb_idl_table *tables; /* Array of ->class->n_tables elements.  指向一个数组,该数组缓存了ovsdb中的所有table */
+    unsigned int change_seqno;      // 用于标识该句柄的状态
+    bool verify_write_only;         // 标识该句柄是否只会进行写操作
 
     /* Session state. */
     unsigned int state_seqno;
@@ -104,7 +105,7 @@ struct ovsdb_idl {
     struct json *schema;
 
     /* Database locking. */
-    char *lock_name;            /* Name of lock we need, NULL if none. */
+    char *lock_name;            /* Name of lock we need, NULL if none.  记录了该句柄当前需要从ovsdb获取的锁(尚未获取到?) */
     bool has_lock;              /* Has db server told us we have the lock? */
     bool is_lock_contended;     /* Has db server told us we can't get lock? */
     struct json *lock_request_id; /* JSON-RPC ID of in-flight lock request. */
@@ -244,6 +245,8 @@ static void ovsdb_idl_remove_from_indexes(const struct ovsdb_idl_row *);
  * in-memory replica of the remote database whose schema is described by
  * 'class'.  (Ordinarily 'class' is compiled from an OVSDB schema automatically
  * by ovsdb-idlc.)
+ * 建立一个跟ovsdb的连接session
+ * @remote "TYPE:ARGS"格式,要进行连接的ovsdb-server地址
  *
  * Passes 'retry' to jsonrpc_session_open().  See that function for
  * documentation.
@@ -265,13 +268,17 @@ ovsdb_idl_create(const char *remote, const struct ovsdb_idl_class *class,
     uint8_t default_mode;
     size_t i;
 
+    // 计算ovsdb客户端缓存的数据库数据的默认模式
     default_mode = (monitor_everything_by_default
                     ? OVSDB_IDL_MONITOR | OVSDB_IDL_ALERT
                     : 0);
 
+    /**< 下面创建并初始化一个ovsdb操作句柄 */
     idl = xzalloc(sizeof *idl);
     idl->class = class;
+    // 创建一个使用JSON-RPC格式的客户端,并向ovsdb-server发起连接请求
     idl->session = jsonrpc_session_open(remote, retry);
+    // 创建一张记录每个table的hash表
     shash_init(&idl->table_by_name);
     idl->tables = xmalloc(class->n_tables * sizeof *idl->tables);
     for (i = 0; i < class->n_tables; i++) {
@@ -284,13 +291,16 @@ ovsdb_idl_create(const char *remote, const struct ovsdb_idl_class *class,
         table->modes = xmalloc(tc->n_columns);
         memset(table->modes, default_mode, tc->n_columns);
         table->need_table = false;
+        // 每个table中会进一步创建一张记录每个column的hash表
         shash_init(&table->columns);
+        // 每个table中会进一步创建一张记录每个index的hash表
         shash_init(&table->indexes);
         for (j = 0; j < tc->n_columns; j++) {
             const struct ovsdb_idl_column *column = &tc->columns[j];
 
             shash_add_assert(&table->columns, column->name, column);
         }
+        // 每个table中会进一步创建一张记录每个rows的hash表
         hmap_init(&table->rows);
         ovs_list_init(&table->track_list);
         table->change_seqno[OVSDB_IDL_CHANGE_INSERT]
@@ -645,7 +655,9 @@ ovsdb_idl_force_reconnect(struct ovsdb_idl *idl)
 /* Some IDL users should only write to write-only columns.  Furthermore,
  * writing to a column which is not write-only can cause serious performance
  * degradations for these users.  This function causes 'idl' to reject writes
- * to columns which are not marked write only using ovsdb_idl_omit_alert(). */
+ * to columns which are not marked write only using ovsdb_idl_omit_alert(). 
+ * 配置指定ovsdb操作句柄只会进行写操作
+ * */
 void
 ovsdb_idl_verify_write_only(struct ovsdb_idl *idl)
 {
@@ -844,14 +856,17 @@ ovsdb_idl_table_from_column(struct ovsdb_idl *idl,
     return &idl->tables[tc - idl->class->tables];
 }
 
+// 从指定ovsdb操作句柄中获取指定column的mode
 static unsigned char *
 ovsdb_idl_get_mode(struct ovsdb_idl *idl,
                    const struct ovsdb_idl_column *column)
 {
     ovs_assert(!idl->change_seqno);
 
+    // 首先查找该column所属的table
     const struct ovsdb_idl_table *table = ovsdb_idl_table_from_column(idl,
                                                                       column);
+    // 然后从该table中索引该column对应的mode字段
     return &table->modes[column - table->class->columns];
 }
 
@@ -1229,9 +1244,11 @@ ovsdb_idl_send_cond_change(struct ovsdb_idl *idl)
 }
 
 /* Turns off OVSDB_IDL_ALERT for 'column' in 'idl'.
+ * 对指定column关闭OVSDB_IDL_ALERT标志
  *
  * This function should be called between ovsdb_idl_create() and the first call
  * to ovsdb_idl_run().
+ * 本函数只允许在ovsdb_idl_create和ovsdb_idl_run之间被调用
  */
 void
 ovsdb_idl_omit_alert(struct ovsdb_idl *idl,
@@ -1242,6 +1259,7 @@ ovsdb_idl_omit_alert(struct ovsdb_idl *idl,
 
 /* Sets the mode for 'column' in 'idl' to 0.  See the big comment above
  * OVSDB_IDL_MONITOR for details.
+ * 对指定column清空mode标志
  *
  * This function should be called between ovsdb_idl_create() and the first call
  * to ovsdb_idl_run().
@@ -4255,7 +4273,10 @@ ovsdb_idl_get_initial_snapshot(struct ovsdb_idl *idl)
  * be acquired (that is, when another client has the same lock).
  *
  * If 'lock_name' is NULL, drops the locking requirement and releases the
- * lock. */
+ * lock. 
+ *
+ * 向ovsdb请求获取名为lock_name的锁
+ * */
 void
 ovsdb_idl_set_lock(struct ovsdb_idl *idl, const char *lock_name)
 {

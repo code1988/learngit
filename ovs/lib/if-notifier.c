@@ -19,12 +19,17 @@
 #include "rtnetlink.h"
 #include "util.h"
 
+// 定义了一个网络接口变化通知结构
 struct if_notifier {
-    struct nln_notifier *notifier;
-    if_notify_func *cb;
-    void *aux;
+    struct nln_notifier *notifier;  // 指向基类netlink通知结构
+    if_notify_func *cb;     // 指向用户自定义的收到通知后的回调函数
+    void *aux;              // 用户自定义的附加数据
 };
 
+/* 网络接口变化后的基础回调函数,实际就是进一步跳转执行用户定义的回调函数
+ * @change  显然没用到
+ * @aux     指向一个阅订者的struct if_notifier结构
+ */
 static void
 if_notifier_cb(const struct rtnetlink_change *change OVS_UNUSED, void *aux)
 {
@@ -33,6 +38,10 @@ if_notifier_cb(const struct rtnetlink_change *change OVS_UNUSED, void *aux)
     notifier->cb(notifier->aux);
 }
 
+/* 创建一个网络接口变化通知实例
+ * @cb  用户自定义的收到通知后的回调函数
+ * @aux 用户自定义的附加数据
+ */
 struct if_notifier *
 if_notifier_create(if_notify_func *cb, void *aux)
 {

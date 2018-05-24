@@ -24,16 +24,19 @@
 extern "C" {
 #endif
 
+// 定义了shash表节点结构
 struct shash_node {
     struct hmap_node node;
     char *name;
     void *data;
 };
 
+// 定义了shash表结构
 struct shash {
     struct hmap map;
 };
 
+// 初始化一个空的hash表
 #define SHASH_INITIALIZER(SHASH) { HMAP_INITIALIZER(&(SHASH)->map) }
 
 #define SHASH_FOR_EACH(SHASH_NODE, SHASH)                               \

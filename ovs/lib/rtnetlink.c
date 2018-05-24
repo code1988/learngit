@@ -27,7 +27,7 @@
 #include "openvswitch/ofpbuf.h"
 #include "packets.h"
 
-static struct nln *nln = NULL;
+static struct nln *nln = NULL;  // 指向一个全局的通用的rtnetlink通信实例,所有基于rtnetlink的通信都需要基于该实例进行
 static struct rtnetlink_change rtn_change;
 
 /* Returns true if the given netlink msg type corresponds to RTNLGRP_LINK. */
@@ -125,7 +125,9 @@ rtnetlink_parse(struct ofpbuf *buf, struct rtnetlink_change *change)
     return parsed;
 }
 
-/* Return RTNLGRP_LINK on success, 0 on parse error. */
+/* Return RTNLGRP_LINK on success, 0 on parse error. 
+ * 解析rtnetlink消息,如果成功则返回RTNLGRP_LINK,否则返回0
+ * */
 static int
 rtnetlink_parse_cb(struct ofpbuf *buf, void *change)
 {
@@ -135,6 +137,9 @@ rtnetlink_parse_cb(struct ofpbuf *buf, void *change)
 /* Registers 'cb' to be called with auxiliary data 'aux' with network device
  * change notifications.  The notifier is stored in 'notifier', which the
  * caller must not modify or free.
+ * 注册一组对网络接口变化的阅订需求
+ * @cb  收到通知后的回调函数
+ * @aux 该rtnetlink通知实例的附加数据 
  *
  * This is probably not the function that you want.  You should probably be
  * using dpif_port_poll() or netdev_change_seq(), which unlike this function
@@ -146,10 +151,12 @@ rtnetlink_parse_cb(struct ofpbuf *buf, void *change)
 struct nln_notifier *
 rtnetlink_notifier_create(rtnetlink_notify_func *cb, void *aux)
 {
+    // 如果尚未创建rtnetlink通知链操作句柄,则首先进行创建
     if (!nln) {
         nln = nln_create(NETLINK_ROUTE, rtnetlink_parse_cb, &rtn_change);
     }
 
+    // 为传入的阅订需求创建一个网络接口链路事件阅订单元并注册到rtnetlink通知链中
     return nln_notifier_create(nln, RTNLGRP_LINK, (nln_notify_func *) cb, aux);
 }
 

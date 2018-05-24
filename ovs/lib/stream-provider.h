@@ -127,11 +127,11 @@ struct stream_class {
 };
 
 /* Passive listener for incoming stream connections.
- * 定义了被动监听管理块结构,用于管理远端流的连接请求
+ * 定义了pstream管理块结构,用于管理远端流的连接请求
  * This structure should be treated as opaque by stream implementations. */
 struct pstream {
-    const struct pstream_class *class;
-    char *name;
+    const struct pstream_class *class;  // 指向该pstream所属的类,通常都是fd_pstream_class
+    char *name;                         // "TYPE:ARGS"格式
     ovs_be16 bound_port;
 };
 
@@ -152,7 +152,9 @@ struct pstream_class {
 
     /* True if this pstream needs periodic probes to verify connectivity.  For
      * pstreams which need probes, it can take a long time to notice the
-     * connection was dropped. */
+     * connection was dropped. 
+     * 标识该pstream类是否需要周期性的去探测连接是否正常
+     * */
     bool needs_probes;
 
     /* Attempts to start listening for stream connections.  'name' is the full
@@ -169,7 +171,11 @@ struct pstream_class {
      * The listen function must not block.  If the connection cannot be
      * completed immediately, it should return EAGAIN (not EINPROGRESS, as
      * returned by the connect system call) and continue the connection in the
-     * background. */
+     * background. 
+     * 该pstream类创建套接字并开启监听远端连接请求的方法
+     *
+     * 备注:该方法必须基于非阻塞模式实现
+     * */
     int (*listen)(const char *name, char *suffix, struct pstream **pstreamp,
                   uint8_t dscp);
 

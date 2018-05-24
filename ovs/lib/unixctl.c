@@ -36,10 +36,11 @@ VLOG_DEFINE_THIS_MODULE(unixctl);
 COVERAGE_DEFINE(unixctl_received);
 COVERAGE_DEFINE(unixctl_replied);
 
+// 用于描述一条unixctl命令
 struct unixctl_command {
-    const char *usage;
-    int min_args, max_args;
-    unixctl_cb_func *cb;
+    const char *usage;      // 该命令的参数描述
+    int min_args, max_args; // 该命令支持的最小和最大参数数量
+    unixctl_cb_func *cb;    // 收到该命令后的回调函数
     void *aux;
 };
 
@@ -53,17 +54,18 @@ struct unixctl_conn {
 };
 
 /* Server for control connection. 
- * 定义了UNIX域服务端控制块结构
+ * 定义了unixctl服务端控制块结构
  * */
 struct unixctl_server {
-    struct pstream *listener;
-    struct ovs_list conns;
+    struct pstream *listener;   // 指向该unixctl服务端关联的pstream
+    struct ovs_list conns;      // 链表头,记录了跟该unixctl服务端连接的所有客户端
 };
 
 static struct vlog_rate_limit rl = VLOG_RATE_LIMIT_INIT(5, 5);
 
-static struct shash commands = SHASH_INITIALIZER(&commands);
+static struct shash commands = SHASH_INITIALIZER(&commands);    // 创建并初始化一张hash表,用于记录unixctl注册的命令
 
+// "list-commands"命令的回调函数 
 static void
 unixctl_list_commands(struct unixctl_conn *conn, int argc OVS_UNUSED,
                       const char *argv[] OVS_UNUSED, void *aux OVS_UNUSED)
@@ -86,6 +88,7 @@ unixctl_list_commands(struct unixctl_conn *conn, int argc OVS_UNUSED,
     ds_destroy(&ds);
 }
 
+// "version"命令的回调函数
 static void
 unixctl_version(struct unixctl_conn *conn, int argc OVS_UNUSED,
                 const char *argv[] OVS_UNUSED, void *aux OVS_UNUSED)
@@ -96,6 +99,13 @@ unixctl_version(struct unixctl_conn *conn, int argc OVS_UNUSED,
 /* Registers a unixctl command with the given 'name'.  'usage' describes the
  * arguments to the command; it is used only for presentation to the user in
  * "list-commands" output.
+ * 根据传入的配置参数注册一条对应的unixctl命令
+ * @name        命令名
+ * @usage       该命令的参数描述
+ * @min_args    该命令支持的最小参数数量
+ * @max_args    该命令支持的最大参数数量
+ * @cb          服务端收到该命令后的回调函数
+ * @aux     
  *
  * 'cb' is called when the command is received.  It is passed an array
  * containing the command name and arguments, plus a copy of 'aux'.  Normally
@@ -110,6 +120,7 @@ unixctl_command_register(const char *name, const char *usage,
                          unixctl_cb_func *cb, void *aux)
 {
     struct unixctl_command *command;
+    // 首先确保该命令尚未被注册
     struct unixctl_command *lookup = shash_find_data(&commands, name);
 
     ovs_assert(!lookup || lookup->cb == cb);
@@ -124,6 +135,7 @@ unixctl_command_register(const char *name, const char *usage,
     command->max_args = max_args;
     command->cb = cb;
     command->aux = aux;
+    // 最后将填充完毕的unixctl命令插入hash表
     shash_add(&commands, name, command);
 }
 
@@ -188,7 +200,7 @@ unixctl_command_reply_error(struct unixctl_conn *conn, const char *error)
 }
 
 /* Creates a unixctl server listening on 'path', which for POSIX may be:
- * 创建UNIX域服务端套接字
+ * 创建UNIX域服务端套接字,并开启监听
  * @path: 不同的取值代表了以下含义    
  *      - NULL, in which case <rundir>/<program>.<pid>.ctl is used.
  *
@@ -213,7 +225,7 @@ unixctl_command_reply_error(struct unixctl_conn *conn, const char *error)
  * daemon instead of the pid of the program that exited.  (Otherwise,
  * "ovs-appctl --target=<program>" will fail.)
  *
- * @serverp: 用于存放创建的UNIX域服务端控制块
+ * @serverp: 用于存放创建的unixctl服务端控制块
  *
  * Returns 0 if successful, otherwise a positive errno value.  If successful,
  * sets '*serverp' to the new unixctl_server (or to NULL if 'path' was "none"),
@@ -233,7 +245,7 @@ unixctl_server_create(const char *path, struct unixctl_server **serverp)
     }
 
     if (path) {
-        // 如果传入了非“none”的有效套接字路径，首先转换成绝对路径，然后添加前缀，最后进行转储
+        // 如果传入了非“none”的有效套接字路径，首先转换成绝对路径，然后添类型前缀"punix:"，最后进行转储
         char *abs_path;
 #ifndef _WIN32
         abs_path = abs_file_name(ovs_rundir(), path);
@@ -243,7 +255,7 @@ unixctl_server_create(const char *path, struct unixctl_server **serverp)
         punix_path = xasprintf("punix:%s", abs_path);
         free(abs_path);
     } else {
-        // 如果传入的套接字路径名为NULL，则设置缺省的套接字路径名格式
+        // 如果传入的套接字路径名为NULL，则设置缺省的套接字路径名格式并添加类型前缀"punix:"
 #ifndef _WIN32
         punix_path = xasprintf("punix:%s/%s.%ld.ctl", ovs_rundir(),
                                program_name, (long int) getpid());
@@ -252,16 +264,19 @@ unixctl_server_create(const char *path, struct unixctl_server **serverp)
 #endif
     }
 
+    // 创建一个UNIX域套接字类型的pstream,并开启监听.
     error = pstream_open(punix_path, &listener, 0);
     if (error) {
         ovs_error(error, "could not initialize control socket %s", punix_path);
         goto exit;
     }
 
+    // 为该UNIX域服务端套接字注册"list-commands"命令和"version"命令
     unixctl_command_register("list-commands", "", 0, 0, unixctl_list_commands,
                              NULL);
     unixctl_command_register("version", "", 0, 0, unixctl_version, NULL);
 
+    // 最后创建一个unixctl服务端控制块
     server = xmalloc(sizeof *server);
     server->listener = listener;
     ovs_list_init(&server->conns);

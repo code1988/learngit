@@ -68,9 +68,10 @@ static void seq_thread_woke(struct seq_thread *) OVS_REQUIRES(seq_mutex);
 static void seq_waiter_destroy(struct seq_waiter *) OVS_REQUIRES(seq_mutex);
 static void seq_wake_waiters(struct seq *) OVS_REQUIRES(seq_mutex);
 
-/* Creates and returns a new 'seq' object. */
-struct seq * OVS_EXCLUDED(seq_mutex)
-seq_create(void)
+/* Creates and returns a new 'seq' object. 
+ * 创建并返回一个序号对象
+ * */
+struct seq * seq_create(void)
 {
     struct seq *seq;
 
@@ -91,7 +92,6 @@ seq_create(void)
 /* Destroys 'seq', waking up threads that were waiting on it, if any. */
 void
 seq_destroy(struct seq *seq)
-     OVS_EXCLUDED(seq_mutex)
 {
     ovs_mutex_lock(&seq_mutex);
     seq_wake_waiters(seq);
@@ -108,14 +108,12 @@ seq_try_lock(void)
 
 void
 seq_lock(void)
-    OVS_ACQUIRES(seq_mutex)
 {
     ovs_mutex_lock(&seq_mutex);
 }
 
 void
 seq_unlock(void)
-    OVS_RELEASES(seq_mutex)
 {
     ovs_mutex_unlock(&seq_mutex);
 }
@@ -124,7 +122,7 @@ seq_unlock(void)
  * on 'seq'. */
 void
 seq_change_protected(struct seq *seq)
-    OVS_REQUIRES(seq_mutex)
+    //OVS_REQUIRES(seq_mutex)
 {
     COVERAGE_INC(seq_change);
 
@@ -136,7 +134,6 @@ seq_change_protected(struct seq *seq)
  * on 'seq'. */
 void
 seq_change(struct seq *seq)
-    OVS_EXCLUDED(seq_mutex)
 {
     ovs_mutex_lock(&seq_mutex);
     seq_change_protected(seq);
@@ -150,7 +147,7 @@ seq_change(struct seq *seq)
  * Usage in seq.h for details. */
 uint64_t
 seq_read_protected(const struct seq *seq)
-    OVS_REQUIRES(seq_mutex)
+    //OVS_REQUIRES(seq_mutex)
 {
     return seq->value;
 }
@@ -162,7 +159,7 @@ seq_read_protected(const struct seq *seq)
  * Usage in seq.h for details. */
 uint64_t
 seq_read(const struct seq *seq)
-    OVS_EXCLUDED(seq_mutex)
+    //OVS_EXCLUDED(seq_mutex)
 {
     uint64_t value;
 
@@ -175,7 +172,7 @@ seq_read(const struct seq *seq)
 
 static void
 seq_wait__(struct seq *seq, uint64_t value, const char *where)
-    OVS_REQUIRES(seq_mutex)
+    //OVS_REQUIRES(seq_mutex)
 {
     unsigned int id = ovsthread_id_self();
     uint32_t hash = hash_int(id, 0);
@@ -266,7 +263,7 @@ seq_init(void)
 
 static struct seq_thread *
 seq_thread_get(void)
-    OVS_REQUIRES(seq_mutex)
+    //OVS_REQUIRES(seq_mutex)
 {
     struct seq_thread *thread = pthread_getspecific(seq_thread_key);
     if (!thread) {
@@ -295,7 +292,7 @@ seq_thread_exit(void *thread_)
 
 static void
 seq_thread_woke(struct seq_thread *thread)
-    OVS_REQUIRES(seq_mutex)
+    //OVS_REQUIRES(seq_mutex)
 {
     struct seq_waiter *waiter, *next_waiter;
 
@@ -308,7 +305,7 @@ seq_thread_woke(struct seq_thread *thread)
 
 static void
 seq_waiter_destroy(struct seq_waiter *waiter)
-    OVS_REQUIRES(seq_mutex)
+    //OVS_REQUIRES(seq_mutex)
 {
     hmap_remove(&waiter->seq->waiters, &waiter->hmap_node);
     ovs_list_remove(&waiter->list_node);
@@ -317,7 +314,7 @@ seq_waiter_destroy(struct seq_waiter *waiter)
 
 static void
 seq_wake_waiters(struct seq *seq)
-    OVS_REQUIRES(seq_mutex)
+    //OVS_REQUIRES(seq_mutex)
 {
     struct seq_waiter *waiter, *next_waiter;
 
