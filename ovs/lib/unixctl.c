@@ -44,6 +44,7 @@ struct unixctl_command {
     void *aux;
 };
 
+// 用于描述一条unixctl连接
 struct unixctl_conn {
     struct ovs_list node;
     struct jsonrpc *rpc;
@@ -139,6 +140,11 @@ unixctl_command_register(const char *name, const char *usage,
     shash_add(&commands, name, command);
 }
 
+/* 回复信息给指定unixctl连接上的请求方
+ * @conn    指向一条等待回复的unixctl连接
+ * @success 标识是否将回复成功的结果
+ * @body    具体回复的内容
+ */
 static void
 unixctl_command_reply__(struct unixctl_conn *conn,
                         bool success, const char *body)
@@ -182,7 +188,11 @@ unixctl_command_reply__(struct unixctl_conn *conn,
 /* Replies to the active unixctl connection 'conn'.  'result' is sent to the
  * client indicating the command was processed successfully.  Only one call to
  * unixctl_command_reply() or unixctl_command_reply_error() may be made per
- * request. */
+ * request. 
+ * 回复成功给指定unixctl连接上的请求方
+ * @conn    指向一条等待回复的unixctl连接
+ * @result  成功信息
+ * */
 void
 unixctl_command_reply(struct unixctl_conn *conn, const char *result)
 {
@@ -192,7 +202,11 @@ unixctl_command_reply(struct unixctl_conn *conn, const char *result)
 /* Replies to the active unixctl connection 'conn'. 'error' is sent to the
  * client indicating an error occurred processing the command.  Only one call to
  * unixctl_command_reply() or unixctl_command_reply_error() may be made per
- * request. */
+ * request. 
+ * 回复错误信息给指定unixctl连接上的请求方
+ * @conn    指向一条等待回复的unixctl连接
+ * @result  错误信息
+ * */
 void
 unixctl_command_reply_error(struct unixctl_conn *conn, const char *error)
 {

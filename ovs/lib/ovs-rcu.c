@@ -178,6 +178,7 @@ ovsrcu_try_quiesce(void)
 bool
 ovsrcu_is_quiescent(void)
 {
+    // 初始化线程私有rcu模块
     ovsrcu_init_module();
     return pthread_getspecific(perthread_key) == NULL;
 }
@@ -372,12 +373,14 @@ ovsrcu_cancel_thread_exit_cb(void *aux OVS_UNUSED)
     pthread_setspecific(perthread_key, NULL);
 }
 
+// 初始化线程私有rcu模块,显然只会执行一次
 static void
 ovsrcu_init_module(void)
 {
     static struct ovsthread_once once = OVSTHREAD_ONCE_INITIALIZER;
     if (ovsthread_once_start(&once)) {
         global_seqno = seq_create();
+        // 实际就是创建一个关联的key
         xpthread_key_create(&perthread_key, ovsrcu_thread_exit_cb);
         fatal_signal_add_hook(ovsrcu_cancel_thread_exit_cb, NULL, NULL, true);
         ovs_list_init(&ovsrcu_threads);

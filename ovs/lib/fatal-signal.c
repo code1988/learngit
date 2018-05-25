@@ -228,13 +228,16 @@ fatal_signal_run(void)
     }
 }
 
+// 注册用于致命信号处理的管道读端到当前线程的poll模型管理块中
 void
 fatal_signal_wait(void)
 {
+    // 初始化致命信号处理模块
     fatal_signal_init();
 #ifdef _WIN32
     poll_wevent_wait(wevent);
 #else
+    // 注册用于致命信号处理的管道读端到当前线程的poll模型管理块中
     poll_fd_wait(signal_fds[0], POLLIN);
 #endif
 }

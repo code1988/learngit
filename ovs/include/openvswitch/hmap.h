@@ -227,7 +227,9 @@ struct hmap_position {
 struct hmap_node *hmap_at_position(const struct hmap *,
                                    struct hmap_position *);
 
-/* Returns the number of nodes currently in 'hmap'. */
+/* Returns the number of nodes currently in 'hmap'. 
+ * 返回指定hash表中记录的节点数量
+ * */
 static inline size_t
 hmap_count(const struct hmap *hmap)
 {

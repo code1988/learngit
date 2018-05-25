@@ -105,7 +105,7 @@ void ovs_mutex_cond_wait(pthread_cond_t *, const struct ovs_mutex *);
  *         ovsthread_once_done(&once);
  *     }
  */
-
+// ovs实现的类似pthread_once_t结构
 struct ovsthread_once {
     bool done;               /* Non-atomic, false negatives possible. */
     struct ovs_mutex mutex;
@@ -131,7 +131,9 @@ bool ovsthread_once_start__(struct ovsthread_once *once)
  *
  * Returns false if this is not the first call to ovsthread_once_start() for
  * 'once'.  In this case, the call will not return until after
- * ovsthread_once_done() has been called. */
+ * ovsthread_once_done() has been called. 
+ * 如果once对象第一次被本函数调用时返回true,后续都将返回false
+ * */
 static inline bool
 ovsthread_once_start(struct ovsthread_once *once)
 {

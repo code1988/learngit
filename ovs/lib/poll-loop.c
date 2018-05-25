@@ -38,26 +38,34 @@ VLOG_DEFINE_THIS_MODULE(poll_loop);
 COVERAGE_DEFINE(poll_create_node);
 COVERAGE_DEFINE(poll_zero_timeout);
 
+// 定义了一个poll节点结构
 struct poll_node {
     struct hmap_node hmap_node;
-    struct pollfd pollfd;       /* Events to pass to time_poll(). */
+    struct pollfd pollfd;       /* Events to pass to time_poll().  该poll节点关联的pollfd */
     HANDLE wevent;              /* Events for WaitForMultipleObjects(). */
-    const char *where;          /* Where poll_node was created. */
+    const char *where;          /* Where poll_node was created.  创建该poll节点的位置 */
 };
 
+// 这个线程私有数据结构用于管理一个poll模型
 struct poll_loop {
-    /* All active poll waiters. */
+    /* All active poll waiters. 
+     * 这张hash表记录了所有注册到该poll模型管理块中的poll节点
+     * */
     struct hmap poll_nodes;
 
     /* Time at which to wake up the next call to poll_block(), LLONG_MIN to
-     * wake up immediately, or LLONG_MAX to wait forever. */
+     * wake up immediately, or LLONG_MAX to wait forever. 
+     * 下次唤醒poll模型的时间点,LLONG_MIN表示非阻塞,LLONG_MAX表示不超时
+     * */
     long long int timeout_when; /* In msecs as returned by time_msec(). */
     const char *timeout_where;  /* Where 'timeout_when' was set. */
 };
 
 static struct poll_loop *poll_loop(void);
 
-/* Look up the node with same fd or wevent. */
+/* Look up the node with same fd or wevent. 
+ * 查找当前线程的poll模型管理块中是否已经存在指定fd关联的poll节点
+ * */
 static struct poll_node *
 find_poll_node(struct poll_loop *loop, int fd, HANDLE wevent)
 {
@@ -92,6 +100,8 @@ find_poll_node(struct poll_loop *loop, int fd, HANDLE wevent)
  *     will wake up on any event on that 'wevent'. It is an error to pass
  *     both 'wevent' and 'fd'.
  *
+ * 注册指定fd以及其关心的事件到poll模型管理块中
+ *
  * The event registration is one-shot: only the following call to
  * poll_block() is affected.  The event will need to be re-registered after
  * poll_block() is called if it is to persist.
@@ -102,6 +112,7 @@ find_poll_node(struct poll_loop *loop, int fd, HANDLE wevent)
 static void
 poll_create_node(int fd, HANDLE wevent, short int events, const char *where)
 {
+    // 获取当前线程私有的poll模型管理块
     struct poll_loop *loop = poll_loop();
     struct poll_node *node;
 
@@ -110,12 +121,17 @@ poll_create_node(int fd, HANDLE wevent, short int events, const char *where)
     /* Both 'fd' and 'wevent' cannot be set. */
     ovs_assert(!fd != !wevent);
 
-    /* Check for duplicate.  If found, "or" the events. */
+    /* Check for duplicate.  If found, "or" the events. 
+     * 查找当前线程的poll模型管理块中是否已经存在该fd关联的poll节点
+     * */
     node = find_poll_node(loop, fd, wevent);
     if (node) {
+        // 如果已经存在该fd关联的poll节点,则无需再创建,直接将新增的事件追加进去即可
         node->pollfd.events |= events;
     } else {
+        // 如果尚未存在则为该fd新建一个poll节点
         node = xzalloc(sizeof *node);
+        // 将新建的poll节点插入当前线程的poll模型管理块的hash表中
         hmap_insert(&loop->poll_nodes, &node->hmap_node,
                     hash_2words(fd, (uint32_t)wevent));
         node->pollfd.fd = fd;
@@ -133,6 +149,7 @@ poll_create_node(int fd, HANDLE wevent, short int events, const char *where)
 /* Registers 'fd' as waiting for the specified 'events' (which should be POLLIN
  * or POLLOUT or POLLIN | POLLOUT).  The following call to poll_block() will
  * wake up when 'fd' becomes ready for one or more of the requested events.
+ * 注册指定fd以及其关心的事件到poll模型管理块中
  *
  * On Windows, 'fd' must be a socket.
  *
@@ -318,6 +335,7 @@ free_poll_nodes(struct poll_loop *loop)
 void
 poll_block(void)
 {
+    // 首先获取当前线程私有的poll模型管理块
     struct poll_loop *loop = poll_loop();
     struct poll_node *node;
     struct pollfd *pollfds;
@@ -327,21 +345,27 @@ poll_block(void)
     int i;
 
     /* Register fatal signal events before actually doing any real work for
-     * poll_block. */
+     * poll_block. 
+     * 注册用于致命信号处理的管道读端到当前线程的poll模型管理块中
+     * */
     fatal_signal_wait();
 
     if (loop->timeout_when == LLONG_MIN) {
         COVERAGE_INC(poll_zero_timeout);
     }
 
+    // 正常运行时略过本函数
     timewarp_run();
+    // 创建一个pollfd数组,数组长度就是poll模型管理块中注册的poll节点数量
     pollfds = xmalloc(hmap_count(&loop->poll_nodes) * sizeof *pollfds);
 
 #ifdef _WIN32
     wevents = xmalloc(hmap_count(&loop->poll_nodes) * sizeof *wevents);
 #endif
 
-    /* Populate with all the fds and events. */
+    /* Populate with all the fds and events. 
+     * 将所有已经注册的fd以及关联的事件填充到该pollfd数组中
+     * */
     i = 0;
     HMAP_FOR_EACH (node, hmap_node, &loop->poll_nodes) {
         pollfds[i] = node->pollfd;
@@ -389,7 +413,7 @@ poll_block(void)
 
     seq_woke();
 }
-
+// 线程私有数据struct poll_loop的析构函数
 static void
 free_poll_loop(void *loop_)
 {
@@ -400,6 +424,7 @@ free_poll_loop(void *loop_)
     free(loop);
 }
 
+// 获取当前线程私有的poll模型管理块, 如果不存在则创建
 static struct poll_loop *
 poll_loop(void)
 {
@@ -407,11 +432,13 @@ poll_loop(void)
     static pthread_key_t key;
     struct poll_loop *loop;
 
+    // 创建线程私有数据struct poll_loop关联的key,显然只会执行一次
     if (ovsthread_once_start(&once)) {
         xpthread_key_create(&key, free_poll_loop);
         ovsthread_once_done(&once);
     }
 
+    // 根据key索引关联的线程私有数据,如果不存在,则创建一个线程私有数据并关联到key
     loop = pthread_getspecific(key);
     if (!loop) {
         loop = xzalloc(sizeof *loop);

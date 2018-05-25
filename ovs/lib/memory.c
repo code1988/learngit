@@ -29,10 +29,14 @@
 VLOG_DEFINE_THIS_MODULE(memory);
 
 /* The number of milliseconds before the first report of daemon memory usage,
- * and the number of milliseconds between checks for daemon memory growth.  */
+ * and the number of milliseconds between checks for daemon memory growth.  
+ * 每次检查内存使用情况的时间间隔
+ * */
 #define MEMORY_CHECK_INTERVAL (10 * 1000)
 
-/* When we should next check memory usage and possibly trigger a report. */
+/* When we should next check memory usage and possibly trigger a report. 
+ * 记录了下一次检查内存使用情况的时间点
+ * */
 static long long int next_check;
 
 /* The last time at which we reported memory usage, and the usage we reported
@@ -40,34 +44,47 @@ static long long int next_check;
 static long long int last_report;
 static unsigned long int last_reported_maxrss;
 
-/* Are we expecting a call to memory_report()? */
+/* Are we expecting a call to memory_report()? 
+ * 标识是否期望报告内存使用情况
+ * */
 static bool want_report;
 
-/* Unixctl connections waiting for responses. */
+/* Unixctl connections waiting for responses. 
+ * 记录了所有请求获取内存使用情况的unixctl连接
+ * */
 static struct unixctl_conn **conns;
-static size_t n_conns;
+static size_t n_conns;      // 记录了请求内存使用情况的客户端数量
 
 static void memory_init(void);
 
 /* Runs the memory monitor.
+ * 定期执行内存使用情况监视工作
  *
  * The client should call memory_should_report() afterward.
+ * 调用本函数后必须紧接着调用memory_should_report
  *
  * This function, and the remainder of this module's interface, should be
- * called from only a single thread. */
+ * called from only a single thread. 
+ * 这个内存监视模块的所有接口都必须在一个线程中被调用
+ * */
 void
 memory_run(void)
 {
     struct rusage usage;
     long long int now;
 
+    // 初始化memory对象,显然只会执行一次
     memory_init();
 
-    /* Time for a check? */
+    /* Time for a check? 
+     * 获取系统运行时间,检查是否到达下一次检查内存使用情况的时间点
+     * */
     now = time_msec();
     if (now < next_check) {
         return;
     }
+    // 程序运行到这里意味着又到了检查内存使用情况的时间了
+    // 首先更新下一次检查的时间
     next_check = now + MEMORY_CHECK_INTERVAL;
 
     /* Time for a report? */
@@ -102,7 +119,9 @@ memory_wait(void)
 }
 
 /* Returns true if the caller should log some information about memory usage
- * (with memory_report()), false otherwise. */
+ * (with memory_report()), false otherwise. 
+ * 判断调用者是否应该打印内存使用情况的日志
+ * */
 bool
 memory_should_report(void)
 {
@@ -126,6 +145,7 @@ compose_report(const struct simap *usage, struct ds *s)
 }
 
 /* Logs the contents of 'usage', as a collection of name-count pairs.
+ * 报告内存使用情况
  *
  * 'usage' should capture large-scale statistics that one might reasonably
  * expect to correlate with memory usage.  For example, each OpenFlow flow
@@ -140,12 +160,14 @@ memory_report(const struct simap *usage)
     ds_init(&s);
     compose_report(usage, &s);
 
+    // 如果否期望报告内存使用情况,则将其打印到日志
     if (want_report) {
         if (s.length) {
             VLOG_INFO("%s", ds_cstr(&s));
         }
         want_report = false;
     }
+    // 如果存在请求内存使用情况的客户端,则一一进行回复
     if (n_conns) {
         for (i = 0; i < n_conns; i++) {
             unixctl_command_reply(conns[i], ds_cstr(&s));
@@ -158,6 +180,7 @@ memory_report(const struct simap *usage)
     ds_destroy(&s);
 }
 
+// 收到unixctl命令"memory/show"的回调函数
 static void
 memory_unixctl_show(struct unixctl_conn *conn, int argc OVS_UNUSED,
                     const char *argv[] OVS_UNUSED, void *aux OVS_UNUSED)
@@ -166,11 +189,13 @@ memory_unixctl_show(struct unixctl_conn *conn, int argc OVS_UNUSED,
     conns[n_conns++] = conn;
 }
 
+// 初始化memory对象,显然只会执行一次
 static void
 memory_init(void)
 {
     static bool inited = false;
 
+    // 第一次调用本函数时会注册unixctl命令"memory/show",并记录下一次检查的时间
     if (!inited) {
         inited = true;
         unixctl_command_register("memory/show", "", 0, 0,

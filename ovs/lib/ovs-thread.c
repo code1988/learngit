@@ -449,7 +449,7 @@ ovs_thread_create(const char *name, void *(*start)(void *), void *arg)
     pthread_attr_destroy(&attr);
     return thread;
 }
-
+// 注意,返回true时是持有锁的
 bool
 ovsthread_once_start__(struct ovsthread_once *once)
 {
@@ -462,6 +462,7 @@ ovsthread_once_start__(struct ovsthread_once *once)
     return false;
 }
 
+// 注意本接口必须跟上面的ovsthread_once_start__配对使用
 void
 ovsthread_once_done(struct ovsthread_once *once)
 {
@@ -473,7 +474,7 @@ ovsthread_once_done(struct ovsthread_once *once)
     once->done = true;
     ovs_mutex_unlock(&once->mutex);
 }
-
+// 判断是否处于单线程状态
 bool
 single_threaded(void)
 {
@@ -625,7 +626,9 @@ count_cpu_cores(void)
     return n_cores > 0 ? n_cores : 0;
 }
 
-/* Returns 'true' if current thread is PMD thread. */
+/* Returns 'true' if current thread is PMD thread. 
+ * 判断当前线程是否是pmd线程
+ * */
 bool
 thread_is_pmd(void)
 {

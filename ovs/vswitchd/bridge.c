@@ -224,9 +224,9 @@ static long long int aa_refresh_timer = LLONG_MIN;
 /* Whenever system interfaces are added, removed or change state, the bridge
  * will be reconfigured.
  */
-static struct if_notifier *ifnotifier;
-static struct seq *ifaces_changed;
-static uint64_t last_ifaces_changed;
+static struct if_notifier *ifnotifier;  // 指向一个网络接口变化通知实例
+static struct seq *ifaces_changed;      // 指向一个用于处理接口变化事件的seq对象 
+static uint64_t last_ifaces_changed;    // 记录了ifaces_changed序号对象最近一次的序号
 
 static void add_del_bridges(const struct ovsrec_open_vswitch *);
 static void bridge_run__(void);
@@ -368,9 +368,11 @@ bridge_init_ofproto(const struct ovsrec_open_vswitch *cfg)
     initialized = true;
 }
 
+// 收到网络接口变化通知后的回调函数
 static void
 if_change_cb(void *aux OVS_UNUSED)
 {
+    // 实质就是刷新ifaces_changed对象的序号,然后唤醒等待在该seq对象上的线程
     seq_change(ifaces_changed);
 }
 
@@ -538,8 +540,11 @@ bridge_init(const char *remote)
     lldp_init();
     // 初始化rstp模块
     rstp_init();
+    // 创建一个用于处理接口变化事件的seq对象
     ifaces_changed = seq_create();
+    // 记录该seq对象当前的序号
     last_ifaces_changed = seq_read(ifaces_changed);
+    // 创建一个网络接口变化通知实例
     ifnotifier = if_notifier_create(if_change_cb, NULL);
 }
 
@@ -3114,7 +3119,9 @@ bridge_wait(void)
 }
 
 /* Adds some memory usage statistics for bridges into 'usage', for use with
- * memory_report(). */
+ * memory_report(). 
+ * 转储bridge相关的内存使用统计数据
+ * */
 void
 bridge_get_memory_usage(struct simap *usage)
 {

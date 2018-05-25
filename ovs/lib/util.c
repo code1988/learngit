@@ -533,7 +533,9 @@ ovs_set_program_name(const char *argv0, const char *version)
     }
 }
 
-/* Returns the name of the currently running thread or process. */
+/* Returns the name of the currently running thread or process. 
+ * 返回当前运行的线程/进程名
+ * */
 const char *
 get_subprogram_name(void)
 {

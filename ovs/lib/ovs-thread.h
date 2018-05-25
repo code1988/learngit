@@ -275,6 +275,7 @@ void xpthread_join(pthread_t, void **);
 #define DEFINE_EXTERN_PER_THREAD_DATA(NAME, ...)         \
     thread_local NAME##_type NAME##_var = __VA_ARGS__;
 #else  /* no C implementation support for thread-local storage  */
+// 这个宏用于静态定义一个线程私有数据,并构造了基于该私有数据的一系列接口
 #define DEFINE_STATIC_PER_THREAD_DATA(TYPE, NAME, ...)                  \
     typedef TYPE NAME##_type;                                           \
     static pthread_key_t NAME##_key;                                    \

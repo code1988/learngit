@@ -57,6 +57,7 @@ coverage_counter_register(struct coverage_counter* counter)
     coverage_counters[n_coverage_counters++] = counter;
 }
 
+// 收到unixctl命令"coverage/show"后的回调函数
 static void
 coverage_unixctl_show(struct unixctl_conn *conn, int argc OVS_UNUSED,
                      const char *argv[] OVS_UNUSED, void *aux OVS_UNUSED)
@@ -72,6 +73,7 @@ coverage_unixctl_show(struct unixctl_conn *conn, int argc OVS_UNUSED,
     svec_destroy(&lines);
 }
 
+// 初始化coverage模块,实际就是注册一条unixctl命令"coverage/show"
 void
 coverage_init(void)
 {

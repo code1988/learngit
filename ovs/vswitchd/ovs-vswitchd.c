@@ -114,18 +114,23 @@ main(int argc, char *argv[])
     unixctl_command_register("exit", "[--cleanup]", 0, 1,
                              ovs_vswitchd_exit, &exit_args);
 
+    // bridge的初始化入口
     bridge_init(remote);
     free(remote);
 
     exiting = false;
     cleanup = false;
     while (!exiting) {
+        // 定期执行内存使用情况监视工作
         memory_run();
+        // 如果调用者需要打印内存使用情况的日志,则执行打印
         if (memory_should_report()) {
             struct simap usage;
 
             simap_init(&usage);
+            // 转储bridge相关的内存使用统计数据
             bridge_get_memory_usage(&usage);
+            // 报告内存使用情况
             memory_report(&usage);
             simap_destroy(&usage);
         }

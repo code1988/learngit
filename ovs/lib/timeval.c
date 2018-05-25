@@ -67,24 +67,27 @@ struct large_warp {
     unsigned int main_thread_id; /* Identification for the main thread. */
 };
 
+// 定义了时钟对象
 struct clock {
-    clockid_t id;               /* CLOCK_MONOTONIC or CLOCK_REALTIME. */
+    clockid_t id;               /* CLOCK_MONOTONIC or CLOCK_REALTIME.  该时钟对象采用的时钟基准 */
 
     /* Features for use by unit tests.  Protected by 'mutex'. */
     atomic_bool slow_path;             /* True if warped or stopped. */
     bool stopped OVS_GUARDED;          /* Disable real-time updates if true. */
     struct ovs_mutex mutex;
     struct timespec warp OVS_GUARDED;  /* Offset added for unit tests. */
-    struct timespec cache OVS_GUARDED; /* Last time read from kernel. */
+    struct timespec cache OVS_GUARDED; /* Last time read from kernel. 记录了最近一次从系统获取的时间 */
     struct large_warp large_warp OVS_GUARDED; /* Connection information waiting
                                                  for warp response. */
 };
 
 /* Our clocks. */
-static struct clock monotonic_clock; /* CLOCK_MONOTONIC, if available. */
-static struct clock wall_clock;      /* CLOCK_REALTIME. */
+static struct clock monotonic_clock; /* CLOCK_MONOTONIC, if available. 通过操作这个时钟对象来获取系统运行时间(如果不支持,实际上等于墙上时间) */
+static struct clock wall_clock;      /* CLOCK_REALTIME.  通过操作这个时钟对象来获取墙上时间 */
 
-/* The monotonic time at which the time module was initialized. */
+/* The monotonic time at which the time module was initialized. 
+ * 记录了time模块初始化以来经历的时间(ms)
+ * */
 static long long int boot_time;
 
 /* True only when timeval_dummy_register() is called. */
@@ -96,7 +99,9 @@ static struct seq *timewarp_seq;
 DEFINE_STATIC_PER_THREAD_DATA(uint64_t, last_seq, 0);
 
 /* Monotonic time in milliseconds at which to die with SIGALRM (if not
- * LLONG_MAX). */
+ * LLONG_MAX). 
+ * 系统运行截止时间
+ * */
 static long long int deadline = LLONG_MAX;
 
 /* Monotonic time, in milliseconds, at which the last call to time_poll() woke
@@ -110,6 +115,7 @@ static void refresh_rusage(void);
 static void timespec_add(struct timespec *sum,
                          const struct timespec *a, const struct timespec *b);
 
+// 初始化指定的时间对象
 static void
 init_clock(struct clock *c, clockid_t id)
 {
@@ -120,22 +126,30 @@ init_clock(struct clock *c, clockid_t id)
     xclock_gettime(c->id, &c->cache);
 }
 
+// 初始化时间跟踪模块
 static void
 do_init_time(void)
 {
     struct timespec ts;
 
+    // 初始化coverage模块 
     coverage_init();
 
+    // 创建一个序号对象timewarp_seq
     timewarp_seq = seq_create();
+    // 初始化时间对象monotonic_clock
     init_clock(&monotonic_clock, (!clock_gettime(CLOCK_MONOTONIC, &ts)
                                   ? CLOCK_MONOTONIC
                                   : CLOCK_REALTIME));
+    // 初始化时间对象wall_clock
     init_clock(&wall_clock, CLOCK_REALTIME);
+    // 记录下系统运行时间
     boot_time = timespec_to_msec(&monotonic_clock.cache);
 }
 
-/* Initializes the timetracking module, if not already initialized. */
+/* Initializes the timetracking module, if not already initialized. 
+ * 封装初始化时间跟踪模块,显然只会执行一次
+ * */
 static void
 time_init(void)
 {
@@ -143,11 +157,16 @@ time_init(void)
     pthread_once(&once, do_init_time);
 }
 
+/* 通过指定时间对象获取时间
+ * @c   获取时间的操作对象
+ * @ts  用于存放获取的时间
+ */
 static void
 time_timespec__(struct clock *c, struct timespec *ts)
 {
     bool slow_path;
 
+    // 初始化时间跟踪模块,显然只会初始化一次
     time_init();
 
     atomic_read_relaxed(&c->slow_path, &slow_path);
@@ -210,26 +229,35 @@ time_wall(void)
     return time_sec__(&wall_clock);
 }
 
+// 通过指定时钟对象来获取时间(ms)
 static long long int
 time_msec__(struct clock *c)
 {
     struct timespec ts;
 
+    // 通过该时间对象获取时间
     time_timespec__(c, &ts);
+    // 将获取的时间转换成ms单位并返回
     return timespec_to_msec(&ts);
 }
 
-/* Returns a monotonic timer, in ms (within TIME_UPDATE_INTERVAL ms). */
+/* Returns a monotonic timer, in ms (within TIME_UPDATE_INTERVAL ms). 
+ * 获取系统运行时间,单位ms
+ * */
 long long int
 time_msec(void)
 {
+    // 通过monotonic_clock时钟获取时间
     return time_msec__(&monotonic_clock);
 }
 
-/* Returns the current time, in ms (within TIME_UPDATE_INTERVAL ms). */
+/* Returns the current time, in ms (within TIME_UPDATE_INTERVAL ms). 
+ * 获取墙上时间,单位ms
+ * */
 long long int
 time_wall_msec(void)
 {
+    // 通过wall_clock时钟获取时间
     return time_msec__(&wall_clock);
 }
 
@@ -250,6 +278,7 @@ time_alarm(unsigned int secs)
 }
 
 /* Like poll(), except:
+ * ovs封装的poll接口
  *
  *      - The timeout is specified as an absolute time, as defined by
  *        time_msec(), instead of a duration.
@@ -270,12 +299,14 @@ time_poll(struct pollfd *pollfds, int n_pollfds, HANDLE *handles OVS_UNUSED,
     bool quiescent;
     int retval = 0;
 
+    // 封装初始化时间跟踪模块
     time_init();
     coverage_clear();
     coverage_run();
     if (*last_wakeup && !thread_is_pmd()) {
         log_poll_interval(*last_wakeup);
     }
+    // 获取系统运行时间
     start = time_msec();
 
     timeout_when = MIN(timeout_when, deadline);
@@ -361,10 +392,13 @@ timeval_to_msec(const struct timeval *tv)
 }
 
 /* Returns the monotonic time at which the "time" module was initialized, in
- * milliseconds. */
+ * milliseconds. 
+ * 返回系统运行时间
+ * */
 long long int
 time_boot_msec(void)
 {
+    // 初始化时间跟踪模块,显然只会初始化一次
     time_init();
     return boot_time;
 }
@@ -523,7 +557,9 @@ timewarp_work(void)
 #endif
 }
 
-/* Perform work needed for "timewarp_seq"'s producer and consumers. */
+/* Perform work needed for "timewarp_seq"'s producer and consumers. 
+ * 显然本函数只工作在测试环境下
+ * */
 void
 timewarp_run(void)
 {
@@ -554,6 +590,7 @@ timeval_diff_msec(const struct timeval *a, const struct timeval *b)
     return timeval_to_msec(a) - timeval_to_msec(b);
 }
 
+// 将a和b两个时间相加,结果存放到sum中
 static void
 timespec_add(struct timespec *sum,
              const struct timespec *a,

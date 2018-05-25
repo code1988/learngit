@@ -30,10 +30,12 @@
 
 COVERAGE_DEFINE(seq_change);
 
-/* A sequence number object. */
+/* A sequence number object. 
+ * seq对象结构
+ * */
 struct seq {
-    uint64_t value OVS_GUARDED;
-    struct hmap waiters OVS_GUARDED; /* Contains 'struct seq_waiter's. */
+    uint64_t value OVS_GUARDED; // 记录了该seq对象的seq号
+    struct hmap waiters OVS_GUARDED; /* Contains 'struct seq_waiter's.  这张hash表用于管理该seq对象维护的所有seq_waiter */
 };
 
 /* A thread waiting on a particular seq. */
@@ -48,18 +50,20 @@ struct seq_waiter {
     uint64_t value OVS_GUARDED; /* seq->value we're waiting to change. */
 };
 
-/* A thread that might be waiting on one or more seqs. */
+/* A thread that might be waiting on one or more seqs. 
+ * 这个线程私有数据结构用于管理seq
+ * */
 struct seq_thread {
     struct ovs_list waiters OVS_GUARDED; /* Contains 'struct seq_waiter's. */
     struct latch latch OVS_GUARDED;  /* Wakeup latch for this thread. */
     bool waiting OVS_GUARDED;        /* True if latch_wait() already called. */
 };
 
-static struct ovs_mutex seq_mutex = OVS_MUTEX_INITIALIZER;
+static struct ovs_mutex seq_mutex = OVS_MUTEX_INITIALIZER;  // 该互斥锁用于维护下面的seq_next
 
 static uint64_t seq_next OVS_GUARDED_BY(seq_mutex) = 1;
 
-static pthread_key_t seq_thread_key;
+static pthread_key_t seq_thread_key;    // 这个key值跟线程私有数据seq关联
 
 static void seq_init(void);
 static struct seq_thread *seq_thread_get(void) OVS_REQUIRES(seq_mutex);
@@ -75,8 +79,10 @@ struct seq * seq_create(void)
 {
     struct seq *seq;
 
+    // 创建线程私有数据seq_thread关联的key,只会执行一次
     seq_init();
 
+    // 创建并初始化一个seq对象
     seq = xmalloc(sizeof *seq);
 
     COVERAGE_INC(seq_change);
@@ -119,7 +125,9 @@ seq_unlock(void)
 }
 
 /* Increments 'seq''s sequence number, waking up any threads that are waiting
- * on 'seq'. */
+ * on 'seq'. 
+ * 递增指定seq对象的序号,然后唤醒等待在该seq对象上的线程(调用者需要确保本函数处理锁保护区域)
+ * */
 void
 seq_change_protected(struct seq *seq)
     //OVS_REQUIRES(seq_mutex)
@@ -131,7 +139,9 @@ seq_change_protected(struct seq *seq)
 }
 
 /* Increments 'seq''s sequence number, waking up any threads that are waiting
- * on 'seq'. */
+ * on 'seq'. 
+ * 刷新指定seq对象的序号,然后唤醒等待在该seq对象上的线程
+ * */
 void
 seq_change(struct seq *seq)
 {
@@ -141,6 +151,7 @@ seq_change(struct seq *seq)
 }
 
 /* Returns 'seq''s current sequence number (which could change immediately).
+ * 返回指定seq对象当前的序号(调用者需要确保本函数处理锁保护区域)
  *
  * seq_read() and seq_wait() can be used together to yield a race-free wakeup
  * when an object changes, even without an ability to lock the object.  See
@@ -153,6 +164,7 @@ seq_read_protected(const struct seq *seq)
 }
 
 /* Returns 'seq''s current sequence number (which could change immediately).
+ * 返回指定seq对象当前的序号
  *
  * seq_read() and seq_wait() can be used together to yield a race-free wakeup
  * when an object changes, even without an ability to lock the object.  See
@@ -249,7 +261,7 @@ seq_woke(void)
         ovs_mutex_unlock(&seq_mutex);
     }
 }
-
+// 创建线程私有数据seq_thread关联的key,显然本函数只会执行一次
 static void
 seq_init(void)
 {
@@ -277,9 +289,10 @@ seq_thread_get(void)
     return thread;
 }
 
+// 线程私有数据struct seq_thread的析构函数
 static void
 seq_thread_exit(void *thread_)
-    OVS_EXCLUDED(seq_mutex)
+//    OVS_EXCLUDED(seq_mutex)
 {
     struct seq_thread *thread = thread_;
 
