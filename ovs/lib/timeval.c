@@ -279,6 +279,11 @@ time_alarm(unsigned int secs)
 
 /* Like poll(), except:
  * ovs封装的poll接口
+ * @poolfds         指向已经填充完毕的pollfd数组
+ * @n_pollfds       pollfd数组中有效元素数量
+ * @handles         linux下忽略
+ * @timeout_when    下次唤醒poll模型的时间点(这是个绝对时间)
+ * @elapsed         用于存放本函数耗时
  *
  *      - The timeout is specified as an absolute time, as defined by
  *        time_msec(), instead of a duration.
@@ -306,9 +311,10 @@ time_poll(struct pollfd *pollfds, int n_pollfds, HANDLE *handles OVS_UNUSED,
     if (*last_wakeup && !thread_is_pmd()) {
         log_poll_interval(*last_wakeup);
     }
-    // 获取系统运行时间
+    // 记录下poll开始前的时间(用于在poll结束时计算poll期间的耗时)
     start = time_msec();
 
+    // 确保下次唤醒时间点不晚于截止时间
     timeout_when = MIN(timeout_when, deadline);
     quiescent = ovsrcu_is_quiescent();
 
@@ -317,10 +323,13 @@ time_poll(struct pollfd *pollfds, int n_pollfds, HANDLE *handles OVS_UNUSED,
         int time_left;
 
         if (now >= timeout_when) {
+            // 如果当前时间已经超过预设的下次唤醒时间点,则剩余时间清0
             time_left = 0;
         } else if ((unsigned long long int) timeout_when - now > INT_MAX) {
+            // 如果预设的下次唤醒时间点距离当前还有超过INT_MAX,则剩余时间统一设置为INT_MAX
             time_left = INT_MAX;
         } else {
+            // 除此之外,正常方式更新剩余时间
             time_left = timeout_when - now;
         }
 
@@ -333,6 +342,7 @@ time_poll(struct pollfd *pollfds, int n_pollfds, HANDLE *handles OVS_UNUSED,
         }
 
 #ifndef _WIN32
+        // 执行系统调用接口poll
         retval = poll(pollfds, n_pollfds, time_left);
         if (retval < 0) {
             retval = -errno;
@@ -352,10 +362,13 @@ time_poll(struct pollfd *pollfds, int n_pollfds, HANDLE *handles OVS_UNUSED,
         }
 #endif
 
+        // 程序运行到这里意味着poll函数已经返回
+
         if (!quiescent && time_left) {
             ovsrcu_quiesce_end();
         }
 
+        // 如果当前时间已经超过截止时间,则生成SIGALRM信号
         if (deadline <= time_msec()) {
 #ifndef _WIN32
             fatal_signal_handler(SIGALRM);
@@ -369,12 +382,14 @@ time_poll(struct pollfd *pollfds, int n_pollfds, HANDLE *handles OVS_UNUSED,
             break;
         }
 
+        // 如果poll函数为信号中断,则将再次进入poll函数
         if (retval != -EINTR) {
             break;
         }
     }
     *last_wakeup = time_msec();
     refresh_rusage();
+    // 计算poll期间的耗时
     *elapsed = *last_wakeup - start;
     return retval;
 }

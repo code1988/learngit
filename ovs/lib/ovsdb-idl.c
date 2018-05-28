@@ -415,7 +415,9 @@ ovsdb_idl_clear(struct ovsdb_idl *idl)
 
 /* Processes a batch of messages from the database server on 'idl'.  This may
  * cause the IDL's contents to change.  The client may check for that with
- * ovsdb_idl_get_seqno(). */
+ * ovsdb_idl_get_seqno(). 
+ * 处理一批来自ovsdb-server的消息
+ * */
 void
 ovsdb_idl_run(struct ovsdb_idl *idl)
 {

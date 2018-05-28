@@ -142,9 +142,11 @@ main(int argc, char *argv[])
         bridge_wait();
         unixctl_server_wait(unixctl);
         netdev_wait();
+        // 如果判定要终止进程,则设置立即唤醒poll模型
         if (exiting) {
             poll_immediate_wake();
         }
+        // poll入口
         poll_block();
         if (should_service_stop()) {
             exiting = true;

@@ -582,9 +582,12 @@ struct sk_buff {
 	 * want to keep them across layers you have to do a skb_clone()
 	 * first. This is owned by whoever has the skb queued ATM.
 	 */
-	char			cb[48] __aligned(8);    // 通用控制字段，可被各层网络模块自定义，比如：
-                                            // netlink用它存储参数控制块netlink_skb_parms
-                                            // bridge用它存储入口参数控制块br_input_skb_cb
+	char			cb[48] __aligned(8);    /* 通用控制字段，4.4.52版本将其进一步细分:
+                                                    |---剩余空间(SOCK_SKB_CB_OFFSET)--|---固定空间(struct sock_skb_cb)---|
+                                               其中,剩余空间可被各层网络模块自定义，比如：
+                                                    netlink用它存储参数控制块netlink_skb_parms
+                                                    bridge用它存储入口参数控制块br_input_skb_cb
+                                            */
 	unsigned long		_skb_refdst;
 	void			(*destructor)(struct sk_buff *skb);
 #ifdef CONFIG_XFRM

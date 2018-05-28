@@ -54,11 +54,11 @@ struct hook {
     void (*hook_cb)(void *aux);
     void (*cancel_cb)(void *aux);
     void *aux;
-    bool run_at_exit;
+    bool run_at_exit;   // 标识该钩子结构是否会在结束时执行
 };
 #define MAX_HOOKS 32
-static struct hook hooks[MAX_HOOKS];    // 定义了一张信号钩子表
-static size_t n_hooks;      // 记录了已经注册的信号钩子数量
+static struct hook hooks[MAX_HOOKS];    // 定义了一张致命信号钩子表
+static size_t n_hooks;      // 记录了已经注册的致命信号钩子数量
 
 static int signal_fds[2];   // 定义了一对用于处理致命信号的管道fd
 static volatile sig_atomic_t stored_sig_nr = SIG_ATOMIC_MAX;    // 记录了尚未处理的信号ID
@@ -165,7 +165,9 @@ fatal_signal_add_hook(void (*hook_cb)(void *aux), void (*cancel_cb)(void *aux),
 }
 
 /* Handles fatal signal number 'sig_nr'.
- * 致命信号的统一处理函数
+ * 致命信号的统一处理函数,实际就是往signal_fds写管道写一个标志
+ *
+ * 备注:显然这个信号处理函数的作用就是将信号处理从特殊的上下文转换到普通的用户空间上下文中进行
  *
  * Ordinarily this is the actual signal handler.  When other code needs to
  * handle one of our signals, however, it can register for that signal and, if
@@ -187,6 +189,7 @@ fatal_signal_handler(int sig_nr)
 
 /* Check whether a fatal signal has occurred and, if so, call the fatal signal
  * hooks and exit.
+ * 检查是否已经有信号发生,如果有就执行真正的致命信号处理函数
  *
  * This function is called automatically by poll_block(), but specialized
  * programs that may not always call poll_block() on a regular basis should
@@ -204,6 +207,7 @@ fatal_signal_run(void)
     fatal_signal_init();
 
     sig_nr = stored_sig_nr;
+    // 如果已经有信号发生,则进行处理
     if (sig_nr != SIG_ATOMIC_MAX) {
         char namebuf[SIGNAL_NAME_BUFSIZE];
 
@@ -215,11 +219,14 @@ fatal_signal_run(void)
 #else
         VLOG_WARN("terminating with signal %d", (int)sig_nr);
 #endif
+        // 执行该信号模块统一注册的结束回调函数
         call_hooks(sig_nr);
         fflush(stderr);
 
         /* Re-raise the signal with the default handling so that the program
-         * termination status reflects that we were killed by this signal */
+         * termination status reflects that we were killed by this signal 
+         * 复位进程对该信号的处理行为,并重新向自身进程发送该信号
+         * */
         signal(sig_nr, SIG_DFL);
         raise(sig_nr);
 
@@ -257,6 +264,7 @@ fatal_signal_atexit_handler(void)
     call_hooks(0);
 }
 
+// 执行该信号模块统一注册的结束回调函数
 static void
 call_hooks(int sig_nr)
 {

@@ -4,6 +4,7 @@
  *		interface as the means of communication with the user level.
  *
  *		PF_INET protocol family socket handler.
+ *		本文件是PF_INET协议族套接字操作接口
  *
  * Authors:	Ross Biro
  *		Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
@@ -1699,12 +1700,14 @@ static struct packet_type ip_packet_type __read_mostly = {
 	.func = ip_rcv,
 };
 
+// PF_INET协议族的初始化入口
 static int __init inet_init(void)
 {
 	struct inet_protosw *q;
 	struct list_head *r;
 	int rc = -EINVAL;
 
+    // 编译期间检查从skb->cb[]的剩余空间中占用struct inet_skb_parm长度是否合法
 	sock_skb_cb_check_size(sizeof(struct inet_skb_parm));
 
 	rc = proto_register(&tcp_prot, 1);

@@ -2123,13 +2123,15 @@ struct sock_skb_cb {
 /* Store sock_skb_cb at the end of skb->cb[] so protocol families
  * using skb->cb[] would keep using it directly and utilize its
  * alignement guarantee.
+ * 计算struct sock_skb_cb起始地址在skb->cb[]中的偏移量,也就是cb字段中剩余空间的最大可用长度
  */
 #define SOCK_SKB_CB_OFFSET ((FIELD_SIZEOF(struct sk_buff, cb) - \
 			    sizeof(struct sock_skb_cb)))
-
+// 计算skb中struct sock_skb_cb起始地址
 #define SOCK_SKB_CB(__skb) ((struct sock_skb_cb *)((__skb)->cb + \
 			    SOCK_SKB_CB_OFFSET))
 
+// 编译期间检查从skb->cb[]的剩余空间中占用size长度是否合法
 #define sock_skb_cb_check_size(size) \
 	BUILD_BUG_ON((size) > SOCK_SKB_CB_OFFSET)
 

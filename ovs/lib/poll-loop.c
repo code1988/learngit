@@ -219,6 +219,7 @@ poll_timer_wait_at(long long int msec, const char *where)
  * as returned by time_msec(), reaches 'when' or later.  If 'when' is earlier
  * than the current time, the following call to poll_block() will not block at
  * all.
+ * 设置下次唤醒poll模型的时间点
  *
  * The timer registration is one-shot: only the following call to poll_block()
  * is affected.  The timer will need to be re-registered after poll_block() is
@@ -239,6 +240,7 @@ poll_timer_wait_until_at(long long int when, const char *where)
 
 /* Causes the following call to poll_block() to wake up immediately, without
  * blocking.
+ * 设置立即唤醒poll模型
  *
  * ('where' is used in debug logging.  Commonly one would use
  * poll_immediate_wake() to automatically provide the caller's source file and
@@ -312,6 +314,7 @@ log_wakeup(const char *where, const struct pollfd *pollfd, int timeout)
     ds_destroy(&s);
 }
 
+// 释放指定poll模型管理块中的所有poll节点
 static void
 free_poll_nodes(struct poll_loop *loop)
 {
@@ -385,6 +388,7 @@ poll_block(void)
         i++;
     }
 
+    // 调用ovs封装的poll接口
     retval = time_poll(pollfds, hmap_count(&loop->poll_nodes), wevents,
                        loop->timeout_when, &elapsed);
     if (retval < 0) {
@@ -402,15 +406,19 @@ poll_block(void)
         }
     }
 
+    // 释放当前线程私有poll模型管理块中的所有poll节点,并复位其余字段
     free_poll_nodes(loop);
     loop->timeout_when = LLONG_MAX;
     loop->timeout_where = NULL;
     free(pollfds);
     free(wevents);
 
-    /* Handle any pending signals before doing anything else. */
+    /* Handle any pending signals before doing anything else. 
+     * 检查是否已经有信号发生,如果有就执行真正的致命信号处理函数
+     * */
     fatal_signal_run();
 
+    // 销毁等待在当前线程私有seq_thread上的对象
     seq_woke();
 }
 // 线程私有数据struct poll_loop的析构函数

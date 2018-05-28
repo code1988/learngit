@@ -56,7 +56,7 @@ struct seq_waiter {
 struct seq_thread {
     struct ovs_list waiters OVS_GUARDED; /* Contains 'struct seq_waiter's. */
     struct latch latch OVS_GUARDED;  /* Wakeup latch for this thread. */
-    bool waiting OVS_GUARDED;        /* True if latch_wait() already called. */
+    bool waiting OVS_GUARDED;        /* True if latch_wait() already called.  标识是否有其他对象等待在该seq上 */
 };
 
 static struct ovs_mutex seq_mutex = OVS_MUTEX_INITIALIZER;  // 该互斥锁用于维护下面的seq_next
@@ -244,10 +244,13 @@ seq_wait_at(const struct seq *seq_, uint64_t value, const char *where)
 }
 
 /* Called by poll_block() just before it returns, this function destroys any
- * seq_waiter objects associated with the current thread. */
+ * seq_waiter objects associated with the current thread. 
+ * 销毁等待在当前线程私有seq_thread上的对象
+ * 备注: 本接口只会被poll_block函数调用(在其return前)
+ * */
 void
 seq_woke(void)
-    OVS_EXCLUDED(seq_mutex)
+//    OVS_EXCLUDED(seq_mutex)
 {
     struct seq_thread *thread;
 

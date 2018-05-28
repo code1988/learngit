@@ -2973,6 +2973,7 @@ bridge_run(void)
     static struct ovsrec_open_vswitch null_cfg;
     const struct ovsrec_open_vswitch *cfg;
 
+    // 复位Open_vSwitch表
     ovsrec_open_vswitch_init(&null_cfg);
 
     ovsdb_idl_run(idl);
