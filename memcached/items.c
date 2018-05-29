@@ -2,6 +2,10 @@
 #include "memcached.h"
 #include "bipbuffer.h"
 #include "slab_automove.h"
+#ifdef EXTSTORE
+#include "storage.h"
+#include "slab_automove_extstore.h"
+#endif
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <sys/resource.h>
@@ -58,7 +62,7 @@ static int stats_sizes_buckets = 0;
 
 static volatile int do_run_lru_maintainer_thread = 0;
 static int lru_maintainer_initialized = 0;
-static pthread_mutex_t lru_maintainer_lock = PTHREAD_MUTEX_INITIALIZER; // 定义了用于维护LRU维护模块的互斥锁
+static pthread_mutex_t lru_maintainer_lock = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t cas_id_lock = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t stats_sizes_lock = PTHREAD_MUTEX_INITIALIZER;
 
@@ -132,6 +136,11 @@ static unsigned int temp_lru_size(int slabs_clsid) {
     ret = sizes_bytes[id];
     pthread_mutex_unlock(&lru_locks[id]);
     return ret;
+}
+
+/* must be locked before call */
+unsigned int do_get_lru_size(uint32_t id) {
+    return sizes[id];
 }
 
 /* Enable this for reference-count debugging. */
@@ -388,7 +397,16 @@ static void do_item_link_q(item *it) { /* item is the new head */
     *head = it;
     if (*tail == 0) *tail = it;
     sizes[it->slabs_clsid]++;
+#ifdef EXTSTORE
+    if (it->it_flags & ITEM_HDR) {
+        sizes_bytes[it->slabs_clsid] += (ITEM_ntotal(it) - it->nbytes) + sizeof(item_hdr);
+    } else {
+        sizes_bytes[it->slabs_clsid] += ITEM_ntotal(it);
+    }
+#else
     sizes_bytes[it->slabs_clsid] += ITEM_ntotal(it);
+#endif
+
     return;
 }
 
@@ -424,7 +442,16 @@ static void do_item_unlink_q(item *it) {
     if (it->next) it->next->prev = it->prev;
     if (it->prev) it->prev->next = it->next;
     sizes[it->slabs_clsid]--;
+#ifdef EXTSTORE
+    if (it->it_flags & ITEM_HDR) {
+        sizes_bytes[it->slabs_clsid] -= (ITEM_ntotal(it) - it->nbytes) + sizeof(item_hdr);
+    } else {
+        sizes_bytes[it->slabs_clsid] -= ITEM_ntotal(it);
+    }
+#else
     sizes_bytes[it->slabs_clsid] -= ITEM_ntotal(it);
+#endif
+
     return;
 }
 
@@ -903,7 +930,7 @@ void item_stats_sizes(ADD_STAT add_stats, void *c) {
         int i;
         for (i = 0; i < stats_sizes_buckets; i++) {
             if (stats_sizes_hist[i] != 0) {
-                char key[8];
+                char key[12];
                 snprintf(key, sizeof(key), "%d", i * 32);
                 APPEND_STAT(key, "%u", stats_sizes_hist[i]);
             }
@@ -960,6 +987,7 @@ item *do_item_get(const char *key, const size_t nkey, const uint32_t hv, conn *c
         was_found = 1;
         if (item_is_flushed(it)) {
             do_item_unlink(it, hv);
+            STORAGE_delete(c->thread->storage, it);
             do_item_remove(it);
             it = NULL;
             pthread_mutex_lock(&c->thread->stats.mutex);
@@ -971,6 +999,7 @@ item *do_item_get(const char *key, const size_t nkey, const uint32_t hv, conn *c
             was_found = 2;
         } else if (it->exptime != 0 && it->exptime <= current_time) {
             do_item_unlink(it, hv);
+            STORAGE_delete(c->thread->storage, it);
             do_item_remove(it);
             it = NULL;
             pthread_mutex_lock(&c->thread->stats.mutex);
@@ -1082,6 +1111,7 @@ int lru_pull_tail(const int orig_id, const int cur_lru,
                 itemstats[id].tailrepairs++;
                 search->refcount = 1;
                 /* This will call item_remove -> item_free since refcnt is 1 */
+                STORAGE_delete(ext_storage, search);
                 do_item_unlink_nolock(search, hv);
                 item_trylock_unlock(hold_lock);
                 continue;
@@ -1097,6 +1127,7 @@ int lru_pull_tail(const int orig_id, const int cur_lru,
             }
             /* refcnt 2 -> 1 */
             do_item_unlink_nolock(search, hv);
+            STORAGE_delete(ext_storage, search);
             /* refcnt 1 -> 0 -> item_free */
             do_item_remove(search);
             item_trylock_unlock(hold_lock);
@@ -1162,6 +1193,7 @@ int lru_pull_tail(const int orig_id, const int cur_lru,
                         itemstats[id].evicted_active++;
                     }
                     LOGGER_LOG(NULL, LOG_EVICTIONS, LOGGER_EVICTION, search);
+                    STORAGE_delete(ext_storage, search);
                     do_item_unlink_nolock(search, hv);
                     removed++;
                     if (settings.slab_automove == 2) {
@@ -1483,26 +1515,44 @@ static void lru_maintainer_crawler_check(struct crawler_expired_data *cdata, log
     }
 }
 
+slab_automove_reg_t slab_automove_default = {
+    .init = slab_automove_init,
+    .free = slab_automove_free,
+    .run = slab_automove_run
+};
+#ifdef EXTSTORE
+slab_automove_reg_t slab_automove_extstore = {
+    .init = slab_automove_extstore_init,
+    .free = slab_automove_extstore_free,
+    .run = slab_automove_extstore_run
+};
+#endif
 static pthread_t lru_maintainer_tid;
 
 #define MAX_LRU_MAINTAINER_SLEEP 1000000
 #define MIN_LRU_MAINTAINER_SLEEP 1000
 
 static void *lru_maintainer_thread(void *arg) {
+    slab_automove_reg_t *sam = &slab_automove_default;
+#ifdef EXTSTORE
+    void *storage = arg;
+    if (storage != NULL)
+        sam = &slab_automove_extstore;
+    int x;
+#endif
     int i;
     useconds_t to_sleep = MIN_LRU_MAINTAINER_SLEEP;
     useconds_t last_sleep = MIN_LRU_MAINTAINER_SLEEP;
     rel_time_t last_crawler_check = 0;
     rel_time_t last_automove_check = 0;
-    useconds_t next_juggles[MAX_NUMBER_OF_SLAB_CLASSES];
-    useconds_t backoff_juggles[MAX_NUMBER_OF_SLAB_CLASSES];
+    useconds_t next_juggles[MAX_NUMBER_OF_SLAB_CLASSES] = {0};
+    useconds_t backoff_juggles[MAX_NUMBER_OF_SLAB_CLASSES] = {0};
     struct crawler_expired_data *cdata =
         calloc(1, sizeof(struct crawler_expired_data));
     if (cdata == NULL) {
         fprintf(stderr, "Failed to allocate crawler data for LRU maintainer thread\n");
         abort();
     }
-    memset(next_juggles, 0, sizeof(next_juggles));
     pthread_mutex_init(&cdata->lock, NULL);
     cdata->crawl_complete = true; // kick off the crawler.
     logger *l = logger_create();
@@ -1512,8 +1562,7 @@ static void *lru_maintainer_thread(void *arg) {
     }
 
     double last_ratio = settings.slab_automove_ratio;
-    void *am = slab_automove_init(settings.slab_automove_window,
-            settings.slab_automove_ratio);
+    void *am = sam->init(&settings);
 
     pthread_mutex_lock(&lru_maintainer_lock);
     if (settings.verbose > 2)
@@ -1543,6 +1592,20 @@ static void *lru_maintainer_thread(void *arg) {
             }
 
             int did_moves = lru_maintainer_juggle(i);
+#ifdef EXTSTORE
+            // Deeper loop to speed up pushing to storage.
+            if (storage) {
+                for (x = 0; x < 500; x++) {
+                    int found;
+                    found = lru_maintainer_store(storage, i);
+                    if (found) {
+                        did_moves += found;
+                    } else {
+                        break;
+                    }
+                }
+            }
+#endif
             if (did_moves == 0) {
                 if (backoff_juggles[i] != 0) {
                     backoff_juggles[i] += backoff_juggles[i] / 8;
@@ -1575,13 +1638,12 @@ static void *lru_maintainer_thread(void *arg) {
 
         if (settings.slab_automove == 1 && last_automove_check != current_time) {
             if (last_ratio != settings.slab_automove_ratio) {
-                slab_automove_free(am);
-                am = slab_automove_init(settings.slab_automove_window,
-                        settings.slab_automove_ratio);
+                sam->free(am);
+                am = sam->init(&settings);
                 last_ratio = settings.slab_automove_ratio;
             }
             int src, dst;
-            slab_automove_run(am, &src, &dst);
+            sam->run(am, &src, &dst);
             if (src != -1 && dst != -1) {
                 slabs_reassign(src, dst);
                 LOGGER_LOG(l, LOG_SYSEVENTS, LOGGER_SLAB_MOVE, NULL,
@@ -1597,7 +1659,7 @@ static void *lru_maintainer_thread(void *arg) {
         }
     }
     pthread_mutex_unlock(&lru_maintainer_lock);
-    slab_automove_free(am);
+    sam->free(am);
     // LRU crawler *must* be stopped.
     free(cdata);
     if (settings.verbose > 2)

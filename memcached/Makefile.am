@@ -38,8 +38,19 @@ if BUILD_LINUX_PRIVS
 memcached_SOURCES += linux_priv.c
 endif
 
+if BUILD_OPENBSD_PRIVS
+memcached_SOURCES += openbsd_priv.c
+endif
+
 if ENABLE_SASL
 memcached_SOURCES += sasl_defs.c
+endif
+
+if ENABLE_EXTSTORE
+memcached_SOURCES += extstore.c extstore.h \
+                     crc32c.c crc32c.h \
+                     storage.c storage.h \
+                     slab_automove_extstore.c slab_automove_extstore.h
 endif
 
 memcached_debug_SOURCES = $(memcached_SOURCES)

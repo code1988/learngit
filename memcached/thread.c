@@ -3,6 +3,9 @@
  * Thread management for memcached.
  */
 #include "memcached.h"
+#ifdef EXTSTORE
+#include "storage.h"
+#endif
 #include <assert.h>
 #include <stdio.h>
 #include <errno.h>
@@ -136,17 +139,23 @@ void pause_threads(enum pause_thread_types type) {
     buf[0] = 0;
     switch (type) {
         case PAUSE_ALL_THREADS:
-            lru_maintainer_pause();
             slabs_rebalancer_pause();
+            lru_maintainer_pause();
             lru_crawler_pause();
+#ifdef EXTSTORE
+            storage_compact_pause();
+#endif
         case PAUSE_WORKER_THREADS:
             buf[0] = 'p';
             pthread_mutex_lock(&worker_hang_lock);
             break;
         case RESUME_ALL_THREADS:
-            lru_maintainer_resume();
             slabs_rebalancer_resume();
+            lru_maintainer_resume();
             lru_crawler_resume();
+#ifdef EXTSTORE
+            storage_compact_resume();
+#endif
         case RESUME_WORKER_THREADS:
             pthread_mutex_unlock(&worker_hang_lock);
             break;
@@ -300,7 +309,16 @@ void accept_new_conns(const bool do_accept) {
  * Set up a thread's information.
  */
 static void setup_thread(LIBEVENT_THREAD *me) {
+#if defined(LIBEVENT_VERSION_NUMBER) && LIBEVENT_VERSION_NUMBER >= 0x02000101
+    struct event_config *ev_config;
+    ev_config = event_config_new();
+    event_config_set_flag(ev_config, EVENT_BASE_FLAG_NOLOCK);
+    me->base = event_base_new_with_config(ev_config);
+    event_config_free(ev_config);
+#else
     me->base = event_init();
+#endif
+
     if (! me->base) {
         fprintf(stderr, "Can't allocate event base\n");
         exit(1);
@@ -334,6 +352,13 @@ static void setup_thread(LIBEVENT_THREAD *me) {
         fprintf(stderr, "Failed to create suffix cache\n");
         exit(EXIT_FAILURE);
     }
+#ifdef EXTSTORE
+    me->io_cache = cache_create("io", sizeof(io_wrap), sizeof(char*), NULL, NULL);
+    if (me->io_cache == NULL) {
+        fprintf(stderr, "Failed to create IO object cache\n");
+        exit(EXIT_FAILURE);
+    }
+#endif
 }
 
 /*
@@ -358,6 +383,8 @@ static void *worker_libevent(void *arg) {
     register_thread_initialized();
 
     event_base_loop(me->base, 0);
+
+    event_base_free(me->base);
     return NULL;
 }
 
@@ -598,7 +625,7 @@ void item_unlink(item *item) {
  * Does arithmetic on a numeric item value.
  */
 enum delta_result_type add_delta(conn *c, const char *key,
-                                 const size_t nkey, int incr,
+                                 const size_t nkey, bool incr,
                                  const int64_t delta, char *buf,
                                  uint64_t *cas) {
     enum delta_result_type ret;
@@ -641,6 +668,9 @@ void threadlocal_stats_reset(void) {
         pthread_mutex_lock(&threads[ii].stats.mutex);
 #define X(name) threads[ii].stats.name = 0;
         THREAD_STATS_FIELDS
+#ifdef EXTSTORE
+        EXTSTORE_THREAD_STATS_FIELDS
+#endif
 #undef X
 
         memset(&threads[ii].stats.slab_stats, 0,
@@ -663,6 +693,9 @@ void threadlocal_stats_aggregate(struct thread_stats *stats) {
         pthread_mutex_lock(&threads[ii].stats.mutex);
 #define X(name) stats->name += threads[ii].stats.name;
         THREAD_STATS_FIELDS
+#ifdef EXTSTORE
+        EXTSTORE_THREAD_STATS_FIELDS
+#endif
 #undef X
 
         for (sid = 0; sid < MAX_NUMBER_OF_SLAB_CLASSES; sid++) {
@@ -765,7 +798,9 @@ void memcached_thread_init(int nthreads, void *arg) {
 
         threads[i].notify_receive_fd = fds[0];
         threads[i].notify_send_fd = fds[1];
-
+#ifdef EXTSTORE
+        threads[i].storage = arg;
+#endif
         setup_thread(&threads[i]);
         /* Reserve three fds for the libevent base, and two for the pipe */
         stats_state.reserved_fds += 5;

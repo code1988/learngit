@@ -1,5 +1,8 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Set to nonzero if you want to enable ARMv8 crc32 */
+#undef ARM_CRC32
+
 /* Set to nonzero if you want to include DTRACE */
 #undef ENABLE_DTRACE
 
@@ -14,6 +17,9 @@
 
 /* machine is littleendian */
 #undef ENDIAN_LITTLE
+
+/* Set to nonzero if you want to enable extstore */
+#undef EXTSTORE
 
 /* Define to 1 if support accept4 */
 #undef HAVE_ACCEPT4
@@ -54,11 +60,17 @@
 /* Define to 1 if you have the `mlockall' function. */
 #undef HAVE_MLOCKALL
 
+/* Define to 1 if you have the `pledge' function. */
+#undef HAVE_PLEDGE
+
 /* we have sasl_callback_ft */
 #undef HAVE_SASL_CALLBACK_FT
 
 /* Set to nonzero if your SASL implementation supports SASL_CB_GETCONF */
 #undef HAVE_SASL_CB_GETCONF
+
+/* Set to nonzero if your SASL implementation supports SASL_CB_GETCONFPATH */
+#undef HAVE_SASL_CB_GETCONFPATH
 
 /* Define to 1 if you have the <sasl/sasl.h> header file. */
 #undef HAVE_SASL_SASL_H

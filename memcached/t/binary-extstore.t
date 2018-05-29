@@ -2,45 +2,23 @@
 
 use strict;
 use warnings;
-use Cwd;
+use Test::More;
 use FindBin qw($Bin);
 use lib "$Bin/lib";
 use MemcachedTest;
+use Data::Dumper qw/Dumper/;
 
-my $supports_sasl = supports_sasl();
+my $ext_path;
 
-use Test::More;
-
-if (supports_sasl()) {
-    if ($ENV{'RUN_SASL_TESTS'}) {
-        plan tests => 33;
-    } else {
-        plan skip_all => 'Skipping SASL tests';
-        exit 0;
-    }
-} else {
-    plan tests => 1;
-    eval {
-        my $server = new_memcached("-S");
-    };
-    ok($@, "Died with illegal -S args when SASL is not supported.");
+if (!supports_extstore()) {
+    plan skip_all => 'extstore not enabled';
     exit 0;
 }
 
-eval {
-    my $server = new_memcached("-S -B auto");
-};
-ok($@, "SASL shouldn't be used with protocol auto negotiate");
+$ext_path = "/tmp/extstore.$$";
 
-eval {
-    my $server = new_memcached("-S -B ascii");
-};
-ok($@, "SASL isn't implemented in the ascii protocol");
-
-eval {
-    my $server = new_memcached("-S -B binary -B ascii");
-};
-ok($@, "SASL isn't implemented in the ascii protocol");
+my $server = new_memcached("-m 64 -U 0 -o ext_page_size=8,ext_page_count=8,ext_wbuf_size=2,ext_threads=1,ext_io_depth=2,ext_item_size=512,ext_item_age=2,ext_recache_rate=10000,ext_max_frag=0.9,ext_path=$ext_path,no_lru_crawler,slab_automove=0");
+ok($server, "started the server");
 
 # Based almost 100% off testClient.py which is:
 # Copyright (c) 2007  Dustin Sallings <dustin@spy.net>
@@ -73,12 +51,11 @@ use constant CMD_QUITQ      => 0x17;
 use constant CMD_FLUSHQ     => 0x18;
 use constant CMD_APPENDQ    => 0x19;
 use constant CMD_PREPENDQ   => 0x1A;
-
-use constant CMD_SASL_LIST_MECHS    => 0x20;
-use constant CMD_SASL_AUTH          => 0x21;
-use constant CMD_SASL_STEP          => 0x22;
-use constant ERR_AUTH_ERROR   => 0x20;
-
+use constant CMD_TOUCH      => 0x1C;
+use constant CMD_GAT        => 0x1D;
+use constant CMD_GATQ       => 0x1E;
+use constant CMD_GATK       => 0x23;
+use constant CMD_GATKQ      => 0x24;
 
 # REQ and RES formats are divided even though they currently share
 # the same format, since they _could_ differ in the future.
@@ -89,44 +66,26 @@ use constant MIN_RECV_BYTES   => length(pack(RES_PKT_FMT));
 use constant REQ_MAGIC        => 0x80;
 use constant RES_MAGIC        => 0x81;
 
-my $pwd=getcwd;
-$ENV{'SASL_CONF_PATH'} = "$pwd/t/sasl";
-
-my $server = new_memcached('-B binary -S -l 127.0.0.1 ');
-
 my $mc = MC::Client->new;
 
 my $check = sub {
-    my ($key, $orig_val) = @_;
-    my ($status, $val, $cas) = $mc->get($key);
-
-    if ($val =~ /^\d+$/) {
-        cmp_ok($val,'==', $orig_val, "$val = $orig_val");
-    }
-    else {
-        cmp_ok($val, 'eq', $orig_val, "$val = $orig_val");
-    }
+    my ($key, $orig_flags, $orig_val) = @_;
+    my ($flags, $val, $cas) = $mc->get($key);
+    is($flags, $orig_flags, "Flags is set properly");
+    ok($val eq $orig_val || $val == $orig_val, $val . " = " . $orig_val);
 };
 
 my $set = sub {
-    my ($key, $orig_value, $exp) = @_;
-    $exp = defined $exp ? $exp : 0;
-    my ($status, $rv)= $mc->set($key, $orig_value, $exp);
-    $check->($key, $orig_value);
+    my ($key, $exp, $orig_flags, $orig_value) = @_;
+    $mc->set($key, $orig_value, $orig_flags, $exp);
+    $check->($key, $orig_flags, $orig_value);
 };
 
 my $empty = sub {
     my $key = shift;
-    my ($status,$rv) =()= eval { $mc->get($key) };
-    #if ($status == ERR_AUTH_ERROR) {
-    #    ok($@->auth_error, "Not authorized to connect");
-    #}
-    #else {
-    #    ok($@->not_found, "We got a not found error when we expected one");
-    #}
-    if ($status) {
-        ok($@->not_found, "We got a not found error when we expected one");
-    }
+    my $rv =()= eval { $mc->get($key) };
+    is($rv, 0, "Didn't get a result from get");
+    ok($@->not_found, "We got a not found error when we expected one");
 };
 
 my $delete = sub {
@@ -135,154 +94,138 @@ my $delete = sub {
     $empty->($key);
 };
 
-# BEGIN THE TEST
-ok($server, "started the server");
-
-my $v = $mc->version;
-ok(defined $v && length($v), "Proper version: $v");
-
-# list mechs
-my $mechs= $mc->list_mechs();
-Test::More::cmp_ok($mechs, 'eq', 'CRAM-MD5 PLAIN', "list_mechs $mechs");
-
-# this should fail, not authenticated
+my $value;
+my $bigvalue;
 {
-    my ($status, $val)= $mc->set('x', "somevalue");
-    ok($status, "this fails to authenticate");
-    cmp_ok($status,'==',ERR_AUTH_ERROR, "error code matches");
-}
-$empty->('x');
-{
-    my $mc = MC::Client->new;
-    my ($status, $val) = $mc->delete('x');
-    ok($status, "this fails to authenticate");
-    cmp_ok($status,'==',ERR_AUTH_ERROR, "error code matches");
-}
-$empty->('x');
-{
-    my $mc = MC::Client->new;
-    my ($status, $val)= $mc->set('x', "somevalue");
-    ok($status, "this fails to authenticate");
-    cmp_ok($status,'==',ERR_AUTH_ERROR, "error code matches");
-}
-$empty->('x');
-{
-    my $mc = MC::Client->new;
-    my ($status, $val)=  $mc->flush('x');
-    ok($status, "this fails to authenticate");
-    cmp_ok($status,'==',ERR_AUTH_ERROR, "error code matches");
-}
-$empty->('x');
-
-# Build the auth DB for testing.
-my $sasldb = '/tmp/test-memcached.sasldb';
-unlink $sasldb;
-
-my $saslpasswd_path;
-for my $dir (split(/:/, $ENV{PATH}),
-             "/usr/bin",
-             "/usr/sbin",
-             "/usr/local/bin",
-             "/usr/local/sbin",
-    ) {
-    my $exe = $dir . '/saslpasswd2';
-    if (-x $exe) {
-        $saslpasswd_path = $exe;
-        last;
+    my @chars = ("C".."Z");
+    for (1 .. 20000) {
+        $value .= $chars[rand @chars];
+    }
+    for (1 .. 800000) {
+        $bigvalue .= $chars[rand @chars];
     }
 }
 
-system("echo testpass | $saslpasswd_path -a memcached -c -p testuser");
+# diag "small object";
+$set->('x', 10, 19, "somevalue");
 
-$mc = MC::Client->new;
-
-# Attempt a bad auth mech.
-is ($mc->authenticate('testuser', 'testpass', "X" x 40), 0x4, "bad mech");
-
-# Attempt bad authentication.
-is ($mc->authenticate('testuser', 'wrongpassword'), 0x20, "bad auth");
-
-# Now try good authentication and make the tests work.
-is ($mc->authenticate('testuser', 'testpass'), 0, "authenticated");
-# these should work
-{
-    my ($status, $val)= $mc->set('x', "somevalue");
-    ok(! $status);
-}
-$check->('x','somevalue');
-
-{
-    my ($status, $val)= $mc->delete('x');
-    ok(! $status);
-}
-$empty->('x');
-
-{
-    my ($status, $val)= $mc->set('x', "somevalue");
-    ok(! $status);
-}
-$check->('x','somevalue');
-
-{
-    my ($status, $val)=  $mc->flush('x');
-    ok(! $status);
-}
-$empty->('x');
-
-{
-    my $mc = MC::Client->new;
-
-    # Attempt bad authentication.
-    is ($mc->authenticate('testuser', 'wrongpassword'), 0x20, "bad auth");
-
-    # This should fail because $mc is not authenticated
-    my ($status, $val)= $mc->set('x', "somevalue");
-    ok($status, "this fails to authenticate");
-    cmp_ok($status,'==',ERR_AUTH_ERROR, "error code matches");
-}
-$empty->('x', 'somevalue');
-
-{
-    my $mc = MC::Client->new;
-
-    # Attempt bad authentication.
-    is ($mc->authenticate('testuser', 'wrongpassword'), 0x20, "bad auth");
-
-    # Mix an authenticated connection and an unauthenticated connection to
-    # confirm c->authenticated is not shared among connections
-    my $mc2 = MC::Client->new;
-    is ($mc2->authenticate('testuser', 'testpass'), 0, "authenticated");
-    my ($status, $val)= $mc2->set('x', "somevalue");
-    ok(! $status);
-
-    # This should fail because $mc is not authenticated
-    ($status, $val)= $mc->set('x', "somevalue");
-    ok($status, "this fails to authenticate");
-    cmp_ok($status,'==',ERR_AUTH_ERROR, "error code matches");
-}
-
-# check the SASL stats, make sure they track things correctly
-# note: the enabled or not is presence checked in stats.t
-
-# while authenticated, get current counter
-#
-# My initial approach was going to be to get current counts, reauthenticate
-# and fail, followed by a reauth successfully so I'd know what happened.
-# Reauthentication is currently unsupported, so it doesn't work that way at the
-# moment.  Adding tests may break this.
-
+# check extstore counters
 {
     my %stats = $mc->stats('');
-    is ($stats{'auth_cmds'}, 5, "auth commands counted");
-    is ($stats{'auth_errors'}, 3, "auth errors correct");
+    is($stats{extstore_objects_written}, 0);
 }
 
+# diag "Delete";
+#$delete->('x');
 
-# Along with the assertion added to the code to verify we're staying
-# within bounds when we do a stats detail dump (detail turned on at
-# the top).
-# my %stats = $mc->stats('detail dump');
+# diag "Flush";
+#$empty->('y');
 
+# fill some larger objects
+{
+    my $keycount = 1000;
+    for (1 .. $keycount) {
+        $set->("nfoo$_", 0, 19, $value);
+    }
+    # wait for a flush
+    sleep 4;
+    # value returns for one flushed object.
+    $check->('nfoo1', 19, $value);
+
+    # check extstore counters
+    my %stats = $mc->stats('');
+    cmp_ok($stats{extstore_page_allocs}, '>', 0, 'at least one page allocated');
+    cmp_ok($stats{extstore_objects_written}, '>', $keycount / 2, 'some objects written');
+    cmp_ok($stats{extstore_bytes_written}, '>', length($value) * 2, 'some bytes written');
+    cmp_ok($stats{get_extstore}, '>', 0, 'one object was fetched');
+    cmp_ok($stats{extstore_objects_read}, '>', 0, 'one object read');
+    cmp_ok($stats{extstore_bytes_read}, '>', length($value), 'some bytes read');
+    # Test multiget
+    my $rv = $mc->get_multi(qw(nfoo2 nfoo3 noexist));
+    is($rv->{nfoo2}->[1], $value, 'multiget nfoo2');
+    is($rv->{nfoo3}->[1], $value, 'multiget nfoo2');
+
+    # Remove half of the keys for the next test.
+    for (1 .. $keycount) {
+        next unless $_ % 2 == 0;
+        $delete->("nfoo$_");
+    }
+
+    my %stats2 = $mc->stats('');
+    cmp_ok($stats{extstore_bytes_used}, '>', $stats2{extstore_bytes_used},
+        'bytes used dropped after deletions');
+    cmp_ok($stats{extstore_objects_used}, '>', $stats2{extstore_objects_used},
+        'objects used dropped after deletions');
+    is($stats2{badcrc_from_extstore}, 0, 'CRC checks successful');
+
+    # delete the rest
+    for (1 .. $keycount) {
+        next unless $_ % 2 == 1;
+        $delete->("nfoo$_");
+    }
+}
+
+# check evictions and misses
+{
+    my $keycount = 1000;
+    for (1 .. $keycount) {
+        $set->("mfoo$_", 0, 19, $value);
+    }
+    sleep 4;
+    for ($keycount .. ($keycount*3)) {
+        $set->("mfoo$_", 0, 19, $value);
+    }
+    sleep 4;
+    # FIXME: Need to sample through a few values, or fix eviction to be
+    # more accurate. On 32bit systems some pages unused to this point get
+    # filled after the first few items, then the eviction algo pulls those
+    # pages since they have the lowest version number, leaving older objects
+    # in memory and evicting newer ones.
+    for (1 .. ($keycount*3)) {
+        next unless $_ % 100 == 0;
+        eval { $mc->get("mfoo$_"); };
+    }
+
+    my %s = $mc->stats('');
+    cmp_ok($s{extstore_objects_evicted}, '>', 0);
+    cmp_ok($s{miss_from_extstore}, '>', 0);
+}
+
+# store and re-fetch a chunked value
+{
+    my %stats = $mc->stats('');
+    $set->("bigvalue", 0, 0, $bigvalue);
+    sleep 4;
+    $check->("bigvalue", 0, $bigvalue);
+    my %stats2 = $mc->stats('');
+
+    cmp_ok($stats2{extstore_objects_written}, '>',
+        $stats{extstore_objects_written}, "a large value flushed");
+}
+
+# ensure ASCII can still fetch the chunked value.
+{
+    my $ns = $server->new_sock;
+
+    my %s1 = $mc->stats('');
+    mem_get_is($ns, "bigvalue", $bigvalue);
+    print $ns "extstore recache_rate 1\r\n";
+    is(scalar <$ns>, "OK\r\n", "recache rate upped");
+    for (1..3) {
+        mem_get_is($ns, "bigvalue", $bigvalue);
+        $check->('bigvalue', 0, $bigvalue);
+    }
+    my %s2 = $mc->stats('');
+    cmp_ok($s2{recache_from_extstore}, '>', $s1{recache_from_extstore},
+        'a new recache happened');
+
+}
+
+done_testing();
+
+END {
+    unlink $ext_path if $ext_path;
+}
 # ######################################################################
 # Test ends around here.
 # ######################################################################
@@ -294,8 +237,6 @@ use warnings;
 use fields qw(socket);
 use IO::Socket::INET;
 
-use constant ERR_AUTH_ERROR   => 0x20;
-
 sub new {
     my $self = shift;
     my ($s) = @_;
@@ -304,19 +245,6 @@ sub new {
     $self = fields::new($self);
     $self->{socket} = $sock;
     return $self;
-}
-
-sub authenticate {
-    my ($self, $user, $pass, $mech)= @_;
-    $mech ||= 'PLAIN';
-    my $buf = sprintf("%c%s%c%s", 0, $user, 0, $pass);
-    my ($status, $rv, undef) = $self->_do_command(::CMD_SASL_AUTH, $mech, $buf, '');
-    return $status;
-}
-sub list_mechs {
-    my ($self)= @_;
-    my ($status, $rv, undef) = $self->_do_command(::CMD_SASL_LIST_MECHS, '', '', '');
-    return join(" ", sort(split(/\s+/, $rv)));
 }
 
 sub build_command {
@@ -374,7 +302,7 @@ sub send_silent {
     $self->send_command($cmd, $key, $val, $opaque, $extra_header, $cas);
     $self->send_command(::CMD_NOOP, '', '', $opaque + 1);
 
-    my ($ropaque, $status, $data) = $self->_handle_single_response;
+    my ($ropaque, $data) = $self->_handle_single_response;
     Test::More::is($ropaque, $opaque + 1);
 }
 
@@ -385,20 +313,27 @@ sub silent_mutation {
     $empty->($key);
     my $extra = pack "NN", 82, 0;
     $mc->send_silent($cmd, $key, $value, 7278552, $extra, 0);
-    $check->($key, $value);
+    $check->($key, 82, $value);
 }
 
 sub _handle_single_response {
     my $self = shift;
     my $myopaque = shift;
 
-    $self->{socket}->recv(my $response, ::MIN_RECV_BYTES);
+    my $hdr = "";
+    while(::MIN_RECV_BYTES - length($hdr) > 0) {
+        $self->{socket}->recv(my $response, ::MIN_RECV_BYTES - length($hdr));
+        $hdr .= $response;
+    }
+    Test::More::is(length($hdr), ::MIN_RECV_BYTES, "Expected read length");
 
     my ($magic, $cmd, $keylen, $extralen, $datatype, $status, $remaining,
-        $opaque, $ident_hi, $ident_lo) = unpack(::RES_PKT_FMT, $response);
+        $opaque, $ident_hi, $ident_lo) = unpack(::RES_PKT_FMT, $hdr);
+    Test::More::is($magic, ::RES_MAGIC, "Got proper response magic");
 
-    return ($opaque, '', '', '', 0) if not defined $remaining;
-    return ($opaque, '', '', '', 0) if ($remaining == 0);
+    my $cas = ($ident_hi * 2 ** 32) + $ident_lo;
+
+    return ($opaque, '', $cas, 0) if($remaining == 0);
 
     # fetch the value
     my $rv="";
@@ -410,14 +345,17 @@ sub _handle_single_response {
         my $found = length($rv);
         die("Expected $remaining bytes, got $found");
     }
+    if (defined $myopaque) {
+        Test::More::is($opaque, $myopaque, "Expected opaque");
+    } else {
+        Test::More::pass("Implicit pass since myopaque is undefined");
+    }
 
-    my $cas = ($ident_hi * 2 ** 32) + $ident_lo;
+    if ($status) {
+        die MC::Error->new($status, $rv);
+    }
 
-    #if ($status) {
-        #die MC::Error->new($status, $rv);
-    #}
-
-    return ($opaque, $status, $rv, $cas, $keylen);
+    return ($opaque, $rv, $cas, $keylen);
 }
 
 sub _do_command {
@@ -428,8 +366,8 @@ sub _do_command {
     $extra_header = '' unless defined $extra_header;
     my $opaque = int(rand(2**32));
     $self->send_command($cmd, $key, $val, $opaque, $extra_header, $cas);
-    my (undef, $status, $rv, $rcas) = $self->_handle_single_response($opaque);
-    return ($status, $rv, $rcas);
+    my (undef, $rv, $rcas) = $self->_handle_single_response($opaque);
+    return ($rv, $rcas);
 }
 
 sub _incrdecr_header {
@@ -448,18 +386,24 @@ sub _incrdecr_header {
     return $extra_header;
 }
 
-sub _incrdecr {
+sub _incrdecr_cas {
     my $self = shift;
     my ($cmd, $key, $amt, $init, $exp) = @_;
 
-    my ($status, $data, undef) = $self->_do_command($cmd, $key, '',
+    my ($data, $rcas) = $self->_do_command($cmd, $key, '',
                                            $self->_incrdecr_header($amt, $init, $exp));
 
     my $header = substr $data, 0, 8, '';
     my ($resp_hi, $resp_lo) = unpack "NN", $header;
     my $resp = ($resp_hi * 2 ** 32) + $resp_lo;
 
-    return $resp;
+    return $resp, $rcas;
+}
+
+sub _incrdecr {
+    my $self = shift;
+    my ($v, $c) = $self->_incrdecr_cas(@_);
+    return $v
 }
 
 sub silent_incrdecr {
@@ -481,10 +425,9 @@ sub stats {
     my %rv = ();
     my $found_key = '';
     my $found_val = '';
-    my $status= 0;
     do {
-        my ($op, $status, $data, $cas, $keylen) = $self->_handle_single_response($opaque);
-        if ($keylen > 0) {
+        my ($op, $data, $cas, $keylen) = $self->_handle_single_response($opaque);
+        if($keylen > 0) {
             $found_key = substr($data, 0, $keylen);
             $found_val = substr($data, $keylen);
             $rv{$found_key} = $found_val;
@@ -498,12 +441,12 @@ sub stats {
 sub get {
     my $self = shift;
     my $key  = shift;
-    my ($status, $rv, $cas) = $self->_do_command(::CMD_GET, $key, '', '');
+    my ($rv, $cas) = $self->_do_command(::CMD_GET, $key, '', '');
 
     my $header = substr $rv, 0, 4, '';
     my $flags  = unpack("N", $header);
 
-    return ($status, $rv);
+    return ($flags, $rv, $cas);
 }
 
 sub get_multi {
@@ -518,9 +461,8 @@ sub get_multi {
     $self->send_command(::CMD_NOOP, '', '', $terminal);
 
     my %return;
-    my $status = 0;
     while (1) {
-        my ($opaque, $status, $data) = $self->_handle_single_response;
+        my ($opaque, $data) = $self->_handle_single_response;
         last if $opaque == $terminal;
 
         my $header = substr $data, 0, 4, '';
@@ -531,6 +473,27 @@ sub get_multi {
 
     return %return if wantarray;
     return \%return;
+}
+
+sub touch {
+    my $self = shift;
+    my ($key, $expire) = @_;
+    my $extra_header = pack "N", $expire;
+    my $cas = 0;
+    return $self->_do_command(::CMD_TOUCH, $key, '', $extra_header, $cas);
+}
+
+sub gat {
+    my $self   = shift;
+    my $key    = shift;
+    my $expire = shift;
+    my $extra_header = pack "N", $expire;
+    my ($rv, $cas) = $self->_do_command(::CMD_GAT, $key, '', $extra_header);
+
+    my $header = substr $rv, 0, 4, '';
+    my $flags  = unpack("N", $header);
+
+    return ($flags, $rv, $cas);
 }
 
 sub version {
@@ -553,10 +516,7 @@ sub add {
 
 sub set {
     my $self = shift;
-    my $flags = 0;
-    my $cas = 0;
-    my ($key, $val, $expire) = @_;
-    $expire = defined $expire ? $expire : 0;
+    my ($key, $val, $flags, $expire, $cas) = @_;
     my $extra_header = pack "NN", $flags, $expire;
     return $self->_do_command(::CMD_SET, $key, $val, $extra_header, $cas);
 }
@@ -591,6 +551,16 @@ sub incr {
     return $self->_incrdecr(::CMD_INCR, $key, $amt, $init, $exp);
 }
 
+sub incr_cas {
+    my $self = shift;
+    my ($key, $amt, $init, $exp) = @_;
+    $amt = 1 unless defined $amt;
+    $init = 0 unless defined $init;
+    $exp = 0 unless defined $exp;
+
+    return $self->_incrdecr_cas(::CMD_INCR, $key, $amt, $init, $exp);
+}
+
 sub decr {
     my $self = shift;
     my ($key, $amt, $init, $exp) = @_;
@@ -618,7 +588,6 @@ use constant ERR_TOO_BIG      => 0x3;
 use constant ERR_EINVAL       => 0x4;
 use constant ERR_NOT_STORED   => 0x5;
 use constant ERR_DELTA_BADVAL => 0x6;
-use constant ERR_AUTH_ERROR   => 0x20;
 
 use overload '""' => sub {
     my $self = shift;
@@ -653,12 +622,10 @@ sub delta_badval {
     return $self->[0] == ERR_DELTA_BADVAL;
 }
 
-sub auth_error {
+sub einval {
     my $self = shift;
-    return $self->[0] == ERR_AUTH_ERROR;
+    return $self->[0] == ERR_EINVAL;
 }
-
-unlink $sasldb;
 
 # vim: filetype=perl
 
