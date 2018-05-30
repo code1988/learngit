@@ -29,10 +29,10 @@ static logger *logger_stack_head = NULL;
 static logger *logger_stack_tail = NULL;
 static unsigned int logger_count = 0;
 static volatile int do_run_logger_thread = 1;
-static pthread_t logger_tid;
-pthread_mutex_t logger_stack_lock = PTHREAD_MUTEX_INITIALIZER;
+static pthread_t logger_tid;// 记录了logger线程ID
+pthread_mutex_t logger_stack_lock = PTHREAD_MUTEX_INITIALIZER;  // 定义了一个用于维护logger_stack的互斥锁
 
-pthread_key_t logger_key;
+pthread_key_t logger_key;   // 定义了一个和线程私有logger关联的key
 
 #if !defined(HAVE_GCC_64ATOMICS) && !defined(__sun)
 pthread_mutex_t logger_atomics_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -500,7 +500,9 @@ static void logger_thread_sum_stats(struct logger_stats *ls) {
 #define MAX_LOGGER_SLEEP 1000000
 #define MIN_LOGGER_SLEEP 1000
 
-/* Primary logger thread routine */
+/* Primary logger thread routine 
+ * logger线程主函数
+ * */
 static void *logger_thread(void *arg) {
     useconds_t to_sleep = MIN_LOGGER_SLEEP;
     L_DEBUG("LOGGER: Starting logger thread\n");
@@ -541,6 +543,7 @@ static void *logger_thread(void *arg) {
     return NULL;
 }
 
+// 启动一个logger线程
 static int start_logger_thread(void) {
     int ret;
     do_run_logger_thread = 1;
@@ -563,7 +566,9 @@ static int start_logger_thread(void) {
  * Public functions for submitting logs and starting loggers from workers.
  *************************/
 
-/* Global logger thread start/init */
+/* Global logger thread start/init 
+ * 日志模块初始化
+ * */
 void logger_init(void) {
     /* TODO: auto destructor when threads exit */
     /* TODO: error handling */
@@ -571,13 +576,16 @@ void logger_init(void) {
     /* init stack for iterating loggers */
     logger_stack_head = 0;
     logger_stack_tail = 0;
+    // 创建一个线程私有logger模块关联的key
     pthread_key_create(&logger_key, NULL);
 
+    // 启动一个logger线程
     if (start_logger_thread() != 0) {
         abort();
     }
 
     /* This can be removed once the global stats initializer is improved */
+    // 复位全局统计模块中的logger相关参数(这部分复位操作其实是多余的,因为后续执行全局统计模块初始化时会覆盖这部分操作)
     STATS_LOCK();
     stats.log_worker_dropped = 0;
     stats.log_worker_written = 0;
@@ -592,6 +600,7 @@ void logger_init(void) {
 
 /* called *from* the thread using a logger.
  * initializes the per-thread bipbuf, links it into the list of loggers
+ * 为当前线程创建一个logger节点
  */
 logger *logger_create(void) {
     L_DEBUG("LOGGER: Creating and linking new logger instance\n");

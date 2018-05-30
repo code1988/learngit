@@ -120,11 +120,11 @@ static inline int _get_extstore(conn *c, item *it, int iovst, int iovcnt);
 static void conn_free(conn *c);
 
 /** exported globals **/
-struct stats stats;
+struct stats stats;     // 定义了一个全局的统计模块
 struct stats_state stats_state;
 struct settings settings;   // 定义了一个源自命令行的全局可访问的配置集合
-time_t process_started;     /* when the process was started */
-conn **conns;
+time_t process_started;     /* when the process was started  进程启动时间(墙上时间加偏移量得到) */
+conn **conns;           // 定义了一个全局的连接池
 
 struct slab_rebalance slab_rebal;
 volatile int slab_rebalance_signal;
@@ -137,7 +137,7 @@ void *ext_storage;
 /** file scope variables **/
 static conn *listen_conn = NULL;
 static int max_fds;
-static struct event_base *main_base;
+static struct event_base *main_base;    // 记录了主线程的event_base
 
 enum transmit_result {
     TRANSMIT_COMPLETE,   /** All done writing. */
@@ -196,6 +196,7 @@ static rel_time_t realtime(const time_t exptime) {
     }
 }
 
+// 全局的统计模块初始化
 static void stats_init(void) {
     memset(&stats, 0, sizeof(struct stats));
     memset(&stats_state, 0, sizeof(struct stats_state));
@@ -204,7 +205,9 @@ static void stats_init(void) {
     /* make the time we started always be 2 seconds before we really
        did, so time(0) - time.started is never zero.  if so, things
        like 'settings.oldest_live' which act as booleans as well as
-       values are now false in boolean context... */
+       values are now false in boolean context... 
+       计算进程启动时间
+       */
     process_started = time(0) - ITEM_UPDATE_INTERVAL - 2;
     stats_prefix_init();
 }
@@ -332,6 +335,7 @@ static pthread_t conn_timeout_tid;
 
 #define CONNS_PER_SLICE 100
 #define TIMEOUT_MSG_SIZE (1 + sizeof(int))
+// 空闲连接超时的主函数
 static void *conn_timeout_thread(void *arg) {
     int i;
     conn *c;
@@ -392,6 +396,7 @@ static void *conn_timeout_thread(void *arg) {
     return NULL;
 }
 
+// 创建空闲连接超时线程
 static int start_conn_timeout_thread() {
     int ret;
 
@@ -413,6 +418,7 @@ static int start_conn_timeout_thread() {
  * structures until they're needed, so as to avoid wasting memory when the
  * maximum connection count is much higher than the actual number of
  * connections.
+ * 初始化连接池
  *
  * This does end up wasting a few pointers' worth of memory for FDs that are
  * used for things other than connections, but that's worth it in exchange for
@@ -420,10 +426,11 @@ static int start_conn_timeout_thread() {
  */
 static void conn_init(void) {
     /* We're unlikely to see an FD much higher than maxconns. */
-    int next_fd = dup(1);
+    int next_fd = dup(1);   // next_fd用于计算最小空闲fd
     int headroom = 10;      /* account for extra unexpected open FDs */
     struct rlimit rl;
 
+    // 计算fd的最大值
     max_fds = settings.maxconns + headroom + next_fd;
 
     /* But if possible, get the actual highest FD we can possibly ever see. */
@@ -436,6 +443,7 @@ static void conn_init(void) {
 
     close(next_fd);
 
+    // 创建一个数组,用作连接池,数组元素是每个连接session的地址
     if ((conns = calloc(max_fds, sizeof(conn *))) == NULL) {
         fprintf(stderr, "Failed to allocate connection structures\n");
         /* This is unrecoverable so bail out early. */
@@ -500,6 +508,7 @@ void conn_worker_readd(conn *c) {
 #endif
 }
 
+// 根据传入的fd以及相关配置参数创建对应的连接session
 conn *conn_new(const int sfd, enum conn_states init_state,
                 const int event_flags,
                 const int read_buffer_size, enum network_transport transport,
@@ -509,6 +518,7 @@ conn *conn_new(const int sfd, enum conn_states init_state,
     assert(sfd >= 0 && sfd < max_fds);
     c = conns[sfd];
 
+    // 如果该fd对应的连接session尚未注册,则先创建并注册到全局的连接池中
     if (NULL == c) {
         if (!(c = (conn *)calloc(1, sizeof(conn)))) {
             STATS_LOCK();
@@ -571,6 +581,7 @@ conn *conn_new(const int sfd, enum conn_states init_state,
         c->request_addr_size = 0;
     }
 
+    // 如果该连接session属于TCP类型并且代表了一个新的连接请求,则获取对端的套接字地址
     if (transport == tcp_transport && init_state == conn_new_cmd) {
         if (getpeername(sfd, (struct sockaddr *) &c->request_addr,
                         &c->request_addr_size)) {
@@ -626,6 +637,7 @@ conn *conn_new(const int sfd, enum conn_states init_state,
 
     c->noreply = false;
 
+    // 为该连接session创建对应的event,并注册到指定event_base的事件循环中
     event_set(&c->event, sfd, event_flags, event_handler, (void *)c);
     event_base_set(base, &c->event);
     c->ev_flags = event_flags;
@@ -5360,6 +5372,7 @@ static int read_into_chunked_item(conn *c) {
     return total;
 }
 
+// 状态机运行
 static void drive_machine(conn *c) {
     bool stop = false;
     int sfd;
@@ -5379,7 +5392,8 @@ static void drive_machine(conn *c) {
     while (!stop) {
 
         switch(c->state) {
-        case conn_listening:
+        case conn_listening:    // 连接session处于监听状态的处理流程
+            // 首先就是调用accept/accept来接受连接请求
             addrlen = sizeof(addr);
 #ifdef HAVE_ACCEPT4
             if (use_accept4) {
@@ -5410,6 +5424,7 @@ static void drive_machine(conn *c) {
                 }
                 break;
             }
+            // 如果调用的是accept需要额外将新连接的fd设置为非阻塞
             if (!use_accept4) {
                 if (fcntl(sfd, F_SETFL, fcntl(sfd, F_GETFL) | O_NONBLOCK) < 0) {
                     perror("setting O_NONBLOCK");
@@ -5418,6 +5433,7 @@ static void drive_machine(conn *c) {
                 }
             }
 
+            // 如果配置了尽早关闭的标识并且连接数量超限,则立刻发送出错通知给对端,然后断开连接
             if (settings.maxconns_fast &&
                 stats_state.curr_conns + stats_state.reserved_fds >= settings.maxconns - 1) {
                 str = "ERROR Too many open connections\r\n";
@@ -5427,6 +5443,7 @@ static void drive_machine(conn *c) {
                 stats.rejected_conns++;
                 STATS_UNLOCK();
             } else {
+                // 正常情况下就在这里分发该新连接给某个工作线程
                 dispatch_conn_new(sfd, conn_new_cmd, EV_READ | EV_PERSIST,
                                      DATA_BUFFER_SIZE, c->transport);
             }
@@ -5732,6 +5749,7 @@ static void drive_machine(conn *c) {
     return;
 }
 
+// 指定连接session关联的event触发后的回调函数
 void event_handler(const int fd, const short which, void *arg) {
     conn *c;
 
@@ -6025,6 +6043,7 @@ static int server_sockets(int port, enum network_transport transport,
     }
 }
 
+// 创建流式非阻塞UNIX域套接字
 static int new_socket_unix(void) {
     int sfd;
     int flags;
@@ -6043,6 +6062,7 @@ static int new_socket_unix(void) {
     return sfd;
 }
 
+// 创建UNIX域服务端套接字并开启监听
 static int server_socket_unix(const char *path, int access_mask) {
     int sfd;
     struct linger ling = {0, 0};
@@ -6051,16 +6071,19 @@ static int server_socket_unix(const char *path, int access_mask) {
     int flags =1;
     int old_umask;
 
+    // 确保传入了套接字绑定地址
     if (!path) {
         return 1;
     }
 
+    // 创建流式非阻塞UNIX域套接字
     if ((sfd = new_socket_unix()) == -1) {
         return 1;
     }
 
     /*
      * Clean up a previous socket file if we left it around
+     * 清除之前存在的套接字文件
      */
     if (lstat(path, &tstat) == 0) {
         if (S_ISSOCK(tstat.st_mode))
@@ -6080,19 +6103,24 @@ static int server_socket_unix(const char *path, int access_mask) {
     addr.sun_family = AF_UNIX;
     strncpy(addr.sun_path, path, sizeof(addr.sun_path) - 1);
     assert(strcmp(addr.sun_path, path) == 0);
+    // 临时修改进程的UMASK,用于设置UNIX域套接字绑定的套接字文件访问权限
     old_umask = umask( ~(access_mask&0777));
+    // 将创建的UNIX域套接字绑定到指定地址上
     if (bind(sfd, (struct sockaddr *)&addr, sizeof(addr)) == -1) {
         perror("bind()");
         close(sfd);
         umask(old_umask);
         return 1;
     }
+    // 恢复进程的UMASK 
     umask(old_umask);
+    // 监听该UNIX域套接字
     if (listen(sfd, settings.backlog) == -1) {
         perror("listen()");
         close(sfd);
         return 1;
     }
+    // 为该UNIX域套接字创建一个连接session,并注册该session的读事件到主线程的event_base事件循环中
     if (!(listen_conn = conn_new(sfd, conn_listening,
                                  EV_READ | EV_PERSIST, 1,
                                  local_transport, main_base))) {
@@ -6111,15 +6139,17 @@ static int server_socket_unix(const char *path, int access_mask) {
  * rather than absolute UNIX timestamps, a space savings on systems where
  * sizeof(time_t) > sizeof(unsigned int).
  */
-volatile rel_time_t current_time;
-static struct event clockevent;
+volatile rel_time_t current_time;   // 这个全局变量用来记录当前时间,这是一个相对基准时间monotonic_start的偏移量
+static struct event clockevent;     // 定义了时钟模块的event
 
 /* libevent uses a monotonic clock when available for event scheduling. Aside
  * from jitter, simply ticking our internal timer here is accurate enough.
  * Note that users who are setting explicit dates for expiration times *must*
- * ensure their clocks are correct before starting memcached. */
+ * ensure their clocks are correct before starting memcached. 
+ * 初始化时钟模块,同时也是超时事件的回调函数
+ * */
 static void clock_handler(const int fd, const short which, void *arg) {
-    struct timeval t = {.tv_sec = 1, .tv_usec = 0};
+    struct timeval t = {.tv_sec = 1, .tv_usec = 0};     // 超时时间默认被设置为1s间隔
     static bool initialized = false;
 #if defined(HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
     static bool monotonic = false;
@@ -6130,6 +6160,7 @@ static void clock_handler(const int fd, const short which, void *arg) {
         /* only delete the event if it's actually there. */
         evtimer_del(&clockevent);
     } else {
+        // 第一次初始化时钟模块时会设置一次基准时间
         initialized = true;
         /* process_started is initialized to time() - 2. We initialize to 1 so
          * flush_all won't underflow during tests. */
@@ -6146,10 +6177,12 @@ static void clock_handler(const int fd, const short which, void *arg) {
     // This function should be quick to avoid delaying the timer.
     assoc_start_expand(stats_state.curr_items);
 
+    // 创建超时event并将其加入到主线程event_base的事件循环中
     evtimer_set(&clockevent, clock_handler, 0);
     event_base_set(main_base, &clockevent);
     evtimer_add(&clockevent, &t);
 
+    // 更新当前时间,显然该时间默认会1s更新一次
 #if defined(HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
     if (monotonic) {
         struct timespec ts;
@@ -6345,6 +6378,7 @@ static void usage_license(void) {
     return;
 }
 
+// 保存当前进程的PID到指定文件
 static void save_pid(const char *pid_file) {
     FILE *fp;
     if (access(pid_file, F_OK) == 0) {
@@ -6794,7 +6828,7 @@ int main (int argc, char **argv) {
             settings.shutdown_command = true;
             break;
 
-        case 'a':
+        case 'a':   // 配置UNIX域套接字绑定的套接字文件的访问权限(8进制字符串)
             /* access for unix domain socket, as octal mask (like chmod)*/
             settings.access= strtol(optarg,NULL,8);
             break;
@@ -6872,7 +6906,7 @@ int main (int argc, char **argv) {
         case 'u':   // 配置进程真实用户ID
             username = optarg;
             break;
-        case 'P':
+        case 'P':   // 配置保存PID的文件名
             pid_file = optarg;
             break;
         case 'f':
@@ -7615,6 +7649,7 @@ int main (int argc, char **argv) {
     /* initialize main thread libevent instance */
 #if defined(LIBEVENT_VERSION_NUMBER) && LIBEVENT_VERSION_NUMBER >= 0x02000101
     /* If libevent version is larger/equal to 2.0.2-alpha, use newer version */
+    // 创建主线程的event_baes,并设置不分配锁,这个选项让在多个线程访问该event_base的行为变得不安全 
     struct event_config *ev_config;
     ev_config = event_config_new();
     event_config_set_flag(ev_config, EVENT_BASE_FLAG_NOLOCK);
@@ -7625,11 +7660,14 @@ int main (int argc, char **argv) {
     main_base = event_init();
 #endif
 
-    /* initialize other stuff */
+    /* initialize other stuff  logger模块初始化 */
     logger_init();
+    // 全局统计模块初始化
     stats_init();
     assoc_init(settings.hashpower_init);
+    // 初始化连接池
     conn_init();
+    // 初始化存储模块
     slabs_init(settings.maxbytes, settings.factor, preallocate,
             use_slab_sizes ? slab_sizes : NULL);
 #ifdef EXTSTORE
@@ -7662,12 +7700,15 @@ int main (int argc, char **argv) {
     /*
      * ignore SIGPIPE signals; we can use errno == EPIPE if we
      * need that information
+     * 忽略SIGPIPE信号
      */
     if (sigignore(SIGPIPE) == -1) {
         perror("failed to ignore SIGPIPE; sigaction");
         exit(EX_OSERR);
     }
-    /* start up worker threads if MT mode */
+    /* start up worker threads if MT mode 
+     * 初始化工作线程和LRU爬虫模块
+     * */
 #ifdef EXTSTORE
     slabs_set_storage(storage);
     memcached_thread_init(settings.num_threads, storage);
@@ -7703,14 +7744,17 @@ int main (int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
+    // 如果配置了空闲连接超时值,则创建空闲连接超时线程
     if (settings.idle_timeout && start_conn_timeout_thread() == -1) {
         exit(EXIT_FAILURE);
     }
 
-    /* initialise clock event */
+    /* initialise clock event  初始化时钟模块 */
     clock_handler(0, 0, 0);
 
-    /* create unix mode sockets after dropping privileges */
+    /* create unix mode sockets after dropping privileges 
+     * 如果配置了UNIX域套接字绑定地址,则在这里创建UNIX域服务端套接字并开启监听
+     * */
     if (settings.socketpath != NULL) {
         errno = 0;
         if (server_socket_unix(settings.socketpath,settings.access)) {
@@ -7719,7 +7763,9 @@ int main (int argc, char **argv) {
         }
     }
 
-    /* create the listening socket, bind it, and init */
+    /* create the listening socket, bind it, and init 
+     * 如果没有配置UNIX域套接字绑定地址,则在这里创建TCP/UDP套接字并开启监听
+     * */
     if (settings.socketpath == NULL) {
         const char *portnumber_filename = getenv("MEMCACHED_PORT_FILENAME");
         char *temp_portnumber_filename = NULL;
@@ -7774,16 +7820,20 @@ int main (int argc, char **argv) {
      * is only an advisory.
      */
     usleep(1000);
+    // 检查配置的最大连接数量是否足够
     if (stats_state.curr_conns + stats_state.reserved_fds >= settings.maxconns - 1) {
         fprintf(stderr, "Maxconns setting is too low, use -c to increase.\n");
         exit(EXIT_FAILURE);
     }
 
+    // 如果配置了保存PID的文件名,则保存当前进程的PID到该文件
     if (pid_file != NULL) {
         save_pid(pid_file);
     }
 
-    /* Drop privileges no longer needed */
+    /* Drop privileges no longer needed 
+     * 丢弃不再需要的权限
+     * */
     if (settings.drop_privileges) {
         drop_privileges();
     }
@@ -7791,7 +7841,9 @@ int main (int argc, char **argv) {
     /* Initialize the uriencode lookup table. */
     uriencode_init();
 
-    /* enter the event loop */
+    /* enter the event loop 
+     * 进入主线程的event_base事件循环
+     * */
     if (event_base_loop(main_base, 0) != 0) {
         retval = EXIT_FAILURE;
     }

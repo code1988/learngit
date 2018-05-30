@@ -458,7 +458,7 @@ enum event_method_feature {
 enum event_base_config_flag {
 	/** Do not allocate a lock for the event base, even if we have
 	    locking set up.     
-        不要为即将创建的event_baes分配锁(显然通常用于单线程进程) */
+        不要为即将创建的event_baes分配锁,设置这个选项可以为event_base节省一点用于上锁和解锁的时间,但是让在多个线程访问该event_base的行为变得不安全 */
 	EVENT_BASE_FLAG_NOLOCK = 0x01,
 	/** Do not check the EVENT_* environment variables when configuring
 	    an event_base       

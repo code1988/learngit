@@ -67,6 +67,7 @@ fail:
     exit(EXIT_FAILURE);
 }
 
+// 丢弃当前工作线程的一些进程权限
 void drop_worker_privileges(void) {
     scmp_filter_ctx ctx = seccomp_init(DENY_ACTION);
     if (ctx == NULL) {

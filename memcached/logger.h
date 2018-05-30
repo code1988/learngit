@@ -120,6 +120,7 @@ typedef struct _logentry {
 #define LOG_STRICT     (1<<7) /* block worker instead of drop */
 #define LOG_RAWCMDS    (1<<9) /* raw ascii commands */
 
+// 定义了logger节点结构,该结构通常关联一个线程
 typedef struct _logger {
     struct _logger *prev;
     struct _logger *next;

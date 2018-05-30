@@ -93,7 +93,7 @@ static crawler crawlers[LARGEST_ID];
 
 static int crawler_count = 0;
 static volatile int do_run_lru_crawler_thread = 0;
-static int lru_crawler_initialized = 0;
+static int lru_crawler_initialized = 0; // 标识LRU爬虫模块是否已经完成初始化
 static pthread_mutex_t lru_crawler_lock = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t  lru_crawler_cond = PTHREAD_COND_INITIALIZER;
 #ifdef EXTSTORE
@@ -683,6 +683,7 @@ void lru_crawler_resume(void) {
     pthread_mutex_unlock(&lru_crawler_lock);
 }
 
+// 初始化LRU爬虫模块
 int init_lru_crawler(void *arg) {
     if (lru_crawler_initialized == 0) {
 #ifdef EXTSTORE

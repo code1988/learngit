@@ -159,10 +159,11 @@ typedef void (*ADD_STAT)(const char *key, const uint16_t klen,
  */
 /**
  * Possible states of a connection.
+ * 枚举了一个连接过程中可能出现的状态
  */
 enum conn_states {
     conn_listening,  /**< the socket which listens for connections */
-    conn_new_cmd,    /**< Prepare connection for next command */
+    conn_new_cmd,    /**< Prepare connection for next command  收到一个新的连接请求 */
     conn_waiting,    /**< waiting for a readable socket */
     conn_read,       /**< reading in a command line */
     conn_parse_cmd,  /**< try to parse a command from the input buffer */
@@ -282,9 +283,10 @@ struct slab_stats {
 
 /**
  * Stats stored per-thread.
+ * 定义了每个线程的统计信息结构
  */
 struct thread_stats {
-    pthread_mutex_t   mutex;
+    pthread_mutex_t   mutex;    // 用于维护本结构的互斥锁
 #define X(name) uint64_t    name;
     THREAD_STATS_FIELDS
 #ifdef EXTSTORE
@@ -297,11 +299,12 @@ struct thread_stats {
 
 /**
  * Global stats. Only resettable stats should go into this structure.
+ * 定义了全局的统计信息结构
  */
 struct stats {
     uint64_t      total_items;
-    uint64_t      total_conns;
-    uint64_t      rejected_conns;
+    uint64_t      total_conns;  // 记录了总的连接数量
+    uint64_t      rejected_conns;   // 记录了拒绝的连接数量
     uint64_t      malloc_fails;
     uint64_t      listen_disabled_num;
     uint64_t      slabs_moved;       /* times slabs were moved around */
@@ -329,17 +332,18 @@ struct stats {
 /**
  * Global "state" stats. Reflects state that shouldn't be wiped ever.
  * Ordered for some cache line locality for commonly updated counters.
+ * 定义了全局的状态信息统计结构
  */
 struct stats_state {
     uint64_t      curr_items;
     uint64_t      curr_bytes;
-    uint64_t      curr_conns;
+    uint64_t      curr_conns;       // 记录了已经创建并激活的连接session数量
     uint64_t      hash_bytes;       /* size used for hash tables */
-    unsigned int  conn_structs;
-    unsigned int  reserved_fds;
+    unsigned int  conn_structs;     // 记录了已经创建的连接session数量
+    unsigned int  reserved_fds;     // 记录了保留的fd数量
     unsigned int  hash_power_level; /* Better hope it's not over 9000 */
     bool          hash_is_expanding; /* If the hash table is being expanded */
-    bool          accepting_conns;  /* whether we are currently accepting */
+    bool          accepting_conns;  /* whether we are currently accepting  标识我们当前是否处于listen状态 */
     bool          slab_reassign_running; /* slab reassign in progress */
     bool          lru_crawler_running; /* crawl in progress */
 };
@@ -353,7 +357,7 @@ struct stats_state {
  */
 struct settings {
     size_t maxbytes;
-    int maxconns;
+    int maxconns;       // 记录了配置的最大连接数量
     int port;
     int udpport;
     char *inter;
@@ -361,7 +365,7 @@ struct settings {
     rel_time_t oldest_live; /* ignore existing items older than this */
     uint64_t oldest_cas; /* ignore existing items with CAS values lower than this */
     int evict_to_free;
-    char *socketpath;   /* path to unix socket if using local socket */
+    char *socketpath;   /* path to unix socket if using local socket  UNIX域套接字绑定地址 */
     int access;  /* access mask (a la chmod) for unix domain socket */
     double factor;          /* chunk size growth factor */
     int chunk_size;
@@ -378,7 +382,7 @@ struct settings {
     int slab_chunk_size_max;  /* Upper end for chunks within slab pages. */
     int slab_page_size;     /* Slab's page units. */
     bool sasl;              /* SASL on/off 标识是否开启sasl功能,默认关闭 */
-    bool maxconns_fast;     /* Whether or not to early close connections */
+    bool maxconns_fast;     /* Whether or not to early close connections  标识是否尽早关闭有问题的连接 */
     bool lru_crawler;        /* Whether or not to enable the autocrawler thread 标识是否已经使能LRU自动爬虫线程 */
     bool lru_maintainer_thread; /* LRU maintainer background thread */
     bool lru_segmented;     /* Use split or flat LRU's */
@@ -405,7 +409,7 @@ struct settings {
     int idle_timeout;       /* Number of seconds to let connections idle */
     unsigned int logger_watcher_buf_size; /* size of logger's per-watcher buffer */
     unsigned int logger_buf_size; /* size of per-thread logger buffer */
-    bool drop_privileges;   /* Whether or not to drop unnecessary process privileges */
+    bool drop_privileges;   /* Whether or not to drop unnecessary process privileges  标识是否需要丢弃多余的进程权限 */
     bool relaxed_privileges;   /* Relax process restrictions when running testapp */
 #ifdef EXTSTORE
     unsigned int ext_item_size; /* minimum size of items to store externally */
@@ -519,14 +523,15 @@ typedef struct {
     unsigned short page_id; /* from IO header */
 } item_hdr;
 #endif
+// 定义了工作线程管理块结构
 typedef struct {
-    pthread_t thread_id;        /* unique ID of this thread */
-    struct event_base *base;    /* libevent handle this thread uses */
-    struct event notify_event;  /* listen event for notify pipe */
-    int notify_receive_fd;      /* receiving end of notify pipe */
-    int notify_send_fd;         /* sending end of notify pipe */
-    struct thread_stats stats;  /* Stats generated by this thread */
-    struct conn_queue *new_conn_queue; /* queue of new connections to handle */
+    pthread_t thread_id;        /* unique ID of this thread  该线程ID */
+    struct event_base *base;    /* libevent handle this thread uses 该线程关联的event_base实例 */
+    struct event notify_event;  /* listen event for notify pipe  该线程用于监听管道读事件的event实例 */
+    int notify_receive_fd;      /* receiving end of notify pipe  记录了管道的接收端fd */
+    int notify_send_fd;         /* sending end of notify pipe  记录了管道的发生端fd */
+    struct thread_stats stats;  /* Stats generated by this thread  记录了该线程的统计信息 */
+    struct conn_queue *new_conn_queue; /* queue of new connections to handle 指向该线程关联的连接队列 */
     cache_t *suffix_cache;      /* suffix cache */
 #ifdef EXTSTORE
     cache_t *io_cache;          /* IO objects */
@@ -552,27 +557,28 @@ typedef struct _io_wrap {
 #endif
 /**
  * The structure representing a connection into memcached.
+ * 用于描述一个连接session
  */
 struct conn {
-    int    sfd;
+    int    sfd;     // 该连接session关联的fd
     sasl_conn_t *sasl_conn;
     bool authenticated;
-    enum conn_states  state;
+    enum conn_states  state;    // 该链接session当前状态
     enum bin_substates substate;
     rel_time_t last_cmd_time;
-    struct event event;
-    short  ev_flags;
-    short  which;   /** which events were just triggered */
+    struct event event; // 该连接session关联的event
+    short  ev_flags;    // 该连接session关联的event的标志集合        
+    short  which;   /** which events were just triggered 记录了最近一次触发事件源 */
 
-    char   *rbuf;   /** buffer to read commands into */
-    char   *rcurr;  /** but if we parsed some already, this is where we stopped */
-    int    rsize;   /** total allocated size of rbuf */
-    int    rbytes;  /** how much data, starting from rcur, do we have unparsed */
+    char   *rbuf;   /** buffer to read commands into  指向一片读缓冲区 */
+    char   *rcurr;  /** but if we parsed some already, this is where we stopped  读指针 */
+    int    rsize;   /** total allocated size of rbuf  读缓冲区长度 */
+    int    rbytes;  /** how much data, starting from rcur, do we have unparsed  读缓冲区中尚未读取的数据长度 */
 
-    char   *wbuf;
-    char   *wcurr;
-    int    wsize;
-    int    wbytes;
+    char   *wbuf;   //指向一片写缓冲区
+    char   *wcurr;  // 写指针
+    int    wsize;   // 写缓冲区长度
+    int    wbytes;  // 写缓冲区中已经写入的数据长度?
     /** which state to go into after finishing current write */
     enum conn_states  write_and_go;
     void   *write_and_free; /** free this memory after finishing writing */
@@ -619,13 +625,13 @@ struct conn {
     io_wrap *io_wraplist; /* linked list of io_wraps */
     bool io_queued; /* FIXME: debugging flag */
 #endif
-    enum protocol protocol;   /* which protocol this connection speaks */
-    enum network_transport transport; /* what transport is used by this connection */
+    enum protocol protocol;   /* which protocol this connection speaks  该连接session使用的数据格式 */
+    enum network_transport transport; /* what transport is used by this connection  该连接session使用的协议类型 */
 
     /* data for UDP clients */
     int    request_id; /* Incoming UDP request ID, if this is a UDP "connection" */
-    struct sockaddr_in6 request_addr; /* udp: Who sent the most recent request */
-    socklen_t request_addr_size;
+    struct sockaddr_in6 request_addr; /* udp: Who sent the most recent request  记录对端地址 */
+    socklen_t request_addr_size;    // 记录对端地址长度
     unsigned char *hdrbuf; /* udp packet headers */
     int    hdrsize;   /* number of headers' worth of space is allocated */
 
