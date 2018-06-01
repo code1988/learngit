@@ -146,6 +146,7 @@ extern "C"
 
     /**
      * Definition of the header structure for a request packet.
+     * 二进制请求报文头定义
      * See section 2
      */
     typedef union {

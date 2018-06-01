@@ -17,21 +17,24 @@
 #include <atomic.h>
 #endif
 
-#define ITEMS_PER_ALLOC 64
+#define ITEMS_PER_ALLOC 64  // 每次申请连接队列单元的数量
 
-/* An item in the connection queue. */
+/* An item in the connection queue. 
+ * 枚举了连接队列单元的类型
+ * */
 enum conn_queue_item_modes {
     queue_new_conn,   /* brand new connection. */
     queue_redispatch, /* redispatching from side thread */
 };
+// 定义了连接信息队列单元结构
 typedef struct conn_queue_item CQ_ITEM;
 struct conn_queue_item {
-    int               sfd;
-    enum conn_states  init_state;
-    int               event_flags;
-    int               read_buffer_size;
-    enum network_transport     transport;
-    enum conn_queue_item_modes mode;
+    int               sfd;                  // 要分发的fd
+    enum conn_states  init_state;           // 该fd的起始状态
+    int               event_flags;          // 该fd要注册的event标志
+    int               read_buffer_size;     // 该fd要分配的读缓冲区长度
+    enum network_transport     transport;   // 该fd的协议类型
+    enum conn_queue_item_modes mode;        // 该连接队列单元的类型
     conn *c;
     CQ_ITEM          *next;
 };
@@ -43,7 +46,7 @@ typedef struct conn_queue CQ;
 struct conn_queue {
     CQ_ITEM *head;
     CQ_ITEM *tail;
-    pthread_mutex_t lock;
+    pthread_mutex_t lock;   // 用于维护该连接队列的锁
 };
 
 /* Locks for cache LRU operations 
@@ -65,8 +68,8 @@ static pthread_mutex_t stats_lock = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t worker_hang_lock;
 
 /* Free list of CQ_ITEM structs */
-static CQ_ITEM *cqi_freelist;
-static pthread_mutex_t cqi_freelist_lock;
+static CQ_ITEM *cqi_freelist;       // 定义了一个空余连接队列单元池
+static pthread_mutex_t cqi_freelist_lock;   // 定义了一个用于维护cqi_freelist的互斥锁
 
 static pthread_mutex_t *item_locks;
 /* size of the item lock hash table */
@@ -221,6 +224,7 @@ static CQ_ITEM *cq_pop(CQ *cq) {
 
 /*
  * Adds an item to a connection queue.
+ * 将指定连接队列单元插入到指定连接队列
  */
 static void cq_push(CQ *cq, CQ_ITEM *item) {
     item->next = NULL;
@@ -236,9 +240,11 @@ static void cq_push(CQ *cq, CQ_ITEM *item) {
 
 /*
  * Returns a fresh connection queue item.
+ * 返回一个可用的连接队列单元
  */
 static CQ_ITEM *cqi_new(void) {
     CQ_ITEM *item = NULL;
+    // 从空余连接队列池中获取一个连接队列单元
     pthread_mutex_lock(&cqi_freelist_lock);
     if (cqi_freelist) {
         item = cqi_freelist;
@@ -246,6 +252,7 @@ static CQ_ITEM *cqi_new(void) {
     }
     pthread_mutex_unlock(&cqi_freelist_lock);
 
+    // 如果空余连接队列池中为空,则一次性创建ITEMS_PER_ALLOC数量的连接队列单元
     if (NULL == item) {
         int i;
 
@@ -262,6 +269,7 @@ static CQ_ITEM *cqi_new(void) {
          * Link together all the new items except the first one
          * (which we'll return to the caller) for placement on
          * the freelist.
+         * 将创建的连接队列单元(除了马上就要用的第一个)链接起来并放入空余连接队列池
          */
         for (i = 2; i < ITEMS_PER_ALLOC; i++)
             item[i - 1].next = &item[i];
@@ -278,6 +286,7 @@ static CQ_ITEM *cqi_new(void) {
 
 /*
  * Frees a connection queue item (adds it to the freelist.)
+ * 回收指定连接队列单元,实际就是将其放入空余连接队列单元池
  */
 static void cqi_free(CQ_ITEM *item) {
     pthread_mutex_lock(&cqi_freelist_lock);
@@ -426,21 +435,25 @@ static void thread_libevent_process(int fd, short which, void *arg) {
     conn *c;
     unsigned int timeout_fd;
 
+    // 读取管道中的字符
     if (read(fd, buf, 1) != 1) {
         if (settings.verbose > 0)
             fprintf(stderr, "Can't read from libevent pipe\n");
         return;
     }
 
+    // 根据不同字符进入相应的处理流程
     switch (buf[0]) {
-    case 'c':
+    case 'c':           // 意味着收到一个连接队列单元
         item = cq_pop(me->new_conn_queue);
 
         if (NULL == item) {
             break;
         }
+        // 根据链接队列单元的不同类型进入相应的处理流程
         switch (item->mode) {
-            case queue_new_conn:
+            case queue_new_conn:    // 意味着收到一个新连接
+                // 为这个新连接创建一个对应的连接session
                 c = conn_new(item->sfd, item->init_state, item->event_flags,
                                    item->read_buffer_size, item->transport,
                                    me->base);
@@ -464,6 +477,7 @@ static void thread_libevent_process(int fd, short which, void *arg) {
                 conn_worker_readd(item->c);
                 break;
         }
+        // 回收使用完毕的连接队列单元
         cqi_free(item);
         break;
     /* we were told to pause and report in */
@@ -482,7 +496,7 @@ static void thread_libevent_process(int fd, short which, void *arg) {
     }
 }
 
-/* Which thread we assigned a connection to most recently. */
+/* Which thread we assigned a connection to most recently.  记录了最近一次分发到新连接的工作线程序号 */
 static int last_thread = -1;
 
 /*
@@ -493,6 +507,7 @@ static int last_thread = -1;
  */
 void dispatch_conn_new(int sfd, enum conn_states init_state, int event_flags,
                        int read_buffer_size, enum network_transport transport) {
+    // 返回一个可用的连接队列单元
     CQ_ITEM *item = cqi_new();
     char buf[1];
     if (item == NULL) {
@@ -502,12 +517,14 @@ void dispatch_conn_new(int sfd, enum conn_states init_state, int event_flags,
         return ;
     }
 
+    // 通过求余的方式选择要分发的线程
     int tid = (last_thread + 1) % settings.num_threads;
 
     LIBEVENT_THREAD *thread = threads + tid;
 
     last_thread = tid;
 
+    // 填充该连接队列单元
     item->sfd = sfd;
     item->init_state = init_state;
     item->event_flags = event_flags;
@@ -515,10 +532,12 @@ void dispatch_conn_new(int sfd, enum conn_states init_state, int event_flags,
     item->transport = transport;
     item->mode = queue_new_conn;
 
+    // 将该连接队列单元插入到要分发的线程的连接队列
     cq_push(thread->new_conn_queue, item);
 
     MEMCACHED_CONN_DISPATCH(sfd, thread->thread_id);
     buf[0] = 'c';
+    // 往要分发线程的写管道写一个'c'来通知该线程接收接收连接队列单元
     if (write(thread->notify_send_fd, buf, 1) != 1) {
         perror("Writing to thread notify pipe");
     }

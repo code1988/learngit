@@ -136,11 +136,11 @@ CMD_VERSION	t/binary-extstore.t	/^use constant CMD_VERSION    => 0x0B;$/;"	c
 CMD_VERSION	t/binary-sasl.t	/^use constant CMD_VERSION    => 0x0B;$/;"	c
 CMD_VERSION	t/binary.t	/^use constant CMD_VERSION    => 0x0B;$/;"	c
 COLD_LRU	items.h	3;"	d
-COMMAND_TOKEN	memcached.c	2931;"	d	file:
+COMMAND_TOKEN	memcached.c	2939;"	d	file:
 CONFIG_CLEAN_FILES	doc/Makefile	/^CONFIG_CLEAN_FILES =$/;"	m
 CONFIG_CLEAN_VPATH_FILES	doc/Makefile	/^CONFIG_CLEAN_VPATH_FILES =$/;"	m
 CONFIG_HEADER	doc/Makefile	/^CONFIG_HEADER = $(top_builddir)\/config.h$/;"	m
-CONNS_PER_SLICE	memcached.c	336;"	d	file:
+CONNS_PER_SLICE	memcached.c	339;"	d	file:
 CPP	doc/Makefile	/^CPP = gcc -E$/;"	m
 CPPFLAGS	doc/Makefile	/^CPPFLAGS = $/;"	m
 CQ	thread.c	/^typedef struct conn_queue CQ;$/;"	t	typeref:struct:conn_queue	file:
@@ -173,8 +173,8 @@ DESTROY	t/lib/MemcachedTest.pm	/^sub DESTROY {$/;"	s
 DISTFILES	doc/Makefile	/^DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)$/;"	m
 DIST_COMMON	doc/Makefile	/^DIST_COMMON = $(srcdir)\/Makefile.am $(am__DIST_COMMON)$/;"	m
 DIST_SOURCES	doc/Makefile	/^DIST_SOURCES =$/;"	m
-DONT_UPDATE	memcached.h	733;"	d
-DO_UPDATE	memcached.h	732;"	d
+DONT_UPDATE	memcached.h	735;"	d
+DO_UPDATE	memcached.h	734;"	d
 DTRACE	doc/Makefile	/^DTRACE = $/;"	m
 DTRACEFLAGS	doc/Makefile	/^DTRACEFLAGS = $/;"	m
 ECHO_C	doc/Makefile	/^ECHO_C = $/;"	m
@@ -278,11 +278,11 @@ ITEM_suffix	memcached.h	112;"	d
 ITERATIONS	testapp.c	122;"	d	file:
 ITERATIONS	testapp.c	135;"	d	file:
 ITOA_LJUST_H	itoa_ljust.h	2;"	d
-IT_REFCOUNT_LIMIT	memcached.c	3518;"	d	file:
+IT_REFCOUNT_LIMIT	memcached.c	3526;"	d	file:
 JENKINS_HASH	hash.h	/^    JENKINS_HASH=0, MURMUR3_HASH$/;"	e	enum:hashfunc_type
 JENKINS_HASH_H	jenkins_hash.h	2;"	d
 KEY_MAX_LENGTH	memcached.h	36;"	d
-KEY_TOKEN	memcached.c	2933;"	d	file:
+KEY_TOKEN	memcached.c	2941;"	d	file:
 LARGEST_ID	crawler.c	24;"	d	file:
 LARGEST_ID	items.c	30;"	d	file:
 LDFLAGS	doc/Makefile	/^LDFLAGS = $/;"	m
@@ -356,7 +356,7 @@ MAX_NUMBER_OF_SLAB_CLASSES	memcached.h	93;"	d
 MAX_SASL_MECH_LEN	sasl_defs.h	5;"	d
 MAX_SENDBUF_SIZE	memcached.h	45;"	d
 MAX_STORAGE_COMPACT_SLEEP	storage.c	202;"	d	file:
-MAX_TOKENS	memcached.c	2935;"	d	file:
+MAX_TOKENS	memcached.c	2943;"	d	file:
 MAX_VERBOSITY_LEVEL	memcached.h	351;"	d
 MC::Client	t/binary-extstore.t	/^package MC::Client;$/;"	p
 MC::Client	t/binary-sasl.t	/^package MC::Client;$/;"	p
@@ -709,7 +709,7 @@ READ_DATA_RECEIVED	memcached.c	/^    READ_DATA_RECEIVED,$/;"	e	enum:try_read_res
 READ_ERROR	memcached.c	/^    READ_ERROR,            \/** an error occurred (on the socket) (or client closed connection) *\/$/;"	e	enum:try_read_result	file:
 READ_MEMORY_ERROR	memcached.c	/^    READ_MEMORY_ERROR      \/** failed to allocate more memory *\/$/;"	e	enum:try_read_result	file:
 READ_NO_DATA_RECEIVED	memcached.c	/^    READ_NO_DATA_RECEIVED,$/;"	e	enum:try_read_result	file:
-REALTIME_MAXDELTA	memcached.c	172;"	d	file:
+REALTIME_MAXDELTA	memcached.c	173;"	d	file:
 REASSIGN_BADCLASS	slabs.h	/^    REASSIGN_OK=0, REASSIGN_RUNNING, REASSIGN_BADCLASS, REASSIGN_NOSPARE,$/;"	e	enum:reassign_result_type
 REASSIGN_NOSPARE	slabs.h	/^    REASSIGN_OK=0, REASSIGN_RUNNING, REASSIGN_BADCLASS, REASSIGN_NOSPARE,$/;"	e	enum:reassign_result_type
 REASSIGN_OK	slabs.h	/^    REASSIGN_OK=0, REASSIGN_RUNNING, REASSIGN_BADCLASS, REASSIGN_NOSPARE,$/;"	e	enum:reassign_result_type
@@ -767,7 +767,7 @@ STORAGE_delete	items.h	95;"	d
 STORED	memcached.h	/^    NOT_STORED=0, STORED, EXISTS, NOT_FOUND, TOO_LARGE, NO_MEMORY$/;"	e	enum:store_item_type
 STORE_OFFSET	storage.h	10;"	d
 STRIP	doc/Makefile	/^STRIP = $/;"	m
-SUBCOMMAND_TOKEN	memcached.c	2932;"	d	file:
+SUBCOMMAND_TOKEN	memcached.c	2940;"	d	file:
 SUFFIX_LIST_INITIAL	memcached.h	53;"	d
 SUFFIX_SIZE	memcached.h	47;"	d
 TAIL_REPAIR_TIME_DEFAULT	memcached.h	97;"	d
@@ -777,7 +777,7 @@ TEST_FUNC	testapp.c	/^typedef enum test_return (*TEST_FUNC)(void);$/;"	t	typeref
 TEST_PASS	testapp.c	/^enum test_return { TEST_SKIP, TEST_PASS, TEST_FAIL };$/;"	e	enum:test_return	file:
 TEST_SKIP	testapp.c	/^enum test_return { TEST_SKIP, TEST_PASS, TEST_FAIL };$/;"	e	enum:test_return	file:
 THREAD_STATS_FIELDS	memcached.h	257;"	d
-TIMEOUT_MSG_SIZE	memcached.c	337;"	d	file:
+TIMEOUT_MSG_SIZE	memcached.c	340;"	d	file:
 TMP_TEMPLATE	testapp.c	26;"	d	file:
 TOO_LARGE	memcached.h	/^    NOT_STORED=0, STORED, EXISTS, NOT_FOUND, TOO_LARGE, NO_MEMORY$/;"	e	enum:store_item_type
 TRACE_H	trace.h	2;"	d
@@ -796,14 +796,14 @@ X	memcached.h	252;"	d
 X	memcached.h	254;"	d
 X	memcached.h	290;"	d
 X	memcached.h	295;"	d
-X	thread.c	696;"	d	file:
-X	thread.c	701;"	d	file:
+X	thread.c	716;"	d	file:
 X	thread.c	721;"	d	file:
-X	thread.c	726;"	d	file:
-X	thread.c	729;"	d	file:
-X	thread.c	732;"	d	file:
+X	thread.c	741;"	d	file:
+X	thread.c	746;"	d	file:
+X	thread.c	749;"	d	file:
 X	thread.c	752;"	d	file:
-X	thread.c	754;"	d	file:
+X	thread.c	772;"	d	file:
+X	thread.c	774;"	d	file:
 XML2RFC	doc/Makefile	/^XML2RFC = \/usr\/bin\/xml2rfc$/;"	m
 XSLTPROC	doc/Makefile	/^XSLTPROC = no$/;"	m
 _P1003_1B_VISIBLE	memcached.c	33;"	d	file:
@@ -979,7 +979,7 @@ __anon54::base	memcached.h	/^    struct event_base *base;    \/* libevent handle
 __anon54::io_cache	memcached.h	/^    cache_t *io_cache;          \/* IO objects *\/$/;"	m	struct:__anon54	access:public
 __anon54::l	memcached.h	/^    logger *l;                  \/* logger buffer *\/$/;"	m	struct:__anon54	access:public
 __anon54::lru_bump_buf	memcached.h	/^    void *lru_bump_buf;         \/* async LRU bump buffer *\/$/;"	m	struct:__anon54	access:public
-__anon54::new_conn_queue	memcached.h	/^    struct conn_queue *new_conn_queue; \/* queue of new connections to handle 指向该线程关联的连接队列 *\/$/;"	m	struct:__anon54	typeref:struct:__anon54::conn_queue	access:public
+__anon54::new_conn_queue	memcached.h	/^    struct conn_queue *new_conn_queue; \/* queue of new connections to handle 指向该线程等待处理的新连接队列 *\/$/;"	m	struct:__anon54	typeref:struct:__anon54::conn_queue	access:public
 __anon54::notify_event	memcached.h	/^    struct event notify_event;  \/* listen event for notify pipe  该线程用于监听管道读事件的event实例 *\/$/;"	m	struct:__anon54	typeref:struct:__anon54::event	access:public
 __anon54::notify_receive_fd	memcached.h	/^    int notify_receive_fd;      \/* receiving end of notify pipe  记录了管道的接收端fd *\/$/;"	m	struct:__anon54	access:public
 __anon54::notify_send_fd	memcached.h	/^    int notify_send_fd;         \/* sending end of notify pipe  记录了管道的发生端fd *\/$/;"	m	struct:__anon54	access:public
@@ -1025,7 +1025,7 @@ __anon9::__anon10::opcode	protocol_binary.h	/^            uint8_t opcode;$/;"	m	
 __anon9::__anon10::reserved	protocol_binary.h	/^            uint16_t reserved;$/;"	m	struct:__anon9::__anon10	access:public
 __anon9::bytes	protocol_binary.h	/^        uint8_t bytes[24];$/;"	m	union:__anon9	access:public
 __anon9::request	protocol_binary.h	/^        } request;$/;"	m	union:__anon9	typeref:struct:__anon9::__anon10	access:public
-__builtin_expect	memcached.h	774;"	d
+__builtin_expect	memcached.h	776;"	d
 __check_for_switch_to_b	bipbuffer.c	/^static void __check_for_switch_to_b(bipbuf_t* me)$/;"	f	file:	signature:(bipbuf_t* me)
 __gcc_attribute__	util.h	26;"	d
 __gcc_attribute__	util.h	28;"	d
@@ -1509,18 +1509,18 @@ conn::ilist	memcached.h	/^    item   **ilist;   \/* list of items to write out *
 conn::io_queued	memcached.h	/^    bool io_queued; \/* FIXME: debugging flag *\/$/;"	m	struct:conn	access:public
 conn::io_wrapleft	memcached.h	/^    int io_wrapleft;$/;"	m	struct:conn	access:public
 conn::io_wraplist	memcached.h	/^    io_wrap *io_wraplist; \/* linked list of io_wraps *\/$/;"	m	struct:conn	access:public
-conn::iov	memcached.h	/^    struct iovec *iov;$/;"	m	struct:conn	typeref:struct:conn::iovec	access:public
-conn::iovsize	memcached.h	/^    int    iovsize;   \/* number of elements allocated in iov[] *\/$/;"	m	struct:conn	access:public
-conn::iovused	memcached.h	/^    int    iovused;   \/* number of elements used in iov[] *\/$/;"	m	struct:conn	access:public
+conn::iov	memcached.h	/^    struct iovec *iov;      \/\/ iovec池$/;"	m	struct:conn	typeref:struct:conn::iovec	access:public
+conn::iovsize	memcached.h	/^    int    iovsize;   \/* number of elements allocated in iov[]  记录了iovec池中的iovec总数 *\/$/;"	m	struct:conn	access:public
+conn::iovused	memcached.h	/^    int    iovused;   \/* number of elements used in iov[]  记录了已经使用的iovec数量 *\/$/;"	m	struct:conn	access:public
 conn::isize	memcached.h	/^    int    isize;$/;"	m	struct:conn	access:public
 conn::item	memcached.h	/^    void   *item;     \/* for commands set\/add\/replace  *\/$/;"	m	struct:conn	access:public
 conn::keylen	memcached.h	/^    int keylen;$/;"	m	struct:conn	access:public
 conn::last_cmd_time	memcached.h	/^    rel_time_t last_cmd_time;$/;"	m	struct:conn	access:public
 conn::msgbytes	memcached.h	/^    int    msgbytes;  \/* number of bytes in current msg *\/$/;"	m	struct:conn	access:public
 conn::msgcurr	memcached.h	/^    int    msgcurr;   \/* element in msglist[] being transmitted now *\/$/;"	m	struct:conn	access:public
-conn::msglist	memcached.h	/^    struct msghdr *msglist;$/;"	m	struct:conn	typeref:struct:conn::msghdr	access:public
-conn::msgsize	memcached.h	/^    int    msgsize;   \/* number of elements allocated in msglist[] *\/$/;"	m	struct:conn	access:public
-conn::msgused	memcached.h	/^    int    msgused;   \/* number of elements used in msglist[] *\/$/;"	m	struct:conn	access:public
+conn::msglist	memcached.h	/^    struct msghdr *msglist; \/\/ msghdr池$/;"	m	struct:conn	typeref:struct:conn::msghdr	access:public
+conn::msgsize	memcached.h	/^    int    msgsize;   \/* number of elements allocated in msglist[]  记录了msghdr池中的msghdr总数 *\/$/;"	m	struct:conn	access:public
+conn::msgused	memcached.h	/^    int    msgused;   \/* number of elements used in msglist[]  记录了已经使用的msghdr数量 *\/$/;"	m	struct:conn	access:public
 conn::next	memcached.h	/^    conn   *next;     \/* Used for generating a list of conn structures *\/$/;"	m	struct:conn	access:public
 conn::noreply	memcached.h	/^    bool   noreply;   \/* True if the reply should not be sent. *\/$/;"	m	struct:conn	access:public
 conn::opaque	memcached.h	/^    int opaque;$/;"	m	struct:conn	access:public
@@ -1550,7 +1550,7 @@ conn::transport	memcached.h	/^    enum network_transport transport; \/* what tra
 conn::wbuf	memcached.h	/^    char   *wbuf;   \/\/指向一片写缓冲区$/;"	m	struct:conn	access:public
 conn::wbytes	memcached.h	/^    int    wbytes;  \/\/ 写缓冲区中已经写入的数据长度?$/;"	m	struct:conn	access:public
 conn::wcurr	memcached.h	/^    char   *wcurr;  \/\/ 写指针$/;"	m	struct:conn	access:public
-conn::which	memcached.h	/^    short  which;   \/** which events were just triggered *\/$/;"	m	struct:conn	access:public
+conn::which	memcached.h	/^    short  which;   \/** which events were just triggered 记录了最近一次触发事件源 *\/$/;"	m	struct:conn	access:public
 conn::write_and_free	memcached.h	/^    void   *write_and_free; \/** free this memory after finishing writing *\/$/;"	m	struct:conn	access:public
 conn::write_and_go	memcached.h	/^    enum conn_states  write_and_go;$/;"	m	struct:conn	typeref:enum:conn::conn_states	access:public
 conn::wsize	memcached.h	/^    int    wsize;   \/\/ 写缓冲区长度$/;"	m	struct:conn	access:public
@@ -1578,17 +1578,17 @@ conn_nread	memcached.h	/^    conn_nread,      \/**< reading in a fixed number of
 conn_parse_cmd	memcached.h	/^    conn_parse_cmd,  \/**< try to parse a command from the input buffer *\/$/;"	e	enum:conn_states
 conn_queue	thread.c	/^struct conn_queue {$/;"	s	file:
 conn_queue::head	thread.c	/^    CQ_ITEM *head;$/;"	m	struct:conn_queue	file:	access:public
-conn_queue::lock	thread.c	/^    pthread_mutex_t lock;$/;"	m	struct:conn_queue	file:	access:public
+conn_queue::lock	thread.c	/^    pthread_mutex_t lock;   \/\/ 用于维护该连接队列的锁$/;"	m	struct:conn_queue	file:	access:public
 conn_queue::tail	thread.c	/^    CQ_ITEM *tail;$/;"	m	struct:conn_queue	file:	access:public
 conn_queue_item	thread.c	/^struct conn_queue_item {$/;"	s	file:
 conn_queue_item::c	thread.c	/^    conn *c;$/;"	m	struct:conn_queue_item	file:	access:public
-conn_queue_item::event_flags	thread.c	/^    int               event_flags;$/;"	m	struct:conn_queue_item	file:	access:public
-conn_queue_item::init_state	thread.c	/^    enum conn_states  init_state;$/;"	m	struct:conn_queue_item	typeref:enum:conn_queue_item::conn_states	file:	access:public
-conn_queue_item::mode	thread.c	/^    enum conn_queue_item_modes mode;$/;"	m	struct:conn_queue_item	typeref:enum:conn_queue_item::conn_queue_item_modes	file:	access:public
+conn_queue_item::event_flags	thread.c	/^    int               event_flags;          \/\/ 该fd要注册的event标志$/;"	m	struct:conn_queue_item	file:	access:public
+conn_queue_item::init_state	thread.c	/^    enum conn_states  init_state;           \/\/ 该fd的起始状态$/;"	m	struct:conn_queue_item	typeref:enum:conn_queue_item::conn_states	file:	access:public
+conn_queue_item::mode	thread.c	/^    enum conn_queue_item_modes mode;        \/\/ 该连接队列单元的类型$/;"	m	struct:conn_queue_item	typeref:enum:conn_queue_item::conn_queue_item_modes	file:	access:public
 conn_queue_item::next	thread.c	/^    CQ_ITEM          *next;$/;"	m	struct:conn_queue_item	file:	access:public
-conn_queue_item::read_buffer_size	thread.c	/^    int               read_buffer_size;$/;"	m	struct:conn_queue_item	file:	access:public
-conn_queue_item::sfd	thread.c	/^    int               sfd;$/;"	m	struct:conn_queue_item	file:	access:public
-conn_queue_item::transport	thread.c	/^    enum network_transport     transport;$/;"	m	struct:conn_queue_item	typeref:enum:conn_queue_item::network_transport	file:	access:public
+conn_queue_item::read_buffer_size	thread.c	/^    int               read_buffer_size;     \/\/ 该fd要分配的读缓冲区长度$/;"	m	struct:conn_queue_item	file:	access:public
+conn_queue_item::sfd	thread.c	/^    int               sfd;                  \/\/ 要分发的fd$/;"	m	struct:conn_queue_item	file:	access:public
+conn_queue_item::transport	thread.c	/^    enum network_transport     transport;   \/\/ 该fd的协议类型$/;"	m	struct:conn_queue_item	typeref:enum:conn_queue_item::network_transport	file:	access:public
 conn_queue_item_modes	thread.c	/^enum conn_queue_item_modes {$/;"	g	file:
 conn_read	memcached.h	/^    conn_read,       \/**< reading in a command line *\/$/;"	e	enum:conn_states
 conn_release_items	memcached.c	/^static void conn_release_items(conn *c) {$/;"	f	file:	signature:(conn *c)
@@ -1618,8 +1618,8 @@ cq_init	thread.c	/^static void cq_init(CQ *cq) {$/;"	f	file:	signature:(CQ *cq)
 cq_pop	thread.c	/^static CQ_ITEM *cq_pop(CQ *cq) {$/;"	f	file:	signature:(CQ *cq)
 cq_push	thread.c	/^static void cq_push(CQ *cq, CQ_ITEM *item) {$/;"	f	file:	signature:(CQ *cq, CQ_ITEM *item)
 cqi_free	thread.c	/^static void cqi_free(CQ_ITEM *item) {$/;"	f	file:	signature:(CQ_ITEM *item)
-cqi_freelist	thread.c	/^static CQ_ITEM *cqi_freelist;$/;"	v	file:
-cqi_freelist_lock	thread.c	/^static pthread_mutex_t cqi_freelist_lock;$/;"	v	file:
+cqi_freelist	thread.c	/^static CQ_ITEM *cqi_freelist;       \/\/ 定义了一个空余连接队列单元池$/;"	v	file:
+cqi_freelist_lock	thread.c	/^static pthread_mutex_t cqi_freelist_lock;   \/\/ 定义了一个用于维护cqi_freelist的互斥锁$/;"	v	file:
 cqi_new	thread.c	/^static CQ_ITEM *cqi_new(void) {$/;"	f	file:	signature:(void)
 crawl_complete	crawler.h	/^    bool crawl_complete;$/;"	m	struct:crawler_expired_data	access:public
 crawler	memcached.h	/^} crawler;$/;"	t	typeref:struct:__anon52
@@ -1681,7 +1681,7 @@ crc32c_zeros_op	crc32c.c	/^static void crc32c_zeros_op(uint32_t *even, size_t le
 crc_func	crc32c.h	/^typedef uint32_t (*crc_func)(uint32_t crc, const void *buf, size_t len);$/;"	t
 create_worker	thread.c	/^static void create_worker(void *(*func)(void *), void *arg) {$/;"	f	file:	signature:(void *(*func)(void *), void *arg)
 curr_bytes	memcached.h	/^    uint64_t      curr_bytes;$/;"	m	struct:stats_state	access:public
-curr_conns	memcached.h	/^    uint64_t      curr_conns;       \/\/ 记录了$/;"	m	struct:stats_state	access:public
+curr_conns	memcached.h	/^    uint64_t      curr_conns;       \/\/ 记录了已经创建并激活的连接session数量$/;"	m	struct:stats_state	access:public
 curr_items	memcached.h	/^    uint64_t      curr_items;$/;"	m	struct:stats_state	access:public
 current_test	stats.c	/^static char *current_test = "";$/;"	v	file:
 current_time	memcached.c	/^volatile rel_time_t current_time;   \/\/ 这个全局变量用来记录当前时间,这是一个相对基准时间monotonic_start的偏移量$/;"	v
@@ -1802,12 +1802,12 @@ drive_machine	memcached.c	/^static void drive_machine(conn *c);$/;"	p	file:	sign
 drop_privileges	linux_priv.c	/^void drop_privileges(void) {$/;"	f	signature:(void)
 drop_privileges	memcached.h	/^    bool drop_privileges;   \/* Whether or not to drop unnecessary process privileges  标识是否需要丢弃多余的进程权限 *\/$/;"	m	struct:settings	access:public
 drop_privileges	memcached.h	/^extern void drop_privileges(void);$/;"	p	signature:(void)
-drop_privileges	memcached.h	763;"	d
+drop_privileges	memcached.h	765;"	d
 drop_privileges	openbsd_priv.c	/^void drop_privileges() {$/;"	f
 drop_privileges	solaris_priv.c	/^void drop_privileges(void) {$/;"	f	signature:(void)
 drop_worker_privileges	linux_priv.c	/^void drop_worker_privileges(void) {$/;"	f	signature:(void)
 drop_worker_privileges	memcached.h	/^extern void drop_worker_privileges(void);$/;"	p	signature:(void)
-drop_worker_privileges	memcached.h	769;"	d
+drop_worker_privileges	memcached.h	771;"	d
 dropped	items.c	/^    uint64_t dropped;$/;"	m	struct:_lru_bump_buf	file:	access:public
 dropped	logger.h	/^    uint64_t dropped; \/* entries dropped *\/$/;"	m	struct:_logger	access:public
 dump_enabled	memcached.h	/^    bool dump_enabled;      \/* whether cachedump\/metadump commands work *\/$/;"	m	struct:settings	access:public
@@ -1834,7 +1834,7 @@ ev_flags	memcached.h	/^    short  ev_flags;    \/\/ 该连接session关联的eve
 eval	crawler.c	/^    crawler_eval_func eval; \/* runs on an item. *\/$/;"	m	struct:__anon50	file:	access:public
 event	logger.h	/^    enum log_entry_subtype event;$/;"	m	struct:_logentry	typeref:enum:_logentry::log_entry_subtype	access:public
 event	memcached.h	/^    struct event event; \/\/ 该连接session关联的event$/;"	m	struct:conn	typeref:struct:conn::event	access:public
-event_flags	thread.c	/^    int               event_flags;$/;"	m	struct:conn_queue_item	file:	access:public
+event_flags	thread.c	/^    int               event_flags;          \/\/ 该fd要注册的event标志$/;"	m	struct:conn_queue_item	file:	access:public
 event_handler	memcached.c	/^static void event_handler(const int fd, const short which, void *arg);$/;"	p	file:	signature:(const int fd, const short which, void *arg)
 event_handler	memcached.c	/^void event_handler(const int fd, const short which, void *arg) {$/;"	f	signature:(const int fd, const short which, void *arg)
 event_init	configure	/^ event_init();$/;"	f
@@ -2026,11 +2026,11 @@ hash_is_expanding	memcached.h	/^    bool          hash_is_expanding; \/* If the 
 hash_power_level	memcached.h	/^    unsigned int  hash_power_level; \/* Better hope it's not over 9000 *\/$/;"	m	struct:stats_state	access:public
 hashfunc_type	hash.h	/^enum hashfunc_type {$/;"	g
 hashmask	assoc.c	38;"	d	file:
-hashmask	thread.c	76;"	d	file:
+hashmask	thread.c	79;"	d	file:
 hashpower	assoc.c	/^unsigned int hashpower = HASHPOWER_DEFAULT;$/;"	v
 hashpower_init	memcached.h	/^    int hashpower_init;     \/* Starting hash power level *\/$/;"	m	struct:settings	access:public
 hashsize	assoc.c	37;"	d	file:
-hashsize	thread.c	75;"	d	file:
+hashsize	thread.c	78;"	d	file:
 hdr_it	memcached.h	/^    item *hdr_it;             \/* original header item. *\/$/;"	m	struct:_io_wrap	access:public
 hdrbuf	memcached.h	/^    unsigned char *hdrbuf; \/* udp packet headers *\/$/;"	m	struct:conn	access:public
 hdrsize	memcached.h	/^    int    hdrsize;   \/* number of headers' worth of space is allocated *\/$/;"	m	struct:conn	access:public
@@ -2098,7 +2098,7 @@ init_sasl	sasl_defs.c	/^void init_sasl(void) {$/;"	f	signature:(void)
 init_sasl	sasl_defs.h	/^void init_sasl(void);$/;"	p	signature:(void)
 init_sasl	sasl_defs.h	18;"	d
 init_sasl_conn	memcached.c	/^static void init_sasl_conn(conn *c) {$/;"	f	file:	signature:(conn *c)
-init_state	thread.c	/^    enum conn_states  init_state;$/;"	m	struct:conn_queue_item	typeref:enum:conn_queue_item::conn_states	file:	access:public
+init_state	thread.c	/^    enum conn_states  init_state;           \/\/ 该fd的起始状态$/;"	m	struct:conn_queue_item	typeref:enum:conn_queue_item::conn_states	file:	access:public
 initial	protocol_binary.h	/^                uint64_t initial;$/;"	m	struct:__anon26::__anon27::__anon28	access:public
 initial_pool_size	cache.c	/^const int initial_pool_size = 64;$/;"	v
 inline_ascii_response	memcached.h	/^    bool inline_ascii_response; \/* pre-format the VALUE line for ASCII responses *\/$/;"	m	struct:settings	access:public
@@ -2122,13 +2122,13 @@ io_wrap	memcached.h	/^} io_wrap;$/;"	t	typeref:struct:_io_wrap
 io_wrapleft	memcached.h	/^    int io_wrapleft;$/;"	m	struct:conn	access:public
 io_wraplist	memcached.h	/^    io_wrap *io_wraplist; \/* linked list of io_wraps *\/$/;"	m	struct:conn	access:public
 iov	extstore.h	/^    struct iovec *iov; \/* alternatively, use this iovec *\/$/;"	m	struct:_obj_io	typeref:struct:_obj_io::iovec	access:public
-iov	memcached.h	/^    struct iovec *iov;$/;"	m	struct:conn	typeref:struct:conn::iovec	access:public
+iov	memcached.h	/^    struct iovec *iov;      \/\/ iovec池$/;"	m	struct:conn	typeref:struct:conn::iovec	access:public
 iovcnt	extstore.h	/^    unsigned int iovcnt; \/* number of IOV's *\/$/;"	m	struct:_obj_io	access:public
 iovec_count	memcached.h	/^    unsigned int iovec_count; \/* total number of iovecs *\/$/;"	m	struct:_io_wrap	access:public
 iovec_data	memcached.h	/^    unsigned int iovec_data;  \/* specific index of data iovec *\/$/;"	m	struct:_io_wrap	access:public
 iovec_start	memcached.h	/^    unsigned int iovec_start; \/* start of the iovecs for this IO *\/$/;"	m	struct:_io_wrap	access:public
-iovsize	memcached.h	/^    int    iovsize;   \/* number of elements allocated in iov[] *\/$/;"	m	struct:conn	access:public
-iovused	memcached.h	/^    int    iovused;   \/* number of elements used in iov[] *\/$/;"	m	struct:conn	access:public
+iovsize	memcached.h	/^    int    iovsize;   \/* number of elements allocated in iov[]  记录了iovec池中的iovec总数 *\/$/;"	m	struct:conn	access:public
+iovused	memcached.h	/^    int    iovused;   \/* number of elements used in iov[]  记录了已经使用的iovec数量 *\/$/;"	m	struct:conn	access:public
 is_external	crawler.h	/^    bool is_external; \/* whether this was an alloc local or remote to the module. *\/$/;"	m	struct:crawler_expired_data	access:public
 is_numeric	scripts/damemtop	/^sub is_numeric {$/;"	s
 isize	memcached.h	/^    int    isize;$/;"	m	struct:conn	access:public
@@ -2242,7 +2242,7 @@ len	extstore.h	/^    unsigned int len;     \/* for both modes *\/$/;"	m	struct:_
 length	memcached.c	/^    size_t length;$/;"	m	struct:token_s	file:	access:public
 libdir	doc/Makefile	/^libdir = ${exec_prefix}\/lib$/;"	m
 libexecdir	doc/Makefile	/^libexecdir = ${exec_prefix}\/libexec$/;"	m
-likely	memcached.h	777;"	d
+likely	memcached.h	779;"	d
 limited_get	memcached.c	/^static inline item* limited_get(char *key, size_t nkey, conn *c, uint32_t exptime, bool should_touch) {$/;"	f	file:	signature:(char *key, size_t nkey, conn *c, uint32_t exptime, bool should_touch)
 list_mechs	t/binary-sasl.t	/^sub list_mechs {$/;"	s
 list_size	slabs.c	/^    unsigned int list_size; \/* size of prev array *\/$/;"	m	struct:__anon1	file:	access:public
@@ -2255,7 +2255,7 @@ localstatedir	doc/Makefile	/^localstatedir = ${prefix}\/var$/;"	m
 locations	sasl_defs.c	/^const char * const locations[] = {$/;"	v
 lock	crawler.h	/^    pthread_mutex_t lock;$/;"	m	struct:crawler_expired_data	access:public
 lock	storage.c	/^    pthread_mutex_t lock; \/\/ gates the bools.$/;"	m	struct:storage_compact_wrap	file:	access:public
-lock	thread.c	/^    pthread_mutex_t lock;$/;"	m	struct:conn_queue	file:	access:public
+lock	thread.c	/^    pthread_mutex_t lock;   \/\/ 用于维护该连接队列的锁$/;"	m	struct:conn_queue	file:	access:public
 log_entry_subtype	logger.h	/^enum log_entry_subtype {$/;"	g
 log_entry_type	logger.h	/^enum log_entry_type {$/;"	g
 log_watcher_sent	memcached.h	/^    uint64_t      log_watcher_sent; \/* logs sent to watcher buffers *\/$/;"	m	struct:stats	access:public
@@ -2415,9 +2415,9 @@ max_age_ratio	slab_automove_extstore.c	/^    double max_age_ratio;$/;"	m	struct:
 max_fds	memcached.c	/^static int max_fds;$/;"	v	file:
 max_results	protocol_binary.h	/^                uint32_t max_results;$/;"	m	struct:__anon38::__anon39::__anon40	access:public
 maxbytes	memcached.h	/^    size_t maxbytes;$/;"	m	struct:settings	access:public
-maxconns	memcached.h	/^    int maxconns;$/;"	m	struct:settings	access:public
+maxconns	memcached.h	/^    int maxconns;       \/\/ 记录了配置的最大连接数量$/;"	m	struct:settings	access:public
 maxconns_entered	memcached.h	/^    struct timeval maxconns_entered;  \/* last time maxconns entered *\/$/;"	m	struct:stats	typeref:struct:stats::timeval	access:public
-maxconns_fast	memcached.h	/^    bool maxconns_fast;     \/* Whether or not to early close connections *\/$/;"	m	struct:settings	access:public
+maxconns_fast	memcached.h	/^    bool maxconns_fast;     \/* Whether or not to early close connections  标识是否尽早关闭有问题的连接 *\/$/;"	m	struct:settings	access:public
 maxconns_handler	memcached.c	/^static void maxconns_handler(const int fd, const short which, void *arg) {$/;"	f	file:	signature:(const int fd, const short which, void *arg)
 maxconnsevent	memcached.c	/^static struct event maxconnsevent;$/;"	v	typeref:struct:event	file:
 maximize_sndbuf	memcached.c	/^static void maximize_sndbuf(const int sfd) {$/;"	f	file:	signature:(const int sfd)
@@ -2456,16 +2456,16 @@ mkdir_p	doc/Makefile	/^mkdir_p = $(MKDIR_P)$/;"	m
 mkinstalldirs	doc/Makefile	/^mkinstalldirs = $(install_sh) -d$/;"	m
 mod	crawler.c	/^    crawler_module_reg_t *mod;$/;"	m	struct:_crawler_module_t	file:	access:public
 mode	extstore.h	/^    enum obj_io_mode mode;$/;"	m	struct:_obj_io	typeref:enum:_obj_io::obj_io_mode	access:public
-mode	thread.c	/^    enum conn_queue_item_modes mode;$/;"	m	struct:conn_queue_item	typeref:enum:conn_queue_item::conn_queue_item_modes	file:	access:public
+mode	thread.c	/^    enum conn_queue_item_modes mode;        \/\/ 该连接队列单元的类型$/;"	m	struct:conn_queue_item	typeref:enum:conn_queue_item::conn_queue_item_modes	file:	access:public
 move_status	slabs.c	/^enum move_status {$/;"	g	file:
 moves_to_cold	items.c	/^    uint64_t moves_to_cold;$/;"	m	struct:__anon45	file:	access:public
 moves_to_warm	items.c	/^    uint64_t moves_to_warm;$/;"	m	struct:__anon45	file:	access:public
 moves_within_lru	items.c	/^    uint64_t moves_within_lru;$/;"	m	struct:__anon45	file:	access:public
 msgbytes	memcached.h	/^    int    msgbytes;  \/* number of bytes in current msg *\/$/;"	m	struct:conn	access:public
 msgcurr	memcached.h	/^    int    msgcurr;   \/* element in msglist[] being transmitted now *\/$/;"	m	struct:conn	access:public
-msglist	memcached.h	/^    struct msghdr *msglist;$/;"	m	struct:conn	typeref:struct:conn::msghdr	access:public
-msgsize	memcached.h	/^    int    msgsize;   \/* number of elements allocated in msglist[] *\/$/;"	m	struct:conn	access:public
-msgused	memcached.h	/^    int    msgused;   \/* number of elements used in msglist[] *\/$/;"	m	struct:conn	access:public
+msglist	memcached.h	/^    struct msghdr *msglist; \/\/ msghdr池$/;"	m	struct:conn	typeref:struct:conn::msghdr	access:public
+msgsize	memcached.h	/^    int    msgsize;   \/* number of elements allocated in msglist[]  记录了msghdr池中的msghdr总数 *\/$/;"	m	struct:conn	access:public
+msgused	memcached.h	/^    int    msgused;   \/* number of elements used in msglist[]  记录了已经使用的msghdr数量 *\/$/;"	m	struct:conn	access:public
 mt_stats_lock	stats.c	/^void mt_stats_lock() { }$/;"	f
 mt_stats_unlock	stats.c	/^void mt_stats_unlock() { }$/;"	f
 mutation_ratio	logger.h	/^    uint16_t mutation_ratio; \/* log one out of every N mutations *\/$/;"	m	struct:_logger	access:public
@@ -2477,8 +2477,8 @@ mutex	extstore.c	/^    pthread_mutex_t mutex;$/;"	m	struct:__anon44	file:	access
 mutex	items.c	/^    pthread_mutex_t mutex;$/;"	m	struct:_lru_bump_buf	file:	access:public
 mutex	logger.h	/^    pthread_mutex_t mutex; \/* guard for this + *buf *\/$/;"	m	struct:_logger	access:public
 mutex	memcached.h	/^    pthread_mutex_t   mutex;    \/\/ 用于维护本结构的互斥锁$/;"	m	struct:thread_stats	access:public
-mutex_lock	memcached.h	699;"	d
-mutex_unlock	memcached.h	700;"	d
+mutex_lock	memcached.h	701;"	d
+mutex_unlock	memcached.h	702;"	d
 my_sasl_hostname	sasl_defs.c	/^char my_sasl_hostname[1025];$/;"	v
 name	cache.h	/^    char *name;$/;"	m	struct:__anon41	access:public
 nbytes	memcached.h	/^    int              nbytes;    \/* used. *\/$/;"	m	struct:_strchunk	access:public
@@ -2486,13 +2486,13 @@ nbytes	memcached.h	/^    int             nbytes;     \/* size of data *\/$/;"	m	
 nbytes	memcached.h	/^    int             nbytes;     \/* size of data *\/$/;"	m	struct:_stritem	access:public
 needs_client	crawler.c	/^    bool needs_client; \/* whether or not to grab onto the remote client *\/$/;"	m	struct:__anon50	file:	access:public
 needs_lock	crawler.c	/^    bool needs_lock; \/* whether or not we need the LRU lock held when eval is called *\/$/;"	m	struct:__anon50	file:	access:public
-negotiating_prot	memcached.h	/^    negotiating_prot \/* Discovering the protocol *\/$/;"	e	enum:protocol
+negotiating_prot	memcached.h	/^    negotiating_prot \/* Discovering the protocol  自动协商 *\/$/;"	e	enum:protocol
 network_transport	memcached.h	/^enum network_transport {$/;"	g
 new	t/binary-extstore.t	/^sub new {$/;"	s
 new	t/binary-sasl.t	/^sub new {$/;"	s
 new	t/binary.t	/^sub new {$/;"	s
 new	t/lib/MemcachedTest.pm	/^sub new {$/;"	s
-new_conn_queue	memcached.h	/^    struct conn_queue *new_conn_queue; \/* queue of new connections to handle 指向该线程关联的连接队列 *\/$/;"	m	struct:__anon54	typeref:struct:__anon54::conn_queue	access:public
+new_conn_queue	memcached.h	/^    struct conn_queue *new_conn_queue; \/* queue of new connections to handle 指向该线程等待处理的新连接队列 *\/$/;"	m	struct:__anon54	typeref:struct:__anon54::conn_queue	access:public
 new_memcached	t/lib/MemcachedTest.pm	/^sub new_memcached {$/;"	s
 new_sock	t/lib/MemcachedTest.pm	/^sub new_sock {$/;"	s
 new_socket	memcached.c	/^static int new_socket(struct addrinfo *ai) {$/;"	f	file:	signature:(struct addrinfo *ai)
@@ -2730,7 +2730,7 @@ rbuf	memcached.h	/^    char   *rbuf;   \/** buffer to read commands into  指向
 rbytes	memcached.h	/^    int    rbytes;  \/** how much data, starting from rcur, do we have unparsed  读缓冲区中尚未读取的数据长度 *\/$/;"	m	struct:conn	access:public
 rcurr	memcached.h	/^    char   *rcurr;  \/** but if we parsed some already, this is where we stopped  读指针 *\/$/;"	m	struct:conn	access:public
 read_ascii_response	testapp.c	/^static void read_ascii_response(char *buffer, size_t size) {$/;"	f	file:	signature:(char *buffer, size_t size)
-read_buffer_size	thread.c	/^    int               read_buffer_size;$/;"	m	struct:conn_queue_item	file:	access:public
+read_buffer_size	thread.c	/^    int               read_buffer_size;     \/\/ 该fd要分配的读缓冲区长度$/;"	m	struct:conn_queue_item	file:	access:public
 read_into_chunked_item	memcached.c	/^static int read_into_chunked_item(conn *c) {$/;"	f	file:	signature:(conn *c)
 realtime	memcached.c	/^static rel_time_t realtime(const time_t exptime) {$/;"	f	file:	signature:(const time_t exptime)
 reassign_result_type	slabs.h	/^enum reassign_result_type {$/;"	g
@@ -2747,10 +2747,10 @@ refcount	extstore.c	/^    unsigned int refcount;$/;"	m	struct:_store_page	file:	
 refcount	memcached.h	/^    unsigned short   refcount;  \/* used? *\/$/;"	m	struct:_strchunk	access:public
 refcount	memcached.h	/^    unsigned short  refcount;$/;"	m	struct:__anon52	access:public
 refcount	memcached.h	/^    unsigned short  refcount;$/;"	m	struct:_stritem	access:public
-refcount_decr	memcached.h	747;"	d
-refcount_incr	memcached.h	746;"	d
+refcount_decr	memcached.h	749;"	d
+refcount_incr	memcached.h	748;"	d
 register_thread_initialized	thread.c	/^static void register_thread_initialized(void) {$/;"	f	file:	signature:(void)
-rejected_conns	memcached.h	/^    uint64_t      rejected_conns;$/;"	m	struct:stats	access:public
+rejected_conns	memcached.h	/^    uint64_t      rejected_conns;   \/\/ 记录了拒绝的连接数量$/;"	m	struct:stats	access:public
 rel_time_t	logger.h	/^typedef unsigned int rel_time_t;$/;"	t
 relaxed	slab_automove_extstore.c	/^    unsigned int relaxed;$/;"	m	struct:window_data	file:	access:public
 relaxed_privileges	memcached.h	/^    bool relaxed_privileges;   \/* Relax process restrictions when running testapp *\/$/;"	m	struct:settings	access:public
@@ -2882,8 +2882,8 @@ settings::lru_crawler_tocrawl	memcached.h	/^    uint32_t lru_crawler_tocrawl; \/
 settings::lru_maintainer_thread	memcached.h	/^    bool lru_maintainer_thread; \/* LRU maintainer background thread *\/$/;"	m	struct:settings	access:public
 settings::lru_segmented	memcached.h	/^    bool lru_segmented;     \/* Use split or flat LRU's *\/$/;"	m	struct:settings	access:public
 settings::maxbytes	memcached.h	/^    size_t maxbytes;$/;"	m	struct:settings	access:public
-settings::maxconns	memcached.h	/^    int maxconns;$/;"	m	struct:settings	access:public
-settings::maxconns_fast	memcached.h	/^    bool maxconns_fast;     \/* Whether or not to early close connections *\/$/;"	m	struct:settings	access:public
+settings::maxconns	memcached.h	/^    int maxconns;       \/\/ 记录了配置的最大连接数量$/;"	m	struct:settings	access:public
+settings::maxconns_fast	memcached.h	/^    bool maxconns_fast;     \/* Whether or not to early close connections  标识是否尽早关闭有问题的连接 *\/$/;"	m	struct:settings	access:public
 settings::num_threads	memcached.h	/^    int num_threads;        \/* number of worker (without dispatcher) libevent threads to run 工作线程数量(0<n<=64) *\/$/;"	m	struct:settings	access:public
 settings::num_threads_per_udp	memcached.h	/^    int num_threads_per_udp; \/* number of worker threads serving each udp socket *\/$/;"	m	struct:settings	access:public
 settings::oldest_cas	memcached.h	/^    uint64_t oldest_cas; \/* ignore existing items with CAS values lower than this *\/$/;"	m	struct:settings	access:public
@@ -2916,7 +2916,7 @@ setup_thread	thread.c	/^static void setup_thread(LIBEVENT_THREAD *me) {$/;"	f	fi
 sfd	crawler.c	/^    int sfd; \/* client fd. *\/$/;"	m	struct:__anon49	file:	access:public
 sfd	logger.h	/^    int sfd; \/* client fd *\/$/;"	m	struct:__anon59	access:public
 sfd	memcached.h	/^    int    sfd;     \/\/ 该连接session关联的fd$/;"	m	struct:conn	access:public
-sfd	thread.c	/^    int               sfd;$/;"	m	struct:conn_queue_item	file:	access:public
+sfd	thread.c	/^    int               sfd;                  \/\/ 要分发的fd$/;"	m	struct:conn_queue_item	file:	access:public
 sharedstatedir	doc/Makefile	/^sharedstatedir = ${prefix}\/com$/;"	m
 show_help	scripts/damemtop	/^sub show_help {$/;"	s
 shutdown_command	memcached.h	/^    bool shutdown_command; \/* allow shutdown command *\/$/;"	m	struct:settings	access:public
@@ -3100,7 +3100,7 @@ stats::lru_crawler_starts	memcached.h	/^    uint64_t      lru_crawler_starts; \/
 stats::lru_maintainer_juggles	memcached.h	/^    uint64_t      lru_maintainer_juggles; \/* number of LRU bg pokes *\/$/;"	m	struct:stats	access:public
 stats::malloc_fails	memcached.h	/^    uint64_t      malloc_fails;$/;"	m	struct:stats	access:public
 stats::maxconns_entered	memcached.h	/^    struct timeval maxconns_entered;  \/* last time maxconns entered *\/$/;"	m	struct:stats	typeref:struct:stats::timeval	access:public
-stats::rejected_conns	memcached.h	/^    uint64_t      rejected_conns;$/;"	m	struct:stats	access:public
+stats::rejected_conns	memcached.h	/^    uint64_t      rejected_conns;   \/\/ 记录了拒绝的连接数量$/;"	m	struct:stats	access:public
 stats::slab_reassign_busy_deletes	memcached.h	/^    uint64_t      slab_reassign_busy_deletes; \/* refcounted items killed *\/$/;"	m	struct:stats	access:public
 stats::slab_reassign_busy_items	memcached.h	/^    uint64_t      slab_reassign_busy_items; \/* valid temporarily unmovable *\/$/;"	m	struct:stats	access:public
 stats::slab_reassign_chunk_rescues	memcached.h	/^    uint64_t      slab_reassign_chunk_rescues; \/* chunked-item chunks recovered *\/$/;"	m	struct:stats	access:public
@@ -3109,7 +3109,7 @@ stats::slab_reassign_inline_reclaim	memcached.h	/^    uint64_t      slab_reassig
 stats::slab_reassign_rescues	memcached.h	/^    uint64_t      slab_reassign_rescues; \/* items rescued during slab move *\/$/;"	m	struct:stats	access:public
 stats::slabs_moved	memcached.h	/^    uint64_t      slabs_moved;       \/* times slabs were moved around *\/$/;"	m	struct:stats	access:public
 stats::time_in_listen_disabled_us	memcached.h	/^    uint64_t      time_in_listen_disabled_us;  \/* elapsed time in microseconds while server unable to process new connections *\/$/;"	m	struct:stats	access:public
-stats::total_conns	memcached.h	/^    uint64_t      total_conns;$/;"	m	struct:stats	access:public
+stats::total_conns	memcached.h	/^    uint64_t      total_conns;  \/\/ 记录了总的连接数量$/;"	m	struct:stats	access:public
 stats::total_items	memcached.h	/^    uint64_t      total_items;$/;"	m	struct:stats	access:public
 stats_init	memcached.c	/^static void stats_init(void) {$/;"	f	file:	signature:(void)
 stats_init	memcached.c	/^static void stats_init(void);$/;"	p	file:	signature:(void)
@@ -3138,7 +3138,7 @@ stats_state	memcached.h	/^struct stats_state {$/;"	s
 stats_state::accepting_conns	memcached.h	/^    bool          accepting_conns;  \/* whether we are currently accepting  标识我们当前是否处于listen状态 *\/$/;"	m	struct:stats_state	access:public
 stats_state::conn_structs	memcached.h	/^    unsigned int  conn_structs;     \/\/ 记录了已经创建的连接session数量$/;"	m	struct:stats_state	access:public
 stats_state::curr_bytes	memcached.h	/^    uint64_t      curr_bytes;$/;"	m	struct:stats_state	access:public
-stats_state::curr_conns	memcached.h	/^    uint64_t      curr_conns;       \/\/ 记录了$/;"	m	struct:stats_state	access:public
+stats_state::curr_conns	memcached.h	/^    uint64_t      curr_conns;       \/\/ 记录了已经创建并激活的连接session数量$/;"	m	struct:stats_state	access:public
 stats_state::curr_items	memcached.h	/^    uint64_t      curr_items;$/;"	m	struct:stats_state	access:public
 stats_state::hash_bytes	memcached.h	/^    uint64_t      hash_bytes;       \/* size used for hash tables *\/$/;"	m	struct:stats_state	access:public
 stats_state::hash_is_expanding	memcached.h	/^    bool          hash_is_expanding; \/* If the hash table is being expanded *\/$/;"	m	struct:stats_state	access:public
@@ -3329,7 +3329,7 @@ too_big	t/binary.t	/^sub too_big {$/;"	s
 top_build_prefix	doc/Makefile	/^top_build_prefix = ..\/$/;"	m
 top_builddir	doc/Makefile	/^top_builddir = ..$/;"	m
 top_srcdir	doc/Makefile	/^top_srcdir = ..$/;"	m
-total_conns	memcached.h	/^    uint64_t      total_conns;$/;"	m	struct:stats	access:public
+total_conns	memcached.h	/^    uint64_t      total_conns;  \/\/ 记录了总的连接数量$/;"	m	struct:stats	access:public
 total_items	memcached.h	/^    uint64_t      total_items;$/;"	m	struct:stats	access:public
 total_pages	slabs.h	/^    long int total_pages;$/;"	m	struct:__anon42	access:public
 total_prefix_size	stats.c	/^static int total_prefix_size = 0;$/;"	v	file:
@@ -3341,7 +3341,7 @@ transmit	memcached.c	/^static enum transmit_result transmit(conn *c) {$/;"	f	fil
 transmit	memcached.c	/^static enum transmit_result transmit(conn *c);$/;"	p	file:	signature:(conn *c)
 transmit_result	memcached.c	/^enum transmit_result {$/;"	g	file:
 transport	memcached.h	/^    enum network_transport transport; \/* what transport is used by this connection  该连接session使用的协议类型 *\/$/;"	m	struct:conn	typeref:enum:conn::network_transport	access:public
-transport	thread.c	/^    enum network_transport     transport;$/;"	m	struct:conn_queue_item	typeref:enum:conn_queue_item::network_transport	file:	access:public
+transport	thread.c	/^    enum network_transport     transport;   \/\/ 该fd的协议类型$/;"	m	struct:conn_queue_item	typeref:enum:conn_queue_item::network_transport	file:	access:public
 try_read_command	memcached.c	/^static int try_read_command(conn *c) {$/;"	f	file:	signature:(conn *c)
 try_read_command	memcached.c	/^static int try_read_command(conn *c);$/;"	p	file:	signature:(conn *c)
 try_read_network	memcached.c	/^static enum try_read_result try_read_network(conn *c) {$/;"	f	file:	signature:(conn *c)
@@ -3362,7 +3362,7 @@ udp_transport	memcached.h	/^    udp_transport$/;"	e	enum:network_transport
 udpport	memcached.h	/^    int udpport;$/;"	m	struct:settings	access:public
 udpport	t/lib/MemcachedTest.pm	/^sub udpport { $_[0]{udpport} }$/;"	s
 unfetched	memcached.h	/^    uint64_t        unfetched;  \/* items reclaimed unfetched during this crawl. *\/$/;"	m	struct:__anon52	access:public
-unlikely	memcached.h	778;"	d
+unlikely	memcached.h	780;"	d
 update_event	memcached.c	/^static bool update_event(conn *c, const int new_flags) {$/;"	f	file:	signature:(conn *c, const int new_flags)
 update_event	memcached.c	/^static bool update_event(conn *c, const int new_flags);$/;"	p	file:	signature:(conn *c, const int new_flags)
 uriencode	util.c	/^bool uriencode(const char *src, char *dst, const size_t srclen, const size_t dstlen) {$/;"	f	signature:(const char *src, char *dst, const size_t srclen, const size_t dstlen)
@@ -3405,7 +3405,7 @@ wbuf_size	extstore.h	/^    unsigned int wbuf_size; \/\/ must divide cleanly into
 wbuf_stack	extstore.c	/^    _store_wbuf *wbuf_stack; \/* wbuf freelist *\/$/;"	m	struct:store_engine	file:	access:public
 wbytes	memcached.h	/^    int    wbytes;  \/\/ 写缓冲区中已经写入的数据长度?$/;"	m	struct:conn	access:public
 wcurr	memcached.h	/^    char   *wcurr;  \/\/ 写指针$/;"	m	struct:conn	access:public
-which	memcached.h	/^    short  which;   \/** which events were just triggered *\/$/;"	m	struct:conn	access:public
+which	memcached.h	/^    short  which;   \/** which events were just triggered 记录了最近一次触发事件源 *\/$/;"	m	struct:conn	access:public
 window_cur	slab_automove.c	/^    uint32_t window_cur;$/;"	m	struct:__anon48	file:	access:public
 window_cur	slab_automove_extstore.c	/^    uint32_t window_cur;$/;"	m	struct:__anon56	file:	access:public
 window_data	slab_automove.c	/^    struct window_data *window_data;$/;"	m	struct:__anon48	typeref:struct:__anon48::window_data	file:	access:public

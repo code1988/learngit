@@ -74,6 +74,7 @@ static void drive_machine(conn *c);
 static int new_socket(struct addrinfo *ai);
 static int try_read_command(conn *c);
 
+// 枚举了读数据操作的结果
 enum try_read_result {
     READ_DATA_RECEIVED,
     READ_NO_DATA_RECEIVED,
@@ -283,6 +284,7 @@ static void settings_init(void) {
 
 /*
  * Adds a message header to a connection.
+ * 填充msghdr池中一个尚未使用过的msghdr
  *
  * Returns 0 on success, -1 on out-of-memory.
  */
@@ -292,6 +294,7 @@ static int add_msghdr(conn *c)
 
     assert(c != NULL);
 
+    // 如果msghdr池中已经没有可用成员,则将msghdr池扩增1倍
     if (c->msgsize == c->msgused) {
         msg = realloc(c->msglist, c->msgsize * 2 * sizeof(struct msghdr));
         if (! msg) {
@@ -304,6 +307,7 @@ static int add_msghdr(conn *c)
         c->msgsize *= 2;
     }
 
+    // 顺序获取一个尚未使用过的msghdr,然后进行填充
     msg = c->msglist + c->msgused;
 
     /* this wipes msg_iovlen, msg_control, msg_controllen, and
@@ -828,6 +832,7 @@ static void conn_close(conn *c) {
  * Shrinks a connection's buffers if they're too big.  This prevents
  * periodic large "get" requests from permanently chewing lots of server
  * memory.
+ * 缩小连接session中过大的缓冲区
  *
  * This should only be called in between requests since it can wipe output
  * buffers!
@@ -905,6 +910,7 @@ static const char *state_text(enum conn_states state) {
  * Sets a connection's current state in the state machine. Any special
  * processing that needs to happen on certain state transitions can
  * happen here.
+ * 设置指定连接session的当前状态
  */
 static void conn_set_state(conn *c, enum conn_states state) {
     assert(c != NULL);
@@ -2192,6 +2198,7 @@ static bool authenticated(conn *c) {
     return rv;
 }
 
+// 分发指定连接session当前解析得到的一条二进制命令
 static void dispatch_bin_command(conn *c) {
     int protocol_error = 0;
 
@@ -2665,6 +2672,7 @@ static void complete_nread_binary(conn *c) {
     }
 }
 
+// 复位命令处理单元,同时根据读缓冲区是否存在残留数据来决定进入命令解析状态或等待读事件状态
 static void reset_cmd_handler(conn *c) {
     c->cmd = -1;
     c->substate = bin_no_state;
@@ -2672,7 +2680,9 @@ static void reset_cmd_handler(conn *c) {
         item_remove(c->item);
         c->item = NULL;
     }
+    // 缩小连接session中过大的缓冲区
     conn_shrink(c);
+    // 如果读缓冲区中存在未读取的数据,则连接session进入命令解析状态;否则进入等待读事件状态
     if (c->rbytes > 0) {
         conn_set_state(c, conn_parse_cmd);
     } else {
@@ -4919,13 +4929,16 @@ static void process_command(conn *c, char *command) {
 
 /*
  * if we have a complete line in the buffer, process it.
+ * 解析并处理读缓冲区中的命令
  */
 static int try_read_command(conn *c) {
     assert(c != NULL);
     assert(c->rcurr <= (c->rbuf + c->rsize));
     assert(c->rbytes > 0);
 
+    // 如果该连接session配置的数据格式是自协商方式或者使用的是UDP协议,则需要根据第一个字节判断实际使用的数据格式
     if (c->protocol == negotiating_prot || c->transport == udp_transport)  {
+        // 如果第一个字节为PROTOCOL_BINARY_REQ则使用二进制格式,否则使用ASCII格式
         if ((unsigned char)c->rbuf[0] == (unsigned char)PROTOCOL_BINARY_REQ) {
             c->protocol = binary_prot;
         } else {
@@ -4939,12 +4952,16 @@ static int try_read_command(conn *c) {
     }
 
     if (c->protocol == binary_prot) {
+        // 二进制格式报文处理流程
         /* Do we have the complete packet header? */
         if (c->rbytes < sizeof(c->binary_header)) {
-            /* need more data! */
+            /* need more data! 
+             * 头不完整意味着需要继续接收报文的剩余部分
+             * */
             return 0;
         } else {
 #ifdef NEED_ALIGN
+            // 读指针每次开始解析一条完整报文时需要确保8字节对其
             if (((long)(c->rcurr)) % 8 != 0) {
                 /* must realign input buffer */
                 memmove(c->rbuf, c->rcurr, c->rbytes);
@@ -4954,6 +4971,7 @@ static int try_read_command(conn *c) {
                 }
             }
 #endif
+            // 解析报文头
             protocol_binary_request_header* req;
             req = (protocol_binary_request_header*)c->rcurr;
 
@@ -4987,6 +5005,7 @@ static int try_read_command(conn *c) {
             c->msgcurr = 0;
             c->msgused = 0;
             c->iovused = 0;
+            // 填充msghdr池中一个尚未使用过的msghdr
             if (add_msghdr(c) != 0) {
                 out_of_memory(c,
                         "SERVER_ERROR Out of memory allocating headers");
@@ -4999,6 +5018,7 @@ static int try_read_command(conn *c) {
             /* clear the returned cas value */
             c->cas = 0;
 
+            // 分发这条解析得到的二进制命令
             dispatch_bin_command(c);
 
             c->rbytes -= sizeof(c->binary_header);
@@ -5093,6 +5113,7 @@ static enum try_read_result try_read_udp(conn *c) {
 /*
  * read from network as much as we can, handle buffer overflow and connection
  * close.
+ * 读取尽可能多的数据,并处理了溢出和连接关闭的情况
  * before reading, move the remaining incomplete fragment of a command
  * (if any) to the beginning of the buffer.
  *
@@ -5108,18 +5129,23 @@ static enum try_read_result try_read_network(conn *c) {
     int num_allocs = 0;
     assert(c != NULL);
 
+    // 复位读指针,如果读缓冲区中存在尚未读取的数据则将其移到缓冲区起始地址
     if (c->rcurr != c->rbuf) {
         if (c->rbytes != 0) /* otherwise there's nothing to copy */
             memmove(c->rbuf, c->rcurr, c->rbytes);
         c->rcurr = c->rbuf;
     }
 
+    // 循环读取尽可能多数据
     while (1) {
+        // 如果读缓冲区数据溢出,则扩大读缓冲区
         if (c->rbytes >= c->rsize) {
+            // 读缓冲区只会扩大4次,超过4次则直接返回已经读取的数据
             if (num_allocs == 4) {
                 return gotdata;
             }
             ++num_allocs;
+            // 每次扩大的长度为原来基础上翻倍
             char *new_rbuf = realloc(c->rbuf, c->rsize * 2);
             if (!new_rbuf) {
                 STATS_LOCK();
@@ -5137,6 +5163,7 @@ static enum try_read_result try_read_network(conn *c) {
             c->rsize *= 2;
         }
 
+        // 读取数据
         int avail = c->rsize - c->rbytes;
         res = read(c->sfd, c->rbuf + c->rbytes, avail);
         if (res > 0) {
@@ -5164,6 +5191,7 @@ static enum try_read_result try_read_network(conn *c) {
     return gotdata;
 }
 
+// 更新指定连接session关心的事件标志
 static bool update_event(conn *c, const int new_flags) {
     assert(c != NULL);
 
@@ -5451,7 +5479,8 @@ static void drive_machine(conn *c) {
             stop = true;
             break;
 
-        case conn_waiting:
+        case conn_waiting:      // 连接session处于等待套接字可读状态时的流程
+            // 更新该连接session关心的事件为读事件(似乎多余)
             if (!update_event(c, EV_READ | EV_PERSIST)) {
                 if (settings.verbose > 0)
                     fprintf(stderr, "Couldn't update event\n");
@@ -5459,21 +5488,26 @@ static void drive_machine(conn *c) {
                 break;
             }
 
+            // 设置该连接session进入读事件状态
             conn_set_state(c, conn_read);
             stop = true;
             break;
 
-        case conn_read:
+        case conn_read:         // 连接session处于读事件状态时的流程
+            // 读取尽可能多的数据
             res = IS_UDP(c->transport) ? try_read_udp(c) : try_read_network(c);
 
             switch (res) {
             case READ_NO_DATA_RECEIVED:
+                // 如果没有读到数据,则该连接session进入等待读事件状态
                 conn_set_state(c, conn_waiting);
                 break;
             case READ_DATA_RECEIVED:
+                // 如果有读到数据,则该连接session进入命令解析状态
                 conn_set_state(c, conn_parse_cmd);
                 break;
             case READ_ERROR:
+                // 如果读取失败,则该连接session进入连接关闭析状态
                 conn_set_state(c, conn_closing);
                 break;
             case READ_MEMORY_ERROR: /* Failed to allocate more memory */
@@ -5482,7 +5516,7 @@ static void drive_machine(conn *c) {
             }
             break;
 
-        case conn_parse_cmd :
+        case conn_parse_cmd :   // 连接session处于命令解析状态时的流程
             if (try_read_command(c) == 0) {
                 /* wee need more data! */
                 conn_set_state(c, conn_waiting);
@@ -5490,12 +5524,16 @@ static void drive_machine(conn *c) {
 
             break;
 
-        case conn_new_cmd:
+        case conn_new_cmd:      // 连接session处于处理读缓冲区残留命令状态时的流程
             /* Only process nreqs at a time to avoid starving other
                connections */
 
             --nreqs;
             if (nreqs >= 0) {
+                /* 复位命令处理单元,同时根据读缓冲区是否存在残留数据来决定进入命令解析状态或等待读事件状态
+                 *
+                 * 备注: 显然这种情况下将会再次迭代状态机
+                 */
                 reset_cmd_handler(c);
             } else {
                 pthread_mutex_lock(&c->thread->stats.mutex);
@@ -5690,8 +5728,9 @@ static void drive_machine(conn *c) {
             conn_set_state(c, conn_closing);
             break;
           }
+            // 向客户端写数据,并处理返回值
             switch (transmit(c)) {
-            case TRANSMIT_COMPLETE:
+            case TRANSMIT_COMPLETE:     // 写成功的情况
                 if (c->state == conn_mwrite) {
                     conn_release_items(c);
                     /* XXX:  I don't know why this wasn't the general case */
