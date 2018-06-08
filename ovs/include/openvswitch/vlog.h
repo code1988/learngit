@@ -50,6 +50,16 @@ extern "C" {
     VLOG_LEVEL(WARN, LOG_WARNING, 4)            \
     VLOG_LEVEL(INFO, LOG_NOTICE,  5)            \
     VLOG_LEVEL(DBG,  LOG_DEBUG,   7)
+/* 枚举了ovs封装的log等级
+ * 展开后实际就是:
+ *      VLL_OFF,
+ *      VLL_EMER,
+ *      VLL_ERR,
+ *      VLL_WARN,
+ *      VLL_INFO,
+ *      VLL_DBG,
+ *      VLL_N_LEVELS
+ */
 enum vlog_level {
 #define VLOG_LEVEL(NAME, SYSLOG_LEVEL, RFC5424_LEVEL) VLL_##NAME,
     VLOG_LEVELS
@@ -183,7 +193,7 @@ void vlog_rate_limit(const struct vlog_module *, enum vlog_level,
  * roughly the name of the source file, and makes it the module used by the
  * logging convenience macros defined below. 
  * 定义了一个名为MODULE的vlog模块
- * 实际就是定义并初始化了一个全局的this_module变量,并且定义了对应的构造函数,意味着在main之前就会执行该函数,
+ * 实际就是定义并初始化了一个文件域中的静态全局this_module变量,并且定义了对应的构造函数,意味着在main之前就会执行该函数,
  * 也就是事先将该vlog模块插入了全局的vlog_modules链表
  * */
 #define VLOG_DEFINE_THIS_MODULE(MODULE)                                 \

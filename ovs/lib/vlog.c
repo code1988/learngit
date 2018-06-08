@@ -115,9 +115,9 @@ DEFINE_STATIC_PER_THREAD_DATA(unsigned int, msg_num, 0);
  * All of the following is protected by 'log_file_mutex', which nests inside
  * pattern_rwlock. */
 static struct ovs_mutex log_file_mutex OVS_ACQ_AFTER(pattern_rwlock)
-    = OVS_MUTEX_INITIALIZER;    // 定义了用于维护vlog模块链表的互斥锁
+    = OVS_MUTEX_INITIALIZER;    // 定义了用于维护以下5个变量的互斥锁
 static char *log_file_name OVS_GUARDED_BY(log_file_mutex) = NULL;   // 日志文件名
-static int log_fd OVS_GUARDED_BY(log_file_mutex) = -1;
+static int log_fd OVS_GUARDED_BY(log_file_mutex) = -1;              // 日志文件对应的fd
 static struct async_append *log_writer OVS_GUARDED_BY(log_file_mutex);
 static bool log_async OVS_GUARDED_BY(log_file_mutex);
 static struct syslogger *syslogger = NULL;
