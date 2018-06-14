@@ -339,6 +339,7 @@ fork_notify_startup(int fd)
     }
 }
 
+// 判断已经终止的子程序是否需要重新启动
 static bool
 should_restart(int status)
 {

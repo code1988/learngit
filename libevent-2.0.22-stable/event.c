@@ -1816,8 +1816,9 @@ event_base_once(struct event_base *base, evutil_socket_t fd, short events,
 /* 初始化已创建的事件，事件进入"已初始化和非未决"状态
  * @ev  - 指向已经申请空间的event结构
  *
- * 备注：跟函数跟event_new的差别在于需要传入已经存在的event结构，显然该结构既可以是堆上申请的，也可以是静态分配的，甚至可以是栈上分配的
- *       不能对已经注册到事件循环中的事件(也就是未决事件)调用本函数
+ * 备注：本函数跟event_new的差别在于需要传入已经存在的event结构，显然该结构既可以是堆上申请的，也可以是静态分配的，甚至可以是栈上分配的
+ *       不能对已经注册到事件循环中的事件(也就是未决事件)调用本函数;
+ *       由于本函数会导致event结构对外开放,尽管有补救接口event_get_struct_event_size,但考虑到跟未来版本兼容,不建议使用本接口
  */
 int
 event_assign(struct event *ev, struct event_base *base, evutil_socket_t fd, short events, void (*callback)(evutil_socket_t, short, void *), void *arg)

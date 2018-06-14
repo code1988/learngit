@@ -113,9 +113,10 @@ struct port {
     struct ovs_list ifaces;    /* List of "struct iface"s. */
 };
 
+// 定义了bridge的抽象
 struct bridge {
     struct hmap_node node;      /* In 'all_bridges'. */
-    char *name;                 /* User-specified arbitrary name. */
+    char *name;                 /* User-specified arbitrary name. 该bridge名 */
     char *type;                 /* Datapath type. */
     struct eth_addr ea;         /* Bridge Ethernet Address. */
     struct eth_addr default_ea; /* Default MAC. */
@@ -152,7 +153,9 @@ struct aa_mapping {
     char *br_name;
 };
 
-/* All bridges, indexed by name. */
+/* All bridges, indexed by name. 
+ * 这张hash表记录了所有已经创建的bridge
+ * */
 static struct hmap all_bridges = HMAP_INITIALIZER(&all_bridges);
 
 /* OVSDB IDL used to obtain configuration. 
@@ -3280,12 +3283,15 @@ qos_unixctl_show(struct unixctl_conn *conn, int argc OVS_UNUSED,
     ds_destroy(&ds);
 }
 
-/* Bridge reconfiguration functions. */
+/* Bridge reconfiguration functions. 
+ * 根据传入的配置创建一个bridge
+ * */
 static void
 bridge_create(const struct ovsrec_bridge *br_cfg)
 {
     struct bridge *br;
 
+    // 确保该bridge尚未创建
     ovs_assert(!bridge_lookup(br_cfg->name));
     br = xzalloc(sizeof *br);
 
@@ -3334,6 +3340,7 @@ bridge_destroy(struct bridge *br, bool del)
     }
 }
 
+// 根据bridge名索引对应的bridge实例
 static struct bridge *
 bridge_lookup(const char *name)
 {

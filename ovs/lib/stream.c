@@ -578,9 +578,12 @@ pstream_close(struct pstream *pstream)
 /* Tries to accept a new connection on 'pstream'.  If successful, stores the
  * new connection in '*new_stream' and returns 0.  Otherwise, returns a
  * positive errno value.
+ * 在指定pstream上尝试accept一个新的connection
  *
  * pstream_accept() will not block waiting for a connection.  If no connection
- * is ready to be accepted, it returns EAGAIN immediately. */
+ * is ready to be accepted, it returns EAGAIN immediately. 
+ * accept为非阻塞操作,如果没有新的connection则返回EAGAIN
+ * */
 int
 pstream_accept(struct pstream *pstream, struct stream **new_stream)
 {

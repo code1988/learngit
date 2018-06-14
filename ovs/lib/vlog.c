@@ -89,7 +89,7 @@ static struct ovs_rwlock pattern_rwlock = OVS_RWLOCK_INITIALIZER;
  * 定义了每个vlog输出对象结构
  * */
 struct destination {
-    const char *name;           /* Name.  输出对象名 */
+    const char *name;           /* Name.  输出对象名,比如"CONSOLE"等 */
     char *pattern OVS_GUARDED_BY(pattern_rwlock); /* Current pattern.  输出格式 */
     bool default_pattern;       /* Whether current pattern is the default.  标识当前的输出格式是否是缺省的 */
 };
@@ -241,7 +241,9 @@ vlog_get_module_name(const struct vlog_module *module)
 }
 
 /* Returns the logging module named 'name', or NULL if 'name' is not the name
- * of a logging module. */
+ * of a logging module. 
+ * 根据vlog模块名索引对应的vlog模块
+ * */
 struct vlog_module *
 vlog_module_from_name(const char *name)
 {
@@ -797,7 +799,9 @@ vlog_disable_rate_limit(struct unixctl_conn *conn, int argc,
 }
 
 /* Initializes the logging subsystem and registers its unixctl server
- * commands. */
+ * commands. 
+ * 初始化log模块,显然只会执行一次
+ * */
 void
 vlog_init(void)
 {
@@ -812,6 +816,7 @@ vlog_init(void)
          * occurs.  We want to keep this really minimal because any attempt to
          * log anything before calling ovsthread_once_done() will deadlock. */
         atomic_read_explicit(&log_facility, &facility, memory_order_relaxed);
+        // 初始化syslog子模块
         if (!syslogger) {
             syslogger = syslog_libc_create();
         }
@@ -828,6 +833,7 @@ vlog_init(void)
             free(s);
         }
 
+        // 为unixctl注册一系列vlog命令
         unixctl_command_register(
             "vlog/set", "{spec | PATTERN:destination:pattern}",
             0, INT_MAX, vlog_unixctl_set, NULL);
