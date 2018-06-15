@@ -136,11 +136,11 @@ CMD_VERSION	t/binary-extstore.t	/^use constant CMD_VERSION    => 0x0B;$/;"	c
 CMD_VERSION	t/binary-sasl.t	/^use constant CMD_VERSION    => 0x0B;$/;"	c
 CMD_VERSION	t/binary.t	/^use constant CMD_VERSION    => 0x0B;$/;"	c
 COLD_LRU	items.h	3;"	d
-COMMAND_TOKEN	memcached.c	2939;"	d	file:
+COMMAND_TOKEN	memcached.c	2942;"	d	file:
 CONFIG_CLEAN_FILES	doc/Makefile	/^CONFIG_CLEAN_FILES =$/;"	m
 CONFIG_CLEAN_VPATH_FILES	doc/Makefile	/^CONFIG_CLEAN_VPATH_FILES =$/;"	m
 CONFIG_HEADER	doc/Makefile	/^CONFIG_HEADER = $(top_builddir)\/config.h$/;"	m
-CONNS_PER_SLICE	memcached.c	339;"	d	file:
+CONNS_PER_SLICE	memcached.c	341;"	d	file:
 CPP	doc/Makefile	/^CPP = gcc -E$/;"	m
 CPPFLAGS	doc/Makefile	/^CPPFLAGS = $/;"	m
 CQ	thread.c	/^typedef struct conn_queue CQ;$/;"	t	typeref:struct:conn_queue	file:
@@ -278,11 +278,11 @@ ITEM_suffix	memcached.h	112;"	d
 ITERATIONS	testapp.c	122;"	d	file:
 ITERATIONS	testapp.c	135;"	d	file:
 ITOA_LJUST_H	itoa_ljust.h	2;"	d
-IT_REFCOUNT_LIMIT	memcached.c	3526;"	d	file:
+IT_REFCOUNT_LIMIT	memcached.c	3529;"	d	file:
 JENKINS_HASH	hash.h	/^    JENKINS_HASH=0, MURMUR3_HASH$/;"	e	enum:hashfunc_type
 JENKINS_HASH_H	jenkins_hash.h	2;"	d
 KEY_MAX_LENGTH	memcached.h	36;"	d
-KEY_TOKEN	memcached.c	2941;"	d	file:
+KEY_TOKEN	memcached.c	2944;"	d	file:
 LARGEST_ID	crawler.c	24;"	d	file:
 LARGEST_ID	items.c	30;"	d	file:
 LDFLAGS	doc/Makefile	/^LDFLAGS = $/;"	m
@@ -356,7 +356,7 @@ MAX_NUMBER_OF_SLAB_CLASSES	memcached.h	93;"	d
 MAX_SASL_MECH_LEN	sasl_defs.h	5;"	d
 MAX_SENDBUF_SIZE	memcached.h	45;"	d
 MAX_STORAGE_COMPACT_SLEEP	storage.c	202;"	d	file:
-MAX_TOKENS	memcached.c	2943;"	d	file:
+MAX_TOKENS	memcached.c	2946;"	d	file:
 MAX_VERBOSITY_LEVEL	memcached.h	351;"	d
 MC::Client	t/binary-extstore.t	/^package MC::Client;$/;"	p
 MC::Client	t/binary-sasl.t	/^package MC::Client;$/;"	p
@@ -709,7 +709,7 @@ READ_DATA_RECEIVED	memcached.c	/^    READ_DATA_RECEIVED,$/;"	e	enum:try_read_res
 READ_ERROR	memcached.c	/^    READ_ERROR,            \/** an error occurred (on the socket) (or client closed connection) *\/$/;"	e	enum:try_read_result	file:
 READ_MEMORY_ERROR	memcached.c	/^    READ_MEMORY_ERROR      \/** failed to allocate more memory *\/$/;"	e	enum:try_read_result	file:
 READ_NO_DATA_RECEIVED	memcached.c	/^    READ_NO_DATA_RECEIVED,$/;"	e	enum:try_read_result	file:
-REALTIME_MAXDELTA	memcached.c	173;"	d	file:
+REALTIME_MAXDELTA	memcached.c	174;"	d	file:
 REASSIGN_BADCLASS	slabs.h	/^    REASSIGN_OK=0, REASSIGN_RUNNING, REASSIGN_BADCLASS, REASSIGN_NOSPARE,$/;"	e	enum:reassign_result_type
 REASSIGN_NOSPARE	slabs.h	/^    REASSIGN_OK=0, REASSIGN_RUNNING, REASSIGN_BADCLASS, REASSIGN_NOSPARE,$/;"	e	enum:reassign_result_type
 REASSIGN_OK	slabs.h	/^    REASSIGN_OK=0, REASSIGN_RUNNING, REASSIGN_BADCLASS, REASSIGN_NOSPARE,$/;"	e	enum:reassign_result_type
@@ -767,7 +767,7 @@ STORAGE_delete	items.h	95;"	d
 STORED	memcached.h	/^    NOT_STORED=0, STORED, EXISTS, NOT_FOUND, TOO_LARGE, NO_MEMORY$/;"	e	enum:store_item_type
 STORE_OFFSET	storage.h	10;"	d
 STRIP	doc/Makefile	/^STRIP = $/;"	m
-SUBCOMMAND_TOKEN	memcached.c	2940;"	d	file:
+SUBCOMMAND_TOKEN	memcached.c	2943;"	d	file:
 SUFFIX_LIST_INITIAL	memcached.h	53;"	d
 SUFFIX_SIZE	memcached.h	47;"	d
 TAIL_REPAIR_TIME_DEFAULT	memcached.h	97;"	d
@@ -777,7 +777,7 @@ TEST_FUNC	testapp.c	/^typedef enum test_return (*TEST_FUNC)(void);$/;"	t	typeref
 TEST_PASS	testapp.c	/^enum test_return { TEST_SKIP, TEST_PASS, TEST_FAIL };$/;"	e	enum:test_return	file:
 TEST_SKIP	testapp.c	/^enum test_return { TEST_SKIP, TEST_PASS, TEST_FAIL };$/;"	e	enum:test_return	file:
 THREAD_STATS_FIELDS	memcached.h	257;"	d
-TIMEOUT_MSG_SIZE	memcached.c	340;"	d	file:
+TIMEOUT_MSG_SIZE	memcached.c	342;"	d	file:
 TMP_TEMPLATE	testapp.c	26;"	d	file:
 TOO_LARGE	memcached.h	/^    NOT_STORED=0, STORED, EXISTS, NOT_FOUND, TOO_LARGE, NO_MEMORY$/;"	e	enum:store_item_type
 TRACE_H	trace.h	2;"	d
@@ -1476,7 +1476,7 @@ clsid	logger.h	/^    uint8_t clsid;$/;"	m	struct:logentry_ext_write	access:publi
 clsid	logger.h	/^    uint8_t clsid;$/;"	m	struct:logentry_item_get	access:public
 clsid	logger.h	/^    uint8_t clsid;$/;"	m	struct:logentry_item_store	access:public
 cmd	logger.h	/^    int cmd;$/;"	m	struct:logentry_item_store	access:public
-cmd	memcached.h	/^    short cmd; \/* current command being processed *\/$/;"	m	struct:conn	access:public
+cmd	memcached.h	/^    short cmd; \/* current command being processed  记录了当前需要处理的命令 *\/$/;"	m	struct:conn	access:public
 column_can_total	scripts/damemtop	/^sub column_can_total {$/;"	s
 complete_incr_bin	memcached.c	/^static void complete_incr_bin(conn *c) {$/;"	f	file:	signature:(conn *c)
 complete_nread	memcached.c	/^static void complete_nread(conn *c) {$/;"	f	file:	signature:(conn *c)
@@ -1498,7 +1498,7 @@ conn::__anon55::size	memcached.h	/^        size_t size;$/;"	m	struct:conn::__ano
 conn::authenticated	memcached.h	/^    bool authenticated;$/;"	m	struct:conn	access:public
 conn::binary_header	memcached.h	/^    protocol_binary_request_header binary_header;$/;"	m	struct:conn	access:public
 conn::cas	memcached.h	/^    uint64_t cas; \/* the cas to return *\/$/;"	m	struct:conn	access:public
-conn::cmd	memcached.h	/^    short cmd; \/* current command being processed *\/$/;"	m	struct:conn	access:public
+conn::cmd	memcached.h	/^    short cmd; \/* current command being processed  记录了当前需要处理的命令 *\/$/;"	m	struct:conn	access:public
 conn::ev_flags	memcached.h	/^    short  ev_flags;    \/\/ 该连接session关联的event的标志集合        $/;"	m	struct:conn	access:public
 conn::event	memcached.h	/^    struct event event; \/\/ 该连接session关联的event$/;"	m	struct:conn	typeref:struct:conn::event	access:public
 conn::hdrbuf	memcached.h	/^    unsigned char *hdrbuf; \/* udp packet headers *\/$/;"	m	struct:conn	access:public
@@ -1545,7 +1545,7 @@ conn::suffixcurr	memcached.h	/^    char   **suffixcurr;$/;"	m	struct:conn	access
 conn::suffixleft	memcached.h	/^    int    suffixleft;$/;"	m	struct:conn	access:public
 conn::suffixlist	memcached.h	/^    char   **suffixlist;$/;"	m	struct:conn	access:public
 conn::suffixsize	memcached.h	/^    int    suffixsize;$/;"	m	struct:conn	access:public
-conn::thread	memcached.h	/^    LIBEVENT_THREAD *thread; \/* Pointer to the thread object serving this connection *\/$/;"	m	struct:conn	access:public
+conn::thread	memcached.h	/^    LIBEVENT_THREAD *thread; \/* Pointer to the thread object serving this connection  该连接session关联的工作线程 *\/$/;"	m	struct:conn	access:public
 conn::transport	memcached.h	/^    enum network_transport transport; \/* what transport is used by this connection  该连接session使用的协议类型 *\/$/;"	m	struct:conn	typeref:enum:conn::network_transport	access:public
 conn::wbuf	memcached.h	/^    char   *wbuf;   \/\/指向一片写缓冲区$/;"	m	struct:conn	access:public
 conn::wbytes	memcached.h	/^    int    wbytes;  \/\/ 写缓冲区中已经写入的数据长度?$/;"	m	struct:conn	access:public
@@ -2412,7 +2412,7 @@ man_MANS	doc/Makefile	/^man_MANS = memcached.1$/;"	m
 mandir	doc/Makefile	/^mandir = ${datarootdir}\/man$/;"	m
 max_age_ratio	slab_automove.c	/^    double max_age_ratio;$/;"	m	struct:__anon48	file:	access:public
 max_age_ratio	slab_automove_extstore.c	/^    double max_age_ratio;$/;"	m	struct:__anon56	file:	access:public
-max_fds	memcached.c	/^static int max_fds;$/;"	v	file:
+max_fds	memcached.c	/^static int max_fds;         \/\/ 记录程序支持的最大fd$/;"	v	file:
 max_results	protocol_binary.h	/^                uint32_t max_results;$/;"	m	struct:__anon38::__anon39::__anon40	access:public
 maxbytes	memcached.h	/^    size_t maxbytes;$/;"	m	struct:settings	access:public
 maxconns	memcached.h	/^    int maxconns;       \/\/ 记录了配置的最大连接数量$/;"	m	struct:settings	access:public
@@ -3302,7 +3302,7 @@ testcase	testapp.c	/^struct testcase {$/;"	s	file:
 testcase::description	testapp.c	/^    const char *description;$/;"	m	struct:testcase	file:	access:public
 testcase::function	testapp.c	/^    TEST_FUNC function;$/;"	m	struct:testcase	file:	access:public
 testcases	testapp.c	/^struct testcase testcases[] = {$/;"	v	typeref:struct:testcase
-thread	memcached.h	/^    LIBEVENT_THREAD *thread; \/* Pointer to the thread object serving this connection *\/$/;"	m	struct:conn	access:public
+thread	memcached.h	/^    LIBEVENT_THREAD *thread; \/* Pointer to the thread object serving this connection  该连接session关联的工作线程 *\/$/;"	m	struct:conn	access:public
 thread_id	memcached.h	/^    pthread_t thread_id;        \/* unique ID of this thread  该线程ID *\/$/;"	m	struct:__anon54	access:public
 thread_libevent_process	thread.c	/^static void thread_libevent_process(int fd, short which, void *arg) {$/;"	f	file:	signature:(int fd, short which, void *arg)
 thread_libevent_process	thread.c	/^static void thread_libevent_process(int fd, short which, void *arg);$/;"	p	file:	signature:(int fd, short which, void *arg)

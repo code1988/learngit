@@ -34,7 +34,7 @@
 #include "openvswitch/vlog.h"
 
 VLOG_DEFINE_THIS_MODULE(jsonrpc);
-
+// 定义了jsonrpc对象结构,该对象包含了对一个连接session上数据传输和处理方式
 struct jsonrpc {
     struct stream *stream;
     char *name;
@@ -75,7 +75,9 @@ jsonrpc_pstream_open(const char *name, struct pstream **pstreamp, uint8_t dscp)
 }
 
 /* Returns a new JSON-RPC stream that uses 'stream' for input and output.  The
- * new jsonrpc object takes ownership of 'stream'. */
+ * new jsonrpc object takes ownership of 'stream'. 
+ * 为传入的stream分配一个jsonrpc对象
+ * */
 struct jsonrpc *
 jsonrpc_open(struct stream *stream)
 {

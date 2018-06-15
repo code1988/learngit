@@ -44,14 +44,16 @@ struct unixctl_command {
     void *aux;
 };
 
-// 用于描述一条unixctl连接
+// 用于描述一条unixctl连接session
 struct unixctl_conn {
     struct ovs_list node;
-    struct jsonrpc *rpc;
+    struct jsonrpc *rpc;    // 该连接session关联的jsonrpc对象
 
     /* Only one request can be in progress at a time.  While the request is
-     * being processed, 'request_id' is populated, otherwise it is null. */
-    struct json *request_id;   /* ID of the currently active request. */
+     * being processed, 'request_id' is populated, otherwise it is null. 
+     * 一次只能处理一条request
+     * */
+    struct json *request_id;   /* ID of the currently active request. 记录了当前正在处理的这条request */
 };
 
 /* Server for control connection. 
@@ -405,6 +407,7 @@ kill_connection(struct unixctl_conn *conn)
     free(conn);
 }
 
+// 运行uninctl服务端程序,实际就是接受和并处理新/旧连接session
 void
 unixctl_server_run(struct unixctl_server *server)
 {
@@ -416,10 +419,14 @@ unixctl_server_run(struct unixctl_server *server)
         struct stream *stream;
         int error;
 
+        // 在指定pstream上尝试accept一个新的连接session
         error = pstream_accept(server->listener, &stream);
         if (!error) {
+            // 如果收到一条新的连接,则为其创建一个连接session
             struct unixctl_conn *conn = xzalloc(sizeof *conn);
+            // 将新创建的连接session插入该服务端的连接session链表
             ovs_list_push_back(&server->conns, &conn->node);
+            // 为该新创建的连接session创建一个关联的jsonrpc对象
             conn->rpc = jsonrpc_open(stream);
         } else if (error == EAGAIN) {
             break;

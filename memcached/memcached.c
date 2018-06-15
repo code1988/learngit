@@ -137,7 +137,8 @@ void *ext_storage;
 #endif
 /** file scope variables **/
 static conn *listen_conn = NULL;
-static int max_fds;
+
+static int max_fds;         // 记录程序支持的最大fd
 static struct event_base *main_base;    // 记录了主线程的event_base
 
 enum transmit_result {
