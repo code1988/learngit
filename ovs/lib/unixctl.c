@@ -303,6 +303,7 @@ exit:
     return error;
 }
 
+// unixctl命令解析并处理
 static void
 process_command(struct unixctl_conn *conn, struct jsonrpc_msg *request)
 {
@@ -312,6 +313,7 @@ process_command(struct unixctl_conn *conn, struct jsonrpc_msg *request)
     struct json_array *params;
 
     COVERAGE_INC(unixctl_received);
+    // 首先记录下当前这条request的id,显然这是个json对象
     conn->request_id = json_clone(request->id);
 
     if (VLOG_IS_DBG_ENABLED()) {
@@ -323,7 +325,9 @@ process_command(struct unixctl_conn *conn, struct jsonrpc_msg *request)
         free(id_s);
     }
 
+    // 从该request的数组类型json对象中返回该数组结构
     params = json_array(request->params);
+    // 根据命令名查找该命令对象
     command = shash_find_data(&commands, request->method);
     if (!command) {
         error = xasprintf("\"%s\" is not a valid command", request->method);
@@ -334,9 +338,11 @@ process_command(struct unixctl_conn *conn, struct jsonrpc_msg *request)
         error = xasprintf("\"%s\" command takes at most %d arguments",
                           request->method, command->max_args);
     } else {
+        // 程序进入这里意味着成功找到该命令对象
         struct svec argv = SVEC_EMPTY_INITIALIZER;
         int  i;
 
+        // 将命令名以及参数都存放到svec结构中,形成一个字符串数组
         svec_add(&argv, request->method);
         for (i = 0; i < params->n; i++) {
             if (params->elems[i]->type != JSON_STRING) {
@@ -348,6 +354,7 @@ process_command(struct unixctl_conn *conn, struct jsonrpc_msg *request)
         }
         svec_terminate(&argv);
 
+        // 如果以上操作无误,最终调用该命令对象的回调函数
         if (!error) {
             command->cb(conn, argv.n, (const char **) argv.names,
                         command->aux);
@@ -356,12 +363,14 @@ process_command(struct unixctl_conn *conn, struct jsonrpc_msg *request)
         svec_destroy(&argv);
     }
 
+    // 如果以上操作存在任意错误则回复一个error消息
     if (error) {
         unixctl_command_reply_error(conn, error);
         free(error);
     }
 }
 
+// 接收并处理处理指定连接session上的数据
 static int
 run_connection(struct unixctl_conn *conn)
 {

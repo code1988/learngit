@@ -62,7 +62,7 @@ int jsonrpc_recv_block(struct jsonrpc *, struct jsonrpc_msg **);
 int jsonrpc_transact_block(struct jsonrpc *, struct jsonrpc_msg *,
                            struct jsonrpc_msg **);
 
-/* Messages. */
+/* Messages.  json消息类型枚举 */
 enum jsonrpc_msg_type {
     JSONRPC_REQUEST,           /* Request. */
     JSONRPC_NOTIFY,            /* Notification. */
@@ -71,12 +71,12 @@ enum jsonrpc_msg_type {
 };
 
 struct jsonrpc_msg {
-    enum jsonrpc_msg_type type;
-    char *method;               /* Request or notification only. */
-    struct json *params;        /* Request or notification only. */
-    struct json *result;        /* Successful reply only. */
-    struct json *error;         /* Error reply only. */
-    struct json *id;            /* Request or reply only. */
+    enum jsonrpc_msg_type type; // 该json消息类型
+    char *method;               /* Request or notification only.  记录了命令名 */
+    struct json *params;        /* Request or notification only.  记录了该命令的参数 */
+    struct json *result;        /* Successful reply only.  记录了该命令返回成功时的结果 */
+    struct json *error;         /* Error reply only.  记录了该命令返回失败时的结果 */
+    struct json *id;            /* Request or reply only.  用于标示每条命令 */
 };
 
 struct jsonrpc_msg *jsonrpc_create_request(const char *method,

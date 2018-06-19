@@ -274,6 +274,7 @@ jsonrpc_send(struct jsonrpc *rpc, struct jsonrpc_msg *msg)
 }
 
 /* Attempts to receive a message from 'rpc'.
+ * 尝试接收一条json格式的消息
  *
  * If successful, stores the received message in '*msgp' and returns 0.  The
  * caller takes ownership of '*msgp' and must eventually destroy it with

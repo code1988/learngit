@@ -56,7 +56,9 @@ hmap_node_nullify(struct hmap_node *node)
     node->next = HMAP_NODE_NULL;
 }
 
-/* A hash map. */
+/* A hash map. 
+ * 定义了hash表结构
+ * */
 struct hmap {
     struct hmap_node **buckets; /* Must point to 'one' iff 'mask' == 0. */
     struct hmap_node *one;

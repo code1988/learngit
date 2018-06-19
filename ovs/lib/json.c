@@ -291,6 +291,7 @@ json_string(const struct json *json)
     return json->u.string;
 }
 
+// 从指定的数组类型json对象中返回该数组结构
 struct json_array *
 json_array(const struct json *json)
 {
@@ -421,7 +422,9 @@ json_deep_clone(const struct json *json)
     }
 }
 
-/* Returns 'json', with the reference count incremented. */
+/* Returns 'json', with the reference count incremented. 
+ * 克隆一个指定的json对象,实际就是在原json对象的count字段上累加
+ * */
 struct json *
 json_clone(const struct json *json_)
 {

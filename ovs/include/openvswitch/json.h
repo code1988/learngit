@@ -54,16 +54,16 @@ enum json_type {
 
 const char *json_type_to_string(enum json_type);
 
-/* A JSON array. */
+/* A JSON array.  定义了一个json的数组结构 */
 struct json_array {
-    size_t n, n_allocated;
-    struct json **elems;
+    size_t n, n_allocated;  // 分别记录了该数组中的元素数量
+    struct json **elems;    // 这个数组记录了该json数组中的元素
 };
 
-/* A JSON value. */
+/* A JSON value.  定义了一个json对象结构 */
 struct json {
-    enum json_type type;
-    size_t count;
+    enum json_type type;    // 该json对象类型
+    size_t count;           // 该json对象的引用计数
     union {
         struct shash *object;   /* Contains "struct json *"s. */
         struct json_array array;
