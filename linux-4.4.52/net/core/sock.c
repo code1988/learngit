@@ -144,6 +144,9 @@
 #include <net/busy_poll.h>
 
 static DEFINE_MUTEX(proto_list_mutex);
+/* 定义了一张全局的链表，记录了所有已经注册的proto结构，每个proto结构都代表一种支持的协议
+ * 这些proto结构为对应协议的数据从socket层向下进入协议栈、或者从链路层向上进入协议栈指明了方向，
+ */
 static LIST_HEAD(proto_list);
 
 /**
@@ -1405,6 +1408,9 @@ EXPORT_SYMBOL_GPL(sock_update_netprioidx);
 
 /**
  *	sk_alloc - All socket objects are allocated here
+ *	分配sock结构(实质是分配了包含sock结构的父结构)
+ *
+ *	备注：分配成功后还做了一些初始化，比如绑上指定的协议块等
  *	@net: the applicable net namespace
  *	@family: protocol family
  *	@priority: for allocation (%GFP_KERNEL, %GFP_ATOMIC, etc)
@@ -1418,17 +1424,17 @@ struct sock *sk_alloc(struct net *net, int family, gfp_t priority,
 
 	sk = sk_prot_alloc(prot, priority | __GFP_ZERO, family);
 	if (sk) {
-		sk->sk_family = family;
+		sk->sk_family = family;                     // 设置该sock所属的地址族
 		/*
 		 * See comment in struct sock definition to understand
 		 * why we need sk_prot_creator -acme
 		 */
-		sk->sk_prot = sk->sk_prot_creator = prot;
+		sk->sk_prot = sk->sk_prot_creator = prot;   // 将该sock结构绑上指定的协议块
 		sock_lock_init(sk);
 		sk->sk_net_refcnt = kern ? 0 : 1;
 		if (likely(sk->sk_net_refcnt))
 			get_net(net);
-		sock_net_set(sk, net);
+		sock_net_set(sk, net);                      // 设置该sock所属的网络命名空间
 		atomic_set(&sk->sk_wmem_alloc, 1);
 
 		sock_update_classid(sk);
@@ -2299,15 +2305,21 @@ static void sock_def_error_report(struct sock *sk)
 	rcu_read_unlock();
 }
 
+/* 这是sk_data_ready的缺省回调函数，用于通知指定sock有数据接收到
+ * @sk  - 指向一个sock结构
+ */
 static void sock_def_readable(struct sock *sk)
 {
 	struct socket_wq *wq;
 
 	rcu_read_lock();
 	wq = rcu_dereference(sk->sk_wq);
+    // 判断该sock的等待队列上是否有进程在等待
 	if (wq_has_sleeper(wq))
+        // 如果有，那么将该进程唤醒
 		wake_up_interruptible_sync_poll(&wq->wait, POLLIN | POLLPRI |
 						POLLRDNORM | POLLRDBAND);
+    // 该sock进行异步I/O通知处理
 	sk_wake_async(sk, SOCK_WAKE_WAITD, POLL_IN);
 	rcu_read_unlock();
 }
@@ -2362,6 +2374,7 @@ void sk_stop_timer(struct sock *sk, struct timer_list* timer)
 }
 EXPORT_SYMBOL(sk_stop_timer);
 
+// 对套接字做一些基本的初始化
 void sock_init_data(struct socket *sock, struct sock *sk)
 {
 	skb_queue_head_init(&sk->sk_receive_queue);
@@ -2393,7 +2406,7 @@ void sock_init_data(struct socket *sock, struct sock *sk)
 			af_family_clock_key_strings[sk->sk_family]);
 
 	sk->sk_state_change	=	sock_def_wakeup;
-	sk->sk_data_ready	=	sock_def_readable;
+	sk->sk_data_ready	=	sock_def_readable;      // 这里注册了一个缺省的sk_data_ready钩子，实际具体套接字可以覆盖为自己的钩子
 	sk->sk_write_space	=	sock_def_write_space;
 	sk->sk_error_report	=	sock_def_error_report;
 	sk->sk_destruct		=	sock_def_destruct;
@@ -2835,6 +2848,7 @@ static int req_prot_init(const struct proto *prot)
 	return 0;
 }
 
+// 将指定协议类型的proto结构注册到全局的proto_list链表中
 int proto_register(struct proto *prot, int alloc_slab)
 {
 	if (alloc_slab) {
