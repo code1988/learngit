@@ -969,6 +969,7 @@ fetch_braces(const char *p, const char *def, char *out, size_t out_size)
     return p;
 }
 
+// 格式化待输出的消息
 static void
 format_log_message(const struct vlog_module *module, enum vlog_level level,
                    const char *pattern, const char *message,
@@ -1109,6 +1110,7 @@ void
 vlog_valist(const struct vlog_module *module, enum vlog_level level,
             const char *message, va_list args)
 {
+    // 首先计算需要输出到哪些输出对象上
     bool log_to_console = module->levels[VLF_CONSOLE] >= level;
     bool log_to_syslog = module->levels[VLF_SYSLOG] >= level;
     bool log_to_file;
@@ -1117,7 +1119,7 @@ vlog_valist(const struct vlog_module *module, enum vlog_level level,
     log_to_file = module->levels[VLF_FILE] >= level && log_fd >= 0;
     ovs_mutex_unlock(&log_file_mutex);
     if (log_to_console || log_to_syslog || log_to_file) {
-        int save_errno = errno;
+        int save_errno = errno;     // 临时记录原errno
         struct ds s;
 
         vlog_init();
@@ -1127,6 +1129,7 @@ vlog_valist(const struct vlog_module *module, enum vlog_level level,
         ++*msg_num_get();
 
         ovs_rwlock_rdlock(&pattern_rwlock);
+        // 输出到控制终端的情况
         if (log_to_console) {
             format_log_message(module, level,
                                destinations[VLF_CONSOLE].pattern, message,
@@ -1135,6 +1138,7 @@ vlog_valist(const struct vlog_module *module, enum vlog_level level,
             fputs(ds_cstr(&s), stderr);
         }
 
+        // 输出到syslog的情况
         if (log_to_syslog) {
             int syslog_level = syslog_levels[level];
             char *save_ptr = NULL;

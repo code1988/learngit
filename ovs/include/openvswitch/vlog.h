@@ -101,7 +101,7 @@ struct vlog_module {
     const char *name;             /* User-visible name. 该vlog模块名 */
     int levels[VLF_N_DESTINATIONS]; /* Minimum log level for each
                                        destination.  该vlog模块在每个输出对象上的输出阈值 */
-    int min_level;                /* Minimum log level for any destination. */
+    int min_level;                /* Minimum log level for any destination. 该vlog模块在所有输出对象上的最小阈值 */
     bool honor_rate_limits;       /* Set false to ignore rate limits. */
 };
 
