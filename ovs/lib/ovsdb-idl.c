@@ -90,11 +90,11 @@ enum ovsdb_idl_state {
 
 // 定义了一个ovsdb操作句柄结构
 struct ovsdb_idl {
-    const struct ovsdb_idl_class *class;    // 该句柄所属的类
+    const struct ovsdb_idl_class *class;    // 该句柄关联的ovsdb数据库
     struct jsonrpc_session *session;        // 该句柄关联的JSON-RPC格式的连接session
     struct uuid uuid;
-    struct shash table_by_name; /* Contains "struct ovsdb_idl_table *"s. 这个hash表用于管理该句柄缓存的所有table */
-    struct ovsdb_idl_table *tables; /* Array of ->class->n_tables elements.  指向一个数组,该数组缓存了ovsdb中的所有table */
+    struct shash table_by_name; /* Contains "struct ovsdb_idl_table *"s. 这个hash表用于管理该句柄缓存的所有table实例 */
+    struct ovsdb_idl_table *tables; /* Array of ->class->n_tables elements.  指向一个数组,该数组缓存了ovsdb中的所有table实例 */
     unsigned int change_seqno;      // 用于标识该句柄的状态
     bool verify_write_only;         // 标识该句柄是否只会进行写操作
 
@@ -106,8 +106,8 @@ struct ovsdb_idl {
 
     /* Database locking. */
     char *lock_name;            /* Name of lock we need, NULL if none.  记录了该句柄当前需要从ovsdb获取的锁(尚未获取到?) */
-    bool has_lock;              /* Has db server told us we have the lock? */
-    bool is_lock_contended;     /* Has db server told us we can't get lock? */
+    bool has_lock;              /* Has db server told us we have the lock?  标识ovsdb锁已经被当前进程持有 */
+    bool is_lock_contended;     /* Has db server told us we can't get lock?  标识ovsdb锁是否已经被其他客户端持有 */
     struct json *lock_request_id; /* JSON-RPC ID of in-flight lock request. */
 
     /* Transaction support. */
@@ -278,8 +278,9 @@ ovsdb_idl_create(const char *remote, const struct ovsdb_idl_class *class,
     idl->class = class;
     // 创建一个使用JSON-RPC格式的客户端,并向ovsdb-server发起连接请求
     idl->session = jsonrpc_session_open(remote, retry);
-    // 创建一张记录每个table的hash表
+    // 创建一张管理每个table实例的hash表
     shash_init(&idl->table_by_name);
+    // 创建并初始化一个记录每个table实例的数组
     idl->tables = xmalloc(class->n_tables * sizeof *idl->tables);
     for (i = 0; i < class->n_tables; i++) {
         const struct ovsdb_idl_table_class *tc = &class->tables[i];
@@ -291,9 +292,9 @@ ovsdb_idl_create(const char *remote, const struct ovsdb_idl_class *class,
         table->modes = xmalloc(tc->n_columns);
         memset(table->modes, default_mode, tc->n_columns);
         table->need_table = false;
-        // 每个table中会进一步创建一张记录每个column的hash表
+        // 每个table中会进一步创建一张管理每个column的hash表
         shash_init(&table->columns);
-        // 每个table中会进一步创建一张记录每个index的hash表
+        // 每个table中会进一步创建一张管理每个index的hash表
         shash_init(&table->indexes);
         for (j = 0; j < tc->n_columns; j++) {
             const struct ovsdb_idl_column *column = &tc->columns[j];
@@ -833,7 +834,9 @@ ovsdb_idl_get_class(const struct ovsdb_idl *idl)
     return idl->class;
 }
 
-/* Given 'column' in some table in 'class', returns the table's class. */
+/* Given 'column' in some table in 'class', returns the table's class. 
+ * 根据传入的column对象索引所属的table类
+ * */
 const struct ovsdb_idl_table_class *
 ovsdb_idl_table_class_from_column(const struct ovsdb_idl_class *class,
                                   const struct ovsdb_idl_column *column)
@@ -848,13 +851,17 @@ ovsdb_idl_table_class_from_column(const struct ovsdb_idl_class *class,
     OVS_NOT_REACHED();
 }
 
-/* Given 'column' in some table in 'idl', returns the table. */
+/* Given 'column' in some table in 'idl', returns the table. 
+ * 根据传入的column对象索引对应的table实例
+ * */
 static struct ovsdb_idl_table *
 ovsdb_idl_table_from_column(struct ovsdb_idl *idl,
                             const struct ovsdb_idl_column *column)
 {
+    // 首先根据传入的column对象得到所属的table类
     const struct ovsdb_idl_table_class *tc =
         ovsdb_idl_table_class_from_column(idl->class, column);
+    // 根据该table类的地址，通过偏移量就可以计算得到对应的table实例
     return &idl->tables[tc - idl->class->tables];
 }
 
@@ -865,7 +872,7 @@ ovsdb_idl_get_mode(struct ovsdb_idl *idl,
 {
     ovs_assert(!idl->change_seqno);
 
-    // 首先查找该column所属的table
+    // 首先查找该column所属的table实例
     const struct ovsdb_idl_table *table = ovsdb_idl_table_from_column(idl,
                                                                       column);
     // 然后从该table中索引该column对应的mode字段
@@ -2724,6 +2731,7 @@ may_add_arc(const struct ovsdb_idl_row *src, const struct ovsdb_idl_row *dst)
     return arc->src != src;
 }
 
+// 根据传入的table类索引对应的table实例
 static struct ovsdb_idl_table *
 ovsdb_idl_table_from_class(const struct ovsdb_idl *idl,
                            const struct ovsdb_idl_table_class *table_class)
@@ -2786,6 +2794,7 @@ ovsdb_idl_get_row_for_uuid(const struct ovsdb_idl *idl,
     return ovsdb_idl_get_row(ovsdb_idl_table_from_class(idl, tc), uuid);
 }
 
+// 根据传入的hash节点索引指定table中一个有效的row
 static struct ovsdb_idl_row *
 next_real_row(struct ovsdb_idl_table *table, struct hmap_node *node)
 {
@@ -2802,6 +2811,7 @@ next_real_row(struct ovsdb_idl_table *table, struct hmap_node *node)
 
 /* Returns a row in 'table_class''s table in 'idl', or a null pointer if that
  * table is empty.
+ * 返回指定table中第一个有效的row
  *
  * Database tables are internally maintained as hash tables, so adding or
  * removing rows while traversing the same table can cause some rows to be
@@ -2810,8 +2820,10 @@ const struct ovsdb_idl_row *
 ovsdb_idl_first_row(const struct ovsdb_idl *idl,
                     const struct ovsdb_idl_table_class *table_class)
 {
+    // 首先根据传入的table类索引对应的table实例
     struct ovsdb_idl_table *table
         = ovsdb_idl_table_from_class(idl, table_class);
+    // 然后从该table的用于管理row的hash中返回第一个有效的row
     return next_real_row(table, hmap_first(&table->rows));
 }
 
@@ -4301,6 +4313,7 @@ ovsdb_idl_set_lock(struct ovsdb_idl *idl, const char *lock_name)
 }
 
 /* Returns true if 'idl' is configured to obtain a lock and owns that lock.
+ * 标识ovsdb锁是否已经被当前进程持有
  *
  * Locking and unlocking happens asynchronously from the database client's
  * point of view, so the information is only useful for optimization (e.g. if
@@ -4313,7 +4326,9 @@ ovsdb_idl_has_lock(const struct ovsdb_idl *idl)
 }
 
 /* Returns true if 'idl' is configured to obtain a lock but the database server
- * has indicated that some other client already owns the requested lock. */
+ * has indicated that some other client already owns the requested lock. 
+ * 检查ovsdb锁是否已经被其他客户端持有
+ * */
 bool
 ovsdb_idl_is_lock_contended(const struct ovsdb_idl *idl)
 {

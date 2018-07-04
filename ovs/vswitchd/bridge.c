@@ -2984,6 +2984,7 @@ bridge_run(void)
     if_notifier_run();
 
     if (ovsdb_idl_is_lock_contended(idl)) {
+        // 如果ovsdb锁已经被其他客户端持有，意味着有另一个ovs-vswitchd正在运行
         static struct vlog_rate_limit rl = VLOG_RATE_LIMIT_INIT(1, 1);
         struct bridge *br, *next_br;
 
@@ -3002,11 +3003,15 @@ bridge_run(void)
     } else if (!ovsdb_idl_has_lock(idl)
                || !ovsdb_idl_has_ever_connected(idl)) {
         /* Returns if not holding the lock or not done retrieving db
-         * contents. */
+         * contents. 
+         * 如果尚未持有ovsdb锁或者虽然持有了但从未检索过ovsdb，则直接返回
+         * */
         return;
     }
+    // 获取ovsdb中记录的第一份"Open_vSwitch"表信息
     cfg = ovsrec_open_vswitch_first(idl);
 
+    // 如果ovsdb中存在一份有效的"Open_vSwitch"表信息，则根据其中的other_config column执行一些初始化
     if (cfg) {
         netdev_set_flow_api_enabled(&cfg->other_config);
         dpdk_init(&cfg->other_config);

@@ -31,6 +31,7 @@
  * the "struct ovsdb_datum"s into easier-to-use forms, via the ->parse() and
  * ->unparse functions in struct ovsdb_idl_column.  (Those functions are
  * generated automatically via ovsdb-idlc.)
+ * 用于描述ovsdb数据库table中的一个row
  *
  * When no transaction is in progress:
  *
@@ -63,7 +64,7 @@
  *       current transaction.
  */
 struct ovsdb_idl_row {
-    struct hmap_node hmap_node; /* In struct ovsdb_idl_table's 'rows'. */
+    struct hmap_node hmap_node; /* In struct ovsdb_idl_table's 'rows'.  该row关联的hash节点模块 */
     struct uuid uuid;           /* Row "_uuid" field. */
     struct ovs_list src_arcs;   /* Forward arcs (ovsdb_idl_arc.src_node). */
     struct ovs_list dst_arcs;   /* Backward arcs (ovsdb_idl_arc.dst_node). */
@@ -95,10 +96,10 @@ struct ovsdb_idl_column {
     void (*unparse)(struct ovsdb_idl_row *);
 };
 
-// 用于描述ovsdb数据库中一个table所属的类
+// ovsdb数据库中一类table的抽象
 struct ovsdb_idl_table_class {
     char *name;     // 类名,作为键值索引用
-    bool is_root;
+    bool is_root;   // 标识这类table是否为根表
     const struct ovsdb_idl_column *columns; // 指向一const数组,记录了该类table包含的columns
     size_t n_columns;                       // 数组中的column数量,显然也是个固定值
     size_t allocation_size;
@@ -108,7 +109,7 @@ struct ovsdb_idl_table_class {
 // 用于描述ovsdb数据库中一个table
 struct ovsdb_idl_table {
     const struct ovsdb_idl_table_class *class;  // 指向该table所属的类
-    unsigned char *modes;    /* OVSDB_IDL_* bitmasks, indexed by column.  指向一个数组,数组长度跟该table所属类包含的column数量有关,
+    unsigned char *modes;    /* OVSDB_IDL_* bitmasks, indexed by column.  指向一个数组,数组长度跟这类table包含的column数量有关,
                                 每个元素依次记录了对应column的mode */
     bool need_table;         /* Monitor table even if no columns are selected
                               * for replication. */
@@ -122,10 +123,11 @@ struct ovsdb_idl_table {
     bool cond_changed;
 };
 
+// 用于描述一个完整的ovsdb数据库
 struct ovsdb_idl_class {
     const char *database;       /* <db-name> for this database.  数据库名 */
-    const struct ovsdb_idl_table_class *tables;     // 指向一张数据库的数据列表
-    size_t n_tables;                                // 该数据列表中的数据条目数量
+    const struct ovsdb_idl_table_class *tables;     // 这张列表的每个条目就是一类table的集合，整张表记录了数据库的所有数据
+    size_t n_tables;                                // 该列表中的条目数量
 };
 
 /*
