@@ -127,7 +127,7 @@ const char *system_description);
 void ovsrec_autoattach_index_set_system_name(const struct ovsrec_autoattach *,
 const char *system_name);
 
-/* Bridge table.  bridge的配置表 */
+/* Bridge table.  定义了网桥的配置表结构 */
 struct ovsrec_bridge {
 	struct ovsdb_idl_row header_;
 
@@ -182,8 +182,8 @@ struct ovsrec_bridge {
 	struct smap other_config;
 
 	/* ports column. */
-	struct ovsrec_port **ports;
-	size_t n_ports;
+	struct ovsrec_port **ports;     // 这张表记录量该网桥包含的每个端口的配置表
+	size_t n_ports;                 // 该网桥包含的端口数量
 
 	/* protocols column. */
 	char **protocols;
@@ -1278,7 +1278,7 @@ const int64_t *sampling, size_t n_sampling);
 void ovsrec_ipfix_index_set_targets(const struct ovsrec_ipfix *,
 const char **targets, size_t n_targets);
 
-/* Interface table. */
+/* Interface table.  定义了端口配置表结构 */
 struct ovsrec_interface {
 	struct ovsdb_idl_row header_;
 
@@ -2389,14 +2389,14 @@ void ovsrec_netflow_index_set_targets(const struct ovsrec_netflow *,
 const char **targets, size_t n_targets);
 
 /* Open_vSwitch table. 
- * 定义了真正的"Open_vSwitch"表信息
+ * 定义了名为"Open_vSwitch"的交换机的配置表结构
  * */
 struct ovsrec_open_vswitch {
-	struct ovsdb_idl_row header_;   // 该表关联的ovsdb row
+	struct ovsdb_idl_row header_;   // 该配置表关联的ovsdb row
 
 	/* bridges column. */
-	struct ovsrec_bridge **bridges;
-	size_t n_bridges;
+	struct ovsrec_bridge **bridges; // 这张表记录了该交换机包含的每个网桥的配置表
+	size_t n_bridges;               // 记录了网桥数量
 
 	/* cur_cfg column. */
 	int64_t cur_cfg;
@@ -2664,7 +2664,7 @@ const char *system_type);
 void ovsrec_open_vswitch_index_set_system_version(const struct ovsrec_open_vswitch *,
 const char *system_version);
 
-/* Port table. */
+/* Port table.  定义了端口的配置表结构 */
 struct ovsrec_port {
 	struct ovsdb_idl_row header_;
 
@@ -2694,8 +2694,8 @@ struct ovsrec_port {
 	bool fake_bridge;
 
 	/* interfaces column. */
-	struct ovsrec_interface **interfaces;
-	size_t n_interfaces;
+	struct ovsrec_interface **interfaces;   // 这张表记录了该端口包含的每个接口的配置信息
+	size_t n_interfaces;                    // 该端口包含的接口数量
 
 	/* lacp column. */
 	char *lacp;

@@ -601,6 +601,7 @@ DECL_OFPROTO_COLLECTION (struct ofgroup *, group)
          i__++)
 
 /* ofproto class structure, to be defined by each ofproto implementation.
+ * 定义了一套所有ofproto实例通用的方法抽象
  *
  *
  * Data Structures

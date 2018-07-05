@@ -35,6 +35,7 @@ shash_init(struct shash *sh)
     hmap_init(&sh->map);
 }
 
+// 只是销毁传入的hash表(注意跟下面那个函数的区别)
 void
 shash_destroy(struct shash *sh)
 {
@@ -44,7 +45,9 @@ shash_destroy(struct shash *sh)
     }
 }
 
-/* Like shash_destroy(), but also free() each node's 'data'. */
+/* Like shash_destroy(), but also free() each node's 'data'. 
+ * 销毁传入的hash表，并且会释放表中每个节点的内存
+ * */
 void
 shash_destroy_free_data(struct shash *sh)
 {

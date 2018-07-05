@@ -228,7 +228,9 @@ int ofproto_enumerate_names(const char *type, struct sset *names);
 void ofproto_parse_name(const char *name, char **dp_name, char **dp_type);
 
 /* An interface hint element, which is used by ofproto_init() to
- * describe the caller's understanding of the startup state. */
+ * describe the caller's understanding of the startup state. 
+ * 用于描述一个接口的暗示信息
+ * */
 struct iface_hint {
     char *br_name;              /* Name of owning bridge. */
     char *br_type;              /* Type of owning bridge. */

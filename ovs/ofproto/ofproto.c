@@ -289,9 +289,9 @@ static void meter_insert_rule(struct rule *);
 static void ofproto_unixctl_init(void);
 
 /* All registered ofproto classes, in probe order. */
-static const struct ofproto_class **ofproto_classes;
-static size_t n_ofproto_classes;
-static size_t allocated_ofproto_classes;
+static const struct ofproto_class **ofproto_classes;    // 这张表记录了所有已经注册的ofproto方法
+static size_t n_ofproto_classes;    // 已经注册的ofproto方法套数
+static size_t allocated_ofproto_classes;    // 已经分配的ofproto_classes表的长度
 
 /* Global lock that protects all flow table operations. */
 struct ovs_mutex ofproto_mutex = OVS_MUTEX_INITIALIZER;
@@ -304,7 +304,7 @@ size_t n_handlers, n_revalidators;
 /* Map from datapath name to struct ofproto, for use by unixctl commands. */
 static struct hmap all_ofprotos = HMAP_INITIALIZER(&all_ofprotos);
 
-/* Initial mappings of port to OpenFlow number mappings. */
+/* Initial mappings of port to OpenFlow number mappings.  这张全局的hash表记录了交换机配置的接口信息 */
 static struct shash init_ofp_ports = SHASH_INITIALIZER(&init_ofp_ports);
 
 static struct vlog_rate_limit rl = VLOG_RATE_LIMIT_INIT(1, 5);
@@ -313,6 +313,7 @@ static struct vlog_rate_limit rl = VLOG_RATE_LIMIT_INIT(1, 5);
 static bool flow_restore_wait = true;
 
 /* Must be called to initialize the ofproto library.
+ * 根据传入的接口暗示信息hash表来初始化交换机的ofproto库
  *
  * The caller may pass in 'iface_hints', which contains an shash of
  * "iface_hint" elements indexed by the interface's name.  The provider
@@ -327,9 +328,12 @@ ofproto_init(const struct shash *iface_hints)
     struct shash_node *node;
     size_t i;
 
+    // 注册一套ofproto方法
     ofproto_class_register(&ofproto_dpif_class);
 
-    /* Make a local copy, since we don't own 'iface_hints' elements. */
+    /* Make a local copy, since we don't own 'iface_hints' elements. 
+     * 将传入的接口暗示信息转储到一张全局的hash表init_ofp_ports
+     * */
     SHASH_FOR_EACH(node, iface_hints) {
         const struct iface_hint *orig_hint = node->data;
         struct iface_hint *new_hint = xmalloc(sizeof *new_hint);
@@ -342,6 +346,7 @@ ofproto_init(const struct shash *iface_hints)
         shash_add(&init_ofp_ports, node->name, new_hint);
     }
 
+    // 依次调用每类ofproto中的init方法
     for (i = 0; i < n_ofproto_classes; i++) {
         ofproto_classes[i]->init(&init_ofp_ports);
     }
@@ -376,23 +381,28 @@ ofproto_class_find__(const char *type)
 }
 
 /* Registers a new ofproto class.  After successful registration, new ofprotos
- * of that type can be created using ofproto_create(). */
+ * of that type can be created using ofproto_create(). 
+ * 注册一套新的ofproto方法
+ * */
 int
 ofproto_class_register(const struct ofproto_class *new_class)
 {
     size_t i;
 
+    // 确保这套方法尚未注册过
     for (i = 0; i < n_ofproto_classes; i++) {
         if (ofproto_classes[i] == new_class) {
             return EEXIST;
         }
     }
 
+    // 如果ofproto_classes这张表已经存满，则先进行扩展
     if (n_ofproto_classes >= allocated_ofproto_classes) {
         ofproto_classes = x2nrealloc(ofproto_classes,
                                      &allocated_ofproto_classes,
                                      sizeof *ofproto_classes);
     }
+    // 将这套新的方法记录到ofproto_classes中，也就完成了注册
     ofproto_classes[n_ofproto_classes++] = new_class;
     return 0;
 }

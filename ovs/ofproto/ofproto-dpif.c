@@ -202,7 +202,7 @@ ofproto_dpif_cast(const struct ofproto *ofproto)
 /* Global variables. */
 static struct vlog_rate_limit rl = VLOG_RATE_LIMIT_INIT(1, 5);
 
-/* Initial mappings of port to bridge mappings. */
+/* Initial mappings of port to bridge mappings. 这张全局的hash表记录了交换机配置的接口信息 */
 static struct shash init_ofp_ports = SHASH_INITIALIZER(&init_ofp_ports);
 
 /* Initialize 'ofm' for a learn action.  If the rule already existed, reference
@@ -239,7 +239,10 @@ init(const struct shash *iface_hints)
 {
     struct shash_node *node;
 
-    /* Make a local copy, since we don't own 'iface_hints' elements. */
+    /* Make a local copy, since we don't own 'iface_hints' elements. 
+     * 再次将传入的接口暗示信息转储到一张全局的hash表init_ofp_ports
+     * 备注： 之前其实已经在另一个文件域(ofproto.c)中进行过一次转储
+     * */
     SHASH_FOR_EACH(node, iface_hints) {
         const struct iface_hint *orig_hint = node->data;
         struct iface_hint *new_hint = xmalloc(sizeof *new_hint);
@@ -5519,6 +5522,7 @@ ofproto_unixctl_dpif_set_dp_features(struct unixctl_conn *conn,
     ds_destroy(&ds);
 }
 
+// 注册一系列ofproto相关的unixctl命令
 static void
 ofproto_unixctl_init(void)
 {
@@ -5744,6 +5748,7 @@ meter_del(struct ofproto *ofproto_, ofproto_meter_id meter_id)
     ovsrcu_postpone(free_meter_id, arg);
 }
 
+// 这里为基于ofproto实现的交换机定义了一套全局的方法实例
 const struct ofproto_class ofproto_dpif_class = {
     init,
     enumerate_types,

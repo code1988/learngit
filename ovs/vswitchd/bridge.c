@@ -328,6 +328,7 @@ static ofp_port_t iface_pick_ofport(const struct ovsrec_interface *);
 
 static void discover_types(const struct ovsrec_open_vswitch *cfg);
 
+// 初始化交换机的ofproto库
 static void
 bridge_init_ofproto(const struct ovsrec_open_vswitch *cfg)
 {
@@ -335,12 +336,15 @@ bridge_init_ofproto(const struct ovsrec_open_vswitch *cfg)
     static bool initialized = false;
     int i;
 
+    // 确保交换机的ofproto库只会初始化一次
     if (initialized) {
         return;
     }
 
+    // 初始化一张用于记录所有接口暗示信息的hash表
     shash_init(&iface_hints);
 
+    // 如果传入了一份有效的交换机配置表，则为其中配置的每个接口都创建一个对应的暗示信息单元，并插入hash表
     if (cfg) {
         for (i = 0; i < cfg->n_bridges; i++) {
             const struct ovsrec_bridge *br_cfg = cfg->bridges[i];
@@ -365,8 +369,10 @@ bridge_init_ofproto(const struct ovsrec_open_vswitch *cfg)
         }
     }
 
+    // 使用这张记录量所有接口暗示信息的hash对ofproto库进行初始化
     ofproto_init(&iface_hints);
 
+    // ofproto库初始化完毕
     shash_destroy_free_data(&iface_hints);
     initialized = true;
 }
