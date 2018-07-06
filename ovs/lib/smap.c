@@ -191,15 +191,21 @@ smap_get(const struct smap *smap, const char *key)
 }
 
 /* Returns the value associated with 'key' in 'smap'.
- * If 'smap' does not contain 'key', returns 'def'. */
+ * If 'smap' does not contain 'key', returns 'def'. 
+ * 在指定的记录了字符串格式数据的hash表中，根据指定键值索引对应的字符串格式数据，如果不存在则返回缺省值
+ * */
 const char *
 smap_get_def(const struct smap *smap, const char *key, const char *def)
 {
+    // 首先根据传入的键值在hash表中获取对应的节点
     struct smap_node *node = smap_get_node(smap, key);
+    // 如果该节点存在则返回对应值，如果不存在则返回缺省值
     return node ? node->value : def;
 }
 
-/* Returns the node associated with 'key' in 'smap', or NULL. */
+/* Returns the node associated with 'key' in 'smap', or NULL. 
+ * 在指定的记录了字符串格式数据的hash表中，根据指定键值索引对应的节点
+ * */
 struct smap_node *
 smap_get_node(const struct smap *smap, const char *key)
 {
@@ -209,11 +215,15 @@ smap_get_node(const struct smap *smap, const char *key)
 
 /* Gets the value associated with 'key' in 'smap' and converts it to a boolean.
  * If 'key' is not in 'smap', or its value is neither "true" nor "false",
- * returns 'def'. */
+ * returns 'def'. 
+ * 在指定的记录了字符串格式数据的hash表中，根据指定键值索引对应的字符串数据，最后转换成bool值返回
+ * */
 bool
 smap_get_bool(const struct smap *smap, const char *key, bool def)
 {
+    // 首先根据传入的键值在hash表中获取对应的字符串格式数据
     const char *value = smap_get_def(smap, key, "");
+    // 然后配合传入的缺省值，返回合适的bool值
     if (def) {
         return strcasecmp("false", value) != 0;
     } else {

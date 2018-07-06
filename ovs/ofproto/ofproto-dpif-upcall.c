@@ -387,6 +387,7 @@ static dp_purge_callback dp_purge_cb;
 static atomic_bool enable_megaflows = ATOMIC_VAR_INIT(true);
 static atomic_bool enable_ufid = ATOMIC_VAR_INIT(true);
 
+// 注册一系列upcall相关的unixctl命令
 void
 udpif_init(void)
 {

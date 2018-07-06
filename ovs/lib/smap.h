@@ -22,15 +22,16 @@
 struct json;
 struct uuid;
 
-/* A map from string to string. */
+/* A map from string to string.  用于实现 字符串->字符串 映射的hash表结构*/
 struct smap {
     struct hmap map;           /* Contains "struct smap_node"s. */
 };
 
+// 用于实现 字符串->字符串 映射的hash表节点结构
 struct smap_node {
     struct hmap_node node;     /* In struct smap's 'map' hmap. */
-    char *key;
-    char *value;
+    char *key;      // 字符串格式的键值
+    char *value;    // 字符串格式的数据
 };
 
 #define SMAP_INITIALIZER(SMAP) { HMAP_INITIALIZER(&(SMAP)->map) }

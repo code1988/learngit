@@ -254,8 +254,11 @@ init(const struct shash *iface_hints)
         shash_add(&init_ofp_ports, node->name, new_hint);
     }
 
+    // 注册一系列ofproto相关的unixctl命令
     ofproto_unixctl_init();
+    // 注册一系列ofproto信息跟踪相关的unixctl命令
     ofproto_dpif_trace_init();
+    // 注册一系列upcall相关的unixctl命令
     udpif_init();
 }
 

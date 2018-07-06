@@ -369,7 +369,7 @@ bridge_init_ofproto(const struct ovsrec_open_vswitch *cfg)
         }
     }
 
-    // 使用这张记录量所有接口暗示信息的hash对ofproto库进行初始化
+    // 使用这张记录了所有接口暗示信息的hash表对ofproto库进行初始化
     ofproto_init(&iface_hints);
 
     // ofproto库初始化完毕
@@ -3026,7 +3026,9 @@ bridge_run(void)
     /* Initialize the ofproto library.  This only needs to run once, but
      * it must be done after the configuration is set.  If the
      * initialization has already occurred, bridge_init_ofproto()
-     * returns immediately. */
+     * returns immediately. 
+     * 初始化交换机的ofproto库
+     * */
     bridge_init_ofproto(cfg);
 
     /* Once the value of flow-restore-wait is false, we no longer should

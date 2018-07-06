@@ -2423,7 +2423,10 @@ struct ovsrec_open_vswitch {
 	int64_t next_cfg;
 
 	/* other_config column. */
-	struct smap other_config;
+	struct smap other_config;   /* 这张 字符串->字符串 hash表记录了该交换机其余的配置参数，包括：
+                                   "flow-restore-wait"
+                                */
+
 
 	/* ovs_version column. */
 	char *ovs_version;

@@ -665,6 +665,7 @@ ofproto_trace(struct ofproto_dpif *ofproto, const struct flow *flow,
     }
 }
 
+// 注册一系列ofproto信息跟踪相关的unixctl命令
 void
 ofproto_dpif_trace_init(void)
 {

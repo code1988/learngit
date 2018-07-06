@@ -328,7 +328,7 @@ ofproto_init(const struct shash *iface_hints)
     struct shash_node *node;
     size_t i;
 
-    // 注册一套ofproto方法
+    // 注册一类ofproto方法
     ofproto_class_register(&ofproto_dpif_class);
 
     /* Make a local copy, since we don't own 'iface_hints' elements. 
@@ -351,6 +351,7 @@ ofproto_init(const struct shash *iface_hints)
         ofproto_classes[i]->init(&init_ofp_ports);
     }
 
+    // 最后注册了一条unixctl命令：罗列已经注册的每一类ofproto方法
     ofproto_unixctl_init();
 }
 
@@ -382,7 +383,7 @@ ofproto_class_find__(const char *type)
 
 /* Registers a new ofproto class.  After successful registration, new ofprotos
  * of that type can be created using ofproto_create(). 
- * 注册一套新的ofproto方法
+ * 注册一类新的ofproto方法
  * */
 int
 ofproto_class_register(const struct ofproto_class *new_class)
@@ -927,6 +928,10 @@ ofproto_set_flow_restore_wait(bool flow_restore_wait_db)
     flow_restore_wait = flow_restore_wait_db;
 }
 
+/* 检查是否需要等待流程恢复
+ * @返回值： true   - 需要
+ *           false  - 不需要
+ */
 bool
 ofproto_get_flow_restore_wait(void)
 {
@@ -8718,6 +8723,9 @@ ofproto_lookup(const char *name)
     return NULL;
 }
 
+/* 罗列已经注册的ofproto方法，也就是已经创建的交换机实例
+ * 收到unixctl命令"ofproto/list"后的回调函数
+ */
 static void
 ofproto_unixctl_list(struct unixctl_conn *conn, int argc OVS_UNUSED,
                      const char *argv[] OVS_UNUSED, void *aux OVS_UNUSED)
@@ -8733,6 +8741,7 @@ ofproto_unixctl_list(struct unixctl_conn *conn, int argc OVS_UNUSED,
     ds_destroy(&results);
 }
 
+// 注册了一条unixctl命令：罗列已经注册的ofproto方法
 static void
 ofproto_unixctl_init(void)
 {
