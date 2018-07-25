@@ -2940,7 +2940,7 @@ dpif_netlink_meter_del(struct dpif *dpif OVS_UNUSED,
     return EFBIG; /* meter_id out of range */
 }
 
-
+// 定义了netlink类型的datapath接口
 const struct dpif_class dpif_netlink_class = {
     "system",
     NULL,                       /* init */

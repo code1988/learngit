@@ -601,7 +601,7 @@ DECL_OFPROTO_COLLECTION (struct ofgroup *, group)
          i__++)
 
 /* ofproto class structure, to be defined by each ofproto implementation.
- * 定义了一套所有ofproto实例通用的方法抽象
+ * 定义了一套所有ofproto实例(即ovs交换机)通用的方法抽象
  *
  *
  * Data Structures
@@ -707,7 +707,10 @@ DECL_OFPROTO_COLLECTION (struct ofgroup *, group)
  * block as necessary to obtain a result.  Thus, these functions may return
  * EAGAIN (or EWOULDBLOCK or EINPROGRESS) only where the function descriptions
  * explicitly say those errors are a possibility.  We may relax this
- * requirement in the future if and when we encounter performance problems. */
+ * requirement in the future if and when we encounter performance problems. 
+ *
+ * 备注：通常只有1类ofproto方法ofproto_dpif_class
+ * */
 struct ofproto_class {
 /* ## ----------------- ## */
 /* ## Factory Functions ## */

@@ -54,14 +54,18 @@ sset_add__(struct sset *set, const char *name, size_t length, size_t hash)
     return node;
 }
 
-/* Initializes 'set' as an empty set of strings. */
+/* Initializes 'set' as an empty set of strings. 
+ * 初始化一张sset结构的hash表
+ * */
 void
 sset_init(struct sset *set)
 {
     hmap_init(&set->map);
 }
 
-/* Destroys 'sets'. */
+/* Destroys 'sets'. 
+ * 销毁指定的sset结构的hash表
+ * */
 void
 sset_destroy(struct sset *set)
 {
@@ -243,7 +247,11 @@ sset_find(const struct sset *set, const char *name)
     return sset_find__(set, name, hash_name(name));
 }
 
-/* Returns true if 'set' contains a copy of 'name', false otherwise. */
+/* Returns true if 'set' contains a copy of 'name', false otherwise. 
+ * 检查hash表set中是否记录了名为name的节点
+ * @返回值  true    - set中存在名为name的节点
+ *          false   - set中不存在名为name的节点
+ * */
 bool
 sset_contains(const struct sset *set, const char *name)
 {

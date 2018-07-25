@@ -180,7 +180,7 @@ static struct ovsdb_idl *idl;
 static bool initial_config_done;
 static struct ovsdb_idl_txn *daemonize_txn;
 
-/* Most recently processed IDL sequence number. */
+/* Most recently processed IDL sequence number.  记录了最近一次处理完毕的ovsdb序号 */
 static unsigned int idl_seqno;
 
 /* Track changes to port connectivity. */
@@ -385,6 +385,9 @@ if_change_cb(void *aux OVS_UNUSED)
     seq_change(ifaces_changed);
 }
 
+/* 检查网络接口是否发生变化
+ * @notifier    指向要检查的网络接口变化通知实例
+ */
 static bool
 if_notifier_changed(struct if_notifier *notifier OVS_UNUSED)
 {
@@ -2955,6 +2958,7 @@ status_update_wait(void)
     }
 }
 
+// 真正运行网桥的地方
 static void
 bridge_run__(void)
 {
@@ -2964,13 +2968,17 @@ bridge_run__(void)
 
     /* Let each datapath type do the work that it needs to do. */
     sset_init(&types);
+    // 收集所有支持的datapath类型名
     ofproto_enumerate_types(&types);
+    // 然后运行每个datapath类型名对应的ofproto方法实例中type_run方法
     SSET_FOR_EACH (type, &types) {
         ofproto_type_run(type);
     }
     sset_destroy(&types);
 
-    /* Let each bridge do the work that it needs to do. */
+    /* Let each bridge do the work that it needs to do. 
+     * 运行每个已经创建的bridge
+     * */
     HMAP_FOR_EACH (br, node, &all_bridges) {
         ofproto_run(br->ofproto);
     }
@@ -3038,6 +3046,7 @@ bridge_run(void)
                                         "flow-restore-wait", false));
     }
 
+    // 真正运行网桥的地方
     bridge_run__();
 
     /* Re-configure SSL.  We do this on every trip through the main loop,
@@ -3053,6 +3062,7 @@ bridge_run(void)
         stream_ssl_set_ca_cert_file(ssl->ca_cert, ssl->bootstrap_ca_cert);
     }
 
+    // 如果ovsdb的序号发生了变化
     if (ovsdb_idl_get_seqno(idl) != idl_seqno ||
         if_notifier_changed(ifnotifier)) {
         struct ovsdb_idl_txn *txn;

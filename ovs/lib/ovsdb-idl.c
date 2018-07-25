@@ -95,7 +95,7 @@ struct ovsdb_idl {
     struct uuid uuid;
     struct shash table_by_name; /* Contains "struct ovsdb_idl_table *"s. 这个hash表用于管理该句柄缓存的所有table实例 */
     struct ovsdb_idl_table *tables; /* Array of ->class->n_tables elements.  指向一个数组,该数组缓存了ovsdb中的所有table实例 */
-    unsigned int change_seqno;      // 用于标识该句柄的状态
+    unsigned int change_seqno;      // 用于标识该句柄关联的ovsdb状态的序号,ovsdb变化和ovsdb重连接都会导致该值变化
     bool verify_write_only;         // 标识该句柄是否只会进行写操作
 
     /* Session state. */
@@ -598,7 +598,14 @@ ovsdb_idl_wait(struct ovsdb_idl *idl)
  * causes the database contents to be reloaded even if they didn't change.  (It
  * could also happen if the database server sends out a "change" that reflects
  * what the IDL already thought was in the database.  The database server is
- * not supposed to do that, but bugs could in theory cause it to do so.) */
+ * not supposed to do that, but bugs could in theory cause it to do so.) 
+ * 返回指定ovsdb的当前序号
+ *
+ * 备注：序号发生变化的因素有以下几种：
+ *              第一次获取ovsdb的行为会被认为是一次变化;
+ *              每次成功请求到锁会被认为是一次变化;
+ *              和ovsdb的连接断开重连会被认为是一次变化
+ * */
 unsigned int
 ovsdb_idl_get_seqno(const struct ovsdb_idl *idl)
 {

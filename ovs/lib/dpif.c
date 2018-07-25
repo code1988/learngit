@@ -67,6 +67,7 @@ COVERAGE_DEFINE(dpif_meter_set);
 COVERAGE_DEFINE(dpif_meter_get);
 COVERAGE_DEFINE(dpif_meter_del);
 
+// 这张表记录了几种基础的datapath接口类型
 static const struct dpif_class *base_dpif_classes[] = {
 #if defined(__linux__) || defined(_WIN32)
     &dpif_netlink_class,
@@ -78,10 +79,14 @@ struct registered_dpif_class {
     const struct dpif_class *dpif_class;
     int refcount;
 };
-static struct shash dpif_classes = SHASH_INITIALIZER(&dpif_classes);
+
+// 这张全局的hash表用于记录所有已经注册的registered_dpif_class结构
+static struct shash dpif_classes = SHASH_INITIALIZER(&dpif_classes);    
 static struct sset dpif_blacklist = SSET_INITIALIZER(&dpif_blacklist);
 
-/* Protects 'dpif_classes', including the refcount, and 'dpif_blacklist'. */
+/* Protects 'dpif_classes', including the refcount, and 'dpif_blacklist'. 
+ * 定义了一个用于维护dpif_classes变量的互斥锁
+ * */
 static struct ovs_mutex dpif_mutex = OVS_MUTEX_INITIALIZER;
 
 /* Rate limit for individual messages going to or from the datapath, output at
@@ -233,7 +238,9 @@ dp_blacklist_provider(const char *type)
 }
 
 /* Adds the types of all currently registered datapath providers to 'types'.
- * The caller must first initialize the sset. */
+ * The caller must first initialize the sset. 
+ * 获取支持的datapath类型名集合，结果存储在传入的hash表中
+ * */
 void
 dp_enumerate_types(struct sset *types)
 {
@@ -242,6 +249,7 @@ dp_enumerate_types(struct sset *types)
     dp_initialize();
 
     ovs_mutex_lock(&dpif_mutex);
+    // 遍历所有已经注册的registered_dpif_class结构，并将每个datapath类型名插入hash表中
     SHASH_FOR_EACH(node, &dpif_classes) {
         const struct registered_dpif_class *registered_class = node->data;
         sset_add(types, registered_class->dpif_class->type);

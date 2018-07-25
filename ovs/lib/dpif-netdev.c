@@ -5490,6 +5490,7 @@ dpif_netdev_ct_flush(struct dpif *dpif, const uint16_t *zone)
     return conntrack_flush(&dp->conntrack, zone);
 }
 
+// 定义了netdev类型的datapath接口
 const struct dpif_class dpif_netdev_class = {
     "netdev",
     dpif_netdev_init,

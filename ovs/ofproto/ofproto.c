@@ -346,7 +346,7 @@ ofproto_init(const struct shash *iface_hints)
         shash_add(&init_ofp_ports, node->name, new_hint);
     }
 
-    // 依次调用每类ofproto中的init方法
+    // 依次调用每类ofproto中的init方法，通常就只有1类ofproto，即ofproto_dpif_class
     for (i = 0; i < n_ofproto_classes; i++) {
         ofproto_classes[i]->init(&init_ofp_ports);
     }
@@ -357,19 +357,24 @@ ofproto_init(const struct shash *iface_hints)
 
 /* 'type' should be a normalized datapath type, as returned by
  * ofproto_normalize_type().  Returns the corresponding ofproto_class
- * structure, or a null pointer if there is none registered for 'type'. */
+ * structure, or a null pointer if there is none registered for 'type'. 
+ * 查找包含指定datapath类型名的ofproto方法实例
+ * */
 static const struct ofproto_class *
 ofproto_class_find__(const char *type)
 {
     size_t i;
 
+    // 遍历每个已经注册的ofproto方法
     for (i = 0; i < n_ofproto_classes; i++) {
         const struct ofproto_class *class = ofproto_classes[i];
         struct sset types;
         bool found;
 
         sset_init(&types);
+        // 获取当前ofproto方法支持的datapath类型名集合
         class->enumerate_types(&types);
+        // 然后检查该datapath类型名集合中是否记录了指定类型名
         found = sset_contains(&types, type);
         sset_destroy(&types);
 
@@ -432,7 +437,9 @@ ofproto_class_unregister(const struct ofproto_class *class)
 }
 
 /* Clears 'types' and enumerates all registered ofproto types into it.  The
- * caller must first initialize the sset. */
+ * caller must first initialize the sset. 
+ * 将所有已经注册的ofproto方法支持的datapath类型名统一收集到指定的一张hash表中
+ * */
 void
 ofproto_enumerate_types(struct sset *types)
 {
@@ -445,6 +452,7 @@ ofproto_enumerate_types(struct sset *types)
 }
 
 /* Returns the fully spelled out name for the given ofproto 'type'.
+ * 返回指定datapath类型名的标准格式
  *
  * Normalized type string can be compared with strcmp().  Unnormalized type
  * string might be the same even if they have different spellings. */
@@ -1705,13 +1713,19 @@ process_port_change(struct ofproto *ofproto, int error, char *devname)
     }
 }
 
+/* 运行包含指定datapath类型名的ofproto方法实例中type_run方法
+ *
+ * 备注：显然如果对应ofproto方法实例中没有注册type_run方法，本函数其实什么都没做
+ */
 int
 ofproto_type_run(const char *datapath_type)
 {
     const struct ofproto_class *class;
     int error;
 
+    // 首先确保该类型名为标准格式
     datapath_type = ofproto_normalize_type(datapath_type);
+    // 查找包含该datapath类型名的ofproto方法实例
     class = ofproto_class_find__(datapath_type);
 
     error = class->type_run ? class->type_run(datapath_type) : 0;
@@ -1735,6 +1749,7 @@ ofproto_type_wait(const char *datapath_type)
     }
 }
 
+// 运行一个指定的ovs交换机
 int
 ofproto_run(struct ofproto *p)
 {

@@ -233,7 +233,8 @@ ofproto_dpif_send_async_msg(struct ofproto_dpif *ofproto,
 }
 
 /* Factory functions. */
-
+/* 基于ofproto实现的交换机定义的一些初始化动作，只会在函数ofproto_init中被调用
+ */
 static void
 init(const struct shash *iface_hints)
 {
@@ -262,6 +263,9 @@ init(const struct shash *iface_hints)
     udpif_init();
 }
 
+/* 基于ofproto实现的交换机定义的用于获取支持的datapath类型名集合的方法
+ * @types   用于存放获取到的datapath类型名集合
+ */
 static void
 enumerate_types(struct sset *types)
 {

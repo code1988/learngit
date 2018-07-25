@@ -78,6 +78,7 @@ struct ct_dpif_entry;
 
 /* Datapath interface class structure, to be defined by each implementation of
  * a datapath interface.
+ * 定义了一类datapath接口的抽象
  *
  * These functions return 0 if successful or a positive errno value on failure,
  * except where otherwise noted.
