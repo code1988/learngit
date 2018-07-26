@@ -53,7 +53,7 @@ const uint8_t flow_segment_u64s[4] = {
     FLOW_U64S
 };
 
-int flow_vlan_limit = FLOW_MAX_VLAN_HEADERS;
+int flow_vlan_limit = FLOW_MAX_VLAN_HEADERS;        // 记录了交换机的"vlan_limit"属性
 
 /* Asserts that field 'f1' follows immediately after 'f0' in struct flow,
  * without any intervening padding. */
@@ -3246,6 +3246,7 @@ minimask_has_extra(const struct minimask *a, const struct minimask *b)
     return false;
 }
 
+// 配置交换机的"vlan_limit"属性
 void
 flow_limit_vlans(int vlan_limit)
 {

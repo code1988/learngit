@@ -289,8 +289,8 @@ int ofproto_port_dump_done(struct ofproto_port_dump *);
           : (ofproto_port_dump_done(DUMP), false));         \
         )
 
-#define OFPROTO_FLOW_LIMIT_DEFAULT 200000
-#define OFPROTO_MAX_IDLE_DEFAULT 10000 /* ms */
+#define OFPROTO_FLOW_LIMIT_DEFAULT 200000   // 交换机"flow_limit"属性的缺省值
+#define OFPROTO_MAX_IDLE_DEFAULT 10000 /* ms    交换机"max-idle"属性的缺省值 */
 
 const char *ofproto_port_open_type(const char *datapath_type,
                                    const char *port_type);

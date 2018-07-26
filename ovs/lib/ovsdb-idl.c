@@ -2958,7 +2958,9 @@ ovsdb_idl_txn_status_to_string(enum ovsdb_idl_txn_status status)
 
 /* Starts a new transaction on 'idl'.  A given ovsdb_idl may only have a single
  * active transaction at a time.  See the large comment in ovsdb-idl.h for
- * general information on transactions. */
+ * general information on transactions. 
+ * 创建一次新的ovsdb交易
+ * */
 struct ovsdb_idl_txn *
 ovsdb_idl_txn_create(struct ovsdb_idl *idl)
 {
@@ -3051,7 +3053,9 @@ ovsdb_idl_txn_increment(struct ovsdb_idl_txn *txn,
  * has been called for 'txn' but the commit is still incomplete (that is, the
  * last call returned TXN_INCOMPLETE) then the transaction may or may not still
  * end up committing at the database server, but the client will not be able to
- * get any further status information back. */
+ * get any further status information back. 
+ * 结束一次指定的ovsdb交易
+ * */
 void
 ovsdb_idl_txn_destroy(struct ovsdb_idl_txn *txn)
 {

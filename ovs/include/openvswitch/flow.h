@@ -76,7 +76,7 @@ const char *flow_tun_flag_to_string(uint32_t flags);
 BUILD_ASSERT_DECL(FLOW_MAX_VLAN_HEADERS % 2 == 0);
 
 /* Legacy maximum VLAN headers */
-#define LEGACY_MAX_VLAN_HEADERS 1
+#define LEGACY_MAX_VLAN_HEADERS 1   // 交换机"vlan_limit"属性的缺省值
 
 /*
  * A flow in the network.

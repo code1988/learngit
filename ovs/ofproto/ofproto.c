@@ -296,10 +296,10 @@ static size_t allocated_ofproto_classes;    // 已经分配的ofproto_classes表
 /* Global lock that protects all flow table operations. */
 struct ovs_mutex ofproto_mutex = OVS_MUTEX_INITIALIZER;
 
-unsigned ofproto_flow_limit = OFPROTO_FLOW_LIMIT_DEFAULT;
-unsigned ofproto_max_idle = OFPROTO_MAX_IDLE_DEFAULT;
+unsigned ofproto_flow_limit = OFPROTO_FLOW_LIMIT_DEFAULT;   // 记录了交换机的"flow_limit"属性
+unsigned ofproto_max_idle = OFPROTO_MAX_IDLE_DEFAULT;       // 记录了交换机的"max_idle"属性
 
-size_t n_handlers, n_revalidators;
+size_t n_handlers, n_revalidators;  // 记录了交换机的"n-handler-threads"、"n-revalidator-threads"属性
 
 /* Map from datapath name to struct ofproto, for use by unixctl commands. */
 static struct hmap all_ofprotos = HMAP_INITIALIZER(&all_ofprotos);
@@ -694,7 +694,9 @@ ofproto_set_in_band_queue(struct ofproto *ofproto, int queue_id)
 }
 
 /* Sets the number of flows at which eviction from the kernel flow table
- * will occur. */
+ * will occur. 
+ * 配置交换机的"flow_limit"属性
+ * */
 void
 ofproto_set_flow_limit(unsigned limit)
 {
@@ -702,7 +704,9 @@ ofproto_set_flow_limit(unsigned limit)
 }
 
 /* Sets the maximum idle time for flows in the datapath before they are
- * expired. */
+ * expired. 
+ * 配置交换机的"max_idle"属性
+ * */
 void
 ofproto_set_max_idle(unsigned max_idle)
 {
@@ -777,20 +781,24 @@ ofproto_type_set_config(const char *datapath_type, const struct smap *cfg)
     }
 }
 
+// 配置交换机的"n-handler-threads"、"n-revalidator-threads"属性
 void
 ofproto_set_threads(int n_handlers_, int n_revalidators_)
 {
-    int threads = MAX(count_cpu_cores(), 2);
+    int threads = MAX(count_cpu_cores(), 2);    // 线程数量不少于2个
 
-    n_revalidators = MAX(n_revalidators_, 0);
-    n_handlers = MAX(n_handlers_, 0);
+    // handler线程和revalidators线程数量都不小于0
+    n_revalidators = MAX(n_revalidators_, 0);   
+    n_handlers = MAX(n_handlers_, 0);           
 
+    // 如果revalidators线程数量为0,则根据handler线程数量进行调整
     if (!n_revalidators) {
         n_revalidators = n_handlers
             ? MAX(threads - (int) n_handlers, 1)
             : threads / 4 + 1;
     }
 
+    // 如果handler线程数量为0,则根据revalidators线程数量进行调整
     if (!n_handlers) {
         n_handlers = MAX(threads - (int) n_revalidators, 1);
     }
@@ -8770,6 +8778,7 @@ ofproto_unixctl_init(void)
                              ofproto_unixctl_list, NULL);
 }
 
+// 配置交换机的"vlan_limit"属性
 void
 ofproto_set_vlan_limit(int vlan_limit)
 {

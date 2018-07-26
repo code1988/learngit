@@ -183,7 +183,9 @@ smap_clear(struct smap *smap)
 }
 
 /* Returns the value associated with 'key' in 'smap'.
- * If 'smap' does not contain 'key', returns NULL. */
+ * If 'smap' does not contain 'key', returns NULL. 
+ * 在指定的记录了字符串格式数据的hash表中，根据指定键值索引对应的字符串格式数据，如果不存在则返回NULL
+ * */
 const char *
 smap_get(const struct smap *smap, const char *key)
 {
@@ -232,12 +234,16 @@ smap_get_bool(const struct smap *smap, const char *key, bool def)
 }
 
 /* Gets the value associated with 'key' in 'smap' and converts it to an int
- * using atoi().  If 'key' is not in 'smap', returns 'def'. */
+ * using atoi().  If 'key' is not in 'smap', returns 'def'. 
+ * 在指定的记录了字符串格式数据的hash表中，根据指定键值索引对应的字符串数据，最后转换成int类型返回
+ * */
 int
 smap_get_int(const struct smap *smap, const char *key, int def)
 {
+    // 首先根据传入的键值在hash表中获取对应的字符串格式数据
     const char *value = smap_get(smap, key);
 
+    // 如果数据存在则转换成int类型值返回，如果不存在则返回缺省值
     return value ? atoi(value) : def;
 }
 
@@ -381,6 +387,11 @@ smap_add__(struct smap *smap, char *key, void *value, size_t hash)
     return node;
 }
 
+/* 根据传入的字符串格式key值以及该key值对应的hash值，从指定hash表中索引对应的节点
+ * @key     字符串格式key值
+ * @key_len key值的长度
+ * @hash    key值对应的hash值
+ */
 static struct smap_node *
 smap_find__(const struct smap *smap, const char *key, size_t key_len,
             size_t hash)

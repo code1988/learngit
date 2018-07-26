@@ -591,12 +591,14 @@ ovs_thread_stats_next_bucket(const struct ovsthread_stats *stats, size_t i)
 
 
 /* Returns the total number of cores available to this process, or 0 if the
- * number cannot be determined. */
+ * number cannot be determined. 
+ * 获取当前进程可用的cpu核心数
+ * */
 int
 count_cpu_cores(void)
 {
     static struct ovsthread_once once = OVSTHREAD_ONCE_INITIALIZER;
-    static long int n_cores;
+    static long int n_cores;    // 记录了cpu核心数
 
     if (ovsthread_once_start(&once)) {
 #ifndef _WIN32

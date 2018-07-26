@@ -228,7 +228,7 @@ static long long int aa_refresh_timer = LLONG_MIN;
  * will be reconfigured.
  */
 static struct if_notifier *ifnotifier;  // 指向一个网络接口变化通知实例
-static struct seq *ifaces_changed;      // 指向一个用于处理接口变化事件的seq对象 
+static struct seq *ifaces_changed;      // 指向一个用于处理接口变化事件的序号对象 
 static uint64_t last_ifaces_changed;    // 记录了ifaces_changed序号对象最近一次的序号
 
 static void add_del_bridges(const struct ovsrec_open_vswitch *);
@@ -387,12 +387,15 @@ if_change_cb(void *aux OVS_UNUSED)
 
 /* 检查网络接口是否发生变化
  * @notifier    指向要检查的网络接口变化通知实例
+ * @返回值      true    - 有变化
+ *              false   - 没变化
  */
 static bool
 if_notifier_changed(struct if_notifier *notifier OVS_UNUSED)
 {
     uint64_t new_seq;
     bool changed = false;
+    // 通过判断ifaces_changed序号是否发生过变化来实现对网络接口的检查
     new_seq = seq_read(ifaces_changed);
     if (new_seq != last_ifaces_changed) {
         changed = true;
@@ -649,6 +652,7 @@ config_ofproto_types(const struct smap *other_config)
     sset_destroy(&types);
 }
 
+// 重新配置或者复位交换机
 static void
 bridge_reconfigure(const struct ovsrec_open_vswitch *ovs_cfg)
 {
@@ -659,6 +663,7 @@ bridge_reconfigure(const struct ovsrec_open_vswitch *ovs_cfg)
 
     COVERAGE_INC(bridge_reconfigure);
 
+    // 配置交换机的"flow_limit"、"max-idle"、"vlan-limit"、"n-handler-threads"、"n-revalidator-threads"属性
     ofproto_set_flow_limit(smap_get_int(&ovs_cfg->other_config, "flow-limit",
                                         OFPROTO_FLOW_LIMIT_DEFAULT));
     ofproto_set_max_idle(smap_get_int(&ovs_cfg->other_config, "max-idle",
@@ -674,7 +679,9 @@ bridge_reconfigure(const struct ovsrec_open_vswitch *ovs_cfg)
      * to 'ovs_cfg', with only very minimal configuration otherwise.
      *
      * This is mostly an update to bridge data structures. Nothing is pushed
-     * down to ofproto or lower layers. */
+     * down to ofproto or lower layers. 
+     * 添加或删除网桥
+     * */
     add_del_bridges(ovs_cfg);
     HMAP_FOR_EACH (br, node, &all_bridges) {
         bridge_collect_wanted_ports(br, &br->wanted_ports);
@@ -1765,6 +1772,7 @@ port_is_bond_fake_iface(const struct port *port)
     return port->cfg->bond_fake_iface && !ovs_list_is_short(&port->ifaces);
 }
 
+// 添加或删除网桥的接口
 static void
 add_del_bridges(const struct ovsrec_open_vswitch *cfg)
 {
@@ -1775,6 +1783,7 @@ add_del_bridges(const struct ovsrec_open_vswitch *cfg)
 
     /* Collect new bridges' names and types. */
     shash_init(&new_br);
+    // 更新每个网桥
     for (i = 0; i < cfg->n_bridges; i++) {
         static struct vlog_rate_limit rl = VLOG_RATE_LIMIT_INIT(1, 5);
         const struct ovsrec_bridge *br_cfg = cfg->bridges[i];
@@ -3062,13 +3071,15 @@ bridge_run(void)
         stream_ssl_set_ca_cert_file(ssl->ca_cert, ssl->bootstrap_ca_cert);
     }
 
-    // 如果ovsdb的序号发生了变化
+    // 如果ovsdb的序号发生了变化或者网络接口发生了变化，则会同步ovsdb的信息
     if (ovsdb_idl_get_seqno(idl) != idl_seqno ||
         if_notifier_changed(ifnotifier)) {
         struct ovsdb_idl_txn *txn;
 
+        // 记录下当前的ovsdb序号
         idl_seqno = ovsdb_idl_get_seqno(idl);
         txn = ovsdb_idl_txn_create(idl);
+        // 如果ovsdb中存在一份有效的"Open_vSwitch"表信息，则根据这些信息重新配置交换机，否则复位交换机
         bridge_reconfigure(cfg ? cfg : &null_cfg);
 
         if (cfg) {

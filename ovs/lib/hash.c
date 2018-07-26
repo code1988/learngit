@@ -25,7 +25,9 @@ hash_3words(uint32_t a, uint32_t b, uint32_t c)
     return hash_finish(hash_add(hash_add(hash_add(a, 0), b), c), 12);
 }
 
-/* Returns the hash of the 'n' bytes at 'p', starting from 'basis'. */
+/* Returns the hash of the 'n' bytes at 'p', starting from 'basis'. 
+ * 计算一段指定长度数据的hash值
+ * */
 uint32_t
 hash_bytes(const void *p_, size_t n, uint32_t basis)
 {
