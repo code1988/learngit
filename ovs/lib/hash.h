@@ -334,6 +334,7 @@ hash_bytes64(const uint64_t p[], size_t n_bytes, uint32_t basis)
     return hash_words64(p, n_bytes / 8, basis);
 }
 
+// 计算字符串s的hash值
 static inline uint32_t hash_string(const char *s, uint32_t basis)
 {
     return hash_bytes(s, strlen(s), basis);

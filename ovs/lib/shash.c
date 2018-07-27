@@ -138,7 +138,10 @@ shash_add(struct shash *sh, const char *name, const void *data)
     return shash_add_nocopy(sh, xstrdup(name), data);
 }
 
-// 将用户数据插入hash表(该接口内部确保键值不重复)
+/* 将用户数据插入hash表(该接口内部确保键值不重复)
+ * @返回值      true    - 插入成功
+ *              false   - 该键值已经存在，插入失败
+ */
 bool
 shash_add_once(struct shash *sh, const char *name, const void *data)
 {
@@ -213,7 +216,9 @@ shash_find__(const struct shash *sh, const char *name, size_t name_len,
     return NULL;
 }
 
-/* If there are duplicates, returns a random element. */
+/* If there are duplicates, returns a random element. 
+ * 根据name从hash表中索引关联的节点
+ * */
 struct shash_node *
 shash_find(const struct shash *sh, const char *name)
 {

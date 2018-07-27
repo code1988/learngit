@@ -113,21 +113,21 @@ struct port {
     struct ovs_list ifaces;    /* List of "struct iface"s. */
 };
 
-// 定义了bridge的抽象
+// 定义了bridge的抽象结构
 struct bridge {
     struct hmap_node node;      /* In 'all_bridges'. */
     char *name;                 /* User-specified arbitrary name. 该bridge名 */
-    char *type;                 /* Datapath type. */
+    char *type;                 /* Datapath type.  该bridge的datapath类型名 */
     struct eth_addr ea;         /* Bridge Ethernet Address. */
-    struct eth_addr default_ea; /* Default MAC. */
-    const struct ovsrec_bridge *cfg;
+    struct eth_addr default_ea; /* Default MAC.  该bridge的缺省MAC，提取自uuid */
+    const struct ovsrec_bridge *cfg;    // 指向该bridge关联的ovsdb配置表
 
     /* OpenFlow switch processing. */
     struct ofproto *ofproto;    /* OpenFlow switch. */
 
     /* Bridge ports. */
-    struct hmap ports;          /* "struct port"s indexed by name. */
-    struct hmap ifaces;         /* "struct iface"s indexed by ofp_port. */
+    struct hmap ports;          /* "struct port"s indexed by name.  该bridge包含的端口集合 */
+    struct hmap ifaces;         /* "struct iface"s indexed by ofp_port.  该bridge包含的接口集合 */
     struct hmap iface_by_name;  /* "struct iface"s indexed by name. */
 
     /* Port mirroring. */
@@ -139,10 +139,10 @@ struct bridge {
     /* Used during reconfiguration. */
     struct shash wanted_ports;
 
-    /* Synthetic local port if necessary. */
-    struct ovsrec_port synth_local_port;
-    struct ovsrec_interface synth_local_iface;
-    struct ovsrec_interface *synth_local_ifacep;
+    /* Synthetic local port if necessary.  本地端口只有在该bridge配置了控制器的情况下才使用 */
+    struct ovsrec_port synth_local_port;        // 该网桥的本地端口配置表，端口名就是该bridge名
+    struct ovsrec_interface synth_local_iface;  // 该网桥的本地接口配置表，接口名就是该bridge名，类型为"internal"
+    struct ovsrec_interface *synth_local_ifacep;// 默认就是指向synth_local_iface
 };
 
 struct aa_mapping {
@@ -680,9 +680,10 @@ bridge_reconfigure(const struct ovsrec_open_vswitch *ovs_cfg)
      *
      * This is mostly an update to bridge data structures. Nothing is pushed
      * down to ofproto or lower layers. 
-     * 添加或删除网桥
+     * 添加新网桥或删除过期网桥
      * */
     add_del_bridges(ovs_cfg);
+    // 遍历所有已经创建的网桥，为每个网桥收集各自的当前有效端口配置表，并删除每个网桥中的过期端口
     HMAP_FOR_EACH (br, node, &all_bridges) {
         bridge_collect_wanted_ports(br, &br->wanted_ports);
         bridge_del_ports(br, &br->wanted_ports);
@@ -1772,7 +1773,9 @@ port_is_bond_fake_iface(const struct port *port)
     return port->cfg->bond_fake_iface && !ovs_list_is_short(&port->ifaces);
 }
 
-// 添加或删除网桥的接口
+/* 添加新网桥或删除过期网桥
+ * @cfg     指向一张最新的交换机配置表，NULL意味着将删除所有已经存在的网桥
+ */
 static void
 add_del_bridges(const struct ovsrec_open_vswitch *cfg)
 {
@@ -1783,11 +1786,12 @@ add_del_bridges(const struct ovsrec_open_vswitch *cfg)
 
     /* Collect new bridges' names and types. */
     shash_init(&new_br);
-    // 更新每个网桥
+    // 遍历所有的网桥配置表，将每个有效网桥的配置插入hash表new_br，键值就是网桥名
     for (i = 0; i < cfg->n_bridges; i++) {
         static struct vlog_rate_limit rl = VLOG_RATE_LIMIT_INIT(1, 5);
         const struct ovsrec_bridge *br_cfg = cfg->bridges[i];
 
+        // 包含'/'、'\'字符的网桥名是无效的
         if (strchr(br_cfg->name, '/') || strchr(br_cfg->name, '\\')) {
             /* Prevent remote ovsdb-server users from accessing arbitrary
              * directories, e.g. consider a bridge named "../../../etc/".
@@ -1802,7 +1806,9 @@ add_del_bridges(const struct ovsrec_open_vswitch *cfg)
     }
 
     /* Get rid of deleted bridges or those whose types have changed.
-     * Update 'cfg' of bridges that still exist. */
+     * Update 'cfg' of bridges that still exist. 
+     * 遍历所有已经创建的网桥，如果一个网桥的配置表不存在了，或者配置表虽然存在但datapath类型名发生变化，则删除该网桥
+     * */
     HMAP_FOR_EACH_SAFE (br, next, node, &all_bridges) {
         br->cfg = shash_find_data(&new_br, br->name);
         if (!br->cfg || strcmp(br->type, ofproto_normalize_type(
@@ -1811,7 +1817,7 @@ add_del_bridges(const struct ovsrec_open_vswitch *cfg)
         }
     }
 
-    /* Add new bridges. */
+    /* Add new bridges.  创建新网桥 */
     SHASH_FOR_EACH(node, &new_br) {
         const struct ovsrec_bridge *br_cfg = node->data;
         if (!bridge_lookup(br_cfg->name)) {
@@ -3318,7 +3324,7 @@ qos_unixctl_show(struct unixctl_conn *conn, int argc OVS_UNUSED,
 }
 
 /* Bridge reconfiguration functions. 
- * 根据传入的配置创建一个bridge
+ * 根据传入的bridge配置创建一个bridge实例
  * */
 static void
 bridge_create(const struct ovsrec_bridge *br_cfg)
@@ -3334,8 +3340,11 @@ bridge_create(const struct ovsrec_bridge *br_cfg)
     br->cfg = br_cfg;
 
     /* Derive the default Ethernet address from the bridge's UUID.  This should
-     * be unique and it will be stable between ovs-vswitchd runs.  */
+     * be unique and it will be stable between ovs-vswitchd runs.  
+     * 从该bridge配置表中的uuid属性中提取一个缺省的mac地址
+     * */
     memcpy(&br->default_ea, &br_cfg->header_.uuid, ETH_ADDR_LEN);
+    // 确保该缺省mac地址是单播和私有的
     eth_addr_mark_random(&br->default_ea);
 
     hmap_init(&br->ports);
@@ -3344,9 +3353,13 @@ bridge_create(const struct ovsrec_bridge *br_cfg)
     hmap_init(&br->mirrors);
 
     hmap_init(&br->mappings);
+    // 将该网桥插入all_bridges这张全局hash表
     hmap_insert(&all_bridges, &br->node, hash_string(br->name, 0));
 }
 
+/* 删除指定网桥
+ * @del     标识是否同时删除整个交换机
+ */
 static void
 bridge_destroy(struct bridge *br, bool del)
 {
@@ -3439,6 +3452,10 @@ bridge_unixctl_reconnect(struct unixctl_conn *conn, int argc,
     unixctl_command_reply(conn, NULL);
 }
 
+/* 获取指定网桥的控制器数量
+ * @controllersp    用于存放控制器配置表数组，NULL表示不关心控制器内容
+ * @返回值          控制器数量
+ */
 static size_t
 bridge_get_controllers(const struct bridge *br,
                        struct ovsrec_controller ***controllersp)
@@ -3449,17 +3466,23 @@ bridge_get_controllers(const struct bridge *br,
     controllers = br->cfg->controller;
     n_controllers = br->cfg->n_controller;
 
+    // 如果只配置了1个控制器并且该控制器的目标名为"none"，则不使用任何控制器
     if (n_controllers == 1 && !strcmp(controllers[0]->target, "none")) {
         controllers = NULL;
         n_controllers = 0;
     }
 
+    // 如果调用这关心控制器内容，则转储控制器列表地址
     if (controllersp) {
         *controllersp = controllers;
     }
+    // 返回控制器数量
     return n_controllers;
 }
 
+/* 收集指定bridge包含的所有端口配置表
+ * @wanted_ports    指向一张hash表，该hash表用于存放收集到的端口配置表
+ */
 static void
 bridge_collect_wanted_ports(struct bridge *br,
                             struct shash *wanted_ports)
@@ -3468,21 +3491,26 @@ bridge_collect_wanted_ports(struct bridge *br,
 
     shash_init(wanted_ports);
 
+    // 遍历该bridge的所有端口配置表
     for (i = 0; i < br->cfg->n_ports; i++) {
         const char *name = br->cfg->ports[i]->name;
+        // 确保相同端口名的配置表只往hash表中添加一次
         if (!shash_add_once(wanted_ports, name, br->cfg->ports[i])) {
             VLOG_WARN("bridge %s: %s specified twice as bridge port",
                       br->name, name);
         }
     }
+    // 如果该bridge配置了控制器，并且以该bridge名作为端口名的端口配置表不存在，则合成一个该端口配置表
     if (bridge_get_controllers(br, NULL)
         && !shash_find(wanted_ports, br->name)) {
         VLOG_WARN("bridge %s: no port named %s, synthesizing one",
                   br->name, br->name);
 
+        // 复位该网桥的本地接口配置表和本地端口配置表
         ovsrec_interface_init(&br->synth_local_iface);
         ovsrec_port_init(&br->synth_local_port);
 
+        // 填充本地端口和本地接口配置表相关信息
         br->synth_local_port.interfaces = &br->synth_local_ifacep;
         br->synth_local_port.n_interfaces = 1;
         br->synth_local_port.name = br->name;
@@ -3492,13 +3520,17 @@ bridge_collect_wanted_ports(struct bridge *br,
 
         br->synth_local_ifacep = &br->synth_local_iface;
 
+        // 将本地端口配置表插入hash表
         shash_add(wanted_ports, br->name, &br->synth_local_port);
     }
 }
 
 /* Deletes "struct port"s and "struct iface"s under 'br' which aren't
  * consistent with 'br->cfg'.  Updates 'br->if_cfg_queue' with interfaces which
- * 'br' needs to complete its configuration. */
+ * 'br' needs to complete its configuration. 
+ * 删除指定网桥中过期的端口
+ * @wanted_ports    这张hash表记录了该网桥中当前有效的端口配置表
+ * */
 static void
 bridge_del_ports(struct bridge *br, const struct shash *wanted_ports)
 {
@@ -3506,17 +3538,24 @@ bridge_del_ports(struct bridge *br, const struct shash *wanted_ports)
     struct port *port, *next;
 
     /* Get rid of deleted ports.
-     * Get rid of deleted interfaces on ports that still exist. */
+     * Get rid of deleted interfaces on ports that still exist. 
+     * 遍历该网桥包含的所有端口，删除那些过期的端口
+     * */
     HMAP_FOR_EACH_SAFE (port, next, hmap_node, &br->ports) {
+        // 那些配置表已经不存在的端口被判定为过期
         port->cfg = shash_find_data(wanted_ports, port->name);
         if (!port->cfg) {
+            // 删除判定为过期的端口
             port_destroy(port);
         } else {
+            // 仍旧有效的端口将会进一步去删除过期接口
             port_del_ifaces(port);
         }
     }
 
-    /* Update iface->cfg and iface->type in interfaces that still exist. */
+    /* Update iface->cfg and iface->type in interfaces that still exist. 
+     * 遍历该网桥中当前有效的每个接口配置表
+     * */
     SHASH_FOR_EACH (port_node, wanted_ports) {
         const struct ovsrec_port *port_rec = port_node->data;
         size_t i;
@@ -4147,7 +4186,9 @@ port_create(struct bridge *br, const struct ovsrec_port *cfg)
     return port;
 }
 
-/* Deletes interfaces from 'port' that are no longer configured for it. */
+/* Deletes interfaces from 'port' that are no longer configured for it. 
+ * 删除指定端口中的过期接口
+ * */
 static void
 port_del_ifaces(struct port *port)
 {
@@ -4157,6 +4198,7 @@ port_del_ifaces(struct port *port)
 
     /* Collect list of new interfaces. */
     sset_init(&new_ifaces);
+    // 首先收集该端口上新的接口配置表
     for (i = 0; i < port->cfg->n_interfaces; i++) {
         const char *name = port->cfg->interfaces[i]->name;
         const char *type = port->cfg->interfaces[i]->type;
@@ -4165,8 +4207,11 @@ port_del_ifaces(struct port *port)
         }
     }
 
-    /* Get rid of deleted interfaces. */
+    /* Get rid of deleted interfaces. 
+     * 遍历该端口包含的所有接口，删除那些过期的接口
+     * */
     LIST_FOR_EACH_SAFE (iface, next, port_elem, &port->ifaces) {
+        // 那些配置表已经不存在的接口被判定为过期
         if (!sset_contains(&new_ifaces, iface->name)) {
             iface_destroy(iface);
         }

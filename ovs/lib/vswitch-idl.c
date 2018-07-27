@@ -13537,7 +13537,9 @@ ovsrec_interface_init__(struct ovsdb_idl_row *row)
     ovsrec_interface_init(ovsrec_interface_cast(row));
 }
 
-/* Clears the contents of 'row' in table "Interface". */
+/* Clears the contents of 'row' in table "Interface". 
+ * 复位指定的接口配置表
+ * */
 void
 ovsrec_interface_init(struct ovsrec_interface *row)
 {

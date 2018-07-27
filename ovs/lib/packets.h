@@ -289,6 +289,7 @@ static inline struct eth_addr eth_addr_invert(const struct eth_addr src)
     return dst;
 }
 
+// 确保指定mac地址是单播和私有的
 static inline void eth_addr_mark_random(struct eth_addr *ea)
 {
     ea->ea[0] &= ~1;                /* Unicast. */

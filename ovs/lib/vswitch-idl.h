@@ -135,14 +135,14 @@ struct ovsrec_bridge {
 	struct ovsrec_autoattach *auto_attach;
 
 	/* controller column. */
-	struct ovsrec_controller **controller;
-	size_t n_controller;
+	struct ovsrec_controller **controller;  // 这张表记录了该网桥控制器的配置表
+	size_t n_controller;                    // 控制器数量
 
 	/* datapath_id column. */
 	char *datapath_id;
 
 	/* datapath_type column. */
-	char *datapath_type;	/* Always nonnull. */
+	char *datapath_type;	/* Always nonnull.  该网桥datapath的类型名 */
 
 	/* datapath_version column. */
 	char *datapath_version;	/* Always nonnull. */
@@ -506,7 +506,7 @@ const struct smap *);
 void ovsrec_bridge_index_set_stp_enable(const struct ovsrec_bridge *,
 bool stp_enable);
 
-/* Controller table. */
+/* Controller table. 网桥控制器的配置表结构 */
 struct ovsrec_controller {
 	struct ovsdb_idl_row header_;
 
@@ -1278,7 +1278,7 @@ const int64_t *sampling, size_t n_sampling);
 void ovsrec_ipfix_index_set_targets(const struct ovsrec_ipfix *,
 const char **targets, size_t n_targets);
 
-/* Interface table.  定义了端口配置表结构 */
+/* Interface table.  定义了接口配置表结构 */
 struct ovsrec_interface {
 	struct ovsdb_idl_row header_;
 
