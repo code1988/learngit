@@ -263,7 +263,7 @@ init(const struct shash *iface_hints)
     udpif_init();
 }
 
-/* 基于ofproto实现的交换机定义的用于获取支持的datapath类型名集合的方法
+/* 将这类ovs交换机行为实例支持的所有datapath类型名收集到传入的hash表types中
  * @types   用于存放获取到的datapath类型名集合
  */
 static void
@@ -272,6 +272,10 @@ enumerate_types(struct sset *types)
     dp_enumerate_types(types);
 }
 
+/* 在这类ovs交换机行为实例中收集指定类型的datapath名
+ * @type    指定要收集的datapath类型名
+ * @names   用于存放收集到的datapath名的hash表
+ */
 static int
 enumerate_names(const char *type, struct sset *names)
 {
@@ -5755,7 +5759,7 @@ meter_del(struct ofproto *ofproto_, ofproto_meter_id meter_id)
     ovsrcu_postpone(free_meter_id, arg);
 }
 
-// 这里为基于ofproto实现的交换机定义了一套全局的方法实例
+// 这里定义了一类ovs交换机行为实例
 const struct ofproto_class ofproto_dpif_class = {
     init,
     enumerate_types,

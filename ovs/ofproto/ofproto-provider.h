@@ -601,7 +601,7 @@ DECL_OFPROTO_COLLECTION (struct ofgroup *, group)
          i__++)
 
 /* ofproto class structure, to be defined by each ofproto implementation.
- * 定义了一套所有ofproto实例(即ovs交换机)通用的方法抽象
+ * 用于定义ovs交换机的一类行为抽象，本结构包含的行为主要服务ofproto、ofport、rule、ofgroup这4类对象
  *
  *
  * Data Structures
@@ -709,7 +709,7 @@ DECL_OFPROTO_COLLECTION (struct ofgroup *, group)
  * explicitly say those errors are a possibility.  We may relax this
  * requirement in the future if and when we encounter performance problems. 
  *
- * 备注：通常只有1类ofproto方法ofproto_dpif_class
+ * 备注：通常只有1类ovs交换机行为实例ofproto_dpif_class
  * */
 struct ofproto_class {
 /* ## ----------------- ## */
@@ -729,7 +729,9 @@ struct ofproto_class {
     /* Enumerates the types of all supported ofproto types into 'types'.  The
      * caller has already initialized 'types'.  The implementation should add
      * its own types to 'types' but not remove any existing ones, because other
-     * ofproto classes might already have added names to it. */
+     * ofproto classes might already have added names to it. 
+     * 将这类ovs交换机行为实例支持的所有datapath类型名收集到传入的hash表types中
+     * */
     void (*enumerate_types)(struct sset *types);
 
     /* Enumerates the names of all existing datapath of the specified 'type'
@@ -739,6 +741,7 @@ struct ofproto_class {
      * 'type' is one of the types enumerated by ->enumerate_types().
      *
      * Returns 0 if successful, otherwise a positive errno value.
+     * 在这类ovs交换机行为实例中收集指定类型的datapath名
      */
     int (*enumerate_names)(const char *type, struct sset *names);
 

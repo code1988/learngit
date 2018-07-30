@@ -358,21 +358,21 @@ ofproto_init(const struct shash *iface_hints)
 /* 'type' should be a normalized datapath type, as returned by
  * ofproto_normalize_type().  Returns the corresponding ofproto_class
  * structure, or a null pointer if there is none registered for 'type'. 
- * 查找包含指定datapath类型名的ofproto方法实例
+ * 查找支持该datapath类型名的ovs交换机行为实例
  * */
 static const struct ofproto_class *
 ofproto_class_find__(const char *type)
 {
     size_t i;
 
-    // 遍历每个已经注册的ofproto方法
+    // 遍历每一类已经注册的ovs交换机行为实例
     for (i = 0; i < n_ofproto_classes; i++) {
         const struct ofproto_class *class = ofproto_classes[i];
         struct sset types;
         bool found;
 
         sset_init(&types);
-        // 获取当前ofproto方法支持的datapath类型名集合
+        // 收集这类ovs交换机支持的所有datapath类型名
         class->enumerate_types(&types);
         // 然后检查该datapath类型名集合中是否记录了指定类型名
         found = sset_contains(&types, type);
@@ -467,11 +467,16 @@ ofproto_normalize_type(const char *type)
  * successful, otherwise a positive errno value.
  *
  * Some kinds of datapaths might not be practically enumerable.  This is not
- * considered an error. */
+ * considered an error. 
+ *
+ * 收集指定datapath类型名的datapath名
+ * */
 int
 ofproto_enumerate_names(const char *type, struct sset *names)
 {
+    // 首先查找支持该datapath类型名的ovs交换机行为实例
     const struct ofproto_class *class = ofproto_class_find__(type);
+    // 如果存在对应的行为实例，就从中收集该类型的datapath名
     return class ? class->enumerate_names(type, names) : EAFNOSUPPORT;
 }
 

@@ -681,9 +681,11 @@ bridge_reconfigure(const struct ovsrec_open_vswitch *ovs_cfg)
      * This is mostly an update to bridge data structures. Nothing is pushed
      * down to ofproto or lower layers. 
      * 添加新网桥或删除过期网桥
+     * 然后遍历所有已经创建的网桥，为每个网桥收集各自的当前有效端口配置表，并删除每个网桥中的过期端口 
+     *
+     * 需要注意的是，这阶段更新只涉及网桥、端口、接口本身的变化
      * */
     add_del_bridges(ovs_cfg);
-    // 遍历所有已经创建的网桥，为每个网桥收集各自的当前有效端口配置表，并删除每个网桥中的过期端口
     HMAP_FOR_EACH (br, node, &all_bridges) {
         bridge_collect_wanted_ports(br, &br->wanted_ports);
         bridge_del_ports(br, &br->wanted_ports);
@@ -805,11 +807,15 @@ bridge_delete_ofprotos(void)
     /* Delete ofprotos with no bridge or with the wrong type. */
     sset_init(&names);
     sset_init(&types);
+    // 将所有已经注册的ofproto方法支持的datapath类型名统一收集types这张hash表中
     ofproto_enumerate_types(&types);
+    // 遍历收集到的每一种datapath类型名
     SSET_FOR_EACH (type, &types) {
         const char *name;
 
+        // 收集该datapath类型名的datapath名
         ofproto_enumerate_names(type, &names);
+        // 遍历收集到的使用该datapath类型名的每一种datapath名
         SSET_FOR_EACH (name, &names) {
             br = bridge_lookup(name);
             if (!br || strcmp(type, br->type)) {
