@@ -19,16 +19,20 @@
 #include "ovs-thread.h"
 #include "seq.h"
 
-static struct seq *connectivity_seq;
+static struct seq *connectivity_seq;    // 用于记录连接变化的序号对象
 
 /* Provides a global seq for connectivity changes.
+ * 获取记录连接变化的序号对象
  *
  * Connectivity monitoring modules should call seq_change() on the returned
  * object whenever the status of a port changes, whether the cause is local or
  * remote.
+ * 对于连通性监控模块，就是在端口变化时调用seq_change(connectivity_seq_get)，以唤醒相关客户端
  *
  * Clients can seq_wait() on this object for changes to netdev flags, features,
- * ethernet addresses, carrier changes, and bfd/cfm/lacp/stp status. */
+ * ethernet addresses, carrier changes, and bfd/cfm/lacp/stp status. 
+ * 对于客户端模块，就是调用seq_wait等待连通性变化的通知到来
+ * */
 struct seq *
 connectivity_seq_get(void)
 {

@@ -235,7 +235,9 @@ static void ofmonitor_wait(struct connmgr *);
 /* Creates and returns a new connection manager owned by 'ofproto'.  'name' is
  * a name for the ofproto suitable for using in log messages.
  * 'local_port_name' is the name of the local port (OFPP_LOCAL) within
- * 'ofproto'. */
+ * 'ofproto'. 
+ * 为指定openflow交换机创建一个连接管理单元
+ * */
 struct connmgr *
 connmgr_create(struct ofproto *ofproto,
                const char *name, const char *local_port_name)

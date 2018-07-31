@@ -149,9 +149,9 @@ typedef struct {
  *
  * odp_port_t is a port number within a datapath (e.g. see lib/dpif.h).
  */
-typedef uint32_t OVS_BITWISE ofp_port_t;
-typedef uint32_t OVS_BITWISE odp_port_t;
-typedef uint32_t OVS_BITWISE ofp11_port_t;
+typedef uint32_t OVS_BITWISE ofp_port_t;        // 1.0版本使用的端口号类型
+typedef uint32_t OVS_BITWISE odp_port_t;        // datapath中使用的端口号类型
+typedef uint32_t OVS_BITWISE ofp11_port_t;      // 1.1版本使用的端口号类型
 
 /* Macro functions that cast int types to ofp/odp/ofp11 types. */
 #define OFP_PORT_C(X) ((OVS_FORCE ofp_port_t) (X))

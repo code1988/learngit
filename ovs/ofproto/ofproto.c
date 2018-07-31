@@ -84,12 +84,12 @@ static void oftable_destroy(struct oftable *);
 static void oftable_set_name(struct oftable *, const char *name);
 
 static enum ofperr evict_rules_from_table(struct oftable *)
-    OVS_REQUIRES(ofproto_mutex);
+    //OVS_REQUIRES(ofproto_mutex);
 static void oftable_configure_eviction(struct oftable *,
                                        unsigned int eviction,
                                        const struct mf_subfield *fields,
                                        size_t n_fields)
-    OVS_REQUIRES(ofproto_mutex);
+    //OVS_REQUIRES(ofproto_mutex);
 
 /* This is the only combination of OpenFlow eviction flags that OVS supports: a
  * combination of OF1.4+ importance, the remaining lifetime of the flow, and
@@ -120,13 +120,13 @@ struct eviction_group {
 };
 
 static bool choose_rule_to_evict(struct oftable *table, struct rule **rulep)
-    OVS_REQUIRES(ofproto_mutex);
+    //OVS_REQUIRES(ofproto_mutex);
 static uint64_t rule_eviction_priority(struct ofproto *ofproto, struct rule *)
-    OVS_REQUIRES(ofproto_mutex);
+    //OVS_REQUIRES(ofproto_mutex);
 static void eviction_group_add_rule(struct rule *)
-    OVS_REQUIRES(ofproto_mutex);
+    //OVS_REQUIRES(ofproto_mutex);
 static void eviction_group_remove_rule(struct rule *)
-    OVS_REQUIRES(ofproto_mutex);
+    //OVS_REQUIRES(ofproto_mutex);
 
 static void rule_criteria_init(struct rule_criteria *, uint8_t table_id,
                                const struct match *match, int priority,
@@ -165,12 +165,12 @@ static const struct ofpact_learn *next_learn_with_delete(
     const struct rule_actions *, const struct ofpact_learn *start);
 
 static void learned_cookies_inc(struct ofproto *, const struct rule_actions *)
-    OVS_REQUIRES(ofproto_mutex);
+    //OVS_REQUIRES(ofproto_mutex);
 static void learned_cookies_dec(struct ofproto *, const struct rule_actions *,
                                 struct ovs_list *dead_cookies)
-    OVS_REQUIRES(ofproto_mutex);
+    //OVS_REQUIRES(ofproto_mutex);
 static void learned_cookies_flush(struct ofproto *, struct ovs_list *dead_cookies)
-    OVS_REQUIRES(ofproto_mutex);
+    //OVS_REQUIRES(ofproto_mutex);
 
 /* ofport. */
 static void ofport_destroy__(struct ofport *) OVS_EXCLUDED(ofproto_mutex);
@@ -293,7 +293,9 @@ static const struct ofproto_class **ofproto_classes;    // 这张表记录了所
 static size_t n_ofproto_classes;    // 已经注册的ofproto方法套数
 static size_t allocated_ofproto_classes;    // 已经分配的ofproto_classes表的长度
 
-/* Global lock that protects all flow table operations. */
+/* Global lock that protects all flow table operations. 
+ * 用于维护openflow交换机的互斥锁
+ * */
 struct ovs_mutex ofproto_mutex = OVS_MUTEX_INITIALIZER;
 
 unsigned ofproto_flow_limit = OFPROTO_FLOW_LIMIT_DEFAULT;   // 记录了交换机的"flow_limit"属性
@@ -301,7 +303,9 @@ unsigned ofproto_max_idle = OFPROTO_MAX_IDLE_DEFAULT;       // 记录了交换�
 
 size_t n_handlers, n_revalidators;  // 记录了交换机的"n-handler-threads"、"n-revalidator-threads"属性
 
-/* Map from datapath name to struct ofproto, for use by unixctl commands. */
+/* Map from datapath name to struct ofproto, for use by unixctl commands. 
+ * 这张hash表记录了所有已经创建的ofproto结构，键值为datapath名
+ * */
 static struct hmap all_ofprotos = HMAP_INITIALIZER(&all_ofprotos);
 
 /* Initial mappings of port to OpenFlow number mappings.  这张全局的hash表记录了交换机配置的接口信息 */
@@ -358,7 +362,7 @@ ofproto_init(const struct shash *iface_hints)
 /* 'type' should be a normalized datapath type, as returned by
  * ofproto_normalize_type().  Returns the corresponding ofproto_class
  * structure, or a null pointer if there is none registered for 'type'. 
- * 查找支持该datapath类型名的ovs交换机行为实例
+ * 查找使用了该类型datapath的ovs交换机行为实例
  * */
 static const struct ofproto_class *
 ofproto_class_find__(const char *type)
@@ -452,7 +456,7 @@ ofproto_enumerate_types(struct sset *types)
 }
 
 /* Returns the fully spelled out name for the given ofproto 'type'.
- * 返回指定datapath类型名的标准格式
+ * 返回指定datapath类型名的标准格式，实际就是对无效类型名设置缺省类型"system"
  *
  * Normalized type string can be compared with strcmp().  Unnormalized type
  * string might be the same even if they have different spellings. */
@@ -469,12 +473,12 @@ ofproto_normalize_type(const char *type)
  * Some kinds of datapaths might not be practically enumerable.  This is not
  * considered an error. 
  *
- * 收集指定datapath类型名的datapath名
+ * 收集指定datapath类型的datapath名
  * */
 int
 ofproto_enumerate_names(const char *type, struct sset *names)
 {
-    // 首先查找支持该datapath类型名的ovs交换机行为实例
+    // 首先查找使用了该类型datapath的ovs交换机行为实例
     const struct ofproto_class *class = ofproto_class_find__(type);
     // 如果存在对应的行为实例，就从中收集该类型的datapath名
     return class ? class->enumerate_names(type, names) : EAFNOSUPPORT;
@@ -488,10 +492,11 @@ ofproto_bump_tables_version(struct ofproto *ofproto)
                                                ofproto->tables_version);
 }
 
+// 使用指定datapath名和datapath类型创建一个openflow交换机实例
 int
 ofproto_create(const char *datapath_name, const char *datapath_type,
                struct ofproto **ofprotop)
-    OVS_EXCLUDED(ofproto_mutex)
+//    OVS_EXCLUDED(ofproto_mutex)
 {
     const struct ofproto_class *class;
     struct ofproto *ofproto;
@@ -500,7 +505,9 @@ ofproto_create(const char *datapath_name, const char *datapath_type,
 
     *ofprotop = NULL;
 
+    // 确保该datapath类型名合法
     datapath_type = ofproto_normalize_type(datapath_type);
+    // 查找使用了该类型datapath的ovs交换机行为实例
     class = ofproto_class_find__(datapath_type);
     if (!class) {
         VLOG_WARN("could not create datapath %s of unknown type %s",
@@ -508,6 +515,7 @@ ofproto_create(const char *datapath_name, const char *datapath_type,
         return EAFNOSUPPORT;
     }
 
+    // 调用该实例定义的方法申请一块openflow交换机实例的内存
     ofproto = class->alloc();
     if (!ofproto) {
         VLOG_ERR("failed to allocate datapath %s of type %s",
@@ -515,12 +523,13 @@ ofproto_create(const char *datapath_name, const char *datapath_type,
         return ENOMEM;
     }
 
-    /* Initialize. */
+    /* Initialize.  初始化该openflow交换机实例 */
     ovs_mutex_lock(&ofproto_mutex);
     memset(ofproto, 0, sizeof *ofproto);
     ofproto->ofproto_class = class;
     ofproto->name = xstrdup(datapath_name);
     ofproto->type = xstrdup(datapath_type);
+    // 将该openflow交换机实例插入全局的all_ofprotos
     hmap_insert(&all_ofprotos, &ofproto->hmap_node,
                 hash_string(ofproto->name, 0));
     ofproto->datapath_id = 0;
@@ -544,6 +553,7 @@ ofproto_create(const char *datapath_name, const char *datapath_type,
     hindex_init(&ofproto->cookies);
     hmap_init(&ofproto->learned_cookies);
     ovs_list_init(&ofproto->expirable);
+    // 为该openflow交换机创建一个连接管理单元
     ofproto->connmgr = connmgr_create(ofproto, datapath_name, datapath_name);
     ofproto->min_mtu = INT_MAX;
     cmap_init(&ofproto->groups);
@@ -560,6 +570,7 @@ ofproto_create(const char *datapath_name, const char *datapath_type,
     ovs_mutex_init(&ofproto->vl_mff_map.mutex);
     cmap_init(&ofproto->vl_mff_map.cmap);
 
+    // 调用该openflow交换机的构造函数，完成进一步构建
     error = ofproto->ofproto_class->construct(ofproto);
     if (error) {
         VLOG_ERR("failed to open datapath %s: %s",
@@ -582,6 +593,7 @@ ofproto_create(const char *datapath_name, const char *datapath_type,
     }
 
     ofproto->datapath_id = pick_datapath_id(ofproto);
+    // 初始化该openflow交换机端口
     init_ports(ofproto);
 
     /* Initialize meters table. */
@@ -773,14 +785,18 @@ ofproto_port_set_mcast_snooping(struct ofproto *ofproto, void *aux,
             : EOPNOTSUPP);
 }
 
+// 使用自定义的配置设置指定类型的datapath
 void
 ofproto_type_set_config(const char *datapath_type, const struct smap *cfg)
 {
     const struct ofproto_class *class;
 
+    // 首先确保该类型名为标准格式
     datapath_type = ofproto_normalize_type(datapath_type);
+    // 然后查找使用了该类型datapath的ovs交换机行为实例
     class = ofproto_class_find__(datapath_type);
 
+    // 最后调用实例提供的设置配置的方法
     if (class->type_set_config) {
         class->type_set_config(datapath_type, cfg);
     }
@@ -1705,11 +1721,15 @@ ofproto_destroy(struct ofproto *p, bool del)
  * with the netdev-based datapath, it tears down the data structures that
  * represent the datapath.
  *
- * The datapath should not be currently open as an ofproto. */
+ * The datapath should not be currently open as an ofproto. 
+ * 删除指定的datapath
+ * */
 int
 ofproto_delete(const char *name, const char *type)
 {
+    // 首先查找使用了该类型datapath的ovs交换机行为实例
     const struct ofproto_class *class = ofproto_class_find__(type);
+    // 如果对应的行为实例存在且支持删除操作，则执行具体的删除操作
     return (!class ? EAFNOSUPPORT
             : !class->del ? EACCES
             : class->del(type, name));
@@ -1738,7 +1758,7 @@ ofproto_type_run(const char *datapath_type)
 
     // 首先确保该类型名为标准格式
     datapath_type = ofproto_normalize_type(datapath_type);
-    // 查找包含该datapath类型名的ofproto方法实例
+    // 查找使用了该类型datapath的ovs交换机行为实例
     class = ofproto_class_find__(datapath_type);
 
     error = class->type_run ? class->type_run(datapath_type) : 0;
@@ -2713,6 +2733,7 @@ update_port(struct ofproto *ofproto, const char *name)
     return error;
 }
 
+// 初始化指定openflow交换机端口
 static int
 init_ports(struct ofproto *p)
 {
@@ -8286,6 +8307,7 @@ pick_datapath_id(const struct ofproto *ofproto)
     return ofproto->fallback_dpid;
 }
 
+// 计算得到一个随机的dpid值
 static uint64_t
 pick_fallback_dpid(void)
 {

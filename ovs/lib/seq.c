@@ -140,7 +140,7 @@ seq_change_protected(struct seq *seq)
 
 /* Increments 'seq''s sequence number, waking up any threads that are waiting
  * on 'seq'. 
- * 刷新指定seq对象的序号,然后唤醒等待在该seq对象上的线程
+ * 递增指定seq对象的序号,然后唤醒等待在该seq对象上的线程
  * */
 void
 seq_change(struct seq *seq)

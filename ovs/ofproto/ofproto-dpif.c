@@ -186,7 +186,9 @@ COVERAGE_DEFINE(rev_mcast_snooping);
 /* All existing ofproto_backer instances, indexed by ofproto->up.type. */
 struct shash all_dpif_backers = SHASH_INITIALIZER(&all_dpif_backers);
 
-/* All existing ofproto_dpif instances, indexed by ->up.name. */
+/* All existing ofproto_dpif instances, indexed by ->up.name. 
+ * 这张hash表记录了所有已经存在的ofproto_dpif结构
+ * */
 struct hmap all_ofproto_dpifs = HMAP_INITIALIZER(&all_ofproto_dpifs);
 
 static bool ofproto_use_tnl_push_pop = true;
@@ -263,7 +265,7 @@ init(const struct shash *iface_hints)
     udpif_init();
 }
 
-/* 将这类ovs交换机行为实例支持的所有datapath类型名收集到传入的hash表types中
+/* 将支持的所有datapath类型名收集到传入的hash表types中
  * @types   用于存放获取到的datapath类型名集合
  */
 static void
@@ -272,7 +274,7 @@ enumerate_types(struct sset *types)
     dp_enumerate_types(types);
 }
 
-/* 在这类ovs交换机行为实例中收集指定类型的datapath名
+/* 收集指定类型的datapath名
  * @type    指定要收集的datapath类型名
  * @names   用于存放收集到的datapath名的hash表
  */
@@ -292,6 +294,8 @@ enumerate_names(const char *type, struct sset *names)
     return 0;
 }
 
+/* 删除指定的datapath
+ */
 static int
 del(const char *type, const char *name)
 {
@@ -643,6 +647,7 @@ type_wait(const char *type)
 
 static int add_internal_flows(struct ofproto_dpif *);
 
+// 申请一块openflow交换机实例的内存
 static struct ofproto *
 alloc(void)
 {
@@ -650,6 +655,7 @@ alloc(void)
     return &ofproto->up;
 }
 
+// 销毁指定openflow交换机实例的内存
 static void
 dealloc(struct ofproto *ofproto_)
 {
@@ -1412,6 +1418,7 @@ check_support(struct dpif_backer *backer)
     backer->rt_support.odp.ct_orig_tuple6 = check_ct_orig_tuple6(backer);
 }
 
+// openflow交换机实例的构造函数，实际就是进一步初始化
 static int
 construct(struct ofproto *ofproto_)
 {
@@ -1552,6 +1559,7 @@ add_internal_flows(struct ofproto_dpif *ofproto)
     return error;
 }
 
+// openflow交换机实例的析构函数，实际就是执行清理操作
 static void
 destruct(struct ofproto *ofproto_, bool del)
 {

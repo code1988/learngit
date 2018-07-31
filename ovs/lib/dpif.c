@@ -239,7 +239,7 @@ dp_blacklist_provider(const char *type)
 
 /* Adds the types of all currently registered datapath providers to 'types'.
  * The caller must first initialize the sset. 
- * 获取支持的datapath类型名集合，结果存储在传入的hash表中
+ * 获取这类ovs交换机行为实例支持的datapath类型名，结果存储在传入的hash表中
  * */
 void
 dp_enumerate_types(struct sset *types)

@@ -1377,7 +1377,7 @@ struct ovsrec_interface {
 	size_t n_ofport;
 
 	/* ofport_request column. */
-	int64_t *ofport_request;
+	int64_t *ofport_request;        // 如果该接口需要一个特殊的端口号，就记录在这里
 	size_t n_ofport_request;
 
 	/* options column. */

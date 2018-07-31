@@ -89,6 +89,7 @@ struct ct_dpif_entry;
  * and when we encounter performance problems. */
 struct dpif_class {
     /* Type of dpif in this class, e.g. "system", "netdev", etc.
+     * 这类datapath接口的类型名
      *
      * One of the providers should supply a "system" type, since this is
      * the type assumed if no type is specified when opening a dpif. */

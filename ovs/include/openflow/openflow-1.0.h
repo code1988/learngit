@@ -24,7 +24,7 @@
 /* Maximum name of a port.
  *
  * OpenFlow 1.6 (draft) increases this to 64. */
-#define OFP10_MAX_PORT_NAME_LEN  16
+#define OFP10_MAX_PORT_NAME_LEN  16     // 1.0版本协议规定端口名最长16字节
 
 /* Port number(s)   meaning
  * ---------------  --------------------------------------
@@ -35,7 +35,7 @@
  */
 
 /* Ranges. */
-#define OFPP_MAX        OFP_PORT_C(0xff00) /* Max # of switch ports. */
+#define OFPP_MAX        OFP_PORT_C(0xff00) /* Max # of switch ports.  1.0版本支持的最大端口序号 */
 #define OFPP_FIRST_RESV OFP_PORT_C(0xfff7) /* First assigned reserved port. */
 #define OFPP_LAST_RESV  OFP_PORT_C(0xffff) /* Last assigned reserved port. */
 
@@ -49,7 +49,7 @@
 #define OFPP_ALL        OFP_PORT_C(0xfffc) /* All ports except input port. */
 #define OFPP_CONTROLLER OFP_PORT_C(0xfffd) /* Send to controller. */
 #define OFPP_LOCAL      OFP_PORT_C(0xfffe) /* Local openflow "port". */
-#define OFPP_NONE       OFP_PORT_C(0xffff) /* Not associated with any port. */
+#define OFPP_NONE       OFP_PORT_C(0xffff) /* Not associated with any port. 表示该端口没有关联一个特殊的端口号 */
 
 /* OpenFlow 1.0 specific capabilities supported by the datapath (struct
  * ofp_switch_features, member capabilities). */

@@ -65,33 +65,35 @@ struct smap;
 extern struct ovs_mutex ofproto_mutex;
 
 /* An OpenFlow switch.
+ * 定义了符合openflow行为的ovs交换机抽象结构
  *
  * With few exceptions, ofproto implementations may look at these fields but
  * should not modify them. */
 struct ofproto {
     struct hmap_node hmap_node; /* In global 'all_ofprotos' hmap. */
-    const struct ofproto_class *ofproto_class;
-    char *type;                 /* Datapath type. */
-    char *name;                 /* Datapath name. */
+    const struct ofproto_class *ofproto_class;  // 该交换机使用的openflow行为实例
+    char *type;                 /* Datapath type. 该ovs交换机使用的datapath类型名 */
+    char *name;                 /* Datapath name. 该ovs交换机使用的datapath名，实际来自网桥名 */
 
     /* Settings. */
-    uint64_t fallback_dpid;     /* Datapath ID if no better choice found. */
+    uint64_t fallback_dpid;     /* Datapath ID if no better choice found.  缺省的dpid值 */
     uint64_t datapath_id;       /* Datapath ID. */
     bool forward_bpdu;          /* Option to allow forwarding of BPDU frames
-                                 * when NORMAL action is invoked. */
-    char *mfr_desc;             /* Manufacturer (NULL for default). */
-    char *hw_desc;              /* Hardware (NULL for default). */
-    char *sw_desc;              /* Software version (NULL for default). */
-    char *serial_desc;          /* Serial number (NULL for default). */
-    char *dp_desc;              /* Datapath description (NULL for default). */
-    enum ofputil_frag_handling frag_handling;
+                                 * when NORMAL action is invoked.  标识是否允许转发BPDU报文 */
+    char *mfr_desc;             /* Manufacturer (NULL for default). 制造商描述 */
+    char *hw_desc;              /* Hardware (NULL for default).  硬件描述 */
+    char *sw_desc;              /* Software version (NULL for default). 软件版本描述 */
+    char *serial_desc;          /* Serial number (NULL for default). 序列号 */
+    char *dp_desc;              /* Datapath description (NULL for default). datapath描述 */
+    enum ofputil_frag_handling frag_handling;   // 对分片报文的处理方式，缺省是OFPUTIL_FRAG_NORMAL
 
     /* Datapath. */
     struct hmap ports;          /* Contains "struct ofport"s. */
     struct shash port_by_name;
     struct simap ofp_requests;  /* OpenFlow port number requests. */
     uint16_t alloc_port_no;     /* Last allocated OpenFlow port number. */
-    uint16_t max_ports;         /* Max possible OpenFlow port num, plus one. */
+    uint16_t max_ports;         /* Max possible OpenFlow port num, plus one.  
+                                   该ovs交换机支持的最大端口序号，跟使用的openflow版本有关*/
     struct hmap ofport_usage;   /* Map ofport to last used time. */
     uint64_t change_seq;        /* Change sequence for netdev status. */
 
@@ -117,7 +119,7 @@ struct ofproto {
     uint32_t controller_meter_id;   /* Datapath controller meter. UINT32_MAX
                                        if not defined.  */
 
-    /* OpenFlow connections. */
+    /* OpenFlow connections.  该ovs交换机的连接管理单元 */
     struct connmgr *connmgr;
 
     int min_mtu;                    /* Current MTU of non-internal ports. */
@@ -142,6 +144,7 @@ struct ofproto *ofproto_lookup(const char *name);
 struct ofport *ofproto_get_port(const struct ofproto *, ofp_port_t ofp_port);
 
 /* An OpenFlow port within a "struct ofproto".
+ * 定义了符合openflow行为的ovs交换机端口抽象结构
  *
  * The port's name is netdev_get_name(port->netdev).
  *
@@ -348,6 +351,8 @@ enum OVS_PACKED_ENUM rule_state {
                        * removed from the classifier as well. */
 };
 
+
+// 定义了openflow规则的抽象结构
 struct rule {
     /* Where this rule resides in an OpenFlow switch.
      *
@@ -601,8 +606,9 @@ DECL_OFPROTO_COLLECTION (struct ofgroup *, group)
          i__++)
 
 /* ofproto class structure, to be defined by each ofproto implementation.
- * 用于定义ovs交换机的一类行为抽象，本结构包含的行为主要服务ofproto、ofport、rule、ofgroup这4类对象
+ * 为ovs交换机定义了统一的openflow行为抽象，本结构包含的行为主要服务ofproto、ofport、rule、ofgroup这4类对象
  *
+ * 本结构为不同平台上openflow的具体实现统一了接口
  *
  * Data Structures
  * ===============
@@ -753,6 +759,7 @@ struct ofproto_class {
      * 'name' is one of the names enumerated by ->enumerate_names() for 'type'.
      *
      * Returns 0 if successful, otherwise a positive errno value.
+     * 删除指定的datapath的方法
      */
     int (*del)(const char *type, const char *name);
 
@@ -833,10 +840,15 @@ struct ofproto_class {
      *
      * The client will destroy the flow tables themselves after ->destruct()
      * returns.
+     *
+     * 申请一块openflow交换机实例的内存
      */
     struct ofproto *(*alloc)(void);
+    // 指定的openflow交换机的构造函数
     int (*construct)(struct ofproto *ofproto);
+    // 指定的openflow交换机的析构函数
     void (*destruct)(struct ofproto *ofproto, bool del);
+    // 销毁指定的openflow交换机实例
     void (*dealloc)(struct ofproto *ofproto);
 
     /* Performs any periodic activity required by 'ofproto'.  It should:
@@ -1831,6 +1843,7 @@ struct ofproto_class {
     /* Pass custom configuration options to the 'type' datapath.
      *
      * This function should be NULL if an implementation does not support it.
+     * 使用自定义的配置设置指定类型的datapath
      */
     void (*type_set_config)(const char *type,
                             const struct smap *other_config);

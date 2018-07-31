@@ -123,12 +123,12 @@ struct bridge {
     const struct ovsrec_bridge *cfg;    // 指向该bridge关联的ovsdb配置表
 
     /* OpenFlow switch processing. */
-    struct ofproto *ofproto;    /* OpenFlow switch. */
+    struct ofproto *ofproto;    /* OpenFlow switch.  指向该bridge在openflow中的实例 */
 
     /* Bridge ports. */
-    struct hmap ports;          /* "struct port"s indexed by name.  该bridge包含的端口集合 */
+    struct hmap ports;          /* "struct port"s indexed by name.  该bridge包含的端口集合，键值为端口名 */
     struct hmap ifaces;         /* "struct iface"s indexed by ofp_port.  该bridge包含的接口集合 */
-    struct hmap iface_by_name;  /* "struct iface"s indexed by name. */
+    struct hmap iface_by_name;  /* "struct iface"s indexed by name.  该bridge包含的接口集合，键值为接口名 */
 
     /* Port mirroring. */
     struct hmap mirrors;        /* "struct mirror" indexed by UUID. */
@@ -637,6 +637,7 @@ collect_in_band_managers(const struct ovsrec_open_vswitch *ovs_cfg,
     *n_managersp = n_managers;
 }
 
+// 为每种类型的datapath设置自定义的配置
 static void
 config_ofproto_types(const struct smap *other_config)
 {
@@ -645,7 +646,9 @@ config_ofproto_types(const struct smap *other_config)
 
     /* Pass custom configuration to datapath types. */
     sset_init(&types);
+    // 首先从所有已经注册的ofproto方法中收集支持的datapath类型名
     ofproto_enumerate_types(&types);
+    // 然后遍历所有的datapath类型名，依次使用自定义的配置设置该类型的datapath
     SSET_FOR_EACH (type, &types) {
         ofproto_type_set_config(type, other_config);
     }
@@ -683,7 +686,7 @@ bridge_reconfigure(const struct ovsrec_open_vswitch *ovs_cfg)
      * 添加新网桥或删除过期网桥
      * 然后遍历所有已经创建的网桥，为每个网桥收集各自的当前有效端口配置表，并删除每个网桥中的过期端口 
      *
-     * 需要注意的是，这阶段更新只涉及网桥、端口、接口本身的变化
+     * 需要注意的是，这阶段更新只涉及网桥、端口、接口本身的变化;这阶段不添加端口
      * */
     add_del_bridges(ovs_cfg);
     HMAP_FOR_EACH (br, node, &all_bridges) {
@@ -702,7 +705,11 @@ bridge_reconfigure(const struct ovsrec_open_vswitch *ovs_cfg)
      *
      * We have to do all the deletions before we can do any additions, because
      * the ports to be added might require resources that will be freed up by
-     * deletions (they might especially overlap in name). */
+     * deletions (they might especially overlap in name). 
+     * 删除已经过期的datapath
+     * 删除已经过期的openflow端口
+     * 刷新那些已经存在的openflow端口
+     * */
     bridge_delete_ofprotos();
     HMAP_FOR_EACH (br, node, &all_bridges) {
         if (br->ofproto) {
@@ -714,11 +721,16 @@ bridge_reconfigure(const struct ovsrec_open_vswitch *ovs_cfg)
      *
      *     - Create ofprotos that are missing.
      *
-     *     - Add ports that are missing. */
+     *     - Add ports that are missing. 
+     * 添加缺失的openflow交换机实例
+     * 添加缺失的openflow端口
+     *     */
     HMAP_FOR_EACH_SAFE (br, next, node, &all_bridges) {
+        // 如果该网桥在openflow中的实例尚未存在，则创建
         if (!br->ofproto) {
             int error;
 
+            // 备注：使用网桥名作为datapath名
             error = ofproto_create(br->name, br->type, &br->ofproto);
             if (error) {
                 VLOG_ERR("failed to create bridge %s: %s", br->name,
@@ -726,14 +738,18 @@ bridge_reconfigure(const struct ovsrec_open_vswitch *ovs_cfg)
                 shash_destroy(&br->wanted_ports);
                 bridge_destroy(br, true);
             } else {
-                /* Trigger storing datapath version. */
+                /* Trigger storing datapath version. 
+                 * 递增用于记录连接变化的序号对象，并唤醒等待在该序号对象上的线程
+                 * */
                 seq_change(connectivity_seq_get());
             }
         }
     }
 
+    // 为每种类型的datapath设置自定义的配置
     config_ofproto_types(&ovs_cfg->other_config);
 
+    // 为每个已经注册的网桥添加各自的端口
     HMAP_FOR_EACH (br, node, &all_bridges) {
         bridge_add_ports(br, &br->wanted_ports);
         shash_destroy(&br->wanted_ports);
@@ -795,7 +811,9 @@ bridge_reconfigure(const struct ovsrec_open_vswitch *ovs_cfg)
 }
 
 /* Delete ofprotos which aren't configured or have the wrong type.  Create
- * ofprotos which don't exist but need to. */
+ * ofprotos which don't exist but need to. 
+ * 删除已经过期的datapath
+ * */
 static void
 bridge_delete_ofprotos(void)
 {
@@ -807,17 +825,19 @@ bridge_delete_ofprotos(void)
     /* Delete ofprotos with no bridge or with the wrong type. */
     sset_init(&names);
     sset_init(&types);
-    // 将所有已经注册的ofproto方法支持的datapath类型名统一收集types这张hash表中
+    // 将所有已经注册的ofproto方法支持的datapath类型名统一收集到types这张hash表中
     ofproto_enumerate_types(&types);
     // 遍历收集到的每一种datapath类型名
     SSET_FOR_EACH (type, &types) {
         const char *name;
 
-        // 收集该datapath类型名的datapath名
+        // 收集该datapath类型的datapath名
         ofproto_enumerate_names(type, &names);
-        // 遍历收集到的使用该datapath类型名的每一种datapath名
+        // 遍历收集到的使用该datapath类型的每一种datapath名
         SSET_FOR_EACH (name, &names) {
+            // 使用该datapath名作为网桥名，从当前有效的网桥集合中索引对应的网桥
             br = bridge_lookup(name);
+            // 如果对应的网桥不存在，或者和网桥当前使用的datapath类型不符，则删除该datapath
             if (!br || strcmp(type, br->type)) {
                 ofproto_delete(name, type);
             }
@@ -988,6 +1008,9 @@ bridge_delete_or_reconfigure_ports(struct bridge *br)
     sset_destroy(&ofproto_ports);
 }
 
+/* 往指定网桥中添加缺失的端口
+ * @with_requested_port 标识本次添加的端口是否存在特殊需求
+ */
 static void
 bridge_add_ports__(struct bridge *br, const struct shash *wanted_ports,
                    bool with_requested_port)
@@ -1002,8 +1025,11 @@ bridge_add_ports__(struct bridge *br, const struct shash *wanted_ports,
             const struct ovsrec_interface *iface_cfg = port_cfg->interfaces[i];
             ofp_port_t requested_ofp_port;
 
+            // 检查该接口是否需要一个特殊的端口号
             requested_ofp_port = iface_get_requested_ofp_port(iface_cfg);
+            // 是否创建该接口跟该接口是否需要一个特殊的端口号以及本次添加的端口特性有关
             if ((requested_ofp_port != OFPP_NONE) == with_requested_port) {
+                // 检查该接口名的接口是否已经存在，如果不存在就创建该接口
                 struct iface *iface = iface_lookup(br, iface_cfg->name);
 
                 if (!iface) {
@@ -1014,15 +1040,22 @@ bridge_add_ports__(struct bridge *br, const struct shash *wanted_ports,
     }
 }
 
+/* 往指定网桥中添加缺失的端口
+ * @wanted_ports    这张hash表记录了该网桥中当前有效的端口配置表
+ */
 static void
 bridge_add_ports(struct bridge *br, const struct shash *wanted_ports)
 {
-    /* First add interfaces that request a particular port number. */
+    /* First add interfaces that request a particular port number. 
+     * 首先添加那些有特殊端口号需求的端口
+     * */
     bridge_add_ports__(br, wanted_ports, true);
 
     /* Then add interfaces that want automatic port number assignment.
      * We add these afterward to avoid accidentally taking a specifically
-     * requested port number. */
+     * requested port number. 
+     * 然后再添加那些没有特殊需求的端口
+     * */
     bridge_add_ports__(br, wanted_ports, false);
 }
 
@@ -1905,6 +1938,7 @@ error:
  * port number 'ofp_port'.  If ofp_port is OFPP_NONE, an OpenFlow port is
  * automatically allocated for the iface.  Takes ownership of and
  * deallocates 'if_cfg'.
+ * 在指定网桥中根据传入的接口配置表和端口配置表创建一个新的接口
  *
  * Return true if an iface is successfully created, false otherwise. */
 static bool
@@ -4508,6 +4542,7 @@ iface_destroy(struct iface *iface)
     }
 }
 
+// 在指定网桥中查找指定接口名的接口
 static struct iface *
 iface_lookup(const struct bridge *br, const char *name)
 {
@@ -4776,6 +4811,8 @@ iface_is_synthetic(const struct iface *iface)
     return ovsdb_idl_row_is_synthetic(&iface->cfg->header_);
 }
 
+/* 判断传入的端口号是否有效，有效返回该端口号，无效则返回OFPP_NONE
+ */
 static ofp_port_t
 iface_validate_ofport__(size_t n, int64_t *ofport)
 {
@@ -4784,6 +4821,7 @@ iface_validate_ofport__(size_t n, int64_t *ofport)
             : OFPP_NONE);
 }
 
+// 检查该接口是否需要一个特殊的端口号，需要则返回该端口号，不需要则返回OFPP_NONE
 static ofp_port_t
 iface_get_requested_ofp_port(const struct ovsrec_interface *cfg)
 {
