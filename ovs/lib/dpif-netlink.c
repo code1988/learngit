@@ -2940,7 +2940,7 @@ dpif_netlink_meter_del(struct dpif *dpif OVS_UNUSED,
     return EFBIG; /* meter_id out of range */
 }
 
-// 定义了netlink类型的datapath接口
+// 定义了netlink类型的datapath接口实例，这是一套基于内核datapath的接口，并且是linux特有的
 const struct dpif_class dpif_netlink_class = {
     "system",
     NULL,                       /* init */

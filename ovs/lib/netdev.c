@@ -72,23 +72,28 @@ struct netdev_saved_flags {
     enum netdev_flags saved_values;
 };
 
-/* Protects 'netdev_shash' and the mutable members of struct netdev. */
+/* Protects 'netdev_shash' and the mutable members of struct netdev. 
+ * 用于维护netdev_shash的互斥锁
+ * */
 static struct ovs_mutex netdev_mutex = OVS_MUTEX_INITIALIZER;
 
-/* All created network devices. */
+/* All created network devices. 
+ * 这张hash表记录了所有已经创建的网络设备
+ * */
 static struct shash netdev_shash OVS_GUARDED_BY(netdev_mutex)
     = SHASH_INITIALIZER(&netdev_shash);
 
-/* Mutual exclusion of */
+/* Mutual exclusion of  用于维护网络设备模块的互斥锁 */
 static struct ovs_mutex netdev_class_mutex OVS_ACQ_BEFORE(netdev_mutex)
     = OVS_MUTEX_INITIALIZER;
 
 /* Contains 'struct netdev_registered_class'es. */
-static struct cmap netdev_classes = CMAP_INITIALIZER;
+static struct cmap netdev_classes = CMAP_INITIALIZER;   // 这张hash表记录了所有已经注册的网络设备行为实例，通过类型名索引
 
+// 定义了一个已经注册的网络设备行为实例的结构
 struct netdev_registered_class {
     struct cmap_node cmap_node; /* In 'netdev_classes', by class->type. */
-    const struct netdev_class *class;
+    const struct netdev_class *class;   // 指向已经注册的行为实例
 
     /* Number of references: one for the class itself and one for every
      * instance of the class. */
@@ -129,18 +134,22 @@ netdev_has_tunnel_push_pop(const struct netdev *netdev)
            && netdev->netdev_class->pop_header;
 }
 
+// 网络设备模块初始化，linux下主要就是注册了4类网络设备的行为实例
 static void
 netdev_initialize(void)
-    OVS_EXCLUDED(netdev_mutex)
+    //OVS_EXCLUDED(netdev_mutex)
 {
     static struct ovsthread_once once = OVSTHREAD_ONCE_INITIALIZER;
 
     if (ovsthread_once_start(&once)) {
+        // 添加一个信号钩子对象
         fatal_signal_add_hook(restore_all_flags, NULL, NULL, true);
 
+        // 注册1类平台无关的网络设备行为实例
         netdev_vport_patch_register();
 
 #ifdef __linux__
+        // 注册3类linux下网络设备的行为实例
         netdev_register_provider(&netdev_linux_class);
         netdev_register_provider(&netdev_internal_class);
         netdev_register_provider(&netdev_tap_class);
@@ -165,7 +174,7 @@ netdev_initialize(void)
  * main poll loop. */
 void
 netdev_run(void)
-    OVS_EXCLUDED(netdev_mutex)
+    //OVS_EXCLUDED(netdev_mutex)
 {
     netdev_initialize();
 
@@ -183,7 +192,7 @@ netdev_run(void)
  * main poll loop. */
 void
 netdev_wait(void)
-    OVS_EXCLUDED(netdev_mutex)
+    //OVS_EXCLUDED(netdev_mutex)
 {
     netdev_initialize();
 
@@ -195,6 +204,7 @@ netdev_wait(void)
     }
 }
 
+// 检查指定类型的已经注册的网络设备行为实例是否存在，存在则返回该实例，不存在则返回NULL
 static struct netdev_registered_class *
 netdev_lookup_class(const char *type)
 {
@@ -209,21 +219,26 @@ netdev_lookup_class(const char *type)
 }
 
 /* Initializes and registers a new netdev provider.  After successful
- * registration, new netdevs of that type can be opened using netdev_open(). */
+ * registration, new netdevs of that type can be opened using netdev_open(). 
+ * 注册一类新的网络设备行为实例
+ * */
 int
 netdev_register_provider(const struct netdev_class *new_class)
-    OVS_EXCLUDED(netdev_class_mutex, netdev_mutex)
+    //OVS_EXCLUDED(netdev_class_mutex, netdev_mutex)
 {
     int error;
 
     ovs_mutex_lock(&netdev_class_mutex);
+    // 首先确保该行为实例尚未注册
     if (netdev_lookup_class(new_class->type)) {
         VLOG_WARN("attempted to register duplicate netdev provider: %s",
                    new_class->type);
         error = EEXIST;
     } else {
+        // linux下的行为实例都未定义init方法，所以忽略这步
         error = new_class->init ? new_class->init() : 0;
         if (!error) {
+            // 创建一个netdev_registered_class结构用于记录该实例，然后插入全局的netdev_classes中
             struct netdev_registered_class *rc;
 
             rc = xmalloc(sizeof *rc);
@@ -249,7 +264,7 @@ netdev_register_provider(const struct netdev_class *new_class)
  * until that has passed.) */
 int
 netdev_unregister_provider(const char *type)
-    OVS_EXCLUDED(netdev_class_mutex, netdev_mutex)
+    //OVS_EXCLUDED(netdev_class_mutex, netdev_mutex)
 {
     struct netdev_registered_class *rc;
     int error;
@@ -282,7 +297,7 @@ netdev_unregister_provider(const char *type)
  * providers into it.  The caller must first initialize the sset. */
 void
 netdev_enumerate_types(struct sset *types)
-    OVS_EXCLUDED(netdev_mutex)
+    //OVS_EXCLUDED(netdev_mutex)
 {
     netdev_initialize();
     sset_clear(types);
@@ -311,15 +326,17 @@ netdev_vport_type_from_name(const char *name)
 /* Check that the network device name is not the same as any of the registered
  * vport providers' dpif_port name (dpif_port is NULL if the vport provider
  * does not define it) or the datapath internal port name (e.g. ovs-system).
+ * 检查指定的网络设备名是否重复，重复则返回true，不重复则返回false
  *
  * Returns true if there is a name conflict, false otherwise. */
 bool
 netdev_is_reserved_name(const char *name)
-    OVS_EXCLUDED(netdev_mutex)
+//    OVS_EXCLUDED(netdev_mutex)
 {
     netdev_initialize();
 
     struct netdev_registered_class *rc;
+    // 检查是否跟已经注册的vport类型网络设备实例的类型名重复
     CMAP_FOR_EACH (rc, cmap_node, &netdev_classes) {
         const char *dpif_port = netdev_vport_class_get_dpif_port(rc->class);
         if (dpif_port && !strncmp(name, dpif_port, strlen(dpif_port))) {
@@ -327,11 +344,13 @@ netdev_is_reserved_name(const char *name)
         }
     }
 
+    // 如果要该网络设备名前缀为"ovs-"，还需要检查是否跟现有datapath类型名重复
     if (!strncmp(name, "ovs-", 4)) {
         struct sset types;
         const char *type;
 
         sset_init(&types);
+        // 获取支持的datapath类型名，结果存储在传入的hash表中
         dp_enumerate_types(&types);
         SSET_FOR_EACH (type, &types) {
             if (!strcmp(name+4, type)) {
@@ -349,6 +368,11 @@ netdev_is_reserved_name(const char *name)
  * (e.g. "system") and returns zero if successful, otherwise a positive errno
  * value.  On success, sets '*netdevp' to the new network device, otherwise to
  * null.
+ * 打开指定的网络设备，并创建对应的网络设备对象
+ * @name    要打开的网络设备名
+ * @type    设备类型，可传入NULL
+ * @netdevp 用于存放创建的网络设备对象
+ *
  *
  * Some network devices may need to be configured (with netdev_set_config())
  * before they can be used.
@@ -358,7 +382,7 @@ netdev_is_reserved_name(const char *name)
  * */
 int
 netdev_open(const char *name, const char *type, struct netdev **netdevp)
-    OVS_EXCLUDED(netdev_mutex)
+    //OVS_EXCLUDED(netdev_mutex)
 {
     struct netdev *netdev;
     int error = 0;
@@ -374,11 +398,13 @@ netdev_open(const char *name, const char *type, struct netdev **netdevp)
     netdev_initialize();
 
     ovs_mutex_lock(&netdev_mutex);
+    // 在已经创建的网络设备中根据该设备名索引对应的设备
     netdev = shash_find_data(&netdev_shash, name);
 
+    // 如果检索到对应的网络设备，但是所使用的网络设备类型与本次传入的类型不同，则需要执行进一步判断
     if (netdev &&
         type && type[0] && strcmp(type, netdev->netdev_class->type)) {
-
+        // 如果该重名的设备设置了自动分类，则将其从netdev_shash中移除，否则就判重名
         if (netdev->auto_classified) {
             /* If this device was first created without a classification type,
              * for example due to routing or tunneling code, and they keep a
@@ -398,21 +424,26 @@ netdev_open(const char *name, const char *type, struct netdev **netdevp)
         }
     }
 
+    // 如果未检索到重名设备(显然上一步中提前移除的特例下也算做未检索到)
     if (!netdev) {
         struct netdev_registered_class *rc;
 
+        // 获取指定类型(缺省为"system")的网络设备行为实例
         rc = netdev_lookup_class(type && type[0] ? type : "system");
+        // 如果该行为实例存在，则调用该实例定义的方法来最终完成设备的创建
         if (rc && ovs_refcount_try_ref_rcu(&rc->refcnt)) {
             netdev = rc->class->alloc();
             if (netdev) {
                 memset(netdev, 0, sizeof *netdev);
                 netdev->netdev_class = rc->class;
+                // 如果未指定设备类型，该设备就会被标识为自动分类
                 netdev->auto_classified = type && type[0] ? false : true;
                 netdev->name = xstrdup(name);
                 netdev->change_seq = 1;
                 netdev->reconfigure_seq = seq_create();
                 netdev->last_reconfigure_seq =
                     seq_read(netdev->reconfigure_seq);
+                // 将创建完毕的设备插入netdev_shash
                 netdev->node = shash_add(&netdev_shash, name, netdev);
 
                 /* By default enable one tx and rx queue per netdev. */
@@ -457,7 +488,7 @@ netdev_open(const char *name, const char *type, struct netdev **netdevp)
  * 'netdev_' is null. */
 struct netdev *
 netdev_ref(const struct netdev *netdev_)
-    OVS_EXCLUDED(netdev_mutex)
+    //OVS_EXCLUDED(netdev_mutex)
 {
     struct netdev *netdev = CONST_CAST(struct netdev *, netdev_);
 
@@ -474,7 +505,7 @@ netdev_ref(const struct netdev *netdev_)
  * or NULL if none are needed. */
 int
 netdev_set_config(struct netdev *netdev, const struct smap *args, char **errp)
-    OVS_EXCLUDED(netdev_mutex)
+    //OVS_EXCLUDED(netdev_mutex)
 {
     if (netdev->netdev_class->set_config) {
         const struct smap no_args = SMAP_INITIALIZER(&no_args);
@@ -513,7 +544,7 @@ netdev_set_config(struct netdev *netdev, const struct smap *args, char **errp)
  * smap_destroy(). */
 int
 netdev_get_config(const struct netdev *netdev, struct smap *args)
-    OVS_EXCLUDED(netdev_mutex)
+    //OVS_EXCLUDED(netdev_mutex)
 {
     int error;
 
@@ -532,7 +563,7 @@ netdev_get_config(const struct netdev *netdev, struct smap *args)
 
 const struct netdev_tunnel_config *
 netdev_get_tunnel_config(const struct netdev *netdev)
-    OVS_EXCLUDED(netdev_mutex)
+    //OVS_EXCLUDED(netdev_mutex)
 {
     if (netdev->netdev_class->get_tunnel_config) {
         return netdev->netdev_class->get_tunnel_config(netdev);
@@ -582,7 +613,7 @@ netdev_unref(struct netdev *dev)
 /* Closes and destroys 'netdev'. */
 void
 netdev_close(struct netdev *netdev)
-    OVS_EXCLUDED(netdev_mutex)
+    //OVS_EXCLUDED(netdev_mutex)
 {
     if (netdev) {
         ovs_mutex_lock(&netdev_mutex);
@@ -640,7 +671,7 @@ netdev_parse_name(const char *netdev_name_, char **name, char **type)
  * function returns EOPNOTSUPP in that case.*/
 int
 netdev_rxq_open(struct netdev *netdev, struct netdev_rxq **rxp, int id)
-    OVS_EXCLUDED(netdev_mutex)
+    //OVS_EXCLUDED(netdev_mutex)
 {
     int error;
 
@@ -670,7 +701,7 @@ netdev_rxq_open(struct netdev *netdev, struct netdev_rxq **rxp, int id)
 /* Closes 'rx'. */
 void
 netdev_rxq_close(struct netdev_rxq *rx)
-    OVS_EXCLUDED(netdev_mutex)
+    //OVS_EXCLUDED(netdev_mutex)
 {
     if (rx) {
         struct netdev *netdev = rx->netdev;
@@ -1225,7 +1256,7 @@ static int
 do_update_flags(struct netdev *netdev, enum netdev_flags off,
                 enum netdev_flags on, enum netdev_flags *old_flagsp,
                 struct netdev_saved_flags **sfp)
-    OVS_EXCLUDED(netdev_mutex)
+    //OVS_EXCLUDED(netdev_mutex)
 {
     struct netdev_saved_flags *sf = NULL;
     enum netdev_flags old_flags;
@@ -1314,7 +1345,7 @@ netdev_turn_flags_off(struct netdev *netdev, enum netdev_flags flags,
  * Does nothing if 'sf' is NULL. */
 void
 netdev_restore_flags(struct netdev_saved_flags *sf)
-    OVS_EXCLUDED(netdev_mutex)
+    //OVS_EXCLUDED(netdev_mutex)
 {
     if (sf) {
         struct netdev *netdev = sf->netdev;
@@ -1790,7 +1821,7 @@ netdev_get_class(const struct netdev *netdev)
  * The caller must free the returned netdev with netdev_close(). */
 struct netdev *
 netdev_from_name(const char *name)
-    OVS_EXCLUDED(netdev_mutex)
+    //OVS_EXCLUDED(netdev_mutex)
 {
     struct netdev *netdev;
 
@@ -1811,7 +1842,7 @@ netdev_from_name(const char *name)
 void
 netdev_get_devices(const struct netdev_class *netdev_class,
                    struct shash *device_list)
-    OVS_EXCLUDED(netdev_mutex)
+    //OVS_EXCLUDED(netdev_mutex)
 {
     struct shash_node *node;
 
@@ -1834,7 +1865,7 @@ netdev_get_devices(const struct netdev_class *netdev_class,
  * each 'netdev-vport' in the list. */
 struct netdev **
 netdev_get_vports(size_t *size)
-    OVS_EXCLUDED(netdev_mutex)
+    //OVS_EXCLUDED(netdev_mutex)
 {
     struct netdev **vports;
     struct shash_node *node;
@@ -1895,6 +1926,10 @@ netdev_rxq_get_queue_id(const struct netdev_rxq *rx)
     return rx->queue_id;
 }
 
+/* 这是一个信号钩子对象中的hook_cb回调，似乎用于进行netdev_flags标志更新
+ *
+ * 备注：该信号钩子对象设置了run_at_exit标志
+ */
 static void
 restore_all_flags(void *aux OVS_UNUSED)
 {

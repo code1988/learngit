@@ -41,7 +41,7 @@
 VLOG_DEFINE_THIS_MODULE(fatal_signal);
 
 /* Signals to catch. 
- * 定义了一张致命信号列表
+ * 定义了一张需要捕获的信号列表
  * */
 #ifndef _WIN32
 static const int fatal_signals[] = { SIGTERM, SIGINT, SIGHUP, SIGALRM };
@@ -54,20 +54,20 @@ struct hook {
     void (*hook_cb)(void *aux);
     void (*cancel_cb)(void *aux);
     void *aux;
-    bool run_at_exit;   // 标识该钩子结构是否会在结束时执行
+    bool run_at_exit;   // 标识该钩子结构是否会在进程正常结束时(比如exit时或者main函数return时)被调用
 };
 #define MAX_HOOKS 32
-static struct hook hooks[MAX_HOOKS];    // 定义了一张致命信号钩子表
-static size_t n_hooks;      // 记录了已经注册的致命信号钩子数量
+static struct hook hooks[MAX_HOOKS];    // 定义了一张信号钩子表，已经注册的钩子对象将会在poll_block中被调用
+static size_t n_hooks;      // 记录了已经注册的信号钩子数量
 
-static int signal_fds[2];   // 定义了一对用于处理致命信号的管道fd
+static int signal_fds[2];   // 定义了一对用于处理信号的管道fd
 static volatile sig_atomic_t stored_sig_nr = SIG_ATOMIC_MAX;    // 记录了尚未处理的信号ID
 
 #ifdef _WIN32
 static HANDLE wevent;
 #endif
 
-static struct ovs_mutex mutex;      // 这个互斥锁用于维护致命信号处理模块
+static struct ovs_mutex mutex;      // 这个互斥锁用于维护信号处理模块
 
 static void call_hooks(int sig_nr);
 #ifdef _WIN32
@@ -138,6 +138,7 @@ fatal_signal_init(void)
  * signal.  'hook_cb' does not need to be async-signal-safe.  In a
  * multithreaded program 'hook_cb' might be called from any thread, with
  * threads other than the one running 'hook_cb' in unknown states.
+ * 注册一个信号钩子对象
  *
  * If 'run_at_exit' is true, 'hook_cb' is also called during normal process
  * termination, e.g. when exit() is called or when main() returns.

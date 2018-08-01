@@ -264,9 +264,9 @@ int netdev_set_miimon_interval(struct netdev *, long long int interval);
 
 /* Flags. */
 enum netdev_flags {
-    NETDEV_UP = 0x0001,         /* Device enabled? */
-    NETDEV_PROMISC = 0x0002,    /* Promiscuous mode? */
-    NETDEV_LOOPBACK = 0x0004    /* This is a loopback device. */
+    NETDEV_UP = 0x0001,         /* Device enabled?      设备是否使能标志位 */
+    NETDEV_PROMISC = 0x0002,    /* Promiscuous mode?    设备是否使能混杂模式标志位 */
+    NETDEV_LOOPBACK = 0x0004    /* This is a loopback device. 设备是否是一个回环设备标志位 */
 };
 
 int netdev_get_flags(const struct netdev *, enum netdev_flags *);

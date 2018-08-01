@@ -78,7 +78,7 @@ struct ct_dpif_entry;
 
 /* Datapath interface class structure, to be defined by each implementation of
  * a datapath interface.
- * 定义了一类datapath接口的抽象
+ * 统一的datapath接口抽象，不同的datapath会实现一套自己的datapath接口实例
  *
  * These functions return 0 if successful or a positive errno value on failure,
  * except where otherwise noted.
@@ -122,7 +122,10 @@ struct dpif_class {
      * be opened as "tap".
      *
      * Returns either 'type' itself or a string literal, which must not
-     * be freed. */
+     * be freed. 
+     *
+     * 获取对应类型的方法
+     * */
     const char *(*port_open_type)(const struct dpif_class *dpif_class,
                                   const char *type);
 

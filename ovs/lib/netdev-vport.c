@@ -66,9 +66,10 @@ static int get_patch_config(const struct netdev *netdev, struct smap *args);
 static int get_tunnel_config(const struct netdev *, struct smap *args);
 static bool tunnel_check_status_change__(struct netdev_vport *);
 
+// 定义了vport类型网络设备行为实例
 struct vport_class {
     const char *dpif_port;
-    struct netdev_class netdev_class;
+    struct netdev_class netdev_class;   // 作为基类的网络设备行为实例
 };
 
 bool
@@ -77,6 +78,7 @@ netdev_vport_is_vport_class(const struct netdev_class *class)
     return is_vport_class(class);
 }
 
+// 获取vport类型网络设备行为实例
 static const struct vport_class *
 vport_class_cast(const struct netdev_class *class)
 {
@@ -109,6 +111,9 @@ netdev_vport_needs_dst_port(const struct netdev *dev)
              !strcmp("lisp", type) || !strcmp("stt", type)) );
 }
 
+/* 将指定网络设备行为实例当作vport类型，尝试获取其类型名。
+ * @返回值：    成功则返回对应的类型名，失败则返回NULL
+ */
 const char *
 netdev_vport_class_get_dpif_port(const struct netdev_class *class)
 {
@@ -994,6 +999,10 @@ netdev_vport_tunnel_register(void)
     }
 }
 
+/* 注册一类名为"patch"的网络设备行为实例
+ * 备注： 这是一类平台无关的行为实例
+ *        这类行为实例用于为内核中datapath模块实现的"virtual ports"提供支持
+ */
 void
 netdev_vport_patch_register(void)
 {

@@ -231,103 +231,6 @@ static struct if_notifier *ifnotifier;  // 指向一个网络接口变化通知�
 static struct seq *ifaces_changed;      // 指向一个用于处理接口变化事件的序号对象 
 static uint64_t last_ifaces_changed;    // 记录了ifaces_changed序号对象最近一次的序号
 
-static void add_del_bridges(const struct ovsrec_open_vswitch *);
-static void bridge_run__(void);
-static void bridge_create(const struct ovsrec_bridge *);
-static void bridge_destroy(struct bridge *, bool del);
-static struct bridge *bridge_lookup(const char *name);
-static unixctl_cb_func bridge_unixctl_dump_flows;
-static unixctl_cb_func bridge_unixctl_reconnect;
-static size_t bridge_get_controllers(const struct bridge *br,
-                                     struct ovsrec_controller ***controllersp);
-static void bridge_collect_wanted_ports(struct bridge *,
-                                        struct shash *wanted_ports);
-static void bridge_delete_ofprotos(void);
-static void bridge_delete_or_reconfigure_ports(struct bridge *);
-static void bridge_del_ports(struct bridge *,
-                             const struct shash *wanted_ports);
-static void bridge_add_ports(struct bridge *,
-                             const struct shash *wanted_ports);
-
-static void bridge_configure_datapath_id(struct bridge *);
-static void bridge_configure_netflow(struct bridge *);
-static void bridge_configure_forward_bpdu(struct bridge *);
-static void bridge_configure_mac_table(struct bridge *);
-static void bridge_configure_mcast_snooping(struct bridge *);
-static void bridge_configure_sflow(struct bridge *, int *sflow_bridge_number);
-static void bridge_configure_ipfix(struct bridge *);
-static void bridge_configure_spanning_tree(struct bridge *);
-static void bridge_configure_tables(struct bridge *);
-static void bridge_configure_dp_desc(struct bridge *);
-static void bridge_configure_aa(struct bridge *);
-static void bridge_aa_refresh_queued(struct bridge *);
-static bool bridge_aa_need_refresh(struct bridge *);
-static void bridge_configure_remotes(struct bridge *,
-                                     const struct sockaddr_in *managers,
-                                     size_t n_managers);
-static void bridge_pick_local_hw_addr(struct bridge *, struct eth_addr *ea,
-                                      struct iface **hw_addr_iface);
-static uint64_t bridge_pick_datapath_id(struct bridge *,
-                                        const struct eth_addr bridge_ea,
-                                        struct iface *hw_addr_iface);
-static uint64_t dpid_from_hash(const void *, size_t nbytes);
-static bool bridge_has_bond_fake_iface(const struct bridge *,
-                                       const char *name);
-static bool port_is_bond_fake_iface(const struct port *);
-
-static unixctl_cb_func qos_unixctl_show_types;
-static unixctl_cb_func qos_unixctl_show;
-
-static struct port *port_create(struct bridge *, const struct ovsrec_port *);
-static void port_del_ifaces(struct port *);
-static void port_destroy(struct port *);
-static struct port *port_lookup(const struct bridge *, const char *name);
-static void port_configure(struct port *);
-static struct lacp_settings *port_configure_lacp(struct port *,
-                                                 struct lacp_settings *);
-static void port_configure_bond(struct port *, struct bond_settings *);
-static bool port_is_synthetic(const struct port *);
-
-static void reconfigure_system_stats(const struct ovsrec_open_vswitch *);
-static void run_system_stats(void);
-
-static void bridge_configure_mirrors(struct bridge *);
-static struct mirror *mirror_create(struct bridge *,
-                                    const struct ovsrec_mirror *);
-static void mirror_destroy(struct mirror *);
-static bool mirror_configure(struct mirror *);
-static void mirror_refresh_stats(struct mirror *);
-
-static void iface_configure_lacp(struct iface *, struct lacp_slave_settings *);
-static bool iface_create(struct bridge *, const struct ovsrec_interface *,
-                         const struct ovsrec_port *);
-static bool iface_is_internal(const struct ovsrec_interface *iface,
-                              const struct ovsrec_bridge *br);
-static const char *iface_get_type(const struct ovsrec_interface *,
-                                  const struct ovsrec_bridge *);
-static void iface_destroy(struct iface *);
-static void iface_destroy__(struct iface *);
-static struct iface *iface_lookup(const struct bridge *, const char *name);
-static struct iface *iface_find(const char *name);
-static struct iface *iface_from_ofp_port(const struct bridge *,
-                                         ofp_port_t ofp_port);
-static void iface_set_mac(const struct bridge *, const struct port *, struct iface *);
-static void iface_set_ofport(const struct ovsrec_interface *, ofp_port_t ofport);
-static void iface_clear_db_record(const struct ovsrec_interface *if_cfg, char *errp);
-static void iface_configure_qos(struct iface *, const struct ovsrec_qos *);
-static void iface_configure_cfm(struct iface *);
-static void iface_refresh_cfm_stats(struct iface *);
-static void iface_refresh_stats(struct iface *);
-static void iface_refresh_netdev_status(struct iface *);
-static void iface_refresh_ofproto_status(struct iface *);
-static bool iface_is_synthetic(const struct iface *);
-static ofp_port_t iface_get_requested_ofp_port(
-    const struct ovsrec_interface *);
-static ofp_port_t iface_pick_ofport(const struct ovsrec_interface *);
-
-
-static void discover_types(const struct ovsrec_open_vswitch *cfg);
-
 // 初始化交换机的ofproto库
 static void
 bridge_init_ofproto(const struct ovsrec_open_vswitch *cfg)
@@ -1008,7 +911,7 @@ bridge_delete_or_reconfigure_ports(struct bridge *br)
     sset_destroy(&ofproto_ports);
 }
 
-/* 往指定网桥中添加缺失的端口
+/* 往指定网桥中添加缺失的端口，实际添加的是接口
  * @with_requested_port 标识本次添加的端口是否存在特殊需求
  */
 static void
@@ -1891,6 +1794,7 @@ iface_do_create(const struct bridge *br,
     int error;
     const char *type;
 
+    // 确保该网络设备名不重复
     if (netdev_is_reserved_name(iface_cfg->name)) {
         VLOG_WARN("could not create interface %s, name is reserved",
                   iface_cfg->name);
@@ -1898,8 +1802,10 @@ iface_do_create(const struct bridge *br,
         goto error;
     }
 
+    // 返回该接口的网络设备类型名
     type = ofproto_port_open_type(br->cfg->datapath_type,
                                   iface_get_type(iface_cfg, br->cfg));
+    // 打开该类型的网络设备，设备名就是接口名
     error = netdev_open(iface_cfg->name, type, &netdev);
     if (error) {
         VLOG_WARN_BUF(errp, "could not open network device %s (%s)",
@@ -4471,6 +4377,12 @@ port_is_synthetic(const struct port *port)
 
 /* Interface functions. */
 
+/* 判断指定接口是否是一个本地端口，是则返回true，不是则返回false
+ *
+ * 备注：判断标准有2个：
+ *              该接口配置的网络设备类型为"internal"
+ *              该接口配置的接口名就是所属网桥名
+ */
 static bool
 iface_is_internal(const struct ovsrec_interface *iface,
                   const struct ovsrec_bridge *br)
@@ -4480,7 +4392,9 @@ iface_is_internal(const struct ovsrec_interface *iface,
 }
 
 /* Returns the correct network device type for interface 'iface' in bridge
- * 'br'. */
+ * 'br'. 
+ * 返回指定接口关联的网络设备类型
+ * */
 static const char *
 iface_get_type(const struct ovsrec_interface *iface,
                const struct ovsrec_bridge *br)
@@ -4489,7 +4403,10 @@ iface_get_type(const struct ovsrec_interface *iface,
 
     /* The local port always has type "internal".  Other ports take
      * their type from the database and default to "system" if none is
-     * specified. */
+     * specified. 
+     * 首先判断该接口是否是一个本地端口，如果是本地端口则为"internal"类型
+     * 然后对于其他端口，如果有配置关联的网络设备类型则返回该类型，没有配置则返回缺省的"system"
+     * */
     if (iface_is_internal(iface, br)) {
         type = "internal";
     } else {

@@ -309,7 +309,8 @@ del(const char *type, const char *name)
     }
     return error;
 }
-
+
+// 
 static const char *
 port_open_type(const char *datapath_type, const char *port_type)
 {

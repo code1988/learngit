@@ -36,17 +36,21 @@ struct netdev_tnl_build_header_params;
 #define NETDEV_NUMA_UNSPEC OVS_NUMA_UNSPEC
 
 /* A network device (e.g. an Ethernet device).
+ * 定义了网络设备对象结构
  *
  * Network device implementations may read these members but should not modify
  * them. */
 struct netdev {
     /* The following do not change during the lifetime of a struct netdev. */
-    char *name;                         /* Name of network device. */
+    char *name;                         /* Name of network device. 该网络设备名 */
     const struct netdev_class *netdev_class; /* Functions to control
-                                                this device. */
+                                                this device.  该网络设备使用的行为实例 */
 
     /* If this is 'true' the user did not specify a netdev_class when
-     * opening this device, and therefore got assigned to the "system" class */
+     * opening this device, and therefore got assigned to the "system" class 
+     * 标识该设备是自动分类的，如果创建该设备时未指定设备类型则该设备会设置该标志
+     * 这种自动分类的设备一旦遇到重名设备就会被踢除
+     * */
     bool auto_classified;
 
     /* A sequence number which indicates changes in one of 'netdev''s
@@ -54,7 +58,9 @@ struct netdev {
      * they may use as a reset when tracking 'netdev'.
      *
      * Minimally, the sequence number is required to change whenever
-     * 'netdev''s flags, features, ethernet address, or carrier changes. */
+     * 'netdev''s flags, features, ethernet address, or carrier changes. 
+     * 起始值为1,每次该设备属性发生变化，该序号就会递增（跳过0值）
+     * */
     uint64_t change_seq;
 
     /* A netdev provider might be unable to change some of the device's
@@ -63,9 +69,12 @@ struct netdev {
      * netdev_request_reconfigure().  The upper layer will react by stopping
      * the operations on the device and calling netdev_reconfigure() to allow
      * the configuration changes.  'last_reconfigure_seq' remembers the value
-     * of 'reconfigure_seq' when the last reconfiguration happened. */
+     * of 'reconfigure_seq' when the last reconfiguration happened. 
+     * 重置序号对象
+     * 当设备处于使用中时，上层请求修改一些不允许修改的参数时，该序号就会递增，同时通知上层
+     * */
     struct seq *reconfigure_seq;
-    uint64_t last_reconfigure_seq;
+    uint64_t last_reconfigure_seq;  // 记录了最近一个发生的重置序号，从上面的序号对象中读取
 
     /* If this is 'true', the user explicitly specified an MTU for this
      * netdev.  Otherwise, Open vSwitch is allowed to override it. */
@@ -81,10 +90,12 @@ struct netdev {
     struct ovs_list saved_flags_list; /* Contains "struct netdev_saved_flags". */
 };
 
+// 设置指定网络设备状态发生变化
 static inline void
 netdev_change_seq_changed(const struct netdev *netdev_)
 {
     struct netdev *netdev = CONST_CAST(struct netdev *, netdev_);
+    // 设置连通性变化并唤醒相关模块
     seq_change(connectivity_seq_get());
     netdev->change_seq++;
     if (!netdev->change_seq) {
@@ -129,6 +140,7 @@ struct netdev_flow_dump {
 
 /* Network device class structure, to be defined by each implementation of a
  * network device.
+ * 统一的网络设备行为抽象结构，每类网络设备按照自身特点进行实例化
  *
  * These functions return 0 if successful or a positive errno value on failure,
  * except where otherwise noted.
@@ -233,7 +245,9 @@ struct netdev_class {
      * One of the providers should supply a "system" type, since this is
      * the type assumed if no type is specified when opening a netdev.
      * The "system" type corresponds to an existing network device on
-     * the system. */
+     * the system. 
+     * 该类netdev的类型名
+     * */
     const char *type;
 
     /* If 'true' then this netdev should be polled by PMD threads. */
@@ -248,7 +262,9 @@ struct netdev_class {
      * device in this class from being opened.
      *
      * This function may be set to null if a network device class needs no
-     * initialization at registration time. */
+     * initialization at registration time. 
+     * linux下该方法未使用
+     * */
     int (*init)(void);
 
     /* Performs periodic work needed by netdevs of this class.  May be null if

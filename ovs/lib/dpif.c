@@ -67,7 +67,7 @@ COVERAGE_DEFINE(dpif_meter_set);
 COVERAGE_DEFINE(dpif_meter_get);
 COVERAGE_DEFINE(dpif_meter_del);
 
-// 这张表记录了几种基础的datapath接口类型
+// 这张表记录了2种基础的datapath接口实例
 static const struct dpif_class *base_dpif_classes[] = {
 #if defined(__linux__) || defined(_WIN32)
     &dpif_netlink_class,
@@ -494,6 +494,7 @@ dpif_type(const struct dpif *dpif)
 }
 
 /* Returns the fully spelled out name for the given datapath 'type'.
+ * 对无效datapaht类型名设置缺省的"system"
  *
  * Normalized type string can be compared with strcmp().  Unnormalized type
  * string might be the same even if they have different spellings. */
@@ -536,10 +537,13 @@ dpif_port_open_type(const char *datapath_type, const char *port_type)
 {
     struct registered_dpif_class *rc;
 
+    // 首先确保datapath类型名有效
     datapath_type = dpif_normalize_type(datapath_type);
 
     ovs_mutex_lock(&dpif_mutex);
+    // 然后索引得到对应类型的datapath行为实例
     rc = shash_find_data(&dpif_classes, datapath_type);
+    // 如果该实例存在且定义了port_open_type方法，则执行该方法，否则就是返回
     if (rc && rc->dpif_class->port_open_type) {
         port_type = rc->dpif_class->port_open_type(rc->dpif_class, port_type);
     }

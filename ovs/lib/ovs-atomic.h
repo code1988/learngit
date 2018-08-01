@@ -478,7 +478,9 @@ struct ovs_refcount {
     atomic_uint count;
 };
 
-/* Initializes 'refcount'.  The reference count is initially 1. */
+/* Initializes 'refcount'.  The reference count is initially 1. 
+ * 初始化引用计数为1
+ * */
 static inline void
 ovs_refcount_init(struct ovs_refcount *refcount)
 {

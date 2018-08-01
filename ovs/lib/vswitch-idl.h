@@ -1370,7 +1370,7 @@ struct ovsrec_interface {
 	size_t n_mtu_request;
 
 	/* name column. */
-	char *name;	/* Always nonnull. */
+	char *name;	/* Always nonnull.  接口名(如果跟所属网桥名相同意味着是一个本地端口) */
 
 	/* ofport column. */
 	int64_t *ofport;
@@ -1395,7 +1395,8 @@ struct ovsrec_interface {
 	struct smap status;
 
 	/* type column. */
-	char *type;	/* Always nonnull. */
+	char *type;	/* Always nonnull.  该接口关联的网络设备类型名，
+                   如果是NULL的话程序中会设置缺省类型"system"，如果是"internal"意味着是一个本地端口 */
 };
 
 enum ovsrec_interface_column_id {

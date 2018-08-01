@@ -2029,6 +2029,7 @@ ofproto_port_dump_done(struct ofproto_port_dump *dump)
  * cases when a netdev type differs from a port type.  For example, when
  * using the userspace datapath, a port of type "internal" needs to be
  * opened as "tap".
+ * 返回合适的网络设备类型名
  *
  * Returns either 'type' itself or a string literal, which must not be
  * freed. */
@@ -2037,12 +2038,15 @@ ofproto_port_open_type(const char *datapath_type, const char *port_type)
 {
     const struct ofproto_class *class;
 
+    // 首先确保该datapath类型名合法
     datapath_type = ofproto_normalize_type(datapath_type);
+    // 然后查找使用了该类型datapath的ovs交换机行为实例
     class = ofproto_class_find__(datapath_type);
     if (!class) {
         return port_type;
     }
 
+    // 如果该实例定义了port_open_type方法则进一步调用该方法获取合适类型名，否则就是将传入的端口设备类型名作为网络设备类型名
     return (class->port_open_type
             ? class->port_open_type(datapath_type, port_type)
             : port_type);

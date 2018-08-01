@@ -44,6 +44,7 @@ struct netdev_vport {
 
 int netdev_vport_construct(struct netdev *);
 
+// 判断指定是否是vport类型网络设备行为实例，是则返回true，不是则返回false
 static bool
 is_vport_class(const struct netdev_class *class)
 {

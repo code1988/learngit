@@ -2892,6 +2892,7 @@ netdev_linux_update_flags(struct netdev *netdev_, enum netdev_flags off,
     FLOW_OFFLOAD_API                                            \
 }
 
+// 定义了"system"类型网络设备的行为实例
 const struct netdev_class netdev_linux_class =
     NETDEV_LINUX_CLASS(
         "system",
@@ -2901,6 +2902,7 @@ const struct netdev_class netdev_linux_class =
         netdev_linux_get_status,
         LINUX_FLOW_OFFLOAD_API);
 
+// 定义了"tap"类型网络设备的行为实例
 const struct netdev_class netdev_tap_class =
     NETDEV_LINUX_CLASS(
         "tap",
@@ -2910,6 +2912,7 @@ const struct netdev_class netdev_tap_class =
         netdev_linux_get_status,
         NO_OFFLOAD_API);
 
+// 定义了"internal"类型网络设备的行为实例
 const struct netdev_class netdev_internal_class =
     NETDEV_LINUX_CLASS(
         "internal",
