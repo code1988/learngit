@@ -5768,7 +5768,7 @@ meter_del(struct ofproto *ofproto_, ofproto_meter_id meter_id)
     ovsrcu_postpone(free_meter_id, arg);
 }
 
-// 这里定义了一类ovs交换机行为实例
+// 这里定义了一类openflow交换机行为实例
 const struct ofproto_class ofproto_dpif_class = {
     init,
     enumerate_types,

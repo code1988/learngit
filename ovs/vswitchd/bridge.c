@@ -761,19 +761,26 @@ add_ofp_port(ofp_port_t port, ofp_port_t *ports, size_t *n, size_t *allocated)
 }
 
 /* Configures the MTU of 'netdev' based on the "mtu_request" column
- * in 'iface_cfg'. */
+ * in 'iface_cfg'. 
+ * 配置指定接口的MTU
+ * */
 static int
 iface_set_netdev_mtu(const struct ovsrec_interface *iface_cfg,
                      struct netdev *netdev)
 {
     if (iface_cfg->n_mtu_request == 1) {
-        /* The user explicitly asked for this MTU. */
+        /* The user explicitly asked for this MTU. 
+         * 标识该网络设备为用户明确要求设置MTU
+         * */
         netdev_mtu_user_config(netdev, true);
         /* Try to set the MTU to the requested value. */
+        //  设置该网络设备的MTU
         return netdev_set_mtu(netdev, *iface_cfg->mtu_request);
     }
 
-    /* The user didn't explicitly asked for any MTU. */
+    /* The user didn't explicitly asked for any MTU. 
+     * 标识用户并未明确设置该网络设备的MTU
+     * */
     netdev_mtu_user_config(netdev, false);
     return 0;
 }
@@ -1771,11 +1778,14 @@ add_del_bridges(const struct ovsrec_open_vswitch *cfg)
 }
 
 /* Configures 'netdev' based on the "options" column in 'iface_cfg'.
- * Returns 0 if successful, otherwise a positive errno value. */
+ * Returns 0 if successful, otherwise a positive errno value. 
+ * 使用配置表中的options那部分参数配置该接口
+ * */
 static int
 iface_set_netdev_config(const struct ovsrec_interface *iface_cfg,
                         struct netdev *netdev, char **errp)
 {
+    // 实际只用了接口配置表中的options那部分配置
     return netdev_set_config(netdev, &iface_cfg->options, errp);
 }
 
@@ -1805,7 +1815,7 @@ iface_do_create(const struct bridge *br,
     // 返回该接口的网络设备类型名
     type = ofproto_port_open_type(br->cfg->datapath_type,
                                   iface_get_type(iface_cfg, br->cfg));
-    // 打开该类型的网络设备，设备名就是接口名
+    // 打开该类型的网络设备，设备名就是接口名，成功则返回创建的网络设备对象
     error = netdev_open(iface_cfg->name, type, &netdev);
     if (error) {
         VLOG_WARN_BUF(errp, "could not open network device %s (%s)",
@@ -1813,13 +1823,16 @@ iface_do_create(const struct bridge *br,
         goto error;
     }
 
+    // 使用配置表中的options那部分参数配置该接口
     error = iface_set_netdev_config(iface_cfg, netdev, errp);
     if (error) {
         goto error;
     }
 
+    // 配置该接口的MTU
     iface_set_netdev_mtu(iface_cfg, netdev);
 
+    // 获取该接口配置的端口号
     *ofp_portp = iface_pick_ofport(iface_cfg);
     error = ofproto_port_add(br->ofproto, netdev, ofp_portp);
     if (error) {
@@ -4738,17 +4751,20 @@ iface_validate_ofport__(size_t n, int64_t *ofport)
             : OFPP_NONE);
 }
 
-// 检查该接口是否需要一个特殊的端口号，需要则返回该端口号，不需要则返回OFPP_NONE
+// 检查该接口是否需要一个指定的端口号，需要则返回该端口号，不需要则返回OFPP_NONE
 static ofp_port_t
 iface_get_requested_ofp_port(const struct ovsrec_interface *cfg)
 {
     return iface_validate_ofport__(cfg->n_ofport_request, cfg->ofport_request);
 }
 
+// 获取指定接口配置的端口号，如果有配置则返回该端口号，否则返回OFPP_NONE
 static ofp_port_t
 iface_pick_ofport(const struct ovsrec_interface *cfg)
 {
+    // 检查该接口是否明确指定了一个端口号
     ofp_port_t requested_ofport = iface_get_requested_ofp_port(cfg);
+    // 如果该接口有明确指定则返回该端口号
     return (requested_ofport != OFPP_NONE
             ? requested_ofport
             : iface_validate_ofport__(cfg->n_ofport, cfg->ofport));

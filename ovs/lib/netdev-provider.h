@@ -77,7 +77,9 @@ struct netdev {
     uint64_t last_reconfigure_seq;  // 记录了最近一个发生的重置序号，从上面的序号对象中读取
 
     /* If this is 'true', the user explicitly specified an MTU for this
-     * netdev.  Otherwise, Open vSwitch is allowed to override it. */
+     * netdev.  Otherwise, Open vSwitch is allowed to override it. 
+     * 标识该设备的MTU是否是用户明确配置的
+     * */
     bool mtu_user_config;
 
     /* The core netdev code initializes these at netdev construction and only

@@ -90,7 +90,7 @@ struct ofproto {
     /* Datapath. */
     struct hmap ports;          /* Contains "struct ofport"s. */
     struct shash port_by_name;
-    struct simap ofp_requests;  /* OpenFlow port number requests. */
+    struct simap ofp_requests;  /* OpenFlow port number requests. 记录了该ovs交换机的包含的所有端口号，键值为对应的网络设备名 */
     uint16_t alloc_port_no;     /* Last allocated OpenFlow port number. */
     uint16_t max_ports;         /* Max possible OpenFlow port num, plus one.  
                                    该ovs交换机支持的最大端口序号，跟使用的openflow版本有关*/

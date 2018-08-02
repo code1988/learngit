@@ -446,16 +446,22 @@ netdev_open(const char *name, const char *type, struct netdev **netdevp)
                 // 将创建完毕的设备插入netdev_shash
                 netdev->node = shash_add(&netdev_shash, name, netdev);
 
-                /* By default enable one tx and rx queue per netdev. */
+                /* By default enable one tx and rx queue per netdev. 
+                 * 如果这类网络设备定义了send和rxq_alloc方法，则分别将n_txq和n_rxq初始化为1，否则初始化为0
+                 * 备注：Linux下特有的3类网络设备都定义了这两种方法，而平台无关的vport类型的网络设备都未定义 
+                 * */
                 netdev->n_txq = netdev->netdev_class->send ? 1 : 0;
                 netdev->n_rxq = netdev->netdev_class->rxq_alloc ? 1 : 0;
 
                 ovs_list_init(&netdev->saved_flags_list);
 
+                // 调用这类网络设备定义的construct方法，完成这类网络设备特有的那部分初始化
                 error = rc->class->construct(netdev);
                 if (!error) {
+                    // 成功初始化后，设置该网络设备状态发生变化以通知其他模块
                     netdev_change_seq_changed(netdev);
                 } else {
+                    // 初始化失败则销毁该网络设备
                     ovs_refcount_unref(&rc->refcnt);
                     seq_destroy(netdev->reconfigure_seq);
                     free(netdev->name);
@@ -502,7 +508,10 @@ netdev_ref(const struct netdev *netdev_)
 }
 
 /* Reconfigures the device 'netdev' with 'args'.  'args' may be empty
- * or NULL if none are needed. */
+ * or NULL if none are needed. 
+ * 配置指定网络设备
+ * @args    配置集合，NULL或者集合为空都意味着不需要进行配置
+ * */
 int
 netdev_set_config(struct netdev *netdev, const struct smap *args, char **errp)
     //OVS_EXCLUDED(netdev_mutex)
@@ -512,6 +521,7 @@ netdev_set_config(struct netdev *netdev, const struct smap *args, char **errp)
         char *verbose_error = NULL;
         int error;
 
+        // 调用这类网络设备定义的set_config方法来最终完成配置
         error = netdev->netdev_class->set_config(netdev,
                                                  args ? args : &no_args,
                                                  &verbose_error);
@@ -529,6 +539,7 @@ netdev_set_config(struct netdev *netdev, const struct smap *args, char **errp)
         }
         return error;
     } else if (args && !smap_is_empty(args)) {
+        // 这种情况意味着这类网络设备是不可配置的
         VLOG_WARN_BUF(errp, "%s: arguments provided to device that is not configurable",
                       netdev_get_name(netdev));
     }
@@ -935,7 +946,9 @@ netdev_get_etheraddr(const struct netdev *netdev, struct eth_addr *mac)
 }
 
 /* Returns the name of the network device that 'netdev' represents,
- * e.g. "eth0".  The caller must not modify or free the returned string. */
+ * e.g. "eth0".  The caller must not modify or free the returned string. 
+ * 返回指定网络设备的设备名
+ * */
 const char *
 netdev_get_name(const struct netdev *netdev)
 {
@@ -972,13 +985,16 @@ netdev_get_mtu(const struct netdev *netdev, int *mtup)
  *
  * If successful, returns 0.  Returns EOPNOTSUPP if 'netdev' does not have an
  * MTU (as e.g. some tunnels do not).  On other failure, returns a positive
- * errno value. */
+ * errno value. 
+ * 设置指定网络设备的MTU
+ * */
 int
 netdev_set_mtu(struct netdev *netdev, int mtu)
 {
     const struct netdev_class *class = netdev->netdev_class;
     int error;
 
+    // 调用这类网络设备的set_mtu方法来最终完成MTU设置
     error = class->set_mtu ? class->set_mtu(netdev, mtu) : EOPNOTSUPP;
     if (error && error != EOPNOTSUPP) {
         VLOG_DBG_RL(&rl, "failed to set MTU for network device %s: %s",
@@ -990,10 +1006,13 @@ netdev_set_mtu(struct netdev *netdev, int mtu)
 
 /* If 'user_config' is true, the user wants to control 'netdev''s MTU and we
  * should not override it.  If 'user_config' is false, we may adjust
- * 'netdev''s MTU (e.g., if 'netdev' is internal). */
+ * 'netdev''s MTU (e.g., if 'netdev' is internal). 
+ * 设置该网络设备的mtu_user_config属性
+ * */
 void
 netdev_mtu_user_config(struct netdev *netdev, bool user_config)
 {
+    // 如果该属性发生了变化，还会在这里通知其他模块
     if (netdev->mtu_user_config != user_config) {
         netdev_change_seq_changed(netdev);
         netdev->mtu_user_config = user_config;

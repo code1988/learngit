@@ -77,20 +77,6 @@ COVERAGE_DEFINE(ofproto_update_port);
 const enum mf_field_id default_prefix_fields[2] =
     { MFF_IPV4_DST, MFF_IPV4_SRC };
 
-/* oftable. */
-static void oftable_init(struct oftable *);
-static void oftable_destroy(struct oftable *);
-
-static void oftable_set_name(struct oftable *, const char *name);
-
-static enum ofperr evict_rules_from_table(struct oftable *)
-    //OVS_REQUIRES(ofproto_mutex);
-static void oftable_configure_eviction(struct oftable *,
-                                       unsigned int eviction,
-                                       const struct mf_subfield *fields,
-                                       size_t n_fields)
-    //OVS_REQUIRES(ofproto_mutex);
-
 /* This is the only combination of OpenFlow eviction flags that OVS supports: a
  * combination of OF1.4+ importance, the remaining lifetime of the flow, and
  * fairness based on user-specified fields. */
@@ -119,28 +105,6 @@ struct eviction_group {
     struct heap rules;          /* Contains "struct rule"s. */
 };
 
-static bool choose_rule_to_evict(struct oftable *table, struct rule **rulep)
-    //OVS_REQUIRES(ofproto_mutex);
-static uint64_t rule_eviction_priority(struct ofproto *ofproto, struct rule *)
-    //OVS_REQUIRES(ofproto_mutex);
-static void eviction_group_add_rule(struct rule *)
-    //OVS_REQUIRES(ofproto_mutex);
-static void eviction_group_remove_rule(struct rule *)
-    //OVS_REQUIRES(ofproto_mutex);
-
-static void rule_criteria_init(struct rule_criteria *, uint8_t table_id,
-                               const struct match *match, int priority,
-                               ovs_version_t version,
-                               ovs_be64 cookie, ovs_be64 cookie_mask,
-                               ofp_port_t out_port, uint32_t out_group);
-static void rule_criteria_require_rw(struct rule_criteria *,
-                                     bool can_write_readonly);
-static void rule_criteria_destroy(struct rule_criteria *);
-
-static enum ofperr collect_rules_loose(struct ofproto *,
-                                       const struct rule_criteria *,
-                                       struct rule_collection *);
-
 struct learned_cookie {
     union {
         /* In struct ofproto's 'learned_cookies' hmap. */
@@ -160,33 +124,6 @@ struct learned_cookie {
      * 'cookie' are deleted. */
     int n OVS_GUARDED_BY(ofproto_mutex);
 };
-
-static const struct ofpact_learn *next_learn_with_delete(
-    const struct rule_actions *, const struct ofpact_learn *start);
-
-static void learned_cookies_inc(struct ofproto *, const struct rule_actions *)
-    //OVS_REQUIRES(ofproto_mutex);
-static void learned_cookies_dec(struct ofproto *, const struct rule_actions *,
-                                struct ovs_list *dead_cookies)
-    //OVS_REQUIRES(ofproto_mutex);
-static void learned_cookies_flush(struct ofproto *, struct ovs_list *dead_cookies)
-    //OVS_REQUIRES(ofproto_mutex);
-
-/* ofport. */
-static void ofport_destroy__(struct ofport *) OVS_EXCLUDED(ofproto_mutex);
-static void ofport_destroy(struct ofport *, bool del);
-static bool ofport_is_mtu_overridden(const struct ofproto *,
-                                     const struct ofport *);
-
-static int update_port(struct ofproto *, const char *devname);
-static int init_ports(struct ofproto *);
-static void reinit_ports(struct ofproto *);
-
-static long long int ofport_get_usage(const struct ofproto *,
-                                      ofp_port_t ofp_port);
-static void ofport_set_usage(struct ofproto *, ofp_port_t ofp_port,
-                             long long int last_used);
-static void ofport_remove_usage(struct ofproto *, ofp_port_t ofp_port);
 
 /* Ofport usage.
  *
@@ -2059,7 +1996,11 @@ ofproto_port_open_type(const char *datapath_type, const char *port_type)
  * If successful, returns 0 and sets '*ofp_portp' to the new port's
  * OpenFlow port number (if 'ofp_portp' is non-null).  On failure,
  * returns a positive errno value and sets '*ofp_portp' to OFPP_NONE (if
- * 'ofp_portp' is non-null). */
+ * 'ofp_portp' is non-null). 
+ * 添加指定网络设备作为openflow交换机的端口
+ * @ofproto     要添加端口的openflow交换机
+ * @ofp_portp   为该网络设备指定的openflow端口号，NULL或者OFPP_NONE都意味着自动分配
+ * */
 int
 ofproto_port_add(struct ofproto *ofproto, struct netdev *netdev,
                  ofp_port_t *ofp_portp)
@@ -2067,10 +2008,12 @@ ofproto_port_add(struct ofproto *ofproto, struct netdev *netdev,
     ofp_port_t ofp_port = ofp_portp ? *ofp_portp : OFPP_NONE;
     int error;
 
+    // 调用这类openflow交换机定义的port_add方法最终完成端口添加
     error = ofproto->ofproto_class->port_add(ofproto, netdev);
     if (!error) {
         const char *netdev_name = netdev_get_name(netdev);
 
+        // 将设备名和端口号这对映射关系插入hash表
         simap_put(&ofproto->ofp_requests, netdev_name,
                   ofp_to_u16(ofp_port));
         error = update_port(ofproto, netdev_name);
@@ -2095,6 +2038,7 @@ ofproto_port_add(struct ofproto *ofproto, struct netdev *netdev,
 /* Looks up a port named 'devname' in 'ofproto'.  On success, returns 0 and
  * initializes '*port' appropriately; on failure, returns a positive errno
  * value.
+ * 在指定openflow交换机中查找指定端口
  *
  * The caller owns the data in 'ofproto_port' and must free it with
  * ofproto_port_destroy() when it is no longer needed. */
@@ -2104,6 +2048,7 @@ ofproto_port_query_by_name(const struct ofproto *ofproto, const char *devname,
 {
     int error;
 
+    // 调用这类openflow交换机定义的port_query_by_name方法来最终完成端口查找
     error = ofproto->ofproto_class->port_query_by_name(ofproto, devname, port);
     if (error) {
         memset(port, 0, sizeof *port);
@@ -2381,7 +2326,12 @@ dealloc_ofp_port(struct ofproto *ofproto, ofp_port_t ofp_port)
 
 /* Opens and returns a netdev for 'ofproto_port' in 'ofproto', or a null
  * pointer if the netdev cannot be opened.  On success, also fills in
- * '*pp'.  */
+ * '*pp'.  
+ * 打开openflow交换机中的指定端口
+ * @ofproto_port    要打开的端口
+ * @pp              在该端口成功打开时会被填充
+ * @返回值          成功则返回对应的网络设备对象
+ * */
 static struct netdev *
 ofport_open(struct ofproto *ofproto,
             struct ofproto_port *ofproto_port,

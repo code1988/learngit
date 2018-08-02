@@ -90,6 +90,9 @@ simap_count(const struct simap *simap)
 /* Inserts a mapping from 'name' to 'data' into 'simap', replacing any
  * existing mapping for 'name'.  Returns true if a new mapping was added,
  * false if an existing mapping's value was replaced.
+ * 将name->data这组映射插入hash表
+ * @name    作为键值
+ * @data    作为键值对应的数据
  *
  * The caller retains ownership of 'name'. */
 bool

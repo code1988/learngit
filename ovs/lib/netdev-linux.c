@@ -1266,7 +1266,10 @@ netdev_linux_tap_batch_send(struct netdev *netdev_,
  * the packet is too big or too small to transmit on the device.
  *
  * The kernel maintains a packet transmission queue, so the caller is not
- * expected to do additional queuing of packets. */
+ * expected to do additional queuing of packets. 
+ * 
+ * 备注：Linux下特有的3类网络设备都使用本函数作为send方法
+ * */
 static int
 netdev_linux_send(struct netdev *netdev_, int qid OVS_UNUSED,
                   struct dp_packet_batch *batch, bool may_steal,
@@ -1315,7 +1318,10 @@ free_batch:
  *
  * The kernel maintains a packet transmission queue, so the client is not
  * expected to do additional queuing of packets.  Thus, this function is
- * unlikely to ever be used.  It is included for completeness. */
+ * unlikely to ever be used.  It is included for completeness. 
+ *
+ * 备注：Linux下特有的3类网络设备都使用本函数作为send_wait方法
+ * */
 static void
 netdev_linux_send_wait(struct netdev *netdev, int qid OVS_UNUSED)
 {

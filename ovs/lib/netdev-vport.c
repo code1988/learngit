@@ -940,13 +940,13 @@ netdev_vport_get_ifindex(const struct netdev *netdev_)
     netdev_vport_update_flags,                              \
     NULL,                       /* reconfigure */           \
                                                             \
-    NULL,                   /* rx_alloc */                  \
-    NULL,                   /* rx_construct */              \
-    NULL,                   /* rx_destruct */               \
-    NULL,                   /* rx_dealloc */                \
-    NULL,                   /* rx_recv */                   \
-    NULL,                   /* rx_wait */                   \
-    NULL,                   /* rx_drain */                  \
+    NULL,                   /* rxq_alloc */                  \
+    NULL,                   /* rxq_construct */              \
+    NULL,                   /* rxq_destruct */               \
+    NULL,                   /* rxq_dealloc */                \
+    NULL,                   /* rxq_recv */                   \
+    NULL,                   /* rxq_wait */                   \
+    NULL,                   /* rxq_drain */                  \
                                                             \
     NETDEV_FLOW_OFFLOAD_API
 

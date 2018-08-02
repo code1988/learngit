@@ -23,11 +23,13 @@
 extern "C" {
 #endif
 
-/* A map from strings to unsigned integers. */
+/* A map from strings to unsigned integers.  
+ * 定义了字符串->uint值类型的hash表结构 */
 struct simap {
     struct hmap map;            /* Contains "struct simap_node"s. */
 };
 
+// 字符串->uint值类型的hash表节点结构
 struct simap_node {
     struct hmap_node node;      /* In struct simap's 'map' hmap. */
     char *name;

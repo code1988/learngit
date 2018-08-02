@@ -1367,7 +1367,7 @@ struct ovsrec_interface {
 
 	/* mtu_request column. */
 	int64_t *mtu_request;
-	size_t n_mtu_request;
+	size_t n_mtu_request;   // 1表示用户明确要设置该接口的MTU，除此之外都表示用户不对MTU进行指定
 
 	/* name column. */
 	char *name;	/* Always nonnull.  接口名(如果跟所属网桥名相同意味着是一个本地端口) */
@@ -1377,8 +1377,8 @@ struct ovsrec_interface {
 	size_t n_ofport;
 
 	/* ofport_request column. */
-	int64_t *ofport_request;        // 如果该接口需要一个特殊的端口号，就记录在这里
-	size_t n_ofport_request;
+	int64_t *ofport_request;        // 如果该接口需要一个指定的端口号，就记录在这里
+	size_t n_ofport_request;        // 该值非0意味着该接口需要一个指定的端口号
 
 	/* options column. */
 	struct smap options;
