@@ -397,12 +397,12 @@ enum port_vlan_mode {
     PORT_VLAN_DOT1Q_TUNNEL
 };
 
-/* Configuration of bundles. */
+/* Configuration of bundles.  基础端口的配置集合 */
 struct ofproto_bundle_settings {
     char *name;                 /* For use in log messages. */
 
-    ofp_port_t *slaves;         /* OpenFlow port numbers for slaves. */
-    size_t n_slaves;
+    ofp_port_t *slaves;         /* OpenFlow port numbers for slaves.  记录了openflow端口号的数组 */
+    size_t n_slaves;            // openflow端口数量
 
     enum port_vlan_mode vlan_mode; /* Selects mode for vlan and trunks */
     uint16_t qinq_ethtype;
@@ -413,7 +413,7 @@ struct ofproto_bundle_settings {
 
     struct bond_settings *bond; /* Must be nonnull iff if n_slaves > 1. */
 
-    struct lacp_settings *lacp;              /* Nonnull to enable LACP. */
+    struct lacp_settings *lacp;              /* Nonnull to enable LACP.  该基础端口的lacp配置信息 */
     struct lacp_slave_settings *lacp_slaves; /* Array of n_slaves elements. */
 
     bool protected;             /* Protected port mode */

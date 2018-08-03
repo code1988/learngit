@@ -44,34 +44,6 @@ static const struct ovs_list OVS_LIST_POISON =
     { (struct ovs_list *) (UINTPTR_MAX / 0xf * 0xc),
       (struct ovs_list *) (UINTPTR_MAX / 0xf * 0xc) };
 
-static inline void ovs_list_init(struct ovs_list *);
-static inline void ovs_list_poison(struct ovs_list *);
-
-/* List insertion. */
-static inline void ovs_list_insert(struct ovs_list *, struct ovs_list *);
-static inline void ovs_list_splice(struct ovs_list *before, struct ovs_list *first,
-                               struct ovs_list *last);
-static inline void ovs_list_push_front(struct ovs_list *, struct ovs_list *);
-static inline void ovs_list_push_back(struct ovs_list *, struct ovs_list *);
-static inline void ovs_list_replace(struct ovs_list *, const struct ovs_list *);
-static inline void ovs_list_moved(struct ovs_list *, const struct ovs_list *orig);
-static inline void ovs_list_move(struct ovs_list *dst, struct ovs_list *src);
-
-/* List removal. */
-static inline struct ovs_list *ovs_list_remove(struct ovs_list *);
-static inline struct ovs_list *ovs_list_pop_front(struct ovs_list *);
-static inline struct ovs_list *ovs_list_pop_back(struct ovs_list *);
-
-/* List elements. */
-static inline struct ovs_list *ovs_list_front(const struct ovs_list *);
-static inline struct ovs_list *ovs_list_back(const struct ovs_list *);
-
-/* List properties. */
-static inline size_t ovs_list_size(const struct ovs_list *);
-static inline bool ovs_list_is_empty(const struct ovs_list *);
-static inline bool ovs_list_is_singleton(const struct ovs_list *);
-static inline bool ovs_list_is_short(const struct ovs_list *);
-
 #define LIST_FOR_EACH(ITER, MEMBER, LIST)                               \
     for (INIT_CONTAINER(ITER, (LIST)->next, MEMBER);                    \
          &(ITER)->MEMBER != (LIST);                                     \

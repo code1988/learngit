@@ -179,7 +179,10 @@ struct ovsrec_bridge {
 	struct ovsrec_netflow *netflow;
 
 	/* other_config column. */
-	struct smap other_config;
+	struct smap other_config;       /* 记录了多条自定义的属性，包括：
+                                     * "hwaddr"
+                                     * "datapath-id" 
+                                     */
 
 	/* ports column. */
 	struct ovsrec_port **ports;     // 这张表记录量该网桥包含的每个端口的配置表
@@ -2429,6 +2432,7 @@ struct ovsrec_open_vswitch {
                                    "flow_limit"
                                    "max-idle" 
                                    "vlan-limit" 
+                                   "enable-statistics" 
                                 */
 
 
@@ -2682,14 +2686,14 @@ struct ovsrec_port {
 	int64_t bond_downdelay;
 
 	/* bond_fake_iface column. */
-	bool bond_fake_iface;
+	bool bond_fake_iface;       // 标识该端口是否是一个bond口
 
 	/* bond_mode column. */
-	char *bond_mode;
-
-	/* bond_updelay column. */
-	int64_t bond_updelay;
-
+	char *bond_mode;            // 端口的bond模式，支持"balance-tcp"、"balance-slb"、"active-backup"
+                                                       
+	/* bond_updelay column. */                         
+	int64_t bond_updelay;                              
+                                                       
 	/* cvlans column. */
 	int64_t *cvlans;
 	size_t n_cvlans;
@@ -2705,7 +2709,7 @@ struct ovsrec_port {
 	size_t n_interfaces;                    // 该端口包含的接口数量
 
 	/* lacp column. */
-	char *lacp;
+	char *lacp;             // lacp模式，支持"off"、"active"、"passive"
 
 	/* mac column. */
 	char *mac;
@@ -2714,7 +2718,11 @@ struct ovsrec_port {
 	char *name;	/* Always nonnull. */
 
 	/* other_config column. */
-	struct smap other_config;
+	struct smap other_config;       /* 该端口包含的自定义属性，包括:
+                                     * "qinq-ethtype"
+                                     * "priority-tags" 
+                                     * "lacp-system-id" 
+                                     */
 
 	/* protected column. */
 	bool protected;
@@ -2739,15 +2747,15 @@ struct ovsrec_port {
 	struct smap status;
 
 	/* tag column. */
-	int64_t *tag;
+	int64_t *tag;   // 记录了该端口的vlan tag号
 	size_t n_tag;
 
 	/* trunks column. */
-	int64_t *trunks;
-	size_t n_trunks;
+	int64_t *trunks;// 记录了该端口允许通过的vlan数组
+	size_t n_trunks;// 允许通过的vlan数量
 
 	/* vlan_mode column. */
-	char *vlan_mode;
+	char *vlan_mode;    // 该端口的vlan模式，支持"access"、"trunk"、"native-tagged"、"native-untagged"、"dot1q-tunnel"
 };
 
 enum ovsrec_port_column_id {

@@ -33,7 +33,7 @@ struct lacp_settings {
     char *name;                       /* Name (for debugging). */
     struct eth_addr id;               /* System ID. Must be nonzero. */
     uint16_t priority;                /* System priority. */
-    bool active;                      /* Active or passive mode? */
+    bool active;                      /* Active or passive mode?  标识是否是active模式 */
     bool fast;                        /* Fast or slow probe interval. */
     bool fallback_ab_cfg;             /* Fallback to BM_SLB on LACP failure. */
 };

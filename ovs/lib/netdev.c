@@ -929,7 +929,9 @@ netdev_send_wait(struct netdev *netdev, int qid)
 }
 
 /* Attempts to set 'netdev''s MAC address to 'mac'.  Returns 0 if successful,
- * otherwise a positive errno value. */
+ * otherwise a positive errno value. 
+ * 为指定网络设备设置MAC
+ * */
 int
 netdev_set_etheraddr(struct netdev *netdev, const struct eth_addr mac)
 {
@@ -1451,7 +1453,10 @@ netdev_set_miimon_interval(struct netdev *netdev, long long int interval)
             : EOPNOTSUPP);
 }
 
-/* Retrieves current device stats for 'netdev'. */
+/* Retrieves current device stats for 'netdev'. 
+ * 获取指定网络设备的当前状态
+ * @stats   用于存放获取到的当前状态
+ * */
 int
 netdev_get_stats(const struct netdev *netdev, struct netdev_stats *stats)
 {
@@ -1462,6 +1467,7 @@ netdev_get_stats(const struct netdev *netdev, struct netdev_stats *stats)
     memset(stats, 0xFF, sizeof *stats);
 
     COVERAGE_INC(netdev_get_stats);
+    // 调用这类网络设备定义的get_stats方法来最终完成状态获取
     error = (netdev->netdev_class->get_stats
              ? netdev->netdev_class->get_stats(netdev, stats)
              : EOPNOTSUPP);
@@ -1820,6 +1826,7 @@ netdev_dump_queue_stats(const struct netdev *netdev,
 
 
 /* Returns the class type of 'netdev'.
+ * 返回指定网络设备的设备类型
  *
  * The caller must not free the returned value. */
 const char *
@@ -1912,6 +1919,7 @@ netdev_get_vports(size_t *size)
     return vports;
 }
 
+// 返回指定网络设备的设备类型
 const char *
 netdev_get_type_from_name(const char *name)
 {

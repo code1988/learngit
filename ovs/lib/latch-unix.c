@@ -23,7 +23,9 @@
 #include "poll-loop.h"
 #include "socket-util.h"
 
-/* Initializes 'latch' as initially unset. */
+/* Initializes 'latch' as initially unset. 
+ * 初始化指定的通信模块，实质就是创建一对非阻塞管道
+ * */
 void
 latch_init(struct latch *latch)
 {

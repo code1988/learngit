@@ -45,6 +45,7 @@ bitmap_n_bytes(size_t n_bits)
     return bitmap_n_longs(n_bits) * sizeof(unsigned long int);
 }
 
+// 分配一个包含n_bits位的数据
 static inline unsigned long *
 bitmap_allocate(size_t n_bits)
 {

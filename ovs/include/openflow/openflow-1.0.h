@@ -48,7 +48,7 @@
                                             * ports disabled by STP. */
 #define OFPP_ALL        OFP_PORT_C(0xfffc) /* All ports except input port. */
 #define OFPP_CONTROLLER OFP_PORT_C(0xfffd) /* Send to controller. */
-#define OFPP_LOCAL      OFP_PORT_C(0xfffe) /* Local openflow "port". */
+#define OFPP_LOCAL      OFP_PORT_C(0xfffe) /* Local openflow "port".  openflow本地端口号 */
 #define OFPP_NONE       OFP_PORT_C(0xffff) /* Not associated with any port. 表示该端口没有关联一个特殊的端口号 */
 
 /* OpenFlow 1.0 specific capabilities supported by the datapath (struct

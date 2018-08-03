@@ -26595,6 +26595,8 @@ ovsrec_open_vswitch_set_ssl(const struct ovsrec_open_vswitch *row, const struct 
 
 /* Sets the "statistics" column's value from the "Open_vSwitch" table in 'row'
  * to 'statistics'.
+ * 设置指定ovs交换机配置表中的statistics参数
+ * @statistics  要更新的统计信息集合，NULL标识清空配置表中的相应条目
  *
  * The caller retains ownership of 'statistics' and everything in it. */
 void

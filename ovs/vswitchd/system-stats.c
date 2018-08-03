@@ -278,28 +278,33 @@ get_filesys_stats(struct smap *stats OVS_UNUSED)
 
 static struct ovs_mutex mutex = OVS_MUTEX_INITIALIZER;
 static pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
-static struct latch latch OVS_GUARDED_BY(mutex);
-static bool enabled;
-static bool started OVS_GUARDED_BY(mutex);
-static struct smap *system_stats OVS_GUARDED_BY(mutex);
+static struct latch latch OVS_GUARDED_BY(mutex);    // 用于系统统计信息收集模块的一个通信模组
+static bool enabled;    // 标识当前是否使能了系统统计信息收集模块
+static bool started OVS_GUARDED_BY(mutex);  // 标识当前是否启动了系统统计信息收集线程
+static struct smap *system_stats OVS_GUARDED_BY(mutex); // 记录当前系统统计信息的hash表
 
 OVS_NO_RETURN static void *system_stats_thread_func(void *);
-static void discard_stats(void);
 
-/* Enables or disables system stats collection, according to 'enable'. */
+/* Enables or disables system stats collection, according to 'enable'. 
+ * 使能/禁止系统的统计信息收集模块
+ * */
 void
 system_stats_enable(bool enable)
 {
     if (enabled != enable) {
         ovs_mutex_lock(&mutex);
         if (enable) {
+            // 第一次使能该模块时会创建系统统计信息收集线程
             if (!started) {
                 ovs_thread_create("system_stats",
                                   system_stats_thread_func, NULL);
+                // 初始化用于系统统计信息收集模块的一个通信模组
                 latch_init(&latch);
                 started = true;
             }
+            // 每次重新使能前都会首先销毁原有的统计信息
             discard_stats();
+            // 然后通过条件变量唤醒统计信息收集线程
             xpthread_cond_signal(&cond);
         }
         enabled = enable;
@@ -346,8 +351,9 @@ system_stats_wait(void)
     }
 }
 
+// 销毁记录了当前系统统计信息的hash表system_stats
 static void
-discard_stats(void) OVS_REQUIRES(mutex)
+discard_stats(void) //OVS_REQUIRES(mutex)
 {
     if (system_stats) {
         smap_destroy(system_stats);
@@ -356,6 +362,7 @@ discard_stats(void) OVS_REQUIRES(mutex)
     }
 }
 
+// 系统统计信息收集线程主函数
 static void *
 system_stats_thread_func(void *arg OVS_UNUSED)
 {

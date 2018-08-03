@@ -587,12 +587,14 @@ ofproto_init_max_ports(struct ofproto *ofproto, uint16_t max_ports)
     ofproto->max_ports = max_ports;
 }
 
+// 返回指定openflow交换机实例的datapath ID
 uint64_t
 ofproto_get_datapath_id(const struct ofproto *ofproto)
 {
     return ofproto->datapath_id;
 }
 
+// 设置指定openflow交换机实例的datapath ID
 void
 ofproto_set_datapath_id(struct ofproto *p, uint64_t datapath_id)
 {
@@ -1330,11 +1332,14 @@ ofproto_port_get_lacp_stats(const struct ofport *port, struct lacp_slave_stats *
  * to 's'.  Otherwise, this function registers a new bundle.
  *
  * Bundles only affect the NXAST_AUTOPATH action and output to the OFPP_NORMAL
- * port. */
+ * port. 
+ * 为指定openflow交换机注册一个bundle对象
+ * */
 int
 ofproto_bundle_register(struct ofproto *ofproto, void *aux,
                         const struct ofproto_bundle_settings *s)
 {
+    // 调用这类openflow交换机定义的bundle_set方法来最终完成bundle的注册
     return (ofproto->ofproto_class->bundle_set
             ? ofproto->ofproto_class->bundle_set(ofproto, aux, s)
             : EOPNOTSUPP);
@@ -1999,7 +2004,9 @@ ofproto_port_open_type(const char *datapath_type, const char *port_type)
  * 'ofp_portp' is non-null). 
  * 添加指定网络设备作为openflow交换机的端口
  * @ofproto     要添加端口的openflow交换机
- * @ofp_portp   为该网络设备指定的openflow端口号，NULL或者OFPP_NONE都意味着自动分配
+ * @ofp_portp   为该网络设备指定的openflow端口号，
+ *              NULL或者OFPP_NONE都意味着自动分配,
+ *              非NULL时，如果添加成功，本结构还会用于存放最终的端口号
  * */
 int
 ofproto_port_add(struct ofproto *ofproto, struct netdev *netdev,
@@ -2016,16 +2023,19 @@ ofproto_port_add(struct ofproto *ofproto, struct netdev *netdev,
         // 将设备名和端口号这对映射关系插入hash表
         simap_put(&ofproto->ofp_requests, netdev_name,
                   ofp_to_u16(ofp_port));
+        // 更新该openflow端口
         error = update_port(ofproto, netdev_name);
     }
     if (ofp_portp) {
         *ofp_portp = OFPP_NONE;
         if (!error) {
             struct ofproto_port ofproto_port;
-
+            
+            // 在该openflow交换机中查找刚添加成功的端口
             error = ofproto_port_query_by_name(ofproto,
                                                netdev_get_name(netdev),
                                                &ofproto_port);
+            // 将该端口最终的端口号填充到ofp_portp中
             if (!error) {
                 *ofp_portp = ofproto_port.ofp_port;
                 ofproto_port_destroy(&ofproto_port);
@@ -2039,6 +2049,8 @@ ofproto_port_add(struct ofproto *ofproto, struct netdev *netdev,
  * initializes '*port' appropriately; on failure, returns a positive errno
  * value.
  * 在指定openflow交换机中查找指定端口
+ * @devname     要查找的端口名
+ * @port        用于存放成功找到后的端口信息
  *
  * The caller owns the data in 'ofproto_port' and must free it with
  * ofproto_port_destroy() when it is no longer needed. */
@@ -2622,6 +2634,7 @@ ofproto_port_get_stats(const struct ofport *port, struct netdev_stats *stats)
     return error;
 }
 
+// 更新指定的openflow端口
 static int
 update_port(struct ofproto *ofproto, const char *name)
 {
@@ -2633,7 +2646,9 @@ update_port(struct ofproto *ofproto, const char *name)
 
     COVERAGE_INC(ofproto_update_port);
 
-    /* Fetch 'name''s location and properties from the datapath. */
+    /* Fetch 'name''s location and properties from the datapath. 
+     * 打开openflow交换机中的该端口
+     * */
     netdev = (!ofproto_port_query_by_name(ofproto, name, &ofproto_port)
               ? ofport_open(ofproto, &ofproto_port, &pp)
               : NULL);

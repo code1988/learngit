@@ -25,6 +25,9 @@
 #include <stdbool.h>
 #include "util.h"
 
+/* 定义了一个线程安全、信号安全、可poll的通信接口结构
+ * Linux下实质就是一对管道
+ */
 struct latch {
 #ifndef _WIN32
     int fds[2];

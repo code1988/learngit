@@ -73,24 +73,25 @@ VLOG_DEFINE_THIS_MODULE(bridge);
 
 COVERAGE_DEFINE(bridge_reconfigure);
 
+// 定义了接口的抽象结构
 struct iface {
     /* These members are always valid.
      *
      * They are immutable: they never change between iface_create() and
      * iface_destroy(). */
-    struct ovs_list port_elem;  /* Element in struct port's "ifaces" list. */
-    struct hmap_node name_node; /* In struct bridge's "iface_by_name" hmap. */
-    struct hmap_node ofp_port_node; /* In struct bridge's "ifaces" hmap. */
+    struct ovs_list port_elem;  /* Element in struct port's "ifaces" list.  用于挂接到所属基础端口的ifaces链表 */
+    struct hmap_node name_node; /* In struct bridge's "iface_by_name" hmap. 用于挂接到所属网桥的hash表iface_by_name */
+    struct hmap_node ofp_port_node; /* In struct bridge's "ifaces" hmap.    用于挂接到所属网桥的hash表ifaces */
     struct port *port;          /* Containing port. */
-    char *name;                 /* Host network device name. */
-    struct netdev *netdev;      /* Network device. */
-    ofp_port_t ofp_port;        /* OpenFlow port number. */
+    char *name;                 /* Host network device name. 接口名，也就是关联的网络设备名 */
+    struct netdev *netdev;      /* Network device. 该接口关联的网络设备 */
+    ofp_port_t ofp_port;        /* OpenFlow port number.  该接口的openflow端口号 */
     uint64_t change_seq;
 
     /* These members are valid only within bridge_reconfigure(). */
-    const char *type;           /* Usually same as cfg->type. */
-    const char *netdev_type;    /* type that should be used for netdev_open. */
-    const struct ovsrec_interface *cfg;
+    const char *type;           /* Usually same as cfg->type.  该接口关联的网络设备类型 */
+    const char *netdev_type;    /* type that should be used for netdev_open. 通常就是上面的type */
+    const struct ovsrec_interface *cfg; // 指向该接口关联的ovsdb配置表
 };
 
 struct mirror {
@@ -101,16 +102,19 @@ struct mirror {
     const struct ovsrec_mirror *cfg;
 };
 
+// 定义了基础端口的抽象结构
 struct port {
-    struct hmap_node hmap_node; /* Element in struct bridge's "ports" hmap. */
-    struct bridge *bridge;
-    char *name;
+    struct hmap_node hmap_node; /* Element in struct bridge's "ports" hmap.  用于挂接到所属网桥的ports集合 */
+    struct bridge *bridge;      // 指向该基础端口所属网桥
+    char *name;                 // 基础端口名
 
-    const struct ovsrec_port *cfg;
+    const struct ovsrec_port *cfg;  // 指向该基础端口关联的ovsdb配置表
 
     /* An ordinary bridge port has 1 interface.
-     * A bridge port for bonding has at least 2 interfaces. */
-    struct ovs_list ifaces;    /* List of "struct iface"s. */
+     * A bridge port for bonding has at least 2 interfaces. 
+     * 普通的网桥基础端口包含1个接口，而1个聚合口至少包含2个接口
+     * */
+    struct ovs_list ifaces;    /* List of "struct iface"s.  这张链表记录了该基础端口包含的所有接口 */
 };
 
 // 定义了bridge的抽象结构
@@ -118,7 +122,7 @@ struct bridge {
     struct hmap_node node;      /* In 'all_bridges'. */
     char *name;                 /* User-specified arbitrary name. 该bridge名 */
     char *type;                 /* Datapath type.  该bridge的datapath类型名 */
-    struct eth_addr ea;         /* Bridge Ethernet Address. */
+    struct eth_addr ea;         /* Bridge Ethernet Address. 该bridge的mac地址 */
     struct eth_addr default_ea; /* Default MAC.  该bridge的缺省MAC，提取自uuid */
     const struct ovsrec_bridge *cfg;    // 指向该bridge关联的ovsdb配置表
 
@@ -126,8 +130,8 @@ struct bridge {
     struct ofproto *ofproto;    /* OpenFlow switch.  指向该bridge在openflow中的实例 */
 
     /* Bridge ports. */
-    struct hmap ports;          /* "struct port"s indexed by name.  该bridge包含的端口集合，键值为端口名 */
-    struct hmap ifaces;         /* "struct iface"s indexed by ofp_port.  该bridge包含的接口集合 */
+    struct hmap ports;          /* "struct port"s indexed by name.  该bridge包含的基础端口集合，键值为端口名 */
+    struct hmap ifaces;         /* "struct iface"s indexed by ofp_port.  该bridge包含的接口集合，键值为openflow端口号 */
     struct hmap iface_by_name;  /* "struct iface"s indexed by name.  该bridge包含的接口集合，键值为接口名 */
 
     /* Port mirroring. */
@@ -625,15 +629,15 @@ bridge_reconfigure(const struct ovsrec_open_vswitch *ovs_cfg)
      *     - Create ofprotos that are missing.
      *
      *     - Add ports that are missing. 
-     * 添加缺失的openflow交换机实例
-     * 添加缺失的openflow端口
      *     */
+    // 遍历所有已经创建的网桥，如果有网桥在openflow中的实例尚未存在，则创建
     HMAP_FOR_EACH_SAFE (br, next, node, &all_bridges) {
-        // 如果该网桥在openflow中的实例尚未存在，则创建
         if (!br->ofproto) {
             int error;
 
-            // 备注：使用网桥名作为datapath名
+            /* 为该网桥创建openflow交换机实例
+             * 备注：使用网桥名作为datapath名
+             */
             error = ofproto_create(br->name, br->type, &br->ofproto);
             if (error) {
                 VLOG_ERR("failed to create bridge %s: %s", br->name,
@@ -658,6 +662,7 @@ bridge_reconfigure(const struct ovsrec_open_vswitch *ovs_cfg)
         shash_destroy(&br->wanted_ports);
     }
 
+    // 更新系统统计信息
     reconfigure_system_stats(ovs_cfg);
 
     /* Complete the configuration. */
@@ -667,15 +672,19 @@ bridge_reconfigure(const struct ovsrec_open_vswitch *ovs_cfg)
         struct port *port;
 
         /* We need the datapath ID early to allow LACP ports to use it as the
-         * default system ID. */
+         * default system ID. 
+         * 获取网桥的mac和datapath ID
+         * */
         bridge_configure_datapath_id(br);
 
         HMAP_FOR_EACH (port, hmap_node, &br->ports) {
             struct iface *iface;
 
+            // 在该端口上注册一个bundle对象
             port_configure(port);
 
             LIST_FOR_EACH (iface, port_elem, &port->ifaces) {
+                //  设置该接口关联的openflow端口
                 iface_set_ofport(iface->cfg, iface->ofp_port);
                 /* Clear eventual previous errors */
                 ovsrec_interface_set_error(iface->cfg, NULL);
@@ -918,7 +927,7 @@ bridge_delete_or_reconfigure_ports(struct bridge *br)
     sset_destroy(&ofproto_ports);
 }
 
-/* 往指定网桥中添加缺失的端口，实际添加的是接口
+/* 往指定网桥中添加缺失的端口，实际包括创建网络设备、添加openflow端口、创建基础端口、创建接口
  * @with_requested_port 标识本次添加的端口是否存在特殊需求
  */
 static void
@@ -951,7 +960,7 @@ bridge_add_ports__(struct bridge *br, const struct shash *wanted_ports,
 }
 
 /* 往指定网桥中添加缺失的端口
- * @wanted_ports    这张hash表记录了该网桥中当前有效的端口配置表
+ * @wanted_ports    这张hash表记录了该网桥中当前有效的基础端口配置表
  */
 static void
 bridge_add_ports(struct bridge *br, const struct shash *wanted_ports)
@@ -969,6 +978,7 @@ bridge_add_ports(struct bridge *br, const struct shash *wanted_ports)
     bridge_add_ports__(br, wanted_ports, false);
 }
 
+// 配置指定的基础端口，实质是在该端口上注册一个bundle对象
 static void
 port_configure(struct port *port)
 {
@@ -1043,8 +1053,11 @@ port_configure(struct port *port)
     s.use_priority_tags = smap_get_bool(&cfg->other_config, "priority-tags",
                                         false);
 
-    /* Get LACP settings. */
+    /* Get LACP settings. 
+     * 提取该基础端口的lacp配置信息
+     * */
     s.lacp = port_configure_lacp(port, &lacp_settings);
+    // 如果该基础端口配置了lacp，则进一步提取其下每个接口的lacp配置信息
     if (s.lacp) {
         size_t i = 0;
 
@@ -1056,7 +1069,9 @@ port_configure(struct port *port)
         s.lacp_slaves = NULL;
     }
 
-    /* Get bond settings. */
+    /* Get bond settings. 
+     * 提取该基础端口的bond配置信息
+     * */
     if (s.n_slaves > 1) {
         s.bond = &bond_settings;
         port_configure_bond(port, &bond_settings);
@@ -1070,7 +1085,9 @@ port_configure(struct port *port)
     /* Protected port mode */
     s.protected = cfg->protected;
 
-    /* Register. */
+    /* Register. 
+     * 为openflow交换机注册一个bundle对象
+     * */
     ofproto_bundle_register(port->bridge->ofproto, port, &s);
 
     /* Clean up. */
@@ -1080,7 +1097,9 @@ port_configure(struct port *port)
     free(s.lacp_slaves);
 }
 
-/* Pick local port hardware address and datapath ID for 'br'. */
+/* Pick local port hardware address and datapath ID for 'br'. 
+ * 获取网桥的mac和datapath ID
+ * */
 static void
 bridge_configure_datapath_id(struct bridge *br)
 {
@@ -1090,8 +1109,14 @@ bridge_configure_datapath_id(struct bridge *br)
     struct iface *hw_addr_iface;
     char *dpid_string;
 
+    // 获取该网桥的MAC
     bridge_pick_local_hw_addr(br, &ea, &hw_addr_iface);
+    // 获取本地接口
     local_iface = iface_from_ofp_port(br, OFPP_LOCAL);
+    /* 如果本地接口存在，则将MAC设置到该接口关联的网络设备上
+     *
+     * 备注：这意味着本地接口上的mac就是该网桥的mac
+     */
     if (local_iface) {
         int error = netdev_set_etheraddr(local_iface->netdev, ea);
         if (error) {
@@ -1103,7 +1128,9 @@ bridge_configure_datapath_id(struct bridge *br)
     }
     br->ea = ea;
 
+    // 获取网桥的datapath ID
     dpid = bridge_pick_datapath_id(br, ea, hw_addr_iface);
+    // 如果跟openflow交换机中原有的datapath ID不同，则用新值覆盖
     if (dpid != ofproto_get_datapath_id(br->ofproto)) {
         VLOG_INFO("bridge %s: using datapath ID %016"PRIx64, br->name, dpid);
         ofproto_set_datapath_id(br->ofproto, dpid);
@@ -1716,6 +1743,7 @@ bridge_has_bond_fake_iface(const struct bridge *br, const char *name)
     return port && port_is_bond_fake_iface(port);
 }
 
+// 检查指定端口是否是bond口
 static bool
 port_is_bond_fake_iface(const struct port *port)
 {
@@ -1791,6 +1819,7 @@ iface_set_netdev_config(const struct ovsrec_interface *iface_cfg,
 
 /* Opens a network device for 'if_cfg' and configures it.  Adds the network
  * device to br->ofproto and stores the OpenFlow port number in '*ofp_portp'.
+ * 打开并配置该网络设备，然后添加为openflow交换机的端口
  *
  * If successful, returns 0 and stores the network device in '*netdevp'.  On
  * failure, returns a positive errno value and stores NULL in '*netdevp'. */
@@ -1832,8 +1861,9 @@ iface_do_create(const struct bridge *br,
     // 配置该接口的MTU
     iface_set_netdev_mtu(iface_cfg, netdev);
 
-    // 获取该接口配置的端口号
+    // 获取该接口配置的openflow端口号
     *ofp_portp = iface_pick_ofport(iface_cfg);
+    // 添加该网络设备作为openflow交换机的端口
     error = ofproto_port_add(br->ofproto, netdev, ofp_portp);
     if (error) {
         VLOG_WARN_BUF(errp, "could not add network device %s to ofproto (%s)",
@@ -1859,6 +1889,8 @@ error:
  * deallocates 'if_cfg'.
  * 在指定网桥中根据传入的接口配置表和端口配置表创建一个新的接口
  *
+ * 备注：创建基础端口的第一个接口时会同时创建该基础端口
+ *
  * Return true if an iface is successfully created, false otherwise. */
 static bool
 iface_create(struct bridge *br, const struct ovsrec_interface *iface_cfg,
@@ -1873,6 +1905,7 @@ iface_create(struct bridge *br, const struct ovsrec_interface *iface_cfg,
 
     /* Do the bits that can fail up front. */
     ovs_assert(!iface_lookup(br, iface_cfg->name));
+    // 首先是创建并配置对应的网络设备，然后添加为openflow端口
     error = iface_do_create(br, iface_cfg, &ofp_port, &netdev, &errp);
     if (error) {
         iface_clear_db_record(iface_cfg, errp);
@@ -1880,13 +1913,17 @@ iface_create(struct bridge *br, const struct ovsrec_interface *iface_cfg,
         return false;
     }
 
-    /* Get or create the port structure. */
+    /* Get or create the port structure. 
+     * 然后从该网桥中获取该基础端口，如果该端口不存在则创建
+     * */
     port = port_lookup(br, port_cfg->name);
     if (!port) {
         port = port_create(br, port_cfg);
     }
 
-    /* Create the iface structure. */
+    /* Create the iface structure. 
+     * 最后创建并初始化该接口
+     * */
     iface = xzalloc(sizeof *iface);
     ovs_list_push_back(&port->ifaces, &iface->port_elem);
     hmap_insert(&br->iface_by_name, &iface->name_node,
@@ -1902,14 +1939,19 @@ iface_create(struct bridge *br, const struct ovsrec_interface *iface_cfg,
     hmap_insert(&br->ifaces, &iface->ofp_port_node,
                 hash_ofp_port(ofp_port));
 
-    /* Populate initial status in database. */
+    /* Populate initial status in database. 
+     * 更新ovsdb中指定接口的当前状态
+     * */
     iface_refresh_stats(iface);
     iface_refresh_netdev_status(iface);
 
-    /* Add bond fake iface if necessary. */
+    /* Add bond fake iface if necessary. 
+     * 另外，如果该基础端口是一个bond口，还需要创建一个名为该基础端口名的网络设备并添加为openflow端口
+     * */
     if (port_is_bond_fake_iface(port)) {
         struct ofproto_port ofproto_port;
 
+        //  在openflow交换机中查找该基础端口名的openflow端口
         if (ofproto_port_query_by_name(br->ofproto, port->name,
                                        &ofproto_port)) {
             error = netdev_open(port->name, "internal", &netdev);
@@ -2107,15 +2149,19 @@ find_local_hw_addr(const struct bridge *br, struct eth_addr *ea,
     hmapx_destroy(&mirror_output_ports);
 }
 
+// 获取指定网桥的MAC
 static void
 bridge_pick_local_hw_addr(struct bridge *br, struct eth_addr *ea,
                           struct iface **hw_addr_iface)
 {
     *hw_addr_iface = NULL;
 
-    /* Did the user request a particular MAC? */
+    /* Did the user request a particular MAC? 
+     * 如果该网桥的ovsdb配置表中配置了指定MAC，则返回该MAC
+     * */
     const char *hwaddr = smap_get_def(&br->cfg->other_config, "hwaddr", "");
     if (eth_addr_from_string(hwaddr, ea)) {
+        // 确保mac有效
         if (eth_addr_is_multicast(*ea)) {
             VLOG_ERR("bridge %s: cannot set MAC address to multicast "
                      "address "ETH_ADDR_FMT, br->name, ETH_ADDR_ARGS(*ea));
@@ -2126,7 +2172,9 @@ bridge_pick_local_hw_addr(struct bridge *br, struct eth_addr *ea,
         }
     }
 
-    /* Find a local hw address */
+    /* Find a local hw address 
+     * 如果没有指定MAC，则自动分配一个
+     * */
     find_local_hw_addr(br, ea, NULL, hw_addr_iface);
 }
 
@@ -2134,7 +2182,9 @@ bridge_pick_local_hw_addr(struct bridge *br, struct eth_addr *ea,
  * Ethernet address is 'bridge_ea'.  If 'bridge_ea' is the Ethernet address of
  * an interface on 'br', then that interface must be passed in as
  * 'hw_addr_iface'; if 'bridge_ea' was derived some other way, then
- * 'hw_addr_iface' must be passed in as a null pointer. */
+ * 'hw_addr_iface' must be passed in as a null pointer. 
+ * 获取网桥的datapath ID
+ * */
 static uint64_t
 bridge_pick_datapath_id(struct bridge *br,
                         const struct eth_addr bridge_ea,
@@ -2155,6 +2205,7 @@ bridge_pick_datapath_id(struct bridge *br,
     const char *datapath_id;
     uint64_t dpid;
 
+    // 如果该网桥的ovsdb配置表中配置了指定的datapath ID,则直接返回该值
     datapath_id = smap_get_def(&br->cfg->other_config, "datapath-id", "");
     if (dpid_from_string(datapath_id, &dpid)) {
         return dpid;
@@ -2383,6 +2434,7 @@ iface_refresh_cfm_stats(struct iface *iface)
     }
 }
 
+// 更新ovsdb中指定接口的当前状态
 static void
 iface_refresh_stats(struct iface *iface)
 {
@@ -2430,12 +2482,15 @@ iface_refresh_stats(struct iface *iface)
 
     struct netdev_stats stats;
 
+    // 确保该接口是ovsdb配置的
     if (iface_is_synthetic(iface)) {
         return;
     }
 
     /* Intentionally ignore return value, since errors will set 'stats' to
-     * all-1s, and we will deal with that correctly below. */
+     * all-1s, and we will deal with that correctly below. 
+     * 获取该网络设备的当前状态
+     * */
     netdev_get_stats(iface->netdev, &stats);
 
     /* Copy statistics into keys[] and values[]. */
@@ -2683,17 +2738,21 @@ port_refresh_bond_status(struct port *port, bool force_update)
     }
 }
 
+// 判断指定ovs交换机是否配置了使能统计模块的功能
 static bool
 enable_system_stats(const struct ovsrec_open_vswitch *cfg)
 {
     return smap_get_bool(&cfg->other_config, "enable-statistics", false);
 }
 
+// 更新系统统计信息
 static void
 reconfigure_system_stats(const struct ovsrec_open_vswitch *cfg)
 {
+    // 首先判断是否配置了使能统计模块
     bool enable = enable_system_stats(cfg);
 
+    // 然后根据配置信息使能/禁止系统的统计信息收集模块
     system_stats_enable(enable);
     if (!enable) {
         ovsrec_open_vswitch_set_statistics(cfg, NULL);
@@ -4129,7 +4188,7 @@ bridge_aa_refresh_queued(struct bridge *br)
 
 
 /* Port functions. */
-
+// 创建基础端口
 static struct port *
 port_create(struct bridge *br, const struct ovsrec_port *cfg)
 {
@@ -4200,11 +4259,13 @@ port_destroy(struct port *port)
     }
 }
 
+// 在指定网桥中查找指定端口
 static struct port *
 port_lookup(const struct bridge *br, const char *name)
 {
     struct port *port;
 
+    // 根据端口名索引对应的端口
     HMAP_FOR_EACH_WITH_HASH (port, hmap_node, hash_string(name, 0),
                              &br->ports) {
         if (!strcmp(port->name, name)) {
@@ -4214,6 +4275,9 @@ port_lookup(const struct bridge *br, const char *name)
     return NULL;
 }
 
+/* 判断指定基础端口是否开启了lacp功能
+ * @activep     如果该端口开启了active模式的lacp，则该变量返回true
+ */
 static bool
 enable_lacp(struct port *port, bool *activep)
 {
@@ -4236,12 +4300,14 @@ enable_lacp(struct port *port, bool *activep)
     }
 }
 
+// 提取指定基础端口的lacp配置信息
 static struct lacp_settings *
 port_configure_lacp(struct port *port, struct lacp_settings *s)
 {
     const char *lacp_time, *system_id;
     int priority;
 
+    // 确保该基础端口开启了lacp功能
     if (!enable_lacp(port, &s->active)) {
         return NULL;
     }
@@ -4281,6 +4347,7 @@ port_configure_lacp(struct port *port, struct lacp_settings *s)
     return s;
 }
 
+// 提取指定接口的lacp配置信息
 static void
 iface_configure_lacp(struct iface *iface, struct lacp_slave_settings *s)
 {
@@ -4309,6 +4376,7 @@ iface_configure_lacp(struct iface *iface, struct lacp_slave_settings *s)
     s->key = key;
 }
 
+// 提取指定基础端口的bond配置信息
 static void
 port_configure_bond(struct port *port, struct bond_settings *s)
 {
@@ -4503,6 +4571,7 @@ iface_find(const char *name)
     return NULL;
 }
 
+// 根据openflow端口号检索对应的接口
 static struct iface *
 iface_from_ofp_port(const struct bridge *br, ofp_port_t ofp_port)
 {
@@ -4558,7 +4627,9 @@ iface_set_mac(const struct bridge *br, const struct port *port, struct iface *if
     }
 }
 
-/* Sets the ofport column of 'if_cfg' to 'ofport'. */
+/* Sets the ofport column of 'if_cfg' to 'ofport'. 
+ * 设置指定接口关联的openflow端口
+ * */
 static void
 iface_set_ofport(const struct ovsrec_interface *if_cfg, ofp_port_t ofport)
 {
@@ -4734,7 +4805,11 @@ iface_configure_cfm(struct iface *iface)
 }
 
 /* Returns true if 'iface' is synthetic, that is, if we constructed it locally
- * instead of obtaining it from the database. */
+ * instead of obtaining it from the database. 
+ * 检查指定接口是否是本地构建的
+ * @返回值  true意味着该接口是本地构建的
+ *          false意味着该接口由ovsdb配置
+ * */
 static bool
 iface_is_synthetic(const struct iface *iface)
 {
@@ -4758,7 +4833,7 @@ iface_get_requested_ofp_port(const struct ovsrec_interface *cfg)
     return iface_validate_ofport__(cfg->n_ofport_request, cfg->ofport_request);
 }
 
-// 获取指定接口配置的端口号，如果有配置则返回该端口号，否则返回OFPP_NONE
+// 获取指定接口配置的openflow端口号，如果有配置则返回该端口号，否则返回OFPP_NONE
 static ofp_port_t
 iface_pick_ofport(const struct ovsrec_interface *cfg)
 {

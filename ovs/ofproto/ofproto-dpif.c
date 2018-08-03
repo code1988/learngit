@@ -80,11 +80,6 @@ COVERAGE_DEFINE(packet_in_overflow);
 
 struct flow_miss;
 
-static void rule_get_stats(struct rule *, uint64_t *packets, uint64_t *bytes,
-                           long long int *used);
-static struct rule_dpif *rule_dpif_cast(const struct rule *);
-static void rule_expire(struct rule_dpif *, long long now);
-
 struct ofbundle {
     struct hmap_node hmap_node; /* In struct ofproto's "bundles" hmap. */
     struct ofproto_dpif *ofproto; /* Owning ofproto. */
@@ -109,23 +104,6 @@ struct ofbundle {
     bool floodable;          /* True if no port has OFPUTIL_PC_NO_FLOOD set. */
 };
 
-static void bundle_remove(struct ofport *);
-static void bundle_update(struct ofbundle *);
-static void bundle_destroy(struct ofbundle *);
-static void bundle_del_port(struct ofport_dpif *);
-static void bundle_run(struct ofbundle *);
-static void bundle_wait(struct ofbundle *);
-static void bundle_flush_macs(struct ofbundle *, bool);
-static void bundle_move(struct ofbundle *, struct ofbundle *);
-
-static void stp_run(struct ofproto_dpif *ofproto);
-static void stp_wait(struct ofproto_dpif *ofproto);
-static int set_stp_port(struct ofport *,
-                        const struct ofproto_port_stp_settings *);
-
-static void rstp_run(struct ofproto_dpif *ofproto);
-static void set_rstp_port(struct ofport *,
-                         const struct ofproto_port_rstp_settings *);
 
 struct ofport_dpif {
     struct hmap_node odp_port_node; /* In dpif_backer's "odp_to_ofport_map". */
@@ -156,11 +134,6 @@ struct ofport_dpif {
     size_t n_qdscp;
 };
 
-static odp_port_t ofp_port_to_odp_port(const struct ofproto_dpif *,
-                                       ofp_port_t);
-
-static ofp_port_t odp_port_to_ofp_port(const struct ofproto_dpif *,
-                                       odp_port_t);
 
 static struct ofport_dpif *
 ofport_dpif_cast(const struct ofport *ofport)
@@ -194,6 +167,7 @@ struct hmap all_ofproto_dpifs = HMAP_INITIALIZER(&all_ofproto_dpifs);
 static bool ofproto_use_tnl_push_pop = true;
 static void ofproto_unixctl_init(void);
 
+// 根据基类的openflow交换机结构计算得到其父结构，也就是基于dpif datapath的openflow交换机
 static inline struct ofproto_dpif *
 ofproto_dpif_cast(const struct ofproto *ofproto)
 {
@@ -3632,15 +3606,19 @@ port_run(struct ofport_dpif *ofport)
     ofport->may_enable = enable;
 }
 
+// 在指定openflow交换机中查找指定端口
 static int
 port_query_by_name(const struct ofproto *ofproto_, const char *devname,
                    struct ofproto_port *ofproto_port)
 {
+    // 计算得到父结构，也就是基于dpif datapath的openflow交换机实例
     struct ofproto_dpif *ofproto = ofproto_dpif_cast(ofproto_);
     struct dpif_port dpif_port;
     int error;
 
+    // 首先检查交换机的ghost_ports集合中是否存在该端口
     if (sset_contains(&ofproto->ghost_ports, devname)) {
+        // 返回该网络设备的设备类型
         const char *type = netdev_get_type_from_name(devname);
 
         /* We may be called before ofproto->up.port_by_name is populated with
@@ -3658,6 +3636,7 @@ port_query_by_name(const struct ofproto *ofproto_, const char *devname,
         return ENODEV;
     }
 
+    // 如果ghost_ports集合中不存在，进而检查ports集合中是否存在该端口
     if (!sset_contains(&ofproto->ports, devname)) {
         return ENODEV;
     }

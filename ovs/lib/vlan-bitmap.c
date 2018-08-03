@@ -19,7 +19,9 @@
 
 /* Allocates and returns a new 4096-bit bitmap that has 1-bit in positions in
  * the 'n_vlans' bits indicated in 'vlans' and 0-bits everywhere else.  Returns
- * a null pointer if there are no (valid) VLANs in 'vlans'. */
+ * a null pointer if there are no (valid) VLANs in 'vlans'. 
+ * 将指定数量的vlan id填充到一个4096位长度的数据，并返回该数据
+ * */
 unsigned long *
 vlan_bitmap_from_array(const int64_t *vlans, size_t n_vlans)
 {
@@ -29,6 +31,7 @@ vlan_bitmap_from_array(const int64_t *vlans, size_t n_vlans)
         return NULL;
     }
 
+    // 分配一个包含4096位的数据
     b = bitmap_allocate(4096);
     if (!vlan_bitmap_from_array__(vlans, n_vlans, b)) {
         free(b);

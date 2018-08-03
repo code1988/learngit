@@ -248,11 +248,12 @@ extern struct shash all_dpif_backers;
 
 struct ofport_dpif *odp_port_to_ofport(const struct dpif_backer *, odp_port_t);
 
-/* A bridge based on a "dpif" datapath. */
-
+/* A bridge based on a "dpif" datapath. 
+ * 定义了基于dpif datapath的openflow交换机结构
+ * */
 struct ofproto_dpif {
     struct hmap_node all_ofproto_dpifs_node; /* In 'all_ofproto_dpifs'. */
-    struct ofproto up;
+    struct ofproto up;      // 封装的openflow交换机基类
     struct dpif_backer *backer;
 
     /* Unique identifier for this instantiation of this bridge in this running

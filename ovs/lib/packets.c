@@ -143,7 +143,12 @@ eth_addr_is_reserved(const struct eth_addr ea)
 
 /* Attempts to parse 's' as an Ethernet address.  If successful, stores the
  * address in 'ea' and returns true, otherwise zeros 'ea' and returns
- * false.  This function checks trailing characters. */
+ * false.  This function checks trailing characters. 
+ * 解析字符串格式mac地址为二进制格式
+ * @s       字符串格式mac
+ * @ea      用于存放解析出来的二进制格式mac
+ * @返回值  解析成功则返回true，失败则返回false
+ * */
 bool
 eth_addr_from_string(const char *s, struct eth_addr *ea)
 {
