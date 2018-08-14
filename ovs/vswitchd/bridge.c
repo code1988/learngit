@@ -668,6 +668,7 @@ bridge_reconfigure(const struct ovsrec_open_vswitch *ovs_cfg)
     /* Complete the configuration. */
     sflow_bridge_number = 0;
     collect_in_band_managers(ovs_cfg, &managers, &n_managers);
+    // 遍历已经注册的网桥
     HMAP_FOR_EACH (br, node, &all_bridges) {
         struct port *port;
 
@@ -677,12 +678,14 @@ bridge_reconfigure(const struct ovsrec_open_vswitch *ovs_cfg)
          * */
         bridge_configure_datapath_id(br);
 
+        // 遍历网桥的基础端口
         HMAP_FOR_EACH (port, hmap_node, &br->ports) {
             struct iface *iface;
 
             // 在该端口上注册一个bundle对象
             port_configure(port);
 
+            // 遍历基础端口的接口
             LIST_FOR_EACH (iface, port_elem, &port->ifaces) {
                 //  设置该接口关联的openflow端口
                 iface_set_ofport(iface->cfg, iface->ofp_port);
@@ -4587,13 +4590,16 @@ iface_from_ofp_port(const struct bridge *br, ofp_port_t ofp_port)
 }
 
 /* Set Ethernet address of 'iface', if one is specified in the configuration
- * file. */
+ * file. 
+ * 配置接口的mac地址
+ * */
 static void
 iface_set_mac(const struct bridge *br, const struct port *port, struct iface *iface)
 {
     struct eth_addr ea, *mac = NULL;
     struct iface *hw_addr_iface;
 
+    // 只有"internal"类型的接口才支持配置mac
     if (strcmp(iface->type, "internal")) {
         return;
     }
