@@ -169,8 +169,8 @@ struct ovsrec_bridge {
 	bool mcast_snooping_enable;
 
 	/* mirrors column. */
-	struct ovsrec_mirror **mirrors;
-	size_t n_mirrors;
+	struct ovsrec_mirror **mirrors; // 该网桥配置的镜像集合
+	size_t n_mirrors;               // 镜像数量
 
 	/* name column. */
 	char *name;	/* Always nonnull.  该bridge名 */
@@ -1286,7 +1286,7 @@ struct ovsrec_interface {
 	struct ovsdb_idl_row header_;
 
 	/* admin_state column. */
-	char *admin_state;
+	char *admin_state;          // 该接口当前的状态："up"/"down"
 
 	/* bfd column. */
 	struct smap bfd;
@@ -1322,7 +1322,7 @@ struct ovsrec_interface {
 	char *cfm_remote_opstate;
 
 	/* duplex column. */
-	char *duplex;
+	char *duplex;           // "full"/"half"
 
 	/* error column. */
 	char *error;
@@ -1331,7 +1331,7 @@ struct ovsrec_interface {
 	struct smap external_ids;
 
 	/* ifindex column. */
-	int64_t *ifindex;
+	int64_t *ifindex;       // 该接口的接口号，实际就是对应的网络设备接口号，由内核分配
 	size_t n_ifindex;
 
 	/* ingress_policing_burst column. */
@@ -1353,19 +1353,19 @@ struct ovsrec_interface {
 	size_t n_link_speed;
 
 	/* link_state column. */
-	char *link_state;
+	char *link_state;       // 该接口当前link状态："up"/"down"
 
 	/* lldp column. */
 	struct smap lldp;
 
 	/* mac column. */
-	char *mac;
+	char *mac;              // 该接口配置的mac地址(只有"internal"类型的接口才支持配置mac)
 
 	/* mac_in_use column. */
-	char *mac_in_use;
+	char *mac_in_use;       // 该接口实际使用的mac
 
 	/* mtu column. */
-	int64_t *mtu;
+	int64_t *mtu;           // 该接口配置的mtu，通常就是1500
 	size_t n_mtu;
 
 	/* mtu_request column. */
@@ -1376,7 +1376,7 @@ struct ovsrec_interface {
 	char *name;	/* Always nonnull.  接口名(如果跟所属网桥名相同意味着是一个本地端口) */
 
 	/* ofport column. */
-	int64_t *ofport;
+	int64_t *ofport;        // 该接口的openflow端口号(对于"internal"类型的接口为OFPP_LOCAL)
 	size_t n_ofport;
 
 	/* ofport_request column. */
@@ -2014,7 +2014,9 @@ const struct smap *);
 void ovsrec_manager_index_set_target(const struct ovsrec_manager *,
 const char *target);
 
-/* Mirror table. */
+/* Mirror table. 
+ * 定义了镜像的配置表结构
+ * */
 struct ovsrec_mirror {
 	struct ovsdb_idl_row header_;
 

@@ -1708,6 +1708,7 @@ ovsdb_datum_compare_3way(const struct ovsdb_datum *a,
 /* If 'key' is one of the keys in 'datum', returns its index within 'datum',
  * otherwise UINT_MAX.  'key.type' must be the type of the atoms stored in the
  * 'keys' array in 'datum'.
+ * 在指定集合中根据key索引对应的值，成功则返回该值在集合中的序号，失败则返回UINT_MAX
  */
 unsigned int
 ovsdb_datum_find_key(const struct ovsdb_datum *datum,

@@ -2298,6 +2298,7 @@ ovsrec_bridge_get_mcast_snooping_enable(const struct ovsrec_bridge *row,
  * ovsdb_datum_find_key() is an easier and more efficient way to search
  * for a given key than implementing the same operation on the "cooked"
  * form in 'row'.
+ * 获取指定网桥关联的镜像配置集合
  *
  * 'key_type' must be OVSDB_TYPE_UUID.
  * (This helps to avoid silent bugs if someone changes mirrors's
@@ -2311,7 +2312,9 @@ ovsrec_bridge_get_mcast_snooping_enable(const struct ovsrec_bridge *row,
  * of it with ovsdb_datum_clone().
  *
  * This function is rarely useful, since it is easier to access the value
- * directly through the "mirrors" member in ovsrec_bridge. */
+ * directly through the "mirrors" member in ovsrec_bridge. 
+ * 本函数用处不大，因为可以通过网桥配置表中的mirrors属性直接获取镜像配置集合
+ * */
 const struct ovsdb_datum *
 ovsrec_bridge_get_mirrors(const struct ovsrec_bridge *row,
 	enum ovsdb_atomic_type key_type OVS_UNUSED)

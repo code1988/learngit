@@ -89,17 +89,20 @@ struct iface {
     uint64_t change_seq;
 
     /* These members are valid only within bridge_reconfigure(). */
-    const char *type;           /* Usually same as cfg->type.  该接口关联的网络设备类型 */
+    const char *type;           /* Usually same as cfg->type.  
+                                   该接口类型："internal"、"vxlan" 
+                                   需要注意的是，"internal"类型的接口不一定是本地端口 */
     const char *netdev_type;    /* type that should be used for netdev_open. 通常就是上面的type */
     const struct ovsrec_interface *cfg; // 指向该接口关联的ovsdb配置表
 };
 
+// 定义了一个镜像的抽象结构
 struct mirror {
-    struct uuid uuid;           /* UUID of this "mirror" record in database. */
-    struct hmap_node hmap_node; /* In struct bridge's "mirrors" hmap. */
-    struct bridge *bridge;
-    char *name;
-    const struct ovsrec_mirror *cfg;
+    struct uuid uuid;           /* UUID of this "mirror" record in database.  该镜像关联的ovsdb条目的uuid */
+    struct hmap_node hmap_node; /* In struct bridge's "mirrors" hmap. 用于挂接到所属网桥的mirrors集合 */
+    struct bridge *bridge;      // 指向该镜像所属网桥
+    char *name;                 // 该镜像名
+    const struct ovsrec_mirror *cfg;    // 指向该镜像关联的ovsdb配置表
 };
 
 // 定义了基础端口的抽象结构
@@ -135,7 +138,7 @@ struct bridge {
     struct hmap iface_by_name;  /* "struct iface"s indexed by name.  该bridge包含的接口集合，键值为接口名 */
 
     /* Port mirroring. */
-    struct hmap mirrors;        /* "struct mirror" indexed by UUID. */
+    struct hmap mirrors;        /* "struct mirror" indexed by UUID.  该bridge包含的镜像对象集合，键值为uuid */
 
     /* Auto Attach */
     struct hmap mappings;       /* "struct" indexed by UUID */
@@ -691,13 +694,19 @@ bridge_reconfigure(const struct ovsrec_open_vswitch *ovs_cfg)
                 iface_set_ofport(iface->cfg, iface->ofp_port);
                 /* Clear eventual previous errors */
                 ovsrec_interface_set_error(iface->cfg, NULL);
+                // 配置该接口的cfm功能
                 iface_configure_cfm(iface);
+                // 配置该接口的qos功能
                 iface_configure_qos(iface, port->cfg->qos);
+                // 配置该接口的mac地址
                 iface_set_mac(br, port, iface);
+                // 配置该接口关联的openflow端口上的BFD功能
                 ofproto_port_set_bfd(br->ofproto, iface->ofp_port,
                                      &iface->cfg->bfd);
+                // 配置该接口关联的openflow端口上的lldp功能
                 ofproto_port_set_lldp(br->ofproto, iface->ofp_port,
                                       &iface->cfg->lldp);
+                // 配置该接口关联的openflow端口的datapath
                 ofproto_port_set_config(br->ofproto, iface->ofp_port,
                                         &iface->cfg->other_config);
             }
@@ -4599,31 +4608,38 @@ iface_set_mac(const struct bridge *br, const struct port *port, struct iface *if
     struct eth_addr ea, *mac = NULL;
     struct iface *hw_addr_iface;
 
-    // 只有"internal"类型的接口才支持配置mac
+    // 只有"internal"类型的接口才支持配置mac 
     if (strcmp(iface->type, "internal")) {
         return;
     }
 
     if (iface->cfg->mac && eth_addr_from_string(iface->cfg->mac, &ea)) {
+        // 如果该接口的配置表中配置了mac，则提取该mac
         mac = &ea;
     } else if (port->cfg->fake_bridge) {
-        /* Fake bridge and no MAC set in the configuration. Pick a local one. */
+        /* Fake bridge and no MAC set in the configuration. Pick a local one. 
+         * 如果该接口的配置表中没有配置mac，并且这是一个伪桥，则从本地提取一个mac
+         * */
         find_local_hw_addr(br, &ea, port, &hw_addr_iface);
         mac = &ea;
     }
 
     if (mac) {
         if (iface->ofp_port == OFPP_LOCAL) {
+            // 本地端口mac来自所属网桥的datapath id，所以不支持从配置表配置mac(从这看来"internal"类型的接口不一定是本地端口)
             VLOG_ERR("interface %s: ignoring mac in Interface record "
                      "(use Bridge record to set local port's mac)",
                      iface->name);
         } else if (eth_addr_is_multicast(*mac)) {
+            // 不能是组播mac
             VLOG_ERR("interface %s: cannot set MAC to multicast address",
                      iface->name);
         } else if (eth_addr_is_zero(*mac)) {
+            // 不能是全0mac
             VLOG_ERR("interface %s: cannot set MAC to all zero address",
                      iface->name);
         } else {
+            // 程序运行到这里意味着提取到一个有效mac，并且该接口支持配置mac
             int error = netdev_set_etheraddr(iface->netdev, *mac);
             if (error) {
                 VLOG_ERR("interface %s: setting MAC failed (%s)",
@@ -4681,6 +4697,7 @@ queue_ids_include(const struct ovsdb_datum *queues, int64_t target)
     return ovsdb_datum_find_key(queues, &atom, OVSDB_TYPE_INTEGER) != UINT_MAX;
 }
 
+// 配置接口的qos
 static void
 iface_configure_qos(struct iface *iface, const struct ovsrec_qos *qos)
 {
@@ -4755,6 +4772,7 @@ iface_configure_qos(struct iface *iface, const struct ovsrec_qos *qos)
     ofpbuf_uninit(&queues_buf);
 }
 
+// 配置指定接口的cfm功能
 static void
 iface_configure_cfm(struct iface *iface)
 {
@@ -4852,7 +4870,7 @@ iface_pick_ofport(const struct ovsrec_interface *cfg)
 }
 
 /* Port mirroring. */
-
+// 根据一个镜像配置的uuid查找对应的镜像实例
 static struct mirror *
 mirror_find_by_uuid(struct bridge *br, const struct uuid *uuid)
 {
@@ -4866,6 +4884,7 @@ mirror_find_by_uuid(struct bridge *br, const struct uuid *uuid)
     return NULL;
 }
 
+// 配置网桥的镜像功能
 static void
 bridge_configure_mirrors(struct bridge *br)
 {
@@ -4874,24 +4893,34 @@ bridge_configure_mirrors(struct bridge *br)
     struct mirror *m, *next;
     size_t i;
 
-    /* Get rid of deleted mirrors. */
+    /* Get rid of deleted mirrors. 
+     * 获取该网桥关联的镜像配置集合
+     * */
     mc = ovsrec_bridge_get_mirrors(br->cfg, OVSDB_TYPE_UUID);
+    // 遍历当前处于生效状态的镜像实例集合，删除那些过期镜像
     HMAP_FOR_EACH_SAFE (m, next, hmap_node, &br->mirrors) {
         union ovsdb_atom atom;
 
         atom.uuid = m->uuid;
+        // 根据uuid来判断该镜像是否过期，过期则销毁
         if (ovsdb_datum_find_key(mc, &atom, OVSDB_TYPE_UUID) == UINT_MAX) {
             mirror_destroy(m);
         }
     }
 
-    /* Add new mirrors and reconfigure existing ones. */
+    /* Add new mirrors and reconfigure existing ones. 
+     * 添加新的镜像，更新原有的镜像
+     * */
     for (i = 0; i < br->cfg->n_mirrors; i++) {
+        // 获取每个镜像的配置表
         const struct ovsrec_mirror *cfg = br->cfg->mirrors[i];
+        // 根据每个镜像配置的uuid查找对应的镜像实例
         m = mirror_find_by_uuid(br, &cfg->header_.uuid);
+        // 如果该镜像实例不存在则创建
         if (!m) {
             m = mirror_create(br, cfg);
         }
+        // 更新该镜像实例
         m->cfg = cfg;
         if (!mirror_configure(m)) {
             mirror_destroy(m);
@@ -4905,6 +4934,7 @@ bridge_configure_mirrors(struct bridge *br)
     bitmap_free(flood_vlans);
 }
 
+// 创建一个镜像实例
 static struct mirror *
 mirror_create(struct bridge *br, const struct ovsrec_mirror *cfg)
 {
@@ -4919,6 +4949,7 @@ mirror_create(struct bridge *br, const struct ovsrec_mirror *cfg)
     return m;
 }
 
+// 销毁一个镜像实例
 static void
 mirror_destroy(struct mirror *m)
 {
@@ -4958,6 +4989,7 @@ mirror_collect_ports(struct mirror *m,
     *n_out_portsp = n_out_ports;
 }
 
+// 更新指定的镜像实例
 static bool
 mirror_configure(struct mirror *m)
 {

@@ -1117,7 +1117,9 @@ ofproto_port_set_queues(struct ofproto *ofproto, ofp_port_t ofp_port,
             : EOPNOTSUPP);
 }
 
-/* LLDP configuration. */
+/* LLDP configuration. 
+ * 配置接口的lldp功能
+ * */
 void
 ofproto_port_set_lldp(struct ofproto *ofproto,
                       ofp_port_t ofp_port,
@@ -1240,7 +1242,9 @@ ofproto_port_set_cfm(struct ofproto *ofproto, ofp_port_t ofp_port,
 }
 
 /* Configures BFD on 'ofp_port' in 'ofproto'.  This function has no effect if
- * 'ofproto' does not have a port 'ofp_port'. */
+ * 'ofproto' does not have a port 'ofp_port'. 
+ * 配置指定openflow端口上的BFD协议
+ * */
 void
 ofproto_port_set_bfd(struct ofproto *ofproto, ofp_port_t ofp_port,
                      const struct smap *cfg)
@@ -1334,6 +1338,8 @@ ofproto_port_get_lacp_stats(const struct ofport *port, struct lacp_slave_stats *
  * Bundles only affect the NXAST_AUTOPATH action and output to the OFPP_NORMAL
  * port. 
  * 为指定openflow交换机注册一个bundle对象
+ *
+ * 备注：一个bundle实际类似于ovsdb中的一个基础端口，下辖至少一个从设备
  * */
 int
 ofproto_bundle_register(struct ofproto *ofproto, void *aux,
@@ -2097,7 +2103,7 @@ ofproto_port_del(struct ofproto *ofproto, ofp_port_t ofp_port)
 }
 
 /* Refreshes datapath configuration of port number 'ofp_port' in 'ofproto'.
- *
+ * 配置指定openflow端口关联的datapath
  * This function has no effect if 'ofproto' does not have a port 'ofp_port'. */
 void
 ofproto_port_set_config(struct ofproto *ofproto, ofp_port_t ofp_port,
@@ -2106,6 +2112,7 @@ ofproto_port_set_config(struct ofproto *ofproto, ofp_port_t ofp_port,
     struct ofport *ofport;
     int error;
 
+    // 根据openflow端口号查找对应的openflow端口
     ofport = ofproto_get_port(ofproto, ofp_port);
     if (!ofport) {
         VLOG_WARN("%s: cannot configure datapath on nonexistent port %"PRIu32,
@@ -2113,6 +2120,7 @@ ofproto_port_set_config(struct ofproto *ofproto, ofp_port_t ofp_port,
         return;
     }
 
+    // 调用这类openflow交换机定义的port_set_config方法最终完成端口datapath配置
     error = (ofproto->ofproto_class->port_set_config
              ? ofproto->ofproto_class->port_set_config(ofport, cfg)
              : EOPNOTSUPP);
@@ -2556,6 +2564,7 @@ ofport_destroy(struct ofport *port, bool del)
      }
 }
 
+// 返回openflow交换机中的指定openflow端口
 struct ofport *
 ofproto_get_port(const struct ofproto *ofproto, ofp_port_t ofp_port)
 {

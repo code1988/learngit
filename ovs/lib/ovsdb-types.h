@@ -24,7 +24,9 @@
 
 struct json;
 
-/* An atomic type: one that OVSDB regards as a single unit of data. */
+/* An atomic type: one that OVSDB regards as a single unit of data. 
+ * ovsdb定义的数据类型
+ * */
 enum ovsdb_atomic_type {
     OVSDB_TYPE_VOID,            /* No value. */
     OVSDB_TYPE_INTEGER,         /* Signed 64-bit integer. */
