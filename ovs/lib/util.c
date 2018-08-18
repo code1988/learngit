@@ -175,6 +175,7 @@ nullable_string_is_equal(const char *a, const char *b)
     return a ? b && !strcmp(a, b) : !b;
 }
 
+// ovs封装的vsnprintf接口
 char *
 xvasprintf(const char *format, va_list args)
 {
@@ -1027,6 +1028,7 @@ base_name(const char *file_name)
  * returns an absolute path to 'file_name' considering it relative to 'dir',
  * which itself must be absolute.  'dir' may be null or the empty string, in
  * which case the current working directory is used.
+ * 返回文件的绝对路径
  *
  * Additionally on Windows, if 'file_name' has a ':', returns a copy of
  * 'file_name'

@@ -451,7 +451,11 @@ stream_get_peer_id(const struct stream *stream)
 /* Given 'name', a pstream name in the form "TYPE:ARGS", stores the class
  * named "TYPE" into '*classp' and returns 0.  Returns EAFNOSUPPORT and stores
  * a null pointer into '*classp' if 'name' is in the wrong form or if no such
- * class exists. */
+ * class exists. 
+ * 根据类名查找对应的类管理块
+ * @name    "TYPE:ARGS"格式，其中"TYPE"就是要查找的类名
+ * @classp  用于存放对应的类管理块
+ * */
 static int
 pstream_lookup_class(const char *name, const struct pstream_class **classp)
 {

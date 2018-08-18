@@ -52,7 +52,9 @@ struct unixctl_conn {
     struct json *request_id;   /* ID of the currently active request. */
 };
 
-/* Server for control connection. */
+/* Server for control connection. 
+ * 定义了UNIX域服务端控制块结构
+ * */
 struct unixctl_server {
     struct pstream *listener;
     struct ovs_list conns;
@@ -186,7 +188,8 @@ unixctl_command_reply_error(struct unixctl_conn *conn, const char *error)
 }
 
 /* Creates a unixctl server listening on 'path', which for POSIX may be:
- *
+ * 创建UNIX域服务端套接字
+ * @path: 不同的取值代表了以下含义    
  *      - NULL, in which case <rundir>/<program>.<pid>.ctl is used.
  *
  *      - A name that does not start with '/', in which case it is put in
@@ -210,6 +213,8 @@ unixctl_command_reply_error(struct unixctl_conn *conn, const char *error)
  * daemon instead of the pid of the program that exited.  (Otherwise,
  * "ovs-appctl --target=<program>" will fail.)
  *
+ * @serverp: 用于存放创建的UNIX域服务端控制块
+ *
  * Returns 0 if successful, otherwise a positive errno value.  If successful,
  * sets '*serverp' to the new unixctl_server (or to NULL if 'path' was "none"),
  * otherwise to NULL. */
@@ -222,11 +227,13 @@ unixctl_server_create(const char *path, struct unixctl_server **serverp)
     int error;
 
     *serverp = NULL;
+    // 如果传入的套接字路径为“none”，则不创建直接返回
     if (path && !strcmp(path, "none")) {
         return 0;
     }
 
     if (path) {
+        // 如果传入了非“none”的有效套接字路径，首先转换成绝对路径，然后添加前缀，最后进行转储
         char *abs_path;
 #ifndef _WIN32
         abs_path = abs_file_name(ovs_rundir(), path);
@@ -236,6 +243,7 @@ unixctl_server_create(const char *path, struct unixctl_server **serverp)
         punix_path = xasprintf("punix:%s", abs_path);
         free(abs_path);
     } else {
+        // 如果传入的套接字路径名为NULL，则设置缺省的套接字路径名格式
 #ifndef _WIN32
         punix_path = xasprintf("punix:%s/%s.%ld.ctl", ovs_rundir(),
                                program_name, (long int) getpid());
