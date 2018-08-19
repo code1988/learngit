@@ -24,12 +24,16 @@ struct smp_operations;
 #define smp_init_ops(ops) (bool (*)(void))NULL
 #endif
 
+// 定义了machine描述符结构
 struct machine_desc {
-	unsigned int		nr;		/* architecture number	*/
-	const char		*name;		/* architecture name	*/
+	unsigned int		nr;		/* architecture number	就是传统的machine type ID */
+	const char		*name;		/* architecture name	该machine的型号名称       */
 	unsigned long		atag_offset;	/* tagged list (relative) */
 	const char *const 	*dt_compat;	/* array of device tree
-						 * 'compatible' strings	*/
+						 * 'compatible' strings	
+                         * 定义了该machine描述符compatible字符串的列表
+                         * setup_arch中会根据bootloader传入的dtb的root node的'compatible' strings来匹配最合适的machine描述符
+                         * */
 
 	unsigned int		nr_irqs;	/* number of IRQs */
 
@@ -55,10 +59,10 @@ struct machine_desc {
 	void			(*reserve)(void);/* reserve mem blocks	*/
 	void			(*map_io)(void);/* IO mapping function	*/
 	void			(*init_early)(void);
-	void			(*init_irq)(void);
-	void			(*init_time)(void);
-	void			(*init_machine)(void);
-	void			(*init_late)(void);
+	void			(*init_irq)(void);      // 板卡中断控制器初始化
+	void			(*init_time)(void); 
+	void			(*init_machine)(void);  // 指向板卡自定义的初始化函数，实际就是将设备树中定义的各种device node加入到系统中
+	void			(*init_late)(void);     // 被 arch/arm/kernel/setup.c -> customize_machine调用
 #ifdef CONFIG_MULTI_IRQ_HANDLER
 	void			(*handle_irq)(struct pt_regs *);
 #endif
@@ -91,6 +95,10 @@ static const struct machine_desc __mach_desc_##_type	\
 #define MACHINE_END				\
 };
 
+/* 用来定义一个machine描述符
+ *
+ * 备注：编译时，该描述符会被放入一个特殊的段".arch.info.init"中，形成machine描述符列表
+ */
 #define DT_MACHINE_START(_name, _namestr)		\
 static const struct machine_desc __mach_desc_##_name	\
  __used							\
