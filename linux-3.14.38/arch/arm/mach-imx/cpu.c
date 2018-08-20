@@ -84,7 +84,7 @@ struct device * __init imx_soc_device_init(void)
 
 	soc_dev_attr->family = "Freescale i.MX";
 
-    // 获取imx家族产品设备树中的root节点
+    // 获取板卡设备树中的root节点
 	root = of_find_node_by_path("/");
     // 从root节点中获取"model"属性值，也就是板卡型号
 	ret = of_property_read_string(root, "model", &soc_dev_attr->machine);

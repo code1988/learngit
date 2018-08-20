@@ -9,10 +9,10 @@
 #include "hardware.h"
 #include "common.h"
 
-unsigned int __mxc_cpu_type;
+unsigned int __mxc_cpu_type;            // 记录了IMX家族具体的cpu型号
 EXPORT_SYMBOL(__mxc_cpu_type);
 
-static unsigned int imx_soc_revision;
+static unsigned int imx_soc_revision;   // 记录了IMX家族soc版本号
 
 void mxc_set_cpu_type(unsigned int type)
 {
@@ -73,6 +73,9 @@ void __init imx_aips_allow_unprivileged_access(
 	}
 }
 
+/* IMX家族soc设备初始化
+ * 成功则返回soc设备对应的device结构指针
+ */
 struct device * __init imx_soc_device_init(void)
 {
 	struct soc_device_attribute *soc_dev_attr;
@@ -87,7 +90,9 @@ struct device * __init imx_soc_device_init(void)
 
 	soc_dev_attr->family = "Freescale i.MX";
 
+    // 获取板卡设备树中的root节点
 	root = of_find_node_by_path("/");
+    // 从root节点中获取"model"属性值，也就是板卡型号
 	ret = of_property_read_string(root, "model", &soc_dev_attr->machine);
 	of_node_put(root);
 	if (ret)
@@ -147,10 +152,12 @@ struct device * __init imx_soc_device_init(void)
 	if (!soc_dev_attr->revision)
 		goto free_soc;
 
+    // 注册该IMX家族的soc设备
 	soc_dev = soc_device_register(soc_dev_attr);
 	if (IS_ERR(soc_dev))
 		goto free_rev;
 
+    // 返回该IMX家族的soc设备对应的通用意义上设备对象
 	return soc_device_to_device(soc_dev);
 
 free_rev:

@@ -8,11 +8,12 @@
 
 #include <linux/device.h>
 
+// 定义了soc的属性集合
 struct soc_device_attribute {
-	const char *machine;
-	const char *family;
-	const char *revision;
-	const char *soc_id;
+	const char *machine;    // 板卡型号，通常来自设备树root节点下的"model"属性值
+	const char *family;     // 该soc所属的家族(比如"Freescale i.MX")
+	const char *revision;   // 该soc版本号，一个"*.*"的字符串
+	const char *soc_id;     // 类似于板卡型号(比如"i.MX6UL")
 };
 
 /**

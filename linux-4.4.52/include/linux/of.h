@@ -32,13 +32,14 @@
 typedef u32 phandle;
 typedef u32 ihandle;
 
+// 用来描述dts中的一个属性信息
 struct property {
-	char	*name;
-	int	length;
-	void	*value;
-	struct property *next;
+	char	*name;          // 属性名
+	int	length;             // 属性值的长度
+	void	*value;         // 属性值，支持表的格式
+	struct property *next;  // 指向下一个属性信息
 	unsigned long _flags;
-	unsigned int unique_id;
+	unsigned int unique_id; // 分配给该属性的唯一编号
 	struct bin_attribute attr;
 };
 
@@ -46,16 +47,17 @@ struct property {
 struct of_irq_controller;
 #endif
 
+// 描述了设备树的一个节点
 struct device_node {
-	const char *name;
-	const char *type;
+	const char *name;       // 节点名
+	const char *type;       // 对应device_type属性值 
 	phandle phandle;
-	const char *full_name;
+	const char *full_name;  // 指向该节点的完整路径
 	struct fwnode_handle fwnode;
 
-	struct	property *properties;
+	struct	property *properties;   // 指向该节点的属性列表
 	struct	property *deadprops;	/* removed properties */
-	struct	device_node *parent;
+	struct	device_node *parent;    // 通过parent、child、sibling这3个字段，将所有的节点连接起来，组成了一个完整的设备树
 	struct	device_node *child;
 	struct	device_node *sibling;
 	struct	kobject kobj;
@@ -801,6 +803,8 @@ static inline int of_property_count_strings(struct device_node *np,
 /**
  * of_property_read_string_index() - Find and read a string from a multiple
  * strings property.
+ * 根据属性名在指定设备节点中查找对应的字符串列表类型的属性值，最后返回指定序号的字符串
+ *
  * @np:		device node from which the property value is to be read.
  * @propname:	name of the property to be searched.
  * @index:	index of the string in the list of strings
@@ -907,6 +911,7 @@ static inline int of_property_read_s32(const struct device_node *np,
 	for (dn = of_find_node_with_property(NULL, prop_name); dn; \
 	     dn = of_find_node_with_property(dn, prop_name))
 
+// 获取指定dts节点中的子dts节点数量
 static inline int of_get_child_count(const struct device_node *np)
 {
 	struct device_node *child;
