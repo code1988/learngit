@@ -50,8 +50,10 @@
 
 VLOG_DEFINE_THIS_MODULE(rstp);
 
+// 定义了一个用于维护整个rstp模块的互斥锁
 struct ovs_mutex rstp_mutex = OVS_MUTEX_INITIALIZER;
 
+// 这张链表记录了所有已经创建的rstp实例
 static struct ovs_list all_rstps__ = OVS_LIST_INITIALIZER(&all_rstps__);
 static struct ovs_list *const all_rstps OVS_GUARDED_BY(rstp_mutex) = &all_rstps__;
 
@@ -180,7 +182,9 @@ rstp_ref(struct rstp *rstp)
     return rstp;
 }
 
-/* Frees RSTP struct when reference count reaches zero. */
+/* Frees RSTP struct when reference count reaches zero. 
+ * 指定rstp实例的引用计数减1,如果为0则销毁该rstp实例
+ * */
 void
 rstp_unref(struct rstp *rstp)
 {
@@ -248,7 +252,13 @@ rstp_init(void)
                              NULL);
 }
 
-/* Creates and returns a new RSTP instance that initially has no ports. */
+/* Creates and returns a new RSTP instance that initially has no ports. 
+ * 创建一个不包含任何端口的rstp实例
+ * @name            该openflow交换机的datapath名，将同时作为该rstp实例名
+ * @bridge_address  rstp桥mac地址
+ * @send_bpdu       rstp协议bpdu发送函数
+ * @aux             自定义变量，实际就是该rstp实例关联的openflow交换机结构
+ * */
 struct rstp *
 rstp_create(const char *name, rstp_identifier bridge_address,
             void (*send_bpdu)(struct dp_packet *bpdu, void *port_aux,
@@ -267,9 +277,13 @@ rstp_create(const char *name, rstp_identifier bridge_address,
     hmap_init(&rstp->ports);
 
     ovs_mutex_lock(&rstp_mutex);
-    /* Set bridge address. */
+    /* Set bridge address. 
+     * 配置该rstp实例的网桥地址信息，同时地址信息的变化会传导至桥优先级向量和端口优先级向量
+     */
     rstp_set_bridge_address__(rstp, bridge_address);
-    /* Set default parameters values. */
+    /* Set default parameters values. 
+     * 配置该rstp实例的一系列缺省参数
+     * */
     rstp_set_bridge_priority__(rstp, RSTP_DEFAULT_PRIORITY);
     rstp_set_bridge_ageing_time__(rstp, RSTP_DEFAULT_AGEING_TIME);
     rstp_set_bridge_force_protocol_version__(rstp, FPV_DEFAULT);
@@ -291,6 +305,7 @@ rstp_create(const char *name, rstp_identifier bridge_address,
 
     ovs_refcount_init(&rstp->ref_cnt);
 
+    // 将创建完毕的rstp实例插入全局链表all_rstps
     ovs_list_push_back(all_rstps, &rstp->node);
     ovs_mutex_unlock(&rstp_mutex);
 
@@ -301,6 +316,7 @@ rstp_create(const char *name, rstp_identifier bridge_address,
 /* Called by rstp_set_bridge_address() and rstp_set_bridge_priority(),
  * it updates the bridge priority vector according to the values passed by
  * those setters.
+ * 更新指定rstp实例的桥优先级向量，同时会进一步触发更新其下所有rstp端口的优先级向量
  */
 static void
 set_bridge_priority__(struct rstp *rstp)
@@ -314,16 +330,21 @@ set_bridge_priority__(struct rstp *rstp)
 
     /* [17.13] When the bridge address changes, recalculates all priority
      * vectors.
+     * 桥优先级向量改变后，需要重新计算所有rstp端口的优先级向量
      */
     HMAP_FOR_EACH (p, node, &rstp->ports) {
         p->selected = false;
         p->reselect = true;
     }
     rstp->changes = true;
+    // 更新生成树状态
     updt_roles_tree__(rstp);
 }
 
-/* Sets the bridge address. */
+/* Sets the bridge address. 
+ * 配置指定rstp实例的网桥地址信息，同时地址信息的变化会传导至桥优先级向量和端口优先级向量
+ * @bridge_address  rstp中桥mac地址(传入时确保高16位为0)
+ * */
 static void
 rstp_set_bridge_address__(struct rstp *rstp, rstp_identifier bridge_address)
 {
@@ -337,7 +358,9 @@ rstp_set_bridge_address__(struct rstp *rstp, rstp_identifier bridge_address)
     }
 }
 
-/* Sets the bridge address. */
+/* Sets the bridge address. 
+ * 配置指定rstp实例的网桥地址信息(实际就是封装了一层rstp_mutex)
+ * */
 void
 rstp_set_bridge_address(struct rstp *rstp, rstp_identifier bridge_address)
 {
@@ -369,7 +392,9 @@ rstp_get_bridge_id(const struct rstp *rstp)
     return bridge_id;
 }
 
-/* Sets the bridge priority. */
+/* Sets the bridge priority. 
+ * 配置指定rstp实例的桥优先级
+ * */
 static void
 rstp_set_bridge_priority__(struct rstp *rstp, int new_priority)
 {
@@ -387,6 +412,7 @@ rstp_set_bridge_priority__(struct rstp *rstp, int new_priority)
     }
 }
 
+// 配置指定rstp实例的桥优先级(实际就是封装了一层rstp_mutex)
 void
 rstp_set_bridge_priority(struct rstp *rstp, int new_priority)
 {
@@ -395,7 +421,9 @@ rstp_set_bridge_priority(struct rstp *rstp, int new_priority)
     ovs_mutex_unlock(&rstp_mutex);
 }
 
-/* Sets the bridge ageing time. */
+/* Sets the bridge ageing time. 
+ * 配置指定rstp实例的mac老化时间
+ * */
 static void
 rstp_set_bridge_ageing_time__(struct rstp *rstp, int new_ageing_time)
 {
@@ -407,6 +435,7 @@ rstp_set_bridge_ageing_time__(struct rstp *rstp, int new_ageing_time)
     }
 }
 
+// 配置指定rstp实例的mac老化时间(实际就是封装了一层rstp_mutex)
 void
 rstp_set_bridge_ageing_time(struct rstp *rstp, int new_ageing_time)
 {
@@ -470,7 +499,9 @@ reinitialize_rstp__(struct rstp *rstp)
     rstp->ref_cnt = temp.ref_cnt;
 }
 
-/* Sets the force protocol version parameter. */
+/* Sets the force protocol version parameter. 
+ * 配置指定rstp实例的协议版本
+ * */
 static void
 rstp_set_bridge_force_protocol_version__(struct rstp *rstp,
                 enum rstp_force_protocol_version new_force_protocol_version)
@@ -499,6 +530,7 @@ rstp_set_bridge_force_protocol_version__(struct rstp *rstp,
     }
 }
 
+// 配置指定rstp实例的协议版本(实际就是封装了一层rstp_mutex)
 void
 rstp_set_bridge_force_protocol_version(struct rstp *rstp,
                 enum rstp_force_protocol_version new_force_protocol_version)
@@ -518,7 +550,9 @@ rstp_set_bridge_hello_time__(struct rstp *rstp)
     rstp->bridge_hello_time = RSTP_BRIDGE_HELLO_TIME;
 }
 
-/* Sets the bridge max age parameter. */
+/* Sets the bridge max age parameter. 
+ * 配置指定rstp实例的消息老化时间
+ * */
 static void
 rstp_set_bridge_max_age__(struct rstp *rstp, int new_max_age)
 {
@@ -539,6 +573,7 @@ rstp_set_bridge_max_age__(struct rstp *rstp, int new_max_age)
     }
 }
 
+// 配置指定rstp实例的消息老化时间(实际就是封装了一层rstp_mutex)
 void
 rstp_set_bridge_max_age(struct rstp *rstp, int new_max_age)
 {
@@ -547,7 +582,9 @@ rstp_set_bridge_max_age(struct rstp *rstp, int new_max_age)
     ovs_mutex_unlock(&rstp_mutex);
 }
 
-/* Sets the bridge forward delay parameter. */
+/* Sets the bridge forward delay parameter. 
+ * 配置指定rstp实例的转发延迟
+ * */
 static void
 rstp_set_bridge_forward_delay__(struct rstp *rstp, int new_forward_delay)
 {
@@ -565,6 +602,7 @@ rstp_set_bridge_forward_delay__(struct rstp *rstp, int new_forward_delay)
     }
 }
 
+// 配置指定rstp实例的转发延迟(实际就是封装了一层rstp_mutex)
 void
 rstp_set_bridge_forward_delay(struct rstp *rstp, int new_forward_delay)
 {
@@ -573,7 +611,9 @@ rstp_set_bridge_forward_delay(struct rstp *rstp, int new_forward_delay)
     ovs_mutex_unlock(&rstp_mutex);
 }
 
-/* Sets the bridge transmit hold count parameter. */
+/* Sets the bridge transmit hold count parameter. 
+ * 配置指定rstp实例的发送间隔
+ * */
 static void
 rstp_set_bridge_transmit_hold_count__(struct rstp *rstp,
                                       int new_transmit_hold_count)
@@ -594,6 +634,7 @@ rstp_set_bridge_transmit_hold_count__(struct rstp *rstp,
     }
 }
 
+// 配置指定rstp实例的发送间隔(实际就是封装了一层rstp_mutex)
 void
 rstp_set_bridge_transmit_hold_count(struct rstp *rstp,
                                     int new_transmit_hold_count)
@@ -736,7 +777,9 @@ rstp_port_set_port_name__(struct rstp_port *port, const char *name)
     port->port_name = xstrdup(name);
 }
 
-/* Converts the link speed to a port path cost [Table 17-3]. */
+/* Converts the link speed to a port path cost [Table 17-3]. 
+ * 根据传入的速率值计算对应的rstp路径成本
+ * */
 uint32_t
 rstp_convert_speed_to_cost(unsigned int speed)
 {
@@ -1117,6 +1160,7 @@ rstp_port_set_state__(struct rstp_port *p, enum rstp_state state)
     p->rstp_state = state;
 }
 
+// 配置指定rstp端口的状态
 void
 rstp_port_set_state(struct rstp_port *p, enum rstp_state state)
 {
@@ -1125,7 +1169,9 @@ rstp_port_set_state(struct rstp_port *p, enum rstp_state state)
     ovs_mutex_unlock(&rstp_mutex);
 }
 
-/* Adds a RSTP port. */
+/* Adds a RSTP port. 
+ * 创建并添加一个rstp端口实例到指定rstp实例中 
+ * */
 struct rstp_port *
 rstp_add_port(struct rstp *rstp)
 {
@@ -1453,6 +1499,7 @@ rstp_port_set_path_cost(struct rstp_port *port, uint32_t path_cost)
     ovs_mutex_unlock(&rstp_mutex);
 }
 
+// 配置指定rstp端口实例中的自定义数据
 void
 rstp_port_set_aux(struct rstp_port *port, void *aux)
 {

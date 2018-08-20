@@ -192,6 +192,7 @@ struct dpif_backer_support {
 
 /* Reasons that we might need to revalidate every datapath flow, and
  * corresponding coverage counters.
+ * 定义了需要再次验证的原因
  *
  * A value of 0 means that there is no need to revalidate.
  *
@@ -199,17 +200,20 @@ struct dpif_backer_support {
  * counters, but with only a few reasons I guess this is good enough for
  * now. */
 enum revalidate_reason {
-    REV_RECONFIGURE = 1,       /* Switch configuration changed. */
-    REV_STP,                   /* Spanning tree protocol port status change. */
-    REV_RSTP,                  /* RSTP port status change. */
-    REV_BOND,                  /* Bonding changed. */
-    REV_PORT_TOGGLED,          /* Port enabled or disabled by CFM, LACP, ...*/
+    REV_RECONFIGURE = 1,       /* Switch configuration changed.                 交换机配置发生变化 */
+    REV_STP,                   /* Spanning tree protocol port status change.    stp端口状态发生变化 */
+    REV_RSTP,                  /* RSTP port status change.                      rstp端口状态发生变化 */
+    REV_BOND,                  /* Bonding changed.                              bond变化 */
+    REV_PORT_TOGGLED,          /* Port enabled or disabled by CFM, LACP, ...    端口使能/禁止CFM、LACP等协议 */
     REV_FLOW_TABLE,            /* Flow table changed. */
-    REV_MAC_LEARNING,          /* Mac learning changed. */
-    REV_MCAST_SNOOPING,        /* Multicast snooping changed. */
+    REV_MAC_LEARNING,          /* Mac learning changed.                         mac地址学习发生变化 */
+    REV_MCAST_SNOOPING,        /* Multicast snooping changed.                   组播snooping发生变化 */
 };
 
-/* All datapaths of a given type share a single dpif backer instance. */
+/* All datapaths of a given type share a single dpif backer instance. 
+ * dpif支持者实例结构
+ * 备注：相同类型的datapath将共享一个dpif支持者实例
+ * */
 struct dpif_backer {
     char *type;
     int refcount;
@@ -221,7 +225,7 @@ struct dpif_backer {
 
     struct simap tnl_backers;      /* Set of dpif ports backing tunnels. */
 
-    enum revalidate_reason need_revalidate; /* Revalidate all flows. */
+    enum revalidate_reason need_revalidate; /* Revalidate all flows.  记录了需要在次验证的原因 */
 
     bool recv_set_enable; /* Enables or disables receiving packets. */
 
@@ -249,12 +253,12 @@ extern struct shash all_dpif_backers;
 struct ofport_dpif *odp_port_to_ofport(const struct dpif_backer *, odp_port_t);
 
 /* A bridge based on a "dpif" datapath. 
- * 定义了基于dpif datapath的openflow交换机结构
+ * 定义了基于dpif实现的openflow交换机结构
  * */
 struct ofproto_dpif {
     struct hmap_node all_ofproto_dpifs_node; /* In 'all_ofproto_dpifs'. */
-    struct ofproto up;      // 封装的openflow交换机基类
-    struct dpif_backer *backer;
+    struct ofproto up;          // 封装的openflow交换机基类
+    struct dpif_backer *backer; // 指向这类openflow交换机共享的dpif支持者实例
 
     /* Unique identifier for this instantiation of this bridge in this running
      * process.  */
@@ -274,7 +278,7 @@ struct ofproto_dpif {
     struct dpif_sflow *sflow;
     struct dpif_ipfix *ipfix;
     struct hmap bundles;        /* Contains "struct ofbundle"s. */
-    struct mac_learning *ml;
+    struct mac_learning *ml;    // 指向该ovs交换机的mac地址学习表
     struct mcast_snooping *ms;
     bool has_bonded_bundles;
     bool lacp_enabled;

@@ -34,20 +34,20 @@
 #include "openvswitch/vlog.h"
 
 VLOG_DEFINE_THIS_MODULE(jsonrpc);
-// 定义了jsonrpc对象结构,该对象包含了对一个连接session上数据传输和处理方式
+// 定义了jsonrpc对象结构,该对象包含了对一条连接session上数据传输和处理方式
 struct jsonrpc {
-    struct stream *stream;
-    char *name;
+    struct stream *stream;      // 该jsonrpc拥有的一条连接流
+    char *name;                 // 该jsonrpc名字，来自上面这条流名
     int status;
 
     /* Input. */
-    struct byteq input;
-    uint8_t input_buffer[512];
+    struct byteq input;         // 用于存储输入数据的环形缓冲区对象
+    uint8_t input_buffer[512];  // 环形缓冲区
     struct json_parser *parser;
 
     /* Output. */
-    struct ovs_list output;     /* Contains "struct ofpbuf"s. */
-    size_t output_count;        /* Number of elements in "output". */
+    struct ovs_list output;     /* Contains "struct ofpbuf"s.  用于存储输出数据的链表 */
+    size_t output_count;        /* Number of elements in "output".  链表节点数量 */
     size_t backlog;
 };
 
@@ -76,7 +76,7 @@ jsonrpc_pstream_open(const char *name, struct pstream **pstreamp, uint8_t dscp)
 
 /* Returns a new JSON-RPC stream that uses 'stream' for input and output.  The
  * new jsonrpc object takes ownership of 'stream'. 
- * 为传入的stream分配一个jsonrpc对象
+ * 为传入的stream创建一个jsonrpc对象
  * */
 struct jsonrpc *
 jsonrpc_open(struct stream *stream)
@@ -106,7 +106,9 @@ jsonrpc_close(struct jsonrpc *rpc)
     }
 }
 
-/* Performs periodic maintenance on 'rpc', such as flushing output buffers. */
+/* Performs periodic maintenance on 'rpc', such as flushing output buffers. 
+ * 对指定jsonrpc执行定期维护
+ * */
 void
 jsonrpc_run(struct jsonrpc *rpc)
 {

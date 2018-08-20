@@ -416,7 +416,7 @@ kill_connection(struct unixctl_conn *conn)
     free(conn);
 }
 
-// 运行uninctl服务端程序,实际就是接受和并处理新/旧连接session
+// 运行unixctl服务端程序,实际就是接受并处理新/旧连接session
 void
 unixctl_server_run(struct unixctl_server *server)
 {
@@ -447,7 +447,9 @@ unixctl_server_run(struct unixctl_server *server)
     }
 
     struct unixctl_conn *conn, *next;
+    // 遍历该unixctl服务端的连接session链表
     LIST_FOR_EACH_SAFE (conn, next, node, &server->conns) {
+        // 处理每个连接session
         int error = run_connection(conn);
         if (error && error != EAGAIN) {
             kill_connection(conn);

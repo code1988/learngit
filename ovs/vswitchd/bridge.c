@@ -489,6 +489,9 @@ bridge_exit(bool delete_datapath)
 /* Looks at the list of managers in 'ovs_cfg' and extracts their remote IP
  * addresses and ports into '*managersp' and '*n_managersp'.  The caller is
  * responsible for freeing '*managersp' (with free()).
+ * 收集ovs交换机配置表中的所有manager信息
+ * @managersp   这张表用于存放收集的manager信息
+ * @n_managersp 收集到的manager信息数量
  *
  * You may be asking yourself "why does ovs-vswitchd care?", because
  * ovsdb-server is responsible for connecting to the managers, and ovs-vswitchd
@@ -509,7 +512,9 @@ collect_in_band_managers(const struct ovsrec_open_vswitch *ovs_cfg,
 
     /* Collect all of the potential targets from the "targets" columns of the
      * rows pointed to by "manager_options", excluding any that are
-     * out-of-band. */
+     * out-of-band. 
+     * 首先收集那些非带外的manager
+     * */
     sset_init(&targets);
     for (i = 0; i < ovs_cfg->n_manager_options; i++) {
         struct ovsrec_manager *m = ovs_cfg->manager_options[i];
@@ -521,7 +526,9 @@ collect_in_band_managers(const struct ovsrec_open_vswitch *ovs_cfg,
         }
     }
 
-    /* Now extract the targets' IP addresses. */
+    /* Now extract the targets' IP addresses. 
+     * 然后提取每个manager的ip地址
+     * */
     if (!sset_is_empty(&targets)) {
         const char *target;
 
@@ -532,7 +539,9 @@ collect_in_band_managers(const struct ovsrec_open_vswitch *ovs_cfg,
                 struct sockaddr_in in;
             } sa;
 
-            /* Ignore loopback. */
+            /* Ignore loopback. 
+             * 忽略环回接口
+             * */
             if (stream_parse_target_with_default_port(target, OVSDB_PORT,
                                                       &sa.ss)
                 && sa.ss.ss_family == AF_INET
@@ -670,6 +679,7 @@ bridge_reconfigure(const struct ovsrec_open_vswitch *ovs_cfg)
 
     /* Complete the configuration. */
     sflow_bridge_number = 0;
+    // 收集配置的manager信息
     collect_in_band_managers(ovs_cfg, &managers, &n_managers);
     // 遍历已经注册的网桥
     HMAP_FOR_EACH (br, node, &all_bridges) {
@@ -711,15 +721,24 @@ bridge_reconfigure(const struct ovsrec_open_vswitch *ovs_cfg)
                                         &iface->cfg->other_config);
             }
         }
+        // 配置网桥的镜像功能
         bridge_configure_mirrors(br);
+        // 配置网桥的forward bpdu功能
         bridge_configure_forward_bpdu(br);
+        // 配置网桥的mac地址学习表，实际就是配置mac地址老化时间和容量大小
         bridge_configure_mac_table(br);
         bridge_configure_mcast_snooping(br);
+        // 根据上面收集到的manager信息完成和openflow控制器的连接
         bridge_configure_remotes(br, managers, n_managers);
+        // 配置网桥的netflow功能
         bridge_configure_netflow(br);
+        // 配置网桥的sflow模块
         bridge_configure_sflow(br, &sflow_bridge_number);
+        // 配置网桥的ipfix功能
         bridge_configure_ipfix(br);
+        // 配置网桥的生成树功能
         bridge_configure_spanning_tree(br);
+        // 配置网桥关联的openflow交换机流表
         bridge_configure_tables(br);
         bridge_configure_dp_desc(br);
         bridge_configure_aa(br);
@@ -1166,7 +1185,9 @@ bridge_get_allowed_versions(struct bridge *br)
                                          br->cfg->n_protocols);
 }
 
-/* Set NetFlow configuration on 'br'. */
+/* Set NetFlow configuration on 'br'. 
+ * 配置网桥的netflow功能
+ * */
 static void
 bridge_configure_netflow(struct bridge *br)
 {
@@ -1227,7 +1248,9 @@ bridge_configure_netflow(struct bridge *br)
     sset_destroy(&opts.collectors);
 }
 
-/* Set sFlow configuration on 'br'. */
+/* Set sFlow configuration on 'br'. 
+ * 配置网桥的sflow模块
+ * */
 static void
 bridge_configure_sflow(struct bridge *br, int *sflow_bridge_number)
 {
@@ -1293,7 +1316,9 @@ ovsrec_fscs_is_valid(const struct ovsrec_flow_sample_collector_set *fscs,
     return ovsrec_ipfix_is_valid(fscs->ipfix) && fscs->bridge == br->cfg;
 }
 
-/* Set IPFIX configuration on 'br'. */
+/* Set IPFIX configuration on 'br'. 
+ * 配置网桥的ipfix功能
+ * */
 static void
 bridge_configure_ipfix(struct bridge *br)
 {
@@ -1487,6 +1512,7 @@ port_configure_stp(const struct ofproto *ofproto, struct port *port,
     }
 }
 
+// 收集指定基础端口的rstp配置信息
 static void
 port_configure_rstp(const struct ofproto *ofproto, struct port *port,
         struct ofproto_port_rstp_settings *port_s, int *port_num_counter)
@@ -1494,6 +1520,7 @@ port_configure_rstp(const struct ofproto *ofproto, struct port *port,
     const char *config_str;
     struct iface *iface;
 
+    // 首先判断该基础端口是否被配置为rstp端口
     if (!smap_get_bool(&port->cfg->other_config, "rstp-enable", true)) {
         port_s->enable = false;
         return;
@@ -1501,7 +1528,9 @@ port_configure_rstp(const struct ofproto *ofproto, struct port *port,
         port_s->enable = true;
     }
 
-    /* RSTP over bonds is not supported. */
+    /* RSTP over bonds is not supported. 
+     * 不允许在聚合口上配置rstp
+     * */
     if (!ovs_list_is_singleton(&port->ifaces)) {
         VLOG_ERR("port %s: cannot enable RSTP on bonds, disabling",
                 port->name);
@@ -1509,23 +1538,29 @@ port_configure_rstp(const struct ofproto *ofproto, struct port *port,
         return;
     }
 
+    // 获取对应的接口
     iface = CONTAINER_OF(ovs_list_front(&port->ifaces), struct iface, port_elem);
 
     /* Internal ports shouldn't participate in spanning tree, so
-     * skip them. */
+     * skip them. 
+     * 不允许在"internal"类型接口上配置rstp
+     * */
     if (!strcmp(iface->type, "internal")) {
         VLOG_DBG("port %s: disable RSTP on internal ports", port->name);
         port_s->enable = false;
         return;
     }
 
-    /* RSTP on mirror output ports is not supported. */
+    /* RSTP on mirror output ports is not supported. 
+     * 不允许在镜像的输出端口上配置rstp
+     * */
     if (ofproto_is_mirror_output_bundle(ofproto, port)) {
         VLOG_DBG("port %s: disable RSTP on mirror ports", port->name);
         port_s->enable = false;
         return;
     }
 
+    // 以下主要就是收集该基础端口的rstp配置信息
     config_str = smap_get(&port->cfg->other_config, "rstp-port-num");
     if (config_str) {
         unsigned long int port_num = strtoul(config_str, NULL, 0);
@@ -1547,7 +1582,9 @@ port_configure_rstp(const struct ofproto *ofproto, struct port *port,
     }
 
     /* Increment the port num counter, because we only support
-     * RSTP_MAX_PORTS rstp ports. */
+     * RSTP_MAX_PORTS rstp ports. 
+     * 递增rstp端口数量
+     * */
     (*port_num_counter)++;
 
     config_str = smap_get(&port->cfg->other_config, "rstp-path-cost");
@@ -1557,6 +1594,7 @@ port_configure_rstp(const struct ofproto *ofproto, struct port *port,
         enum netdev_features current;
         unsigned int mbps;
 
+        // 获取该接口关联的网络设备的功能集合，然后从中获取最大速率，最后根据最大速率计算得到路径成本
         netdev_get_features(iface->netdev, &current, NULL, NULL, NULL);
         mbps = netdev_features_to_bps(current, 100 * 1000 * 1000) / 1000000;
         port_s->path_cost = rstp_convert_speed_to_cost(mbps);
@@ -1663,10 +1701,12 @@ bridge_configure_stp(struct bridge *br, bool enable_stp)
     }
 }
 
+// 配置网桥的rstp功能
 static void
 bridge_configure_rstp(struct bridge *br, bool enable_rstp)
 {
     if (!enable_rstp) {
+        // 如果配置了禁用rstp功能，则在这里执行禁用
         ofproto_set_rstp(br->ofproto, NULL);
     } else {
         struct ofproto_rstp_settings br_s;
@@ -1674,6 +1714,7 @@ bridge_configure_rstp(struct bridge *br, bool enable_rstp)
         struct port *port;
         int port_num_counter;
 
+        // 收集rstp配置信息
         config_str = smap_get(&br->cfg->other_config, "rstp-address");
         if (config_str) {
             struct eth_addr ea;
@@ -1705,22 +1746,28 @@ bridge_configure_rstp(struct bridge *br, bool enable_rstp)
         br_s.transmit_hold_count = smap_get_ullong(
             oc, "rstp-transmit-hold-count", RSTP_DEFAULT_TRANSMIT_HOLD_COUNT);
 
-        /* Configure RSTP on the bridge. */
+        /* Configure RSTP on the bridge. 
+         * 在该网桥关联的openflow交换机中配置rstp功能
+         * */
         if (ofproto_set_rstp(br->ofproto, &br_s)) {
             VLOG_ERR("bridge %s: could not enable RSTP", br->name);
             return;
         }
 
         port_num_counter = 0;
+        // 遍历该网桥的每个基础端口
         HMAP_FOR_EACH (port, hmap_node, &br->ports) {
             struct ofproto_port_rstp_settings port_s;
             struct iface *iface;
 
+            // 收集每个基础端口的rstp配置信息
             port_configure_rstp(br->ofproto, port, &port_s,
                     &port_num_counter);
 
             /* As bonds are not supported, just apply configuration to
-             * all interfaces. */
+             * all interfaces. 
+             * 为每个基础端口配置rtsp功能
+             * */
             LIST_FOR_EACH (iface, port_elem, &port->ifaces) {
                 if (ofproto_port_set_rstp(br->ofproto, iface->ofp_port,
                             &port_s)) {
@@ -1732,12 +1779,14 @@ bridge_configure_rstp(struct bridge *br, bool enable_rstp)
     }
 }
 
+// 配置网桥的生成树功能
 static void
 bridge_configure_spanning_tree(struct bridge *br)
 {
     bool enable_rstp = br->cfg->rstp_enable;
     bool enable_stp = br->cfg->stp_enable;
 
+    // 如果同时配置使能了rstp和stp，则优先使能rstp
     if (enable_rstp && enable_stp) {
         VLOG_WARN("%s: RSTP and STP are mutually exclusive but both are "
                   "configured; enabling RSTP", br->name);
@@ -1984,7 +2033,9 @@ iface_create(struct bridge *br, const struct ovsrec_interface *iface_cfg,
     return true;
 }
 
-/* Set forward BPDU option. */
+/* Set forward BPDU option. 
+ * 配置网桥是否转发bpdu帧
+ * */
 static void
 bridge_configure_forward_bpdu(struct bridge *br)
 {
@@ -1994,7 +2045,9 @@ bridge_configure_forward_bpdu(struct bridge *br)
                                            false));
 }
 
-/* Set MAC learning table configuration for 'br'. */
+/* Set MAC learning table configuration for 'br'. 
+ * 配置网桥的mac地址学习表，实际就是配置mac地址老化时间和容量大小
+ * */
 static void
 bridge_configure_mac_table(struct bridge *br)
 {
@@ -3729,6 +3782,7 @@ equal_pathnames(const char *a, const char *b, size_t b_stoplen)
     }
 }
 
+// 根据配置的manager信息完成和openflow控制器的连接
 static void
 bridge_configure_remotes(struct bridge *br,
                          const struct sockaddr_in *managers, size_t n_managers)
@@ -3849,6 +3903,7 @@ bridge_configure_remotes(struct bridge *br,
     }
 }
 
+// 配置该网桥关联的openflow交换机流表
 static void
 bridge_configure_tables(struct bridge *br)
 {
@@ -3856,6 +3911,7 @@ bridge_configure_tables(struct bridge *br)
     int n_tables;
     int i, j;
 
+    // 首先获取关联的openflow交换机的流表数量
     n_tables = ofproto_get_n_tables(br->ofproto);
     j = 0;
     for (i = 0; i < n_tables; i++) {

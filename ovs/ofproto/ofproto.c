@@ -671,13 +671,17 @@ ofproto_set_max_idle(unsigned max_idle)
 
 /* If forward_bpdu is true, the NORMAL action will forward frames with
  * reserved (e.g. STP) destination Ethernet addresses. if forward_bpdu is false,
- * the NORMAL action will drop these frames. */
+ * the NORMAL action will drop these frames. 
+ * 设置指定openflow交换机是否转发bpdu帧
+ * @forward_bpdu    指示是否转发bpdu帧
+ * */
 void
 ofproto_set_forward_bpdu(struct ofproto *ofproto, bool forward_bpdu)
 {
     bool old_val = ofproto->forward_bpdu;
     ofproto->forward_bpdu = forward_bpdu;
     if (old_val != ofproto->forward_bpdu) {
+        // 如果这类openflow交换机定义了forward_bpdu_changed方法，则调用该方法以通知相关模块该标志发生改变
         if (ofproto->ofproto_class->forward_bpdu_changed) {
             ofproto->ofproto_class->forward_bpdu_changed(ofproto);
         }
@@ -686,11 +690,14 @@ ofproto_set_forward_bpdu(struct ofproto *ofproto, bool forward_bpdu)
 
 /* Sets the MAC aging timeout for the OFPP_NORMAL action on 'ofproto' to
  * 'idle_time', in seconds, and the maximum number of MAC table entries to
- * 'max_entries'. */
+ * 'max_entries'. 
+ * 配置openflow交换机mac地址老化时间和容量大小
+ * */
 void
 ofproto_set_mac_table_config(struct ofproto *ofproto, unsigned idle_time,
                              size_t max_entries)
 {
+    // 如果这类openflow交换机定义了set_mac_table_config方法，则调用该方法最终完成mac地址老化时间和容量大小配置
     if (ofproto->ofproto_class->set_mac_table_config) {
         ofproto->ofproto_class->set_mac_table_config(ofproto, idle_time,
                                                      max_entries);
@@ -1013,6 +1020,8 @@ ofproto_port_get_stp_stats(struct ofproto *ofproto, ofp_port_t ofp_port,
 
 /* Configures RSTP on 'ofproto' using the settings defined in 's'.  If
  * 's' is NULL, disables RSTP.
+ * 配置openflow交换机的rstp功能
+ * @s   rstp的配置参数集合，NULL表示禁用rstp功能
  *
  * Returns 0 if successful, otherwise a positive errno value. */
 int
@@ -1022,6 +1031,7 @@ ofproto_set_rstp(struct ofproto *ofproto,
     if (!ofproto->ofproto_class->set_rstp) {
         return EOPNOTSUPP;
     }
+    // 调用这类openflow交换机定义的set_rstp方法
     ofproto->ofproto_class->set_rstp(ofproto, s);
     return 0;
 }
@@ -1047,12 +1057,15 @@ ofproto_get_rstp_status(struct ofproto *ofproto,
  * (using the 'port_num' member in the range of 1 through 255, inclusive)
  * and ensuring there are no duplicates.  If the 's' is NULL, then RSTP
  * is disabled on the port.
+ * 配置指定openflow端口的rstp功能
+ * @s   该openflow端口rstp配置信息集合，NULL表示禁用该端口上的rstp功能
  *
  * Returns 0 if successful, otherwise a positive errno value.*/
 int
 ofproto_port_set_rstp(struct ofproto *ofproto, ofp_port_t ofp_port,
                       const struct ofproto_port_rstp_settings *s)
 {
+    // 获取对应的openflow端口
     struct ofport *ofport = ofproto_get_port(ofproto, ofp_port);
     if (!ofport) {
         VLOG_WARN("%s: cannot configure RSTP on nonexistent port %"PRIu32,
@@ -1063,6 +1076,7 @@ ofproto_port_set_rstp(struct ofproto *ofproto, ofp_port_t ofp_port,
     if (!ofproto->ofproto_class->set_rstp_port) {
         return  EOPNOTSUPP;
     }
+    // 调用这类openflow交换机定义的set_rstp_port方法来最终完成该openflow端口rstp配置
     ofproto->ofproto_class->set_rstp_port(ofport, s);
     return 0;
 }
@@ -1413,10 +1427,13 @@ ofproto_set_flood_vlans(struct ofproto *ofproto, unsigned long *flood_vlans)
 }
 
 /* Returns true if 'aux' is a registered bundle that is currently in use as the
- * output for a mirror. */
+ * output for a mirror. 
+ * 检查传入的aux是否是当前镜像功能的输出bundle对象
+ * */
 bool
 ofproto_is_mirror_output_bundle(const struct ofproto *ofproto, void *aux)
 {
+    // 调用这类openflow交换机定义的is_mirror_output_bundle方法来最终完成检查
     return (ofproto->ofproto_class->is_mirror_output_bundle
             ? ofproto->ofproto_class->is_mirror_output_bundle(ofproto, aux)
             : false);
@@ -1424,7 +1441,9 @@ ofproto_is_mirror_output_bundle(const struct ofproto *ofproto, void *aux)
 
 /* Configuration of OpenFlow tables. */
 
-/* Returns the number of OpenFlow tables in 'ofproto'. */
+/* Returns the number of OpenFlow tables in 'ofproto'. 
+ * 获取openflow交换机的流表数量
+ * */
 int
 ofproto_get_n_tables(const struct ofproto *ofproto)
 {

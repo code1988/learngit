@@ -1057,6 +1057,7 @@ netdev_get_ifindex(const struct netdev *netdev)
  * bitmap of "enum ofp_port_features" bits, in host byte order.  Returns 0 if
  * successful, otherwise a positive errno value.  On failure, all of the
  * passed-in values are set to 0.
+ * 获取指定网络设备的功能集合
  *
  * Some network devices may not implement support for this function.  In such
  * cases this function will always return EOPNOTSUPP. */
@@ -1101,7 +1102,9 @@ netdev_get_features(const struct netdev *netdev,
 
 /* Returns the maximum speed of a network connection that has the NETDEV_F_*
  * bits in 'features', in bits per second.  If no bits that indicate a speed
- * are set in 'features', returns 'default_bps'. */
+ * are set in 'features', returns 'default_bps'. 
+ * 从指定功能集合中获取最大速率
+ * */
 uint64_t
 netdev_features_to_bps(enum netdev_features features,
                        uint64_t default_bps)

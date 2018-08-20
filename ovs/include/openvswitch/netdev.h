@@ -85,7 +85,10 @@ struct netdev_stats {
     uint64_t rx_jabber_errors;
 };
 
-/* Features. */
+/* Features. 
+ * 定义了ovs交换机关心的网络设备功能集合
+ * 备注：这里定义的枚举项显然属于位图结构
+ * */
 enum netdev_features {
     NETDEV_F_10MB_HD =    1 << 0,  /* 10 Mb half-duplex rate support. */
     NETDEV_F_10MB_FD =    1 << 1,  /* 10 Mb full-duplex rate support. */

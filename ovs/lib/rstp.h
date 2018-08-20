@@ -50,18 +50,18 @@ struct dp_packet;
 #define RSTP_MIN_PRIORITY 0
 #define RSTP_MAX_PRIORITY 61440
 #define RSTP_PRIORITY_STEP 4096
-#define RSTP_DEFAULT_PRIORITY 32768
+#define RSTP_DEFAULT_PRIORITY 32768 // rstp缺省桥优先级
 
 /* Port priority defaults [Table 17-2] */
 #define RSTP_MIN_PORT_PRIORITY 0
 #define RSTP_MAX_PORT_PRIORITY 240
 #define RSTP_STEP_PORT_PRIORITY 16
-#define RSTP_DEFAULT_PORT_PRIORITY 128
+#define RSTP_DEFAULT_PORT_PRIORITY 128  // rstp端口缺省优先级
 
 /* Performance parameters defaults. [Table 7-5] and [Table 17-1]
  * These values are expressed in seconds.
  */
-#define RSTP_DEFAULT_AGEING_TIME 300
+#define RSTP_DEFAULT_AGEING_TIME 300    // rstp缺省老化时间
 #define RSTP_MIN_AGEING_TIME 10
 #define RSTP_MAX_AGEING_TIME 1000000
 
@@ -102,6 +102,7 @@ typedef uint64_t rstp_identifier;
 
 #define RSTP_PORT_ID_FMT "%04"PRIx16
 
+// rstp端口的4种状态
 enum rstp_state {
     RSTP_DISABLED,
     RSTP_LEARNING,
@@ -111,8 +112,8 @@ enum rstp_state {
 
 /* Force Protocol Version [17.13.4] */
 enum rstp_force_protocol_version {
-    FPV_STP_COMPATIBILITY = 0,
-    FPV_DEFAULT = 2
+    FPV_STP_COMPATIBILITY = 0,  // stp兼容模式
+    FPV_DEFAULT = 2             // rstp标准模式
 };
 
 enum rstp_port_role {

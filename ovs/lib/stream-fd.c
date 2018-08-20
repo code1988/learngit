@@ -34,12 +34,12 @@
 VLOG_DEFINE_THIS_MODULE(stream_fd);
 
 /* Active file descriptor stream. */
-
+// 基于描述符的stream封装结构
 struct stream_fd
 {
-    struct stream stream;
-    int fd;
-    int fd_type;
+    struct stream stream;   // 封装的stream基类
+    int fd;                 // 关联的描述符
+    int fd_type;            // 描述符类型
 };
 
 static const struct stream_class stream_fd_class;
@@ -52,6 +52,7 @@ static void maybe_unlink_and_free(char *path);
  * and stores a pointer to the stream in '*streamp'.  Initial connection status
  * 'connect_status' is interpreted as described for stream_init(). 'fd_type'
  * tells whether the socket is TCP or Unix domain socket.
+ * 创建一个基于描述符的stream管理块
  *
  * Takes ownership of 'name'.
  *
@@ -162,6 +163,7 @@ fd_wait(struct stream *stream, enum stream_wait_type wait)
     }
 }
 
+// 定义了属于stream的通用文件类(显然stream的TCP套接字类和UNIX域套接字类都属于通用文件类)
 static const struct stream_class stream_fd_class = {
     "fd",                       /* name */
     false,                      /* needs_probes */
@@ -186,8 +188,6 @@ struct fd_pstream
                      struct stream **); // 该pstream接受远端连接请求时的回调函数
     char *unlink_path;      // 通常就是该pstream关联fd的绑定地址
 };
-
-static const struct pstream_class fd_pstream_class;
 
 static struct fd_pstream *
 fd_pstream_cast(struct pstream *pstream)

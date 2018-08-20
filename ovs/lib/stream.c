@@ -290,7 +290,9 @@ stream_close(struct stream *stream)
 }
 
 /* Returns the name of 'stream', that is, the string passed to
- * stream_open(). */
+ * stream_open(). 
+ * 获取指定流的名字
+ * */
 const char *
 stream_get_name(const struct stream *stream)
 {
@@ -379,7 +381,9 @@ stream_send(struct stream *stream, const void *buffer, size_t n)
 }
 
 /* Allows 'stream' to perform maintenance activities, such as flushing
- * output buffers. */
+ * output buffers. 
+ * 对指定stream执行维护活动
+ * */
 void
 stream_run(struct stream *stream)
 {

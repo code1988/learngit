@@ -104,10 +104,10 @@ struct ofbundle {
     bool floodable;          /* True if no port has OFPUTIL_PC_NO_FLOOD set. */
 };
 
-
+// 定义了基于dpif实现的openflow端口结构
 struct ofport_dpif {
     struct hmap_node odp_port_node; /* In dpif_backer's "odp_to_ofport_map". */
-    struct ofport up;
+    struct ofport up;       // 封装的openflow端口基类
 
     odp_port_t odp_port;
     struct ofbundle *bundle;    /* Bundle that contains this port, if any. */
@@ -2287,7 +2287,10 @@ aa_vlan_get_queue_size(struct ofproto *ofproto OVS_UNUSED)
 
 /* Spanning Tree. */
 
-/* Called while rstp_mutex is held. */
+/* Called while rstp_mutex is held. 
+ * openflow交换机发送rstp协议的bpdu帧的回调函数
+ * 备注：调用本函数前必须先持有rstp_mutex
+ * */
 static void
 rstp_send_bpdu_cb(struct dp_packet *pkt, void *ofport_, void *ofproto_)
 {
@@ -2331,23 +2334,31 @@ send_bpdu_cb(struct dp_packet *pkt, int port_num, void *ofproto_)
     dp_packet_delete(pkt);
 }
 
-/* Configure RSTP on 'ofproto_' using the settings defined in 's'. */
+/* Configure RSTP on 'ofproto_' using the settings defined in 's'. 
+ * 配置openflow交换机的rstp功能
+ * @s   rstp的配置参数集合，NULL表示禁用rstp功能
+ * */
 static void
 set_rstp(struct ofproto *ofproto_, const struct ofproto_rstp_settings *s)
 {
     struct ofproto_dpif *ofproto = ofproto_dpif_cast(ofproto_);
 
-    /* Only revalidate flows if the configuration changed. */
+    /* Only revalidate flows if the configuration changed. 
+     * 首先检查配置是否发生变化，如果发生变化则在dpif支持者实例中进行标记
+     * */
     if (!s != !ofproto->rstp) {
         ofproto->backer->need_revalidate = REV_RECONFIGURE;
     }
 
     if (s) {
+        // 传入的配置集合有效的情况
+        // 如果该openflow交换机尚未关联rstp实例，则首先进行创建
         if (!ofproto->rstp) {
             ofproto->rstp = rstp_create(ofproto_->name, s->address,
                                         rstp_send_bpdu_cb, ofproto);
             ofproto->rstp_last_tick = time_msec();
         }
+        // 使用传入的配置参数更新该rstp实例
         rstp_set_bridge_address(ofproto->rstp, s->address);
         rstp_set_bridge_priority(ofproto->rstp, s->priority);
         rstp_set_bridge_ageing_time(ofproto->rstp, s->ageing_time);
@@ -2358,11 +2369,15 @@ set_rstp(struct ofproto *ofproto_, const struct ofproto_rstp_settings *s)
         rstp_set_bridge_transmit_hold_count(ofproto->rstp,
                                             s->transmit_hold_count);
     } else {
+        // 传入的配置集合无效的情况
         struct ofport *ofport;
+        // 删除所有的rstp端口实例
         HMAP_FOR_EACH (ofport, hmap_node, &ofproto->up.ports) {
             set_rstp_port(ofport, NULL);
         }
+        // 该rstp实例引用计数减1
         rstp_unref(ofproto->rstp);
+        // 解除该openflow交换机和该rstp实例的关联
         ofproto->rstp = NULL;
     }
 }
@@ -2736,7 +2751,10 @@ stp_wait(struct ofproto_dpif *ofproto)
 
 /* Configures RSTP on 'ofport_' using the settings defined in 's'.  The
  * caller is responsible for assigning RSTP port numbers and ensuring
- * there are no duplicates. */
+ * there are no duplicates. 
+ * 配置指定openflow端口的rstp功能
+ * @s   该openflow端口rstp配置信息集合，NULL表示禁用该端口上的rstp功能
+ * */
 static void
 set_rstp_port(struct ofport *ofport_,
               const struct ofproto_port_rstp_settings *s)
@@ -2745,6 +2763,7 @@ set_rstp_port(struct ofport *ofport_,
     struct ofproto_dpif *ofproto = ofproto_dpif_cast(ofport->up.ofproto);
     struct rstp_port *rp = ofport->rstp_port;
 
+    // 如果传入的配置信息无效或者配置该端口禁用rstp功能，则解除该openflow端口上关联的rstp端口实例
     if (!s || !s->enable) {
         if (rp) {
             rstp_port_set_aux(rp, NULL);
@@ -2757,11 +2776,14 @@ set_rstp_port(struct ofport *ofport_,
         return;
     }
 
-    /* Check if need to add a new port. */
+    /* Check if need to add a new port. 
+     * 如果该openflow端口尚未关联一个rstp端口实例，则先创建一个
+     * */
     if (!rp) {
         rp = ofport->rstp_port = rstp_add_port(ofproto->rstp);
     }
 
+    // 配置该rstp端口实例
     rstp_port_set(rp, s->port_num, s->priority, s->path_cost,
                   s->admin_edge_port, s->auto_edge,
                   s->admin_p2p_mac_state, s->admin_port_state, s->mcheck,
@@ -3395,6 +3417,7 @@ set_flood_vlans(struct ofproto *ofproto_, unsigned long *flood_vlans)
     return 0;
 }
 
+// 检查传入的aux是否是当前镜像功能的输出bundle对象
 static bool
 is_mirror_output_bundle(const struct ofproto *ofproto_, void *aux)
 {
@@ -3403,6 +3426,7 @@ is_mirror_output_bundle(const struct ofproto *ofproto_, void *aux)
     return bundle && mirror_bundle_out(ofproto->mbridge, bundle) != 0;
 }
 
+// 通知相关模块该openflow交换机是否转发bpdu标志发生变化
 static void
 forward_bpdu_changed(struct ofproto *ofproto_)
 {
@@ -3410,6 +3434,7 @@ forward_bpdu_changed(struct ofproto *ofproto_)
     ofproto->backer->need_revalidate = REV_RECONFIGURE;
 }
 
+// 配置openflow交换机mac地址老化时间和容量大小
 static void
 set_mac_table_config(struct ofproto *ofproto_, unsigned int idle_time,
                      size_t max_entries)

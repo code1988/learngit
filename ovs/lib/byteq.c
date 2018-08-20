@@ -24,7 +24,9 @@
  * store data.  'size' must be a power of 2.
  *
  * The caller must ensure that 'buffer' remains available to the byteq as long
- * as 'q' is in use. */
+ * as 'q' is in use. 
+ * 初始化一个环形缓冲区对象
+ * */
 void
 byteq_init(struct byteq *q, uint8_t *buffer, size_t size)
 {

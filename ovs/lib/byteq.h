@@ -20,12 +20,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
-/* General-purpose circular queue of bytes. */
+/* General-purpose circular queue of bytes. 
+ * 通用的环形缓冲区结构
+ * */
 struct byteq {
-    uint8_t *buffer;            /* Circular queue. */
-    unsigned int size;          /* Number of bytes allocated for 'buffer'. */
-    unsigned int head;          /* Head of queue. */
-    unsigned int tail;          /* Chases the head. */
+    uint8_t *buffer;            /* Circular queue.  环形缓冲区 */
+    unsigned int size;          /* Number of bytes allocated for 'buffer'. 环形缓冲区长度 */
+    unsigned int head;          /* Head of queue.   头指针 */
+    unsigned int tail;          /* Chases the head. 尾指针 */
 };
 
 void byteq_init(struct byteq *, uint8_t *buffer, size_t size);

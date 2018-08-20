@@ -261,14 +261,14 @@ enum rstp_rcvd_info {
     OTHER_INFO
 };
 
-// 定义了rstp端口信息结构
+// 定义了rstp端口抽象结构
 struct rstp_port {
     struct ovs_refcount ref_cnt;        // 该rstp端口的引用计数
 
     struct rstp *rstp OVS_GUARDED_BY(rstp_mutex);   // 指向所属的rstp实例
     struct hmap_node node OVS_GUARDED_BY(rstp_mutex); /* In rstp->ports. */
-    void *aux OVS_GUARDED_BY(rstp_mutex);
-    char *port_name;                    // 端口名
+    void *aux OVS_GUARDED_BY(rstp_mutex);   // 该rstp端口配置的自定义数据，创建该rstp端口实例时配置，通常就是关联的openflow端口结构
+    char *port_name;                        // 端口名
     struct rstp_bpdu received_bpdu_buffer OVS_GUARDED_BY(rstp_mutex);   // BPDU缓冲区
     /*************************************************************************
      * MAC status parameters
@@ -733,7 +733,7 @@ struct rstp_port {
 // 定义了rstp实例
 struct rstp {
     struct ovs_list node OVS_GUARDED_BY(rstp_mutex);   /* In rstp instances list  RSTP实例的链表节点 */
-    char *name;     /* Bridge name. 网桥名 */
+    char *name;     /* Bridge name. 该rstp实例名，即网桥名，即关联的openflow交换机datapath名 */
 
     /* Changes in last SM execution. */
     bool changes OVS_GUARDED_BY(rstp_mutex);
@@ -743,7 +743,7 @@ struct rstp {
 
     /* Bridge MAC address
      * (stored in the least significant 48 bits of rstp_identifier).
-     * 桥ID
+     * 该rstp桥mac(显然只用到低48bit)
      */
     rstp_identifier address OVS_GUARDED_BY(rstp_mutex); /* [7.12.5] */
 
@@ -851,7 +851,7 @@ struct rstp {
      * Bridge Identifiers are compared, and a component derived from the Bridge
      * Address (7.12.5), which guarantees uniqueness of the Bridge Identifiers
      * of different Bridges.
-     * 该网桥ID
+     * 该网桥ID(完整的64bit)
      */
     rstp_identifier bridge_identifier OVS_GUARDED_BY(rstp_mutex);
 
@@ -909,7 +909,7 @@ struct rstp {
     bool stp_version OVS_GUARDED_BY(rstp_mutex);
 
     /* Ports */
-    struct hmap ports OVS_GUARDED_BY(rstp_mutex);
+    struct hmap ports OVS_GUARDED_BY(rstp_mutex);   // 该rstp实例包含的rstp端口集合
 
     // 该rstp实例的引用计数
     struct ovs_refcount ref_cnt;
@@ -918,7 +918,7 @@ struct rstp {
      * 指向该rstp实例的BPDU发送钩子函数
      * */
     void (*send_bpdu)(struct dp_packet *bpdu, void *port_aux, void *rstp_aux);
-    void *aux;
+    void *aux;  // 用户自定义变量，创建该rstp实例时设置，通常就是该rstp实例关联的openflow交换机结构
 
     bool root_changed;
     void *old_root_aux;

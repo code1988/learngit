@@ -181,7 +181,18 @@ struct ovsrec_bridge {
 	/* other_config column. */
 	struct smap other_config;       /* 记录了多条自定义的属性，包括：
                                      * "hwaddr"
-                                     * "datapath-id" 
+                                     * "datapath-id"        记录了该bridge的datapath id
+                                     * "forward-bpdu"       标识该bridge是否转发bpdu帧:true/false 
+                                     * "mac-aging-time"     记录了该bridge的mac地址老化时间
+                                     * "mac-table-size"     记录了该bridge的mac地址表容量大小
+                                     * "disable-in-band"    标识该bridge是否支持带内管理:true/false
+                                     * "rstp-address"       记录了该bridge的rstp桥mac地址 
+                                     * "rstp-priority"      记录了该bridge的rstp桥优先级 
+                                     * "rstp-ageing-time"   记录了该bridge的rstp mac老化时间 
+                                     * "rstp-max-age"       记录了该bridge的rstp消息老化时间
+                                     * "rstp-force-protocol-version"    记录了该bridge的rstp协议版本 
+                                     * "rstp-forward-delay"             记录了该bridge的rstp转发延迟 
+                                     * "rstp-transmit-hold-count"       记录了该bridge的rstp报文发送间隔 
                                      */
 
 	/* ports column. */
@@ -193,7 +204,7 @@ struct ovsrec_bridge {
 	size_t n_protocols;
 
 	/* rstp_enable column. */
-	bool rstp_enable;
+	bool rstp_enable;               // 标识是否使能该网桥的rstp功能
 
 	/* rstp_status column. */
 	struct smap rstp_status;
@@ -205,7 +216,7 @@ struct ovsrec_bridge {
 	struct smap status;
 
 	/* stp_enable column. */
-	bool stp_enable;
+	bool stp_enable;                // 标识是否使能该网桥的stp功能
 };
 
 enum ovsrec_bridge_column_id {
@@ -1828,7 +1839,9 @@ const struct smap *);
 void ovsrec_interface_index_set_type(const struct ovsrec_interface *,
 const char *type);
 
-/* Manager table. */
+/* Manager table. 
+ * 交换机manager信息配置表结构
+ * */
 struct ovsrec_manager {
 	struct ovsdb_idl_row header_;
 
@@ -2422,8 +2435,8 @@ struct ovsrec_open_vswitch {
 	size_t n_iface_types;
 
 	/* manager_options column. */
-	struct ovsrec_manager **manager_options;
-	size_t n_manager_options;
+	struct ovsrec_manager **manager_options;    // 这张表记录了该交换机配置的manager信息
+	size_t n_manager_options;                   // 记录了manager信息条数
 
 	/* next_cfg column. */
 	int64_t next_cfg;
@@ -2724,6 +2737,15 @@ struct ovsrec_port {
                                      * "qinq-ethtype"
                                      * "priority-tags" 
                                      * "lacp-system-id" 
+                                     * "rstp-enable"        标识该基础端口是否使能rstp功能
+                                     * "rstp-port-num"   
+                                     * "rstp-path-cost"     该基础端口作为rstp端口时的路径成本 
+                                     * "rstp-port-priority" 该基础端口作为rstp端口时的端口优先级
+                                     * "rstp-admin-p2p-mac"  
+                                     * "rstp-admin-port-state"  该基础端口作为rstp端口时是否配置为disable状态
+                                     * "rstp-port-admin-edge"   该基础端口作为rstp端口时是否配置为边缘端口
+                                     * "rstp-port-auto-edge"    该基础端口作为rstp端口时是否支持自动切换为边缘端口 
+                                     * "rstp-port-mcheck" 
                                      */
 
 	/* protected column. */

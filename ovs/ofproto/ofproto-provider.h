@@ -65,7 +65,7 @@ struct smap;
 extern struct ovs_mutex ofproto_mutex;
 
 /* An OpenFlow switch.
- * 定义了符合openflow行为的ovs交换机抽象结构
+ * 定义了符合openflow行为的交换机抽象结构
  *
  * With few exceptions, ofproto implementations may look at these fields but
  * should not modify them. */
@@ -99,8 +99,8 @@ struct ofproto {
 
     /* Flow tables. */
     long long int eviction_group_timer; /* For rate limited reheapification. */
-    struct oftable *tables;
-    int n_tables;
+    struct oftable *tables;     // 这张表记录了该ovs交换机包含的流表
+    int n_tables;               // 流表数量
     ovs_version_t tables_version;  /* Controls which rules are visible to
                                     * table lookups. */
 
@@ -193,6 +193,7 @@ enum oftable_flags {
 };
 
 /* A flow table within a "struct ofproto".
+ * openflow交换机流表结构
  *
  *
  * Thread-safety

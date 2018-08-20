@@ -116,6 +116,12 @@ punix_open(const char *name OVS_UNUSED, char *suffix,
                           punix_accept, bind_path, pstreamp);
 }
 
+/* accept一个unix域套接字连接请求
+ * @fd  该unix域套接字流的fd
+ * @ss  该unix域套接字流的请求端地址
+ * @ss_len  地址长度
+ * @streamp 用于存放创建的stream对象
+ */
 static int
 punix_accept(int fd, const struct sockaddr_storage *ss, size_t ss_len,
              struct stream **streamp)

@@ -249,21 +249,27 @@ ovs_list_size(const struct ovs_list *list)
     return cnt;
 }
 
-/* Returns true if 'list' is empty, false otherwise. */
+/* Returns true if 'list' is empty, false otherwise. 
+ * 判断链表是否为空
+ * */
 static inline bool
 ovs_list_is_empty(const struct ovs_list *list)
 {
     return list->next == list;
 }
 
-/* Returns true if 'list' has exactly 1 element, false otherwise. */
+/* Returns true if 'list' has exactly 1 element, false otherwise. 
+ * 判断链表是否有且只有一个节点
+ * */
 static inline bool
 ovs_list_is_singleton(const struct ovs_list *list)
 {
     return ovs_list_is_short(list) && !ovs_list_is_empty(list);
 }
 
-/* Returns true if 'list' has 0 or 1 elements, false otherwise. */
+/* Returns true if 'list' has 0 or 1 elements, false otherwise. 
+ * 判断链表是否是短链表(短链表的定义是包含0个或1个链表节点)
+ * */
 static inline bool
 ovs_list_is_short(const struct ovs_list *list)
 {

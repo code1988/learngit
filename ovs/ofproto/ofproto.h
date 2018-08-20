@@ -104,14 +104,15 @@ struct ofproto_rstp_status {
     uint16_t bridge_port_id;
 };
 
+// rstp全局配置参数集合结构，用于初始化配置rstp
 struct ofproto_rstp_settings {
-    rstp_identifier address;
-    uint16_t priority;
-    uint32_t ageing_time;
-    enum rstp_force_protocol_version force_protocol_version;
-    uint16_t bridge_forward_delay;
-    uint16_t bridge_max_age;
-    uint16_t transmit_hold_count;
+    rstp_identifier address;    // rstp桥mac地址(显然只用到低48bit)
+    uint16_t priority;          // 桥优先级,缺省32768
+    uint32_t ageing_time;       // mac老化时间,缺省300s
+    enum rstp_force_protocol_version force_protocol_version;    // 协议版本，缺省2
+    uint16_t bridge_forward_delay;  // 转发延迟时间，缺省15s
+    uint16_t bridge_max_age;        // 消息老化时间，缺省20s
+    uint16_t transmit_hold_count;   // 发送持有计数，缺省6次
 };
 
 struct ofproto_port_rstp_status {
@@ -128,16 +129,17 @@ struct ofproto_port_rstp_status {
     int uptime;
 };
 
+// rstp端口配置参数集合结构，用于初始化配置rstp端口
 struct ofproto_port_rstp_settings {
-    bool enable;
+    bool enable;            // 使能/禁止该端口上的rstp功能
     uint16_t port_num;           /* In the range 1-4095, inclusive. */
-    uint8_t priority;
-    uint32_t path_cost;
-    bool admin_edge_port;
-    bool auto_edge;
+    uint8_t priority;       // 端口优先级
+    uint32_t path_cost;     // 端口路径成本
+    bool admin_edge_port;   // 标识是否配置为边缘端口
+    bool auto_edge;         // 标识是否配置为自动边缘端口
     bool mcheck;
     uint8_t admin_p2p_mac_state;
-    bool admin_port_state;
+    bool admin_port_state;  // 标识是否配置为rstp disable状态端口(注意跟enable参数区别)
 };
 
 struct ofproto_stp_settings {

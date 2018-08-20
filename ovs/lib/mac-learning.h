@@ -88,10 +88,14 @@
 
 struct mac_learning;
 
-/* Default maximum size of a MAC learning table, in entries. */
+/* Default maximum size of a MAC learning table, in entries. 
+ * mac地址表缺省容量大小
+ * */
 #define MAC_DEFAULT_MAX 2048
 
-/* Time, in seconds, before expiring a mac_entry due to inactivity. */
+/* Time, in seconds, before expiring a mac_entry due to inactivity. 
+ * mac地址缺省老化时间
+ * */
 #define MAC_ENTRY_DEFAULT_IDLE_TIME 300
 
 /* Time, in seconds, to lock an entry updated by a gratuitous ARP to avoid
@@ -148,7 +152,9 @@ static inline bool mac_entry_is_grat_arp_locked(const struct mac_entry *mac)
     return time_now() < mac->grat_arp_lock;
 }
 
-/* MAC learning table. */
+/* MAC learning table. 
+ * mac地址学习表结构
+ * */
 struct mac_learning {
     struct hmap table;          /* Learning table. */
     struct ovs_list lrus OVS_GUARDED; /* In-use entries, LRU at front. */
@@ -157,7 +163,7 @@ struct mac_learning {
     unsigned int idle_time;     /* Max age before deleting an entry. */
     size_t max_entries;         /* Max number of learned MACs. */
     struct ovs_refcount ref_cnt;
-    struct ovs_rwlock rwlock;
+    struct ovs_rwlock rwlock;   // 用于维护该mac地址学习表的读写锁
     bool need_revalidate;
 
     /* Fairness.
