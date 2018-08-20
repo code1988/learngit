@@ -48,6 +48,7 @@ struct regmap_async {
 	void *work_buf;
 };
 
+// regmap的核心结构体，可以理解为regmap操作句柄
 struct regmap {
 	union {
 		struct mutex mutex;

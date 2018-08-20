@@ -1,5 +1,12 @@
 /*
  * device.h - generic, centralized driver model
+ * 描述linux设备模型的核心头文件
+ *
+ * 设备模型包含了4个核心概念：
+ *          bus     - 总线（核心数据结构就是struct bus_type）
+ *          class   - 分类
+ *          device  - 设备（核心数据结构就是struct device）
+ *          device driver   - 驱动（核心数据结构就是struct device_driver）
  *
  * Copyright (c) 2001-2003 Patrick Mochel <mochel@osdl.org>
  * Copyright (c) 2004-2009 Greg Kroah-Hartman <gregkh@suse.de>
@@ -61,6 +68,7 @@ extern void bus_remove_file(struct bus_type *, struct bus_attribute *);
 
 /**
  * struct bus_type - The bus type of the device
+ * 定义了linux设备模型中总线的基本结构
  *
  * @name:	The name of the bus.
  * @dev_name:	Used for subsystems to enumerate devices like ("foo%u", dev->id).
@@ -101,6 +109,8 @@ extern void bus_remove_file(struct bus_type *, struct bus_attribute *);
  * A bus is represented by the bus_type structure. It contains the name, the
  * default attributes, the bus' methods, PM operations, and the driver core's
  * private data.
+ *
+ * 总线是CPU和设备之间信息交互的通道
  */
 struct bus_type {
 	const char		*name;
@@ -225,6 +235,9 @@ enum probe_type {
 
 /**
  * struct device_driver - The basic device driver structure
+ * 定义了linux设备模型中设备驱动的基本结构
+ *
+ * 备注：实际驱动开发中基本不会直接使用该结构，因为内核在之上又封装了一层，如platform_driver等
  * @name:	Name of the device driver.
  * @bus:	The bus which the device of this driver belongs to.
  * @owner:	The module owner.
@@ -257,8 +270,8 @@ enum probe_type {
  * of any specific device.
  */
 struct device_driver {
-	const char		*name;
-	struct bus_type		*bus;
+	const char		*name;      // 驱动名
+	struct bus_type		*bus;   // 所属总线
 
 	struct module		*owner;
 	const char		*mod_name;	/* used for built-in modules */
@@ -266,7 +279,7 @@ struct device_driver {
 	bool suppress_bind_attrs;	/* disables bind/unbind via sysfs */
 	enum probe_type probe_type;
 
-	const struct of_device_id	*of_match_table;
+	const struct of_device_id	*of_match_table;        // 指向该驱动支持的device描述列表(规定最后一个表项为NULL)
 	const struct acpi_device_id	*acpi_match_table;
 
 	int (*probe) (struct device *dev);
@@ -354,6 +367,8 @@ int subsys_virtual_register(struct bus_type *subsys,
 
 /**
  * struct class - device classes
+ * 定义了linux设备模型中设备类的基本结构
+ *
  * @name:	Name of the class.
  * @owner:	The module owner.
  * @class_attrs: Default attributes of this class.
@@ -381,7 +396,7 @@ int subsys_virtual_register(struct bus_type *subsys,
  * connected or how they work.
  */
 struct class {
-	const char		*name;
+    const char		*name;      // 类名
 	struct module		*owner;
 
 	struct class_attribute		*class_attrs;
@@ -650,6 +665,7 @@ char *devm_kvasprintf(struct device *dev, gfp_t gfp, const char *fmt,
 		      va_list ap);
 extern __printf(3, 4)
 char *devm_kasprintf(struct device *dev, gfp_t gfp, const char *fmt, ...);
+// 带垃圾回收机制的kzalloc
 static inline void *devm_kzalloc(struct device *dev, size_t size, gfp_t gfp)
 {
 	return devm_kmalloc(dev, size, gfp | __GFP_ZERO);
@@ -692,10 +708,14 @@ struct device_dma_parameters {
 
 /**
  * struct device - The basic device structure
+ * 定义了linux设备模型中设备的基本结构
+ *
+ * 备注：实际驱动开发中基本不会直接使用该结构，因为内核在之上又封装了一层，如platform_device等
  * @parent:	The device's "parent" device, the device to which it is attached.
  * 		In most cases, a parent device is some sort of bus or host
  * 		controller. If parent is NULL, the device, is a top-level device,
  * 		which is not usually what you want.
+ * 		该设备的父设备
  * @p:		Holds the private data of the driver core portions of the device.
  * 		See the comment of the struct device_private for detail.
  * @kobj:	A top-level, abstract class from which other classes are derived.
@@ -766,7 +786,7 @@ struct device {
 
 	struct device_private	*p;
 
-	struct kobject kobj;
+	struct kobject kobj;    // 抽象了linux设备基本结构中的共性部分
 	const char		*init_name; /* initial name of the device */
 	const struct device_type *type;
 
@@ -774,11 +794,12 @@ struct device {
 					 * its driver.
 					 */
 
-	struct bus_type	*bus;		/* type of bus device is on */
+	struct bus_type	*bus;		/* type of bus device is on     指向所属的总线 */
 	struct device_driver *driver;	/* which driver has allocated this
 					   device */
 	void		*platform_data;	/* Platform specific data, device
-					   core doesn't touch it */
+					   core doesn't touch it 
+                       指向针对该device的具体板卡相关的数据(比如struct dsa_platform_data结构) */
 	void		*driver_data;	/* Driver data, set and get with
 					   dev_set/get_drvdata */
 	struct dev_pm_info	power;
@@ -788,7 +809,7 @@ struct device {
 	struct irq_domain	*msi_domain;
 #endif
 #ifdef CONFIG_PINCTRL
-	struct dev_pin_info	*pins;
+	struct dev_pin_info	*pins;      // 指向和该device关联的pin/pin group描述信息
 #endif
 #ifdef CONFIG_GENERIC_MSI_IRQ
 	struct list_head	msi_list;
@@ -818,7 +839,7 @@ struct device {
 	/* arch specific additions */
 	struct dev_archdata	archdata;
 
-	struct device_node	*of_node; /* associated device tree node */
+	struct device_node	*of_node; /* associated device tree node    指向和该device关联的dts节点 */
 	struct fwnode_handle	*fwnode; /* firmware device node */
 
 	dev_t			devt;	/* dev_t, creates the sysfs "dev" */
@@ -828,10 +849,10 @@ struct device {
 	struct list_head	devres_head;
 
 	struct klist_node	knode_class;
-	struct class		*class;
-	const struct attribute_group **groups;	/* optional groups */
+	struct class		*class;             // 指向该device所属的类
+	const struct attribute_group **groups;	/* optional groups  指向所属的属性组表头(比如soc_attr_groups) */
 
-	void	(*release)(struct device *dev);
+	void	(*release)(struct device *dev); // 指向释放本device结构的回调函数
 	struct iommu_group	*iommu_group;
 
 	bool			offline_disabled:1;
@@ -846,6 +867,7 @@ static inline struct device *kobj_to_dev(struct kobject *kobj)
 /* Get the wakeup routines, which depend on struct device */
 #include <linux/pm_wakeup.h>
 
+// 获取设备名
 static inline const char *dev_name(const struct device *dev)
 {
 	/* Use the init name until the kobject becomes available */
@@ -918,6 +940,7 @@ static inline void dev_set_uevent_suppress(struct device *dev, int val)
 	dev->kobj.uevent_suppress = val;
 }
 
+// 判断设备是否已经注册
 static inline int device_is_registered(struct device *dev)
 {
 	return dev->kobj.state_in_sysfs;
@@ -1027,6 +1050,7 @@ extern struct device *__root_device_register(const char *name,
 
 extern void root_device_unregister(struct device *root);
 
+// 返回指定device的platform_data字段
 static inline void *dev_get_platdata(const struct device *dev)
 {
 	return dev->platform_data;

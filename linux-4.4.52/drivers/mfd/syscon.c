@@ -36,6 +36,7 @@ struct syscon {
 	struct list_head list;
 };
 
+// 定义了syscon设备的通用寄存器配置信息
 static struct regmap_config syscon_regmap_config = {
 	.reg_bits = 32,
 	.val_bits = 32,
@@ -92,6 +93,7 @@ err_map:
 	return ERR_PTR(ret);
 }
 
+// 根据device_node获取对应的regmap
 struct regmap *syscon_node_to_regmap(struct device_node *np)
 {
 	struct syscon *entry, *syscon = NULL;
@@ -112,19 +114,23 @@ struct regmap *syscon_node_to_regmap(struct device_node *np)
 	if (IS_ERR(syscon))
 		return ERR_CAST(syscon);
 
+    // 最终返回regmap
 	return syscon->regmap;
 }
 EXPORT_SYMBOL_GPL(syscon_node_to_regmap);
 
+// 根据"compatible"属性查找对应的regmap句柄
 struct regmap *syscon_regmap_lookup_by_compatible(const char *s)
 {
 	struct device_node *syscon_np;
 	struct regmap *regmap;
 
+    // 从root节点开始遍历，只根据"compatible"的属性值匹配所在的device_node
 	syscon_np = of_find_compatible_node(NULL, NULL, s);
 	if (!syscon_np)
 		return ERR_PTR(-ENODEV);
 
+    // 根据匹配到的device_node进而获取对应的regmap
 	regmap = syscon_node_to_regmap(syscon_np);
 	of_node_put(syscon_np);
 
@@ -174,6 +180,9 @@ struct regmap *syscon_regmap_lookup_by_phandle(struct device_node *np,
 }
 EXPORT_SYMBOL_GPL(syscon_regmap_lookup_by_phandle);
 
+/* 在匹配成功的syscon设备上执行syscon驱动初始化
+ * @pdev    - 成功匹配的syscon设备
+ */
 static int syscon_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -204,6 +213,7 @@ static int syscon_probe(struct platform_device *pdev)
 		return PTR_ERR(syscon->regmap);
 	}
 
+    // 将syscon控制块作为私有数据记录到成功匹配的syscon设备私有数据块中
 	platform_set_drvdata(pdev, syscon);
 
 	dev_dbg(dev, "regmap %pR registered\n", res);
@@ -216,6 +226,7 @@ static const struct platform_device_id syscon_ids[] = {
 	{ }
 };
 
+// 定义了一个基于platfrom总线的syscon驱动
 static struct platform_driver syscon_driver = {
 	.driver = {
 		.name = "syscon",
@@ -224,12 +235,14 @@ static struct platform_driver syscon_driver = {
 	.id_table	= syscon_ids,
 };
 
+// syscon驱动注册
 static int __init syscon_init(void)
 {
 	return platform_driver_register(&syscon_driver);
 }
 postcore_initcall(syscon_init);
 
+// syscon驱动注销
 static void __exit syscon_exit(void)
 {
 	platform_driver_unregister(&syscon_driver);
