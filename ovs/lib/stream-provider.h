@@ -127,7 +127,7 @@ struct stream_class {
 };
 
 /* Passive listener for incoming stream connections.
- * 定义了pstream管理块结构,用于管理远端流的连接请求
+ * 定义了pstream结构抽象,用于管理远端流的连接请求
  * This structure should be treated as opaque by stream implementations. */
 struct pstream {
     const struct pstream_class *class;  // 指向该pstream所属的类,通常都是fd_pstream_class

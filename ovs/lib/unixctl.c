@@ -376,12 +376,16 @@ run_connection(struct unixctl_conn *conn)
 {
     int error, i;
 
+    // 将该连接session关联的jsonrpc输出缓冲区中的数据都发送出去
     jsonrpc_run(conn->rpc);
+    // 返回该jsonrpc的当前状态
     error = jsonrpc_get_status(conn->rpc);
+    // 如果该jsonrpc已经退役，或者在执行上面操作后其发送缓冲区仍旧存在积压数据，则直接返回
     if (error || jsonrpc_get_backlog(conn->rpc)) {
         return error;
     }
 
+    // 程序运行到这里意味着该jsonrpc正常运行且输出缓冲区已经为空
     for (i = 0; i < 10; i++) {
         struct jsonrpc_msg *msg;
 

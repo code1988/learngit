@@ -36,19 +36,19 @@
 VLOG_DEFINE_THIS_MODULE(jsonrpc);
 // 定义了jsonrpc对象结构,该对象包含了对一条连接session上数据传输和处理方式
 struct jsonrpc {
-    struct stream *stream;      // 该jsonrpc拥有的一条连接流
+    struct stream *stream;      // 该jsonrpc拥有的一个stream对象
     char *name;                 // 该jsonrpc名字，来自上面这条流名
     int status;
 
     /* Input. */
     struct byteq input;         // 用于存储输入数据的环形缓冲区对象
     uint8_t input_buffer[512];  // 环形缓冲区
-    struct json_parser *parser;
+    struct json_parser *parser; // 该jsonrpc拥有的json解析器，用于解析接收到的数据
 
     /* Output. */
     struct ovs_list output;     /* Contains "struct ofpbuf"s.  用于存储输出数据的链表 */
-    size_t output_count;        /* Number of elements in "output".  链表节点数量 */
-    size_t backlog;
+    size_t output_count;        /* Number of elements in "output".  链表节点(ofpbuf结构)数量 */
+    size_t backlog;             // 发送缓冲区积压的数据长度
 };
 
 /* Rate limit for error messages. */
@@ -107,7 +107,7 @@ jsonrpc_close(struct jsonrpc *rpc)
 }
 
 /* Performs periodic maintenance on 'rpc', such as flushing output buffers. 
- * 对指定jsonrpc执行定期维护
+ * 对指定jsonrpc执行定期维护，主要就是将输出缓冲区中的数据都发送出去
  * */
 void
 jsonrpc_run(struct jsonrpc *rpc)
@@ -116,7 +116,9 @@ jsonrpc_run(struct jsonrpc *rpc)
         return;
     }
 
+    // 备注：当前ovs版本stream_run实际不作任何事
     stream_run(rpc->stream);
+    // 如果该jsonrpc中当前存在尚未发送的数据，则在这里发送这些数据
     while (!ovs_list_is_empty(&rpc->output)) {
         struct ofpbuf *buf = ofpbuf_from_list(rpc->output.next);
         int retval;
@@ -124,13 +126,16 @@ jsonrpc_run(struct jsonrpc *rpc)
         retval = stream_send(rpc->stream, buf->data, buf->size);
         if (retval >= 0) {
             rpc->backlog -= retval;
+            // 该数据单元中移除实际已经发送的数据
             ofpbuf_pull(buf, retval);
+            // 如果该数据单元中数据已经清空，则删除该数据单元
             if (!buf->size) {
                 ovs_list_remove(&buf->list_node);
                 rpc->output_count--;
                 ofpbuf_delete(buf);
             }
         } else {
+            // 发送数据时遇到非EAGAIN的错误时，该错误号会记录在所属的jsonrpc中，同时该jsonrpc会执行清理操作
             if (retval != -EAGAIN) {
                 VLOG_WARN_RL(&rl, "%s: send error: %s",
                              rpc->name, ovs_strerror(-retval));
@@ -165,6 +170,10 @@ jsonrpc_wait(struct jsonrpc *rpc)
  * messages that one attempts to send with 'rpc' will be discarded.  The
  * caller can keep 'rpc' around as long as it wants, but it's not going
  * to provide any more useful services.
+ * 返回指定jsonrpc的当前状态
+ *
+ * 备注：处于非0状态的jsonrpc意味着已经退役
+ *       它将不再收发任何消息
  */
 int
 jsonrpc_get_status(const struct jsonrpc *rpc)
@@ -174,10 +183,13 @@ jsonrpc_get_status(const struct jsonrpc *rpc)
 
 /* Returns the number of bytes buffered by 'rpc' to be written to the
  * underlying stream.  Always returns 0 if 'rpc' has encountered an error or if
- * the remote end closed the connection. */
+ * the remote end closed the connection. 
+ * 返回指定jsonrpc发送缓冲区积压的数据长度
+ * */
 size_t
 jsonrpc_get_backlog(const struct jsonrpc *rpc)
 {
+    // 已经退役的jsonrpc其积压数据已经被清空，所以只有处于正常工作状态的jsonrpc才会存在积压数据
     return rpc->status ? 0 : rpc->backlog;
 }
 
@@ -298,6 +310,7 @@ jsonrpc_recv(struct jsonrpc *rpc, struct jsonrpc_msg **msgp)
     int i;
 
     *msgp = NULL;
+    // 确保该jsonrpc没有退役
     if (rpc->status) {
         return rpc->status;
     }
@@ -305,13 +318,17 @@ jsonrpc_recv(struct jsonrpc *rpc, struct jsonrpc_msg **msgp)
     for (i = 0; i < 50; i++) {
         size_t n, used;
 
-        /* Fill our input buffer if it's empty. */
+        /* Fill our input buffer if it's empty. 
+         * 如果该jsonrpc接收缓冲区为空，则先在stream上接收数据
+         * */
         if (byteq_is_empty(&rpc->input)) {
             size_t chunk;
             int retval;
 
+            // 从该jsonrpc的stream上接收最多headroom大小的数据
             chunk = byteq_headroom(&rpc->input);
             retval = stream_recv(rpc->stream, byteq_head(&rpc->input), chunk);
+            // 接收数据时遇到非EAGAIN的错误时，该错误号会记录在所属的jsonrpc中，同时该jsonrpc会执行清理操作
             if (retval < 0) {
                 if (retval == -EAGAIN) {
                     return EAGAIN;
@@ -325,19 +342,27 @@ jsonrpc_recv(struct jsonrpc *rpc, struct jsonrpc_msg **msgp)
                 jsonrpc_error(rpc, EOF);
                 return EOF;
             }
+            // 往该jsonrpc接收缓冲区写入retval字节数据后，就需要同步调整数据头的位置
             byteq_advance_head(&rpc->input, retval);
         }
 
-        /* We have some input.  Feed it into the JSON parser. */
+        /* We have some input.  Feed it into the JSON parser. 
+         * 程序运行到这里意味着该jsonrpc接收缓冲区中存在数据，就需要将这些数据注入json解析器
+         * 如果json解析器尚未存在，则先创建
+         * */
         if (!rpc->parser) {
             rpc->parser = json_parser_create(0);
         }
+        // 从接收缓冲区取最多tailroom长度数据注入json解析器
         n = byteq_tailroom(&rpc->input);
         used = json_parser_feed(rpc->parser,
                                 (char *) byteq_tail(&rpc->input), n);
+        // 实际取出n字节数据后，就需要同步调整数据尾的位置
         byteq_advance_tail(&rpc->input, used);
 
-        /* If we have complete JSON, attempt to parse it as JSON-RPC. */
+        /* If we have complete JSON, attempt to parse it as JSON-RPC. 
+         * 如果json解析器中注入的json消息已经完整，则进行解析
+         * */
         if (json_parser_is_done(rpc->parser)) {
             *msgp = jsonrpc_parse_received_message(rpc);
             if (*msgp) {
@@ -455,7 +480,9 @@ jsonrpc_transact_block(struct jsonrpc *rpc, struct jsonrpc_msg *request,
 
 /* Attempts to parse the content of 'rpc->parser' (which is complete JSON) as a
  * JSON-RPC message.  If successful, returns the JSON-RPC message.  On failure,
- * signals an error on 'rpc' with jsonrpc_error() and returns NULL. */
+ * signals an error on 'rpc' with jsonrpc_error() and returns NULL. 
+ * 解析注入在json解析器中的完整消息，成功则返回解析出来的一条完整的jsonrpc消息，失败则返回NULL
+ * */
 static struct jsonrpc_msg *
 jsonrpc_parse_received_message(struct jsonrpc *rpc)
 {
@@ -463,8 +490,10 @@ jsonrpc_parse_received_message(struct jsonrpc *rpc)
     struct json *json;
     char *error;
 
+    // 完成对注入json解析器中的数据解析，解析完毕后会销毁该解析器
     json = json_parser_finish(rpc->parser);
     rpc->parser = NULL;
+    // 一条完整json消息顶层不允许为字符串类型
     if (json->type == JSON_STRING) {
         VLOG_WARN_RL(&rl, "%s: error parsing stream: %s",
                      rpc->name, json_string(json));
@@ -486,25 +515,33 @@ jsonrpc_parse_received_message(struct jsonrpc *rpc)
     return msg;
 }
 
+/* 指定jsonrpc记录error值
+ * 备注：调用者要确保传入的error不为0
+ */
 static void
 jsonrpc_error(struct jsonrpc *rpc, int error)
 {
     ovs_assert(error);
+    // 原本处于正常状态的jsonrpc被标记了错误号后，会进一步执行清理操作
     if (!rpc->status) {
         rpc->status = error;
         jsonrpc_cleanup(rpc);
     }
 }
 
+// 对指定jsonrpc执行清理操作
 static void
 jsonrpc_cleanup(struct jsonrpc *rpc)
 {
+    // 关闭stream
     stream_close(rpc->stream);
     rpc->stream = NULL;
 
+    // 终止json解析器
     json_parser_abort(rpc->parser);
     rpc->parser = NULL;
 
+    // 销毁发送缓冲区
     ofpbuf_list_delete(&rpc->output);
     rpc->backlog = 0;
     rpc->output_count = 0;
@@ -668,6 +705,7 @@ null_from_json_null(struct json *json)
     return json;
 }
 
+// 从指定json对象中解析处一条完整的jsonrpc消息
 char *
 jsonrpc_msg_from_json(struct json *json, struct jsonrpc_msg **msgp)
 {
@@ -676,12 +714,15 @@ jsonrpc_msg_from_json(struct json *json, struct jsonrpc_msg **msgp)
     struct shash *object;
     char *error;
 
+    // 该json对象类型必须是JSON_OBJECT
     if (json->type != JSON_OBJECT) {
         error = xstrdup("message is not a JSON object");
         goto exit;
     }
+    // 从该json对象中返回记录了子对象的hash表
     object = json_object(json);
 
+    // 在hash表中查找"method"节点
     method = shash_find_and_delete(object, "method");
     if (method && method->type != JSON_STRING) {
         error = xstrdup("method is not a JSON string");

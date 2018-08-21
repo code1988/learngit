@@ -37,6 +37,7 @@ enum OVS_PACKED_ENUM ofpbuf_source {
 
 /* Buffer for holding arbitrary data.  An ofpbuf is automatically reallocated
  * as necessary if it grows too large for the available memory.
+ * 通用的数据载体结构
  *
  * 'header' and 'msg' conventions:
  *
@@ -55,15 +56,15 @@ enum OVS_PACKED_ENUM ofpbuf_source {
  * rconn: Reuses 'header' as a private pointer while queuing.
  */
 struct ofpbuf {
-    void *base;                 /* First byte of allocated space. */
-    void *data;                 /* First byte actually in use. */
-    uint32_t size;              /* Number of bytes in use. */
-    uint32_t allocated;         /* Number of bytes allocated. */
+    void *base;                 /* First byte of allocated space.   指向分配的内存缓冲区的起始地址 */
+    void *data;                 /* First byte actually in use.      指向当前使用中的起始地址 */
+    uint32_t size;              /* Number of bytes in use.          当前占用中的字节数 */
+    uint32_t allocated;         /* Number of bytes allocated.       分配的内存缓冲区大小 */
 
     void *header;               /* OpenFlow header. */
     void *msg;                  /* message's body */
     struct ovs_list list_node;  /* Private list element for use by owner. */
-    enum ofpbuf_source source;  /* Source of memory allocated as 'base'. */
+    enum ofpbuf_source source;  /* Source of memory allocated as 'base'.  分配的内存来源 */
 };
 
 /* An initializer for a struct ofpbuf that will be initially empty and uses the
@@ -164,7 +165,9 @@ void ofpbuf_list_delete(struct ovs_list *);
 static inline bool ofpbuf_equal(const struct ofpbuf *, const struct ofpbuf *);
 
 
-/* Frees memory that 'b' points to, as well as 'b' itself. */
+/* Frees memory that 'b' points to, as well as 'b' itself. 
+ * 销毁指定数据单元
+ * */
 static inline void ofpbuf_delete(struct ofpbuf *b)
 {
     if (b) {
@@ -243,7 +246,9 @@ static inline void ofpbuf_clear(struct ofpbuf *b)
 }
 
 /* Removes 'size' bytes from the head end of 'b', which must contain at least
- * 'size' bytes of data.  Returns the first byte of data removed. */
+ * 'size' bytes of data.  Returns the first byte of data removed. 
+ * 指定数据载体中移除size长度的数据，实际就是data指针后移size字节
+ * */
 static inline void *ofpbuf_pull(struct ofpbuf *b, size_t size)
 {
     void *data = b->data;

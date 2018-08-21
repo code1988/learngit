@@ -518,7 +518,9 @@ ofpbuf_to_string(const struct ofpbuf *b, size_t maxbytes)
 }
 
 /* Removes each of the "struct ofpbuf"s on 'list' from the list and frees
- * them.  */
+ * them. 
+ * 销毁链表中的每个发送缓冲区节点
+ * */
 void
 ofpbuf_list_delete(struct ovs_list *list)
 {

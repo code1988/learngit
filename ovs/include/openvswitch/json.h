@@ -65,11 +65,11 @@ struct json {
     enum json_type type;    // 该json对象类型
     size_t count;           // 该json对象的引用计数
     union {
-        struct shash *object;   /* Contains "struct json *"s. */
-        struct json_array array;
-        long long int integer;
+        struct shash *object;   /* Contains "struct json *"s.  对应JSON_OBJECT类型 */
+        struct json_array array;    // 对应JSON_ARRAY类型
+        long long int integer;      // 对应JSON_INTEGER类型
         double real;
-        char *string;
+        char *string;               // 对应JSON_STRING类型
     } u;
 };
 
@@ -125,8 +125,8 @@ struct json *json_from_stream(FILE *stream);
 /* Serializing JSON. */
 
 enum {
-    JSSF_PRETTY = 1 << 0,       /* Multiple lines with indentation, if true. */
-    JSSF_SORT = 1 << 1          /* Object members in sorted order, if true. */
+    JSSF_PRETTY = 1 << 0,       /* Multiple lines with indentation, if true.  多行输出 */
+    JSSF_SORT = 1 << 1          /* Object members in sorted order, if true.   经过整理 */
 };
 char *json_to_string(const struct json *, int flags);
 void json_to_ds(const struct json *, int flags, struct ds *);

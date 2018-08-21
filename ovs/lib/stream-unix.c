@@ -111,7 +111,7 @@ punix_open(const char *name OVS_UNUSED, char *suffix,
         return error;
     }
 
-    // 为该UNIX域套接字创建一个pstream管理块
+    // 为该UNIX域套接字创建一个描述符类型pstream管理块
     return new_fd_pstream(xstrdup(name), fd,
                           punix_accept, bind_path, pstreamp);
 }
@@ -131,6 +131,7 @@ punix_accept(int fd, const struct sockaddr_storage *ss, size_t ss_len,
     char *bound_name = (name_len > 0
                         ? xasprintf("unix:%.*s", name_len, sun->sun_path)
                         : xstrdup("unix"));
+    // 为该UNIX域套接字创建一个描述符类型stream对象(状态为连接完成)
     return new_fd_stream(bound_name, fd, 0, AF_UNIX, streamp);
 }
 

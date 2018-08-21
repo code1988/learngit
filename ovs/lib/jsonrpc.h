@@ -70,6 +70,7 @@ enum jsonrpc_msg_type {
     JSONRPC_ERROR              /* Error reply. */
 };
 
+// 用于描述一条完整jsonrpc消息的结构
 struct jsonrpc_msg {
     enum jsonrpc_msg_type type; // 该json消息类型
     char *method;               /* Request or notification only.  记录了命令名 */

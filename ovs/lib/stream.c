@@ -44,11 +44,13 @@ VLOG_DEFINE_THIS_MODULE(stream);
 COVERAGE_DEFINE(pstream_open);
 COVERAGE_DEFINE(stream_open);
 
-/* State of an active stream.*/
+/* State of an active stream.
+ * 一条活动stream的状态枚举
+ * */
 enum stream_state {
-    SCS_CONNECTING,             /* Underlying stream is not connected. */
-    SCS_CONNECTED,              /* Connection established. */
-    SCS_DISCONNECTED            /* Connection failed or connection closed. */
+    SCS_CONNECTING,             /* Underlying stream is not connected. stream尚未连接成功 */
+    SCS_CONNECTED,              /* Connection established. stream已经连接成功 */
+    SCS_DISCONNECTED            /* Connection failed or connection closed.  stream连接失败或连接关闭 */
 };
 
 static const struct stream_class *stream_classes[] = {
@@ -276,7 +278,9 @@ stream_open_block(int error, struct stream **streamp)
     return error;
 }
 
-/* Closes 'stream'. */
+/* Closes 'stream'. 
+ * 关闭指定stream
+ * */
 void
 stream_close(struct stream *stream)
 {
@@ -315,7 +319,9 @@ scs_connecting(struct stream *stream)
 /* Tries to complete the connection on 'stream'.  If 'stream''s connection is
  * complete, returns 0 if the connection was successful or a positive errno
  * value if it failed.  If the connection is still in progress, returns
- * EAGAIN. */
+ * EAGAIN. 
+ * 尝试完成对指定stream的连接
+ * */
 int
 stream_connect(struct stream *stream)
 {
@@ -324,14 +330,14 @@ stream_connect(struct stream *stream)
     do {
         last_state = stream->state;
         switch (stream->state) {
-        case SCS_CONNECTING:
+        case SCS_CONNECTING:    // 标识尚未连接成功的stream会尝试发起单次连接
             scs_connecting(stream);
             break;
 
-        case SCS_CONNECTED:
+        case SCS_CONNECTED:     // 标识已经连接成功的stream返回成功
             return 0;
 
-        case SCS_DISCONNECTED:
+        case SCS_DISCONNECTED:  // 标识连接失败的stream返回对应的错误号
             return stream->error;
 
         default:
@@ -352,11 +358,16 @@ stream_connect(struct stream *stream)
  *       is zero.
  *
  * The recv function will not block waiting for a packet to arrive.  If no
- * data have been received, it returns -EAGAIN immediately. */
+ * data have been received, it returns -EAGAIN immediately.
+ * 从指定stream上接收最多n字节的数据
+ * @返回值      接收成功则返回实际收到的字节数；接收失败返回errno；如果对端关闭连接或收到0字节则返回0
+ * */
 int
 stream_recv(struct stream *stream, void *buffer, size_t n)
 {
+    // 首先确保该stream已经连接成功
     int retval = stream_connect(stream);
+    // 然后在已经连接成功的stream上接收数据
     return (retval ? -retval
             : n == 0 ? 0
             : (stream->class->recv)(stream, buffer, n));
@@ -370,11 +381,16 @@ stream_recv(struct stream *stream, void *buffer, size_t n)
  *     - On error, a negative errno value.
  *
  * The send function will not block.  If no bytes can be immediately accepted
- * for transmission, it returns -EAGAIN immediately. */
+ * for transmission, it returns -EAGAIN immediately. 
+ * 在指定stream上发送数据
+ * @返回值      发送成功则返回实际发送的字节数；发送失败返回errno
+ * */
 int
 stream_send(struct stream *stream, const void *buffer, size_t n)
 {
+    // 首先确保该stream已经连接成功
     int retval = stream_connect(stream);
+    // 然后在已经连接成功的stream上发送数据
     return (retval ? -retval
             : n == 0 ? 0
             : (stream->class->send)(stream, buffer, n));
@@ -383,6 +399,7 @@ stream_send(struct stream *stream, const void *buffer, size_t n)
 /* Allows 'stream' to perform maintenance activities, such as flushing
  * output buffers. 
  * 对指定stream执行维护活动
+ * 备注：当前ovs版本stream_fd_class中实际未定义run方法
  * */
 void
 stream_run(struct stream *stream)
@@ -653,7 +670,9 @@ pstream_get_bound_port(const struct pstream *pstream)
  * After calling this function, stream_close() must be used to destroy
  * 'stream', otherwise resources will be leaked.
  *
- * Takes ownership of 'name'. */
+ * Takes ownership of 'name'. 
+ * 初始化基类stream对象
+ * */
 void
 stream_init(struct stream *stream, const struct stream_class *class,
             int connect_status, char *name)
@@ -668,7 +687,9 @@ stream_init(struct stream *stream, const struct stream_class *class,
     ovs_assert(stream->state != SCS_CONNECTING || class->connect);
 }
 
-/* Takes ownership of 'name'. */
+/* Takes ownership of 'name'. 
+ * 初始化基类pstream对象
+ * */
 void
 pstream_init(struct pstream *pstream, const struct pstream_class *class,
             char *name)

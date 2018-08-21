@@ -22,12 +22,13 @@
 
 /* General-purpose circular queue of bytes. 
  * 通用的环形缓冲区结构
+ * 备注：数据从头部写入，从尾部读取
  * */
 struct byteq {
     uint8_t *buffer;            /* Circular queue.  环形缓冲区 */
-    unsigned int size;          /* Number of bytes allocated for 'buffer'. 环形缓冲区长度 */
-    unsigned int head;          /* Head of queue.   头指针 */
-    unsigned int tail;          /* Chases the head. 尾指针 */
+    unsigned int size;          /* Number of bytes allocated for 'buffer'. 环形缓冲区长度，必须确保是2的次方 */
+    unsigned int head;          /* Head of queue.   数据头，这个值可以超过size大小 */
+    unsigned int tail;          /* Chases the head. 数据尾，这个值可以超过size大小 */
 };
 
 void byteq_init(struct byteq *, uint8_t *buffer, size_t size);

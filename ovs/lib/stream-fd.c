@@ -121,6 +121,7 @@ fd_recv(struct stream *stream, void *buffer, size_t n)
     return retval;
 }
 
+// 描述符类型stream的发送数据接口(实际unix-socket和tcp-socket都是调用该接口发送数据)
 static ssize_t
 fd_send(struct stream *stream, const void *buffer, size_t n)
 {
@@ -182,10 +183,12 @@ static const struct stream_class stream_fd_class = {
  * */
 struct fd_pstream
 {
-    struct pstream pstream; // 封装的pstream基类结构
+    struct pstream pstream; // 封装的pstream基类
     int fd;                 // 该pstream关联的fd
     int (*accept_cb)(int fd, const struct sockaddr_storage *, size_t ss_len,
-                     struct stream **); // 该pstream接受远端连接请求时的回调函数
+                     struct stream **); /* 该pstream在调用pfd_accept时，会递归调用本回调函数
+                                         * 两者区别在于本回调函数跟具体类型的文件描述符相关(inet-socket/unix-socket)
+                                         */
     char *unlink_path;      // 通常就是该pstream关联fd的绑定地址
 };
 
@@ -242,6 +245,10 @@ pfd_close(struct pstream *pstream)
     free(ps);
 }
 
+/* 描述符类型pstream的accept接口(实际unix-socket和tcp-socket都是调用该接口接受连接)
+ * @pstream     指向描述符类型的pstream
+ * @new_streamp 用于存放创建的stream
+ */
 static int
 pfd_accept(struct pstream *pstream, struct stream **new_streamp)
 {
@@ -271,6 +278,7 @@ pfd_accept(struct pstream *pstream, struct stream **new_streamp)
         return retval;
     }
 
+    // 进一步执行套接字类型相关的accept回调函数
     return ps->accept_cb(new_fd, &ss, ss_len, new_streamp);
 }
 
@@ -281,7 +289,9 @@ pfd_wait(struct pstream *pstream)
     poll_fd_wait(ps->fd, POLLIN);
 }
 
-// 定义了属于pstream的通用文件类(显然pstream的TCP套接字类和UNIX域套接字类都属于通用文件类)
+/* 定义了文件描述符类型的pstream对象
+ * 备注：不管是unix-socket还是tcp-socket实际底层关联的都是文件描述符类型的pstream对象
+ */
 static const struct pstream_class fd_pstream_class = {
     "pstream",
     false,

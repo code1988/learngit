@@ -241,6 +241,10 @@ shash_find_data(const struct shash *sh, const char *name)
     return node ? node->data : NULL;
 }
 
+/* 在hash表中根据传入的字符串键值查找对应的节点
+ * @返回值  成功找到则返回对应的节点，并从hash表中移除该节点
+ *          未找到则返回NULL
+ */
 void *
 shash_find_and_delete(struct shash *sh, const char *name)
 {

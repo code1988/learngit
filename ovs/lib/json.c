@@ -62,17 +62,19 @@ struct json_token {
 };
 
 enum json_lex_state {
-    JSON_LEX_START,             /* Not inside a token. */
+    JSON_LEX_START,             /* Not inside a token.  解析器刚创建或注入了完整的json数据时处于该状态 */
     JSON_LEX_NUMBER,            /* Reading a number. */
     JSON_LEX_KEYWORD,           /* Reading a keyword. */
     JSON_LEX_STRING,            /* Reading a quoted string. */
     JSON_LEX_ESCAPE             /* In a quoted string just after a "\". */
 };
 
+// json解析器状态定义
 enum json_parse_state {
-    JSON_PARSE_START,           /* Beginning of input. */
-    JSON_PARSE_END,             /* End of input. */
+    JSON_PARSE_START,           /* Beginning of input.  解析器刚创建时处于起始状态(没有注入任何数据) */
+    JSON_PARSE_END,             /* End of input.        标识解析器中注入了完整的json数据 */
 
+    // 以下两类表示注入json数据不完整时的状态
     /* Objects. */
     JSON_PARSE_OBJECT_INIT,     /* Expecting '}' or an object name. */
     JSON_PARSE_OBJECT_NAME,     /* Expecting an object name. */
@@ -90,9 +92,9 @@ struct json_parser_node {
     struct json *json;
 };
 
-/* A JSON parser. */
+/* A JSON parser. json解析器结构 */
 struct json_parser {
-    int flags;
+    int flags;      // 该标志来自创建该json解析器时
 
     /* Lexical analysis. */
     enum json_lex_state lex_state;
@@ -109,7 +111,7 @@ struct json_parser {
     char *member_name;
 
     /* Parse status. */
-    bool done;
+    bool done;          // 标识该解析器是否已经完成解析
     char *error;                /* Error message, if any, null if none yet. */
 };
 
@@ -118,7 +120,6 @@ static void json_parser_input(struct json_parser *, struct json_token *);
 
 static void json_error(struct json_parser *p, const char *format, ...)
     OVS_PRINTF_FORMAT(2, 3);
-
 const char *
 json_type_to_string(enum json_type type)
 {
@@ -299,6 +300,7 @@ json_array(const struct json *json)
     return CONST_CAST(struct json_array *, &json->u.array);
 }
 
+// 从指定的table类型json对象中返回记录了子对象的hash表
 struct shash *
 json_object(const struct json *json)
 {
@@ -938,8 +940,6 @@ json_lex_string(struct json_parser *p)
 static bool
 json_lex_input(struct json_parser *p, unsigned char c)
 {
-    struct json_token token;
-
     switch (p->lex_state) {
     case JSON_LEX_START:
         switch (c) {
@@ -1017,12 +1017,12 @@ json_lex_input(struct json_parser *p, unsigned char c)
     ds_put_char(&p->buffer, c);
     return true;
 }
-
 /* Parsing. */
 
 /* Parses 'string' as a JSON object or array and returns a newly allocated
  * 'struct json'.  The caller must free the returned structure with
  * json_destroy() when it is no longer needed.
+ * 从指定字符串中解析得到json对象
  *
  * 'string' must be encoded in UTF-8.
  *
@@ -1045,6 +1045,7 @@ json_from_string(const char *string)
 /* Reads the file named 'file_name', parses its contents as a JSON object or
  * array, and returns a newly allocated 'struct json'.  The caller must free
  * the returned structure with json_destroy() when it is no longer needed.
+ * 从指定文件中解析得到json对象
  *
  * The file must be encoded in UTF-8.
  *
@@ -1071,6 +1072,7 @@ json_from_file(const char *file_name)
 /* Parses the contents of 'stream' as a JSON object or array, and returns a
  * newly allocated 'struct json'.  The caller must free the returned structure
  * with json_destroy() when it is no longer needed.
+ * 从指定文件中解析得到json对象
  *
  * The file must be encoded in UTF-8.
  *
@@ -1103,14 +1105,19 @@ json_from_stream(FILE *stream)
     return json;
 }
 
-struct json_parser *
-json_parser_create(int flags)
+// 创建一个json解析器
+struct json_parser *json_parser_create(int flags)
 {
     struct json_parser *p = xzalloc(sizeof *p);
     p->flags = flags;
     return p;
 }
 
+/* 往指定json解析器注入待解析的数据
+ * @input   需要解析的json格式数据
+ * @n       需要解析的数据长度
+ * @返回值  实际注入到解析器的数据长度
+ */
 size_t
 json_parser_feed(struct json_parser *p, const char *input, size_t n)
 {
@@ -1130,12 +1137,14 @@ json_parser_feed(struct json_parser *p, const char *input, size_t n)
     return i;
 }
 
+// 判断json解析器中注入的json消息是否完整
 bool
 json_parser_is_done(const struct json_parser *p)
 {
     return p->done;
 }
 
+// 完成对注入json解析器中的数据解析，解析完毕后会销毁该解析器
 struct json *
 json_parser_finish(struct json_parser *p)
 {
@@ -1171,11 +1180,13 @@ json_parser_finish(struct json_parser *p)
         p->error = NULL;
     }
 
+    // 销毁该解析器
     json_parser_abort(p);
 
     return json;
 }
 
+// 销毁一个json解析器
 void
 json_parser_abort(struct json_parser *p)
 {
@@ -1463,6 +1474,7 @@ static void json_serialize_string(const char *, struct ds *);
 /* Converts 'json' to a string in JSON format, encoded in UTF-8, and returns
  * that string.  The caller is responsible for freeing the returned string,
  * with free(), when it is no longer needed.
+ * 将指定json对象中的json消息转换程json格式的字符串
  *
  * If 'flags' contains JSSF_PRETTY, the output is pretty-printed with each
  * nesting level introducing an additional indentation.  Otherwise, the
