@@ -1700,7 +1700,7 @@ static struct packet_type ip_packet_type __read_mostly = {
 	.func = ip_rcv,
 };
 
-// PF_INET协议族的初始化入口
+// PF_INET协议族的初始化入口，所有IPv4协议的注册都是在这里完成的
 static int __init inet_init(void)
 {
 	struct inet_protosw *q;

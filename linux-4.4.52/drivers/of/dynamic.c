@@ -16,6 +16,7 @@
 
 /**
  * of_node_get() - Increment refcount of a node
+ * 自增指定dts节点的引用计数
  * @node:	Node to inc refcount, NULL is supported to simplify writing of
  *		callers
  *
@@ -31,6 +32,7 @@ EXPORT_SYMBOL(of_node_get);
 
 /**
  * of_node_put() - Decrement refcount of a node
+    * 递减指定device_node的引用计数值
  * @node:	Node to dec refcount, NULL is supported to simplify writing of
  *		callers
  */

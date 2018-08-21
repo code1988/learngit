@@ -132,6 +132,7 @@ typedef __u64 __bitwise __addrpair;
 
 /**
  *	struct sock_common - minimal network layer representation of sockets
+ *	 sock结构中网络层内容的最小形式
  *	@skc_daddr: Foreign IPv4 addr
  *	@skc_rcv_saddr: Bound local IPv4 addr
  *	@skc_hash: hash value used with various protocol lookup tables
@@ -183,7 +184,7 @@ struct sock_common {
 		};
 	};
 
-	unsigned short		skc_family;
+	unsigned short		skc_family;     // 记录该sock所属的地址族
 	volatile unsigned char	skc_state;
 	unsigned char		skc_reuse:4;
 	unsigned char		skc_reuseport:1;
@@ -191,10 +192,10 @@ struct sock_common {
 	unsigned char		skc_net_refcnt:1;
 	int			skc_bound_dev_if;
 	union {
-		struct hlist_node	skc_bind_node;
+		struct hlist_node	skc_bind_node;  // 目前发现的应用是：作为netlink中具体协议类型的多播hash表普通节点
 		struct hlist_nulls_node skc_portaddr_node;
 	};
-	struct proto		*skc_prot;
+	struct proto		*skc_prot;          // 指向该跟sock绑定的协议块
 	possible_net_t		skc_net;
 
 #if IS_ENABLED(CONFIG_IPV6)
@@ -246,6 +247,12 @@ struct sock_common {
 struct cg_proto;
 /**
   *	struct sock - network layer representation of sockets
+  *	备注： 每个socket结构都对应有一个sock结构，即socket->sk指向对应的sock，sock->socket指向对应的socket
+  *	        不将这两个数据结构合并为一的原因是，socket的内容跟文件系统密切相关(涉及inode结构)，而sock的内容跟通信密切相关模块，
+  *	        拆分成两个数据结构有利于减小每个结构的大小
+  *
+  *	注意点： sock结构往往是作为一个模块嵌入到具体的协议中，类似于list_head，所以往往存在一个父结构
+  *
   *	@__sk_common: shared layout with inet_timewait_sock
   *	@sk_shutdown: mask of %SEND_SHUTDOWN and/or %RCV_SHUTDOWN
   *	@sk_userlocks: %SO_SNDBUF and %SO_RCVBUF settings
@@ -356,7 +363,7 @@ struct sock {
 #define sk_rxhash		__sk_common.skc_rxhash
 
 	socket_lock_t		sk_lock;
-	struct sk_buff_head	sk_receive_queue;
+	struct sk_buff_head	sk_receive_queue;   // 该套接字的接收队列头，队列的成员就是skb
 	/*
 	 * The backlog queue is special, it is always used with
 	 * the per-socket spinlock held and requires low latency
@@ -364,27 +371,28 @@ struct sock {
 	 * Note : rmem_alloc is in this structure to fill a hole
 	 * on 64bit arches, not because its logically part of
 	 * backlog.
+     * 定义了该套接字的接收队列中已经接收尚未处理的数据信息
 	 */
 	struct {
-		atomic_t	rmem_alloc;
+		atomic_t	rmem_alloc; // 已经接收尚未处理的数据大小
 		int		len;
 		struct sk_buff	*head;
 		struct sk_buff	*tail;
 	} sk_backlog;
 #define sk_rmem_alloc sk_backlog.rmem_alloc
-	int			sk_forward_alloc;
+	int			sk_forward_alloc;   // 发送队列中尚存的可用空间大小
 
 	__u32			sk_txhash;
 #ifdef CONFIG_NET_RX_BUSY_POLL
 	unsigned int		sk_napi_id;
 	unsigned int		sk_ll_usec;
 #endif
-	atomic_t		sk_drops;
-	int			sk_rcvbuf;
+	atomic_t		sk_drops;       // 记录了该套接字丢弃的消息数量
+	int			sk_rcvbuf;          // 接收缓冲区大小
 
-	struct sk_filter __rcu	*sk_filter;
+	struct sk_filter __rcu	*sk_filter; // 指向一个BPF过滤器
 	union {
-		struct socket_wq __rcu	*sk_wq;
+		struct socket_wq __rcu	*sk_wq; // 指向该sock的等待队列和异步通知队列集合
 		struct socket_wq	*sk_wq_raw;
 	};
 #ifdef CONFIG_XFRM
@@ -393,16 +401,16 @@ struct sock {
 	struct dst_entry	*sk_rx_dst;
 	struct dst_entry __rcu	*sk_dst_cache;
 	/* Note: 32bit hole on 64bit arches */
-	atomic_t		sk_wmem_alloc;
+	atomic_t		sk_wmem_alloc;      // 已经申请尚未发送的数据大小
 	atomic_t		sk_omem_alloc;
-	int			sk_sndbuf;
+	int			sk_sndbuf;              // 发送缓冲区大小
 	struct sk_buff_head	sk_write_queue;
 	kmemcheck_bitfield_begin(flags);
 	unsigned int		sk_shutdown  : 2,
 				sk_no_check_tx : 1,
 				sk_no_check_rx : 1,
 				sk_userlocks : 4,
-				sk_protocol  : 8,
+				sk_protocol  : 8,       // 记录了该sock对应的协议族下的具体协议类型(比如NETLINK_ROUTE)
 				sk_type      : 16;
 #define SK_PROTOCOL_MAX U8_MAX
 	kmemcheck_bitfield_end(flags);
@@ -418,9 +426,9 @@ struct sock {
 	int			sk_rcvlowat;
 	unsigned long	        sk_lingertime;
 	struct sk_buff_head	sk_error_queue;
-	struct proto		*sk_prot_creator;
+	struct proto		*sk_prot_creator;   // 指向该跟sock绑定的协议块
 	rwlock_t		sk_callback_lock;
-	int			sk_err,
+	int			sk_err,                     // 记录了该套接字的出错ID
 				sk_err_soft;
 	u32			sk_ack_backlog;
 	u32			sk_max_ack_backlog;
@@ -430,8 +438,8 @@ struct sock {
 #endif
 	struct pid		*sk_peer_pid;
 	const struct cred	*sk_peer_cred;
-	long			sk_rcvtimeo;
-	long			sk_sndtimeo;
+	long			sk_rcvtimeo;            // 接收超时时间
+	long			sk_sndtimeo;            // 发送超时时间 
 	struct timer_list	sk_timer;
 	ktime_t			sk_stamp;
 	u16			sk_tsflags;
@@ -451,12 +459,12 @@ struct sock {
 #endif
 	struct cg_proto		*sk_cgrp;
 	void			(*sk_state_change)(struct sock *sk);
-	void			(*sk_data_ready)(struct sock *sk);
+	void			(*sk_data_ready)(struct sock *sk);  // 该sock上有数据收到时调用，用于告知套接字，缺省都被注册为sock_def_readable
 	void			(*sk_write_space)(struct sock *sk);
 	void			(*sk_error_report)(struct sock *sk);
 	int			(*sk_backlog_rcv)(struct sock *sk,
 						  struct sk_buff *skb);
-	void                    (*sk_destruct)(struct sock *sk);
+	void                    (*sk_destruct)(struct sock *sk);    // 该sock结构的析构函数   
 };
 
 #define __sk_user_data(sk) ((*((void __rcu **)&(sk)->sk_user_data)))
@@ -658,11 +666,13 @@ static inline void sk_nulls_add_node_rcu(struct sock *sk, struct hlist_nulls_hea
 	__sk_nulls_add_node_rcu(sk, list);
 }
 
+// 将指定套接字从所在的hash桶中删除
 static inline void __sk_del_bind_node(struct sock *sk)
 {
 	__hlist_del(&sk->sk_bind_node);
 }
 
+// 将指定套接字作为一个普通节点插入头节点list对应的hash桶中
 static inline void sk_add_bind_node(struct sock *sk,
 					struct hlist_head *list)
 {
@@ -685,7 +695,7 @@ static inline void sk_add_bind_node(struct sock *sk,
 #define sk_for_each_safe(__sk, tmp, list) \
 	hlist_for_each_entry_safe(__sk, tmp, list, sk_node)
 #define sk_for_each_bound(__sk, list) \
-	hlist_for_each_entry(__sk, list, sk_bind_node)
+	hlist_for_each_entry(__sk, list, sk_bind_node)          // 遍历头节点list对应的hash链表中的每个节点所在的父结构
 
 /**
  * sk_nulls_for_each_entry_offset - iterate over a list at a given struct offset
@@ -952,6 +962,9 @@ static inline void sk_prot_clear_nulls(struct sock *sk, int size)
 }
 
 /* Networking protocol blocks we attach to sockets.
+ * 定义了一个通用的网络协议块，跟sock结构密切相关(一个proto对应一个协议族的操作集合，所有属于该协议族的sock共用对应的proto)
+ *
+ * 备注：这是一个socket层到传输层的接口
  * socket layer -> transport layer interface
  */
 struct proto {
@@ -1413,6 +1426,10 @@ static inline void sk_mem_reclaim_partial(struct sock *sk)
 		__sk_mem_reclaim(sk, sk->sk_forward_alloc - 1);
 }
 
+/* 减少sock结构中发送队列剩余可用空间大小
+ * @sk  - 指向sock结构
+ * @size    - 发送队列要减少的长度
+ */
 static inline void sk_mem_charge(struct sock *sk, int size)
 {
 	if (!sk_has_account(sk))
@@ -2033,6 +2050,9 @@ static inline void sk_clear_bit(int nr, struct sock *sk)
 	clear_bit(nr, &sk->sk_wq_raw->flags);
 }
 
+/* 指定套接字进行异步I/O通知处理
+ * @sk  - 指向sock结构
+ */
 static inline void sk_wake_async(const struct sock *sk, int how, int band)
 {
 	if (sock_flag(sk, SOCK_FASYNC)) {
@@ -2093,11 +2113,13 @@ static inline gfp_t gfp_any(void)
 	return in_softirq() ? GFP_ATOMIC : GFP_KERNEL;
 }
 
+// 计算接收超时时间(如果是非阻塞调用，则返回0)
 static inline long sock_rcvtimeo(const struct sock *sk, bool noblock)
 {
 	return noblock ? 0 : sk->sk_rcvtimeo;
 }
 
+// 计算发送超时时间(如果是非阻塞调用，则返回0)
 static inline long sock_sndtimeo(const struct sock *sk, bool noblock)
 {
 	return noblock ? 0 : sk->sk_sndtimeo;
@@ -2219,6 +2241,7 @@ static inline void sk_eat_skb(struct sock *sk, struct sk_buff *skb)
 	__kfree_skb(skb);
 }
 
+// 获取指定socket控制块所属的网络命名空间
 static inline
 struct net *sock_net(const struct sock *sk)
 {

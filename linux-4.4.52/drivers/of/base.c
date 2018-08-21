@@ -1,5 +1,6 @@
 /*
  * Procedures for creating, accessing and interpreting the device tree.
+ * 创建、访问和解释设备树的过程
  *
  * Paul Mackerras	August 1996.
  * Copyright (C) 1996-2005 Paul Mackerras.
@@ -235,6 +236,11 @@ static struct property *__of_find_property(const struct device_node *np,
 	return pp;
 }
 
+/* 根据给定的属性名，在指定node中查找其对应的属性描述符
+ * @np      - 指向一个设备树节点
+ * @name    - 指向检索的属性名
+ * @lenp    - 用于存放对应属性值的长度
+ */
 struct property *of_find_property(const struct device_node *np,
 				  const char *name,
 				  int *lenp)
@@ -304,6 +310,8 @@ const void *__of_get_property(const struct device_node *np,
 /*
  * Find a property with a given name for a given node
  * and return the value.
+ * 根据给定的属性名，在指定node中查找其对应的属性值
+ * @lenp    用于存放属性值的长度，如果传入NULL意味不关心
  */
 const void *of_get_property(const struct device_node *np, const char *name,
 			    int *lenp)
@@ -484,6 +492,7 @@ static int __of_device_is_compatible(const struct device_node *device,
 
 /** Checks if the given "compat" string matches one of the strings in
  * the device's "compatible" property
+ * 判断指定node的"compatible"属性中是否包含了字符串compat
  */
 int of_device_is_compatible(const struct device_node *device,
 		const char *compat)
@@ -549,6 +558,7 @@ static bool __of_device_is_available(const struct device_node *device)
 
 /**
  *  of_device_is_available - check if a device is available for use
+ *  根据node中的"status"属性值，判断该设备是否是使能的
  *
  *  @device: Node to check for availability
  *
@@ -758,6 +768,7 @@ static struct device_node *__of_find_node_by_path(struct device_node *parent,
 
 /**
  *	of_find_node_opts_by_path - Find a node matching a full OF path
+ *	根据完全路径查找对应的device_node
  *	@path: Either the full path to match, or if the path does not
  *	       start with '/', the name of a property of the /aliases
  *	       node (an alias).  In the case of an alias, the node
@@ -887,14 +898,18 @@ EXPORT_SYMBOL(of_find_node_by_type);
 /**
  *	of_find_compatible_node - Find a node based on type and one of the
  *                                tokens in its "compatible" property
+ *  遍历指定device_node，根据"device_type"和"compatible"的属性值匹配所在的device_node 
  *	@from:		The node to start searching from or NULL, the node
  *			you pass will not be searched, only the next one
  *			will; typically, you pass what the previous call
  *			returned. of_node_put() will be called on it
+ *			指定遍历的起点device_node,NULL意味着从root节点开始(实际遍历似乎是从下一级device_node开始的，没空细看)
  *	@type:		The type string to match "device_type" or NULL to ignore
+ *	            用于指定需要匹配的"device_type"属性值，NULL表示忽略匹配"device_type"
  *	@compatible:	The string to match to one of the tokens in the device
- *			"compatible" list.
+ *			"compatible" list.  用于指定需要匹配的"compatible"属性值
  *
+ *  备注: 本函数会累加匹配到的device_node的引用计数，所以用完之后要记得调用of_node_put
  *	Returns a node pointer with refcount incremented, use
  *	of_node_put() on it when done.
  */
@@ -909,6 +924,7 @@ struct device_node *of_find_compatible_node(struct device_node *from,
 		if (__of_device_is_compatible(np, compatible, type, NULL) &&
 		    of_node_get(np))
 			break;
+    // 这里会对from节点尝试递减其引用计数(?)
 	of_node_put(from);
 	raw_spin_unlock_irqrestore(&devtree_lock, flags);
 	return np;
@@ -1060,6 +1076,7 @@ EXPORT_SYMBOL_GPL(of_modalias_node);
 
 /**
  * of_find_node_by_phandle - Find a node given a phandle
+ * 根据给定的phandle查找对应的设备节点
  * @handle:	phandle of the node to find
  *
  * Returns a node pointer with refcount incremented, use
@@ -1334,10 +1351,11 @@ EXPORT_SYMBOL_GPL(of_property_read_u64_array);
 
 /**
  * of_property_read_string - Find and read a string from a property
+ * 在指定的device_node中查找指定属性的值
  * @np:		device node from which the property value is to be read.
  * @propname:	name of the property to be searched.
  * @out_string:	pointer to null terminated return string, modified only if
- *		return value is 0.
+ *		return value is 0.  用于存放找到的属性值
  *
  * Search for a property in a device tree node and retrieve a null
  * terminated string value (pointer to data, not a copy). Returns 0 on
@@ -1563,10 +1581,11 @@ static int __of_parse_phandle_with_args(const struct device_node *np,
 
 /**
  * of_parse_phandle - Resolve a phandle property to a device_node pointer
- * @np: Pointer to device node holding phandle property
- * @phandle_name: Name of property holding a phandle value
+ * 根据phandle的属性名索引对应的dts节点
+ * @np: Pointer to device node holding phandle property     指向持有该phandle属性的dts节点
+ * @phandle_name: Name of property holding a phandle value  持有一个phandle句柄的属性名
  * @index: For properties holding a table of phandles, this is the index into
- *         the table
+ *         the table    如果该属性名持有的是一个phandle句柄列表，则index参数用来表示具体需要索引的序号
  *
  * Returns the device_node pointer with refcount incremented.  Use
  * of_node_put() on it when done.
@@ -1964,8 +1983,9 @@ void of_alias_scan(void * (*dt_alloc)(u64 size, u64 align))
 
 /**
  * of_alias_get_id - Get alias id for the given device_node
- * @np:		Pointer to the given device_node
- * @stem:	Alias stem of the given device_node
+ * 返回指定dts节点在alias的dts节点中对应的唯一编号
+ * @np:		Pointer to the given device_node        要查找对应别名的dts节点
+ * @stem:	Alias stem of the given device_node     别名的前缀部分
  *
  * The function travels the lookup table to get the alias id for the given
  * device_node and alias stem.  It returns the alias id if found.
