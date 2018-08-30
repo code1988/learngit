@@ -603,9 +603,9 @@ bridge_reconfigure(const struct ovsrec_open_vswitch *ovs_cfg)
      * This is mostly an update to bridge data structures. Nothing is pushed
      * down to ofproto or lower layers. 
      * 添加新网桥或删除过期网桥
-     * 然后遍历所有已经创建的网桥，为每个网桥收集各自的当前有效端口配置表，并删除每个网桥中的过期端口 
+     * 然后遍历所有已经创建的网桥，为每个网桥收集各自的当前有效基础端口配置表，并删除每个网桥中的过期基础端口 
      *
-     * 需要注意的是，这阶段更新只涉及网桥、端口、接口本身的变化;这阶段不添加端口
+     * 需要注意的是，这阶段更新只涉及网桥、基础端口、接口本身的变化;这阶段不添加端口
      * */
     add_del_bridges(ovs_cfg);
     HMAP_FOR_EACH (br, node, &all_bridges) {
@@ -3563,8 +3563,8 @@ bridge_get_controllers(const struct bridge *br,
     return n_controllers;
 }
 
-/* 收集指定bridge包含的所有端口配置表
- * @wanted_ports    指向一张hash表，该hash表用于存放收集到的端口配置表
+/* 收集指定bridge包含的所有基础端口配置表
+ * @wanted_ports    指向一张hash表，该hash表用于存放收集到的基础端口配置表
  */
 static void
 bridge_collect_wanted_ports(struct bridge *br,
@@ -3574,7 +3574,7 @@ bridge_collect_wanted_ports(struct bridge *br,
 
     shash_init(wanted_ports);
 
-    // 遍历该bridge的所有端口配置表
+    // 遍历该bridge的所有基础端口配置表
     for (i = 0; i < br->cfg->n_ports; i++) {
         const char *name = br->cfg->ports[i]->name;
         // 确保相同端口名的配置表只往hash表中添加一次
@@ -3611,7 +3611,7 @@ bridge_collect_wanted_ports(struct bridge *br,
 /* Deletes "struct port"s and "struct iface"s under 'br' which aren't
  * consistent with 'br->cfg'.  Updates 'br->if_cfg_queue' with interfaces which
  * 'br' needs to complete its configuration. 
- * 删除指定网桥中过期的端口
+ * 删除指定网桥中过期的基础端口
  * @wanted_ports    这张hash表记录了该网桥中当前有效的端口配置表
  * */
 static void

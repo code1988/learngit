@@ -27,11 +27,14 @@ extern "C" {
 // 定义了shash表节点结构
 struct shash_node {
     struct hmap_node node;
-    char *name;
-    void *data;
+    char *name;     // 该shash表节点关联的键值
+    void *data;     // 该shash表节点记录的数据
 };
 
-// 定义了shash表结构
+/* 定义了shash表结构
+ * 
+ * 备注：shash表用于键值为字符串格式，数据格式不限的情况
+ */
 struct shash {
     struct hmap map;
 };

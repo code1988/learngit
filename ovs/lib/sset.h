@@ -24,12 +24,21 @@
 extern "C" {
 #endif
 
+/* 定义了sset类型hash表的节点结构
+ *
+ * 备注：该节点的数据空间紧接在该节点结构后
+ */
 struct sset_node {
-    struct hmap_node hmap_node;
-    char name[1];
+    struct hmap_node hmap_node; // 封装的基类hash节点结构
+    char name[1];   // 该节点记录的字符串格式数据值，这里写成"char name[]"显然更加合适
 };
 
-/* A set of strings. */
+/* A set of strings. 
+ * 定义了sset类型的hash表结构
+ *
+ * 备注：这类hash表用于记录字符串格式的name
+ *       这类hash表的键值就是记录的数据值
+ * */
 struct sset {
     struct hmap map;
 };

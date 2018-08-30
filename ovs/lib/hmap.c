@@ -30,10 +30,13 @@ COVERAGE_DEFINE(hmap_expand);
 COVERAGE_DEFINE(hmap_shrink);
 COVERAGE_DEFINE(hmap_reserve);
 
-/* Initializes 'hmap' as an empty hash table. */
+/* Initializes 'hmap' as an empty hash table. 
+ * 初始化hash表
+ * */
 void
 hmap_init(struct hmap *hmap)
 {
+    // 空hash表，其buckets指针必须指向one地址
     hmap->buckets = &hmap->one;
     hmap->one = NULL;
     hmap->mask = 0;
@@ -41,10 +44,13 @@ hmap_init(struct hmap *hmap)
 }
 
 /* Frees memory reserved by 'hmap'.  It is the client's responsibility to free
- * the nodes themselves, if necessary. */
+ * the nodes themselves, if necessary. 
+ * 销毁hash表
+ * */
 void
 hmap_destroy(struct hmap *hmap)
 {
+    // 如果buckets指针未指向one的地址，意味着该hash表不为空
     if (hmap && hmap->buckets != &hmap->one) {
         free(hmap->buckets);
     }
@@ -87,6 +93,7 @@ hmap_moved(struct hmap *hmap)
     }
 }
 
+// 调整hash表buckets数量
 static void
 resize(struct hmap *hmap, size_t new_mask, const char *where)
 {
@@ -122,6 +129,9 @@ resize(struct hmap *hmap, size_t new_mask, const char *where)
     hmap_destroy(&tmp);
 }
 
+/* 计算hash表的mask字段值
+ * @capacity    通常就是hash表当前记录的节点数量
+ */
 static size_t
 calc_mask(size_t capacity)
 {
@@ -143,6 +153,7 @@ calc_mask(size_t capacity)
 }
 
 /* Expands 'hmap', if necessary, to optimize the performance of searches.
+ * 对hash表进行扩容
  *
  * ('where' is used in debug logging.  Commonly one would use hmap_expand() to
  * automatically provide the caller's source file and line number for
@@ -150,9 +161,11 @@ calc_mask(size_t capacity)
 void
 hmap_expand_at(struct hmap *hmap, const char *where)
 {
+    // 计算该hash表新的buckets数量
     size_t new_mask = calc_mask(hmap->n);
     if (new_mask > hmap->mask) {
         COVERAGE_INC(hmap_expand);
+        // 调整buckets数量
         resize(hmap, new_mask, where);
     }
 }

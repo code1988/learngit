@@ -91,6 +91,9 @@ EXPORT_SYMBOL(mem_map);
  * of ZONE_NORMAL.  Under CONFIG_DISCONTIG this means that max_low_pfn and
  * highstart_pfn must be the same; there must be no gap between ZONE_NORMAL
  * and ZONE_HIGHMEM.
+ * high memory(只在32位平台中有意义)的起始地址
+ * high_memory-0xffffffff之间的区域就被称为high memory
+ * vmalloc、fixmap都属于high memory中的子区域
  */
 void * high_memory;
 

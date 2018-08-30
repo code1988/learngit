@@ -25,9 +25,12 @@
 extern "C" {
 #endif
 
-/* A hash map node, to be embedded inside the data structure being mapped. */
+/* A hash map node, to be embedded inside the data structure being mapped. 
+ * 基类hash节点结构
+ * 备注：openvswitch中所有hash节点都是从本结构派生
+ * */
 struct hmap_node {
-    size_t hash;                /* Hash value. */
+    size_t hash;                /* Hash value.  该hash节点关联的hash值 */
     struct hmap_node *next;     /* Next in linked list. */
 };
 
@@ -57,13 +60,15 @@ hmap_node_nullify(struct hmap_node *node)
 }
 
 /* A hash map. 
- * 定义了hash表结构
+ * 定义了hash表的基类抽象结构
+ * 备注：openvswitch中所有hash表都是从本结构派生
  * */
 struct hmap {
-    struct hmap_node **buckets; /* Must point to 'one' iff 'mask' == 0. */
-    struct hmap_node *one;
-    size_t mask;
-    size_t n;
+    struct hmap_node **buckets; /* Must point to 'one' iff 'mask' == 0.  
+                                   这个数组记录了该hash表所有节点 */
+    struct hmap_node *one;      // 这个字段似乎总是NULL，当hash表为空时buckets指针会指向该字段的地址
+    size_t mask;    // 该hash表当前buckets数量，其值必然是(2的幂次方-1)
+    size_t n;       // 该hash表当前记录的节点数量
 };
 
 /* Initializer for an empty hash map. 
@@ -257,7 +262,12 @@ hmap_is_empty(const struct hmap *hmap)
 }
 
 /* Inserts 'node', with the given 'hash', into 'hmap'.  'hmap' is never
- * expanded automatically. */
+ * expanded automatically. 
+ * 将节点快速插入hash表
+ * @hash    该节点对应的hash值
+ *
+ * 备注："快速"的含义是不会对该hash表进行自动扩容
+ * */
 static inline void
 hmap_insert_fast(struct hmap *hmap, struct hmap_node *node, size_t hash)
 {
@@ -270,6 +280,8 @@ hmap_insert_fast(struct hmap *hmap, struct hmap_node *node, size_t hash)
 
 /* Inserts 'node', with the given 'hash', into 'hmap', and expands 'hmap' if
  * necessary to optimize search performance.
+ * 将节点插入hash表
+ * @hash    该节点对应的hash值
  *
  * ('where' is used in debug logging.  Commonly one would use hmap_insert() to
  * automatically provide the caller's source file and line number for
@@ -278,7 +290,9 @@ static inline void
 hmap_insert_at(struct hmap *hmap, struct hmap_node *node, size_t hash,
                const char *where)
 {
+    // 将节点快速插入hash表
     hmap_insert_fast(hmap, node, hash);
+    // 如果节点数量超过hash表当前长度的2倍，则对该hash表进行扩容
     if (hmap->n / 2 > hmap->mask) {
         hmap_expand_at(hmap, where);
     }

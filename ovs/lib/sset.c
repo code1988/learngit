@@ -20,18 +20,23 @@
 
 #include "hash.h"
 
+// 计算length长度的name数据的hash值
 static uint32_t
 hash_name__(const char *name, size_t length)
 {
     return hash_bytes(name, length, 0);
 }
 
+// 计算字符串name的hash值
 static uint32_t
 hash_name(const char *name)
 {
     return hash_name__(name, strlen(name));
 }
 
+/* 查找键值为name的节点
+ * @hash    键值name对应的hash值
+ */
 static struct sset_node *
 sset_find__(const struct sset *set, const char *name, size_t hash)
 {
@@ -45,6 +50,9 @@ sset_find__(const struct sset *set, const char *name, size_t hash)
     return NULL;
 }
 
+/* 将字符串格式的name值插入hash表
+ * @hash    键值name对应的hash值
+ */
 static struct sset_node *
 sset_add__(struct sset *set, const char *name, size_t length, size_t hash)
 {
@@ -138,13 +146,17 @@ sset_count(const struct sset *set)
 }
 
 /* Adds 'name' to 'set'.  If 'name' is new, returns the new sset_node;
- * otherwise (if a copy of 'name' already existed in 'set'), returns NULL. */
+ * otherwise (if a copy of 'name' already existed in 'set'), returns NULL. 
+ * 将指定字符串格式name插入sset类型hash表
+ * */
 struct sset_node *
 sset_add(struct sset *set, const char *name)
 {
+    // 首先计算字符串name的hash值
     size_t length = strlen(name);
     uint32_t hash = hash_name__(name, length);
 
+    // 如果该name对应的节点已经存在则返回NULL，否则为该name创建一个新节点并返回该节点
     return (sset_find__(set, name, hash)
             ? NULL
             : sset_add__(set, name, length, hash));

@@ -507,8 +507,10 @@ void __init mem_init(void)
 #endif
 			"    fixmap  : 0x%08lx - 0x%08lx   (%4ld kB)\n"     // fixmap代表固定映射空间,通常固定3M
 			"    vmalloc : 0x%08lx - 0x%08lx   (%4ld MB)\n"     // vmalloc区域用于给vmalloc/ioremap动态分配内存
-			"    lowmem  : 0x%08lx - 0x%08lx   (%4ld MB)\n"     // lowmem代表线性映射区,对应了一段连续的物理地址. 
-                                                                // ".text",".init",".data",".bss"都属于lowmem的子区域 
+			"    lowmem  : 0x%08lx - 0x%08lx   (%4ld MB)\n"     /* lowmem位于PAGE_OFFSET-high_memory之间
+                                                                 * 这是一个线性映射空间,对应一段连续的物理地址. 
+                                                                 * ".text",".init",".data",".bss"都属于lowmem的子区域 
+                                                                 */
 #ifdef CONFIG_HIGHMEM
 			"    pkmap   : 0x%08lx - 0x%08lx   (%4ld MB)\n"     // pkmap代表永久内存映射空间
 #endif
