@@ -92,6 +92,7 @@ get_netdev_tunnel_config(const struct netdev *netdev)
     return &netdev_vport_cast(netdev)->tnl_cfg;
 }
 
+// 判断指定网络设备是否是"patch"类型网络设备
 bool
 netdev_vport_is_patch(const struct netdev *netdev)
 {

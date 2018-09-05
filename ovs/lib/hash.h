@@ -133,6 +133,7 @@ hash_words64_inline(const uint64_t *p, size_t n_words, uint32_t basis)
     return hash_finish(hash_add_words64(basis, p, n_words), n_words * 8);
 }
 
+// 计算指针地址的hash值
 static inline uint32_t hash_pointer(const void *p, uint32_t basis)
 {
     /* Often pointers are hashed simply by casting to integer type, but that

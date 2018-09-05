@@ -80,23 +80,24 @@ COVERAGE_DEFINE(packet_in_overflow);
 
 struct flow_miss;
 
+// 定义了bundle的抽象结构
 struct ofbundle {
     struct hmap_node hmap_node; /* In struct ofproto's "bundles" hmap. */
-    struct ofproto_dpif *ofproto; /* Owning ofproto. */
-    void *aux;                  /* Key supplied by ofproto's client. */
+    struct ofproto_dpif *ofproto; /* Owning ofproto.  该bundle所属的openflow交换机 */
+    void *aux;                  /* Key supplied by ofproto's client.  该bundle关联的自定义数据，比如struct port */
     char *name;                 /* Identifier for log messages. */
 
     /* Configuration. */
     struct ovs_list ports;      /* Contains "struct ofport"s. */
-    enum port_vlan_mode vlan_mode; /* VLAN mode */
-    uint16_t qinq_ethtype;
-    int vlan;                   /* -1=trunk port, else a 12-bit VLAN ID. */
+    enum port_vlan_mode vlan_mode; /* VLAN mode  该bundle的vlan模式，缺省都是trunk */
+    uint16_t qinq_ethtype;      // QinQ类型，缺省就是ETH_TYPE_VLAN_8021AD
+    int vlan;                   /* -1=trunk port, else a 12-bit VLAN ID.  -1或12bit的vlan id */
     unsigned long *trunks;      /* Bitmap of trunked VLANs, if 'vlan' == -1.
                                  * NULL if all VLANs are trunked. */
     unsigned long *cvlans;
     struct lacp *lacp;          /* LACP if LACP is enabled, otherwise NULL. */
     struct bond *bond;          /* Nonnull iff more than one port. */
-    bool use_priority_tags;     /* Use 802.1p tag for frames in VLAN 0? */
+    bool use_priority_tags;     /* Use 802.1p tag for frames in VLAN 0?  标识是否使用802.1p */
 
     bool protected;             /* Protected port mode */
 
@@ -2845,7 +2846,9 @@ set_queues(struct ofport *ofport_, const struct ofproto_port_queue *qdscp,
  * are removed from every ofproto.  When patch ports and SLB bonds are in use
  * and a VM migration happens and the gratuitous ARPs are somehow lost, this
  * avoids a MAC_ENTRY_IDLE_TIME delay before the migrated VM can communicate
- * with the host from which it migrated. */
+ * with the host from which it migrated. 
+ * flush指定bundle的mac地址学习表
+ * */
 static void
 bundle_flush_macs(struct ofbundle *bundle, bool all_ofprotos)
 {
@@ -2899,6 +2902,7 @@ bundle_move(struct ofbundle *old, struct ofbundle *new)
     ovs_rwlock_unlock(&ml->rwlock);
 }
 
+// 根据传入的自定义数据查找对应的bundle对象
 static struct ofbundle *
 bundle_lookup(const struct ofproto_dpif *ofproto, void *aux)
 {
@@ -2950,6 +2954,7 @@ bundle_del_port(struct ofport_dpif *port)
     bundle_update(bundle);
 }
 
+// 往指定bundle插入一个openflow端口
 static bool
 bundle_add_port(struct ofbundle *bundle, ofp_port_t ofp_port,
                 struct lacp_slave_settings *lacp)
@@ -2984,6 +2989,7 @@ bundle_add_port(struct ofbundle *bundle, ofp_port_t ofp_port,
     return true;
 }
 
+// 销毁指定bundle对象
 static void
 bundle_destroy(struct ofbundle *bundle)
 {
@@ -3016,6 +3022,7 @@ bundle_destroy(struct ofbundle *bundle)
     free(bundle);
 }
 
+// 为指定openflow交换机注册/更新一个bundle对象
 static int
 bundle_set(struct ofproto *ofproto_, void *aux,
            const struct ofproto_bundle_settings *s)
@@ -3038,6 +3045,7 @@ bundle_set(struct ofproto *ofproto_, void *aux,
     ovs_assert(s->n_slaves == 1 || s->bond != NULL);
     ovs_assert((s->lacp != NULL) == (s->lacp_slaves != NULL));
 
+    // 如果该bundle对象尚未存在，则首先进行创建
     bundle = bundle_lookup(ofproto, aux);
     if (!bundle) {
         bundle = xmalloc(sizeof *bundle);
@@ -3060,6 +3068,7 @@ bundle_set(struct ofproto *ofproto_, void *aux,
 
         bundle->floodable = true;
         bundle->protected = false;
+        // 将该bundle注册到mbridge中
         mbridge_register_bundle(ofproto->mbridge, bundle);
     }
 
@@ -3083,6 +3092,7 @@ bundle_set(struct ofproto *ofproto_, void *aux,
 
     /* Update set of ports. */
     ok = true;
+    // 往该bundle插入所有从openflow端口
     for (i = 0; i < s->n_slaves; i++) {
         if (!bundle_add_port(bundle, s->slaves[i],
                              s->lacp ? &s->lacp_slaves[i] : NULL)) {
@@ -3110,7 +3120,9 @@ bundle_set(struct ofproto *ofproto_, void *aux,
         return EINVAL;
     }
 
-    /* Set VLAN tagging mode */
+    /* Set VLAN tagging mode 
+     * 配置该bundle的vlan模式
+     * */
     if (s->vlan_mode != bundle->vlan_mode
         || s->use_priority_tags != bundle->use_priority_tags) {
         bundle->vlan_mode = s->vlan_mode;
@@ -3118,12 +3130,15 @@ bundle_set(struct ofproto *ofproto_, void *aux,
         need_flush = true;
     }
 
+    // 配置该bundle的QinQ类型
     if (s->qinq_ethtype != bundle->qinq_ethtype) {
         bundle->qinq_ethtype = s->qinq_ethtype;
         need_flush = true;
     }
 
-    /* Set VLAN tag. */
+    /* Set VLAN tag. 
+     * 配置该bundle的vlan id
+     * */
     vlan = (s->vlan_mode == PORT_VLAN_TRUNK ? -1
             : s->vlan >= 0 && s->vlan <= 4095 ? s->vlan
             : 0);
@@ -3132,7 +3147,9 @@ bundle_set(struct ofproto *ofproto_, void *aux,
         need_flush = true;
     }
 
-    /* Get trunked VLANs. */
+    /* Get trunked VLANs. 
+     * 配置该bundle的允许通过vlan集合
+     * */
     switch (s->vlan_mode) {
     case PORT_VLAN_ACCESS:
         trunks = NULL;
@@ -3673,6 +3690,7 @@ port_query_by_name(const struct ofproto *ofproto_, const char *devname,
     return error;
 }
 
+// 添加指定网络设备作为openflow交换机的端口
 static int
 port_add(struct ofproto *ofproto_, struct netdev *netdev)
 {
@@ -3681,6 +3699,7 @@ port_add(struct ofproto *ofproto_, struct netdev *netdev)
     char namebuf[NETDEV_VPORT_NAME_BUFSIZE];
     const char *dp_port_name;
 
+    // 如果该网络设备是"patch"类型网络设备，则将其插入ghost_ports集合
     if (netdev_vport_is_patch(netdev)) {
         sset_add(&ofproto->ghost_ports, netdev_get_name(netdev));
         return 0;

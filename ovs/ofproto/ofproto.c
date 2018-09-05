@@ -245,7 +245,8 @@ size_t n_handlers, n_revalidators;  // 记录了交换机的"n-handler-threads"�
  * */
 static struct hmap all_ofprotos = HMAP_INITIALIZER(&all_ofprotos);
 
-/* Initial mappings of port to OpenFlow number mappings.  这张全局的hash表记录了交换机配置的接口信息 */
+/* Initial mappings of port to OpenFlow number mappings.  
+ * 这张全局的hash表记录了交换机配置的接口信息(数据的结构struct iface_hint) */
 static struct shash init_ofp_ports = SHASH_INITIALIZER(&init_ofp_ports);
 
 static struct vlog_rate_limit rl = VLOG_RATE_LIMIT_INIT(1, 5);
@@ -2434,7 +2435,9 @@ ofport_equal(const struct ofputil_phy_port *a,
 
 /* Adds an ofport to 'p' initialized based on the given 'netdev' and 'opp'.
  * The caller must ensure that 'p' does not have a conflicting ofport (that is,
- * one with the same name or port number). */
+ * one with the same name or port number). 
+ * 添加一个openflow端口到openflow交换机
+ * */
 static int
 ofport_install(struct ofproto *p,
                struct netdev *netdev, const struct ofputil_phy_port *pp)

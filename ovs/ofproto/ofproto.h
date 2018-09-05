@@ -399,26 +399,26 @@ enum port_vlan_mode {
     PORT_VLAN_DOT1Q_TUNNEL
 };
 
-/* Configuration of bundles.  基础端口的配置集合 */
+/* Configuration of bundles.  一个bundle的配置集合结构 */
 struct ofproto_bundle_settings {
-    char *name;                 /* For use in log messages. */
+    char *name;                 /* For use in log messages.  该bundle名(实际就是对应的基础端口名) */
 
     ofp_port_t *slaves;         /* OpenFlow port numbers for slaves.  记录了openflow端口号的数组 */
     size_t n_slaves;            // openflow端口数量
 
-    enum port_vlan_mode vlan_mode; /* Selects mode for vlan and trunks */
+    enum port_vlan_mode vlan_mode; /* Selects mode for vlan and trunks  该bundle的vlan模式 */
     uint16_t qinq_ethtype;
-    int vlan;                   /* VLAN VID, except for PORT_VLAN_TRUNK. */
-    unsigned long *trunks;      /* vlan_bitmap, except for PORT_VLAN_ACCESS. */
+    int vlan;                   /* VLAN VID, except for PORT_VLAN_TRUNK.  -1或12bit vlan id */
+    unsigned long *trunks;      /* vlan_bitmap, except for PORT_VLAN_ACCESS.  允许通过的vlan集合 */
     unsigned long *cvlans;
-    bool use_priority_tags;     /* Use 802.1p tag for frames in VLAN 0? */
+    bool use_priority_tags;     /* Use 802.1p tag for frames in VLAN 0?  标识是否使用802.1p tag */
 
-    struct bond_settings *bond; /* Must be nonnull iff if n_slaves > 1. */
+    struct bond_settings *bond; /* Must be nonnull iff if n_slaves > 1.  bond配置(该bundle从设备数量大于1时有效) */
 
-    struct lacp_settings *lacp;              /* Nonnull to enable LACP.  该基础端口的lacp配置信息 */
+    struct lacp_settings *lacp;              /* Nonnull to enable LACP.  该bundle的lacp配置信息 */
     struct lacp_slave_settings *lacp_slaves; /* Array of n_slaves elements. */
 
-    bool protected;             /* Protected port mode */
+    bool protected;             /* Protected port mode  标识该bundle是否处于保护模式 */
 };
 
 int ofproto_bundle_register(struct ofproto *, void *aux,

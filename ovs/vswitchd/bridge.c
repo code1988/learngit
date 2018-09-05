@@ -647,7 +647,7 @@ bridge_reconfigure(const struct ovsrec_open_vswitch *ovs_cfg)
         if (!br->ofproto) {
             int error;
 
-            /* 为该网桥创建openflow交换机实例
+            /* 为该网桥创建openflow交换机实例，其中包括了新openflow端口创建
              * 备注：使用网桥名作为datapath名
              */
             error = ofproto_create(br->name, br->type, &br->ofproto);
@@ -848,6 +848,7 @@ bridge_delete_or_reconfigure_ports(struct bridge *br)
     /* Main task: Iterate over the ports in 'br->ofproto' and remove the ports
      * that are not configured in the database.  (This commonly happens when
      * ports have been deleted, e.g. with "ovs-vsctl del-port".)
+     * 遍历每个openflow端口
      *
      * Side tasks: Reconfigure the ports that are still in 'br'.  Delete ports
      * that have the wrong OpenFlow port number (and arrange to add them back
@@ -858,6 +859,7 @@ bridge_delete_or_reconfigure_ports(struct bridge *br)
 
         sset_add(&ofproto_ports, ofproto_port.name);
 
+        // 删除过期openflow端口
         iface = iface_lookup(br, ofproto_port.name);
         if (!iface) {
             /* No such iface is configured, so we should delete this
@@ -879,6 +881,7 @@ bridge_delete_or_reconfigure_ports(struct bridge *br)
             goto delete;
         }
 
+        // 配置该接口的MTU
         iface_set_netdev_mtu(iface->cfg, iface->netdev);
 
         /* If the requested OpenFlow port for 'iface' changed, and it's not
@@ -4565,6 +4568,7 @@ iface_get_type(const struct ovsrec_interface *iface,
     return type;
 }
 
+// 删除指定接口
 static void
 iface_destroy__(struct iface *iface)
 {
@@ -4595,6 +4599,7 @@ iface_destroy__(struct iface *iface)
     }
 }
 
+// 删除指定接口
 static void
 iface_destroy(struct iface *iface)
 {

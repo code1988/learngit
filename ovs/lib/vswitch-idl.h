@@ -2771,7 +2771,7 @@ struct ovsrec_port {
 	struct smap status;
 
 	/* tag column. */
-	int64_t *tag;   // 记录了该端口的vlan tag号
+	int64_t *tag;   // 记录了该端口的vlan tag号，类似于pvid的概念
 	size_t n_tag;
 
 	/* trunks column. */

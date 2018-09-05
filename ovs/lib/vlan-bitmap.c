@@ -64,6 +64,7 @@ vlan_bitmap_from_array__(const int64_t *vlans, size_t n_vlans,
 
 /* Returns true if 'a' and 'b' are the same: either both null or both the same
  * 4096-bit bitmap.
+ * 比较两个vlan集合是否相等
  *
  * (We assume that a nonnull bitmap is not all 0-bits.) */
 bool

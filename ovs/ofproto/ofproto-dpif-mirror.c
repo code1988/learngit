@@ -39,9 +39,10 @@ struct mbridge {
     struct ovs_refcount ref_cnt;
 };
 
+// 封装了mirror功能的bundle对象
 struct mbundle {
     struct cmap_node cmap_node; /* In parent 'mbridge' map. */
-    struct ofbundle *ofbundle;
+    struct ofbundle *ofbundle;  // 基类bundle
 
     mirror_mask_t src_mirrors;  /* Mirrors triggered when packet received. */
     mirror_mask_t dst_mirrors;  /* Mirrors triggered when packet sent. */

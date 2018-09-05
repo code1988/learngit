@@ -334,26 +334,6 @@ struct pcap_linux {
 #define MUST_CLEAR_RFMON	0x00000002	/* clear rfmon (monitor) mode */
 #define MUST_DELETE_MONIF	0x00000004	/* delete monitor-mode interface */
 
-/*
- * Prototypes for internal functions and methods.
- */
-static void map_arphrd_to_dlt(pcap_t *, int, int, const char *, int);
-#ifdef HAVE_PF_PACKET_SOCKETS
-static short int map_packet_type_to_sll_type(short int);
-#endif
-static int pcap_activate_linux(pcap_t *);
-static int activate_old(pcap_t *);
-static int activate_new(pcap_t *);
-static int activate_mmap(pcap_t *, int *);
-static int pcap_can_set_rfmon_linux(pcap_t *);
-static int pcap_read_linux(pcap_t *, int, pcap_handler, u_char *);
-static int pcap_read_packet(pcap_t *, pcap_handler, u_char *);
-static int pcap_inject_linux(pcap_t *, const void *, size_t);
-static int pcap_stats_linux(pcap_t *, struct pcap_stat *);
-static int pcap_setfilter_linux(pcap_t *, struct bpf_program *);
-static int pcap_setdirection_linux(pcap_t *, pcap_direction_t);
-static int pcap_set_datalink_linux(pcap_t *, int);
-static void pcap_cleanup_linux(pcap_t *);
 
 /*
  * This is what the header structure looks like in a 64-bit kernel;
@@ -392,24 +372,6 @@ union thdr {
 #ifdef HAVE_PACKET_RING
 #define RING_GET_FRAME_AT(h, offset) (((union thdr **)h->buffer)[(offset)])
 #define RING_GET_CURRENT_FRAME(h) RING_GET_FRAME_AT(h, h->offset)
-
-static void destroy_ring(pcap_t *handle);
-static int create_ring(pcap_t *handle, int *status);
-static int prepare_tpacket_socket(pcap_t *handle);
-static void pcap_cleanup_linux_mmap(pcap_t *);
-static int pcap_read_linux_mmap_v1(pcap_t *, int, pcap_handler , u_char *);
-static int pcap_read_linux_mmap_v1_64(pcap_t *, int, pcap_handler , u_char *);
-#ifdef HAVE_TPACKET2
-static int pcap_read_linux_mmap_v2(pcap_t *, int, pcap_handler , u_char *);
-#endif
-#ifdef HAVE_TPACKET3
-static int pcap_read_linux_mmap_v3(pcap_t *, int, pcap_handler , u_char *);
-#endif
-static int pcap_setfilter_linux_mmap(pcap_t *, struct bpf_program *);
-static int pcap_setnonblock_mmap(pcap_t *p, int nonblock, char *errbuf);
-static int pcap_getnonblock_mmap(pcap_t *p, char *errbuf);
-static void pcap_oneshot_mmap(u_char *user, const struct pcap_pkthdr *h,
-    const u_char *bytes);
 #endif
 
 #ifdef TP_STATUS_VLAN_TPID_VALID
@@ -421,42 +383,14 @@ static void pcap_oneshot_mmap(u_char *user, const struct pcap_pkthdr *h,
 /*
  * Wrap some ioctl calls
  */
-#ifdef HAVE_PF_PACKET_SOCKETS
-static int	iface_get_id(int fd, const char *device, char *ebuf);
-#endif /* HAVE_PF_PACKET_SOCKETS */
-static int	iface_get_mtu(int fd, const char *device, char *ebuf);
-static int 	iface_get_arptype(int fd, const char *device, char *ebuf);
-#ifdef HAVE_PF_PACKET_SOCKETS
-static int 	iface_bind(int fd, int ifindex, char *ebuf);
-#ifdef IW_MODE_MONITOR
-static int	has_wext(int sock_fd, const char *device, char *ebuf);
-#endif /* IW_MODE_MONITOR */
-static int	enter_rfmon_mode(pcap_t *handle, int sock_fd,
-    const char *device);
-#endif /* HAVE_PF_PACKET_SOCKETS */
-#if defined(HAVE_LINUX_NET_TSTAMP_H) && defined(PACKET_TIMESTAMP)
-static int	iface_ethtool_get_ts_info(const char *device, pcap_t *handle,
-    char *ebuf);
-#endif
-#ifdef HAVE_PACKET_RING
-static int	iface_get_offload(pcap_t *handle);
-#endif
-static int 	iface_bind_old(int fd, const char *device, char *ebuf);
-
 #ifdef SO_ATTACH_FILTER
-static int	fix_program(pcap_t *handle, struct sock_fprog *fcode,
-    int is_mapped);
-static int	fix_offset(struct bpf_insn *p);
-static int	set_kernel_filter(pcap_t *handle, struct sock_fprog *fcode);
-static int	reset_kernel_filter(pcap_t *handle);
-
 static struct sock_filter	total_insn
 	= BPF_STMT(BPF_RET | BPF_K, 0);
 static struct sock_fprog	total_fcode
 	= { 1, &total_insn };       // 这个预定义的BPF过滤规则用来拒绝接收所有包
 #endif /* SO_ATTACH_FILTER */
 
-// 从普通网络接口中匹配指定的接口，匹配成功将会创建对应的linux平台pcap句柄
+// 创建linux平台上普通网络接口类型的pcap句柄
 pcap_t *
 pcap_create_interface(const char *device, char *ebuf)
 {
@@ -467,6 +401,7 @@ pcap_create_interface(const char *device, char *ebuf)
 	if (handle == NULL)
 		return NULL;
 
+    // 这里首先覆盖了2个该pcap句柄回调函数
 	handle->activate_op = pcap_activate_linux;
 	handle->can_set_rfmon_op = pcap_can_set_rfmon_linux;
 

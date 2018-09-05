@@ -277,10 +277,11 @@ struct ofproto_dpif {
     struct netflow *netflow;
     struct dpif_sflow *sflow;
     struct dpif_ipfix *ipfix;
-    struct hmap bundles;        /* Contains "struct ofbundle"s. */
+    struct hmap bundles;        /* Contains "struct ofbundle"s.  
+                                   记录了该openflow交换机包含的所有bundle对象，键值为每个bundle对象的地址 */
     struct mac_learning *ml;    // 指向该ovs交换机的mac地址学习表
     struct mcast_snooping *ms;
-    bool has_bonded_bundles;
+    bool has_bonded_bundles;    // 标识该openflow交换机中是否存在bond类型的bundle
     bool lacp_enabled;
     struct mbridge *mbridge;
 
@@ -298,7 +299,7 @@ struct ofproto_dpif {
 
     /* Ports. */
     struct sset ports;             /* Set of standard port names. */
-    struct sset ghost_ports;       /* Ports with no datapath port. */
+    struct sset ghost_ports;       /* Ports with no datapath port.  "patch"类型网络设备集合，键值为设备名 */
     struct sset port_poll_set;     /* Queued names for port_poll() reply. */
     int port_poll_errno;           /* Last errno for port_poll() reply. */
     uint64_t change_seq;           /* Connectivity status changes. */

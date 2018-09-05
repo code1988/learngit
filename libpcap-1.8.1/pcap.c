@@ -301,6 +301,7 @@ pcap_next_ex(pcap_t *p, struct pcap_pkthdr **pkt_header,
 	return (p->read_op(p, 1, p->oneshot_callback, (u_char *)&s));
 }
 
+// 这张表记录了支持的特殊捕获源，比如从usb口捕获报文
 static struct capture_source_type {
 	int (*findalldevs_op)(pcap_if_t **, char *);
 	pcap_t *(*create_op)(const char *, char *, int *);
@@ -430,7 +431,7 @@ pcap_create(const char *device, char *errbuf)
 	 * source types until we find one that works for this
 	 * device or run out of types.
      *
-     * 首先从非本地网络接口列表中匹配指定的接口名
+     * 首先在非本地网络接口列表中进行匹配，如果由匹配到，则调用这类网络接口的create_op回调创建pcap句柄
 	 */
 	for (i = 0; capture_source_types[i].create_op != NULL; i++) {
 		is_theirs = 0;
@@ -461,7 +462,7 @@ pcap_create(const char *device, char *errbuf)
 	/*
 	 * OK, try it as a regular network interface.
      *
-     * 如果上面没有匹配成功，再从普通网络接口中匹配指定的接口名(通常都是进入这里)
+     * 如果上面没有匹配成功，再将其作为一个普通网络接口，创建对应的pcap句柄(通常都是进入这里)
 	 */
 	p = pcap_create_interface(device_str, errbuf);
 	if (p == NULL) {
@@ -655,7 +656,7 @@ pcap_set_rfmon(pcap_t *p, int rfmon)
 	return (0);
 }
 
-// 设置超时时间
+// 设置执行捕获操作的持续时间
 int
 pcap_set_timeout(pcap_t *p, int timeout_ms)
 {
@@ -789,7 +790,7 @@ pcap_get_tstamp_precision(pcap_t *p)
         return (p->opt.tstamp_precision);
 }
 
-// 使指定pcap句柄进入运作状态，这里实际包含了创建捕获套接字的动作
+// 使指定pcap句柄进入活动状态，这里实际包含了创建捕获套接字的动作
 int
 pcap_activate(pcap_t *p)
 {
@@ -871,7 +872,7 @@ pcap_open_live(const char *device, int snaplen, int promisc, int to_ms, char *er
 	 * the adapter is in monitor mode or not.
 	 */
 	p->oldstyle = 1;
-    // 使指定pcap句柄进入运作状态，这里实际包含了创建捕获套接字的动作
+    // 使指定pcap句柄进入活动状态，这里实际包含了创建捕获套接字的动作
 	status = pcap_activate(p);
 	if (status < 0)
 		goto fail;

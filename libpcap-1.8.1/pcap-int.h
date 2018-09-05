@@ -116,8 +116,8 @@ struct pcap_opt {
 	int	promisc;    // 标识该pcap句柄是否开启混杂模式，需要注意的是，"any"设备不允许开启混杂模式
 	int	rfmon;		/* monitor mode  表示该pcap句柄是否开启监听模式，该模式只用于无线网卡 */
 	int	immediate;	/* immediate mode - deliver packets as soon as they arrive  标识收到报文时是否立即传递给用户 */
-	int	tstamp_type;
-	int	tstamp_precision;
+	int	tstamp_type;        // 该pcap句柄使用的时间戳类型
+	int	tstamp_precision;   // 该pcap句柄使用的时间戳精度
 };
 
 typedef int	(*activate_op_t)(pcap_t *);
@@ -179,7 +179,7 @@ struct pcap {
 
 	int break_loop;		/* flag set to force break from packet-reading loop 标识是否强制退出循环捕获 */
 
-	void *priv;		/* private data for methods  指向该pcap句柄的私有空间 */
+	void *priv;		/* private data for methods  指向该pcap句柄的私有空间，linux下就是struct pcap_linux */
 
 	int swapped;
 	FILE *rfile;		/* null if live capture, non-null if savefile */
@@ -195,7 +195,9 @@ struct pcap {
 	int version_major;
 	int version_minor;
 
-	int snapshot;   // 该pcap句柄支持的最大捕获包的长度
+	int snapshot;   /* 该pcap句柄支持捕获的最大包长
+                     * 对于普通的以太网接口可以设置为1518,对于环回口可以设置为65549,其他情况下可以设置为MAXIMUM_SNAPLEN
+                     */
 	int linktype;		/* Network linktype 网络链路类型，对于以太网设备/环回设备，通常就是DLT_EN10MB */
 	int linktype_ext;       /* Extended information stored in the linktype field of a file */
 	int tzoff;		/* timezone offset */
@@ -203,7 +205,7 @@ struct pcap {
 	int activated;		/* true if the capture is really started  标识该pcap句柄是否处于运作状态，处于运作状态的pcap句柄将不允许进行修改 */
 	int oldstyle;		/* if we're opening with pcap_open_live() */
 
-	struct pcap_opt opt;
+	struct pcap_opt opt;    // 该句柄包含的一个子结构
 
 	/*
 	 * Place holder for pcap_next().
@@ -243,7 +245,7 @@ struct pcap {
 	 * More methods.
      * 以下这部分回调函数都是跟平台相关的
 	 */
-	activate_op_t activate_op;              // 对应回调函数：pcap_activate_linux
+	activate_op_t activate_op;              // 该句柄的激活方法，对应回调函数：pcap_activate_linux
 	can_set_rfmon_op_t can_set_rfmon_op;    // 对应回调函数：pcap_can_set_rfmon_linux
 	inject_op_t inject_op;                  // 对应回调函数：pcap_inject_linux
 	setfilter_op_t setfilter_op;            // 对应回调函数：pcap_setfilter_linux       / pcap_setfilter_linux_mmap
