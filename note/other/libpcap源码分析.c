@@ -113,6 +113,7 @@ libpcap是跨平台网络数据包捕获函数库，本文将基于Linux平台�
 
     int pcap_activate_linux(pcap_t *handle)
     {
+        int status;
         // 获取该pcap句柄的私有空间
         struct pcap_linux *handlep = handle->priv;
 
@@ -135,6 +136,71 @@ libpcap是跨平台网络数据包捕获函数库，本文将基于Linux平台�
                 handle->opt.promisc = 0;
         }
 
+        handlep->device = strdup(device);
+        handlep->timeout = handle->opt.timeout;
+
+        // 开启混杂模式的接口，需要先从/proc/net/dev中获取该接口当前"drop"报文数量
+        if (handle->opt.promisc)
+            handlep->proc_dropped = linux_if_drops(handlep->device);
+
+        /* 创建用于捕获接口收到的原始报文的套接字
+         * 备注：旧版本的kernel使用SOCK_PACKET类型套接字来实现对原始报文的捕获，这种过时的方式不再展开分析
+         *       较新的kernel使用PF_PACKET来实现该功能
+         */
+        ret = activate_new(handle);
+        // 这里只分析成功使用PF_PACKET创建套接字的情况
+        if (ret == 1) {
+            /* 尝试对新创建的套接字开启PACKET_MMAP功能
+             * 备注：旧版本的kernel不支持开启PACKET_MMAP功能，所以只能作为普通的原始套接字使用
+             *       较新版本的kernel逐渐开始支持v1、v2、v3版本的PACKET_MMAP，这里将会尝试开启当前系统支持的最高版本PACKET_MMAP
+             */
+            switch (activate_mmap(handle, &status)) {
+                case 1: // 返回1意味着成功开启PACKET_MMAP功能，这里是为poll选择一个合适的超时时间
+                    set_poll_timeout(handlep);
+                    return status;
+                case 0: // 返回0意味着kernel不支持PACKET_MMAP
+                    break;
+            }
+        } 
+
+        /* 程序运行到这里只有2种可能：
+         *      通过新式的PF_PACKET创建了套接字，但不支持PACKET_MMAP特性时
+         *      通过老式的SOCKET_PACKET创建了套接字之后
+         */
+
+        // 如果配置了套接字接收缓冲区长度，就在这里进行设置
+        if (handle->opt.buffer_size != 0) {
+            setsockopt(handle->fd, SOL_SOCKET, SO_RCVBUF,&handle->opt.buffer_size,sizeof(handle->opt.buffer_size));
+        }
+
+        // 不开启PACKET_MMAP的情况下，就在这里分配用户空间接收缓冲区
+        handle->buffer   = malloc(handle->bufsize + handle->offset);
+        handle->selectable_fd = handle->fd;
+    }
+
+    int activate_new(pcap_t *handle)
+    {
+        struct pcap_linux *handlep = handle->priv;
+        const char      *device = handle->opt.device;
+        int         is_any_device = (strcmp(device, "any") == 0);
+
+        // 如果是名为"any"的接口，则创建SOCK_DGRAM类型的套接字;通常情况下都是创建SOCK_RAW类型的套接字
+        sock_fd = is_any_device ?
+            socket(PF_PACKET, SOCK_DGRAM, htons(ETH_P_ALL)) :
+            socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+
+        // 记录下环回接口的序号
+        handlep->lo_ifindex = iface_get_id(sock_fd, "lo", handle->errbuf);
+
+        handle->offset   = 0;
+
+        if (!is_any_device) {
+            // 获取该接口的硬件类型，linux中专门用ARPHRD_*来标识设备接口类型
+            arptype = iface_get_arptype(sock_fd, device, handle->errbuf);
+            /* pcap中使用DLT_*来标识设备接口，所以这里就是将ARPHRD_*映射成对应的DLT_*
+             * 除此之外，还会根据接口类型修改offset，从而确保 offset + 2层头长度 实现4字节对齐
+             */
+        }
     }
    
    相关数据结构：
@@ -143,15 +209,19 @@ libpcap是跨平台网络数据包捕获函数库，本文将基于Linux平台�
         read_op_t read_op;      // 在该接口上进行读操作的回调函数(linux上就是 pcap_read_linux / pcap_read_linux_mmap_v3)
         int fd;                 // 该接口关联的套接字
         int selectable_fd;      // 通常就是fd
-        u_int bufsize;          // 该值初始时来自用户配置的snapshot，当开启PACKET_MMAP时，跟配置的接收环形缓冲区tp_frame_size值同步
-        void *buffer;           // 当开启PACKET_MMAP时，指向一个成员为union thdr结构的数组，记录了接收环形缓冲区中每个帧的帧头;当不支持PACKET_MMAP时，暂略
+        u_int bufsize;          // 接收缓冲区的有效大小，该值初始时来自用户配置的snapshot，当开启PACKET_MMAP时，跟配置的接收环形缓冲区tp_frame_size值同步
+        void *buffer;           /* 当开启PACKET_MMAP时，指向一个成员为union thdr结构的数组，记录了接收环形缓冲区中每个帧的帧头;
+                                 * 当不支持PACKET_MMAP时，指向用户空间的接收缓冲区，其大小为 bufsize + offset 
+                                 */
         int cc;                 // 跟配置的接收环形缓冲区tp_frame_nr值同步(由于pcap中内存块数量和帧数量相等，所以本字段也就是内存块数量)
         int break_loop;         // 标识是否强制退出循环捕获
         void *priv;             // 指向该pcap句柄的私有空间(紧跟在本pcap结构后)，linux下就是struct pcap_linux
         struct pcap *next;      // 这张链表记录了所有已经打开的pcap句柄，目的是可以被用于关闭操作
         int snapshot;           // 该pcap句柄支持的最大捕获包的长度,对于普通的以太网接口可以设置为1518,对于环回口可以设置为65549,其他情况下可以设置为MAXIMUM_SNAPLEN
-        int linktype;           // 网络链路类型，对于以太网设备/环回设备，通常就是DLT_EN10MB
+        int linktype;           // 接口的链路类型，对于以太网设备/环回设备，通常就是DLT_EN10MB
+        int offset;             // 该值跟接口链路类型相关，目的是确保 offset + 2层头长度 实现4字节对齐
         int activated;          // 标识该pcap句柄是否处于运作状态，处于运作状态的pcap句柄将不允许进行修改
+        struct pcap_opt opt;    // 该句柄包含的一个子结构
         pcap_direction_t direction;     // 捕包方向
         struct bpf_program fcode;       // BPF过滤模块
         int dlt_count;                  // 该设备对应的dlt_list中元素数量，通常为2
@@ -187,8 +257,12 @@ libpcap是跨平台网络数据包捕获函数库，本文将基于Linux平台�
         u_int   packets_read;       // 统计捕获到的包数量
         long    proc_dropped;       // 统计丢弃的包数量
 
-        char    *device;            // 接口名，比如"eth0"
+        char    *device;            // 接口名，同步自pcap->opt.device
         int filter_in_userland;     // 标识用户空间是否需要过滤包
         int timeout;                // 进行捕获操作的持续时间，同步自pcap->opt.timeout
+        int sock_packet;            // 0意味着使用了PF_PACKET方式创建的套接字
+        int cooked;                 // 1意味着使用了SOCK_DGRAM类型套接字，0意味着使用了SOCK_RAW类型套接字
+        int lo_ifindex;             // 记录了环回接口序号
+
     }
 

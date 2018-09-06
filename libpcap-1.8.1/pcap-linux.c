@@ -303,12 +303,12 @@ struct pcap_linux {
 	long	proc_dropped;	/* packets reported dropped by /proc/net/dev  记录该接口droped报文数量 */
 	struct pcap_stat stat;
 
-	char	*device;	/* device name  设备接口名 */
+	char	*device;	/* device name  设备接口名，同步自pcap->opt.device */
 	int	filter_in_userland; /* must filter in userland 标识用户空间是否需要过滤包 */
 	int	blocks_to_filter_in_userland;
 	int	must_do_on_close; /* stuff we must do when we close */
 	int	timeout;	/* timeout for buffering  进行捕获时的超时时间，从pcap->opt.timeout同步过来,0意味着不超时 */
-	int	sock_packet;	/* using Linux 2.0 compatible interface  标识是否使用的是老式接口 */
+	int	sock_packet;	/* using Linux 2.0 compatible interface  标识是否使用的是老式的SOCK_PACKET类型套接字 */
 	int	cooked;		/* using SOCK_DGRAM rather than SOCK_RAW 标识是否使用加工模式 */
 	int	ifindex;	/* interface index of device we're bound to */
 	int	lo_ifindex;	/* interface index of the loopback device  环回接口序号 */
@@ -1043,7 +1043,7 @@ pcap_can_set_rfmon_linux(pcap_t *handle)
  *
  * Or can we get them in binary form from netlink?
  *
- * 获取指定接口droped报文数量
+ * 从/proc/net/dev中获取指定接口"drop"报文数量
  */
 static long int
 linux_if_drops(const char * if_name)
@@ -1413,7 +1413,7 @@ pcap_activate_linux(pcap_t *handle)
 	 * to bind to a particular device and thus to look at all
 	 * devices.
      *
-     * "any"设备将清除混杂模式标识
+     * 名为"any"的接口不能开启混杂模式
 	 */
 	if (strcmp(device, "any") == 0) {
 		if (handle->opt.promisc) {
@@ -1439,6 +1439,7 @@ pcap_activate_linux(pcap_t *handle)
 	 * If we're in promiscuous mode, then we probably want
 	 * to see when the interface drops packets too, so get an
 	 * initial count from /proc/net/dev
+     * 开启混杂模式的接口，需要先从/proc/net/dev中获取该接口当前"drop"报文数量
 	 */
 	if (handle->opt.promisc)
 		handlep->proc_dropped = linux_if_drops(handlep->device);
@@ -1525,7 +1526,7 @@ pcap_activate_linux(pcap_t *handle)
 	/*
 	 * We set up the socket, but not with memory-mapped access.
      *
-     * 程序运行到这里组要因为2种可能：
+     * 程序运行到这里主要因为2种可能：
      *      通过老式的SOCKET_PACKET创建了套接字之后；
      *      通过新式的PF_PACKET创建了套接字，但不支持PACKET_MMAP特性时
 	 */
@@ -1544,8 +1545,9 @@ pcap_activate_linux(pcap_t *handle)
 		}
 	}
 
-	/* Allocate the buffer */
-
+	/* Allocate the buffer 
+     * 不开启PACKET_MMAP的情况下，就在这里分配用户空间接收缓冲区
+     * */
 	handle->buffer	 = malloc(handle->bufsize + handle->offset);
 	if (!handle->buffer) {
 		pcap_snprintf(handle->errbuf, PCAP_ERRBUF_SIZE,
@@ -2895,6 +2897,7 @@ _U_
  *
  *  linux使用ARPHRD_*来标识设备接口，而pcap中使用DLT_*来标识设备接口，
  *  所以本函数就是将ARPHRD_*映射成对应的DLT_*
+ *  备注：本函数还会根据接口类型修改offset，从而确保 offset + 2层头长度 实现4字节对齐
  */
 static void map_arphrd_to_dlt(pcap_t *handle, int sock_fd, int arptype,
 			      const char *device, int cooked_ok)
@@ -3358,7 +3361,8 @@ activate_new(pcap_t *handle)
 	 * socket for the cooked interface, otherwise we first
 	 * try a SOCK_RAW socket for the raw interface.
      *
-     * 如果是"any"设备，则创建SOCK_DGRAM类型的套接字;通常情况下都是创建SOCK_RAW类型的套接字
+     * 如果是"any"设备，则创建SOCK_DGRAM类型的套接字，这类套接字上收到的报文已经被去掉了2层头;
+     * 通常情况下都是创建SOCK_RAW类型的套接字
 	 */
 	sock_fd = is_any_device ?
 		socket(PF_PACKET, SOCK_DGRAM, htons(ETH_P_ALL)) :
@@ -3396,6 +3400,7 @@ activate_new(pcap_t *handle)
 	 * Get the interface index of the loopback device.
 	 * If the attempt fails, don't fail, just set the
 	 * "handlep->lo_ifindex" to -1.
+     * 记录下环回接口的序号
 	 *
 	 * XXX - can there be more than one device that loops
 	 * packets back, i.e. devices other than "lo"?  If so,

@@ -173,7 +173,7 @@ struct pcap {
 	 * Read buffer.
 	 */
 	u_int bufsize;  // 该值初始时来自用户配置的snapshot，当开启PACKET_MMAP时，跟配置的接收环形缓冲区tp_frame_size值同步
-	void *buffer;   // 当开启PACKET_MMAP时，指向一个成员为union thdr结构的数组，记录了接收环形缓冲区中每个帧的帧头;当不支持PACKET_MMAP时，暂略
+	void *buffer;   // 当开启PACKET_MMAP时，指向一个成员为union thdr结构的数组，记录了接收环形缓冲区中每个帧的帧头;当不支持PACKET_MMAP时，指向用户空间的接收缓冲区，其大小为 bufsize + offset
 	u_char *bp;
 	int cc;         // 跟配置的接收环形缓冲区tp_frame_nr值同步(由于pcap中内存块数量和帧数量相等，所以本字段也就是内存块数量)
 
@@ -198,10 +198,11 @@ struct pcap {
 	int snapshot;   /* 该pcap句柄支持捕获的最大包长
                      * 对于普通的以太网接口可以设置为1518,对于环回口可以设置为65549,其他情况下可以设置为MAXIMUM_SNAPLEN
                      */
-	int linktype;		/* Network linktype 网络链路类型，对于以太网设备/环回设备，通常就是DLT_EN10MB */
+	int linktype;		/* Network linktype 接口的链路类型，对于以太网设备/环回设备，通常就是DLT_EN10MB */
 	int linktype_ext;       /* Extended information stored in the linktype field of a file */
 	int tzoff;		/* timezone offset */
-	int offset;		/* offset for proper alignment */
+	int offset;		/* offset for proper alignment  
+                       该值跟接口类型相关，目的是确保 offset + 2层头长度 实现4字节对齐*/
 	int activated;		/* true if the capture is really started  标识该pcap句柄是否处于运作状态，处于运作状态的pcap句柄将不允许进行修改 */
 	int oldstyle;		/* if we're opening with pcap_open_live() */
 
