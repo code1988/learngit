@@ -119,7 +119,7 @@ static inline unsigned int cpumask_check(unsigned int cpu)
 	return cpu;
 }
 
-#if NR_CPUS == 1
+#if NR_CPUS == 1        // 以下是cpu数量为1的情况
 /* Uniprocessor.  Assume all masks are "1". */
 static inline unsigned int cpumask_first(const struct cpumask *srcp)
 {
@@ -162,7 +162,7 @@ static inline unsigned int cpumask_local_spread(unsigned int i, int node)
 	for ((cpu) = 0; (cpu) < 1; (cpu)++, (void)mask)
 #define for_each_cpu_and(cpu, mask, and)	\
 	for ((cpu) = 0; (cpu) < 1; (cpu)++, (void)mask, (void)and)
-#else
+#else       // 以下是cpu数量超过1的情况
 /**
  * cpumask_first - get the first cpu in a cpumask
  * @srcp: the cpumask pointer
@@ -210,6 +210,7 @@ unsigned int cpumask_local_spread(unsigned int i, int node);
 
 /**
  * for_each_cpu - iterate over every cpu in a mask
+ * 遍历每个cpu
  * @cpu: the (optionally unsigned) integer iterator
  * @mask: the cpumask pointer
  *

@@ -44,6 +44,7 @@ struct netns_ipvs;
 #define NETDEV_HASHBITS    8
 #define NETDEV_HASHENTRIES (1 << NETDEV_HASHBITS)
 
+// 定义了网络命名空间的结构
 struct net {
 	atomic_t		passive;	/* To decided when the network
 						 * namespace should be freed.
@@ -65,15 +66,21 @@ struct net {
 
 	struct ns_common	ns;
 
-	struct proc_dir_entry 	*proc_net;
-	struct proc_dir_entry 	*proc_net_stat;
+	struct proc_dir_entry 	*proc_net;      // 指向/proc/net 目录
+	struct proc_dir_entry 	*proc_net_stat; // 指向/proc/net/stat 目录
 
 #ifdef CONFIG_SYSCTL
 	struct ctl_table_set	sysctls;
 #endif
 
-	struct sock 		*rtnl;			/* rtnetlink socket */
-	struct sock		*genl_sock;
+	struct sock 		*rtnl;			/* rtnetlink socket 
+                                         * net命名空间专门为NETLINK_ROUTE预留了一个sock指针，
+                                         * 注册了该协议类型的内核netlink套接字后，该net命名空间下收到任何该协议的消息，
+                                         * 都会触发该netlink套接字中注册的input回调函数*/
+	struct sock		*genl_sock;         /* net命名空间专门为NETLINK_GENERIC预留了一个sock指针，
+                                         * 注册了该协议类型的内核netlink套接字后，该net命名空间下收到任何该协议的消息，
+                                         * 都会触发该netlink套接字中注册的input回调函数
+                                         */
 
 	struct list_head 	dev_base_head;
 	struct hlist_head 	*dev_name_head;
@@ -282,13 +289,14 @@ int peernet2id(struct net *net, struct net *peer);
 bool peernet_has_id(struct net *net, struct net *peer);
 struct net *get_net_ns_by_id(struct net *net, int id);
 
+// 定义了每个网络功能模块在网络命名空间层面操作集合的结构
 struct pernet_operations {
 	struct list_head list;
-	int (*init)(struct net *net);
-	void (*exit)(struct net *net);
+	int (*init)(struct net *net);       // 指向具体模块的功能初始化函数(比如创建具体的proc节点等)
+	void (*exit)(struct net *net);      // 指向具体模块的功能注销函数(比如删除具体的proc节点等)
 	void (*exit_batch)(struct list_head *net_exit_list);
-	int *id;
-	size_t size;
+	int *id;        // 在网络命名空间中唯一标识该功能模块（索引proc节点用）,当然，对于没有id号需求的模块就不必分配了
+	size_t size;    // size指定该功能模块拥有的私有数据块（通常就是记录对应的proc节点信息）大小，配合id号，就可以搜索到对应的私有数据块
 };
 
 /*

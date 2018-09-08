@@ -1170,14 +1170,17 @@ static void __net_exit icmp_sk_exit(struct net *net)
 	net->ipv4.icmp_sk = NULL;
 }
 
+// 具体的icmp功能初始化
 static int __net_init icmp_sk_init(struct net *net)
 {
 	int i, err;
 
+    // 为每个cpu分配一个用于icmp的struct sock结构
 	net->ipv4.icmp_sk = alloc_percpu(struct sock *);
 	if (!net->ipv4.icmp_sk)
 		return -ENOMEM;
 
+    // 为每个cpu创建icmp内核套接字
 	for_each_possible_cpu(i) {
 		struct sock *sk;
 
@@ -1232,12 +1235,17 @@ fail:
 	return err;
 }
 
+// 定义了icmp模块在网络命名空间层面的操作集合
 static struct pernet_operations __net_initdata icmp_sk_ops = {
        .init = icmp_sk_init,
        .exit = icmp_sk_exit,
 };
 
+// icmp模块的初始化入口
 int __init icmp_init(void)
 {
+    /* 将icmp模块注册到每一个网络命名空间，并且执行了icmp_sk_init
+     * 需要注意的是，由于icmp_sk_ops.size = 0，意味着icmp模块没有私有空间
+     */
 	return register_pernet_subsys(&icmp_sk_ops);
 }

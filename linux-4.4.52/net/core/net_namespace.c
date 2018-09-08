@@ -24,14 +24,16 @@
 /*
  *	Our network namespace constructor/destructor lists
  */
-
+// 定义了一个网络功能模块链表头(每创建一个网络功能模块都要插入该链表)
 static LIST_HEAD(pernet_list);
 static struct list_head *first_device = &pernet_list;
 DEFINE_MUTEX(net_mutex);
 
+// 定义了一个网络命名空间链表头(每创建一个网络命名空间都要插入该链表)
 LIST_HEAD(net_namespace_list);
 EXPORT_SYMBOL_GPL(net_namespace_list);
 
+// 定义了一个缺省的全局的网络命名空间(不论单/多网络命名空间，都至少有这一个)
 struct net init_net = {
 	.dev_base_head = LIST_HEAD_INIT(init_net.dev_base_head),
 };
@@ -53,6 +55,7 @@ static struct net_generic *net_alloc_generic(void)
 	return ng;
 }
 
+// 将一个私有数据块注册到全局的net->gen->ptr[id-1]数组中，以后就可以通过id索引到相应的私有数据块
 static int net_assign_generic(struct net *net, int id, void *data)
 {
 	struct net_generic *ng, *old_ng;
@@ -90,11 +93,15 @@ assign:
 	return 0;
 }
 
+// 注册一个网络功能模块到一个网络命名空间(主要就是创建模块的私有空间、执行模块具体的init函数)
 static int ops_init(const struct pernet_operations *ops, struct net *net)
 {
 	int err = -ENOMEM;
 	void *data = NULL;
 
+    /* 如果同时定义了id号和私有数据块长度，就在这里分配私有数据块
+     * 然后将这个私有数据块注册到全局的net->gen->ptr[id-1]数组中
+     */
 	if (ops->id && ops->size) {
 		data = kzalloc(ops->size, GFP_KERNEL);
 		if (!data)
@@ -105,6 +112,7 @@ static int ops_init(const struct pernet_operations *ops, struct net *net)
 			goto cleanup;
 	}
 	err = 0;
+    // 如果该功能模块注册了init函数，则在这里执行
 	if (ops->init)
 		err = ops->init(net);
 	if (!err)
@@ -769,7 +777,8 @@ static int __init net_ns_init(void)
 
 pure_initcall(net_ns_init);
 
-#ifdef CONFIG_NET_NS
+#ifdef CONFIG_NET_NS    // 以下函数用于开启了多网络命名空间的情况
+// 注册网络功能模块到多网络命名空间
 static int __register_pernet_operations(struct list_head *list,
 					struct pernet_operations *ops)
 {
@@ -777,7 +786,9 @@ static int __register_pernet_operations(struct list_head *list,
 	int error;
 	LIST_HEAD(net_exit_list);
 
+    // 将该网络功能模块从尾部插入pernet_list链表
 	list_add_tail(&ops->list, list);
+    // 如果该网络功能模块定义了init函数或者定义了id和size，则需要进一步添加到每个网络命名空间
 	if (ops->init || (ops->id && ops->size)) {
 		for_each_net(net) {
 			error = ops_init(ops, net);
@@ -808,11 +819,12 @@ static void __unregister_pernet_operations(struct pernet_operations *ops)
 	ops_free_list(ops, &net_exit_list);
 }
 
-#else
-
+#else       // 以下函数用于单网络命名空间的情况
+// 注册网络功能模块到单网络命名空间
 static int __register_pernet_operations(struct list_head *list,
 					struct pernet_operations *ops)
 {
+    // 注册该网络功能模块到缺省的网络命名空间init_net
 	return ops_init(ops, &init_net);
 }
 
@@ -826,15 +838,19 @@ static void __unregister_pernet_operations(struct pernet_operations *ops)
 
 #endif /* CONFIG_NET_NS */
 
+// 定义了一个网络命名空间的id管理块
 static DEFINE_IDA(net_generic_ids);
 
+// 注册一个网络功能模块到每个网络命名空间(内部封装)
 static int register_pernet_operations(struct list_head *list,
 				      struct pernet_operations *ops)
 {
 	int error;
 
+    // 这里首先判断该功能模块是否有显式记录id号的需求
 	if (ops->id) {
 again:
+        // 对于有显式记录id号需求的功能模块，这里就为它分配一个
 		error = ida_get_new_above(&net_generic_ids, 1, ops->id);
 		if (error < 0) {
 			if (error == -EAGAIN) {
@@ -866,6 +882,8 @@ static void unregister_pernet_operations(struct pernet_operations *ops)
 
 /**
  *      register_pernet_subsys - register a network namespace subsystem
+ *      注册一个指定的网络功能模块到每个网络命名空间(对外封装)
+ *      备注：不管是单/多网络命名空间，一个命名空间中注册的最后一步都是尝试调用init（如果该模块有注册init函数）
  *	@ops:  pernet operations structure for the subsystem
  *
  *	Register a subsystem which has init and exit functions
@@ -878,10 +896,12 @@ static void unregister_pernet_operations(struct pernet_operations *ops)
  *
  *	When a new network namespace is created all of the init
  *	methods are called in the order in which they were registered.
+ *	一个网络命名空间新创建时，所有已经注册了的网络功能模块，只要注册了init函数，就都会在新的命名空间下再执行一遍
  *
  *	When a network namespace is destroyed all of the exit methods
  *	are called in the reverse of the order with which they were
  *	registered.
+ *	同理，删除一个网络命名空间时，所有已经注册了的网络功能模块，只要注册了exit函数，就都会在该命名空间下执行一遍
  */
 int register_pernet_subsys(struct pernet_operations *ops)
 {
