@@ -77,10 +77,10 @@
 /*
  * A DLT_LINUX_SLL fake link-layer header.
  */
-#define SLL_HDR_LEN	16		/* total header length 伪帧头长度 */
+#define SLL_HDR_LEN	16		/* total header length 伪链路层头长度 */
 #define SLL_ADDRLEN	8		/* length of address field */
 
-// pcap管理的伪帧头
+// pcap管理的伪链路层头结构
 struct sll_header {
 	u_int16_t sll_pkttype;		/* packet type */
 	u_int16_t sll_hatype;		/* link-layer address type */

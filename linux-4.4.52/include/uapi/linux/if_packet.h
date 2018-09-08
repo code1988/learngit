@@ -47,7 +47,7 @@ struct sockaddr_ll {
 #define PACKET_RX_RING			5   // 创建环形接收缓冲区
 #define PACKET_STATISTICS		6   // 获取环形缓冲区的统计信息，对应的参数结构：struct tpacket_stats_v3
 #define PACKET_COPY_THRESH		7                                                                                                  
-#define PACKET_AUXDATA			8                                                                                                  
+#define PACKET_AUXDATA			8   // 使能对辅助数据的支持，辅助数据主要就是报文的vlan头信息 
 #define PACKET_ORIGDEV			9                                                                                                  
 #define PACKET_VERSION			10  // 设置/获取环形缓冲区版本，目前有3个版本可选
 #define PACKET_HDRLEN			11  // 获取指定版本环形缓冲区帧头长(通常也用该选项来判断内核是否支持指定版本的环形缓冲区)

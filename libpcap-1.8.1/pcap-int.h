@@ -234,7 +234,7 @@ struct pcap {
 
 	char errbuf[PCAP_ERRBUF_SIZE + 1];
 	int dlt_count;          // 该设备对应的dlt_list中元素数量，通常为2
-	u_int *dlt_list;        // 指向该设备对应的DLT_*列表
+	u_int *dlt_list;        // 指向该设备对应的DLT_*列表，似乎只有普通的以太网设备在用，实际没太多意义
 	int tstamp_type_count;
 	u_int *tstamp_type_list;
 	int tstamp_precision_count;

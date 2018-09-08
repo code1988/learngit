@@ -310,7 +310,7 @@ struct pcap_linux {
 	int	timeout;	/* timeout for buffering  进行捕获时的超时时间，从pcap->opt.timeout同步过来,0意味着不超时 */
 	int	sock_packet;	/* using Linux 2.0 compatible interface  标识是否使用的是老式的SOCK_PACKET类型套接字 */
 	int	cooked;		/* using SOCK_DGRAM rather than SOCK_RAW 标识是否使用加工模式 */
-	int	ifindex;	/* interface index of device we're bound to */
+	int	ifindex;	/* interface index of device we're bound to  对于普通的以太网接口，这里记录了其接口序号 */
 	int	lo_ifindex;	/* interface index of the loopback device  环回接口序号 */
 	bpf_u_int32 oldmode;	/* mode to restore when turning monitor mode off */
 	char	*mondevice;	/* mac80211 monitor device we created */
@@ -3420,6 +3420,8 @@ activate_new(pcap_t *handle)
 	 * What kind of frames do we have to deal with? Fall back
 	 * to cooked mode if we have an unknown interface type
 	 * or a type we know doesn't work well in raw mode.
+     * 对于接口名不是"any"的接口，如果其接口类型未定义或者属于一种不支持工作在raw模式下的接口，
+     * 这些接口仍旧要回退到加工模式
 	 */
 	if (!is_any_device) {
 		/* Assume for now we don't need cooked mode. */
@@ -3464,8 +3466,12 @@ activate_new(pcap_t *handle)
 			close(sock_fd);
 			return arptype;
 		}
-        //  将ARPHRD_*映射成对应的DLT_*，然后将有些类型的设备重新改创建一个SOCK_DGRAM类型的套接字
+        /*  将ARPHRD_*映射成对应的DLT_*，然后将有些类型的设备重新改创建一个SOCK_DGRAM类型的套接字
+         *  除此之外，还会根据接口类型修改offset，从而确保 offset + L2头长度 实现4字节对齐
+         *  备注：对于普通的以太网接口，由于以太网L2头长为14,所以offset值在这里设为2
+         */
 		map_arphrd_to_dlt(handle, sock_fd, arptype, device, 1);
+        // 符合以下情况的都需要回退到cooked模式
 		if (handle->linktype == -1 ||
 		    handle->linktype == DLT_LINUX_SLL ||
 		    handle->linktype == DLT_LINUX_IRDA ||
@@ -3482,6 +3488,7 @@ activate_new(pcap_t *handle)
 			 * type we can only determine by using
 			 * APIs that may be different on different
 			 * kernels) - reopen in cooked mode.
+             * 回退到加工模式，也就是重新打开SOCK_DGRAM类型套接字
 			 */
 			if (close(sock_fd) == -1) {
 				pcap_snprintf(handle->errbuf, PCAP_ERRBUF_SIZE,
@@ -3510,7 +3517,7 @@ activate_new(pcap_t *handle)
 
 			/*
 			 * Get rid of any link-layer type list
-			 * we allocated - this only supports cooked
+			 * we allocated - this only supports non-cooked
 			 * capture.
              *
              * 使用加工模式时将注销该设备对应的DLT_*列表
@@ -3580,6 +3587,7 @@ activate_new(pcap_t *handle)
 
 		/*
 		 * It uses cooked mode.
+         * 对于接口名为"any"的接口，直接将其设置为cooked模式
 		 */
 		handlep->cooked = 1;
 		handle->linktype = DLT_LINUX_SLL;
@@ -3590,6 +3598,7 @@ activate_new(pcap_t *handle)
 		 * that we can't transmit; stop doing that only
 		 * if we figure out how to transmit in cooked
 		 * mode.
+         * 接口名为"any"的接口只是一个泛指，实际不存在这个接口，所以也不进行绑定 
 		 */
 		handlep->ifindex = -1;
 	}
@@ -3615,7 +3624,7 @@ activate_new(pcap_t *handle)
 	 * for the "any" device (so you don't have to explicitly
 	 * disable it in programs such as tcpdump).
      *
-     * 在普通设备接口上开启混杂模式
+     * 在非"any"设备接口上开启混杂模式
 	 */
 
 	if (!is_any_device && handle->opt.promisc) {
@@ -3632,7 +3641,10 @@ activate_new(pcap_t *handle)
 	}
 
 	/* Enable auxillary data if supported and reserve room for
-	 * reconstructing VLAN headers. */
+	 * reconstructing VLAN headers. 
+     * 使能对辅助数据的支持，辅助数据主要就是报文的vlan头信息,同时将offset增加vlan字段长
+     * 备注：后续如果启用了PACKET_MMAP V3机制，就不需要在这里启用该功能了
+     * */
 #ifdef HAVE_PACKET_AUXDATA
 	val = 1;
 	if (setsockopt(sock_fd, SOL_PACKET, PACKET_AUXDATA, &val,
@@ -3659,7 +3671,7 @@ activate_new(pcap_t *handle)
 	 * 1 byte of packet data (so we don't pass a byte
 	 * count of 0 to "recvfrom()").
      *
-     * 加工模式下必须确保最大捕获包的长度不小于 SLL_HDR_LEN + 1
+     * 加工模式下必须确保最大包的长度不小于 SLL_HDR_LEN + 1
 	 */
 	if (handlep->cooked) {
 		if (handle->snapshot < SLL_HDR_LEN + 1)
@@ -3680,7 +3692,7 @@ activate_new(pcap_t *handle)
 		 * The type field is after the destination and source
 		 * MAC address.
          *
-         * 普通以太网设备VLAN标签位于距离头部12字节位置
+         * 普通以太网设备VLAN标签位于目的mac和源mac之后位置
 		 */
 		handlep->vlan_offset = 2 * ETH_ALEN;
 		break;
@@ -3690,7 +3702,7 @@ activate_new(pcap_t *handle)
 		 * The type field is in the last 2 bytes of the
 		 * DLT_LINUX_SLL header.
          *
-         * 加工模式下的设备VLAN标签记录在sll_header->sll_protocol字段
+         * 加工模式下的设备VLAN标签位于sll_header->sll_protocol字段
 		 */
 		handlep->vlan_offset = SLL_HDR_LEN - 2;
 		break;
@@ -3700,6 +3712,7 @@ activate_new(pcap_t *handle)
 		break;
 	}
 
+    // 配置该pcap句柄的时间戳精度
 #if defined(SIOCGSTAMPNS) && defined(SO_TIMESTAMPNS)
 	if (handle->opt.tstamp_precision == PCAP_TSTAMP_PRECISION_NANO) {
 		int nsec_tstamps = 1;
