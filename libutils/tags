@@ -1,0 +1,25 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+ALIGN1	utility.h	12;"	d
+ALIGN2	utility.h	13;"	d
+ALIGN_ARG	utility.h	11;"	d
+ARRAY_SIZE	utility.h	16;"	d
+HEIGHT	avl.c	3;"	d	file:
+MAX	utility.h	19;"	d
+MAX	utility.h	21;"	d
+__UTILITY_H	utility.h	2;"	d
+avltree_create_node	avl.c	/^avltree_node_t *avltree_create_node(int key,avltree_node_t *left,avltree_node_t *right)$/;"	f	signature:(int key,avltree_node_t *left,avltree_node_t *right)
+avltree_node	avl.c	/^typedef struct avltree_node {$/;"	s	file:
+avltree_node::height	avl.c	/^    int height;$/;"	m	struct:avltree_node	file:	access:public
+avltree_node::key	avl.c	/^    int key;$/;"	m	struct:avltree_node	file:	access:public
+avltree_node::left	avl.c	/^    struct avltree_node *left;$/;"	m	struct:avltree_node	typeref:struct:avltree_node::avltree_node	file:	access:public
+avltree_node::right	avl.c	/^    struct avltree_node *right;$/;"	m	struct:avltree_node	typeref:struct:avltree_node::avltree_node	file:	access:public
+avltree_node_t	avl.c	/^}avltree_node_t;$/;"	t	typeref:struct:avltree_node	file:
+height	avl.c	/^    int height;$/;"	m	struct:avltree_node	file:	access:public
+key	avl.c	/^    int key;$/;"	m	struct:avltree_node	file:	access:public
+left	avl.c	/^    struct avltree_node *left;$/;"	m	struct:avltree_node	typeref:struct:avltree_node::avltree_node	file:	access:public
+right	avl.c	/^    struct avltree_node *right;$/;"	m	struct:avltree_node	typeref:struct:avltree_node::avltree_node	file:	access:public
