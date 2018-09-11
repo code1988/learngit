@@ -309,7 +309,7 @@ libpcap是跨平台网络数据包捕获函数库，本文将基于Linux平台�
         u_int buffer_size;  // 接收缓冲区长度，缺省就是2M. 当PACKET_MMAP开启时，该值用来配置接收环形缓冲区;当不支持PACKET_MMAP时，该值用来配置套接字的接收缓冲区
         int promisc;        // 标识该pcap句柄是否开启混杂模式，需要注意的是，"any"设备不允许开启混杂模式
         int rfmon;          // 表示该pcap句柄是否开启监听模式，该模式只用于无线网卡
-        int immediate;      // 标识收到报文时是否立即传递给用户
+        int immediate;      // 标识收到报文时是否立即传递给用户，只有关闭该标志的前提下才能开启TPACKET_V3模式
         int tstamp_type;        // 该pcap句柄使用的时间戳类型
         int tstamp_precision;   // 该pcap句柄使用的时间戳精度
     }

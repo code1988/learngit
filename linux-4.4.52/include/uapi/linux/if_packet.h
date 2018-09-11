@@ -51,7 +51,7 @@ struct sockaddr_ll {
 #define PACKET_ORIGDEV			9                                                                                                  
 #define PACKET_VERSION			10  // 设置/获取环形缓冲区版本，目前有3个版本可选
 #define PACKET_HDRLEN			11  // 获取指定版本环形缓冲区帧头长(通常也用该选项来判断内核是否支持指定版本的环形缓冲区)
-#define PACKET_RESERVE			12  // 设置环形接收缓冲区中每个帧的保留空间长度(作为额外的headroom)，通常用于预留4字节VLAN tag空间
+#define PACKET_RESERVE			12  // 设置/获取环形接收缓冲区中每个帧的保留空间长度(作为额外的headroom)，通常用于预留4字节VLAN tag空间
 #define PACKET_TX_RING			13  // 创建环形发送缓冲区
 #define PACKET_LOSS			14
 #define PACKET_VNET_HDR			15
@@ -168,7 +168,7 @@ struct tpacket_hdr {
  *          struct tpacket_hdr + struct sockaddr_ll + padding + frame_data
  */
 #define TPACKET_ALIGNMENT	16
-#define TPACKET_ALIGN(x)	(((x)+TPACKET_ALIGNMENT-1)&~(TPACKET_ALIGNMENT-1))
+#define TPACKET_ALIGN(x)	(((x)+TPACKET_ALIGNMENT-1)&~(TPACKET_ALIGNMENT-1))                          // TPACKET讲求16字节对齐
 #define TPACKET_HDRLEN		(TPACKET_ALIGN(sizeof(struct tpacket_hdr)) + sizeof(struct sockaddr_ll))    // V1环形缓冲区帧头长度
 
 // TPACKET_V2环形缓冲区每个帧的头部结构
@@ -316,11 +316,12 @@ struct tpacket_req {
  * 备注：显然tpacket_req3结构是tpacket_req结构的超集，实际可以统一使用本结构去设置所有版本的环形缓冲区，V1/V2版本会自动忽略多余的字段 
  */
 struct tpacket_req3 {
-	unsigned int	tp_block_size;	/* Minimal size of contiguous block */
-	unsigned int	tp_block_nr;	/* Number of blocks */
+	unsigned int	tp_block_size;	/* Minimal size of contiguous block  每个连续内存块的最小尺寸(必须是 PAGE_SIZE * 2^n ) */
+	unsigned int	tp_block_nr;	/* Number of blocks                  内存块数量 */
 	unsigned int	tp_frame_size;	/* Size of frame    (虽然V3中的帧长是可变的，但创建时还是会传入一个最大的允许值) */
 	unsigned int	tp_frame_nr;	/* Total number of frames */
-	unsigned int	tp_retire_blk_tov; /* timeout in msecs  超时时间(ms)，超时后即使内存块没有被数据填入也会被内核停用，0意味着不设超时 */
+	unsigned int	tp_retire_blk_tov; /* timeout in msecs  
+                                          内存块的寿命(ms)，超时后即使内存块没有被数据填入也会被内核停用，0意味着不设超时 */
 	unsigned int	tp_sizeof_priv; /* offset to private data area  每个内存块中私有空间大小，0意味着不设私有空间 */
 	unsigned int	tp_feature_req_word;    // 标志位集合(目前就1个标志 TP_FT_REQ_FILL_RXHASH)
 };

@@ -25,7 +25,7 @@ typedef __kernel_sa_family_t	sa_family_t;
 /*
  *	1003.1g requires sa_family_t and that sa_data is char.
  */
- 
+// 这是个通用的套接字地址格式 
 struct sockaddr {
 	sa_family_t	sa_family;	/* address family, AF_xxx	*/
 	char		sa_data[14];	/* 14 bytes of protocol address	*/
@@ -36,6 +36,7 @@ struct linger {
 	int		l_linger;	/* How long to linger for	*/
 };
 
+// 内核空间中定义的通用套接字地址结构
 #define sockaddr_storage __kernel_sockaddr_storage
 
 /*
@@ -90,16 +91,16 @@ struct cmsghdr {
 #define __CMSG_NXTHDR(ctl, len, cmsg) __cmsg_nxthdr((ctl),(len),(cmsg))
 #define CMSG_NXTHDR(mhdr, cmsg) cmsg_nxthdr((mhdr), (cmsg))
 
-#define CMSG_ALIGN(len) ( ((len)+sizeof(long)-1) & ~(sizeof(long)-1) )
+#define CMSG_ALIGN(len) ( ((len)+sizeof(long)-1) & ~(sizeof(long)-1) )                  // sizeof(long)字节对齐
 
-#define CMSG_DATA(cmsg)	((void *)((char *)(cmsg) + CMSG_ALIGN(sizeof(struct cmsghdr))))
-#define CMSG_SPACE(len) (CMSG_ALIGN(sizeof(struct cmsghdr)) + CMSG_ALIGN(len))
+#define CMSG_DATA(cmsg)	((void *)((char *)(cmsg) + CMSG_ALIGN(sizeof(struct cmsghdr)))) // 获取套接字控制消息的payload首地址
+#define CMSG_SPACE(len) (CMSG_ALIGN(sizeof(struct cmsghdr)) + CMSG_ALIGN(len))          // 计算len长度数据需要的空间(cmdghdr + pad + len + pad)
 #define CMSG_LEN(len) (CMSG_ALIGN(sizeof(struct cmsghdr)) + (len))
 
 #define __CMSG_FIRSTHDR(ctl,len) ((len) >= sizeof(struct cmsghdr) ? \
 				  (struct cmsghdr *)(ctl) : \
 				  (struct cmsghdr *)NULL)
-#define CMSG_FIRSTHDR(msg)	__CMSG_FIRSTHDR((msg)->msg_control, (msg)->msg_controllen)
+#define CMSG_FIRSTHDR(msg)	__CMSG_FIRSTHDR((msg)->msg_control, (msg)->msg_controllen)  // 计算msghdr的第一个cmsghdr地址
 #define CMSG_OK(mhdr, cmsg) ((cmsg)->cmsg_len >= sizeof(struct cmsghdr) && \
 			     (cmsg)->cmsg_len <= (unsigned long) \
 			     ((mhdr)->msg_controllen - \
@@ -144,9 +145,11 @@ static inline size_t msg_data_left(struct msghdr *msg)
 	return iov_iter_count(&msg->msg_iter);
 }
 
-/* "Socket"-level control message types: */
+/* "Socket"-level control message types: 
+ * 套接字级控制消息(cmsg)的类型定义
+ * */
 
-#define	SCM_RIGHTS	0x01		/* rw: access rights (array of int) */
+#define	SCM_RIGHTS	0x01		/* rw: access rights (array of int)  标示传送的是访问权限，对应的payload是一个整形数组 */
 #define SCM_CREDENTIALS 0x02		/* rw: struct ucred		*/
 #define SCM_SECURITY	0x03		/* rw: security label		*/
 
@@ -255,15 +258,23 @@ struct ucred {
 
 /* Flags we can use with send/ and recv. 
    Added those for 1003.1g not all are supported yet
+
+   以下这些MSG_*都是附加标志位，有以下3种应用场景：
+            用于设置send系列系统调用中的flags参数
+            用于设置recv系列系统调用中的flags参数
+            用于标识返回数据的属性
+
+   注意点：并不是所有这些标志都可以适应3种场景;
+           相同一个标志在每种场景中表示的含义通常不同
  */
  
-#define MSG_OOB		1
-#define MSG_PEEK	2
+#define MSG_OOB		1       // 带外数据(Out-Of-Band)标记，收发TCP数据时都可以设置，分别表示需要接收和发送带外数据(也称为TCP紧急数据)
+#define MSG_PEEK	2       // 预读标记，显然，接收数据时(不局限于TCP)可以设置，表示仅获取数据但不从套接字的接收队列中删除
 #define MSG_DONTROUTE	4
 #define MSG_TRYHARD     4       /* Synonym for MSG_DONTROUTE for DECnet */
 #define MSG_CTRUNC	8
 #define MSG_PROBE	0x10	/* Do not send. Only probe path f.e. for MTU */
-#define MSG_TRUNC	0x20
+#define MSG_TRUNC	0x20    // 设置到recv系列系统调用中时表示返回实际包的长度，即使指定的缓冲区太小;返回数据的属性中设置了该标志表示数据包由于长度超限而被截断了
 #define MSG_DONTWAIT	0x40	/* Nonblocking io		 */
 #define MSG_EOR         0x80	/* End of record */
 #define MSG_WAITALL	0x100	/* Wait for a full request */
@@ -282,6 +293,7 @@ struct ucred {
 #define MSG_CMSG_CLOEXEC 0x40000000	/* Set close_on_exec for file
 					   descriptor received through
 					   SCM_RIGHTS */
+// 根据是否有预定义宏CONFIG_COMPAT，来决定是否定义32bit修正标识
 #if defined(CONFIG_COMPAT)
 #define MSG_CMSG_COMPAT	0x80000000	/* This message needs 32 bit fixups */
 #else
@@ -289,7 +301,9 @@ struct ucred {
 #endif
 
 
-/* Setsockoptions(2) level. Thanks to BSD these must match IPPROTO_xxx */
+/* Setsockoptions(2) level. Thanks to BSD these must match IPPROTO_xxx 
+ * 定义了套接字属性所属的级别，这里似乎缺了几个级别，比如SOL_SOCKET
+ * */
 #define SOL_IP		0
 /* #define SOL_ICMP	1	No-no-no! Due to Linux :-) we cannot use SOL_ICMP=1 */
 #define SOL_TCP		6

@@ -10,6 +10,7 @@
 
 typedef unsigned short __kernel_sa_family_t;
 
+// 定义的数据结构用于内核空间中存储套接字地址
 struct __kernel_sockaddr_storage {
 	__kernel_sa_family_t	ss_family;		/* address family */
 	/* Following field(s) are implementation specific */

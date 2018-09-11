@@ -307,7 +307,8 @@ struct pcap_linux {
 	int	filter_in_userland; /* must filter in userland 标识用户空间是否需要过滤包 */
 	int	blocks_to_filter_in_userland;
 	int	must_do_on_close; /* stuff we must do when we close */
-	int	timeout;	/* timeout for buffering  进行捕获时的超时时间，从pcap->opt.timeout同步过来,0意味着不超时 */
+	int	timeout;	/* timeout for buffering  进行捕获时的超时时间，从pcap->opt.timeout同步过来,0意味着不超时 
+                       启用PACKET_MMAP时，该值也就是环形缓冲区内存块的退休事件 */
 	int	sock_packet;	/* using Linux 2.0 compatible interface  标识是否使用的是老式的SOCK_PACKET类型套接字 */
 	int	cooked;		/* using SOCK_DGRAM rather than SOCK_RAW 标识是否使用加工模式 */
 	int	ifindex;	/* interface index of device we're bound to  对于普通的以太网接口，这里记录了其接口序号 */
@@ -315,11 +316,12 @@ struct pcap_linux {
 	bpf_u_int32 oldmode;	/* mode to restore when turning monitor mode off */
 	char	*mondevice;	/* mac80211 monitor device we created */
 	u_char	*mmapbuf;	/* memory-mapped region pointer  接收环形缓冲区在用户进程中的映射地址 */
-	size_t	mmapbuflen;	/* size of region  mmap实际映射的接收环形缓冲区长度 */
+	size_t	mmapbuflen;	/* size of region  mmap映射的接收环形缓冲区实际长度 */
 	int	vlan_offset;	/* offset at which to insert vlan tags; if -1, don't insert  VLAN标签距离报文头部的偏移量，通常为12 */
 	u_int	tp_version;	/* version of tpacket_hdr for mmaped ring  环形缓冲区的版本号 */
 	u_int	tp_hdrlen;	/* hdrlen of tpacket_hdr for mmaped ring  环形缓冲区的帧头长(跟环形缓冲区版本有关) */
-	u_char	*oneshot_buffer; /* buffer for copy of packet */
+	u_char	*oneshot_buffer; /* buffer for copy of packet 
+                                指向一片长度为snapshot的独立缓存，这片缓存仅用于oneshot(只会存放一个包) */
 	int	poll_timeout;	/* timeout to use in poll()  poll系统调用传入的超时参数，默认来自上面的timeout，但TPACKET_V3在3.19版本之前不允许不超时 */
 #ifdef HAVE_TPACKET3
 	unsigned char *current_packet; /* Current packet within the TPACKET_V3 block. Move to next block if NULL. 指向当前待处理的帧 */
@@ -3759,7 +3761,7 @@ activate_new(pcap_t *handle)
 #ifdef HAVE_PACKET_RING
 /*
  * Attempt to activate with memory-mapped access.
- * 尝试对指定捕获套接字开启PACKET_MMAP功能
+ * 尝试对指定pcap句柄开启PACKET_MMAP功能
  * 返回值： 1表示成功开启；0表示系统不支持PACKET_MMAP功能；-1表示出错
  *
  * On success, returns 1, and sets *status to 0 if there are no warnings
@@ -3780,6 +3782,7 @@ activate_mmap(pcap_t *handle, int *status)
 	/*
 	 * Attempt to allocate a buffer to hold the contents of one
 	 * packet, for use by the oneshot callback.
+     * 分配一块缓存用于oneshot的情况，缓存大小为该pcap句柄支持捕获的最大包长
 	 */
 	handlep->oneshot_buffer = malloc(handle->snapshot);
 	if (handlep->oneshot_buffer == NULL) {
@@ -3790,7 +3793,7 @@ activate_mmap(pcap_t *handle, int *status)
 		return -1;
 	}
 
-    // 缓冲区默认长度2M
+    // 缓冲区默认长度2M，这里将首先尝试作为PACKET_MMAP的环形缓冲区使用
 	if (handle->opt.buffer_size == 0) {
 		/* by default request 2M for the ring buffer */
 		handle->opt.buffer_size = 2*1024*1024;
@@ -3831,7 +3834,7 @@ activate_mmap(pcap_t *handle, int *status)
 	 * handle->cc is used to store the ring size.
 	 */
 
-    // 根据环形缓冲区版本注册对应的读操作回调函数
+    // 根据环形缓冲区版本注册linux上PACKET_MMAP读操作回调函数
 	switch (handlep->tp_version) {
 	case TPACKET_V1:
 		handle->read_op = pcap_read_linux_mmap_v1;
@@ -3851,7 +3854,7 @@ activate_mmap(pcap_t *handle, int *status)
 #endif
 	}
 
-    // 最后注册一系列linux上相关通用回调函数
+    // 最后注册一系列linux上PACKET_MMAP相关回调函数
 	handle->cleanup_op = pcap_cleanup_linux_mmap;
 	handle->setfilter_op = pcap_setfilter_linux_mmap;
 	handle->setnonblock_op = pcap_setnonblock_mmap;
@@ -3877,8 +3880,11 @@ activate_mmap(pcap_t *handle _U_, int *status _U_)
  *
  * Return 0 if we succeed; return 1 if we fail because that version isn't
  * supported; return -1 on any other error, and set handle->errbuf.
+ * @返回值  0   - 设置成功
+ *          1   - kernel不支持该版本
+ *          -1  - 其他错误
  *
- * 设置指定版本的环形缓冲区
+ * 设置环形缓冲区为指定版本
  */
 static int
 init_tpacket(pcap_t *handle, int version, const char *version_str)
@@ -3891,9 +3897,10 @@ init_tpacket(pcap_t *handle, int version, const char *version_str)
 	 * Probe whether kernel supports the specified TPACKET version;
 	 * this also gets the length of the header for that version.
      *
-     * 首先探测内核是否支持该版本的环形缓冲区
+     * 首先尝试获取该版本环形缓冲区中帧头长，这也是一种探测内核是否支持该版本的环形缓冲区的方式
 	 */
 	if (getsockopt(handle->fd, SOL_PACKET, PACKET_HDRLEN, &val, &len) < 0) {
+        // 返回这两种错误号都表示kernel不支持
 		if (errno == ENOPROTOOPT || errno == EINVAL)
 			return 1;	/* no */
 
@@ -3907,7 +3914,7 @@ init_tpacket(pcap_t *handle, int version, const char *version_str)
 	handlep->tp_hdrlen = val;
 
 	val = version;
-    // 如果内核支持，则将该捕获套接字设置为该版本的环形缓冲区
+    // 如果内核支持，则为该pcap句柄关联的套接字设置一个该版本的环形缓冲区
 	if (setsockopt(handle->fd, SOL_PACKET, PACKET_VERSION, &val,
 			   sizeof(val)) < 0) {
 		pcap_snprintf(handle->errbuf, PCAP_ERRBUF_SIZE,
@@ -3973,6 +3980,8 @@ init_tpacket(pcap_t *handle, int version, const char *version_str)
  *
  * Return 1 if we succeed or if we fail because neither version 2 nor 3 is
  * supported; return -1 on any other error, and set handle->errbuf.
+ * @返回值  1   - 成功设置了环形缓冲区版本或者kernel不支持TPACKET_V3、TPACKET_V2的情况
+ *          -1  - 遇到除了kernel不支持外的其他错误
  *
  * 为指定的捕获套接字设置合适的环形缓冲区版本，优先考虑设置TPACKET_V3
  */
@@ -3996,7 +4005,8 @@ prepare_tpacket_socket(pcap_t *handle)
 	 * if the user has requested immediate mode, we don't
 	 * use TPACKET_V3.
      *
-     * 如果该pcap句柄没有设置immediate标识，则首先尝试将环形缓冲区版本设置为TPACKET_V3
+     * 如果该pcap句柄没有设置immediate标识，则首先尝试将环形缓冲区版本设置为TPACKET_V3模式
+     * 因为TPACKET_V3模式下报文可能无法实时进行传递
 	 */
 	if (!handle->opt.immediate) {
 		ret = init_tpacket(handle, TPACKET_V3, "TPACKET_V3");
@@ -4041,7 +4051,8 @@ prepare_tpacket_socket(pcap_t *handle)
 	/*
 	 * OK, we're using TPACKET_V1, as that's all the kernel supports.
      *
-     * 如果内核不支持TPACKET_V2，则最后将环形缓冲区版本设置为TPACKET_V1，该版本是所有内核都支持的
+     * 如果内核不支持TPACKET_V2，则最后将环形缓冲区版本设置为TPACKET_V1
+     * 只要内核支持PACKET_MMAP机制，就必然支持TPACKET_V1模式
 	 */
 	handlep->tp_version = TPACKET_V1;
 	handlep->tp_hdrlen = sizeof(struct tpacket_hdr);
@@ -4124,6 +4135,7 @@ create_ring(pcap_t *handle, int *status)
 	 */
 	*status = 0;
 
+    // 根据配置的版本创建对应的接收环形缓冲区
 	switch (handlep->tp_version) {
 
 	case TPACKET_V1:
@@ -4162,21 +4174,24 @@ create_ring(pcap_t *handle, int *status)
 		 * offload are enabled, so we don't get rudely surprised by
 		 * "packets" bigger than the MTU. 
          *
-         * 设置一个合适的环形缓冲区帧长
+         * 设置一个合适的环形缓冲区帧长，缺省同步自snapshot，
+         * 但是因为snapshot可能设置了一个极大的值，这会导致一个环形缓冲区放不下几个帧，并且存在大量空间的浪费，
+         * 所以接下来会尝试进一步调整为一个合理的帧长值
          * */
 		frame_size = handle->snapshot;
+        // 针对以太网接口调整环形缓冲区帧长
 		if (handle->linktype == DLT_EN10MB) {
 			int mtu;
 			int offload;
 
-            // 检查该网络设备是否支持offload机制
+            // 检查该接口是否支持offload机制
 			offload = iface_get_offload(handle);
 			if (offload == -1) {
 				*status = PCAP_ERROR;
 				return -1;
 			}
+            // 对于不支持offload机制的接口，可以使用该接口的MTU值来进一步调整环形缓冲区的帧长
 			if (!offload) {
-                // 对于不支持offload机制的接口，则查询MTU值，并将其作为环形缓冲区的帧长上限
 				mtu = iface_get_mtu(handle->fd, handle->opt.device,
 				    handle->errbuf);
 				if (mtu == -1) {
@@ -4190,6 +4205,7 @@ create_ring(pcap_t *handle, int *status)
 
 		/* NOTE: calculus matching those in tpacket_rcv()
 		 * in linux-2.6/net/packet/af_packet.c
+         * 获取套接字类型
 		 */
 		len = sizeof(sk_type);
 		if (getsockopt(handle->fd, SOL_SOCKET, SO_TYPE, &sk_type,
@@ -4200,6 +4216,9 @@ create_ring(pcap_t *handle, int *status)
 			return -1;
 		}
 #ifdef PACKET_RESERVE
+        /* 获取环形接收缓冲区中每个帧的保留空间长度
+         * 备注：对于V3/V2模式的环形缓冲区，之前是有设置过VLAN_TAG_LEN字节的保留空间，而V1模式则没有设置过
+         */
 		len = sizeof(tp_reserve);
 		if (getsockopt(handle->fd, SOL_PACKET, PACKET_RESERVE,
 		    &tp_reserve, &len) < 0) {
@@ -4219,6 +4238,7 @@ create_ring(pcap_t *handle, int *status)
 #else
 		tp_reserve = 0;	/* older kernel, reserve not supported */
 #endif
+        // 以下一系列计算的最终目的是得到一个合适帧长值
 		maclen = (sk_type == SOCK_DGRAM) ? 0 : MAX_LINKHEADER_SIZE;
 			/* XXX: in the kernel maclen is calculated from
 			 * LL_ALLOCATED_SPACE(dev) and vnet_hdr.hdr_len
@@ -4248,8 +4268,8 @@ create_ring(pcap_t *handle, int *status)
 			 *  when accessing unaligned memory locations"
 			 */
 		macoff = netoff - maclen;
-		req.tp_frame_size = TPACKET_ALIGN(macoff + frame_size);     // 区别于V3,V1/V2的帧长基于用户设置的snapshot再计算得到
-		req.tp_frame_nr = handle->opt.buffer_size/req.tp_frame_size;
+		req.tp_frame_size = TPACKET_ALIGN(macoff + frame_size);     // 最终通过一系列计算才得到合适的帧长值
+		req.tp_frame_nr = handle->opt.buffer_size/req.tp_frame_size;// 得到帧长值之后，就可以进一步得到环形接收缓冲区可以存放的帧总数
 		break;
 
 #ifdef HAVE_TPACKET3
@@ -4259,8 +4279,10 @@ create_ring(pcap_t *handle, int *status)
 		 *
 		 * We pick a "frame" size of 128K to leave enough
 		 * room for at least one reasonably-sized packet
-		 * in the "frame". */
-		req.tp_frame_size = MAXIMUM_SNAPLEN;                        // 区别于V1/V2，V3的帧长这里取了一个比较大的固定值MAXIMUM_SNAPLEN
+		 * in the "frame". 
+         * 区别于V1/V2，V3的帧长可变，只需要设置一个帧长上限值即可
+         * */
+		req.tp_frame_size = MAXIMUM_SNAPLEN;                        
 		req.tp_frame_nr = handle->opt.buffer_size/req.tp_frame_size;
 		break;
 #endif
@@ -4277,7 +4299,8 @@ create_ring(pcap_t *handle, int *status)
 	 * The max block size allowed by the kernel is arch-dependent and
 	 * it's not explicitly checked here. 
      *
-     * V1/V2/V3的内存块长度显然不到帧长的2倍，意味着pcap使每个内存块中只存放一个帧
+     * 计算V1/V2/V3的内存块长度,内存块长度只能取PAGE_SIZE * 2^n，并且要确保至少放下1个帧
+     * 备注：由于V3模式设置帧长上限MAXIMUM_SNAPLEN必然大于PAGE_SIZE，所以可知V3模式下1个内存块中只会有1个帧
      * */
 	req.tp_block_size = getpagesize();
 	while (req.tp_block_size < req.tp_frame_size)
@@ -4398,21 +4421,28 @@ create_ring(pcap_t *handle, int *status)
 
 	/* ask the kernel to create the ring */
 retry:
-    // 创建接收环形缓冲区
+    // 计算内存块数量和帧总数，这里显然再次对帧总数进行调整，最终确保帧总数是内存块总数的整数倍
 	req.tp_block_nr = req.tp_frame_nr / frames_per_block;
 
 	/* req.tp_frame_nr is requested to match frames_per_block*req.tp_block_nr */
 	req.tp_frame_nr = req.tp_block_nr * frames_per_block;
 
 #ifdef HAVE_TPACKET3
-	/* timeout value to retire block - use the configured buffering timeout, or default if <0. */
+	/* timeout value to retire block - use the configured buffering timeout, or default if <0. 
+     * 设置内存块的寿命
+     * */
 	req.tp_retire_blk_tov = (handlep->timeout>=0)?handlep->timeout:0;
-	/* private data not used */
+	/* private data not used 
+     * 设置每个内存块的私有空间大小
+     * */
 	req.tp_sizeof_priv = 0;
-	/* Rx ring - feature request bits - none (rxhash will not be filled) */
+	/* Rx ring - feature request bits - none (rxhash will not be filled) 
+     * 清空环形缓冲区的标志集合
+     * */
 	req.tp_feature_req_word = 0;
 #endif
 
+    // 创建接收环形缓冲区
 	if (setsockopt(handle->fd, SOL_PACKET, PACKET_RX_RING,
 					(void *) &req, sizeof(req))) {
 		if ((errno == ENOMEM) && (req.tp_block_nr > 1)) {
@@ -4461,7 +4491,7 @@ retry:
 	}
 
 	/* allocate a ring for each frame header pointer
-     * 创建一个pcap内部用于管理接收环形缓冲区每个帧头/块头的结构
+     * 创建一个pcap内部用于管理接收环形缓冲区每个帧头的数组
      * */
 	handle->cc = req.tp_frame_nr;
 	handle->buffer = malloc(handle->cc * sizeof(union thdr *));
@@ -4475,7 +4505,9 @@ retry:
 		return -1;
 	}
 
-	/* fill the header ring with proper frame ptr*/
+	/* fill the header ring with proper frame ptr
+     * 将接收环形缓冲区中每个帧头地址记录到管理数组buffer中
+     * */
 	handle->offset = 0;
 	for (i=0; i<req.tp_block_nr; ++i) {
 		void *base = &handlep->mmapbuf[i*req.tp_block_size];
@@ -4486,6 +4518,7 @@ retry:
 	}
 
 	handle->bufsize = req.tp_frame_size;
+    // 开启PACKET_MMAP情况下，offset字段其实不再有意义
 	handle->offset = 0;
 	return 1;
 }
@@ -6365,7 +6398,11 @@ iface_ethtool_flag_ioctl(pcap_t *handle, int cmd, const char *cmdname)
 	return eval.data;
 }
 
-// 检查指定网络设备是否支持offload机制
+/* 检查指定网络设备是否支持offload机制
+ * @返回值  1   - 支持
+ *          0   - 不支持
+ *          -1  - 其他错误
+ */
 static int
 iface_get_offload(pcap_t *handle)
 {

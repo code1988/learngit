@@ -125,8 +125,8 @@
 #define SIOCBRDELIF	0x89a3		/* remove interface from bridge */
 
 /* hardware time stamping: parameters in linux/net_tstamp.h */
-#define SIOCSHWTSTAMP	0x89b0		/* set and get config		*/
-#define SIOCGHWTSTAMP	0x89b1		/* get config			*/
+#define SIOCSHWTSTAMP	0x89b0		/* set and get config   设置硬件时间戳		*/
+#define SIOCGHWTSTAMP	0x89b1		/* get config			获取硬件时间戳配置 */
 
 /* Device private ioctl calls */
 

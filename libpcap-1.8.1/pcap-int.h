@@ -115,7 +115,8 @@ struct pcap_opt {
                             // 当PACKET_MMAP开启时，该值用来配置接收环形缓冲区;当不支持PACKET_MMAP时，该值用来配置套接字的接收缓冲区
 	int	promisc;    // 标识该pcap句柄是否开启混杂模式，需要注意的是，"any"设备不允许开启混杂模式
 	int	rfmon;		/* monitor mode  表示该pcap句柄是否开启监听模式，该模式只用于无线网卡 */
-	int	immediate;	/* immediate mode - deliver packets as soon as they arrive  标识收到报文时是否立即传递给用户 */
+	int	immediate;	/* immediate mode - deliver packets as soon as they arrive  
+                       标识收到报文时是否立即传递给用户，只有关闭该标志的前提下才能开启TPACKET_V3模式 */
 	int	tstamp_type;        // 该pcap句柄使用的时间戳类型
 	int	tstamp_precision;   // 该pcap句柄使用的时间戳精度
 };
@@ -173,9 +174,10 @@ struct pcap {
 	 * Read buffer.
 	 */
 	u_int bufsize;  // 该值初始时来自用户配置的snapshot，当开启PACKET_MMAP时，跟配置的接收环形缓冲区tp_frame_size值同步
-	void *buffer;   // 当开启PACKET_MMAP时，指向一个成员为union thdr结构的数组，记录了接收环形缓冲区中每个帧的帧头;当不支持PACKET_MMAP时，指向用户空间的接收缓冲区，其大小为 bufsize + offset
+	void *buffer;   /* 当开启PACKET_MMAP时，指向一个成员为union thdr结构的数组，记录了接收环形缓冲区中每个帧的帧头;
+                       当不支持PACKET_MMAP时，指向用户空间的接收缓冲区，其大小为 bufsize + offset */
 	u_char *bp;
-	int cc;         // 跟配置的接收环形缓冲区tp_frame_nr值同步(由于pcap中内存块数量和帧数量相等，所以本字段也就是内存块数量)
+	int cc;         // 跟配置的接收环形缓冲区tp_frame_nr值同步
 
 	int break_loop;		/* flag set to force break from packet-reading loop 标识是否强制退出循环捕获 */
 
@@ -202,7 +204,8 @@ struct pcap {
 	int linktype_ext;       /* Extended information stored in the linktype field of a file */
 	int tzoff;		/* timezone offset */
 	int offset;		/* offset for proper alignment  
-                       该值跟接口类型相关，目的是确保 offset + 2层头长度 实现4字节对齐*/
+                       不开启PACKET_MMAP情况下，该值跟接口类型相关，目的是确保 offset + 2层头长度 实现4字节对齐;
+                       开启PACKET_MMAP情况下，offset字段其实不再有意义 */
 	int activated;		/* true if the capture is really started  标识该pcap句柄是否处于运作状态，处于运作状态的pcap句柄将不允许进行修改 */
 	int oldstyle;		/* if we're opening with pcap_open_live() */
 
