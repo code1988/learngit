@@ -303,7 +303,10 @@ exit:
     return error;
 }
 
-// unixctl命令解析并处理
+/* unixctl命令解析并处理
+ *
+ * 备注：传入的jsonrpc消息必然是request类型
+ */
 static void
 process_command(struct unixctl_conn *conn, struct jsonrpc_msg *request)
 {
@@ -393,8 +396,11 @@ run_connection(struct unixctl_conn *conn)
             break;
         }
 
+        // 尝试接收一条json格式的消息
         jsonrpc_recv(conn->rpc, &msg);
+        // 如果收到消息则进行处理
         if (msg) {
+            // unixctl server端只会处理request类型的消息
             if (msg->type == JSONRPC_REQUEST) {
                 process_command(conn, msg);
             } else {

@@ -205,7 +205,7 @@ struct pcap {
 	int tzoff;		/* timezone offset */
 	int offset;		/* offset for proper alignment  
                        不开启PACKET_MMAP情况下，该值跟接口类型相关，目的是确保 offset + 2层头长度 实现4字节对齐;
-                       开启PACKET_MMAP情况下，offset字段其实不再有意义 */
+                       开启PACKET_MMAP情况下，offset字段不同期间用途不同，主要是在进行捕获期间用作buffer字段的序号 */
 	int activated;		/* true if the capture is really started  标识该pcap句柄是否处于运作状态，处于运作状态的pcap句柄将不允许进行修改 */
 	int oldstyle;		/* if we're opening with pcap_open_live() */
 

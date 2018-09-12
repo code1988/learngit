@@ -74,7 +74,7 @@ enum jsonrpc_msg_type {
 struct jsonrpc_msg {
     enum jsonrpc_msg_type type; // 该json消息类型
     char *method;               /* Request or notification only.  记录了命令名 */
-    struct json *params;        /* Request or notification only.  记录了该命令的参数 */
+    struct json *params;        /* Request or notification only.  记录了该命令的参数，必然是JSON_ARRAY类型 */
     struct json *result;        /* Successful reply only.  记录了该命令返回成功时的结果 */
     struct json *error;         /* Error reply only.  记录了该命令返回失败时的结果 */
     struct json *id;            /* Request or reply only.  用于标示每条命令 */

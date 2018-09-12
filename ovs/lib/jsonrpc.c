@@ -38,7 +38,7 @@ VLOG_DEFINE_THIS_MODULE(jsonrpc);
 struct jsonrpc {
     struct stream *stream;      // 该jsonrpc拥有的一个stream对象
     char *name;                 // 该jsonrpc名字，来自上面这条流名
-    int status;
+    int status;                 // 用于标识该jsonrpc的当前状态，0表示处于正常状态，非0表示退役
 
     /* Input. */
     struct byteq input;         // 用于存储输入数据的环形缓冲区对象
@@ -502,6 +502,7 @@ jsonrpc_parse_received_message(struct jsonrpc *rpc)
         return NULL;
     }
 
+    // 从成功解析后得到的json对象中进一步获取一条完整的jsonrpc消息
     error = jsonrpc_msg_from_json(json, &msg);
     if (error) {
         VLOG_WARN_RL(&rl, "%s: received bad JSON-RPC message: %s",
@@ -705,7 +706,7 @@ null_from_json_null(struct json *json)
     return json;
 }
 
-// 从指定json对象中解析处一条完整的jsonrpc消息
+// 从指定json对象中解析出一条完整的jsonrpc消息
 char *
 jsonrpc_msg_from_json(struct json *json, struct jsonrpc_msg **msgp)
 {

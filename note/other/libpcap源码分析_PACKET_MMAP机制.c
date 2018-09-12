@@ -243,6 +243,13 @@ retry:
 小结： 至此已经成功开启PACKET_MMAP功能，显然其中的核心部分在于环形缓冲区的配置，
        接下来将以pcap_read_linux_mmap_v3为线索分析如何在开启PACKET_MMAP的情况下进行捕获
 
+int pcap_read_linux_mmap_v3(pcap_t *handle, int max_packets, pcap_handler callback,u_char *user)
+{
+    // 获取该pcap句柄的私有空间
+    struct pcap_linux *handlep = handle->priv;
+    
+}
+
 相关数据结构：
 /* 创建TPACKET_V3环形缓冲区时对应的配置参数结构
  * 备注： tpacket_req3结构是tpacket_req结构的超集，实际可以统一使用本结构去设置所有版本的环形缓冲区，V1/V2版本会自动忽略多余的字段

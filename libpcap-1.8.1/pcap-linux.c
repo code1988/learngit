@@ -307,7 +307,8 @@ struct pcap_linux {
 	int	filter_in_userland; /* must filter in userland 标识用户空间是否需要过滤包 */
 	int	blocks_to_filter_in_userland;
 	int	must_do_on_close; /* stuff we must do when we close */
-	int	timeout;	/* timeout for buffering  进行捕获时的超时时间，从pcap->opt.timeout同步过来,0意味着不超时 
+	int	timeout;	/* timeout for buffering  进行捕获时的超时时间，从pcap->opt.timeout同步过来,
+                       0意味着收到至少1个报文捕获操作才会结束,
                        启用PACKET_MMAP时，该值也就是环形缓冲区内存块的退休事件 */
 	int	sock_packet;	/* using Linux 2.0 compatible interface  标识是否使用的是老式的SOCK_PACKET类型套接字 */
 	int	cooked;		/* using SOCK_DGRAM rather than SOCK_RAW 标识是否使用加工模式 */
@@ -324,7 +325,8 @@ struct pcap_linux {
                                 指向一片长度为snapshot的独立缓存，这片缓存仅用于oneshot(只会存放一个包) */
 	int	poll_timeout;	/* timeout to use in poll()  poll系统调用传入的超时参数，默认来自上面的timeout，但TPACKET_V3在3.19版本之前不允许不超时 */
 #ifdef HAVE_TPACKET3
-	unsigned char *current_packet; /* Current packet within the TPACKET_V3 block. Move to next block if NULL. 指向当前待处理的帧 */
+	unsigned char *current_packet; /* Current packet within the TPACKET_V3 block. Move to next block if NULL. 
+                                      指向当前待处理的帧 */
 	int packets_left; /* Unhandled packets left within the block from previous call to pcap_read_linux_mmap_v3 in case of TPACKET_V3. 待处理的帧数量 */
 #endif
 };
@@ -4670,7 +4672,7 @@ pcap_get_ring_frame_status(pcap_t *handle, int offset)
 
 /*
  * Block waiting for frames to be available.
- * 等待有帧收到
+ * 等待有报文传递到用户空间
  */
 static int pcap_wait_for_frames_mmap(pcap_t *handle)
 {
@@ -4704,12 +4706,14 @@ static int pcap_wait_for_frames_mmap(pcap_t *handle)
 			 * "you can read on this descriptor" on
 			 * the descriptor.
 			 */
+            // 该pcap句柄关联的套接字被挂断的情况
 			if (pollinfo.revents & (POLLHUP | POLLRDHUP)) {
 				pcap_snprintf(handle->errbuf,
 					PCAP_ERRBUF_SIZE,
 					"Hangup on packet socket");
 				return PCAP_ERROR;
 			}
+            // 该pcap句柄关联的套接字上发生异常，进一步确认异常原因的方法是调用recv
 			if (pollinfo.revents & POLLERR) {
 				/*
 				 * A recv() will give us the actual error code.
@@ -4719,6 +4723,7 @@ static int pcap_wait_for_frames_mmap(pcap_t *handle)
 				if (recv(handle->fd, &c, sizeof c,
 					MSG_PEEK) != -1)
 					continue;	/* what, no error? */
+                // 正在执行捕获的接口链路down
 				if (errno == ENETDOWN) {
 					/*
 					 * The device on which we're
@@ -4740,6 +4745,7 @@ static int pcap_wait_for_frames_mmap(pcap_t *handle)
 				}
 				return PCAP_ERROR;
 			}
+            //  该pcap句柄关联的套接字被关闭的情况
 			if (pollinfo.revents & POLLNVAL) {
 				pcap_snprintf(handle->errbuf,
 					PCAP_ERRBUF_SIZE,
@@ -4747,11 +4753,16 @@ static int pcap_wait_for_frames_mmap(pcap_t *handle)
 				return PCAP_ERROR;
 			}
 		}
-		/* check for break loop condition on interrupted syscall*/
+		/* check for break loop condition on interrupted syscall
+         * 每次poll函数返回时都要检查break_loop标志
+         * */
 		if (handle->break_loop) {
 			handle->break_loop = 0;
 			return PCAP_ERROR_BREAK;
 		}
+        /* 程序运行到这里，如果ret<0，意味着poll函数返回的原因必然是EINTR，所以需要再次调用poll；
+         * 除此之外，不论是因为超时还是收到报文而使poll函数返回的，都将结束本函数
+         */
 	} while (ret < 0);
 	return 0;
 }
@@ -5195,7 +5206,7 @@ pcap_read_linux_mmap_v3(pcap_t *handle, int max_packets, pcap_handler callback,
 	int ret;
 
 again:
-    // 等待环形缓冲区中有内存块提交给用户进程
+    // 等待环形缓冲区中有内存块提交给用户空间
 	if (handlep->current_packet == NULL) {
 		/* wait for frames availability.*/
 		h.raw = RING_GET_CURRENT_FRAME(handle);
@@ -5203,6 +5214,7 @@ again:
 			/*
 			 * The current frame is owned by the kernel; wait
 			 * for a frame to be handed to us.
+             * 等待有报文传递到用户空间
 			 */
 			ret = pcap_wait_for_frames_mmap(handle);
 			if (ret) {
@@ -5210,6 +5222,7 @@ again:
 			}
 		}
 	}
+    // 再次检查接收环形缓冲区中是否有内存块提交给用户空间
 	h.raw = RING_GET_CURRENT_FRAME(handle);
 	if (h.h3->hdr.bh1.block_status == TP_STATUS_KERNEL) {
 		if (pkts == 0 && handlep->timeout == 0) {
@@ -5314,6 +5327,7 @@ again:
 			return PCAP_ERROR_BREAK;
 		}
 	}
+    // 如果该pcap句柄设置的超时为0,则会一直等待下去直到收到报文为止
 	if (pkts == 0 && handlep->timeout == 0) {
 		/* Block until we see a packet. */
 		goto again;
