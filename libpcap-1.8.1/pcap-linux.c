@@ -299,7 +299,7 @@ typedef int		socklen_t;
  * 跟pcap句柄关联的linux平台私有空间
  */
 struct pcap_linux {
-	u_int	packets_read;	/* count of packets read with recvfrom()  统计捕获到的包 */
+	u_int	packets_read;	/* count of packets read with recvfrom()  统计成功捕获到的包 */
 	long	proc_dropped;	/* packets reported dropped by /proc/net/dev  记录该接口droped报文数量 */
 	struct pcap_stat stat;
 
@@ -326,8 +326,9 @@ struct pcap_linux {
 	int	poll_timeout;	/* timeout to use in poll()  poll系统调用传入的超时参数，默认来自上面的timeout，但TPACKET_V3在3.19版本之前不允许不超时 */
 #ifdef HAVE_TPACKET3
 	unsigned char *current_packet; /* Current packet within the TPACKET_V3 block. Move to next block if NULL. 
-                                      指向当前待处理的帧 */
-	int packets_left; /* Unhandled packets left within the block from previous call to pcap_read_linux_mmap_v3 in case of TPACKET_V3. 待处理的帧数量 */
+                                      指向当前等待被读取报文的内存块中的第一个帧(该字段只用于捕获过程中) */
+	int packets_left; /* Unhandled packets left within the block from previous call to pcap_read_linux_mmap_v3 in case of TPACKET_V3. 
+                         当前等待被读取报文的内存块包含的剩余帧数量(该字段只用于捕获过程中) */
 #endif
 };
 
@@ -1607,6 +1608,8 @@ pcap_set_datalink_linux(pcap_t *handle, int dlt)
  *
  * Do checks based on packet direction.
  * 检查指定的包是否满足配置的捕包方向
+ * @返回值：    0   - 不满足
+ *              1   - 满足
  */
 static inline int
 linux_check_direction(const pcap_t *handle, const struct sockaddr_ll *sll)
@@ -1619,6 +1622,7 @@ linux_check_direction(const pcap_t *handle, const struct sockaddr_ll *sll)
 		 * If this is from the loopback device, reject it;
 		 * we'll see the packet as an incoming packet as well,
 		 * and we don't want to see it twice.
+         * 拒绝从环回接口发出的包
 		 */
 		if (sll->sll_ifindex == handlep->lo_ifindex)
 			return 0;
@@ -1641,6 +1645,7 @@ linux_check_direction(const pcap_t *handle, const struct sockaddr_ll *sll)
 
 		/*
 		 * If the user only wants incoming packets, reject it.
+         * 如果配置了只接受输入包，则拒绝所有输出包
 		 */
 		if (handle->direction == PCAP_D_IN)
 			return 0;
@@ -1648,6 +1653,7 @@ linux_check_direction(const pcap_t *handle, const struct sockaddr_ll *sll)
 		/*
 		 * Incoming packet.
 		 * If the user only wants outgoing packets, reject it.
+         * 如果配置了只接受输出包，则拒绝所有输入包
 		 */
 		if (handle->direction == PCAP_D_OUT)
 			return 0;
@@ -4520,7 +4526,7 @@ retry:
 	}
 
 	handle->bufsize = req.tp_frame_size;
-    // 开启PACKET_MMAP情况下，offset字段其实不再有意义
+    // 开启PACKET_MMAP情况下，offset字段其实只在每次执行捕获期间有意义
 	handle->offset = 0;
 	return 1;
 }
@@ -4768,8 +4774,10 @@ static int pcap_wait_for_frames_mmap(pcap_t *handle)
 }
 
 /* handle a single memory mapped packet 
- *
- * 操作环形缓冲区中一个指定的帧缓冲区
+ * 捕获环形缓冲区中一个指定的帧
+ * @返回值      1   - 成功捕获
+ *              0   - 该报文被拒绝
+ *              -1  - 该报文存在错误
  * */
 static int pcap_handle_packet_mmap(
 		pcap_t *handle,
@@ -4790,7 +4798,9 @@ static int pcap_handle_packet_mmap(
 	struct sockaddr_ll *sll;
 	struct pcap_pkthdr pcaphdr;
 
-	/* perform sanity check on internal offset. */
+	/* perform sanity check on internal offset. 
+     * 确保帧长不超过阈值
+     * */
 	if (tp_mac + tp_snaplen > handle->bufsize) {
 		pcap_snprintf(handle->errbuf, PCAP_ERRBUF_SIZE,
 			"corrupted frame on kernel ring mac "
@@ -4812,6 +4822,7 @@ static int pcap_handle_packet_mmap(
 
 	/* if required build in place the sll header*/
 	sll = (void *)frame + TPACKET_ALIGN(handlep->tp_hdrlen);
+    // 如果工作在加工模式，这在这里构建对应的伪头
 	if (handlep->cooked) {
 		struct sll_header *hdrp;
 
@@ -4851,7 +4862,7 @@ static int pcap_handle_packet_mmap(
 		hdrp->sll_protocol = sll->sll_protocol;
 	}
 
-    // 用户级别过滤(前提是开启了)
+    // 如果该pcap句柄开启了用户级别过滤，就在这里进行过滤
 	if (handlep->filter_in_userland && handle->fcode.bf_insns) {
 		struct bpf_aux_data aux_data;
 
@@ -4863,17 +4874,21 @@ static int pcap_handle_packet_mmap(
 			return 0;
 	}
 
-    // 检查包的方向
+    // 检查包的方向是否匹配
 	if (!linux_check_direction(handle, sll))
 		return 0;
 
-	/* get required packet info from ring header */
+	/* get required packet info from ring header 
+     * 记录包的基础信息
+     * */
 	pcaphdr.ts.tv_sec = tp_sec;
 	pcaphdr.ts.tv_usec = tp_usec;
 	pcaphdr.caplen = tp_snaplen;
 	pcaphdr.len = tp_len;
 
-	/* if required build in place the sll header*/
+	/* if required build in place the sll header
+     * 如果工作在加工模式，两个长度字段还要加上伪头长
+     * */
 	if (handlep->cooked) {
 		/* update packet len */
 		pcaphdr.caplen += SLL_HDR_LEN;
@@ -4919,6 +4934,7 @@ static int pcap_handle_packet_mmap(
 	 *
 	 * Trim the snapshot length to be no longer than the
 	 * specified snapshot length.
+     * 如果用户空间收到了超出阈值长度的包，则截断
 	 */
 	if (pcaphdr.caplen > (bpf_u_int32)handle->snapshot)
 		pcaphdr.caplen = handle->snapshot;
@@ -5202,11 +5218,11 @@ pcap_read_linux_mmap_v3(pcap_t *handle, int max_packets, pcap_handler callback,
 {
 	struct pcap_linux *handlep = handle->priv;
 	union thdr h;
-	int pkts = 0;
+	int pkts = 0;       // 记录了成功捕获的报文数量
 	int ret;
 
 again:
-    // 等待环形缓冲区中有内存块提交给用户空间
+    // 等待接收环形缓冲区中有内存块提交给用户空间
 	if (handlep->current_packet == NULL) {
 		/* wait for frames availability.*/
 		h.raw = RING_GET_CURRENT_FRAME(handle);
@@ -5214,7 +5230,7 @@ again:
 			/*
 			 * The current frame is owned by the kernel; wait
 			 * for a frame to be handed to us.
-             * 等待有报文传递到用户空间
+             * 如果当前等待读取的内存块中没有报文，则在这里进行等待
 			 */
 			ret = pcap_wait_for_frames_mmap(handle);
 			if (ret) {
@@ -5222,7 +5238,9 @@ again:
 			}
 		}
 	}
-    // 再次检查接收环形缓冲区中是否有内存块提交给用户空间
+    /* 再次检查接收环形缓冲区中是否有内存块提交给用户空间，如果没有，通常就意味着超时而结束捕获操作;
+     * 除非该pcap句柄设置的是收到至少1个报文捕获操作才会结束
+     */
 	h.raw = RING_GET_CURRENT_FRAME(handle);
 	if (h.h3->hdr.bh1.block_status == TP_STATUS_KERNEL) {
 		if (pkts == 0 && handlep->timeout == 0) {
@@ -5232,25 +5250,30 @@ again:
 		return pkts;
 	}
 
+    // 程序运行到这里意味着当前等待读取的内存块中有报文可读
 	/* non-positive values of max_packets are used to require all
 	 * packets currently available in the ring 
-     * 循环接收数据包，直到达到设置的数量，具体的流程就是依次遍历每个内存块以及其中的每个帧，进行读取
+     * 循环捕获并处理数据包，具体的流程就是依次遍历每个内存块以及其中的每个帧，进行读取,
+     * 直到达到设置的捕获数量或者接收环形缓存区没有报文可读
      * */
 	while ((pkts < max_packets) || PACKET_COUNT_IS_UNLIMITED(max_packets)) {
 		int packets_to_read;
 
-        // 刷新当前准备进行读取操作的位置
+        // 每次读取一个新的内存块前都需要刷新current_packet和packets_left
 		if (handlep->current_packet == NULL) {
+            // 如果当前等待读取的内存块中没有报文，则退出捕获
 			h.raw = RING_GET_CURRENT_FRAME(handle);
-            // 要读取的块如果处于TP_STATUS_KERNEL状态意味着当前环形缓冲区没有数据可读，可以进一步推导出是因为poll超时才进入这里
 			if (h.h3->hdr.bh1.block_status == TP_STATUS_KERNEL)
 				break;
 
 			handlep->current_packet = h.raw + h.h3->hdr.bh1.offset_to_first_pkt;
 			handlep->packets_left = h.h3->hdr.bh1.num_pkts;
 		}
-		packets_to_read = handlep->packets_left;
 
+        /* 在一个内存块中要读取的报文数量不仅受到该内存块中能被读取的报文数量的限制,
+         * 还收到本次捕获操作设置的捕获数量的限制 
+         */
+		packets_to_read = handlep->packets_left;
 		if (!PACKET_COUNT_IS_UNLIMITED(max_packets) &&
 		    packets_to_read > (max_packets - pkts)) {
 			/*
@@ -5262,9 +5285,14 @@ again:
 			packets_to_read = max_packets - pkts;
 		}
 
-        // 从一个内存块中循环捕获packets_to_read数量的帧
+        /* 从一个内存块中循环捕获packets_to_read数量的帧，直到满足以下任一条件才退出：
+         *      超过了该内存块能被读取的包数量;
+         *      超过了本次捕获操作设置的捕获数量
+         *      强制退出
+         */
 		while (packets_to_read-- && !handle->break_loop) {
 			struct tpacket3_hdr* tp3_hdr = (struct tpacket3_hdr*) handlep->current_packet;
+            // 捕获环形缓冲区中一个指定的帧
 			ret = pcap_handle_packet_mmap(
 					handle,
 					callback,
@@ -5289,11 +5317,13 @@ again:
 				handlep->current_packet = NULL;
 				return ret;
 			}
+
+            // 准备读取该内存块中的下一帧
 			handlep->current_packet += tp3_hdr->tp_next_offset;
 			handlep->packets_left--;
 		}
 
-        // 当块中的帧都读完之后，需要把该内存块还给内核
+        // 当一个内存块中的帧都被读取之后，需要把该内存块还给内核
 		if (handlep->packets_left <= 0) {
 			/*
 			 * Hand this block back to the kernel, and, if
@@ -5314,14 +5344,18 @@ again:
 				}
 			}
 
-			/* next block */
+			/* next block 
+             * 准备读取下一个内存块
+             * */
 			if (++handle->offset >= handle->cc)
 				handle->offset = 0;
 
 			handlep->current_packet = NULL;
 		}
 
-		/* check for break loop condition*/
+		/* check for break loop condition
+         * 每次读完一个内存块后都会检查是否要求强制退出
+         * */
 		if (handle->break_loop) {
 			handle->break_loop = 0;
 			return PCAP_ERROR_BREAK;

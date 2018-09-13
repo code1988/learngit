@@ -15,7 +15,7 @@ struct sockaddr_ll {
 	__be16		sll_protocol;   // 标识上层承载的802.3标准以太网协议类型
 	int		sll_ifindex;        // 接口索引号（0匹配任何接口，但只允许用于bind时）
 	unsigned short	sll_hatype; // 硬件地址类型ARPHDR_*（optional,只有接收时有意义）
-	unsigned char	sll_pkttype;// 包类型（optional,只有接收时有意义）
+	unsigned char	sll_pkttype;// 包类型（optional）
 	unsigned char	sll_halen;  // MAC地址长度（optional,只有接收时有意义）
 	unsigned char	sll_addr[8];// 目的MAC地址（optional,只有接收时有意义）
 };
@@ -23,14 +23,14 @@ struct sockaddr_ll {
 /* Packet types 
  * 包类型(可以用来设置skb->pkt_type字段)
  *
- * 备注： 以太网驱动程序都会在接收路径中调用eth_type_trans来确定包类型,所以包类型只对接收到的数据包有意义
+ * 备注： 以太网驱动程序都会在接收路径中调用eth_type_trans来确定包类型
  *        这里定义的包类型和以太网协议类型的区别在于进行分类的视角不同
  * */
 #define PACKET_HOST		0		    /* To us    标示目标地址是本机的数据包		*/
 #define PACKET_BROADCAST	1		/* To all	标示物理层广播包	*/
 #define PACKET_MULTICAST	2		/* To group	标示物理层组播包	*/
 #define PACKET_OTHERHOST	3		/* To someone else 	    标示目标地址是其他主机的数据包 */
-#define PACKET_OUTGOING		4		/* Outgoing of any type 标示本地主机的环回包(这个似乎是发送时的包类型)*/
+#define PACKET_OUTGOING		4		/* Outgoing of any type 标示这是一个输出包(除了这种类型，其他类型都只用于标识接收包) */
 #define PACKET_LOOPBACK		5		/* MC/BRD frame looped back  标示这是个loopback包 */
 #define PACKET_USER		6		/* To user space	*/
 #define PACKET_KERNEL		7		/* To kernel space	*/
@@ -123,16 +123,16 @@ struct tpacket_auxdata {
 };
 
 /* Rx ring - header status 
- * 这部分专门定义了接收环形缓冲区内存块的状态，用于设置tpacket_hdr_v1.block_status
+ * 这部分专门定义了接收环形缓冲区内存块/帧的状态，用于设置tpacket_hdr_v1.block_status/tpacket3_hdr.tp_status
  * */
 #define TP_STATUS_KERNEL		      0     // 标识内存块正在被内核使用
 #define TP_STATUS_USER			(1 << 0)    // 标识内存块可以提供给用户读取数据
 #define TP_STATUS_COPY			(1 << 1)
 #define TP_STATUS_LOSING		(1 << 2)
 #define TP_STATUS_CSUMNOTREADY		(1 << 3)
-#define TP_STATUS_VLAN_VALID		(1 << 4) /* auxdata has valid tp_vlan_tci */
+#define TP_STATUS_VLAN_VALID		(1 << 4) /* auxdata has valid tp_vlan_tci  标识帧携带了有效的vlan id */
 #define TP_STATUS_BLK_TMO		(1 << 5)
-#define TP_STATUS_VLAN_TPID_VALID	(1 << 6) /* auxdata has valid tp_vlan_tpid */
+#define TP_STATUS_VLAN_TPID_VALID	(1 << 6) /* auxdata has valid tp_vlan_tpid 标识帧携带了有效的vlan协议号 */
 #define TP_STATUS_CSUM_VALID		(1 << 7)
 
 /* Tx ring - header status 
@@ -189,7 +189,7 @@ struct tpacket2_hdr {
 struct tpacket_hdr_variant1 {
 	__u32	tp_rxhash;
 	__u32	tp_vlan_tci;    // 低12bit为vid
-	__u16	tp_vlan_tpid;   // 缺省就是0x8100
+	__u16	tp_vlan_tpid;   // 缺省就是ETH_P_8021Q
 	__u16	tp_padding;
 };
 
@@ -200,7 +200,7 @@ struct tpacket3_hdr {
 	__u32		tp_nsec;        // 时间戳(ns)
 	__u32		tp_snaplen;     // 捕获到的帧实际长度
 	__u32		tp_len;         // 帧的理论长度
-	__u32		tp_status;                                       
+	__u32		tp_status;      // 帧的状态                                 
 	__u16		tp_mac;         // 以太网MAC字段距离帧头的偏移量
 	__u16		tp_net;
 	/* pkt_hdr variants */
@@ -221,7 +221,7 @@ struct tpacket_bd_ts {
 // tpacket内存块头部子结构(V1、V2、V3共用)
 struct tpacket_hdr_v1 {
 	__u32	block_status;   // 主要用来标识该内存块当前是否正在被内核使用(内存块被内核填充期间是无法提供给用户使用的)
-	__u32	num_pkts;       // 该内存块中的帧数量
+	__u32	num_pkts;       // 该内存块中的帧数量(等待被读取的帧数量?)
 	__u32	offset_to_first_pkt;    // 该内存块中第一个帧距离内存块起始地址的偏移量
 
 	/* Number of valid bytes (including padding)
@@ -272,7 +272,7 @@ union tpacket_bd_header_u {
 	struct tpacket_hdr_v1 bh1;
 };
 
-// 每个tpacket内存块的头部结构
+// 用于描述每个tpacket内存块的结构
 struct tpacket_block_desc {
 	__u32 version;
 	__u32 offset_to_priv;       // 该内存块私有空间距离内存块起始地址的偏移量
@@ -318,8 +318,9 @@ struct tpacket_req {
 struct tpacket_req3 {
 	unsigned int	tp_block_size;	/* Minimal size of contiguous block  每个连续内存块的最小尺寸(必须是 PAGE_SIZE * 2^n ) */
 	unsigned int	tp_block_nr;	/* Number of blocks                  内存块数量 */
-	unsigned int	tp_frame_size;	/* Size of frame    (虽然V3中的帧长是可变的，但创建时还是会传入一个最大的允许值) */
-	unsigned int	tp_frame_nr;	/* Total number of frames */
+	unsigned int	tp_frame_size;	/* Size of frame    虽然V3中的帧长是可变的，但创建时还是会传入一个最大的允许值 */
+	unsigned int	tp_frame_nr;	/* Total number of frames 
+                                        由于V3中帧长可变，所以帧总数似乎没有意义 */
 	unsigned int	tp_retire_blk_tov; /* timeout in msecs  
                                           内存块的寿命(ms)，超时后即使内存块没有被数据填入也会被内核停用，0意味着不设超时 */
 	unsigned int	tp_sizeof_priv; /* offset to private data area  每个内存块中私有空间大小，0意味着不设私有空间 */
