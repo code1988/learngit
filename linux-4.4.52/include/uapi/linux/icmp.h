@@ -19,6 +19,7 @@
 
 #include <linux/types.h>
 
+// 以下是icmpv4报文中的类型字段定义
 #define ICMP_ECHOREPLY		0	/* Echo Reply			*/
 #define ICMP_DEST_UNREACH	3	/* Destination Unreachable	*/
 #define ICMP_SOURCE_QUENCH	4	/* Source Quench		*/
@@ -32,7 +33,7 @@
 #define ICMP_INFO_REPLY		16	/* Information Reply		*/
 #define ICMP_ADDRESS		17	/* Address Mask Request		*/
 #define ICMP_ADDRESSREPLY	18	/* Address Mask Reply		*/
-#define NR_ICMP_TYPES		18
+#define NR_ICMP_TYPES		18  // icmpv4消息总共支持18种类型
 
 
 /* Codes for UNREACH. */
@@ -64,7 +65,7 @@
 #define ICMP_EXC_TTL		0	/* TTL count exceeded		*/
 #define ICMP_EXC_FRAGTIME	1	/* Fragment Reass time exceeded	*/
 
-
+// icmpv4报文头结构
 struct icmphdr {
   __u8		type;
   __u8		code;

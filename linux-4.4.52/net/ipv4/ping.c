@@ -54,11 +54,11 @@
 #endif
 
 struct ping_table {
-	struct hlist_nulls_head	hash[PING_HTABLE_SIZE];
+	struct hlist_nulls_head	hash[PING_HTABLE_SIZE]; // 这张hash表记录了当前处于活动状态的所有ping操作
 	rwlock_t		lock;
 };
 
-static struct ping_table ping_table;
+static struct ping_table ping_table;    // 这张ping表记录了当前处于活动状态的所有ping操作
 struct pingv6_ops pingv6_ops;
 EXPORT_SYMBOL_GPL(pingv6_ops);
 
@@ -168,6 +168,7 @@ void ping_unhash(struct sock *sk)
 }
 EXPORT_SYMBOL_GPL(ping_unhash);
 
+// 根据指定id号查找对应的发起ping的套接字
 static struct sock *ping_lookup(struct net *net, struct sk_buff *skb, u16 ident)
 {
 	struct hlist_nulls_head *hslot = ping_hashslot(&ping_table, net, ident);
@@ -965,19 +966,21 @@ EXPORT_SYMBOL_GPL(ping_queue_rcv_skb);
 /*
  *	All we need to do is get the socket.
  */
-
+// 收到ICMP_ECHOREPLY类型icmpv4消息时的处理方法
 bool ping_rcv(struct sk_buff *skb)
 {
 	struct sock *sk;
-	struct net *net = dev_net(skb->dev);
-	struct icmphdr *icmph = icmp_hdr(skb);
+	struct net *net = dev_net(skb->dev);        // 获取该skb所属的网络命名空间
+	struct icmphdr *icmph = icmp_hdr(skb);      // 从该skb中获取icmp头
 
 	/* We assume the packet has already been checked by icmp_rcv */
 
 	pr_debug("ping_rcv(skb=%p,id=%04x,seq=%04x)\n",
 		 skb, ntohs(icmph->un.echo.id), ntohs(icmph->un.echo.sequence));
 
-	/* Push ICMP header back */
+	/* Push ICMP header back 
+     * data指针指向icmp头位置
+     * */
 	skb_push(skb, skb->data - (u8 *)icmph);
 
 	sk = ping_lookup(net, skb, ntohs(icmph->un.echo.id));

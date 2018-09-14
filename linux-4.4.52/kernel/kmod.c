@@ -107,6 +107,7 @@ out:
 
 /**
  * __request_module - try to load a kernel module
+ * 尝试加载一个内核模块
  * @wait: wait (or not) for the operation to complete
  * @fmt: printf style format string for the name of the module
  * @...: arguments as specified in the format string

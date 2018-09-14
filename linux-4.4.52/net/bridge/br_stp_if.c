@@ -22,6 +22,8 @@
 
 
 /* Port id is composed of priority and port number.
+ * 根据优先级和桥端口号计算用于stp的端口ID号
+ *          高6位(优先级) | 低10位(桥端口号)
  * NB: some bits of priority are dropped to
  *     make room for more ports.
  */
@@ -33,7 +35,11 @@ static inline port_id br_make_port_id(__u8 priority, __u16 port_no)
 
 #define BR_MAX_PORT_PRIORITY ((u16)~0 >> BR_PORT_BITS)
 
-/* called under bridge lock */
+/* called under bridge lock 
+ * 桥端口的一部分STP功能初始化，包括计算端口ID、设置该桥端口为"指定端口"、端口设置BLOCKING等
+ *
+ * 备注：STP网桥初始都默认自己的是"根桥"，STP端口初始都默认自己是"指定端口"
+ * */
 void br_init_port(struct net_bridge_port *p)
 {
 	struct switchdev_attr attr = {
@@ -43,6 +49,7 @@ void br_init_port(struct net_bridge_port *p)
 	};
 	int err;
 
+    // 根据优先级和桥端口号计算用于stp的端口ID号
 	p->port_id = br_make_port_id(p->priority, p->port_no);
 	br_become_designated_port(p);
 	br_set_state(p, BR_STATE_BLOCKING);
@@ -96,16 +103,25 @@ void br_stp_disable_bridge(struct net_bridge *br)
 	del_timer_sync(&br->gc_timer);
 }
 
-/* called under bridge lock */
+/* called under bridge lock 
+ * 使能端口
+ *
+ * 备注：调用本函数的不一定是内核stp的端口，也可以是没开启stp功能的普通桥端口或开启了用户态stp的端口
+ * */
 void br_stp_enable_port(struct net_bridge_port *p)
 {
+    // 桥端口的一部分STP功能初始化
 	br_init_port(p);
+    // 桥端口状态更新
 	br_port_state_selection(p->br);
+    // 将STP端口状态切换的事件通知用户空间相关的监听者(log && netlink标记第4次)
 	br_log_state(p);
 	br_ifinfo_notify(RTM_NEWLINK, p);
 }
 
-/* called under bridge lock */
+/* called under bridge lock 
+ * 禁用端口
+ * */
 void br_stp_disable_port(struct net_bridge_port *p)
 {
 	struct net_bridge *br = p->br;
@@ -117,6 +133,7 @@ void br_stp_disable_port(struct net_bridge_port *p)
 	p->topology_change_ack = 0;
 	p->config_pending = 0;
 
+    // 将STP端口状态切换的事件通知用户空间相关的监听者(log && netlink标记第5次)
 	br_log_state(p);
 	br_ifinfo_notify(RTM_NEWLINK, p);
 
@@ -209,7 +226,11 @@ void br_stp_set_enabled(struct net_bridge *br, unsigned long val)
 	}
 }
 
-/* called under bridge lock */
+/* called under bridge lock 
+ * 修改网桥ID，这里实际就是修改网桥MAC
+ * @br  - 指向一个网桥
+ * @addr    - 指向一个MAC
+ * */
 void br_stp_change_bridge_id(struct net_bridge *br, const unsigned char *addr)
 {
 	/* should be aligned on 2 bytes for ether_addr_equal() */
@@ -218,6 +239,7 @@ void br_stp_change_bridge_id(struct net_bridge *br, const unsigned char *addr)
 	struct net_bridge_port *p;
 	int wasroot;
 
+    // 判断该桥是否为根桥
 	wasroot = br_is_root_bridge(br);
 
 	br_fdb_change_mac_address(br, addr);
@@ -240,10 +262,14 @@ void br_stp_change_bridge_id(struct net_bridge *br, const unsigned char *addr)
 		br_become_root_bridge(br);
 }
 
-/* should be aligned on 2 bytes for ether_addr_equal() */
+/* should be aligned on 2 bytes for ether_addr_equal() 
+ * 这个常量数组定义了一个全0的MAC地址
+ * */
 static const unsigned short br_mac_zero_aligned[ETH_ALEN >> 1];
 
-/* called under bridge lock */
+/* called under bridge lock 
+ * 重新计算网桥ID，如果有变化则返回true，否则返回false
+ * */
 bool br_stp_recalculate_bridge_id(struct net_bridge *br)
 {
 	const unsigned char *br_mac_zero =
@@ -251,10 +277,13 @@ bool br_stp_recalculate_bridge_id(struct net_bridge *br)
 	const unsigned char *addr = br_mac_zero;
 	struct net_bridge_port *p;
 
-	/* user has chosen a value so keep it */
+	/* user has chosen a value so keep it 
+     * 如果该桥设备的MAC地址是手动分配而来的，则无需重新计算，直接返回
+     * */
 	if (br->dev->addr_assign_type == NET_ADDR_SET)
 		return false;
 
+    // 遍历桥的每个桥端口，查找端口设备的最小MAC
 	list_for_each_entry(p, &br->port_list, list) {
 		if (addr == br_mac_zero ||
 		    memcmp(p->dev->dev_addr, addr, ETH_ALEN) < 0)
@@ -262,9 +291,12 @@ bool br_stp_recalculate_bridge_id(struct net_bridge *br)
 
 	}
 
+    // 比较桥MAC和最小的桥端口MAC是否相同，相同则无需重新计算，直接返回
 	if (ether_addr_equal(br->bridge_id.addr, addr))
 		return false;	/* no change */
 
+    // 程序运行到这里意味着当前最小的桥端口MAC已经小于桥MAC
+    // 所以需要修改桥MAC
 	br_stp_change_bridge_id(br, addr);
 	return true;
 }

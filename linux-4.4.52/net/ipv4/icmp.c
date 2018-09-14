@@ -188,11 +188,14 @@ EXPORT_SYMBOL(icmp_err_convert);
 
 /*
  *	ICMP control array. This specifies what to do with each ICMP.
+ * icmpv4消息类型相关的处理单元
  */
-
 struct icmp_control {
 	bool (*handler)(struct sk_buff *skb);
-	short   error;		/* This ICMP is classed as an error message */
+	short   error;		/* This ICMP is classed as an error message 
+                            为1时表示这类icmpv4消息属于错误信息
+                            为0时表示这类icmpv4消息属于查询消息
+                            */
 };
 
 static const struct icmp_control icmp_pointers[NR_ICMP_TYPES+1];
@@ -892,7 +895,7 @@ static bool icmp_redirect(struct sk_buff *skb)
 
 /*
  *	Handle ICMP_ECHO ("ping") requests.
- *
+ *  收到ICMP_ECHO类型icmpv4消息时的处理方法
  *	RFC 1122: 3.2.2.6 MUST have an echo server that answers ICMP echo
  *		  requests.
  *	RFC 1122: 3.2.2.6 Data received in the ICMP_ECHO request MUST be
@@ -963,6 +966,7 @@ out_err:
 	return false;
 }
 
+// 收到不支持的icmpv4消息类型时的处理方法
 static bool icmp_discard(struct sk_buff *skb)
 {
 	/* pretend it was a success */
@@ -1088,6 +1092,7 @@ void icmp_err(struct sk_buff *skb, u32 info)
 
 /*
  *	This table is the definition of how we handle ICMP.
+ *	这张表定义了icmpv4每个消息类型对应的处理单元
  */
 static const struct icmp_control icmp_pointers[NR_ICMP_TYPES + 1] = {
 	[ICMP_ECHOREPLY] = {
@@ -1170,20 +1175,21 @@ static void __net_exit icmp_sk_exit(struct net *net)
 	net->ipv4.icmp_sk = NULL;
 }
 
-// 具体的icmp功能初始化
+// 具体的icmpv4功能初始化，实际主要就是创建icmpv4内核套接字以及icmpv4在所属网络命名空间层面的初始化
 static int __net_init icmp_sk_init(struct net *net)
 {
 	int i, err;
 
-    // 为每个cpu分配一个用于icmp的struct sock结构
+    // 为每个cpu分配一个用于icmpv4的struct sock结构
 	net->ipv4.icmp_sk = alloc_percpu(struct sock *);
 	if (!net->ipv4.icmp_sk)
 		return -ENOMEM;
 
-    // 为每个cpu创建icmp内核套接字
+    // 遍历每个cpu
 	for_each_possible_cpu(i) {
 		struct sock *sk;
 
+        // 为每个cpu创建一个icmpv4内核套接字
 		err = inet_ctl_sock_create(&sk, PF_INET,
 					   SOCK_RAW, IPPROTO_ICMP, net);
 		if (err < 0)
@@ -1193,6 +1199,7 @@ static int __net_init icmp_sk_init(struct net *net)
 
 		/* Enough space for 2 64K ICMP packets, including
 		 * sk_buff/skb_shared_info struct overhead.
+         * 确保发送空间的长度能存放2*64K的icmpv4报文
 		 */
 		sk->sk_sndbuf =	2 * SKB_TRUESIZE(64 * 1024);
 
@@ -1200,9 +1207,11 @@ static int __net_init icmp_sk_init(struct net *net)
 		 * Speedup sock_wfree()
 		 */
 		sock_set_flag(sk, SOCK_USE_WRITE_QUEUE);
+        // 设置icmpv4内核套接字不进行pmtu发现
 		inet_sk(sk)->pmtudisc = IP_PMTUDISC_DONT;
 	}
 
+    // 以下基本就是设置icmpv4在该网络命名空间层面的参数
 	/* Control parameters for ECHO replies. */
 	net->ipv4.sysctl_icmp_echo_ignore_all = 0;
 	net->ipv4.sysctl_icmp_echo_ignore_broadcasts = 1;

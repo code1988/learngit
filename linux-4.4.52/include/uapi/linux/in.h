@@ -120,18 +120,23 @@ struct in_addr {
 #define IP_CHECKSUM	23
 #define IP_BIND_ADDRESS_NO_PORT	24
 
-/* IP_MTU_DISCOVER values */
-#define IP_PMTUDISC_DONT		0	/* Never send DF frames */
-#define IP_PMTUDISC_WANT		1	/* Use per route hints	*/
-#define IP_PMTUDISC_DO			2	/* Always DF		*/
-#define IP_PMTUDISC_PROBE		3       /* Ignore dst pmtu      */
+/* IP_MTU_DISCOVER values 
+ * 定义了pmtu发现的几种控制模式
+ * */
+#define IP_PMTUDISC_DONT		0	/* Never send DF frames 从不设置DF位，即不进行pmtu发现 */
+#define IP_PMTUDISC_WANT		1	/* Use per route hints	
+                                       根据路由中表项是否锁定了mtu来决定是否设置DF位(这是pmtu默认策略) */
+#define IP_PMTUDISC_DO			2	/* Always DF  总是设置DF位，除非内核设置了忽略DF		*/
+#define IP_PMTUDISC_PROBE		3       /* Ignore dst pmtu  忽略目的pmtu(似乎是忽略收到的pmtu)    */
 /* Always use interface mtu (ignores dst pmtu) but don't set DF flag.
  * Also incoming ICMP frag_needed notifications will be ignored on
  * this socket to prevent accepting spoofed ones.
+ * 不设置DF位，不发送设置了DF位且长度超过出接口mtu的报文
  */
 #define IP_PMTUDISC_INTERFACE		4
 /* weaker version of IP_PMTUDISC_INTERFACE, which allos packets to get
  * fragmented if they exeed the interface mtu
+ * 类似IP_PMTUDISC_INTERFACE模式，区别在于允许长度超过出接口mtu进行分片发送
  */
 #define IP_PMTUDISC_OMIT		5
 

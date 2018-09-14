@@ -1098,6 +1098,7 @@ void __module_get(struct module *module)
 }
 EXPORT_SYMBOL(__module_get);
 
+// 指定模块的引用计数加1
 bool try_module_get(struct module *module)
 {
 	bool ret = true;
@@ -1117,6 +1118,7 @@ bool try_module_get(struct module *module)
 }
 EXPORT_SYMBOL(try_module_get);
 
+// 指定模块的引用计数减1
 void module_put(struct module *module)
 {
 	int ret;

@@ -185,22 +185,26 @@ static const struct stp_proto br_stp_proto = {
 	.rcv	= br_stp_rcv,
 };
 
+// 网桥模块初始化
 static int __init br_init(void)
 {
 	int err;
 
 	BUILD_BUG_ON(sizeof(struct br_input_skb_cb) > FIELD_SIZEOF(struct sk_buff, cb));
 
+    // 注册生成树协议(stp/rstp/mstp，内核只实现了stp)到LLC层，当收到BPDU时就会调用注册的br_stp_rcv接收钩子
 	err = stp_proto_register(&br_stp_proto);
 	if (err < 0) {
 		pr_err("bridge: can't register sap for STP\n");
 		return err;
 	}
 
+    // 初始化供网桥使用的二层转发表项缓存池
 	err = br_fdb_init();
 	if (err)
 		goto err_out;
 
+    // 将网桥模块添加到每一个网络命名空间
 	err = register_pernet_subsys(&br_net_ops);
 	if (err)
 		goto err_out1;
@@ -209,6 +213,7 @@ static int __init br_init(void)
 	if (err)
 		goto err_out2;
 
+    // 向通知链中注册一个网桥事件通知块
 	err = register_netdevice_notifier(&br_device_notifier);
 	if (err)
 		goto err_out3;
@@ -217,10 +222,12 @@ static int __init br_init(void)
 	if (err)
 		goto err_out4;
 
+    // 初始化用于操作网桥的netlink接口
 	err = br_netlink_init();
 	if (err)
 		goto err_out5;
 
+    // 设置用于操作网桥的ioctl钩子函数
 	brioctl_set(br_ioctl_deviceless_stub);
 
 #if IS_ENABLED(CONFIG_ATM_LANE)
@@ -248,6 +255,7 @@ err_out:
 	return err;
 }
 
+// 注销网桥功能
 static void __exit br_deinit(void)
 {
 	stp_proto_unregister(&br_stp_proto);

@@ -1393,7 +1393,7 @@ out_release:
 }
 EXPORT_SYMBOL(__sock_create);
 
-// 内核创建一个指定类型的套接字
+// 创建一个属于用户空间的指定类型的套接字
 int sock_create(int family, int type, int protocol, struct socket **res)
 {
 	return __sock_create(current->nsproxy->net_ns, family, type, protocol, res, 0);

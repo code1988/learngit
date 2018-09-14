@@ -136,6 +136,7 @@ struct ipv6_pinfo;
 struct rtable;
 
 /** struct inet_sock - representation of INET sockets
+ * ipv4/ipv6共用的套接字结构
  *
  * @sk - ancestor class
  * @pinet6 - pointer to IPv6 control block
@@ -157,7 +158,7 @@ struct rtable;
  */
 struct inet_sock {
 	/* sk and pinet6 has to be the first two members of inet_sock */
-	struct sock		sk;
+	struct sock		sk;     // 封装的基类sock结构，固定放在第一个字段显然用于方便 基类<->派生类 转换
 #if IS_ENABLED(CONFIG_IPV6)
 	struct ipv6_pinfo	*pinet6;
 #endif
@@ -178,7 +179,7 @@ struct inet_sock {
 	__u8			tos;
 	__u8			min_ttl;
 	__u8			mc_ttl;
-	__u8			pmtudisc;
+	__u8			pmtudisc;   // pmtu发现的控制模式
 	__u8			recverr:1,
 				is_icsk:1,
 				freebind:1,
@@ -241,6 +242,7 @@ static inline struct sock *skb_to_full_sk(const struct sk_buff *skb)
 	return sk_to_full_sk(skb->sk);
 }
 
+// 根据传入的sock结构得到对应inet_sock结构
 static inline struct inet_sock *inet_sk(const struct sock *sk)
 {
 	return (struct inet_sock *)sk;

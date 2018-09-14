@@ -27,6 +27,7 @@ struct ping_group_range {
 	kgid_t		range[2];
 };
 
+// 用于网络命名空间层面的ipv4信息管理块
 struct netns_ipv4 {
 #ifdef CONFIG_SYSCTL
 	struct ctl_table_header	*forw_hdr;

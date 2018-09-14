@@ -155,10 +155,10 @@ static int vlan_newlink(struct net *src_net, struct net_device *dev,
 	else
 		proto = htons(ETH_P_8021Q);
 
-	vlan->vlan_proto = proto;       // 记录vlan协议类型
+	vlan->vlan_proto = proto;                           // 记录vlan协议类型
 	vlan->vlan_id	 = nla_get_u16(data[IFLA_VLAN_ID]); // 记录vlan id
-	vlan->real_dev	 = real_dev;    // 记录宿主设备
-	vlan->flags	 = VLAN_FLAG_REORDER_HDR;   // vlan设备缺省都会打上VLAN_FLAG_REORDER_HDR标志
+	vlan->real_dev	 = real_dev;                        // 记录宿主设备
+	vlan->flags	 = VLAN_FLAG_REORDER_HDR;               // vlan设备缺省都会打上VLAN_FLAG_REORDER_HDR标志
 
     // 检查宿主设备是否支持vlan协议以及要创建的vlan id在该设备上是否已经存在
 	err = vlan_check_real_dev(real_dev, vlan->vlan_proto, vlan->vlan_id);

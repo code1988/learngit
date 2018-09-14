@@ -1,5 +1,6 @@
 /*
  * Bridge multicast support.
+ * 本文件生效的前提是CONFIG_BRIDGE_IGMP_SNOOPING开启
  *
  * Copyright (c) 2010 Herbert Xu <herbert@gondor.apana.org.au>
  *
@@ -147,12 +148,18 @@ static struct net_bridge_mdb_entry *br_mdb_ip6_get(
 }
 #endif
 
+/* 返回指定skb所在的组播组
+ * @br  - 指向当前网桥
+ * @skb - 指向承载了组播报文的skb
+ * @vid - 该skb所属的vlan
+ */
 struct net_bridge_mdb_entry *br_mdb_get(struct net_bridge *br,
 					struct sk_buff *skb, u16 vid)
 {
 	struct net_bridge_mdb_htable *mdb = rcu_dereference(br->mdb);
 	struct br_ip ip;
 
+    // 确保该网桥的igmp-snooping功能处于使能状态
 	if (br->multicast_disabled)
 		return NULL;
 
@@ -914,6 +921,7 @@ static void br_ip6_multicast_port_query_expired(unsigned long data)
 }
 #endif
 
+// 初始化桥端口的igmp-snooping功能
 void br_multicast_add_port(struct net_bridge_port *port)
 {
 	port->multicast_router = 1;
@@ -1670,6 +1678,14 @@ static int br_multicast_ipv6_rcv(struct net_bridge *br,
 }
 #endif
 
+/* 网桥的以太网多播帧接收入口
+ * @br      - 指向当前网桥
+ * @port    - 指向接收到该多播帧的桥端口
+ * @skb     - 承载了多播帧的skb
+ * @vid     - 该skb所属vlan
+ *
+ * 备注： 显然这里只会处理ipv4和ipv6的报文
+ */
 int br_multicast_rcv(struct net_bridge *br, struct net_bridge_port *port,
 		     struct sk_buff *skb, u16 vid)
 {
@@ -1704,6 +1720,9 @@ static void br_multicast_query_expired(struct net_bridge *br,
 	spin_unlock(&br->multicast_lock);
 }
 
+/* ipv4类型的本地查询器超时处理函数
+ * @data    - 在该定时器初始化时被设置为指向所属网桥的指针
+ */
 static void br_ip4_multicast_query_expired(unsigned long data)
 {
 	struct net_bridge *br = (void *)data;
@@ -1720,6 +1739,7 @@ static void br_ip6_multicast_query_expired(unsigned long data)
 }
 #endif
 
+// 初始化IGMP-SNOOPING
 void br_multicast_init(struct net_bridge *br)
 {
 	br->hash_elasticity = 4;
@@ -1747,10 +1767,13 @@ void br_multicast_init(struct net_bridge *br)
 	br->has_ipv6_addr = 1;
 
 	spin_lock_init(&br->multicast_lock);
+    // 初始化multicast_router_timer定时器
 	setup_timer(&br->multicast_router_timer,
 		    br_multicast_local_router_expired, 0);
+    // 初始化ipv4类型的其他查询器的定时器
 	setup_timer(&br->ip4_other_query.timer,
 		    br_ip4_multicast_querier_expired, (unsigned long)br);
+    // 初始化ipv4类型的本地查询器的定时器
 	setup_timer(&br->ip4_own_query.timer, br_ip4_multicast_query_expired,
 		    (unsigned long)br);
 #if IS_ENABLED(CONFIG_IPV6)
@@ -1761,19 +1784,23 @@ void br_multicast_init(struct net_bridge *br)
 #endif
 }
 
+// 开启指定网桥的指定查询器的定时器
 static void __br_multicast_open(struct net_bridge *br,
 				struct bridge_mcast_own_query *query)
 {
-	query->startup_sent = 0;
+	query->startup_sent = 0;    // 已发送的查询包数量清零
 
+    // 确保所属的网桥已经开启了igmp-snooping
 	if (br->multicast_disabled)
 		return;
 
 	mod_timer(&query->timer, jiffies);
 }
 
+// 开启指定网桥的igmp-snooping功能
 void br_multicast_open(struct net_bridge *br)
 {
+    // 实际就是开启ip4_query的定时器
 	__br_multicast_open(br, &br->ip4_own_query);
 #if IS_ENABLED(CONFIG_IPV6)
 	__br_multicast_open(br, &br->ip6_own_query);
@@ -1908,6 +1935,7 @@ static void br_multicast_start_querier(struct net_bridge *br,
 	}
 }
 
+// igmp-snooping功能开关
 int br_multicast_toggle(struct net_bridge *br, unsigned long val)
 {
 	struct net_bridge_mdb_htable *mdb;

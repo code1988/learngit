@@ -1,6 +1,7 @@
 /*
  *	Device handling code
  *	Linux ethernet bridge
+ *	用于网桥的设备操作接口
  *
  *	Authors:
  *	Lennert Buytenhek		<buytenh@gnu.org>
@@ -322,6 +323,7 @@ static const struct ethtool_ops br_ethtool_ops = {
 	.get_link	= ethtool_op_get_link,
 };
 
+// 定义了网桥设备的管理操作集合(也就是网桥设备的驱动)
 static const struct net_device_ops br_netdev_ops = {
 	.ndo_open		 = br_dev_open,
 	.ndo_stop		 = br_dev_stop,
@@ -358,43 +360,62 @@ static void br_dev_free(struct net_device *dev)
 	free_netdev(dev);
 }
 
+// 定义了一个网桥设备类型管理块
 static struct device_type br_type = {
 	.name	= "bridge",
 };
 
+// 网桥设备初始化回调函数
 void br_dev_setup(struct net_device *dev)
 {
+    // 获取网桥设备的私有空间，这是一个net_bridge结构
 	struct net_bridge *br = netdev_priv(dev);
 
+    // 生成一个随机mac
 	eth_hw_addr_random(dev);
+    // 为网桥设备的链路层参数设置一些缺省值
 	ether_setup(dev);
 
+    // 为网桥设备注册一套设备驱动
 	dev->netdev_ops = &br_netdev_ops;
+    // 为网桥设备注册一个设备销毁回调函数
 	dev->destructor = br_dev_free;
+    // 为网桥设备注册一个ethtool工具使用回调函数统一管理块
 	dev->ethtool_ops = &br_ethtool_ops;
+    // 设置网络设备的细分类型为bridge(?)
 	SET_NETDEV_DEVTYPE(dev, &br_type);
+    // 标识该网络设备为网桥设备
 	dev->priv_flags = IFF_EBRIDGE | IFF_NO_QUEUE;
 
+    // 设置网桥设备当前支持的功能集合
 	dev->features = COMMON_FEATURES | NETIF_F_LLTX | NETIF_F_NETNS_LOCAL |
 			NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_STAG_TX;
+    // 设置网桥设备允许用户态修改的功能集合
 	dev->hw_features = COMMON_FEATURES | NETIF_F_HW_VLAN_CTAG_TX |
 			   NETIF_F_HW_VLAN_STAG_TX;
+    // 设置网桥设备允许被vlan设备继承的功能集合
 	dev->vlan_features = COMMON_FEATURES;
 
 	br->dev = dev;
+    // 初始化该网桥的桥端口链表
 	spin_lock_init(&br->lock);
 	INIT_LIST_HEAD(&br->port_list);
 	spin_lock_init(&br->hash_lock);
 
+    /**<    以下都是一些STP参数设置 */
+    // 网桥id中的优先级设缺省值0x8000
 	br->bridge_id.prio[0] = 0x80;
 	br->bridge_id.prio[1] = 0x00;
 
+    // 网桥设置缺省的生成树组播地址01:80:c2:00:00:00
 	ether_addr_copy(br->group_addr, eth_reserved_addr_base);
 
+    // 网桥的生成树功能默认关闭
 	br->stp_enabled = BR_NO_STP;
 	br->group_fwd_mask = BR_GROUPFWD_DEFAULT;
 	br->group_fwd_mask_required = BR_GROUPFWD_DEFAULT;
 
+    // STP网桥初始时默认自己是"根桥"，所以将"根桥"的参数和自身保持一致
 	br->designated_root = br->bridge_id;
 	br->bridge_max_age = br->max_age = 20 * HZ;
 	br->bridge_hello_time = br->hello_time = 2 * HZ;
@@ -402,6 +423,8 @@ void br_dev_setup(struct net_device *dev)
 	br->ageing_time = BR_DEFAULT_AGEING_TIME;
 
 	br_netfilter_rtable_init(br);
+    // 初始化网桥stp相关定时器
 	br_stp_timer_init(br);
+    // 初始化IGMP-SNOOPING
 	br_multicast_init(br);
 }

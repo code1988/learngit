@@ -1,6 +1,7 @@
 /*
  *	Forwarding database
  *	Linux ethernet bridge
+ *	以太网桥使用的转发数据库
  *
  *	Authors:
  *	Lennert Buytenhek		<buytenh@gnu.org>
@@ -27,7 +28,7 @@
 #include <net/switchdev.h>
 #include "br_private.h"
 
-static struct kmem_cache *br_fdb_cache __read_mostly;
+static struct kmem_cache *br_fdb_cache __read_mostly;   // 定义了一个二层转发表表项的缓存池
 static struct net_bridge_fdb_entry *fdb_find(struct hlist_head *head,
 					     const unsigned char *addr,
 					     __u16 vid);
@@ -36,10 +37,14 @@ static int fdb_insert(struct net_bridge *br, struct net_bridge_port *source,
 static void fdb_notify(struct net_bridge *br,
 		       const struct net_bridge_fdb_entry *, int);
 
-static u32 fdb_salt __read_mostly;
+static u32 fdb_salt __read_mostly;  // 这个值随机生成，用于jhash算法中
 
+/* 初始化供网桥使用的二层转发表项的缓存池
+ * 实际就是为其分配一块slab缓冲区
+ */
 int __init br_fdb_init(void)
 {
+    // 创建一片新的slab缓存池，单元长度net_bridge_fdb_entry
 	br_fdb_cache = kmem_cache_create("bridge_fdb_cache",
 					 sizeof(struct net_bridge_fdb_entry),
 					 0,
@@ -47,10 +52,14 @@ int __init br_fdb_init(void)
 	if (!br_fdb_cache)
 		return -ENOMEM;
 
+    // 生成一个随机数，将用于转发表的hash算法计算
 	get_random_bytes(&fdb_salt, sizeof(fdb_salt));
 	return 0;
 }
 
+/* 销毁以太网桥使用的转发数据库
+ * 实际就是销毁分配的slab缓冲区对象
+ */
 void br_fdb_fini(void)
 {
 	kmem_cache_destroy(br_fdb_cache);
@@ -59,6 +68,7 @@ void br_fdb_fini(void)
 
 /* if topology_changing then use forward_delay (default 15 sec)
  * otherwise keep longer (default 5 minutes)
+ * 返回一个持有时间，当拓扑变化时该值来自转发延迟时间，否则该值来自老化时间
  */
 static inline unsigned long hold_time(const struct net_bridge *br)
 {
@@ -72,6 +82,10 @@ static inline int has_expired(const struct net_bridge *br,
 		time_before_eq(fdb->updated + hold_time(br), jiffies);
 }
 
+/* 计算 mac+vid 的散列地址并返回
+ * 
+ * 备注：这里使用了经典的jhash算法，2个键值分别为mac地址后4字节、vid
+ */
 static inline int br_mac_hash(const unsigned char *mac, __u16 vid)
 {
 	/* use 1 byte of OUI and 3 bytes of NIC */
@@ -370,7 +384,9 @@ void br_fdb_delete_by_port(struct net_bridge *br,
 	spin_unlock_bh(&br->hash_lock);
 }
 
-/* No locking or refcounting, assumes caller has rcu_read_lock */
+/* No locking or refcounting, assumes caller has rcu_read_lock 
+ * 根据 mac地址+vid 查找对应的转发表表项
+ * */
 struct net_bridge_fdb_entry *__br_fdb_get(struct net_bridge *br,
 					  const unsigned char *addr,
 					  __u16 vid)
@@ -466,6 +482,7 @@ int br_fdb_fillbuf(struct net_bridge *br, void *buf,
 	return num;
 }
 
+// 根据mac+vid查找对应的转发表项
 static struct net_bridge_fdb_entry *fdb_find(struct hlist_head *head,
 					     const unsigned char *addr,
 					     __u16 vid)
@@ -480,6 +497,12 @@ static struct net_bridge_fdb_entry *fdb_find(struct hlist_head *head,
 	return NULL;
 }
 
+/* 根据mac+vid从指定hash桶中查找对应的转发表项
+ * @head    - 指向一个hash桶头结构
+ * @addr    - 指向要查找的mac
+ * @vid     - 要查找的mac所在vlan
+ * @返回值  - 成功则返回对应的转发表项，否则返回NULL
+ */
 static struct net_bridge_fdb_entry *fdb_find_rcu(struct hlist_head *head,
 						 const unsigned char *addr,
 						 __u16 vid)
@@ -494,6 +517,17 @@ static struct net_bridge_fdb_entry *fdb_find_rcu(struct hlist_head *head,
 	return NULL;
 }
 
+/* 创建表项
+ * @head    - 指向新创建的表项要插入的hash桶头结构
+ * @addr    - 指向要添加的mac
+ * @source  - 指向收到该mac的桥端口
+ * @vid     - 该mac所属的vlan
+ *
+ * 备注：创建的转发表项缺省属性有
+ *          非本地
+ *          动态
+ *          非用户手动添加
+ */
 static struct net_bridge_fdb_entry *fdb_create(struct hlist_head *head,
 					       struct net_bridge_port *source,
 					       const unsigned char *addr,
@@ -549,7 +583,9 @@ static int fdb_insert(struct net_bridge *br, struct net_bridge_port *source,
 	return 0;
 }
 
-/* Add entry for local address of interface */
+/* Add entry for local address of interface 
+ * 将桥端口设备的mac地址作为本地地址加入到转发表中
+ * */
 int br_fdb_insert(struct net_bridge *br, struct net_bridge_port *source,
 		  const unsigned char *addr, u16 vid)
 {
@@ -561,32 +597,50 @@ int br_fdb_insert(struct net_bridge *br, struct net_bridge_port *source,
 	return ret;
 }
 
+/* 使用指定 mac地址+端口+vlan 3元组更新网桥的转发表(显然，如果转发表中不存在该表项则添加)
+ * @br      - 指向要操作的网桥
+ * @source  - 指向收到报文的桥端口
+ * @addr    - 指向要添加的mac
+ * @vid     - 该mac所在的vlan
+ * @added_by_user   - 1：表示该3元组是由用户手动添加的； 0：表示该3元组从报文中自动学习得到
+ */
 void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
 		   const unsigned char *addr, u16 vid, bool added_by_user)
 {
+    // 计算得到该mac地址对应的hash桶头结构
 	struct hlist_head *head = &br->hash[br_mac_hash(addr, vid)];
 	struct net_bridge_fdb_entry *fdb;
 	bool fdb_modified = false;
 
-	/* some users want to always flood. */
+	/* some users want to always flood. 
+     * 如果该网桥持有时间为0意味着所属的桥端口都不学习任何mac，也就是总是泛洪
+     * */
 	if (hold_time(br) == 0)
 		return;
 
-	/* ignore packets unless we are using this port */
+	/* ignore packets unless we are using this port 
+     * 如果该桥端口既不处于learning状态，又不处于forwarding状态，则意味着该桥端口不学习mac
+     * */
 	if (!(source->state == BR_STATE_LEARNING ||
 	      source->state == BR_STATE_FORWARDING))
 		return;
 
+    // 根据mac+vid查找对应的转发表项
 	fdb = fdb_find_rcu(head, addr, vid);
 	if (likely(fdb)) {
-		/* attempt to update an entry for a local interface */
+        // 如果该表项已经存在，则刷新该表项
+		/* attempt to update an entry for a local interface 
+         * 如果该mac属于网桥自身mac，意味着收到了自己发出的报文，通常也就意味着链路成环，有风暴的可能
+         * */
 		if (unlikely(fdb->is_local)) {
 			if (net_ratelimit())
 				br_warn(br, "received packet on %s with "
 					"own address as source address\n",
 					source->dev->name);
 		} else {
-			/* fastpath: update of existing entry */
+			/* fastpath: update of existing entry 
+             * 排除了以上的特殊情况后，这里才是真正刷新该表项的地方
+             * */
 			if (unlikely(source != fdb->dst)) {
 				fdb->dst = source;
 				fdb_modified = true;
@@ -598,12 +652,15 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
 				fdb_notify(br, fdb, RTM_NEWNEIGH);
 		}
 	} else {
+        // 如果该表项不存在，则添加该表项
 		spin_lock(&br->hash_lock);
+        // 这里进行才次查找确认的目的是为了防止fdb_find_rcu到fdb_find期间cpu被其他用户抢占并抢先插入了该表项
 		if (likely(!fdb_find(head, addr, vid))) {
 			fdb = fdb_create(head, source, addr, vid, 0, 0);
 			if (fdb) {
 				if (unlikely(added_by_user))
 					fdb->added_by_user = 1;
+                // 添加完该表项后需要发送RTM_NEWNEIGH通知
 				fdb_notify(br, fdb, RTM_NEWNEIGH);
 			}
 		}
@@ -671,6 +728,7 @@ nla_put_failure:
 	return -EMSGSIZE;
 }
 
+// 计算转发表的netlink消息payload长度
 static inline size_t fdb_nlmsg_size(void)
 {
 	return NLMSG_ALIGN(sizeof(struct ndmsg))
@@ -680,6 +738,11 @@ static inline size_t fdb_nlmsg_size(void)
 		+ nla_total_size(sizeof(struct nda_cacheinfo));
 }
 
+/* 转发表的rtnetlink通知接口
+ * @br      - 指向所属的网桥
+ * @fdb     - 指向发起该通知的转发表表项
+ * @type    - rtnetlink通知类型
+ */
 static void fdb_notify(struct net_bridge *br,
 		       const struct net_bridge_fdb_entry *fdb, int type)
 {
@@ -687,6 +750,7 @@ static void fdb_notify(struct net_bridge *br,
 	struct sk_buff *skb;
 	int err = -ENOBUFS;
 
+    // 首先是申请一个skb，用于承载转发表的rtnetlink消息
 	skb = nlmsg_new(fdb_nlmsg_size(), GFP_ATOMIC);
 	if (skb == NULL)
 		goto errout;

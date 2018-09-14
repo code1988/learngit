@@ -12,12 +12,16 @@
 #define VLAN_GROUP_ARRAY_SPLIT_PARTS  8
 #define VLAN_GROUP_ARRAY_PART_LEN     (VLAN_N_VID/VLAN_GROUP_ARRAY_SPLIT_PARTS)
 
+// vlan协议序号定义(用于定位四维结构的第一维)
 enum vlan_protos {
 	VLAN_PROTO_8021Q	= 0,
 	VLAN_PROTO_8021AD,
 	VLAN_PROTO_NUM,
 };
 
+/* 定义同一个宿主设备下的vlan组模型
+ * 存储的vlan设备呈现四维结构：VLAN_PROTO_NUM * VLAN_GROUP_ARRAY_SPLIT_PARTS * VLAN_GROUP_ARRAY_PART_LEN * struct net_device指针
+ */
 struct vlan_group {
 	unsigned int		nr_vlan_devs;
 	struct hlist_node	hlist;	/* linked list */
@@ -25,16 +29,19 @@ struct vlan_group {
 					       [VLAN_GROUP_ARRAY_SPLIT_PARTS];
 };
 
+// 定义一个记录vlan设备信息的结构，保存了一个宿主设备上绑定的所有vlan设备的信息
 struct vlan_info {
 	struct net_device	*real_dev; /* The ethernet(like) device
 					    * the vlan is attached to.
+                        * 宿主设备
 					    */
-	struct vlan_group	grp;
-	struct list_head	vid_list;
-	unsigned int		nr_vids;
+	struct vlan_group	grp;        // vlan组，记录了所有绑定在该宿主设备上的vlan设备
+	struct list_head	vid_list;   // vlan id的链表头
+	unsigned int		nr_vids;    // 记录了该vlan id链表中节点数量
 	struct rcu_head		rcu;
 };
 
+// 根据vlan协议ID获取对应的协议序号(四维结构的第一维)
 static inline unsigned int vlan_proto_idx(__be16 proto)
 {
 	switch (proto) {
@@ -66,6 +73,7 @@ static inline struct net_device *vlan_group_get_device(struct vlan_group *vg,
 	return __vlan_group_get_device(vg, vlan_proto_idx(vlan_proto), vlan_id);
 }
 
+// 将指定的vlan设备记录到四维vlan组模型中
 static inline void vlan_group_set_device(struct vlan_group *vg,
 					 __be16 vlan_proto, u16 vlan_id,
 					 struct net_device *dev)
@@ -78,7 +86,9 @@ static inline void vlan_group_set_device(struct vlan_group *vg,
 	array[vlan_id % VLAN_GROUP_ARRAY_PART_LEN] = dev;
 }
 
-/* Must be invoked with rcu_read_lock or with RTNL. */
+/* Must be invoked with rcu_read_lock or with RTNL. 
+ * 根据vlan id在该宿主设备上索引对应的vlan设备
+ * */
 static inline struct net_device *vlan_find_dev(struct net_device *real_dev,
 					       __be16 vlan_proto, u16 vlan_id)
 {
@@ -110,6 +120,7 @@ void vlan_setup(struct net_device *dev);
 int register_vlan_dev(struct net_device *dev);
 void unregister_vlan_dev(struct net_device *dev, struct list_head *head);
 
+// 根据传入的vlan-TCI中的帧优先级，返回vlan设备上对应的入口优先级
 static inline u32 vlan_get_ingress_priority(struct net_device *dev,
 					    u16 vlan_tci)
 {
@@ -161,13 +172,16 @@ extern int vlan_net_id;
 
 struct proc_dir_entry;
 
+/* 定义了整个VLAN模块公用的私有空间(当然公用的前提是同一个网络命名空间下)
+ * 这里具体就是记录了有关vlan的proc文件系统信息
+ */
 struct vlan_net {
 	/* /proc/net/vlan */
 	struct proc_dir_entry *proc_vlan_dir;
 	/* /proc/net/vlan/config */
 	struct proc_dir_entry *proc_vlan_conf;
 	/* Determines interface naming scheme. */
-	unsigned short name_type;
+	unsigned short name_type;   // vlan设备名字显示风格，通常选择eth0.10的风格
 };
 
 #endif /* !(__BEN_VLAN_802_1Q_INC__) */

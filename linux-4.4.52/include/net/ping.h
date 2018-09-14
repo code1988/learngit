@@ -17,7 +17,7 @@
 #include <net/netns/hash.h>
 
 /* PING_HTABLE_SIZE must be power of 2 */
-#define PING_HTABLE_SIZE 	64
+#define PING_HTABLE_SIZE 	64      // 用于存放当前有效的ping操作的hash表的表长
 #define PING_HTABLE_MASK 	(PING_HTABLE_SIZE-1)
 
 #define ping_portaddr_for_each_entry(__sk, node, list) \

@@ -21,19 +21,20 @@
 #include <linux/if_vlan.h>
 
 #define BR_HASH_BITS 8
-#define BR_HASH_SIZE (1 << BR_HASH_BITS)    // 转发表的桶数量，这里就是256
+#define BR_HASH_SIZE (1 << BR_HASH_BITS)                // 转发表的桶数量，这里就是256
 
 #define BR_HOLD_TIME (1*HZ)
 
 #define BR_PORT_BITS	10
-#define BR_MAX_PORTS	(1<<BR_PORT_BITS)   // 网桥支持的最大端口数量，这里是1024个
+#define BR_MAX_PORTS	(1<<BR_PORT_BITS)               // 网桥支持的最大端口数量，这里是1024个
 #define BR_VLAN_BITMAP_LEN	BITS_TO_LONGS(VLAN_N_VID)   // 32位平台:(4096 + 31)/32
 
 #define BR_VERSION	"2.3"
 
 /* Control of forwarding link local multicast */
 #define BR_GROUPFWD_DEFAULT	0
-/* Don't allow forwarding control protocols like STP and LLDP 不允许转发控制协议报文(比如stp、lldp报文等)*/
+/* Don't allow forwarding control protocols like STP and LLDP 
+ * 不允许转发控制协议报文(比如stp、lldp报文等)*/
 #define BR_GROUPFWD_RESTRICTED	0x4007u
 
 /* Path to usermode spanning tree program 用户态生成树(rstp/mstp)程序的路径 */
@@ -108,18 +109,18 @@ struct net_bridge_fdb_entry
 	unsigned char			is_local;   // 标识该mac是否是自身mac
 	unsigned char			is_static;  // 标识该mac是否是静态添加的
 	unsigned char			added_by_user;  // 标识该mac是否是用户手动添加
-	__u16				vlan_id;        // 记录了该mac所在的vlan
+	__u16				vlan_id;            // 记录了该mac所在的vlan
 };
 
 /* 定义了加入一个组播组的组播端口，本结构描述了一个组播端口的详细信息
  */
 struct net_bridge_port_group {
-	struct net_bridge_port		*port;      // 该组播端口对应的网桥端口
+	struct net_bridge_port		*port;          // 该组播端口对应的网桥端口
 	struct net_bridge_port_group __rcu *next;   // 指向下一个相同组播组中的组播端口
 	struct hlist_node		mglist;
 	struct rcu_head			rcu;
-	struct timer_list		timer;          // 该组播端口老化定时器
-	struct br_ip			addr;           // 所在组播组的地址
+	struct timer_list		timer;              // 该组播端口老化定时器
+	struct br_ip			addr;               // 所在组播组的地址
 	unsigned char			state;
 };
 
@@ -128,11 +129,11 @@ struct net_bridge_port_group {
 struct net_bridge_mdb_entry
 {
 	struct hlist_node		hlist[2];
-	struct net_bridge		*br;        // 指向所属的网桥
+	struct net_bridge		*br;                // 指向所属的网桥
 	struct net_bridge_port_group __rcu *ports;  // 加入了该组播组的组播端口链表
 	struct rcu_head			rcu;
-	struct timer_list		timer;      // 该组播组老化定时器
-	struct br_ip			addr;       // 该组播组的地址
+	struct timer_list		timer;              // 该组播组老化定时器
+	struct br_ip			addr;               // 该组播组的地址
 	bool				mglist;
 };
 
@@ -276,7 +277,7 @@ struct net_bridge
 	u8				multicast_query_use_ifaddr:1;
 
 	u32				hash_elasticity;    // 每个组播组中能关联的端口个数
-	u32				hash_max;   // net_bridge_mdb_htable结构中hash数组的最大值
+	u32				hash_max;           // net_bridge_mdb_htable结构中hash数组的最大值
 
 	u32				multicast_last_member_count;
 	u32				multicast_startup_query_count;
@@ -301,8 +302,8 @@ struct net_bridge
 #endif /* IS_ENABLED(CONFIG_IPV6) */
 #endif
 
-	struct timer_list		hello_timer;        // "根桥"定时发送配置BPDU信息的定时器，间隔hello_time(只对"根桥"有用，当发现自己不是"根桥"时关闭)
-	struct timer_list		tcn_timer;          // "非根桥"发送TCN-BPDU信息的定时器，间隔bridge_hello_time(只对"非根桥"有用，当收到回复的TCA时关闭)
+	struct timer_list		hello_timer;            // "根桥"定时发送配置BPDU信息的定时器，间隔hello_time(只对"根桥"有用，当发现自己不是"根桥"时关闭)
+	struct timer_list		tcn_timer;              // "非根桥"发送TCN-BPDU信息的定时器，间隔bridge_hello_time(只对"非根桥"有用，当收到回复的TCA时关闭)
 	struct timer_list		topology_change_timer;  // "根桥"结束发送TC置1的配置BPDU信息的定时器，超时bridge_max_age + bridge_forward_delay(只对"根桥"有用)
 	struct timer_list		gc_timer;
 	struct kobject			*ifobj;

@@ -1,5 +1,6 @@
 /*
  *	VLAN netlink control interface
+ *	基于netlink接口的vlan操作集合
  *
  * 	Copyright (c) 2007 Patrick McHardy <kaber@trash.net>
  *
@@ -18,6 +19,7 @@
 #include "vlan.h"
 
 
+// 定义了一个网络接口链路中有关vlan部分的策略组
 static const struct nla_policy vlan_policy[IFLA_VLAN_MAX + 1] = {
 	[IFLA_VLAN_ID]		= { .type = NLA_U16 },
 	[IFLA_VLAN_FLAGS]	= { .len = sizeof(struct ifla_vlan_flags) },
@@ -38,6 +40,7 @@ static inline int vlan_validate_qos_map(struct nlattr *attr)
 	return nla_validate_nested(attr, IFLA_VLAN_QOS_MAX, vlan_map_policy);
 }
 
+// 验证用于vlan的netlink接口参数是否有效
 static int vlan_validate(struct nlattr *tb[], struct nlattr *data[])
 {
 	struct ifla_vlan_flags *flags;
@@ -86,6 +89,7 @@ static int vlan_validate(struct nlattr *tb[], struct nlattr *data[])
 	return 0;
 }
 
+// 对一个已经存在的vlan设备进行参数修改(处理来自用户空间设置的参数，用来设置设备私有空间vlan_dev_priv中的成员)
 static int vlan_changelink(struct net_device *dev,
 			   struct nlattr *tb[], struct nlattr *data[])
 {
@@ -94,10 +98,13 @@ static int vlan_changelink(struct net_device *dev,
 	struct nlattr *attr;
 	int rem;
 
+    // 如果传入了IFLA_VLAN_FLAGS属性则从中获取ifla_vlan_flags结构
 	if (data[IFLA_VLAN_FLAGS]) {
 		flags = nla_data(data[IFLA_VLAN_FLAGS]);
+        // 进而修改vlan_dev_priv->flags标志
 		vlan_dev_change_flags(dev, flags->flags, flags->mask);
 	}
+    // 如果传入了IFLA_VLAN_INGRESS_QOS/IFLA_VLAN_EGRESS_QOS属性，则从中获取ifla_vlan_qos_mapping结构
 	if (data[IFLA_VLAN_INGRESS_QOS]) {
 		nla_for_each_nested(attr, data[IFLA_VLAN_INGRESS_QOS], rem) {
 			m = nla_data(attr);
@@ -113,46 +120,63 @@ static int vlan_changelink(struct net_device *dev,
 	return 0;
 }
 
+/* 注册并配置一个新的vlan设备
+ * @src_net     - 所处的网络命名空间
+ * @dev         - 新创建的网络设备
+ * @tb[]        - ?
+ * @data[]      - ?
+ *
+ * 备注：对应ioctl接口的函数register_vlan_device，主要的区别在于调用本函数前vlan设备管理块已经被创建
+ */
 static int vlan_newlink(struct net *src_net, struct net_device *dev,
 			struct nlattr *tb[], struct nlattr *data[])
 {
+    // 获取vlan设备附属的私有空间
 	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
 	struct net_device *real_dev;
 	__be16 proto;
 	int err;
 
+    // 检查是否有传入IFLA_VLAN_ID属性
 	if (!data[IFLA_VLAN_ID])
 		return -EINVAL;
 
+    // 检查是否有传入IFLA_LINK属性
 	if (!tb[IFLA_LINK])
 		return -EINVAL;
+    // 从IFLA_LINK属性中获取宿主设备接口序号，再根据接口序号索引得到对应的宿主设备
 	real_dev = __dev_get_by_index(src_net, nla_get_u32(tb[IFLA_LINK]));
 	if (!real_dev)
 		return -ENODEV;
 
+    // 如果传入了IFLA_VLAN_PROTOCOL属性则从中获取vlan的协议类型，否则采用缺省的vlan协议类型
 	if (data[IFLA_VLAN_PROTOCOL])
 		proto = nla_get_be16(data[IFLA_VLAN_PROTOCOL]);
 	else
 		proto = htons(ETH_P_8021Q);
 
-	vlan->vlan_proto = proto;
-	vlan->vlan_id	 = nla_get_u16(data[IFLA_VLAN_ID]);
-	vlan->real_dev	 = real_dev;
-	vlan->flags	 = VLAN_FLAG_REORDER_HDR;
+	vlan->vlan_proto = proto;                           // 记录vlan协议类型
+	vlan->vlan_id	 = nla_get_u16(data[IFLA_VLAN_ID]); // 记录vlan id
+	vlan->real_dev	 = real_dev;                        // 记录宿主设备
+	vlan->flags	 = VLAN_FLAG_REORDER_HDR;               // vlan设备缺省都会打上VLAN_FLAG_REORDER_HDR标志
 
+    // 检查宿主设备是否支持vlan协议以及要创建的vlan id在该设备上是否已经存在
 	err = vlan_check_real_dev(real_dev, vlan->vlan_proto, vlan->vlan_id);
 	if (err < 0)
 		return err;
 
+    // 如果没有传入IFLA_MTU属性则从宿主设备继承mtu值，否则意味着使用了自定义的mtu值，这时候需要确保自定义值不大于宿主设备上的mtu值
 	if (!tb[IFLA_MTU])
 		dev->mtu = real_dev->mtu;
 	else if (dev->mtu > real_dev->mtu)
 		return -EINVAL;
 
+    // 该vlan设备在这里继续处理来自用户空间设置的参数
 	err = vlan_changelink(dev, tb, data);
 	if (err < 0)
 		return err;
 
+    // 进一步注册该vlan设备
 	return register_vlan_dev(dev);
 }
 
@@ -165,6 +189,7 @@ static inline size_t vlan_qos_map_size(unsigned int n)
 	       nla_total_size(sizeof(struct ifla_vlan_qos_mapping)) * n;
 }
 
+// 计算转储vlan设备netlink属性所需空间大小
 static size_t vlan_get_size(const struct net_device *dev)
 {
 	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
@@ -176,6 +201,7 @@ static size_t vlan_get_size(const struct net_device *dev)
 	       vlan_qos_map_size(vlan->nr_egress_mappings);
 }
 
+// 转储vlan设备的netlink属性
 static int vlan_fill_info(struct sk_buff *skb, const struct net_device *dev)
 {
 	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
@@ -245,6 +271,7 @@ static struct net *vlan_get_link_net(const struct net_device *dev)
 	return dev_net(real_dev);
 }
 
+// 定义一个用于vlan的rtnetlink接口操作集合
 struct rtnl_link_ops vlan_link_ops __read_mostly = {
 	.kind		= "vlan",
 	.maxtype	= IFLA_VLAN_MAX,
@@ -260,13 +287,17 @@ struct rtnl_link_ops vlan_link_ops __read_mostly = {
 	.get_link_net	= vlan_get_link_net,
 };
 
+// 初始化操作vlan用的netlink接口
 int __init vlan_netlink_init(void)
 {
+    // 将定义好的vlan_link_ops注册到rtnetlink接口中
 	return rtnl_link_register(&vlan_link_ops);
 }
 
+// 注销操作vlan用的netlink接口
 void __exit vlan_netlink_fini(void)
 {
+    // 将vlan_link_ops从rtnetlink接口中注销
 	rtnl_link_unregister(&vlan_link_ops);
 }
 

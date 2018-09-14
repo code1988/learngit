@@ -1458,6 +1458,11 @@ static int ipip_gro_complete(struct sk_buff *skb, int nhoff)
 	return inet_gro_complete(skb, nhoff);
 }
 
+/* 创建一个属于内核的PF_INET/PF_INET6协议族的套接字
+ * @family      只能是PF_INET或PF_INET6
+ * @type        套接字类型
+ * @protocol    具体的协议类型，比如IPPROTO_ICMP
+ */
 int inet_ctl_sock_create(struct sock **sk, unsigned short family,
 			 unsigned short type, unsigned char protocol,
 			 struct net *net)

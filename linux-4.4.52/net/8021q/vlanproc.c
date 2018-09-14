@@ -1,5 +1,6 @@
 /******************************************************************************
  * vlanproc.c	VLAN Module. /proc filesystem interface.
+ * vlan模块的/proc 文件系统接口
  *
  *		This module is completely hardware-independent and provides
  *		access to the router using Linux /proc filesystem.
@@ -79,6 +80,7 @@ static int vlan_seq_open(struct inode *inode, struct file *file)
 			sizeof(struct seq_net_private));
 }
 
+// 定义了一个用户层对vlan设备的操作集合
 static const struct file_operations vlan_fops = {
 	.owner	 = THIS_MODULE,
 	.open    = vlan_seq_open,
@@ -140,16 +142,20 @@ void vlan_proc_cleanup(struct net *net)
 
 /*
  *	Create /proc/net/vlan entries
+ *	在proc文件系统中创建VLAN模块的节点
  */
 
 int __net_init vlan_proc_init(struct net *net)
 {
+    // 根据vlan_net_id索引得到对应的vlan_net结构
 	struct vlan_net *vn = net_generic(net, vlan_net_id);
 
+    // proc文件系统下创建/proc/net/vlan目录
 	vn->proc_vlan_dir = proc_net_mkdir(net, name_root, net->proc_net);
 	if (!vn->proc_vlan_dir)
 		goto err;
 
+    // proc文件系统下创建/proc/net/vlan/config文件(文件属性：普通文件 + 可读可写)
 	vn->proc_vlan_conf = proc_create(name_conf, S_IFREG|S_IRUSR|S_IWUSR,
 				     vn->proc_vlan_dir, &vlan_fops);
 	if (!vn->proc_vlan_conf)

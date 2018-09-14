@@ -1,6 +1,7 @@
 /*
  *	Ioctl handler
  *	Linux ethernet bridge
+ *	用于网桥的ioctl操作
  *
  *	Authors:
  *	Lennert Buytenhek		<buytenh@gnu.org>
@@ -83,7 +84,12 @@ static int get_fdb_entries(struct net_bridge *br, void __user *userbuf,
 	return num;
 }
 
-/* called with RTNL */
+/* called with RTNL 
+ * 在网桥中增/删接口
+ * @br      - 要操作的网桥
+ * @ifindex - 要操作的接口序号
+ * @isadd   - 1:添加端口，0-移除端口
+ * */
 static int add_del_if(struct net_bridge *br, int ifindex, int isadd)
 {
 	struct net *net = dev_net(br->dev);
@@ -93,14 +99,15 @@ static int add_del_if(struct net_bridge *br, int ifindex, int isadd)
 	if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
 		return -EPERM;
 
+    // 通过接口序号查找对应的网络设备
 	dev = __dev_get_by_index(net, ifindex);
 	if (dev == NULL)
 		return -EINVAL;
 
 	if (isadd)
-		ret = br_add_if(br, dev);
-	else
-		ret = br_del_if(br, dev);
+		ret = br_add_if(br, dev);   // 加端口
+	else                                        
+		ret = br_del_if(br, dev);   // 移除端口
 
 	return ret;
 }
@@ -347,6 +354,11 @@ static int old_deviceless(struct net *net, void __user *uarg)
 	return -EOPNOTSUPP;
 }
 
+/* 操作网桥设备的ioctl钩子函数(显然，跟下面那个ioctl操作的层次不一样)
+ * @net     指向当前的网络命名空间
+ * @cmd     用户层调用ioctl的命令ID号
+ * @uarg    用户层调用ioctl时传入的参数
+ */
 int br_ioctl_deviceless_stub(struct net *net, unsigned int cmd, void __user *uarg)
 {
 	switch (cmd) {
@@ -354,37 +366,45 @@ int br_ioctl_deviceless_stub(struct net *net, unsigned int cmd, void __user *uar
 	case SIOCSIFBR:
 		return old_deviceless(net, uarg);
 
-	case SIOCBRADDBR:
-	case SIOCBRDELBR:
+	case SIOCBRADDBR:   // 创建一个网桥
+	case SIOCBRDELBR:   // 删除一个网桥
 	{
 		char buf[IFNAMSIZ];
 
+        // 先对该用户命名空间进行CAP_NET_ADMIN权限测试
 		if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
 			return -EPERM;
 
+        // 转储ioctl传入的参数uarg，这里就是桥名
 		if (copy_from_user(buf, uarg, IFNAMSIZ))
 			return -EFAULT;
 
 		buf[IFNAMSIZ-1] = 0;
 		if (cmd == SIOCBRADDBR)
-			return br_add_bridge(net, buf);
-
-		return br_del_bridge(net, buf);
+			return br_add_bridge(net, buf); // 如果是SIOCBRADDBR则创建网桥
+                                                                           
+		return br_del_bridge(net, buf);     // 如果是SIOCBRDELBR则删除网桥
 	}
 	}
 	return -EOPNOTSUPP;
 }
 
+/* 网桥设备驱动net_device_ops->ndo_do_ioctl的钩子函数，用于操作网桥从设备(显然，跟上面那个ioctl操作的层次不一样)
+ * @dev     - 要操作的网桥设备
+ * @rq      - 用户层调用ioctl时传入的ifreq结构
+ * @cmd     - 用户层调用ioctl的命令ID号 
+ */
 int br_dev_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 {
+    // 获取网桥设备的私有空间，这是一个net_bridge结构
 	struct net_bridge *br = netdev_priv(dev);
 
 	switch (cmd) {
 	case SIOCDEVPRIVATE:
 		return old_dev_ioctl(dev, rq, cmd);
 
-	case SIOCBRADDIF:
-	case SIOCBRDELIF:
+	case SIOCBRADDIF:   // 将一个接口加入网桥
+	case SIOCBRDELIF:   // 从网桥中移除一个接口
 		return add_del_if(br, rq->ifr_ifindex, cmd == SIOCBRADDIF);
 
 	}

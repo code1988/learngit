@@ -323,6 +323,13 @@ static void __vlan_flush(struct net_bridge_vlan_group *vg)
 		__vlan_del(vlan);
 }
 
+/* 网桥对报文进行检测，功能基本类似与br_allowed_egress
+ * @br  - 指向进行检测的网桥
+ * @v   - 指向一个允许通过的vlan集合(通常就是对应的桥端口配置的vlan集合)
+ * @skb - 指向一个需要被检测的skb
+ * 
+ * 备注：本函数运行前提是配置了CONFIG_BRIDGE_VLAN_FILTERING
+ */
 struct sk_buff *br_handle_vlan(struct net_bridge *br,
 			       struct net_bridge_vlan_group *vg,
 			       struct sk_buff *skb)
@@ -330,7 +337,9 @@ struct sk_buff *br_handle_vlan(struct net_bridge *br,
 	struct net_bridge_vlan *v;
 	u16 vid;
 
-	/* If this packet was not filtered at input, let it pass */
+	/* If this packet was not filtered at input, let it pass 
+     * 如果该skb在入口处已经经过了vlan过滤，这里直接放行
+     * */
 	if (!BR_INPUT_SKB_CB(skb)->vlan_filtered)
 		goto out;
 
@@ -367,10 +376,12 @@ static bool __allowed_ingress(struct net_bridge_vlan_group *vg, __be16 proto,
 	const struct net_bridge_vlan *v;
 	bool tagged;
 
+    // 程序运行到这里意味着该skb经过了网桥的vlan过滤(经过不代表成功通过)
 	BR_INPUT_SKB_CB(skb)->vlan_filtered = true;
 	/* If vlan tx offload is disabled on bridge device and frame was
 	 * sent from vlan device on the bridge device, it does not have
 	 * HW accelerated vlan tag.
+     * 如果该skb没有携带vlan信息，但是其数据包的协议类型却是802.1q或802.1ad，则去掉报文中的4字节vlan-tag
 	 */
 	if (unlikely(!skb_vlan_tag_present(skb) &&
 		     skb->protocol == proto)) {
@@ -379,6 +390,7 @@ static bool __allowed_ingress(struct net_bridge_vlan_group *vg, __be16 proto,
 			return false;
 	}
 
+    // 从skb中获取vlan id
 	if (!br_vlan_get_tag(skb, vid)) {
 		/* Tagged frame */
 		if (skb->vlan_proto != proto) {
@@ -401,35 +413,45 @@ static bool __allowed_ingress(struct net_bridge_vlan_group *vg, __be16 proto,
 		tagged = false;
 	}
 
+    // 如果该skb中没有携带vlan id，则尝试获取该桥端口的pvid
 	if (!*vid) {
 		u16 pvid = br_get_pvid(vg);
 
 		/* Frame had a tag with VID 0 or did not have a tag.
 		 * See if pvid is set on this port.  That tells us which
 		 * vlan untagged or priority-tagged traffic belongs to.
+         * 如果pvid不存在则丢弃直接丢弃
 		 */
 		if (!pvid)
 			goto drop;
 
 		/* PVID is set on this port.  Any untagged or priority-tagged
 		 * ingress frame is considered to belong to this vlan.
+         * 如果pvid存在，则所有收到的不带tag或者只带了802.1p优先级tag的报文都属于该vlan
 		 */
 		*vid = pvid;
 		if (likely(!tagged))
-			/* Untagged Frame. */
+			/* Untagged Frame. 
+             * 表示收到的是不带tag的普通报文
+             * 这里用pvid来设置该skb的vlan信息，并且将数据包的协议类型改为802.1q
+             * */
 			__vlan_hwaccel_put_tag(skb, proto, pvid);
 		else
 			/* Priority-tagged Frame.
 			 * At this point, We know that skb->vlan_tci had
 			 * VLAN_TAG_PRESENT bit and its VID field was 0x000.
 			 * We update only VID field and preserve PCP field.
+             * 表示收到的是只带802.1p优先级tag的报文
 			 */
 			skb->vlan_tci |= pvid;
 
+        // 显然，携带pvid的skb必定是有效的
 		return true;
 	}
 
-	/* Frame had a valid vlan tag.  See if vlan is allowed */
+	/* Frame had a valid vlan tag.  See if vlan is allowed 
+     * 除了pvid，其他vlan都需要检查是否包含在该桥端口配置的vlan集合中
+     * */
 	v = br_vlan_find(vg, *vid);
 	if (v && br_vlan_should_use(v))
 		return true;
@@ -438,12 +460,24 @@ drop:
 	return false;
 }
 
+/* 网桥对入口报文进行检测，实质就是检查指定skb所属的vlan是否包含在指定的vlan集合中
+ * @br  - 指向进行检测的网桥
+ * @v   - 指向一个允许通过的vlan集合(通常就是对应的桥端口配置的vlan集合)
+ * @skb - 指向一个需要被检测的skb
+ * @vid - 用于存放该skb关联的vlan
+ *
+ * 备注：本函数运行前提是配置了CONFIG_BRIDGE_VLAN_FILTERING
+ *       本函数会将进入网桥的普通包也标上vlan，意味着桥上的所有数据包都是带vlan了的
+ *       对于检测不通过的skb，本函数会直接释放
+ *       网桥被作为一个特殊的桥端口，所以v可能来自网桥
+ */
 bool br_allowed_ingress(const struct net_bridge *br,
 			struct net_bridge_vlan_group *vg, struct sk_buff *skb,
 			u16 *vid)
 {
 	/* If VLAN filtering is disabled on the bridge, all packets are
 	 * permitted.
+     * 如果该网桥没有开启vlan过滤功能，则直接通过
 	 */
 	if (!br->vlan_enabled) {
 		BR_INPUT_SKB_CB(skb)->vlan_filtered = false;
@@ -472,13 +506,19 @@ bool br_allowed_egress(struct net_bridge_vlan_group *vg,
 	return false;
 }
 
-/* Called under RCU */
+/* Called under RCU 
+ * 检查指定桥端口是否允许学习指定skb，实质就是检查指定skb所属的vlan是否包含在该桥端口配置的vlan集合中
+ *
+ * 备注：本函数运行前提是配置了CONFIG_BRIDGE_VLAN_FILTERING
+ * */
 bool br_should_learn(struct net_bridge_port *p, struct sk_buff *skb, u16 *vid)
 {
 	struct net_bridge_vlan_group *vg;
 	struct net_bridge *br = p->br;
 
-	/* If filtering was disabled at input, let it pass. */
+	/* If filtering was disabled at input, let it pass. 
+     * 如果该网桥没有开启vlan过滤功能，则直接通过
+     * */
 	if (!br->vlan_enabled)
 		return true;
 
@@ -486,9 +526,11 @@ bool br_should_learn(struct net_bridge_port *p, struct sk_buff *skb, u16 *vid)
 	if (!vg || !vg->num_vlans)
 		return false;
 
+    // 从skb中获取vlan id
 	if (!br_vlan_get_tag(skb, vid) && skb->vlan_proto != br->vlan_proto)
 		*vid = 0;
 
+    // 如果该skb中没有携带vlan id，则尝试获取该桥端口的pvid
 	if (!*vid) {
 		*vid = br_get_pvid(vg);
 		if (!*vid)

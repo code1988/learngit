@@ -100,9 +100,11 @@ static inline netdev_tx_t vlan_netpoll_send_skb(struct vlan_dev_priv *vlan, stru
 	return NETDEV_TX_OK;
 }
 
+// vlan设备的发送函数(在dev_hard_start_xmit中被调用)
 static netdev_tx_t vlan_dev_hard_start_xmit(struct sk_buff *skb,
 					    struct net_device *dev)
 {
+    // 获取该vlan设备附属的私有空间 
 	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
 	struct vlan_ethhdr *veth = (struct vlan_ethhdr *)(skb->data);
 	unsigned int len;
@@ -121,13 +123,16 @@ static netdev_tx_t vlan_dev_hard_start_xmit(struct sk_buff *skb,
 		__vlan_hwaccel_put_tag(skb, vlan->vlan_proto, vlan_tci);
 	}
 
+    // 将该skb->dev重定向到vlan设备的宿主设备
 	skb->dev = vlan->real_dev;
 	len = skb->len;
 	if (unlikely(netpoll_tx_running(dev)))
 		return vlan_netpoll_send_skb(vlan, skb);
 
+    // 重新进入网络设备发送数据的L3->L2层总接口
 	ret = dev_queue_xmit(skb);
 
+    // 根据ret统计vlan设备的收发信息
 	if (likely(ret == NET_XMIT_SUCCESS || ret == NET_XMIT_CN)) {
 		struct vlan_pcpu_stats *stats;
 
@@ -211,7 +216,9 @@ int vlan_dev_set_egress_priority(const struct net_device *dev,
 	return 0;
 }
 
-/* Flags are defined in the vlan_flags enum in include/linux/if_vlan.h file. */
+/* Flags are defined in the vlan_flags enum in include/linux/if_vlan.h file. 
+ * 修改vlan_dev_priv->flags标志
+ * */
 int vlan_dev_change_flags(const struct net_device *dev, u32 flags, u32 mask)
 {
 	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
@@ -239,6 +246,7 @@ int vlan_dev_change_flags(const struct net_device *dev, u32 flags, u32 mask)
 	return 0;
 }
 
+// 获取vlan设备对应的宿主设备名
 void vlan_dev_get_realdev_name(const struct net_device *dev, char *result)
 {
 	strncpy(result, vlan_dev_priv(dev)->real_dev->name, 23);
@@ -339,6 +347,7 @@ out:
 	return 0;
 }
 
+// vlan设备驱动net_device_ops->ndo_do_ioctl钩子函数
 static int vlan_dev_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 {
 	struct net_device *real_dev = vlan_dev_priv(dev)->real_dev;
@@ -746,6 +755,7 @@ static const struct ethtool_ops vlan_ethtool_ops = {
 	.get_ts_info		= vlan_ethtool_get_ts_info,
 };
 
+// 定义了vlan设备管理操作回调函数集(也就是vlan设备的驱动)
 static const struct net_device_ops vlan_netdev_ops = {
 	.ndo_change_mtu		= vlan_dev_change_mtu,
 	.ndo_init		= vlan_dev_init,
@@ -787,17 +797,19 @@ static void vlan_dev_free(struct net_device *dev)
 	free_netdev(dev);
 }
 
+// 每个新创建的vlan设备初始化回调函数
 void vlan_setup(struct net_device *dev)
 {
+    // 为vlan设备设置一些链路层基本参数
 	ether_setup(dev);
 
-	dev->priv_flags		|= IFF_802_1Q_VLAN | IFF_NO_QUEUE;
+	dev->priv_flags		|= IFF_802_1Q_VLAN | IFF_NO_QUEUE;  // 表明这是一个vlan设备
 	dev->priv_flags		&= ~IFF_TX_SKB_SHARING;
 	netif_keep_dst(dev);
 
-	dev->netdev_ops		= &vlan_netdev_ops;
-	dev->destructor		= vlan_dev_free;
-	dev->ethtool_ops	= &vlan_ethtool_ops;
-
-	eth_zero_addr(dev->broadcast);
+	dev->netdev_ops		= &vlan_netdev_ops; // 为vlan设备注册一套驱动
+	dev->destructor		= vlan_dev_free;    // 注册vlan设备注销回调函数
+	dev->ethtool_ops	= &vlan_ethtool_ops;// 注册使用ethtool工具操作vlan设备的回调函数集
+                                                                                            
+	eth_zero_addr(dev->broadcast);          // 清零广播mac
 }

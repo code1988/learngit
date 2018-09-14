@@ -20,8 +20,10 @@
 #include <linux/skbuff.h>
 #include <uapi/linux/icmp.h>
 
+// 从指定skb中获取icmp头
 static inline struct icmphdr *icmp_hdr(const struct sk_buff *skb)
 {
+    // 显然icmp头属于L4层头
 	return (struct icmphdr *)skb_transport_header(skb);
 }
 #endif	/* _LINUX_ICMP_H */

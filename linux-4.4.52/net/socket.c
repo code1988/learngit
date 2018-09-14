@@ -1115,6 +1115,7 @@ EXPORT_SYMBOL(sock_wake_async);
 
 /* 内核创建一个指定类型的套接字
  * @kern    - 1表示该套接字属于内核，0表示该套接字属于用户进程(虽然由内核创建)
+ * @res     用于存放创建的struct socket结构
  */
 int __sock_create(struct net *net, int family, int type, int protocol,
 			 struct socket **res, int kern)
@@ -1136,6 +1137,8 @@ int __sock_create(struct net *net, int family, int type, int protocol,
 
 	   This uglymoron is moved from INET layer to here to avoid
 	   deadlock in module load.
+       PF_INET + SOCK_PACKET组合已经被弃用，这里会将组合改写成PF_PACKET + SOCKET_PACKET
+       备注： 其实SOCKET_PACKET就已经被弃用
 	 */
 	if (family == PF_INET && type == SOCK_PACKET) {
 		static int warned;
@@ -1170,6 +1173,7 @@ int __sock_create(struct net *net, int family, int type, int protocol,
 
 #ifdef CONFIG_MODULES
 	/* Attempt to load a protocol module if the find failed.
+     * 如果该协议族尚未注册在net_families中，就尝试动态加载该协议族的内核模块
 	 *
 	 * 12/09/1996 Marcin: But! this makes REALLY only sense, if the user
 	 * requested real, full-featured networking support upon configuration.
@@ -1235,13 +1239,14 @@ out_release:
 }
 EXPORT_SYMBOL(__sock_create);
 
-// 内核创建一个指定类型的套接字
+// 创建一个属于用户空间的指定类型的套接字
 int sock_create(int family, int type, int protocol, struct socket **res)
 {
 	return __sock_create(current->nsproxy->net_ns, family, type, protocol, res, 0);
 }
 EXPORT_SYMBOL(sock_create);
 
+// 创建一个属于内核的指定类型的套接字
 int sock_create_kern(struct net *net, int family, int type, int protocol, struct socket **res)
 {
 	return __sock_create(net, family, type, protocol, res, 1);

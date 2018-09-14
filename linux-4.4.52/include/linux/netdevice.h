@@ -1899,6 +1899,7 @@ struct netdev_queue *netdev_pick_tx(struct net_device *dev,
 
 /*
  * Net namespace inlines
+ * 返回指定网络设备所属的网络命名空间
  */
 static inline
 struct net *dev_net(const struct net_device *dev)
