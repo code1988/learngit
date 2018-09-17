@@ -167,8 +167,8 @@ struct sock_common {
 	union {
 		__addrpair	skc_addrpair;
 		struct {
-			__be32	skc_daddr;
-			__be32	skc_rcv_saddr;
+			__be32	skc_daddr;      // 对端ipv4地址
+			__be32	skc_rcv_saddr;  // 绑定的本地ipv4地址
 		};
 	};
 	union  {
@@ -180,17 +180,17 @@ struct sock_common {
 		__portpair	skc_portpair;
 		struct {
 			__be16	skc_dport;
-			__u16	skc_num;
+			__u16	skc_num;        // 该字段的一个用处是记录了ping会话id
 		};
 	};
 
-	unsigned short		skc_family;     // 记录该sock所属的地址族
+	unsigned short		skc_family;         // 记录该sock所属的地址族
 	volatile unsigned char	skc_state;
 	unsigned char		skc_reuse:4;
 	unsigned char		skc_reuseport:1;
 	unsigned char		skc_ipv6only:1;
 	unsigned char		skc_net_refcnt:1;
-	int			skc_bound_dev_if;
+	int			skc_bound_dev_if;           // 该sock绑定的设备接口序号
 	union {
 		struct hlist_node	skc_bind_node;  // 目前发现的应用是：作为netlink中具体协议类型的多播hash表普通节点
 		struct hlist_nulls_node skc_portaddr_node;
@@ -199,8 +199,8 @@ struct sock_common {
 	possible_net_t		skc_net;
 
 #if IS_ENABLED(CONFIG_IPV6)
-	struct in6_addr		skc_v6_daddr;
-	struct in6_addr		skc_v6_rcv_saddr;
+	struct in6_addr		skc_v6_daddr;       // 对端ipv6地址
+	struct in6_addr		skc_v6_rcv_saddr;   // 绑定的本地ipv6地址
 #endif
 
 	atomic64_t		skc_cookie;
@@ -211,7 +211,7 @@ struct sock_common {
 	 * for different kind of 'sockets'
 	 */
 	union {
-		unsigned long	skc_flags;
+		unsigned long	skc_flags;  // 该套接字的标志，来自enum sk_flags
 		struct sock	*skc_listener; /* request_sock */
 		struct inet_timewait_death_row *skc_tw_dr; /* inet_timewait_sock */
 	};
@@ -251,7 +251,8 @@ struct cg_proto;
   *	        不将这两个数据结构合并为一的原因是，socket的内容跟文件系统密切相关(涉及inode结构)，而sock的内容跟通信密切相关模块，
   *	        拆分成两个数据结构有利于减小每个结构的大小
   *
-  *	注意点： sock结构往往是作为一个模块嵌入到具体的协议中，类似于list_head，所以往往存在一个父结构
+  *	注意点： sock结构总是作为一个子结构嵌入到具体的协议sock中，
+  *	         所以往往存在一个父结构，并且总是位于父结构的第一个字段，比如inet_sock、netlink_sock
   *
   *	@__sk_common: shared layout with inet_timewait_sock
   *	@sk_shutdown: mask of %SEND_SHUTDOWN and/or %RCV_SHUTDOWN
@@ -362,7 +363,7 @@ struct sock {
 #define sk_flags		__sk_common.skc_flags
 #define sk_rxhash		__sk_common.skc_rxhash
 
-	socket_lock_t		sk_lock;
+	socket_lock_t		sk_lock;            // 该套接字关联的自旋锁
 	struct sk_buff_head	sk_receive_queue;   // 该套接字的接收队列头，队列的成员就是skb
 	/*
 	 * The backlog queue is special, it is always used with
@@ -374,7 +375,7 @@ struct sock {
      * 定义了该套接字的接收队列中已经接收尚未处理的数据信息
 	 */
 	struct {
-		atomic_t	rmem_alloc; // 已经接收尚未处理的数据大小
+		atomic_t	rmem_alloc; // 已经接收尚未处理的数据大小，该值不能超过接收缓冲区大小
 		int		len;
 		struct sk_buff	*head;
 		struct sk_buff	*tail;
@@ -387,10 +388,10 @@ struct sock {
 	unsigned int		sk_napi_id;
 	unsigned int		sk_ll_usec;
 #endif
-	atomic_t		sk_drops;       // 记录了该套接字丢弃的消息数量
-	int			sk_rcvbuf;          // 接收缓冲区大小
+	atomic_t		sk_drops;       // 记录了该套接字丢弃的报文数量
+	int			sk_rcvbuf;          // 该套接字接收缓冲区大小
 
-	struct sk_filter __rcu	*sk_filter; // 指向一个BPF过滤器
+	struct sk_filter __rcu	*sk_filter; // 指向该套接字关联的一个BPF过滤器
 	union {
 		struct socket_wq __rcu	*sk_wq; // 指向该sock的等待队列和异步通知队列集合
 		struct socket_wq	*sk_wq_raw;
@@ -589,6 +590,7 @@ static inline bool __sk_del_node_init(struct sock *sk)
    when sk is ALREADY grabbed f.e. it is found in hash table
    or a list and the lookup is made under lock preventing hash table
    modifications.
+   指定sock的引用计数加1
  */
 
 static inline void sock_hold(struct sock *sk)
@@ -720,7 +722,9 @@ static inline struct user_namespace *sk_user_ns(struct sock *sk)
 	return sk->sk_socket->file->f_cred->user_ns;
 }
 
-/* Sock flags */
+/* Sock flags 
+ * 套接字的标志位集合，用于设置sock->sk_flags字段，最多支持32个标志位
+ * */
 enum sock_flags {
 	SOCK_DEAD,
 	SOCK_DONE,
@@ -768,6 +772,7 @@ static inline void sock_reset_flag(struct sock *sk, enum sock_flags flag)
 	__clear_bit(flag, &sk->sk_flags);
 }
 
+// 检查套接字是否设置了指定标志位
 static inline bool sock_flag(const struct sock *sk, enum sock_flags flag)
 {
 	return test_bit(flag, &sk->sk_flags);
@@ -1647,7 +1652,9 @@ void sock_init_data(struct socket *sock, struct sock *sk);
  *   use separate SMP lock, so that they are prone too.
  */
 
-/* Ungrab socket and destroy it, if it was the last reference. */
+/* Ungrab socket and destroy it, if it was the last reference. 
+ * 指定套接字的引用计数减1,如果不再有用户持有则销毁
+ * */
 static inline void sock_put(struct sock *sk)
 {
 	if (atomic_dec_and_test(&sk->sk_refcnt))

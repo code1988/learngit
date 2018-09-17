@@ -54,16 +54,21 @@
 #endif
 
 struct ping_table {
-	struct hlist_nulls_head	hash[PING_HTABLE_SIZE]; // 这张hash表记录了当前处于活动状态的所有ping操作
-	rwlock_t		lock;
+	struct hlist_nulls_head	hash[PING_HTABLE_SIZE]; // 这张hash表记录了当前处于活动状态的所有ping会话，键值为ping会话id
+	rwlock_t		lock;                           // 用于维护该ping表结构的读写锁
 };
 
-static struct ping_table ping_table;    // 这张ping表记录了当前处于活动状态的所有ping操作
+static struct ping_table ping_table;    // 这张ping表记录了当前处于活动状态的所有ping会话
 struct pingv6_ops pingv6_ops;
 EXPORT_SYMBOL_GPL(pingv6_ops);
 
 static u16 ping_port_rover;
 
+/* 计算一个ping会话的hash值
+ * @net 该ping会话所属的net命名空间
+ * @num 该ping会话的id
+ * @mask    用于取余运算的掩码，也就是 hash桶数量-1
+ */
 static inline u32 ping_hashfn(const struct net *net, u32 num, u32 mask)
 {
 	u32 res = (num + net_hash_mix(net)) & mask;
@@ -73,6 +78,7 @@ static inline u32 ping_hashfn(const struct net *net, u32 num, u32 mask)
 }
 EXPORT_SYMBOL_GPL(ping_hash);
 
+// 返回指定ping会话所在的hash桶头节点
 static inline struct hlist_nulls_head *ping_hashslot(struct ping_table *table,
 					     struct net *net, unsigned int num)
 {
@@ -168,13 +174,15 @@ void ping_unhash(struct sock *sk)
 }
 EXPORT_SYMBOL_GPL(ping_unhash);
 
-// 根据指定id号查找对应的发起ping的套接字
+// 根据指定id号查找对应的发起这次ping会话的套接字
 static struct sock *ping_lookup(struct net *net, struct sk_buff *skb, u16 ident)
 {
+    // 计算该ping会话所属的hash桶头节点
 	struct hlist_nulls_head *hslot = ping_hashslot(&ping_table, net, ident);
 	struct sock *sk = NULL;
 	struct inet_sock *isk;
 	struct hlist_nulls_node *hnode;
+    // 获取该skb当前关联的网络设备的接口序号
 	int dif = skb->dev->ifindex;
 
 	if (skb->protocol == htons(ETH_P_IP)) {
@@ -189,19 +197,24 @@ static struct sock *ping_lookup(struct net *net, struct sk_buff *skb, u16 ident)
 
 	read_lock_bh(&ping_table.lock);
 
+    // 遍历该hash桶中的每个节点
 	ping_portaddr_for_each_entry(sk, hnode, hslot) {
+        // 获取每个sock对应的inet_sock结构
 		isk = inet_sk(sk);
 
 		pr_debug("iterate\n");
+        // 根据ping会话id查找对应ping会话
 		if (isk->inet_num != ident)
 			continue;
 
+        // 程序运行到这里还只意味着找到了拥有相同ping会话id的套接字
 		if (skb->protocol == htons(ETH_P_IP) &&
 		    sk->sk_family == AF_INET) {
 			pr_debug("found: %p: num=%d, daddr=%pI4, dif=%d\n", sk,
 				 (int) isk->inet_num, &isk->inet_rcv_saddr,
 				 sk->sk_bound_dev_if);
 
+            // 如果该套接字绑定在一个本地ipv4地址上，则还必须检查收到的ping回复报文是否是发给该ipv4地址
 			if (isk->inet_rcv_saddr &&
 			    isk->inet_rcv_saddr != ip_hdr(skb)->daddr)
 				continue;
@@ -214,6 +227,7 @@ static struct sock *ping_lookup(struct net *net, struct sk_buff *skb, u16 ident)
 				 &sk->sk_v6_rcv_saddr,
 				 sk->sk_bound_dev_if);
 
+            // 如果该套接字绑定在一个本地ipv6地址上，则还必须检查收到的ping回复报文是否是发给该ipv6地址
 			if (!ipv6_addr_any(&sk->sk_v6_rcv_saddr) &&
 			    !ipv6_addr_equal(&sk->sk_v6_rcv_saddr,
 					     &ipv6_hdr(skb)->daddr))
@@ -223,9 +237,12 @@ static struct sock *ping_lookup(struct net *net, struct sk_buff *skb, u16 ident)
 			continue;
 		}
 
+        // 如果该套接字绑定在一个网络设备上，则还必须检查收到ping回复报文的网络设备是否就是该绑定的设备
 		if (sk->sk_bound_dev_if && sk->sk_bound_dev_if != dif)
 			continue;
 
+        // 程序运行到这里才真正意味着找到了匹配的ping套接字
+        // 持有该套接字
 		sock_hold(sk);
 		goto exit;
 	}
@@ -470,8 +487,8 @@ EXPORT_SYMBOL_GPL(ping_bind);
 
 /*
  * Is this a supported type of ICMP message?
+ * 判断是否是一个ping请求报文
  */
-
 static inline int ping_supported(int family, int type, int code)
 {
 	return (family == AF_INET && type == ICMP_ECHO && code == 0) ||
@@ -481,8 +498,8 @@ static inline int ping_supported(int family, int type, int code)
 /*
  * This routine is called by the ICMP module when it gets some
  * sort of error condition.
+ * 收到icmp错误消息时的统一处理函数
  */
-
 void ping_err(struct sk_buff *skb, int offset, u32 info)
 {
 	int family;
@@ -518,6 +535,7 @@ void ping_err(struct sk_buff *skb, int offset, u32 info)
 		 skb->protocol, type, code, ntohs(icmph->un.echo.id),
 		 ntohs(icmph->un.echo.sequence));
 
+    // 根据指定id号查找对应的发起这次ping会话的套接字
 	sk = ping_lookup(net, skb, ntohs(icmph->un.echo.id));
 	if (!sk) {
 		pr_debug("no socket, dropping\n");
@@ -949,6 +967,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(ping_recvmsg);
 
+// 将承载了ping报文的skb插入指定套接字接收队列(软中断上下文)
 int ping_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
 {
 	pr_debug("ping_queue_rcv_skb(sk=%p,sk->num=%d,skb=%p)\n",
@@ -966,7 +985,7 @@ EXPORT_SYMBOL_GPL(ping_queue_rcv_skb);
 /*
  *	All we need to do is get the socket.
  */
-// 收到ICMP_ECHOREPLY类型icmpv4消息时的处理方法
+// 收到ICMP_ECHOREPLY类型icmpv4/6消息时的处理方法(软中断上下文)
 bool ping_rcv(struct sk_buff *skb)
 {
 	struct sock *sk;
@@ -983,14 +1002,19 @@ bool ping_rcv(struct sk_buff *skb)
      * */
 	skb_push(skb, skb->data - (u8 *)icmph);
 
+    // 根据指定id号查找对应的发起此次ping会话的套接字
 	sk = ping_lookup(net, skb, ntohs(icmph->un.echo.id));
 	if (sk) {
+        // 克隆该skb
 		struct sk_buff *skb2 = skb_clone(skb, GFP_ATOMIC);
 
 		pr_debug("rcv on socket %p\n", sk);
+        // 将承载了ping回复报文的skb插入发起此次ping会话的套接字接收队列
 		if (skb2)
 			ping_queue_rcv_skb(sk, skb2);
+        // 取消对发起该ping会话的套接字的引用(因为上面ping_lookup中进行了持有)
 		sock_put(sk);
+        // 至此，一个ICMP_ECHOREPLY类型icmpv4报文在软中断上下文中的处理全部完成，等待用户进程来读取
 		return true;
 	}
 	pr_debug("no socket, dropping\n");

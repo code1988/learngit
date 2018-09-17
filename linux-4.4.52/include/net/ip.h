@@ -35,8 +35,9 @@
 
 struct sock;
 
+// 该子结构作为承载了ip报文的skb->cb字段，记录了ip报文的控制参数
 struct inet_skb_parm {
-	struct ip_options	opt;		/* Compiled IP options		*/
+	struct ip_options	opt;		/* Compiled IP options  ip选项字段信息		*/
 	unsigned char		flags;
 
 #define IPSKB_FORWARDED		BIT(0)
@@ -65,6 +66,7 @@ struct ipcm_cookie {
 	char			priority;
 };
 
+// 从承载了ip报文的skb中获取inet_skb_parm子结构
 #define IPCB(skb) ((struct inet_skb_parm*)((skb)->cb))
 #define PKTINFO_SKB_CB(skb) ((struct in_pktinfo *)((skb)->cb))
 
@@ -258,6 +260,7 @@ void ip_static_sysctl_init(void);
 #define IP4_REPLY_MARK(net, mark) \
 	((net)->ipv4.sysctl_fwmark_reflect ? (mark) : 0)
 
+// 判断指定ip报文是否是一个分片
 static inline bool ip_is_fragment(const struct iphdr *iph)
 {
 	return (iph->frag_off & htons(IP_MF | IP_OFFSET)) != 0;
@@ -532,6 +535,9 @@ void ip_options_build(struct sk_buff *skb, struct ip_options *opt,
 
 int __ip_options_echo(struct ip_options *dopt, struct sk_buff *skb,
 		      const struct ip_options *sopt);
+/* 填充ip选项字段信息
+ * @dopt    用于存放收集到的ip选项
+ */
 static inline int ip_options_echo(struct ip_options *dopt, struct sk_buff *skb)
 {
 	return __ip_options_echo(dopt, skb, &IPCB(skb)->opt);

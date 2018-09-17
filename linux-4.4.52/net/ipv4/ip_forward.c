@@ -75,27 +75,32 @@ static int ip_forward_finish(struct net *net, struct sock *sk, struct sk_buff *s
 	return dst_output(net, sk, skb);
 }
 
+// ip报文转发
 int ip_forward(struct sk_buff *skb)
 {
 	u32 mtu;
 	struct iphdr *iph;	/* Our header */
 	struct rtable *rt;	/* Route we use */
+    // 获取该ip报文的选项集合
 	struct ip_options *opt	= &(IPCB(skb)->opt);
 	struct net *net;
 
-	/* that should never happen */
+	/* that should never happen  要转发的ip报文其目的mac必然是发往本机的 */
 	if (skb->pkt_type != PACKET_HOST)
 		goto drop;
 
 	if (unlikely(skb->sk))
 		goto drop;
 
+    // 如果该skb关联的网络设备设置了LRO，则丢弃
 	if (skb_warn_if_lro(skb))
 		goto drop;
 
+    // ipsec安全规则检查
 	if (!xfrm4_policy_check(NULL, XFRM_POLICY_FWD, skb))
 		goto drop;
 
+    // 若设置了Router Alert选项，则调用ip_call_ra_chain方法，若处理成功则直接返回
 	if (IPCB(skb)->opt.router_alert && ip_call_ra_chain(skb))
 		return NET_RX_SUCCESS;
 
@@ -106,13 +111,16 @@ int ip_forward(struct sk_buff *skb)
 	 *	According to the RFC, we must first decrease the TTL field. If
 	 *	that reaches zero, we must reply an ICMP control message telling
 	 *	that the packet's lifetime expired.
+     *	如果TTL<=1，意味着该报文寿命已到，必须丢弃，并且将发送一个发送TTL耗尽的icmp消息给源地址
 	 */
 	if (ip_hdr(skb)->ttl <= 1)
 		goto too_many_hops;
 
+    // 检查是否由ipsec策略要转发该ip报文
 	if (!xfrm4_route_forward(skb))
 		goto drop;
 
+    // 获取路由表项
 	rt = skb_rtable(skb);
 
 	if (opt->is_strictroute && rt->rt_uses_gateway)

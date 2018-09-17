@@ -241,6 +241,7 @@ static int ip_local_deliver_finish(struct net *net, struct sock *sk, struct sk_b
 
 /*
  * 	Deliver IP Packets to the higher protocol layers.
+ * 	将收到的ip报文传递给本机的上层协议
  */
 int ip_local_deliver(struct sk_buff *skb)
 {
@@ -249,6 +250,7 @@ int ip_local_deliver(struct sk_buff *skb)
 	 */
 	struct net *net = dev_net(skb->dev);
 
+    // 如果收到的是ip分片，就需要在往上层传递之前先进行重组
 	if (ip_is_fragment(ip_hdr(skb))) {
 		if (ip_defrag(net, skb, IP_DEFRAG_LOCAL_DELIVER))
 			return 0;
@@ -371,6 +373,7 @@ drop:
 
 /*
  * 	Main IP Receive routine.
+ * 	ip报文从L2层进入L3层的入口，该函数被注册在ip_packet_type中
  */
 int ip_rcv(struct sk_buff *skb, struct net_device *dev, struct packet_type *pt, struct net_device *orig_dev)
 {

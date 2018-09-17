@@ -49,11 +49,12 @@
 struct fib_nh;
 struct fib_info;
 struct uncached_list;
+// 定义了ip路由表项结构，实质就是对目的入口的封装
 struct rtable {
-	struct dst_entry	dst;
+	struct dst_entry	dst;        // 封装的目的入口结构
 
 	int			rt_genid;
-	unsigned int		rt_flags;
+	unsigned int		rt_flags;   // 该路由表项属性集合，RTCF_*
 	__u16			rt_type;
 	__u8			rt_is_input;
 	__u8			rt_uses_gateway;

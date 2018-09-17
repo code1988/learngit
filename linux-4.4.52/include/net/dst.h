@@ -30,10 +30,11 @@
 
 struct sk_buff;
 
+// 定义了目的入口结构
 struct dst_entry {
 	struct rcu_head		rcu_head;
 	struct dst_entry	*child;
-	struct net_device       *dev;
+	struct net_device       *dev;       // 指向该路由的输出网络设备
 	struct  dst_ops	        *ops;
 	unsigned long		_metrics;
 	unsigned long           expires;
@@ -96,8 +97,8 @@ struct dst_entry {
 	 * __refcnt wants to be on a different cache line from
 	 * input/output/ops or performance tanks badly
 	 */
-	atomic_t		__refcnt;	/* client references	*/
-	int			__use;
+	atomic_t		__refcnt;	/* client references 目的入口的引用计数	*/
+	int			__use;          // 该目的入口被使用一次(发送一个ip数据报)，该值加1
 	unsigned long		lastuse;
 #ifndef CONFIG_64BIT
 	struct lwtunnel_state   *lwtstate;

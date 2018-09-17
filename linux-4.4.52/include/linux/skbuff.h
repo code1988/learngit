@@ -343,7 +343,7 @@ struct skb_shared_info {
 	unsigned short	gso_size;
 	/* Warning: this field is not always filled in (UFO)! */
 	unsigned short	gso_segs;
-	unsigned short  gso_type;
+	unsigned short  gso_type;   // 该分片的gso类型，SKB_GSO_*
 	struct sk_buff	*frag_list;
 	struct skb_shared_hwtstamps hwtstamps;
 	u32		tskey;
@@ -384,6 +384,7 @@ enum {
 	SKB_FCLONE_CLONE,	/* companion fclone skb (from fclone_cache)  表示该skb是从skbuff_fclone_cache缓存池中分配的子skb，并且已经从父skb克隆得到 */
 };
 
+// 定义了gso的类型位,用于设置gso_type字段
 enum {
 	SKB_GSO_TCPV4 = 1 << 0,
 	SKB_GSO_UDP = 1 << 1,
@@ -587,8 +588,9 @@ struct sk_buff {
                                                其中,剩余空间可被各层网络模块自定义，比如：
                                                     netlink用它存储参数控制块netlink_skb_parms
                                                     bridge用它存储入口参数控制块br_input_skb_cb
+                                                    ip用它存储inet_skb_parm 
                                             */
-	unsigned long		_skb_refdst;
+	unsigned long		_skb_refdst;        // 该套接字关联的dst_entry地址 | norefcount位 联合组成
 	void			(*destructor)(struct sk_buff *skb);
 #ifdef CONFIG_XFRM
 	struct	sec_path	*sp;
@@ -600,7 +602,7 @@ struct sk_buff {
 	struct nf_bridge_info	*nf_bridge;
 #endif
 	unsigned int		len,    // 记录了该skb->data指针控制的数据长度 + 分片结构体数据区长度(显然，该值在每一层中是变化的)
-				data_len;       // 记录了分片结构体数据区的长度
+				data_len;       // 记录了分片结构体数据区的长度，非0意味着该skb包含了非线性数据
 	__u16			mac_len,    // 记录了network layer相对mac地址的偏移量，也就是链路层长度
 				hdr_len;
 
@@ -759,6 +761,7 @@ static inline bool skb_pfmemalloc(const struct sk_buff *skb)
 
 /**
  * skb_dst - returns skb dst_entry
+ * 返回该skb关联的目的入口
  * @skb: buffer
  *
  * Returns skb dst_entry, regardless of reference taken or not.
@@ -812,6 +815,7 @@ static inline bool skb_dst_is_noref(const struct sk_buff *skb)
 	return (skb->_skb_refdst & SKB_DST_NOREF) && skb_dst(skb);
 }
 
+// 获取指定skb关联的路由表项
 static inline struct rtable *skb_rtable(const struct sk_buff *skb)
 {
 	return (struct rtable *)skb_dst(skb);
@@ -1722,7 +1726,7 @@ static inline struct sk_buff *__skb_dequeue_tail(struct sk_buff_head *list)
 	return skb;
 }
 
-
+// 判断指定skb是否包含非线性数据
 static inline bool skb_is_nonlinear(const struct sk_buff *skb)
 {
 	return skb->data_len;
@@ -1897,12 +1901,15 @@ static inline unsigned char *__pskb_pull(struct sk_buff *skb, unsigned int len)
 	return skb->data += len;
 }
 
+// 首先确保skb->data指针控制的数据长度不小于len，然后data指针后移len长度
 static inline unsigned char *pskb_pull(struct sk_buff *skb, unsigned int len)
 {
 	return unlikely(len > skb->len) ? NULL : __pskb_pull(skb, len);
 }
 
-// 确保skb->data指针控制的数据长度不小于len
+/* 确保skb->data指针控制的数据长度不小于len
+ * @返回值： 成功则返回1,失败则返回0
+ */
 static inline int pskb_may_pull(struct sk_buff *skb, unsigned int len)
 {
     // 显然这是最理想的情况，直接返回1
@@ -3400,6 +3407,7 @@ static inline __wsum null_compute_pseudo(struct sk_buff *skb, int proto)
 					 compute_pseudo)		\
 	__skb_checksum_validate(skb, proto, true, true, check, compute_pseudo)
 
+// 简单检查校验和是否正确
 #define skb_checksum_simple_validate(skb)				\
 	__skb_checksum_validate(skb, 0, true, false, 0, null_compute_pseudo)
 
@@ -3671,12 +3679,15 @@ static inline bool skb_is_gso_v6(const struct sk_buff *skb)
 
 void __skb_warn_lro_forwarding(const struct sk_buff *skb);
 
+// 判断该skb关联的网络设备是否设置了LRO
 static inline bool skb_warn_if_lro(const struct sk_buff *skb)
 {
 	/* LRO sets gso_size but not gso_type, whereas if GSO is really
 	 * wanted then gso_type will be set. */
+    // 获取该skb的分片结构体
 	const struct skb_shared_info *shinfo = skb_shinfo(skb);
 
+    // 如果该skb是非线性的，且gso_size不为0，且gso_type为0，则可推断关联的网络设备设置了LRO
 	if (skb_is_nonlinear(skb) && shinfo->gso_size != 0 &&
 	    unlikely(shinfo->gso_type == 0)) {
 		__skb_warn_lro_forwarding(skb);

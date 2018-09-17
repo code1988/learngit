@@ -29,11 +29,11 @@
  */
 
 #define ETH_ALEN	6		/* Octets in one ethernet addr	 */
-#define ETH_HLEN	14		/* Total octets in header.	 */
-#define ETH_ZLEN	60		/* Min. octets in frame sans FCS */
-#define ETH_DATA_LEN	1500		/* Max. octets in payload	 */
-#define ETH_FRAME_LEN	1514		/* Max. octets in frame sans FCS */
-#define ETH_FCS_LEN	4		/* Octets in the FCS		 */
+#define ETH_HLEN	14		/* Total octets in header.	                以太网帧头长度 */
+#define ETH_ZLEN	60		/* Min. octets in frame sans FCS            以太网帧的最小长度(不包含FCS) */
+#define ETH_DATA_LEN	1500		/* Max. octets in payload	        以太网帧可以携带的最大数据长度 */
+#define ETH_FRAME_LEN	1514		/* Max. octets in frame sans FCS    以太网帧的最大长度(不包含FCS) */
+#define ETH_FCS_LEN	4		/* Octets in the FCS		                以太网帧的FCS长度 */
 
 /*
  *	These are the defined Ethernet Protocol ID's.
@@ -99,16 +99,19 @@
 #define ETH_P_AF_IUCV   0xFBFB		/* IBM af_iucv [ NOT AN OFFICIALLY REGISTERED ID ] */
 
 #define ETH_P_802_3_MIN	0x0600		/* If the value in the ethernet type is less than this value
-					 * then the frame is Ethernet II. Else it is 802.3 */
+					 * then the frame is Ethernet II. Else it is 802.3 
+                     如何辨别以太网type/len字段的分界线 */
 
 /*
  *	Non DIX types. Won't clash for 1500 types.
  */
 
-#define ETH_P_802_3	0x0001		/* Dummy type for 802.3 frames  */
+#define ETH_P_802_3	0x0001		/* Dummy type for 802.3 frames  
+                                   raw 802.3封装的以太网帧(len字段后紧跟0xffff标识)，这种封装类型目前只有IPX在用 */
 #define ETH_P_AX25	0x0002		/* Dummy protocol id for AX.25  */
 #define ETH_P_ALL	0x0003		/* Every packet (be careful!!!) */
-#define ETH_P_802_2	0x0004		/* 802.2 frames 		*/
+#define ETH_P_802_2	0x0004		/* 802.2 frames 
+                                   802.3 + 802.2-llc帧(802.2部分具体是否带了SNAP不一定) */
 #define ETH_P_SNAP	0x0005		/* Internal only		*/
 #define ETH_P_DDCMP     0x0006          /* DEC DDCMP: Internal only     */
 #define ETH_P_WAN_PPP   0x0007          /* Dummy type for WAN PPP frames*/

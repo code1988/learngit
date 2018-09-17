@@ -342,6 +342,7 @@ lookup_protocol:
 			inet->hdrincl = 1;
 	}
 
+    // 根据该net命名空间配置的pmtu属性决定是否开启pmtu发现功能
 	if (net->ipv4.sysctl_ip_no_pmtu_disc)
 		inet->pmtudisc = IP_PMTUDISC_DONT;
 	else
@@ -1716,6 +1717,7 @@ static int __init ipv4_offload_init(void)
 
 fs_initcall(ipv4_offload_init);
 
+// 定义了IP协议抽象
 static struct packet_type ip_packet_type __read_mostly = {
 	.type = cpu_to_be16(ETH_P_IP),
 	.func = ip_rcv,
@@ -1820,8 +1822,8 @@ static int __init inet_init(void)
 
 	/*
 	 *	Set the ICMP layer up
+     *	icmpv4模块初始化
 	 */
-
 	if (icmp_init() < 0)
 		panic("Failed to create the ICMP control socket.\n");
 

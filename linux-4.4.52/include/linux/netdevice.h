@@ -2061,14 +2061,15 @@ static inline struct sk_buff **call_gro_receive(gro_receive_t cb,
 
 // 描述了一个以太网协议抽象(这里的以太网协议包括了DSA)
 struct packet_type {
-	__be16			type;	/* This is really htons(ether_type). */
+	__be16			type;	/* This is really htons(ether_type).  该以太网协议号 */
 	struct net_device	*dev;	/* NULL is wildcarded here	     
                                    NULL  : 处理来自所有设备的该协议类型的数据(缺省情况);
                                    非NULL: 只处理来自指定设备的该协议类型的数据(手动bind后) */
 	int			(*func) (struct sk_buff *,
 					 struct net_device *,
 					 struct packet_type *,
-					 struct net_device *);  // 协议相关的处理函数，用于处理来自设备的数据，这其中就包括了通往L3层的入口、DSA模块入口等
+					 struct net_device *);  /* 协议相关的处理函数，用于处理来自设备的数据，
+                                               这其中就包括了通往L3层的入口、DSA模块入口等 */
 	bool			(*id_match)(struct packet_type *ptype,
 					    struct sock *sk);
 	void			*af_packet_priv;    // 指向协议私有的数据空间

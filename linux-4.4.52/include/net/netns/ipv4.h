@@ -52,7 +52,7 @@ struct netns_ipv4 {
 	bool			fib_offload_disabled;
 	struct sock		*fibnl;
 
-	struct sock  * __percpu	*icmp_sk;
+	struct sock  * __percpu	*icmp_sk;   // icmp内核套接字(在smp架构中每个cpu都对应了一个icmp内核套接字)
 	struct sock		*mc_autojoin_sk;
 
 	struct inet_peer_base	*peers;
@@ -69,8 +69,8 @@ struct netns_ipv4 {
 	struct xt_table		*nat_table;
 #endif
 
-	int sysctl_icmp_echo_ignore_all;
-	int sysctl_icmp_echo_ignore_broadcasts;
+	int sysctl_icmp_echo_ignore_all;        // 标识是否关闭ping应答功能(缺省为0)
+	int sysctl_icmp_echo_ignore_broadcasts; // 标识是否关闭广播/组播回应功能(缺省为1)
 	int sysctl_icmp_ignore_bogus_error_responses;
 	int sysctl_icmp_ratelimit;
 	int sysctl_icmp_ratemask;
@@ -81,7 +81,7 @@ struct netns_ipv4 {
 	int sysctl_tcp_ecn;
 	int sysctl_tcp_ecn_fallback;
 
-	int sysctl_ip_no_pmtu_disc;
+	int sysctl_ip_no_pmtu_disc;     // 标识是否关闭pmtu发现功能(缺省为0)
 	int sysctl_ip_fwd_use_pmtu;
 	int sysctl_ip_nonlocal_bind;
 

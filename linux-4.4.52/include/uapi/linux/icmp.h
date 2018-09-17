@@ -20,15 +20,15 @@
 #include <linux/types.h>
 
 // 以下是icmpv4报文中的类型字段定义
-#define ICMP_ECHOREPLY		0	/* Echo Reply			*/
-#define ICMP_DEST_UNREACH	3	/* Destination Unreachable	*/
-#define ICMP_SOURCE_QUENCH	4	/* Source Quench		*/
-#define ICMP_REDIRECT		5	/* Redirect (change route)	*/
-#define ICMP_ECHO		8	/* Echo Request			*/
-#define ICMP_TIME_EXCEEDED	11	/* Time Exceeded		*/
+#define ICMP_ECHOREPLY		0	/* Echo Reply	 ping回复icmp查询消息		*/
+#define ICMP_DEST_UNREACH	3	/* Destination Unreachable  目的不可达类icmp错误消息	*/
+#define ICMP_SOURCE_QUENCH	4	/* Source Quench 信源抑制icmp错误消息(已作废)		*/
+#define ICMP_REDIRECT		5	/* Redirect (change route)	重定向类icmp错误消息(这类消息只有网关允许发送) */
+#define ICMP_ECHO		8	/* Echo Request		 ping请求icmp查询消息	*/
+#define ICMP_TIME_EXCEEDED	11	/* Time Exceeded  超时类icmp错误消息		*/
 #define ICMP_PARAMETERPROB	12	/* Parameter Problem		*/
-#define ICMP_TIMESTAMP		13	/* Timestamp Request		*/
-#define ICMP_TIMESTAMPREPLY	14	/* Timestamp Reply		*/
+#define ICMP_TIMESTAMP		13	/* Timestamp Request 时间戳请求icmp查询消息		*/
+#define ICMP_TIMESTAMPREPLY	14	/* Timestamp Reply	 时间戳回复icmp查询消息	*/
 #define ICMP_INFO_REQUEST	15	/* Information Request		*/
 #define ICMP_INFO_REPLY		16	/* Information Reply		*/
 #define ICMP_ADDRESS		17	/* Address Mask Request		*/
@@ -36,10 +36,10 @@
 #define NR_ICMP_TYPES		18  // icmpv4消息总共支持18种类型
 
 
-/* Codes for UNREACH. */
+/* Codes for UNREACH. 目的不可达类消息的细分类型 */
 #define ICMP_NET_UNREACH	0	/* Network Unreachable		*/
 #define ICMP_HOST_UNREACH	1	/* Host Unreachable		*/
-#define ICMP_PROT_UNREACH	2	/* Protocol Unreachable		*/
+#define ICMP_PROT_UNREACH	2	/* Protocol Unreachable	协议不可达(ip头中协议字段的协议号不支持)	*/
 #define ICMP_PORT_UNREACH	3	/* Port Unreachable		*/
 #define ICMP_FRAG_NEEDED	4	/* Fragmentation Needed/DF set	*/
 #define ICMP_SR_FAILED		5	/* Source Route failed		*/
@@ -55,21 +55,22 @@
 #define ICMP_PREC_CUTOFF	15	/* Precedence cut off */
 #define NR_ICMP_UNREACH		15	/* instead of hardcoding immediate value */
 
-/* Codes for REDIRECT. */
+/* Codes for REDIRECT. 重定向类消息的细分类型 */
 #define ICMP_REDIR_NET		0	/* Redirect Net			*/
 #define ICMP_REDIR_HOST		1	/* Redirect Host		*/
 #define ICMP_REDIR_NETTOS	2	/* Redirect Net for TOS		*/
 #define ICMP_REDIR_HOSTTOS	3	/* Redirect Host for TOS	*/
 
-/* Codes for TIME_EXCEEDED. */
-#define ICMP_EXC_TTL		0	/* TTL count exceeded		*/
-#define ICMP_EXC_FRAGTIME	1	/* Fragment Reass time exceeded	*/
+/* Codes for TIME_EXCEEDED. 超时类消息的细分类型 */
+#define ICMP_EXC_TTL		0	/* TTL count exceeded  TTL耗尽		*/
+#define ICMP_EXC_FRAGTIME	1	/* Fragment Reass time exceeded 分片回收超时	*/
 
 // icmpv4报文头结构
 struct icmphdr {
   __u8		type;
   __u8		code;
   __sum16	checksum;
+  // 可变部分内容取决域type和code
   union {
 	struct {
 		__be16	id;

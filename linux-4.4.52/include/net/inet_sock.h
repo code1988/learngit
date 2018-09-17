@@ -30,6 +30,7 @@
 #include <net/tcp_states.h>
 
 /** struct ip_options - IP Options
+ * ip选项集合，该字段为可选字段，最长40字节
  *
  * @faddr - Saved first hop address
  * @nexthop - Saved nexthop address in LSRR and SSRR
@@ -47,7 +48,7 @@ struct ip_options {
 	unsigned char	srr;
 	unsigned char	rr;
 	unsigned char	ts;
-	unsigned char	is_strictroute:1,
+	unsigned char	is_strictroute:1,   // 标识是否启用了严格源路由选项
 			srr_is_hit:1,
 			is_changed:1,
 			rr_needaddr:1,
@@ -176,7 +177,7 @@ struct inet_sock {
 
 	struct ip_options_rcu __rcu	*inet_opt;
 	int			rx_dst_ifindex;
-	__u8			tos;
+	__u8			tos;        // 用于设置ip头中的TOS字段
 	__u8			min_ttl;
 	__u8			mc_ttl;
 	__u8			pmtudisc;   // pmtu发现的控制模式

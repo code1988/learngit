@@ -447,19 +447,21 @@ static void sock_disable_timestamp(struct sock *sk, unsigned long flags)
 	}
 }
 
-
+// 将指定skb插入指定套接字接收队列(软中断上下文)
 int sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
 {
 	int err;
 	unsigned long flags;
 	struct sk_buff_head *list = &sk->sk_receive_queue;
 
+    // 如果该套接字接收缓冲区已满，则丢弃该报文
 	if (atomic_read(&sk->sk_rmem_alloc) >= sk->sk_rcvbuf) {
 		atomic_inc(&sk->sk_drops);
 		trace_sock_rcvqueue_full(sk, skb);
 		return -ENOMEM;
 	}
 
+    // 使传入的skb中的数据包通过该套接字的eBPF过滤器(前提是有设置)
 	err = sk_filter(sk, skb);
 	if (err)
 		return err;
@@ -479,9 +481,11 @@ int sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
 
 	spin_lock_irqsave(&list->lock, flags);
 	sock_skb_set_dropcount(sk, skb);
+    // 将该skb插入到该套接字接收队列尾部
 	__skb_queue_tail(list, skb);
 	spin_unlock_irqrestore(&list->lock, flags);
 
+    // 如果该套接字有效，就调用sk_data_ready方法通知该套接字数据包已经插入接收队列
 	if (!sock_flag(sk, SOCK_DEAD))
 		sk->sk_data_ready(sk);
 	return 0;
@@ -1482,12 +1486,14 @@ static void __sk_free(struct sock *sk)
 		sk_destruct(sk);
 }
 
+// 尝试销毁指定sock
 void sk_free(struct sock *sk)
 {
 	/*
 	 * We subtract one from sk_wmem_alloc and can know if
 	 * some packets are still in some tx queue.
 	 * If not null, sock_wfree() will call __sk_free(sk) later
+     * 只有sk_wmem_alloc为0的情况下才会在这里立刻销毁，否则该sock会延迟销毁
 	 */
 	if (atomic_dec_and_test(&sk->sk_wmem_alloc))
 		__sk_free(sk);

@@ -26,8 +26,8 @@
 
 /*
  *	IPv6 address structure
+ *	ipv6的地址结构
  */
-
 #if __UAPI_DEF_IN6_ADDR
 struct in6_addr {
 	union {

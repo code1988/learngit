@@ -1,5 +1,6 @@
 /*
  * Linux Socket Filter - Kernel level socket filtering
+ * kernel中的BPF过滤器
  *
  * Based on the design of the Berkeley Packet Filter. The new
  * internal format has been designed by PLUMgrid:
@@ -53,9 +54,10 @@
 
 /**
  *	sk_filter_trim_cap - run a packet through a socket filter
- *	@sk: sock associated with &sk_buff
- *	@skb: buffer to filter
- *	@cap: limit on how short the eBPF program may trim the packet
+ *	使传入的skb中的数据包通过相关连的套接字的BPF过滤器
+ *	@sk: sock associated with &sk_buff  指向跟skb关联的套接字
+ *	@skb: buffer to filter              指向承载了数据包的sbk结构
+ *	@cap: limit on how short the eBPF program may trim the packet   ebpf可以修改的包长下限
  *
  * Run the eBPF program and then cut skb->data to correct size returned by
  * the program. If pkt_len is 0 we toss packet. If skb->len is smaller
@@ -63,6 +65,7 @@
  * wrapper to BPF_PROG_RUN. It returns 0 if the packet should
  * be accepted or -EPERM if the packet should be tossed.
  *
+ * 备注：只有发往用户进程的消息才需要调用本函数，也就是说传入的套接字必然是属于用户进程的
  */
 int sk_filter_trim_cap(struct sock *sk, struct sk_buff *skb, unsigned int cap)
 {
@@ -84,6 +87,7 @@ int sk_filter_trim_cap(struct sock *sk, struct sk_buff *skb, unsigned int cap)
 	rcu_read_lock();
 	filter = rcu_dereference(sk->sk_filter);
 	if (filter) {
+        // 运行过滤器
 		unsigned int pkt_len = bpf_prog_run_save_cb(filter->prog, skb);
 		err = pkt_len ? pskb_trim(skb, max(cap, pkt_len)) : -EPERM;
 	}

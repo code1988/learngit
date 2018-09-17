@@ -82,6 +82,7 @@
 
 #define IPV4_BEET_PHMAXLEN 8
 
+// ip头结构
 struct iphdr {
 #if defined(__LITTLE_ENDIAN_BITFIELD)
 	__u8	ihl:4,
@@ -95,7 +96,7 @@ struct iphdr {
 	__u8	tos;
 	__be16	tot_len;
 	__be16	id;
-	__be16	frag_off;
+	__be16	frag_off;       // [15]:CE位 [14]:DF位 [13]:MF位 [12~0]:分段偏移量
 	__u8	ttl;
 	__u8	protocol;
 	__sum16	check;

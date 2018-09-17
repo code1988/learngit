@@ -26,10 +26,10 @@ struct sockaddr_ll {
  * 备注： 以太网驱动程序都会在接收路径中调用eth_type_trans来确定包类型
  *        这里定义的包类型和以太网协议类型的区别在于进行分类的视角不同
  * */
-#define PACKET_HOST		0		    /* To us    标示目标地址是本机的数据包		*/
-#define PACKET_BROADCAST	1		/* To all	标示物理层广播包	*/
-#define PACKET_MULTICAST	2		/* To group	标示物理层组播包	*/
-#define PACKET_OTHERHOST	3		/* To someone else 	    标示目标地址是其他主机的数据包 */
+#define PACKET_HOST		0		    /* To us    标示目标mac地址是本机的数据包		*/
+#define PACKET_BROADCAST	1		/* To all	标示mac广播包	*/
+#define PACKET_MULTICAST	2		/* To group	标示mac组播包	*/
+#define PACKET_OTHERHOST	3		/* To someone else 	    标示目标mac地址是其他主机的数据包 */
 #define PACKET_OUTGOING		4		/* Outgoing of any type 标示这是一个输出包(除了这种类型，其他类型都只用于标识接收包) */
 #define PACKET_LOOPBACK		5		/* MC/BRD frame looped back  标示这是个loopback包 */
 #define PACKET_USER		6		/* To user space	*/

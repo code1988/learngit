@@ -100,18 +100,18 @@
 
 /*
  *	Build xmit assembly blocks
+ *	用于构造icmpv4发送报文的配置结构
  */
-
 struct icmp_bxm {
-	struct sk_buff *skb;
-	int offset;
-	int data_len;
+	struct sk_buff *skb;    // 在icmp_reply中指向承载了收到的请求数据包的skb；在icmp_send中指向承载了要发送数据包的skb
+	int offset;             // 网络层头部和skb->data指针间的偏移量
+	int data_len;           // icmp数据包的有效载荷长度
 
 	struct {
-		struct icmphdr icmph;
-		__be32	       times[3];
+		struct icmphdr icmph;       // icmp头信息
+		__be32	       times[3];    // 包含3个时间戳的数组
 	} data;
-	int head_len;
+	int head_len;                   // icmp头长，通常就是icmphdr长(对于时间戳报文，还包括12字节时间戳信息)
 	struct ip_options_data replyopts;
 };
 
@@ -204,6 +204,7 @@ static const struct icmp_control icmp_pointers[NR_ICMP_TYPES+1];
  *	The ICMP socket(s). This is the most convenient way to flow control
  *	our ICMP output as well as maintain a clean interface throughout
  *	all layers. All Socketless IP sends will soon be gone.
+ *	返回指定net命名空间中当前cpu对应的icmp内核套接字
  *
  *	On SMP we have one ICMP socket per-cpu.
  */
@@ -212,12 +213,14 @@ static struct sock *icmp_sk(struct net *net)
 	return *this_cpu_ptr(net->ipv4.icmp_sk);
 }
 
+// 返回指定net命名空间中当前cpu对应的icmp内核套接字
 static inline struct sock *icmp_xmit_lock(struct net *net)
 {
 	struct sock *sk;
 
 	local_bh_disable();
 
+    // 返回该net命名空间中当前cpu对应的icmp内核套接字
 	sk = icmp_sk(net);
 
 	if (unlikely(!spin_trylock(&sk->sk_lock.slock))) {
@@ -354,6 +357,7 @@ static int icmp_glue_bits(void *from, char *to, int offset, int len, int odd,
 	return 0;
 }
 
+// 发送icmp报文
 static void icmp_push_reply(struct icmp_bxm *icmp_param,
 			    struct flowi4 *fl4,
 			    struct ipcm_cookie *ipc, struct rtable **rt)
@@ -387,11 +391,12 @@ static void icmp_push_reply(struct icmp_bxm *icmp_param,
 
 /*
  *	Driving logic for building and sending ICMP messages.
+ *	构建icmp回复报文并发送
  */
-
 static void icmp_reply(struct icmp_bxm *icmp_param, struct sk_buff *skb)
 {
 	struct ipcm_cookie ipc;
+    // 获取该skb关联的路由表项
 	struct rtable *rt = skb_rtable(skb);
 	struct net *net = dev_net(rt->dst.dev);
 	struct flowi4 fl4;
@@ -400,12 +405,15 @@ static void icmp_reply(struct icmp_bxm *icmp_param, struct sk_buff *skb)
 	__be32 daddr, saddr;
 	u32 mark = IP4_REPLY_MARK(net, skb->mark);
 
+    // 收集ip选项字段的信息
 	if (ip_options_echo(&icmp_param->replyopts.opt.opt, skb))
 		return;
 
+    // 返回该net命名空间中当前cpu对应的icmp内核套接字
 	sk = icmp_xmit_lock(net);
 	if (!sk)
 		return;
+    // 获取该sock结构对应的inet_sock结构
 	inet = inet_sk(sk);
 
 	icmp_param->data.icmph.checksum = 0;
@@ -559,6 +567,7 @@ relookup_failed:
 
 /*
  *	Send an ICMP message in response to a situation
+ *	发送一个指定类型指定编号的icmpv4消息
  *
  *	RFC 1122: 3.2.2	MUST send at least the IP header and 8 bytes of header.
  *		  MAY send more (we do).
@@ -682,6 +691,7 @@ void icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info)
 					  iph->tos;
 	mark = IP4_REPLY_MARK(net, skb_in->mark);
 
+    // 收集ip选项字段的信息
 	if (ip_options_echo(&icmp_param->replyopts.opt.opt, skb_in))
 		goto out_unlock;
 
@@ -736,7 +746,7 @@ out:;
 }
 EXPORT_SYMBOL(icmp_send);
 
-
+// 将icmp报文传递给ip层原始套接字
 static void icmp_socket_deliver(struct sk_buff *skb, u32 info)
 {
 	const struct iphdr *iph = (const struct iphdr *) skb->data;
@@ -745,6 +755,7 @@ static void icmp_socket_deliver(struct sk_buff *skb, u32 info)
 
 	/* Checkin full IP header plus 8 bytes of protocol to
 	 * avoid additional coding at protocol handlers.
+     * 确保ip头和icmp头都位于skb->data指针控制的线性缓冲区
 	 */
 	if (!pskb_may_pull(skb, iph->ihl * 4 + 8)) {
 		ICMP_INC_STATS_BH(dev_net(skb->dev), ICMP_MIB_INERRORS);
@@ -753,6 +764,7 @@ static void icmp_socket_deliver(struct sk_buff *skb, u32 info)
 
 	raw_icmp_error(skb, protocol, info);
 
+    // 调用icmp协议收到错误消息时的处理函数，也就是icmp_err
 	ipprot = rcu_dereference(inet_protos[protocol]);
 	if (ipprot && ipprot->err_handler)
 		ipprot->err_handler(skb, info);
@@ -875,15 +887,17 @@ out_err:
 
 /*
  *	Handle ICMP_REDIRECT.
+ *	收到ICMP_REDIRECT类型icmpv4/6消息时的处理方法(软中断上下文)
  */
-
 static bool icmp_redirect(struct sk_buff *skb)
 {
+    // 长度检查
 	if (skb->len < sizeof(struct iphdr)) {
 		ICMP_INC_STATS_BH(dev_net(skb->dev), ICMP_MIB_INERRORS);
 		return false;
 	}
 
+    // 确保ip头位于skb->data指针控制的线性缓冲区
 	if (!pskb_may_pull(skb, sizeof(struct iphdr))) {
 		/* there aught to be a stat */
 		return false;
@@ -910,15 +924,18 @@ static bool icmp_echo(struct sk_buff *skb)
 	struct net *net;
 
 	net = dev_net(skb_dst(skb)->dev);
+    // 如果该net命名空间开启了ping应答功能，则对收到的ping请求进行回复
 	if (!net->ipv4.sysctl_icmp_echo_ignore_all) {
 		struct icmp_bxm icmp_param;
 
+        // 收集用于构造ping回复报文的参数
 		icmp_param.data.icmph	   = *icmp_hdr(skb);
 		icmp_param.data.icmph.type = ICMP_ECHOREPLY;
 		icmp_param.skb		   = skb;
 		icmp_param.offset	   = 0;
 		icmp_param.data_len	   = skb->len;
 		icmp_param.head_len	   = sizeof(struct icmphdr);
+        // 回复ping请求
 		icmp_reply(&icmp_param, skb);
 	}
 	/* should there be an ICMP stat for ignored echos? */
@@ -927,6 +944,7 @@ static bool icmp_echo(struct sk_buff *skb)
 
 /*
  *	Handle ICMP Timestamp requests.
+ *  收到ICMP_TIMESTAMP类型icmpv4消息时的处理方法
  *	RFC 1122: 3.2.2.8 MAY implement ICMP timestamp requests.
  *		  SHOULD be in the kernel for minimum random latency.
  *		  MUST be accurate to a few minutes.
@@ -942,6 +960,7 @@ static bool icmp_timestamp(struct sk_buff *skb)
 	if (skb->len < 4)
 		goto out_err;
 
+    // 收集用于构造icmp时间戳回复报文的参数
 	/*
 	 *	Fill in the current time as ms since midnight UT:
 	 */
@@ -958,6 +977,7 @@ static bool icmp_timestamp(struct sk_buff *skb)
 	icmp_param.offset	   = 0;
 	icmp_param.data_len	   = 0;
 	icmp_param.head_len	   = sizeof(struct icmphdr) + 12;
+    // 回复icmp时间戳请求
 	icmp_reply(&icmp_param, skb);
 	return true;
 
@@ -966,7 +986,7 @@ out_err:
 	return false;
 }
 
-// 收到不支持的icmpv4消息类型时的处理方法
+// 收到不支持/不需要做任何处理的icmpv4消息类型时的处理方法，实质就是一个空处理程序
 static bool icmp_discard(struct sk_buff *skb)
 {
 	/* pretend it was a success */
@@ -975,7 +995,7 @@ static bool icmp_discard(struct sk_buff *skb)
 
 /*
  *	Deal with incoming ICMP packets.
- *	ICMPv4报文网络层->传输层的入口函数
+ *	ICMPv4报文网络层->传输层的入口函数(软中断上下文)，被注册在icmp_protocol中
  */
 int icmp_rcv(struct sk_buff *skb)
 {
@@ -1004,14 +1024,18 @@ int icmp_rcv(struct sk_buff *skb)
 		skb_set_network_header(skb, nh);
 	}
 
+    // 将snmp计数器ICMP_MIB_INMSGS加1
 	ICMP_INC_STATS_BH(net, ICMP_MIB_INMSGS);
 
+    // 简单检查校验和是否正确
 	if (skb_checksum_simple_validate(skb))
 		goto csum_error;
 
+    // 首先确保skb->data指针控制的数据长度不小于len，然后data指针后移len长度
 	if (!pskb_pull(skb, sizeof(*icmph)))
 		goto error;
 
+    // 获取icmp头
 	icmph = icmp_hdr(skb);
 
 	ICMPMSGIN_INC_STATS_BH(net, icmph->type);
@@ -1020,6 +1044,7 @@ int icmp_rcv(struct sk_buff *skb)
 	 *
 	 *	RFC 1122: 3.2.2  Unknown ICMP messages types MUST be silently
 	 *		  discarded.
+     *	确保icmp报文类型合法
 	 */
 	if (icmph->type > NR_ICMP_TYPES)
 		goto error;
@@ -1029,18 +1054,21 @@ int icmp_rcv(struct sk_buff *skb)
 	 *	Parse the ICMP message
 	 */
 
+    // 处理该icmp报文为IP广播包或IP组播包的情况
 	if (rt->rt_flags & (RTCF_BROADCAST | RTCF_MULTICAST)) {
 		/*
 		 *	RFC 1122: 3.2.2.6 An ICMP_ECHO to broadcast MAY be
 		 *	  silently ignored (we let user decide with a sysctl).
 		 *	RFC 1122: 3.2.2.8 An ICMP_TIMESTAMP MAY be silently
 		 *	  discarded if to broadcast/multicast.
+         *	  如果系统开启了icmp广播包丢弃功能，则丢弃广播/组播地址的ping请求或者时间戳请求报文
 		 */
 		if ((icmph->type == ICMP_ECHO ||
 		     icmph->type == ICMP_TIMESTAMP) &&
 		    net->ipv4.sysctl_icmp_echo_ignore_broadcasts) {
 			goto error;
 		}
+        // 如果该广播/组播地址的icmp报文不属于ping请求、时间戳请求、地址请求/回复类报文，则丢弃
 		if (icmph->type != ICMP_ECHO &&
 		    icmph->type != ICMP_TIMESTAMP &&
 		    icmph->type != ICMP_ADDRESS &&
@@ -1049,8 +1077,10 @@ int icmp_rcv(struct sk_buff *skb)
 		}
 	}
 
+    // 从全局的icmp_pointers数组中查找该icmp报文所属类型的处理单元，然后执行其接收回调
 	success = icmp_pointers[icmph->type].handler(skb);
 
+    // 处理完毕后释放该skb
 	if (success)  {
 		consume_skb(skb);
 		return 0;
@@ -1066,6 +1096,7 @@ error:
 	goto drop;
 }
 
+// icmpv4协议收到错误消息时的处理函数
 void icmp_err(struct sk_buff *skb, u32 info)
 {
 	struct iphdr *iph = (struct iphdr *)skb->data;
@@ -1078,12 +1109,14 @@ void icmp_err(struct sk_buff *skb, u32 info)
 	/*
 	 * Use ping_err to handle all icmp errors except those
 	 * triggered by ICMP_ECHOREPLY which sent from kernel.
+     * 所有icmp错误消息都使用ping_err方法处理
 	 */
 	if (icmph->type != ICMP_ECHOREPLY) {
 		ping_err(skb, offset, info);
 		return;
 	}
 
+    // 程序运行到这里必然是ICMP_ECHOREPLY类型，所以下面代码似乎都不会执行?
 	if (type == ICMP_DEST_UNREACH && code == ICMP_FRAG_NEEDED)
 		ipv4_update_pmtu(skb, net, info, 0, 0, IPPROTO_ICMP, 0);
 	else if (type == ICMP_REDIRECT)
@@ -1211,7 +1244,7 @@ static int __net_init icmp_sk_init(struct net *net)
 		inet_sk(sk)->pmtudisc = IP_PMTUDISC_DONT;
 	}
 
-    // 以下基本就是设置icmpv4在该网络命名空间层面的参数
+    // 以下基本就是设置icmpv4在该net命名空间层面的参数
 	/* Control parameters for ECHO replies. */
 	net->ipv4.sysctl_icmp_echo_ignore_all = 0;
 	net->ipv4.sysctl_icmp_echo_ignore_broadcasts = 1;
@@ -1244,13 +1277,13 @@ fail:
 	return err;
 }
 
-// 定义了icmp模块在网络命名空间层面的操作集合
+// 定义了icmpv4模块在网络命名空间层面的操作集合
 static struct pernet_operations __net_initdata icmp_sk_ops = {
        .init = icmp_sk_init,
        .exit = icmp_sk_exit,
 };
 
-// icmp模块的初始化入口
+// icmpv4模块的初始化入口
 int __init icmp_init(void)
 {
     /* 将icmp模块注册到每一个网络命名空间，并且执行了icmp_sk_init

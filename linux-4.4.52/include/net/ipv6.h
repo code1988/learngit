@@ -536,6 +536,7 @@ struct frag_queue {
 void ip6_expire_frag_queue(struct net *net, struct frag_queue *fq,
 			   struct inet_frags *frags);
 
+// 判断指定ipv6地址是否是any类型，实质就是判断是否全0
 static inline bool ipv6_addr_any(const struct in6_addr *a)
 {
 #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
