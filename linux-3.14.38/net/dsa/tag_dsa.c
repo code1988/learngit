@@ -214,7 +214,7 @@ out:
 	return 0;
 }
 
-// 定义了一个ETH_P_DSA协议操作集合，在通用DSA驱动初始化函数中会被注册到内核中
+// 定义了ETH_P_DSA协议的收包方法，在通用DSA驱动初始化函数中会被注册到内核中
 struct packet_type dsa_packet_type __read_mostly = {
 	.type	= cpu_to_be16(ETH_P_DSA),
 	.func	= dsa_rcv,

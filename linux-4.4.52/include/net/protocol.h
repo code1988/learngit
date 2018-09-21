@@ -42,7 +42,7 @@
  * */
 struct net_protocol {
 	void			(*early_demux)(struct sk_buff *skb);
-	int			(*handler)(struct sk_buff *skb);        // 收到该协议的报文时的处理方法，通常就是传输层的入口
+	int			(*handler)(struct sk_buff *skb);        // 收到该协议的报文时的处理方法，通常就是数据从网络层进入传输层的入口
 	void			(*err_handler)(struct sk_buff *skb, u32 info);
 	unsigned int		no_policy:1,                    // 标识是否支持IPsec策略检查
 				netns_ok:1,                             // 标识是否支持多网络命名空间 
@@ -78,21 +78,23 @@ struct net_offload {
 /* This should be set for any extension header which is compatible with GSO. */
 #define INET6_PROTO_GSO_EXTHDR	0x1
 
-/* This is used to register socket interfaces for IP protocols.  */
+/* This is used to register socket interfaces for IP protocols.  
+ * 定义了一个传输层协议对应的套接字接口结构
+ * */
 struct inet_protosw {
 	struct list_head list;
 
         /* These two fields form the lookup key.  */
-	unsigned short	 type;	   /* This is the 2nd argument to socket(2). */
-	unsigned short	 protocol; /* This is the L4 protocol number.  */
+	unsigned short	 type;	   /* This is the 2nd argument to socket(2). 套接字类型ID */
+	unsigned short	 protocol; /* This is the L4 protocol number.  该传输层协议ID(IPPROTO_*) */
 
-	struct proto	 *prot;
-	const struct proto_ops *ops;
+	struct proto	 *prot;         // 指向该协议的数据在socket层和传输层间交互的接口集合
+	const struct proto_ops *ops;    // 指向该协议使用的一类套接字管理接口集合
   
-	unsigned char	 flags;      /* See INET_PROTOSW_* below.  */
+	unsigned char	 flags;      /* See INET_PROTOSW_* below. 用来标识该协议的一些特性  */
 };
 #define INET_PROTOSW_REUSE 0x01	     /* Are ports automatically reusable? */
-#define INET_PROTOSW_PERMANENT 0x02  /* Permanent protocols are unremovable. */
+#define INET_PROTOSW_PERMANENT 0x02  /* Permanent protocols are unremovable.  标识协议是持久性的，意味着不可被删除 */
 #define INET_PROTOSW_ICSK      0x04  /* Is this an inet_connection_sock? */
 
 extern const struct net_protocol __rcu *inet_protos[MAX_INET_PROTOS];

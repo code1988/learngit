@@ -34,7 +34,7 @@ const struct net_protocol __rcu *inet_protos[MAX_INET_PROTOS] __read_mostly;
 const struct net_offload __rcu *inet_offloads[MAX_INET_PROTOS] __read_mostly;
 EXPORT_SYMBOL(inet_offloads);
 
-/* 注册一个基于ipv4的协议
+/* 注册一个基于ipv4的协议，实际主要就是注册该协议报文从网络层->传输层的接口
  * @prot        指向一个基于ipv4的协议
  * @protocol    该ipv4协议ID，IPPROTO_*
  * @返回值      成功返回0

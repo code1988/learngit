@@ -1550,8 +1550,8 @@ EXPORT_SYMBOL(tcp_filter);
 
 /*
  *	From tcp_input.c
+ *	ipv4-tcp报文网络层->传输层的入口函数
  */
-
 int tcp_v4_rcv(struct sk_buff *skb)
 {
 	const struct iphdr *iph;

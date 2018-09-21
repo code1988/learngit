@@ -125,9 +125,11 @@
 
 /* The inetsw table contains everything that inet_create needs to
  * build a new socket.
+ * 这张表记录了PF_INET地址族支持的所有inet_protosw结构，首先按照协议使用的套接字类型进行分类，然后相同套接字类型的协议组成一张链表
+ * 备注：这张表包含了必须和非必须的ipv4协议
  */
 static struct list_head inetsw[SOCK_MAX];
-static DEFINE_SPINLOCK(inetsw_lock);
+static DEFINE_SPINLOCK(inetsw_lock);    // 用于维护inetsw的自旋锁
 
 /* New destruction routine */
 
@@ -898,6 +900,7 @@ static int inet_compat_ioctl(struct socket *sock, unsigned int cmd, unsigned lon
 }
 #endif
 
+// 定义了socket层中SOCK_STREAM类型套接字的一组操作集合
 const struct proto_ops inet_stream_ops = {
 	.family		   = PF_INET,
 	.owner		   = THIS_MODULE,
@@ -926,6 +929,7 @@ const struct proto_ops inet_stream_ops = {
 };
 EXPORT_SYMBOL(inet_stream_ops);
 
+// 定义了socket层中SOCK_DGRAM类型套接字的一组操作集合
 const struct proto_ops inet_dgram_ops = {
 	.family		   = PF_INET,
 	.owner		   = THIS_MODULE,
@@ -956,6 +960,7 @@ EXPORT_SYMBOL(inet_dgram_ops);
 /*
  * For SOCK_RAW sockets; should be the same as inet_dgram_ops but without
  * udp_poll
+ * 定义了socket层中SOCK_RAW类型套接字的一组操作集合
  */
 static const struct proto_ops inet_sockraw_ops = {
 	.family		   = PF_INET,
@@ -992,6 +997,7 @@ static const struct net_proto_family inet_family_ops = {
 
 /* Upon startup we insert all the elements in inetsw_array[] into
  * the linked list inetsw.
+ * 定义了一张内核必须支持的基础ipv4协议列表，表中的每个单元都将在初始化时插入inetsw数组
  */
 static struct inet_protosw inetsw_array[] =
 {
@@ -1029,8 +1035,9 @@ static struct inet_protosw inetsw_array[] =
        }
 };
 
-#define INETSW_ARRAY_LEN ARRAY_SIZE(inetsw_array)
+#define INETSW_ARRAY_LEN ARRAY_SIZE(inetsw_array)   // inetsw_array数组元素个数
 
+// 注册一个指定的inet_protosw结构到inetsw数组中
 void inet_register_protosw(struct inet_protosw *p)
 {
 	struct list_head *lh;
@@ -1043,6 +1050,10 @@ void inet_register_protosw(struct inet_protosw *p)
 	if (p->type >= SOCK_MAX)
 		goto out_illegal;
 
+    /* 将该inet_protosw结构插入对应套接字类型的链表中
+     * 链表节点的分布规则是：标记持久性的节点在前，未标记持久性的节点在后
+     * 链表中插入节点的规则是：每次插入到最后一个持久性节点后面
+     */
 	/* If we are trying to override a permanent protocol, bail. */
 	last_perm = &inetsw[p->type];
 	list_for_each(lh, &inetsw[p->type]) {
@@ -1519,12 +1530,14 @@ EXPORT_SYMBOL_GPL(snmp_fold_field64);
 #endif
 
 #ifdef CONFIG_IP_MULTICAST
+// 定义了一个IGMPv4协议的信息结构
 static const struct net_protocol igmp_protocol = {
 	.handler =	igmp_rcv,
 	.netns_ok =	1,
 };
 #endif
 
+// 定义了一个ipv4-tcp协议的信息结构
 static const struct net_protocol tcp_protocol = {
 	.early_demux	=	tcp_v4_early_demux,
 	.handler	=	tcp_v4_rcv,
@@ -1534,6 +1547,7 @@ static const struct net_protocol tcp_protocol = {
 	.icmp_strict_tag_validation = 1,
 };
 
+// 定义了一个ipv4-udp协议的信息结构
 static const struct net_protocol udp_protocol = {
 	.early_demux =	udp_v4_early_demux,
 	.handler =	udp_rcv,
@@ -1542,6 +1556,7 @@ static const struct net_protocol udp_protocol = {
 	.netns_ok =	1,
 };
 
+// 定义了一个ICMPv4协议的信息结构
 static const struct net_protocol icmp_protocol = {
 	.handler =	icmp_rcv,
 	.err_handler =	icmp_err,
@@ -1701,7 +1716,14 @@ static struct packet_type ip_packet_type __read_mostly = {
 	.func = ip_rcv,
 };
 
-// PF_INET协议族的初始化入口，所有IPv4协议的注册都是在这里完成的
+/* IPv4一系列协议的初始化入口，所有基于IPv4的协议都是在这里完成注册
+ *
+ * 备注：这里的IPv4协议只是一种泛指，实际包含了从网络层到socket层的一系列ipv4相关协议初始化
+ *       整个注册过程从上到下进行：
+ *       首先是注册套接字层和传输层间的接口;
+ *       接着是注册网络层->传输层的接口;
+ *       最后是注册链路层->网络层的接口.
+ */
 static int __init inet_init(void)
 {
 	struct inet_protosw *q;
@@ -1743,7 +1765,7 @@ static int __init inet_init(void)
 
 	/*
 	 *	Add all the base protocols.
-     *	注册几个基本的ipv4协议，包括ICMP、UDP、TCP、IGMP 
+     *	注册几个基本的基于ipv4的协议到内核中，包括ICMP、UDP、TCP、IGMP 
      */
 	if (inet_add_protocol(&icmp_protocol, IPPROTO_ICMP) < 0)
 		pr_crit("%s: Cannot add ICMP protocol\n", __func__);
@@ -1756,7 +1778,9 @@ static int __init inet_init(void)
 		pr_crit("%s: Cannot add IGMP protocol\n", __func__);
 #endif
 
-	/* Register the socket-side information for inet_create. */
+	/* Register the socket-side information for inet_create. 
+     * 注册所有支持的inet_protosw结构到全局的inetsw数组中
+     * */
 	for (r = &inetsw[0]; r < &inetsw[SOCK_MAX]; ++r)
 		INIT_LIST_HEAD(r);
 

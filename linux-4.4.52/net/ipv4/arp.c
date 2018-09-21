@@ -1223,7 +1223,7 @@ void arp_ifdown(struct net_device *dev)
 /*
  *	Called once on startup.
  */
-
+// 定义了ETH_P_ARP协议的收包方法
 static struct packet_type arp_packet_type __read_mostly = {
 	.type =	cpu_to_be16(ETH_P_ARP),
 	.func =	arp_rcv,
@@ -1231,6 +1231,7 @@ static struct packet_type arp_packet_type __read_mostly = {
 
 static int arp_proc_init(void);
 
+// arp协议初始化
 void __init arp_init(void)
 {
 	neigh_table_init(NEIGH_ARP_TABLE, &arp_tbl);

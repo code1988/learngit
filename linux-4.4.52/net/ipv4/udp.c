@@ -2029,6 +2029,7 @@ void udp_v4_early_demux(struct sk_buff *skb)
 	}
 }
 
+// ipv4-udp报文网络层->传输层的入口函数
 int udp_rcv(struct sk_buff *skb)
 {
 	return __udp4_lib_rcv(skb, &udp_table, IPPROTO_UDP);

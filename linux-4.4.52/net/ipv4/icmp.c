@@ -971,6 +971,7 @@ static bool icmp_discard(struct sk_buff *skb)
 
 /*
  *	Deal with incoming ICMP packets.
+ *	ICMPv4报文网络层->传输层的入口函数
  */
 int icmp_rcv(struct sk_buff *skb)
 {
