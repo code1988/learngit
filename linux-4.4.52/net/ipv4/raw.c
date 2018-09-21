@@ -915,6 +915,7 @@ static int compat_raw_ioctl(struct sock *sk, unsigned int cmd, unsigned long arg
 }
 #endif
 
+// 定义了IP层原始套接字协议在套接字层和传输层间的接口集合
 struct proto raw_prot = {
 	.name		   = "RAW",
 	.owner		   = THIS_MODULE,

@@ -156,7 +156,9 @@ struct ucred {
 	__u32	gid;
 };
 
-/* Supported address families. */
+/* Supported address families. 
+ * 定义了Linux支持的地址族ID，地址族决定了套接字的地址类型
+ * */
 #define AF_UNSPEC	0
 #define AF_UNIX		1	/* Unix domain sockets 		*/
 #define AF_LOCAL	1	/* POSIX name for AF_UNIX	*/

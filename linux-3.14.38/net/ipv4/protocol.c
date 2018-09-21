@@ -4,6 +4,7 @@
  *		interface as the means of communication with the user level.
  *
  *		INET protocol dispatch tables.
+ *		ipv4协议调度表的实现
  *
  * Authors:	Ross Biro
  *		Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
@@ -31,8 +32,13 @@
 const struct net_protocol __rcu *inet_protos[MAX_INET_PROTOS] __read_mostly;
 const struct net_offload __rcu *inet_offloads[MAX_INET_PROTOS] __read_mostly;
 
+/* 添加一个基于ipv4的协议
+ * @prot        指向一个基于ipv4的协议
+ * @protocol    该ipv4协议ID，IPPROTO_*
+ */
 int inet_add_protocol(const struct net_protocol *prot, unsigned char protocol)
 {
+    // 所有待添加的ipv4协议必须都支持多网络命名空间
 	if (!prot->netns_ok) {
 		pr_err("Protocol %u is not namespace aware, cannot register.\n",
 			protocol);

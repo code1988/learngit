@@ -4,6 +4,7 @@
  *		interface as the means of communication with the user level.
  *
  *		INET protocol dispatch tables.
+ *		ipv4协议调度表的实现
  *
  * Authors:	Ross Biro
  *		Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
@@ -28,18 +29,28 @@
 #include <linux/spinlock.h>
 #include <net/protocol.h>
 
+// 这张表记录了所有已经注册的ipv4协议，索引号就是基于ipv4的协议ID(IPPROTO_*)
 const struct net_protocol __rcu *inet_protos[MAX_INET_PROTOS] __read_mostly;
 const struct net_offload __rcu *inet_offloads[MAX_INET_PROTOS] __read_mostly;
 EXPORT_SYMBOL(inet_offloads);
 
+/* 注册一个基于ipv4的协议
+ * @prot        指向一个基于ipv4的协议
+ * @protocol    该ipv4协议ID，IPPROTO_*
+ * @返回值      成功返回0
+ *
+ * 备注：调用本函数时需要确保指定ipv4协议尚未注册过，否则注册失败
+ */
 int inet_add_protocol(const struct net_protocol *prot, unsigned char protocol)
 {
+    // 所有待添加的ipv4协议必须都支持多网络命名空间
 	if (!prot->netns_ok) {
 		pr_err("Protocol %u is not namespace aware, cannot register.\n",
 			protocol);
 		return -EINVAL;
 	}
 
+    // 将传入的net_protocol结构地址添加到全局的inet_protos，显然如果该协议已经注册过，则返回-1
 	return !cmpxchg((const struct net_protocol **)&inet_protos[protocol],
 			NULL, prot) ? 0 : -1;
 }

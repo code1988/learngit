@@ -4,6 +4,7 @@
  *		interface as the means of communication with the user level.
  *
  *		ROUTE - implementation of the IP router.
+ *		IP路由实现
  *
  * Authors:	Ross Biro
  *		Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>

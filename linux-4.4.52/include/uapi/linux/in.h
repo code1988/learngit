@@ -23,7 +23,9 @@
 #include <linux/socket.h>
 
 #if __UAPI_DEF_IN_IPPROTO
-/* Standard well-defined IP protocols.  */
+/* Standard well-defined IP protocols.  
+ * 以下是基于ipv4的协议枚举
+ * */
 enum {
   IPPROTO_IP = 0,		/* Dummy protocol for TCP		*/
 #define IPPROTO_IP		IPPROTO_IP

@@ -37,13 +37,15 @@
  */
 #define MAX_INET_PROTOS		256
 
-/* This is used to register protocols. */
+/* This is used to register protocols. 
+ * 基于ipv4的协议的配置信息结构
+ * */
 struct net_protocol {
 	void			(*early_demux)(struct sk_buff *skb);
-	int			(*handler)(struct sk_buff *skb);
+	int			(*handler)(struct sk_buff *skb);        // 收到该协议的报文时的处理方法，通常就是传输层的入口
 	void			(*err_handler)(struct sk_buff *skb, u32 info);
-	unsigned int		no_policy:1,
-				netns_ok:1,
+	unsigned int		no_policy:1,    // 标识是否支持IPsec策略检查
+				netns_ok:1,             // 标识是否支持多网络命名空间
 				/* does the protocol do more stringent
 				 * icmp tag validation than simple
 				 * socket lookup?
@@ -52,6 +54,7 @@ struct net_protocol {
 };
 
 #if IS_ENABLED(CONFIG_IPV6)
+// 基于ipv6的协议的配置信息结构
 struct inet6_protocol {
 	void	(*early_demux)(struct sk_buff *skb);
 

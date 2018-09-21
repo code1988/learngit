@@ -245,8 +245,8 @@ EXPORT_SYMBOL(inet_listen);
 
 /*
  *	Create an inet socket.
+ *  用户空间创建PF_INET协议族套接字时最终会调用到本函数
  */
-
 static int inet_create(struct net *net, struct socket *sock, int protocol,
 		       int kern)
 {
@@ -983,6 +983,7 @@ static const struct proto_ops inet_sockraw_ops = {
 #endif
 };
 
+// 定义了一个全局的PF_INET协议族描述符
 static const struct net_proto_family inet_family_ops = {
 	.family = PF_INET,
 	.create = inet_create,
@@ -1710,22 +1711,22 @@ static int __init inet_init(void)
     // 编译期间检查从skb->cb[]的剩余空间中占用struct inet_skb_parm长度是否合法
 	sock_skb_cb_check_size(sizeof(struct inet_skb_parm));
 
-    // 注册tcp协议到内核中
+    // 注册tcp协议在套接字层和传输层间的接口集合到内核中
 	rc = proto_register(&tcp_prot, 1);
 	if (rc)
 		goto out;
 
-    // 注册udp协议到内核中
+    // 注册udp协议在套接字层和传输层间的接口集合到内核中
 	rc = proto_register(&udp_prot, 1);
 	if (rc)
 		goto out_unregister_tcp_proto;
 
-    // 注册IP层原始套接字协议到内核中
+    // 注册IP层原始套接字协议在套接字层和传输层间的接口集合到内核中
 	rc = proto_register(&raw_prot, 1);
 	if (rc)
 		goto out_unregister_udp_proto;
 
-    // 注册ping协议到内核中
+    // 注册ping协议在套接字层和传输层间的接口集合到内核中
 	rc = proto_register(&ping_prot, 1);
 	if (rc)
 		goto out_unregister_raw_proto;
@@ -1733,7 +1734,7 @@ static int __init inet_init(void)
 	/*
 	 *	Tell SOCKET that we are alive...
 	 */
-
+    // 注册PF_INET协议族到socket层
 	(void)sock_register(&inet_family_ops);
 
 #ifdef CONFIG_SYSCTL
@@ -1742,8 +1743,8 @@ static int __init inet_init(void)
 
 	/*
 	 *	Add all the base protocols.
-	 */
-
+     *	注册几个基本的ipv4协议，包括ICMP、UDP、TCP、IGMP 
+     */
 	if (inet_add_protocol(&icmp_protocol, IPPROTO_ICMP) < 0)
 		pr_crit("%s: Cannot add ICMP protocol\n", __func__);
 	if (inet_add_protocol(&udp_protocol, IPPROTO_UDP) < 0)

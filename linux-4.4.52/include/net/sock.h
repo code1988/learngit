@@ -962,11 +962,10 @@ static inline void sk_prot_clear_nulls(struct sock *sk, int size)
 }
 
 /* Networking protocol blocks we attach to sockets.
- * 定义了一个通用的网络协议块，包含了具体协议的驱动实现，并且跟sock结构密切相关
+ * 本结构为指定协议的数据在socket层和传输层间交互提供了一系列接口
  *
- * 备注：本结构为对应协议的数据从socket层向下进入协议栈、或者从链路层向上进入协议栈指明了方向，
+ * 备注： 跟sock结构密切相关
  * socket layer -> transport layer interface
- * AF_UNIX
  */
 struct proto {
 	void			(*close)(struct sock *sk,

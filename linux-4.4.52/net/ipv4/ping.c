@@ -996,6 +996,7 @@ bool ping_rcv(struct sk_buff *skb)
 }
 EXPORT_SYMBOL_GPL(ping_rcv);
 
+// 定义了ping协议在套接字层和传输层间的接口集合
 struct proto ping_prot = {
 	.name =		"PING",
 	.owner =	THIS_MODULE,

@@ -47,6 +47,8 @@ struct net;
 #ifndef ARCH_HAS_SOCKET_TYPES
 /**
  * enum sock_type - Socket types
+ * 套接字类型枚举
+ *
  * @SOCK_STREAM: stream (connection) socket
  * @SOCK_DGRAM: datagram (conn.less) socket
  * @SOCK_RAW: raw socket
@@ -61,16 +63,16 @@ struct net;
  * overrides this enum for binary compat reasons.
  */
 enum sock_type {
-	SOCK_STREAM	= 1,
-	SOCK_DGRAM	= 2,
-	SOCK_RAW	= 3,
+	SOCK_STREAM	= 1,        // 这种套接字类型的主要特点是面向连接
+	SOCK_DGRAM	= 2,        // 这种套接字类型的主要特点是无连接。另外，如果配合AF_PACKET使用，意味着收到的报文不带l2层头
+	SOCK_RAW	= 3,        // 这种套接字类型主要配合AF_PACKET、AF_NETLINK使用(也可以配合AF_INET编写IP报文)
 	SOCK_RDM	= 4,
 	SOCK_SEQPACKET	= 5,
 	SOCK_DCCP	= 6,
-	SOCK_PACKET	= 10,
+	SOCK_PACKET	= 10,       // 这种套接字类型基本已经弃用
 };
 
-#define SOCK_MAX (SOCK_PACKET + 1)
+#define SOCK_MAX (SOCK_PACKET + 1)      // 套接字类型上限
 /* Mask which covers at least up to SOCK_MASK-1.  The
  * remaining bits are used as flags. */
 #define SOCK_TYPE_MASK 0xf
@@ -89,16 +91,22 @@ enum sock_shutdown_cmd {
 	SHUT_RDWR,
 };
 
+// 等待队列和异步通知队列的集合
 struct socket_wq {
 	/* Note: wait MUST be first field of socket_wq */
-	wait_queue_head_t	wait;
-	struct fasync_struct	*fasync_list;
+	wait_queue_head_t	wait;   // 等待队列
+	struct fasync_struct	*fasync_list;   // 异步通知队列
 	unsigned long		flags; /* %SOCKWQ_ASYNC_NOSPACE, etc */
 	struct rcu_head		rcu;
 } ____cacheline_aligned_in_smp;
 
 /**
  *  struct socket - general BSD socket
+ *  定义了socket在虚拟文件系统中的存在形式(可以看成一个文件)
+ *
+ *  备注： 每个socket结构都对应有一个sock结构，即socket->sk指向对应的sock，sock->socket指向对应的socket
+ *         不将这两个数据结构合并为一的原因是，socket的内容跟文件系统密切相关(涉及inode结构)，而sock的内容跟通信密切相关模块，
+ *         拆分成两个数据结构有利于减小每个结构的大小
  *  @state: socket state (%SS_CONNECTED, etc)
  *  @type: socket type (%SOCK_STREAM, etc)
  *  @flags: socket flags (%SOCK_NOSPACE, etc)
@@ -108,10 +116,10 @@ struct socket_wq {
  *  @wq: wait queue for several uses
  */
 struct socket {
-	socket_state		state;
+	socket_state		state;      // 用于表示该socket所处的状态(从状态的枚举中也可以看出，只对tcp socket有效，udp和raw不需要维护该状态) 
 
 	kmemcheck_bitfield_begin(type);
-	short			type;
+	short			type;           // 记录了该socket的类型
 	kmemcheck_bitfield_end(type);
 
 	unsigned long		flags;
@@ -119,8 +127,8 @@ struct socket {
 	struct socket_wq __rcu	*wq;
 
 	struct file		*file;
-	struct sock		*sk;
-	const struct proto_ops	*ops;
+	struct sock		*sk;            // 该socket在网络层的表示
+	const struct proto_ops	*ops;   // 该socket对应协议的操作函数集 
 };
 
 struct vm_area_struct;
@@ -129,8 +137,9 @@ struct sockaddr;
 struct msghdr;
 struct module;
 
+// 定义了socket层跟具体协议相关的一组操作集合
 struct proto_ops {
-	int		family;
+	int		family;     // 所属协议族ID
 	struct module	*owner;
 	int		(*release)   (struct socket *sock);
 	int		(*bind)	     (struct socket *sock,
@@ -190,11 +199,12 @@ struct proto_ops {
 #define DECLARE_SOCKADDR(type, dst, src)	\
 	type dst = ({ __sockaddr_check_size(sizeof(*dst)); (type) src; })
 
+// 用于描述一个协议族信息的结构(当用户态创建该协议族的套接字时，内核会调用这里对应的create回调)
 struct net_proto_family {
-	int		family;
+	int		family;         // 该协议族ID
 	int		(*create)(struct net *net, struct socket *sock,
-				  int protocol, int kern);
-	struct module	*owner;
+				  int protocol, int kern);  // 该协议族的套接字创建方法，该函数通常会创建并初始化一个sock结构(对应的socket结构已经在外面初始化了)
+	struct module	*owner; // 指向该协议族的所有者
 };
 
 struct iovec;

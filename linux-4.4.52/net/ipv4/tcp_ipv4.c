@@ -2326,7 +2326,7 @@ void tcp4_proc_exit(void)
 }
 #endif /* CONFIG_PROC_FS */
 
-// 定义了tcp协议的驱动
+// 定义了tcp协议在套接字层和传输层间的接口集合
 struct proto tcp_prot = {
 	.name			= "TCP",
 	.owner			= THIS_MODULE,

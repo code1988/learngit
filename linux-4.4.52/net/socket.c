@@ -161,8 +161,8 @@ static const struct file_operations socket_file_ops = {
 
 static DEFINE_SPINLOCK(net_family_lock);
 
-/* 这张表用记录了socket层所有已经注册的net_proto_family，索引号就是协议族ID
- * 当用户态执行系统调用socket()创建指定协议族的套接字时，内核就从这张表中索引得到对应的net_proto_family，然后调用其中的create回调创建内核中对应的套接字
+/* 这张表记录了socket层所有已经注册的协议族信息，索引号就是协议族ID
+ * 当用户态执行系统调用socket()创建指定协议族的套接字时，内核就从这张表中索引得到对应的协议族信息，然后调用其中的create回调完成套接字创建
  */
 static const struct net_proto_family __rcu *net_families[NPROTO] __read_mostly;
 
@@ -2515,7 +2515,7 @@ SYSCALL_DEFINE2(socketcall, int, call, unsigned long __user *, args)
 /**
  *	sock_register - add a socket protocol handler
  *	注册一个指定的协议族(比如AF_NETLINK、AF_UNIX)到socket层
- *	实际就是将该协议组管理块加入socket层的全局表net_families中
+ *	实际就是将该协议族管理块加入socket层的全局表net_families中
  *
  *	@ops: description of protocol
  *

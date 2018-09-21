@@ -2855,7 +2855,7 @@ static int req_prot_init(const struct proto *prot)
 	return 0;
 }
 
-/* 将指定协议注册到内核中，实际就是将该协议类型的proto结构注册到全局的proto_list链表中
+/* 注册指定协议在套接字层和传输层间的接口集合到内核中，实际就是将该协议类型的proto结构注册到全局的proto_list链表中
  * @prot            指向要注册的协议对象
  * @alloc_slab      标识是否分配slab内存
  */
