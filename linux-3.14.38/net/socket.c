@@ -653,7 +653,7 @@ static inline int __sock_sendmsg(struct kiocb *iocb, struct socket *sock,
 	return err ?: __sock_sendmsg_nosec(iocb, sock, msg, size);
 }
 
-/* send系列系统调用都会调用到本函数，主要是进一步处理要发送的数据
+/* send(非mmap)系列系统调用都会调用到本函数，主要是进一步处理要发送的数据
  *
  * 这里实际就是加了一层kiocb结构的封装
  */
@@ -672,6 +672,7 @@ int sock_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
 }
 EXPORT_SYMBOL(sock_sendmsg);
 
+// 只有send(mmap)系列系统调用才会调用到本函数
 static int sock_sendmsg_nosec(struct socket *sock, struct msghdr *msg, size_t size)
 {
 	struct kiocb iocb;
@@ -808,7 +809,7 @@ static inline int __sock_recvmsg(struct kiocb *iocb, struct socket *sock,
 	return err ?: __sock_recvmsg_nosec(iocb, sock, msg, size, flags);
 }
 
-// 套接字层的接收数据流程分支[1](带安全检查)
+// 套接字层的recvmsg流程分支[1](带安全检查)
 int sock_recvmsg(struct socket *sock, struct msghdr *msg,
 		 size_t size, int flags)
 {
@@ -825,7 +826,7 @@ int sock_recvmsg(struct socket *sock, struct msghdr *msg,
 }
 EXPORT_SYMBOL(sock_recvmsg);
 
-// 套接字层的接收数据流程分支[2](不带安全检查)
+// 套接字层的recvmsg流程分支[2](不带安全检查)
 static int sock_recvmsg_nosec(struct socket *sock, struct msghdr *msg,
 			      size_t size, int flags)
 {

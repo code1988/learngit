@@ -1710,18 +1710,22 @@ static int __init inet_init(void)
     // 编译期间检查从skb->cb[]的剩余空间中占用struct inet_skb_parm长度是否合法
 	sock_skb_cb_check_size(sizeof(struct inet_skb_parm));
 
+    // 注册tcp协议到内核中
 	rc = proto_register(&tcp_prot, 1);
 	if (rc)
 		goto out;
 
+    // 注册udp协议到内核中
 	rc = proto_register(&udp_prot, 1);
 	if (rc)
 		goto out_unregister_tcp_proto;
 
+    // 注册IP层原始套接字协议到内核中
 	rc = proto_register(&raw_prot, 1);
 	if (rc)
 		goto out_unregister_udp_proto;
 
+    // 注册ping协议到内核中
 	rc = proto_register(&ping_prot, 1);
 	if (rc)
 		goto out_unregister_raw_proto;

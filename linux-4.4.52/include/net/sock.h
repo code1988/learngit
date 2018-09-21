@@ -962,10 +962,11 @@ static inline void sk_prot_clear_nulls(struct sock *sk, int size)
 }
 
 /* Networking protocol blocks we attach to sockets.
- * 定义了一个通用的网络协议块，跟sock结构密切相关(一个proto对应一个协议族的操作集合，所有属于该协议族的sock共用对应的proto)
+ * 定义了一个通用的网络协议块，包含了具体协议的驱动实现，并且跟sock结构密切相关
  *
- * 备注：这是一个socket层到传输层的接口
+ * 备注：本结构为对应协议的数据从socket层向下进入协议栈、或者从链路层向上进入协议栈指明了方向，
  * socket layer -> transport layer interface
+ * AF_UNIX
  */
 struct proto {
 	void			(*close)(struct sock *sk,
@@ -1024,7 +1025,7 @@ struct proto {
 
 	/* Keeping track of sockets in use */
 #ifdef CONFIG_PROC_FS
-	unsigned int		inuse_idx;
+	unsigned int		inuse_idx;      // 分配给该proto结构的唯一性序号
 #endif
 
 	bool			(*stream_memory_free)(const struct sock *sk);
@@ -1045,8 +1046,8 @@ struct proto {
 	int			max_header;
 	bool			no_autobind;
 
-	struct kmem_cache	*slab;
-	unsigned int		obj_size;
+	struct kmem_cache	*slab;      // 指向分配的slab内存
+	unsigned int		obj_size;   // 指定了sock结构的父结构的大小
 	int			slab_flags;
 
 	struct percpu_counter	*orphan_count;
@@ -1064,7 +1065,7 @@ struct proto {
 
 	char			name[32];
 
-	struct list_head	node;
+	struct list_head	node;   // 用于链接到全局的proto_list链表中
 #ifdef SOCK_REFCNT_DEBUG
 	atomic_t		socks;
 #endif

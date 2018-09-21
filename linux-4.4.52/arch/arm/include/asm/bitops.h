@@ -195,8 +195,9 @@ extern int _find_next_bit_be(const unsigned long *p, int size, int offset);
 #ifndef __ARMEB__
 /*
  * These are the little endian, atomic definitions.
+ * 以下是小端模式下的宏
  */
-#define find_first_zero_bit(p,sz)	_find_first_zero_bit_le(p,sz)
+#define find_first_zero_bit(p,sz)	_find_first_zero_bit_le(p,sz)       // 返回变量p中第一个值为0的位序号
 #define find_next_zero_bit(p,sz,off)	_find_next_zero_bit_le(p,sz,off)
 #define find_first_bit(p,sz)		_find_first_bit_le(p,sz)
 #define find_next_bit(p,sz,off)		_find_next_bit_le(p,sz,off)
@@ -204,6 +205,7 @@ extern int _find_next_bit_be(const unsigned long *p, int size, int offset);
 #else
 /*
  * These are the big endian, atomic definitions.
+ * 以下是大端模式下的宏
  */
 #define find_first_zero_bit(p,sz)	_find_first_zero_bit_be(p,sz)
 #define find_next_zero_bit(p,sz,off)	_find_next_zero_bit_be(p,sz,off)

@@ -143,8 +143,9 @@
 
 #include <net/busy_poll.h>
 
+// 用于维护proto_list这张全局链表的互斥锁
 static DEFINE_MUTEX(proto_list_mutex);
-/* 定义了一张全局的链表，记录了所有已经注册的proto结构，每个proto结构都代表一种支持的协议
+/* 定义了一张全局的链表，记录了所有已经注册的proto结构，每个proto结构都代表一种支持的协议对象
  * 这些proto结构为对应协议的数据从socket层向下进入协议栈、或者从链路层向上进入协议栈指明了方向，
  */
 static LIST_HEAD(proto_list);
@@ -2719,7 +2720,7 @@ struct prot_inuse {
 	int val[PROTO_INUSE_NR];
 };
 
-static DECLARE_BITMAP(proto_inuse_idx, PROTO_INUSE_NR);
+static DECLARE_BITMAP(proto_inuse_idx, PROTO_INUSE_NR);     // 定义了一个用于位操作的PROTO_INUSE_NR位变量
 
 #ifdef CONFIG_NET_NS
 void sock_prot_inuse_add(struct net *net, struct proto *prot, int val)
@@ -2787,8 +2788,13 @@ int sock_prot_inuse_get(struct net *net, struct proto *prot)
 EXPORT_SYMBOL_GPL(sock_prot_inuse_get);
 #endif
 
+/* 为指定proto结构分配一个序号
+ *
+ * 备注：本操作需要由调用函数确保处于proto_list_mutex范围内
+ */
 static void assign_proto_idx(struct proto *prot)
 {
+    // 查找proto_inuse_idx中第一个值为0的位序号，并将该序号分配给该proto结构
 	prot->inuse_idx = find_first_zero_bit(proto_inuse_idx, PROTO_INUSE_NR);
 
 	if (unlikely(prot->inuse_idx == PROTO_INUSE_NR - 1)) {
@@ -2796,6 +2802,7 @@ static void assign_proto_idx(struct proto *prot)
 		return;
 	}
 
+    // 将proto_inuse_idx中该位置1
 	set_bit(prot->inuse_idx, proto_inuse_idx);
 }
 
@@ -2848,9 +2855,13 @@ static int req_prot_init(const struct proto *prot)
 	return 0;
 }
 
-// 将指定协议类型的proto结构注册到全局的proto_list链表中
+/* 将指定协议注册到内核中，实际就是将该协议类型的proto结构注册到全局的proto_list链表中
+ * @prot            指向要注册的协议对象
+ * @alloc_slab      标识是否分配slab内存
+ */
 int proto_register(struct proto *prot, int alloc_slab)
 {
+    // 需要分配slab内存的情况
 	if (alloc_slab) {
 		prot->slab = kmem_cache_create(prot->name, prot->obj_size, 0,
 					SLAB_HWCACHE_ALIGN | prot->slab_flags,
@@ -2882,8 +2893,10 @@ int proto_register(struct proto *prot, int alloc_slab)
 		}
 	}
 
+    // 将该协议类型的proto结构插入全局的proto_list链表中
 	mutex_lock(&proto_list_mutex);
 	list_add(&prot->node, &proto_list);
+    // 为该proto结构分配一个序号
 	assign_proto_idx(prot);
 	mutex_unlock(&proto_list_mutex);
 	return 0;

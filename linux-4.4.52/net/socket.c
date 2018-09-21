@@ -160,6 +160,10 @@ static const struct file_operations socket_file_ops = {
  */
 
 static DEFINE_SPINLOCK(net_family_lock);
+
+/* 这张表用记录了socket层所有已经注册的net_proto_family，索引号就是协议族ID
+ * 当用户态执行系统调用socket()创建指定协议族的套接字时，内核就从这张表中索引得到对应的net_proto_family，然后调用其中的create回调创建内核中对应的套接字
+ */
 static const struct net_proto_family __rcu *net_families[NPROTO] __read_mostly;
 
 /*
@@ -388,6 +392,7 @@ struct file *sock_alloc_file(struct socket *sock, int flags, const char *dname)
 }
 EXPORT_SYMBOL(sock_alloc_file);
 
+// 分配fd描述符
 static int sock_map_fd(struct socket *sock, int flags)
 {
 	struct file *newfile;
@@ -527,6 +532,7 @@ static const struct inode_operations sockfs_inode_ops = {
 
 /**
  *	sock_alloc	-	allocate a socket
+ *	分配一个socket结构
  *
  *	Allocate a new inode and socket object. The two are bound together
  *	and initialised. The socket is then returned. If we are out of inodes
@@ -606,15 +612,22 @@ void __sock_tx_timestamp(const struct sock *sk, __u8 *tx_flags)
 }
 EXPORT_SYMBOL(__sock_tx_timestamp);
 
+// sendmsg系统调用最终都会调用到这里
 static inline int sock_sendmsg_nosec(struct socket *sock, struct msghdr *msg)
 {
+    // 这里就是执行绑定在该socket结构上的对应协议的sendmsg回调
 	int ret = sock->ops->sendmsg(sock, msg, msg_data_left(msg));
 	BUG_ON(ret == -EIOCBQUEUED);
 	return ret;
 }
 
+/* sendmsg(非mmap)系统调用都会调用到本函数，主要是进一步处理要发送的数据
+ *
+ * 相比3.14.38，4.4.52去掉了一层kiocb结构的封装操作
+ */
 int sock_sendmsg(struct socket *sock, struct msghdr *msg)
 {
+    // 这里实际就是过了LSM模块
 	int err = security_socket_sendmsg(sock, msg,
 					  msg_data_left(msg));
 
@@ -707,15 +720,18 @@ void __sock_recv_ts_and_drops(struct msghdr *msg, struct sock *sk,
 }
 EXPORT_SYMBOL_GPL(__sock_recv_ts_and_drops);
 
+// recvmsg系统调用最终都会进入这里
 static inline int sock_recvmsg_nosec(struct socket *sock, struct msghdr *msg,
 				     size_t size, int flags)
 {
 	return sock->ops->recvmsg(sock, msg, size, flags);
 }
 
+// recvmsg(非mmap)系统调用接收数据流程
 int sock_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
 		 int flags)
 {
+    // 这里实际就是过了LSM模块
 	int err = security_socket_recvmsg(sock, msg, size, flags);
 
 	return err ?: sock_recvmsg_nosec(sock, msg, size, flags);
@@ -828,8 +844,9 @@ static ssize_t sock_write_iter(struct kiocb *iocb, struct iov_iter *from)
  */
 
 static DEFINE_MUTEX(br_ioctl_mutex);
-static int (*br_ioctl_hook) (struct net *, unsigned int cmd, void __user *arg);
+static int (*br_ioctl_hook) (struct net *, unsigned int cmd, void __user *arg); // 定义了一个用于网桥ioctl操作的钩子函数指针
 
+// 设置网桥ioctl操作的钩子函数 
 void brioctl_set(int (*hook) (struct net *, unsigned int, void __user *))
 {
 	mutex_lock(&br_ioctl_mutex);
@@ -839,8 +856,9 @@ void brioctl_set(int (*hook) (struct net *, unsigned int, void __user *))
 EXPORT_SYMBOL(brioctl_set);
 
 static DEFINE_MUTEX(vlan_ioctl_mutex);
-static int (*vlan_ioctl_hook) (struct net *, void __user *arg);
+static int (*vlan_ioctl_hook) (struct net *, void __user *arg); // 定义了一个用于vlan ioctl操作的钩子函数指针
 
+// 设置vlan ioctl操作的钩子函数
 void vlan_ioctl_set(int (*hook) (struct net *, void __user *))
 {
 	mutex_lock(&vlan_ioctl_mutex);
@@ -860,6 +878,7 @@ void dlci_ioctl_set(int (*hook) (unsigned int, void __user *))
 }
 EXPORT_SYMBOL(dlci_ioctl_set);
 
+// 本函数处理了另外一部分ioctl操作
 static long sock_do_ioctl(struct net *net, struct socket *sock,
 				 unsigned int cmd, unsigned long arg)
 {
@@ -881,8 +900,8 @@ static long sock_do_ioctl(struct net *net, struct socket *sock,
 /*
  *	With an ioctl, arg may well be a user mode pointer, but we don't know
  *	what to do with it - that's up to the protocol still.
+ *	内核中ioctl的总接口
  */
-
 static long sock_ioctl(struct file *file, unsigned cmd, unsigned long arg)
 {
 	struct socket *sock;
@@ -918,18 +937,19 @@ static long sock_ioctl(struct file *file, unsigned cmd, unsigned long arg)
 			break;
 		case SIOCGIFBR:
 		case SIOCSIFBR:
-		case SIOCBRADDBR:
+		case SIOCBRADDBR:   // 以下是网桥模块ioctl函数的ID号
 		case SIOCBRDELBR:
 			err = -ENOPKG;
 			if (!br_ioctl_hook)
 				request_module("bridge");
 
 			mutex_lock(&br_ioctl_mutex);
+            // 调用网桥模块注册的钩子函数
 			if (br_ioctl_hook)
 				err = br_ioctl_hook(net, cmd, argp);
 			mutex_unlock(&br_ioctl_mutex);
 			break;
-		case SIOCGIFVLAN:
+		case SIOCGIFVLAN:   // 以下是vlan模块ioctl函数的ID号
 		case SIOCSIFVLAN:
 			err = -ENOPKG;
 			if (!vlan_ioctl_hook)
@@ -952,12 +972,19 @@ static long sock_ioctl(struct file *file, unsigned cmd, unsigned long arg)
 			mutex_unlock(&dlci_ioctl_mutex);
 			break;
 		default:
+            // 处理其他的ioctl命令ID
 			err = sock_do_ioctl(net, sock, cmd, arg);
 			break;
 		}
 	return err;
 }
 
+/* 创建并初始化一个指定类型的socket结构
+ * @family  - socket的协议族
+ * @type    - socket类型
+ * @protocol- socket的协议类型
+ * @res     - 存储创建的socket结构
+ */
 int sock_create_lite(int family, int type, int protocol, struct socket **res)
 {
 	int err;
@@ -967,6 +994,7 @@ int sock_create_lite(int family, int type, int protocol, struct socket **res)
 	if (err)
 		goto out;
 
+    // 分配一个socket结构
 	sock = sock_alloc();
 	if (!sock) {
 		err = -ENOMEM;
@@ -1085,6 +1113,9 @@ call_kill:
 }
 EXPORT_SYMBOL(sock_wake_async);
 
+/* 内核创建一个指定类型的套接字
+ * @kern    - 1表示该套接字属于内核，0表示该套接字属于用户进程(虽然由内核创建)
+ */
 int __sock_create(struct net *net, int family, int type, int protocol,
 			 struct socket **res, int kern)
 {
@@ -1094,6 +1125,7 @@ int __sock_create(struct net *net, int family, int type, int protocol,
 
 	/*
 	 *      Check protocol is in range
+     *      首先检查地址族、套接字类型是否有效
 	 */
 	if (family < 0 || family >= NPROTO)
 		return -EAFNOSUPPORT;
@@ -1115,6 +1147,7 @@ int __sock_create(struct net *net, int family, int type, int protocol,
 		family = PF_PACKET;
 	}
 
+    // kernel没有使能CONFIG_SECURITY_NETWORK配置选项时，这里不做任何处理
 	err = security_socket_create(family, type, protocol, kern);
 	if (err)
 		return err;
@@ -1123,6 +1156,8 @@ int __sock_create(struct net *net, int family, int type, int protocol,
 	 *	Allocate the socket and allow the family to set things up. if
 	 *	the protocol is 0, the family is instructed to select an appropriate
 	 *	default.
+     *
+     *	创建并初始化一个socket结构
 	 */
 	sock = sock_alloc();
 	if (!sock) {
@@ -1144,6 +1179,7 @@ int __sock_create(struct net *net, int family, int type, int protocol,
 		request_module("net-pf-%d", family);
 #endif
 
+    // 根据协议族ID索引得到对应的协议族管理块 
 	rcu_read_lock();
 	pf = rcu_dereference(net_families[family]);
 	err = -EAFNOSUPPORT;
@@ -1160,6 +1196,7 @@ int __sock_create(struct net *net, int family, int type, int protocol,
 	/* Now protected by module ref count */
 	rcu_read_unlock();
 
+    // 执行协议族管理块中的create回调，通常是在每个协议族调用sock_register进行注册时传入的
 	err = pf->create(net, sock, protocol, kern);
 	if (err < 0)
 		goto out_module_put;
@@ -1198,6 +1235,7 @@ out_release:
 }
 EXPORT_SYMBOL(__sock_create);
 
+// 内核创建一个指定类型的套接字
 int sock_create(int family, int type, int protocol, struct socket **res)
 {
 	return __sock_create(current->nsproxy->net_ns, family, type, protocol, res, 0);
@@ -1210,6 +1248,7 @@ int sock_create_kern(struct net *net, int family, int type, int protocol, struct
 }
 EXPORT_SYMBOL(sock_create_kern);
 
+// 对应用户态的socket()系统调用
 SYSCALL_DEFINE3(socket, int, family, int, type, int, protocol)
 {
 	int retval;
@@ -1230,10 +1269,12 @@ SYSCALL_DEFINE3(socket, int, family, int, type, int, protocol)
 	if (SOCK_NONBLOCK != O_NONBLOCK && (flags & SOCK_NONBLOCK))
 		flags = (flags & ~SOCK_NONBLOCK) | O_NONBLOCK;
 
+    // 内核创建一个对应的套接字
 	retval = sock_create(family, type, protocol, &sock);
 	if (retval < 0)
 		goto out;
 
+    // 分配描述符给该套接字，最后返回该描述符
 	retval = sock_map_fd(sock, flags & (O_CLOEXEC | O_NONBLOCK));
 	if (retval < 0)
 		goto out_release;
@@ -1249,6 +1290,7 @@ out_release:
 
 /*
  *	Create a pair of connected sockets.
+ *	对应用户态的socketpair()系统调用
  */
 
 SYSCALL_DEFINE4(socketpair, int, family, int, type, int, protocol,
@@ -1358,6 +1400,8 @@ out:
  *
  *	We move the socket address to kernel space before we call
  *	the protocol layer (having also checked the address is ok).
+ *
+ *	对应用户态的bind()系统调用
  */
 
 SYSCALL_DEFINE3(bind, int, fd, struct sockaddr __user *, umyaddr, int, addrlen)
@@ -1366,13 +1410,17 @@ SYSCALL_DEFINE3(bind, int, fd, struct sockaddr __user *, umyaddr, int, addrlen)
 	struct sockaddr_storage address;
 	int err, fput_needed;
 
+    // 通过fd查找对应的socket结构
 	sock = sockfd_lookup_light(fd, &err, &fput_needed);
 	if (sock) {
+        // 将传入的用户态绑定地址拷贝到kernel空间
 		err = move_addr_to_kernel(umyaddr, addrlen, &address);
 		if (err >= 0) {
+            // kernel没有使能CONFIG_SECURITY_NETWORK配置选项时，这里不做任何处理
 			err = security_socket_bind(sock,
 						   (struct sockaddr *)&address,
 						   addrlen);
+            // 这里就是执行绑定在该socket结构上的对应协议的bind回调
 			if (!err)
 				err = sock->ops->bind(sock,
 						      (struct sockaddr *)
@@ -1387,6 +1435,8 @@ SYSCALL_DEFINE3(bind, int, fd, struct sockaddr __user *, umyaddr, int, addrlen)
  *	Perform a listen. Basically, we allow the protocol to do anything
  *	necessary for a listen, and if that works, we mark the socket as
  *	ready for listening.
+ *
+ *	 对应用户态的listen()系统调用
  */
 
 SYSCALL_DEFINE2(listen, int, fd, int, backlog)
@@ -1395,6 +1445,7 @@ SYSCALL_DEFINE2(listen, int, fd, int, backlog)
 	int err, fput_needed;
 	int somaxconn;
 
+    // 通过fd查找对应的socket结构
 	sock = sockfd_lookup_light(fd, &err, &fput_needed);
 	if (sock) {
 		somaxconn = sock_net(sock->sk)->core.sysctl_somaxconn;
@@ -1872,6 +1923,10 @@ static int copy_msghdr_from_user(struct msghdr *kmsg,
 			    UIO_FASTIOV, iov, &kmsg->msg_iter);
 }
 
+/* 用户态sendmsg/sendmmsg陷入到内核中的接口
+ *
+ *  @used_address - 指向之前使用过的目的地址（如果存在）,该参数通常只应用于sendmmsg系统调用
+ */
 static int ___sys_sendmsg(struct socket *sock, struct user_msghdr __user *msg,
 			 struct msghdr *msg_sys, unsigned int flags,
 			 struct used_address *used_address)
@@ -1889,15 +1944,18 @@ static int ___sys_sendmsg(struct socket *sock, struct user_msghdr __user *msg,
 
 	msg_sys->msg_name = &address;
 
+    // 通常应该不会设置MSG_CMSG_COMPAT标志
 	if (MSG_CMSG_COMPAT & flags)
 		err = get_compat_msghdr(msg_sys, msg_compat, NULL, &iov);
 	else
+        // 所以这里一般就是将消息从用户空间拷贝到内核
 		err = copy_msghdr_from_user(msg_sys, msg, NULL, &iov);
 	if (err < 0)
 		return err;
 
 	err = -ENOBUFS;
 
+    // 以下这段代码用于拷贝辅助消息数据到内核
 	if (msg_sys->msg_controllen > INT_MAX)
 		goto out_freeiov;
 	ctl_len = msg_sys->msg_controllen;
@@ -1927,8 +1985,10 @@ static int ___sys_sendmsg(struct socket *sock, struct user_msghdr __user *msg,
 			goto out_freectl;
 		msg_sys->msg_control = ctl_buf;
 	}
+    // 首先存储用户态调用sendmsg时传入的flags参数
 	msg_sys->msg_flags = flags;
 
+    // 再检查当前的套接字属性，如果已经配置为非阻塞模式，则继续添加MSG_DONTWAIT标志
 	if (sock->file->f_flags & O_NONBLOCK)
 		msg_sys->msg_flags |= MSG_DONTWAIT;
 	/*
@@ -1936,6 +1996,9 @@ static int ___sys_sendmsg(struct socket *sock, struct user_msghdr __user *msg,
 	 * previously succeeded address, omit asking LSM's decision.
 	 * used_address->name_len is initialized to UINT_MAX so that the first
 	 * destination address never matches.
+     *
+     * 以下这段代码只用于sendmmsg，sendmmsg每次发送多条消息时，由于目的地址都一致，
+     * 所以只需要在第一条消息时执行LSM模块即可，这种策略的目的就是加速数据的发送
 	 */
 	if (used_address && msg_sys->msg_name &&
 	    used_address->name_len == msg_sys->msg_namelen &&
@@ -1944,10 +2007,13 @@ static int ___sys_sendmsg(struct socket *sock, struct user_msghdr __user *msg,
 		err = sock_sendmsg_nosec(sock, msg_sys);
 		goto out_freectl;
 	}
+
+    // 对于sendmsg，每次都需要老老实实通过LSM模块的检查才行
 	err = sock_sendmsg(sock, msg_sys);
 	/*
 	 * If this is sendmmsg() and sending to current destination address was
 	 * successful, remember it.
+     * 以下这段代码只用于sendmmsg，就是记住每次发送的目的地址
 	 */
 	if (used_address && err >= 0) {
 		used_address->name_len = msg_sys->msg_namelen;
@@ -1966,6 +2032,9 @@ out_freeiov:
 
 /*
  *	BSD sendmsg interface
+ *	用户态sendmsg陷入到内核中的接口
+ *
+ *	备注：3.14.38版本内核的msghdr结构在用户态和内核态一样，但是后续版本中，用户态和内核态的msghdr结构将会存在一些差异
  */
 
 long __sys_sendmsg(int fd, struct user_msghdr __user *msg, unsigned flags)
@@ -1974,6 +2043,7 @@ long __sys_sendmsg(int fd, struct user_msghdr __user *msg, unsigned flags)
 	struct msghdr msg_sys;
 	struct socket *sock;
 
+    // 通过fd查找对应的socket结构
 	sock = sockfd_lookup_light(fd, &err, &fput_needed);
 	if (!sock)
 		goto out;
@@ -1985,6 +2055,7 @@ out:
 	return err;
 }
 
+// 对应用户态的sendmsg()系统调用
 SYSCALL_DEFINE3(sendmsg, int, fd, struct user_msghdr __user *, msg, unsigned int, flags)
 {
 	if (flags & MSG_CMSG_COMPAT)
@@ -2062,6 +2133,13 @@ SYSCALL_DEFINE4(sendmmsg, int, fd, struct mmsghdr __user *, mmsg,
 	return __sys_sendmmsg(fd, mmsg, vlen, flags);
 }
 
+/* 用户态recvmsg/recvmmsg陷入到内核中的接口
+ * @sock    - 指向当前操作的socket结构
+ * @msg     - 用户空间的msghdr
+ * @msg_sys - 内核空间的msghdr
+ * @flags   - 用户空间recvmsg/recvmmsg调用传入的flag
+ * @nosec   - recvmsg调用传入0；recvmmsg调用传入具体的数量
+ */
 static int ___sys_recvmsg(struct socket *sock, struct user_msghdr __user *msg,
 			 struct msghdr *msg_sys, unsigned int flags, int nosec)
 {
@@ -2082,22 +2160,32 @@ static int ___sys_recvmsg(struct socket *sock, struct user_msghdr __user *msg,
 
 	msg_sys->msg_name = &addr;
 
+    // 通常应该不会设置MSG_CMSG_COMPAT标志
 	if (MSG_CMSG_COMPAT & flags)
 		err = get_compat_msghdr(msg_sys, msg_compat, &uaddr, &iov);
 	else
+        /* 所以这里一般就是将消息从用户空间拷贝到内核
+         * 跟__sys_sendmsg中存在区别的是，这里是为了接收内核的消息，用户空间并没有数据，所以这里最主要的目的是确定用户空间传入的接收缓冲区大小
+         */
 		err = copy_msghdr_from_user(msg_sys, msg, &uaddr, &iov);
 	if (err < 0)
 		return err;
 	total_len = iov_iter_count(&msg_sys->msg_iter);
 
+    // 获取用户空间传入的辅助消息相关信息
 	cmsg_ptr = (unsigned long)msg_sys->msg_control;
 	msg_sys->msg_flags = flags & (MSG_CMSG_CLOEXEC|MSG_CMSG_COMPAT);
 
 	/* We assume all kernel code knows the size of sockaddr_storage */
 	msg_sys->msg_namelen = 0;
 
+    // 如果套接字本身带了非阻塞标志，则在这里自动添加上
 	if (sock->file->f_flags & O_NONBLOCK)
 		flags |= MSG_DONTWAIT;
+
+    /* 显然，对于recvmsg调用这里执行sock_recvmsg，对于recvmmsg调用这里执行sock_recvmsg_nosec
+     * 实际上，最后都是调用了该socket所在协议的recvmsg钩子函数
+     */
 	err = (nosec ? sock_recvmsg_nosec : sock_recvmsg)(sock, msg_sys,
 							  total_len, flags);
 	if (err < 0)
@@ -2132,6 +2220,7 @@ out_freeiov:
 
 /*
  *	BSD recvmsg interface
+ *	用户态recvmsg陷入到内核中的接口
  */
 
 long __sys_recvmsg(int fd, struct user_msghdr __user *msg, unsigned flags)
@@ -2140,6 +2229,7 @@ long __sys_recvmsg(int fd, struct user_msghdr __user *msg, unsigned flags)
 	struct msghdr msg_sys;
 	struct socket *sock;
 
+    // 通过fd查找对应的socket结构
 	sock = sockfd_lookup_light(fd, &err, &fput_needed);
 	if (!sock)
 		goto out;
@@ -2151,6 +2241,7 @@ out:
 	return err;
 }
 
+// 对应用户态的recvmsg()系统调用
 SYSCALL_DEFINE3(recvmsg, int, fd, struct user_msghdr __user *, msg,
 		unsigned int, flags)
 {
@@ -2423,6 +2514,9 @@ SYSCALL_DEFINE2(socketcall, int, call, unsigned long __user *, args)
 
 /**
  *	sock_register - add a socket protocol handler
+ *	注册一个指定的协议族(比如AF_NETLINK、AF_UNIX)到socket层
+ *	实际就是将该协议组管理块加入socket层的全局表net_families中
+ *
  *	@ops: description of protocol
  *
  *	This function is called by a protocol handler that wants to
