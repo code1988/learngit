@@ -1404,7 +1404,7 @@ EXPORT_SYMBOL_GPL(pskb_put);
 
 /**
  *	skb_put - add data to a buffer
- *	使tail指针后移len长度，为接下来在尾部增加len个字节数据做准备
+ *  将tail指针后移len长度，并返回移动前的tail指针位置
  *	@skb: buffer to use
  *	@len: amount of data to add
  *
@@ -1412,7 +1412,7 @@ EXPORT_SYMBOL_GPL(pskb_put);
  *	exceed the total buffer size the kernel will panic. A pointer to the
  *	first byte of the extra data is returned.
  *
- *	备注：本函数已经改变了tail指针，但是返回的仍旧是改变前的值
+ *  备注：通常调用本函数后就会紧接着写入len长度的数据
  */
 unsigned char *skb_put(struct sk_buff *skb, unsigned int len)
 {
@@ -1428,7 +1428,7 @@ EXPORT_SYMBOL(skb_put);
 
 /**
  *	skb_push - add data to the start of a buffer
- *	写指针前移len字节，这样从返回的位置可以写入len个字节数据
+ *	将data指针前移len字节并返回移动后的data指针位置
  *	@skb: buffer to use
  *	@len: amount of data to add
  *
@@ -1450,11 +1450,12 @@ EXPORT_SYMBOL(skb_push);
 
 /**
  *	skb_pull - remove data from the start of a buffer
- *	读指针后移len字节
+ *	将data指针后移len字节并返回移动后的data指针位置
  *	@skb: buffer to use
  *	@len: amount of data to remove
  *
  *  备注：该函数是linux网络协议栈进行解封装的核心接口，和skb_push严格相对
+ *        调用者需要事先确保其线性数据空间长度不小于len
  *
  *	This function removes data from the start of a buffer, returning
  *	the memory to the headroom. A pointer to the next data in the buffer

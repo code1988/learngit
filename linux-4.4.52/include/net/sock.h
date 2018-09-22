@@ -223,9 +223,10 @@ struct sock_common {
 	int			skc_dontcopy_begin[0];
 	/* public: */
 	union {
-		struct hlist_node	skc_node;
+		struct hlist_node	skc_node;   /* 用于将所属的sock结构链接到对应协议的hash桶中
+                                           (比如ip层原始套接字使用的hash桶raw_hashinfo->ht) */
 		struct hlist_nulls_node skc_nulls_node;
-	};
+	};  // 该联合体实际使用哪个成员跟具体关联的协议以及使用场景有关
 	int			skc_tx_queue_mapping;
 	union {
 		int		skc_incoming_cpu;
@@ -516,11 +517,13 @@ static inline struct sock *sk_entry(const struct hlist_node *node)
 	return hlist_entry(node, struct sock, sk_node);
 }
 
+// 根据传入的hash桶头节点获取该hash桶第一个节点的父结构，也就是sock结构
 static inline struct sock *__sk_head(const struct hlist_head *head)
 {
 	return hlist_entry(head->first, struct sock, sk_node);
 }
 
+// 获取指定hash桶中存放的第一个sock结构
 static inline struct sock *sk_head(const struct hlist_head *head)
 {
 	return hlist_empty(head) ? NULL : __sk_head(head);

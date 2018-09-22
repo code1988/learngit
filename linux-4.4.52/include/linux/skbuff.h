@@ -1854,7 +1854,7 @@ static inline void skb_set_tail_pointer(struct sk_buff *skb, const int offset)
  */
 unsigned char *pskb_put(struct sk_buff *skb, struct sk_buff *tail, int len);
 unsigned char *skb_put(struct sk_buff *skb, unsigned int len);
-/* 写指针往后移len长度，返回移动前的写指针位置
+/* 将tail指针后移len长度，并返回移动前的tail指针位置
  *
  * 备注：通常调用本函数后就会紧接着写入len长度的数据
  */
@@ -1868,6 +1868,9 @@ static inline unsigned char *__skb_put(struct sk_buff *skb, unsigned int len)
 }
 
 unsigned char *skb_push(struct sk_buff *skb, unsigned int len);
+/* 将data指针前移len字节并返回移动后的data指针位置
+ * 备注：通常调用本函数后就会紧接着写入len长度的数据
+ */
 static inline unsigned char *__skb_push(struct sk_buff *skb, unsigned int len)
 {
 	skb->data -= len;
@@ -1876,7 +1879,9 @@ static inline unsigned char *__skb_push(struct sk_buff *skb, unsigned int len)
 }
 
 unsigned char *skb_pull(struct sk_buff *skb, unsigned int len);
-// 将读指针后移len字节
+/* 将data指针后移len长度以减少其线性数据空间，返回移动后的data指针位置
+ * 备注：调用者需要事先确保其线性数据空间长度不小于len
+ */
 static inline unsigned char *__skb_pull(struct sk_buff *skb, unsigned int len)
 {
 	skb->len -= len;
@@ -1884,7 +1889,9 @@ static inline unsigned char *__skb_pull(struct sk_buff *skb, unsigned int len)
 	return skb->data += len;
 }
 
-// 将读指针后移len字节
+/* 如果skb中当前承载的数据总长不小于len，则将将data指针后移len长度并返回移动后的data指针位置;否则返回NULL
+ * 备注：调用者需要事先确保其线性数据空间长度不小于len
+ */
 static inline unsigned char *skb_pull_inline(struct sk_buff *skb, unsigned int len)
 {
 	return unlikely(len > skb->len) ? NULL : __skb_pull(skb, len);
@@ -1892,8 +1899,10 @@ static inline unsigned char *skb_pull_inline(struct sk_buff *skb, unsigned int l
 
 unsigned char *__pskb_pull_tail(struct sk_buff *skb, int delta);
 
+// 将data指针后移len长度以减少其线性数据空间
 static inline unsigned char *__pskb_pull(struct sk_buff *skb, unsigned int len)
 {
+    // 如果data指针控制的线性数据长度小于len，则不足的部分需要先从分片数据中拷贝过来
 	if (len > skb_headlen(skb) &&
 	    !__pskb_pull_tail(skb, len - skb_headlen(skb)))
 		return NULL;
@@ -1901,7 +1910,7 @@ static inline unsigned char *__pskb_pull(struct sk_buff *skb, unsigned int len)
 	return skb->data += len;
 }
 
-// 首先确保skb->data指针控制的数据长度不小于len，然后data指针后移len长度
+// 如果skb中当前承载的数据总长不小于len，则将data指针后移len长度;否则返回NULL
 static inline unsigned char *pskb_pull(struct sk_buff *skb, unsigned int len)
 {
 	return unlikely(len > skb->len) ? NULL : __pskb_pull(skb, len);
@@ -2190,6 +2199,7 @@ static inline u32 skb_network_header_len(const struct sk_buff *skb)
 	return skb->transport_header - skb->network_header;
 }
 
+// 返回L3头长
 static inline u32 skb_inner_network_header_len(const struct sk_buff *skb)
 {
 	return skb->inner_transport_header - skb->inner_network_header;

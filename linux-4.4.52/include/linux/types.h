@@ -182,14 +182,17 @@ typedef struct {
 } atomic64_t;
 #endif
 
+// 链表节点结构
 struct list_head {
 	struct list_head *next, *prev;
 };
 
+// hash桶头结构
 struct hlist_head {
-	struct hlist_node *first;
+	struct hlist_node *first;   // 指向该hash桶的第一个节点
 };
 
+// hash桶普通节点结构
 struct hlist_node {
 	struct hlist_node *next, **pprev;
 };

@@ -189,19 +189,24 @@ bool ip_call_ra_chain(struct sk_buff *skb)
 	return false;
 }
 
+// 将收到的ipv4报文传递给本机的上层协议，主要就是根据ip头中的协议字段选择上层L4协议进行进一步处理
 static int ip_local_deliver_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
 {
+    // 跳过ip头
 	__skb_pull(skb, skb_network_header_len(skb));
 
 	rcu_read_lock();
 	{
+        // 从ip头中获取协议号
 		int protocol = ip_hdr(skb)->protocol;
 		const struct net_protocol *ipprot;
 		int raw;
 
 	resubmit:
+        // ip层原始套接字处理入口
 		raw = raw_local_deliver(skb, protocol);
 
+        // 获取该ipv4协议注册的协议信息
 		ipprot = rcu_dereference(inet_protos[protocol]);
 		if (ipprot) {
 			int ret;

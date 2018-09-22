@@ -28,11 +28,12 @@ int raw_local_deliver(struct sk_buff *, int);
 
 int raw_rcv(struct sock *, struct sk_buff *);
 
-#define RAW_HTABLE_SIZE	MAX_INET_PROTOS
+#define RAW_HTABLE_SIZE	MAX_INET_PROTOS     // 2的幂次方
 
+// 用户进程已经注册的ip层套接字集合结构
 struct raw_hashinfo {
-	rwlock_t lock;
-	struct hlist_head ht[RAW_HTABLE_SIZE];
+	rwlock_t lock;                          // 用于维护该集合的读写锁
+	struct hlist_head ht[RAW_HTABLE_SIZE];  // 这张hash表记录了用户进程已经注册的ip层原始套接字，键值为L4层协议id
 };
 
 #ifdef CONFIG_PROC_FS

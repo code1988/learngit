@@ -89,6 +89,7 @@ struct raw_frag_vec {
 	int hlen;
 };
 
+// 定义了用户进程注册的ip层套接字集合
 static struct raw_hashinfo raw_v4_hashinfo = {
 	.lock = __RW_LOCK_UNLOCKED(raw_v4_hashinfo.lock),
 };
@@ -161,6 +162,7 @@ static int icmp_filter(const struct sock *sk, const struct sk_buff *skb)
 
 /* IP input processing comes here for RAW socket delivery.
  * Caller owns SKB, so we must make clones.
+ * 处理传递给指定协议ip层原始套接字的ip报文
  *
  * RFC 1122: SHOULD pass TOS value up to the transport layer.
  * -> It does. And not only TOS, but all IP header.
@@ -202,16 +204,23 @@ out:
 	return delivered;
 }
 
+/* ip层原始套接字处理入口
+ * @返回值:     1 - 存在对应协议的ip层原始套接字
+ *              0 - 不存在对应协议的ip层原始套接字
+ */
 int raw_local_deliver(struct sk_buff *skb, int protocol)
 {
 	int hash;
 	struct sock *raw_sk;
 
+    // 取余得到hash值
 	hash = protocol & (RAW_HTABLE_SIZE - 1);
+    // 根据hash值从用户进程注册的ip层套接字集合中索引对应的hash桶头节点，再从该hash桶中获取第一个套接字
 	raw_sk = sk_head(&raw_v4_hashinfo.ht[hash]);
 
 	/* If there maybe a raw socket we must check - if not we
 	 * don't care less
+     * 如果用户进程创建了该协议的ip层原始套接字，则将ip报文传递给该协议的ip层原始套接字处理
 	 */
 	if (raw_sk && !raw_v4_input(skb, ip_hdr(skb), hash))
 		raw_sk = NULL;
