@@ -173,9 +173,9 @@ out_stop:
 
 /*
  *	watchdog_get_status: wrapper to get the watchdog status
- *	获取指定看门狗当前状态集合
+ *	获取指定看门狗当前运行状态
  *	@wdd: the watchdog device to get the status from
- *	@status: the status of the watchdog device      用于存放该看门狗的当前状态
+ *	@status: the status of the watchdog device      用于存放该看门狗的当前运行状态
  *
  *	Get the watchdog's status flags.
  */
@@ -197,7 +197,7 @@ static int watchdog_get_status(struct watchdog_device *wdd,
 		goto out_status;
 	}
 
-    // 调用该看门狗设备的status方法来真正获取状态
+    // 调用该看门狗设备的status方法来真正获取运行状态
 	*status = wdd->ops->status(wdd);
 
 out_status:
@@ -276,6 +276,7 @@ out_timeleft:
 
 /*
  *	watchdog_ioctl_op: call the watchdog drivers ioctl op if defined
+ *	尝试调用该看门狗面向底层的ioctl方法
  *	@wdd: the watchdog device to do the ioctl on
  *	@cmd: watchdog command
  *	@arg: argument pointer
@@ -291,11 +292,13 @@ static int watchdog_ioctl_op(struct watchdog_device *wdd, unsigned int cmd,
 
 	mutex_lock(&wdd->lock);
 
+    // 确保该看门狗没有被注销
 	if (test_bit(WDOG_UNREGISTERED, &wdd->status)) {
 		err = -ENODEV;
 		goto out_ioctl;
 	}
 
+    // 调用该看门狗设备面向底层的ioctl方法
 	err = wdd->ops->ioctl(wdd, cmd, arg);
 
 out_ioctl:
@@ -374,15 +377,16 @@ static long watchdog_ioctl(struct file *file, unsigned int cmd,
 	unsigned int val;
 	int err;
 
+    //	尝试调用该看门狗面向底层的ioctl方法
 	err = watchdog_ioctl_op(wdd, cmd, arg);
 	if (err != -ENOIOCTLCMD)
 		return err;
 
 	switch (cmd) {
-	case WDIOC_GETSUPPORT:
+	case WDIOC_GETSUPPORT:  // 获取看门狗信息
 		return copy_to_user(argp, wdd->info,
 			sizeof(struct watchdog_info)) ? -EFAULT : 0;
-	case WDIOC_GETSTATUS:
+	case WDIOC_GETSTATUS:   // 获取看门狗当前运行状态
 		err = watchdog_get_status(wdd, &val);
 		if (err == -ENODEV)
 			return err;
@@ -403,11 +407,11 @@ static long watchdog_ioctl(struct file *file, unsigned int cmd,
 				return err;
 		}
 		return 0;
-	case WDIOC_KEEPALIVE:
+	case WDIOC_KEEPALIVE:   // 用来执行一次喂狗
 		if (!(wdd->info->options & WDIOF_KEEPALIVEPING))
 			return -EOPNOTSUPP;
 		return watchdog_ping(wdd);
-	case WDIOC_SETTIMEOUT:
+	case WDIOC_SETTIMEOUT:  // 用来设置看门狗的超时值
 		if (get_user(val, p))
 			return -EFAULT;
 		err = watchdog_set_timeout(wdd, val);
@@ -415,17 +419,19 @@ static long watchdog_ioctl(struct file *file, unsigned int cmd,
 			return err;
 		/* If the watchdog is active then we send a keepalive ping
 		 * to make sure that the watchdog keep's running (and if
-		 * possible that it takes the new timeout) */
+		 * possible that it takes the new timeout) 
+         * 修改完超时值后需要立刻进行一次喂狗以刷新定时器
+         * */
 		err = watchdog_ping(wdd);
 		if (err < 0)
 			return err;
 		/* Fall */
-	case WDIOC_GETTIMEOUT:
+	case WDIOC_GETTIMEOUT:  // 用来获取看门狗的超时值
 		/* timeout == 0 means that we don't know the timeout */
 		if (wdd->timeout == 0)
 			return -EOPNOTSUPP;
 		return put_user(wdd->timeout, p);
-	case WDIOC_GETTIMELEFT:
+	case WDIOC_GETTIMELEFT: // 用来获取看门狗距离超时的剩余时间
 		err = watchdog_get_timeleft(wdd, &val);
 		if (err)
 			return err;
@@ -644,7 +650,7 @@ int watchdog_dev_unregister(struct watchdog_device *wdd)
 
 /*
  *	watchdog_dev_init: init dev part of watchdog core
- *	为看门狗类设备注册一段设备号
+ *	为看门狗类设备申请一段设备号
  *
  *	Allocate a range of chardev nodes to use for watchdog devices
  */

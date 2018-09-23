@@ -21,7 +21,7 @@ struct watchdog_info {
 	__u8  identity[32];	/* Identity of the board */
 };
 
-#define	WDIOC_GETSUPPORT	_IOR(WATCHDOG_IOCTL_BASE, 0, struct watchdog_info)
+#define	WDIOC_GETSUPPORT	_IOR(WATCHDOG_IOCTL_BASE, 0, struct watchdog_info)  // 获取看门狗信息
 #define	WDIOC_GETSTATUS		_IOR(WATCHDOG_IOCTL_BASE, 1, int)       // 用来获取看门狗当前状态
 #define	WDIOC_GETBOOTSTATUS	_IOR(WATCHDOG_IOCTL_BASE, 2, int)
 #define	WDIOC_GETTEMP		_IOR(WATCHDOG_IOCTL_BASE, 3, int)
@@ -49,7 +49,7 @@ struct watchdog_info {
 #define	WDIOF_PRETIMEOUT	0x0200  /* Pretimeout (in seconds), get/set */
 #define	WDIOF_ALARMONLY		0x0400	/* Watchdog triggers a management or
 					   other external alarm not a reboot */
-#define	WDIOF_KEEPALIVEPING	0x8000	/* Keep alive ping reply */
+#define	WDIOF_KEEPALIVEPING	0x8000	/* Keep alive ping reply  标识是否允许通过ioctl喂狗 */
 
 #define	WDIOS_DISABLECARD	0x0001	/* Turn off the watchdog timer */
 #define	WDIOS_ENABLECARD	0x0002	/* Turn on the watchdog timer */

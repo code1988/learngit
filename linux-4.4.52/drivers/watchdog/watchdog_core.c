@@ -57,7 +57,8 @@ static struct class *watchdog_class;    // 指向一个全局的看门狗设备�
  */
 
 static DEFINE_MUTEX(wtd_deferred_reg_mutex);
-static LIST_HEAD(wtd_deferred_reg_list);    // 初始化过程中需要延迟注册的看门狗设备链
+static LIST_HEAD(wtd_deferred_reg_list);    /* 初始化过程中需要延迟注册的看门狗设备链，
+                                               记录了那些在看门狗系统初始化前探测到的看门狗设备 */
 static bool wtd_deferred_reg_done;          // 标识是否已经完成延迟注册
 
 // 将指定的看门狗设备加入延迟设备链
@@ -304,13 +305,14 @@ static int __init watchdog_init(void)
 		return PTR_ERR(watchdog_class);
 	}
 
-    // 为看门狗类设备注册一段设备号
+    // 为看门狗类设备申请一段设备号
 	err = watchdog_dev_init();
 	if (err < 0) {
 		class_destroy(watchdog_class);
 		return err;
 	}
 
+    // 程序运行到这里意味着看门狗子系统已经完成初始化
     // 注册挂在wtd_deferred_reg_list延迟链表上的看门狗设备
 	watchdog_deferred_registration();
 	return 0;

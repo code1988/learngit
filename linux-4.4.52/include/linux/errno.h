@@ -9,11 +9,12 @@
  * codes, signal_pending() MUST be set.  Note that ptrace can observe these
  * at syscall exit tracing, but they will never be left for the debugged user
  * process to see.
+ * 以下这些错误号用户空间不可见
  */
 #define ERESTARTSYS	512
 #define ERESTARTNOINTR	513
 #define ERESTARTNOHAND	514	/* restart if no handler.. */
-#define ENOIOCTLCMD	515	/* No ioctl command */
+#define ENOIOCTLCMD	515	/* No ioctl command 底层没有定义对应的ioctl命令 */
 #define ERESTART_RESTARTBLOCK 516 /* restart by calling sys_restart_syscall */
 #define EPROBE_DEFER	517	/* Driver requests probe retry */
 #define EOPENSTALE	518	/* open found a stale dentry */

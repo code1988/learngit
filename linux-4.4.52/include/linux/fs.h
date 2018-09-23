@@ -889,7 +889,10 @@ struct file {
 #ifdef CONFIG_SECURITY
 	void			*f_security;
 #endif
-	/* needed for tty driver, and maybe others */
+	/* needed for tty driver, and maybe others 
+     * 指向该file结构的私有数据，实际跟该file类型有关
+     * 比如看门狗设备file则指向对应的watchdog_device
+     * */
 	void			*private_data;
 
 #ifdef CONFIG_EPOLL
@@ -1643,7 +1646,8 @@ struct file_operations {
 	ssize_t (*write_iter) (struct kiocb *, struct iov_iter *);
 	int (*iterate) (struct file *, struct dir_context *);
 	unsigned int (*poll) (struct file *, struct poll_table_struct *);       // 对应用户空间的select/poll
-	long (*unlocked_ioctl) (struct file *, unsigned int, unsigned long);    // 对应用户空间的fcntl
+	long (*unlocked_ioctl) (struct file *, unsigned int, unsigned long);    /* 对应用户空间的fcntl，
+                                                                               第3个入参实际是一个用户空间的地址值 */
 	long (*compat_ioctl) (struct file *, unsigned int, unsigned long);
 	int (*mmap) (struct file *, struct vm_area_struct *);                   // 对应用户空间的mmap
 	int (*open) (struct inode *, struct file *);                            // 对应用户空间的open

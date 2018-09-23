@@ -10,6 +10,7 @@
 
 /*
  * User space memory access functions
+ * 以下定义了在内核空间访问用户空间地址的接口
  */
 #include <linux/string.h>
 #include <linux/thread_info.h>
@@ -112,7 +113,14 @@ static inline void set_fs(mm_segment_t fs)
 		: "cc"); \
 	(flag == 0); })
 
-/* We use 33-bit arithmetic here... */
+/* We use 33-bit arithmetic here... 
+ * 判断指定地址空间是否在当前进程的用户地址空间限制中
+ * @返回值： 
+ *          如果(addr + size) >= (current_thread_info()->addr_limit)，则返回非0
+ *          如果(addr + size) < (current_thread_info()->addr_limit)，则返回0
+ *
+ * 备注：由于内部用到了current_thread_info，所以调用到这个宏的接口都只能在进程上下文中使用
+ * */
 #define __range_ok(addr, size) ({ \
 	unsigned long flag, roksum; \
 	__chk_user_ptr(addr);	\
@@ -227,6 +235,7 @@ extern int __get_user_64t_4(void *);
 		__e;							\
 	})
 
+// 将数据从用户空间拷贝到内核(适用于要拷贝的数据为char、int、long等简单类型的情况)
 #define get_user(x, p)							\
 	({								\
 		might_fault();						\
@@ -275,6 +284,7 @@ extern int __put_user_8(void *, unsigned long long);
 		__e;							\
 	})
 
+// 将数据从内核拷贝到用户空间(适用于要拷贝的数据为char、int、long等简单类型的情况)
 #define put_user(x, p)							\
 	({								\
 		might_fault();						\
@@ -302,6 +312,7 @@ static inline void set_fs(mm_segment_t fs)
 
 #endif /* CONFIG_MMU */
 
+// 判断指定地址空间是否在当前进程的用户地址空间限制中(arm平台上，第一个参数type并没有用到)
 #define access_ok(type, addr, size)	(__range_ok(addr, size) == 0)
 
 #define user_addr_max() \
@@ -489,7 +500,7 @@ do {									\
 	: "cc")
 
 
-#ifdef CONFIG_MMU
+#ifdef CONFIG_MMU   // 开启MMU功能的情况下内核态和用户态数据拷贝方法
 extern unsigned long __must_check
 arm_copy_from_user(void *to, const void __user *from, unsigned long n);
 
@@ -534,23 +545,37 @@ __clear_user(void __user *addr, unsigned long n)
 	return n;
 }
 
-#else
+#else   // 未开启MMU功能的情况下，内核态和用户态数据拷贝就是简单的内存拷贝
 #define __copy_from_user(to, from, n)	(memcpy(to, (void __force *)from, n), 0)
 #define __copy_to_user(to, from, n)	(memcpy((void __force *)to, from, n), 0)
 #define __clear_user(addr, n)		(memset((void __force *)addr, 0, n), 0)
 #endif
 
+/* 将数据从用户空间拷贝到内核
+ * @返回值 返回不能被拷贝的字节数，显然如果完全成功则返回0
+ *
+ * 备注：因为要访问“user”的内存空间，并且本函数可能需要休眠，所以本函数的使用必须处于进程上下文中
+ *       不可以在中断上下文中使用
+ */
 static inline unsigned long __must_check copy_from_user(void *to, const void __user *from, unsigned long n)
 {
+    // 首先检查源缓冲区是否位于用户空间
 	if (access_ok(VERIFY_READ, from, n))
 		n = __copy_from_user(to, from, n);
 	else /* security hole - plug it */
-		memset(to, 0, n);
+		memset(to, 0, n);       // 检查不通过的话就将内核数据空间清零
 	return n;
 }
 
+/* 将数据从内核拷贝到用户空间
+ * @返回值 返回不能被拷贝的字节数，显然如果完全成功则返回0
+ *
+ * 备注：因为要访问“user”的内存空间，并且本函数可能需要休眠，所以本函数的使用必须处于进程上下文中
+ *       不可以在中断上下文中使用
+ */
 static inline unsigned long __must_check copy_to_user(void __user *to, const void *from, unsigned long n)
 {
+    // 首先检查源缓冲区是否位于用户空间
 	if (access_ok(VERIFY_WRITE, to, n))
 		n = __copy_to_user(to, from, n);
 	return n;

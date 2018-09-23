@@ -540,7 +540,7 @@ static struct kobj_type ktype_cdev_dynamic = {
 
 /**
  * cdev_alloc() - allocate a cdev structure
- * 分配一个字符设备结构
+ * 分配一个字符设备结构并执行初始化
  *
  * Allocates and returns a cdev structure, or NULL on failure.
  */

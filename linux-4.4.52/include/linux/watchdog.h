@@ -18,7 +18,7 @@ struct watchdog_ops;
 struct watchdog_device;
 
 /** struct watchdog_ops - The watchdog-devices operations
- * 定义了看门狗设备的驱动接口结构
+ * 定义了具体的看门狗设备面向底层的驱动接口结构
  *
  * @owner:	The module owner.
  * @start:	The routine for starting the watchdog device.
@@ -82,9 +82,9 @@ struct watchdog_ops {
 struct watchdog_device {
 	int id;                             // 唯一标识该看门狗的id(0~MAX_DOGS)
 	struct cdev cdev;                   // 封装的基类字符设备模型
-	struct device *dev;                 // 封装的基类device模型
+	struct device *dev;                 // 指向基类device模型
 	struct device *parent;              // 指向该看门狗设备的父设备            
-	const struct watchdog_info *info;   // 指向该看门狗的信息块(可供用于空间使用)
+	const struct watchdog_info *info;   // 指向该看门狗的信息块(可供用户空间使用)
 	const struct watchdog_ops *ops;
 	unsigned int bootstatus;
 	unsigned int timeout;               // 该看门狗当前设置的超时值
@@ -92,7 +92,7 @@ struct watchdog_device {
 	unsigned int max_timeout;           // 支持的最大超时值
 	void *driver_data;
 	struct mutex lock;                  // 用于维护该看门狗内部成员的互斥锁，对外不透明
-	unsigned long status;               // 该看门狗当前状态集合(仅供内部使用)
+	unsigned long status;               // 该看门狗当前控制状态集合(仅供内部使用)
 /* Bit numbers for status flags */
 #define WDOG_ACTIVE		0	/* Is the watchdog running/active       标识该看门狗是否处于运行状态 */
 #define WDOG_DEV_OPEN		1	/* Opened via /dev/watchdog ?       标识该看门狗设备文件是否处于open状态 */
