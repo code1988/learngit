@@ -163,6 +163,7 @@ typedef __u64 __bitwise __addrpair;
 struct sock_common {
 	/* skc_daddr and skc_rcv_saddr must be grouped on a 8 bytes aligned
 	 * address on 64bit arches : cf INET_MATCH()
+     * 显然只有建立了连接的套接字才会记录了对端地址信息
 	 */
 	union {
 		__addrpair	skc_addrpair;
@@ -401,7 +402,7 @@ struct sock {
 	struct xfrm_policy __rcu *sk_policy[2];
 #endif
 	struct dst_entry	*sk_rx_dst;
-	struct dst_entry __rcu	*sk_dst_cache;
+	struct dst_entry __rcu	*sk_dst_cache;  // 该套接字缓存的出口路由表项，目的是为了节省路由查找时间
 	/* Note: 32bit hole on 64bit arches */
 	atomic_t		sk_wmem_alloc;      // 已经申请尚未发送的数据大小
 	atomic_t		sk_omem_alloc;
@@ -1482,6 +1483,7 @@ static inline void sk_wmem_free_skb(struct sock *sk, struct sk_buff *skb)
  *
  * Since ~2.3.5 it is also exclusive sleep lock serializing
  * accesses from user process context.
+ * 该套接字自旋锁被持有期间，将不会因为中断和底半部而发生变化，基本阻止接收任何数据包
  */
 #define sock_owned_by_user(sk)	((sk)->sk_lock.owned)
 
@@ -1743,6 +1745,7 @@ static inline void sk_rethink_txhash(struct sock *sk)
 		sk_set_txhash(sk);
 }
 
+// 获取套接字缓存的出口路由表项
 static inline struct dst_entry *
 __sk_dst_get(struct sock *sk)
 {

@@ -30,7 +30,7 @@
 
 struct sk_buff;
 
-// 定义了出口表项结构，代表了路由选择子系统的查找结果
+// 定义了出口路由表项结构，代表了路由选择子系统的查找结果
 struct dst_entry {
 	struct rcu_head		rcu_head;
 	struct dst_entry	*child;
@@ -74,6 +74,7 @@ struct dst_entry {
 	 *
 	 * Negative values are used by the implementation layer code to
 	 * force invocation of the dst_ops->check() method.
+     * 非0值表示强制手动校验路由表项
 	 */
 	short			obsolete;
 #define DST_OBSOLETE_NONE	0

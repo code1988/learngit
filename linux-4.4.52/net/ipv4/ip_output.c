@@ -403,12 +403,17 @@ int ip_queue_xmit(struct sock *sk, struct sk_buff *skb, struct flowi *fl)
 	if (rt)
 		goto packet_routed;
 
-	/* Make sure we can route this packet. */
+	/* Make sure we can route this packet. 
+     * 检查该套接字是否已经缓存了有效出口路由表项
+     * */
 	rt = (struct rtable *)__sk_dst_check(sk, 0);
+    // 如果未缓存，则需要进入路由选择子系统为该报文查找出口路由
 	if (!rt) {
 		__be32 daddr;
 
-		/* Use correct destination address if we have options. */
+		/* Use correct destination address if we have options. 
+         * 如果设置了严格路由选择选项标志，就将目的地址设置为ip选项中的第一个地址
+         * */
 		daddr = inet->inet_daddr;
 		if (inet_opt && inet_opt->opt.srr)
 			daddr = inet_opt->opt.faddr;
@@ -416,6 +421,7 @@ int ip_queue_xmit(struct sock *sk, struct sk_buff *skb, struct flowi *fl)
 		/* If this fails, retransmit mechanism of transport layer will
 		 * keep trying until route appears or the connection times
 		 * itself out.
+         * 在路由选择子系统中执行查找，如果失败，传输层中的重传机制将不断尝试，直到有可用路由或连接超时
 		 */
 		rt = ip_route_output_ports(net, fl4, sk,
 					   daddr, inet->inet_saddr,
@@ -428,6 +434,8 @@ int ip_queue_xmit(struct sock *sk, struct sk_buff *skb, struct flowi *fl)
 			goto no_route;
 		sk_setup_caps(sk, &rt->dst);
 	}
+
+    // 设置skb的SKB_DST_NOREF标识
 	skb_dst_set_noref(skb, &rt->dst);
 
 packet_routed:

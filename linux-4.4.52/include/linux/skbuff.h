@@ -797,6 +797,7 @@ static inline void skb_dst_set(struct sk_buff *skb, struct dst_entry *dst)
 
 /**
  * skb_dst_set_noref - sets skb dst, hopefully, without taking reference
+ * 设置skb的SKB_DST_NOREF标识
  * @skb: buffer
  * @dst: dst entry
  *
@@ -813,6 +814,7 @@ static inline void skb_dst_set_noref(struct sk_buff *skb, struct dst_entry *dst)
 
 /**
  * skb_dst_is_noref - Test if skb dst isn't refcounted
+ *                      检查skb是否设置了SKB_DST_NOREF标识且存在出口路由表项
  * @skb: buffer
  */
 static inline bool skb_dst_is_noref(const struct sk_buff *skb)

@@ -534,10 +534,13 @@ discard_and_relse:
 }
 EXPORT_SYMBOL(sk_receive_skb);
 
+// 获取套接字缓存的有效出口路由表项
 struct dst_entry *__sk_dst_check(struct sock *sk, u32 cookie)
 {
+    // 获取套接字缓存的出口路由表项
 	struct dst_entry *dst = __sk_dst_get(sk);
 
+    // 如果缓存了出口路由表项，且配置了强制手动校验，则需要执行校验
 	if (dst && dst->obsolete && dst->ops->check(dst, cookie) == NULL) {
 		sk_tx_queue_clear(sk);
 		RCU_INIT_POINTER(sk->sk_dst_cache, NULL);
