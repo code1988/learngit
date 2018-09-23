@@ -557,7 +557,7 @@ static int watchdog_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
-// 定义了看门狗设备提供给文件系统的接口集合(看门狗杂项设备和字符设备共用这套接口)
+// 定义了看门狗类设备统一提供给文件系统的接口集合(看门狗杂项设备和字符设备共用这套接口)
 static const struct file_operations watchdog_fops = {
 	.owner		= THIS_MODULE,
 	.write		= watchdog_write,

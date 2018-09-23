@@ -615,7 +615,7 @@ struct inode {
 		const unsigned int i_nlink;
 		unsigned int __i_nlink;
 	};
-	dev_t			i_rdev;     // 设备号
+	dev_t			i_rdev;     // 关联的设备号
 	loff_t			i_size;
 	struct timespec		i_atime;
 	struct timespec		i_mtime;
@@ -665,8 +665,8 @@ struct inode {
 	struct list_head	i_devices;
 	union {
 		struct pipe_inode_info	*i_pipe;
-		struct block_device	*i_bdev;
-		struct cdev		*i_cdev;
+		struct block_device	*i_bdev;// 如果该文件为块设备文件，则指向关联的块设备
+		struct cdev		*i_cdev;    // 如果该文件为字符设备文件，则指向关联的字符设备
 		char			*i_link;
 	};
 

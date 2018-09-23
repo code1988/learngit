@@ -372,13 +372,16 @@ static int chrdev_open(struct inode *inode, struct file *filp)
 		struct kobject *kobj;
 		int idx;
 		spin_unlock(&cdev_lock);
+        // 根据设备号在cdev_map对象中查找该设备对应的kobject对象，进而获取对应字符设备结构
 		kobj = kobj_lookup(cdev_map, inode->i_rdev, &idx);
 		if (!kobj)
 			return -ENXIO;
 		new = container_of(kobj, struct cdev, kobj);
 		spin_lock(&cdev_lock);
 		/* Check i_cdev again in case somebody beat us to it while
-		   we dropped the lock. */
+		   we dropped the lock. 
+           绑定该字符设备前要再次检查避免重复绑定
+           */
 		p = inode->i_cdev;
 		if (!p) {
 			inode->i_cdev = p = new;
