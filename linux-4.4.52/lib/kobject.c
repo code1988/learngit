@@ -587,6 +587,7 @@ EXPORT_SYMBOL(kobject_del);
 
 /**
  * kobject_get - increment refcount for object.
+ * 指定kobject对象的引用计数加1 
  * @kobj: object.
  */
 struct kobject *kobject_get(struct kobject *kobj)
@@ -678,6 +679,7 @@ static void kobject_release(struct kref *kref)
 
 /**
  * kobject_put - decrement refcount for object.
+ * 指定kobject对象的引用计数减1,减到0时删除该kobject对象
  * @kobj: object.
  *
  * Decrement the refcount, and if 0, call kobject_cleanup().
