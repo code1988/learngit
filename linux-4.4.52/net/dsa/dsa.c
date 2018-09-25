@@ -746,7 +746,7 @@ static int dsa_of_probe(struct device *dev)
 	u32 eeprom_len;
 	int ret;
 
-    // 获取记录了mdio设备信息的dts节点
+    // 获取跟该dsa dts节点关联的mdio dts节点
 	mdio = of_parse_phandle(np, "dsa,mii-bus", 0);
 	if (!mdio)
 		return -EINVAL;
@@ -1063,9 +1063,13 @@ static void dsa_shutdown(struct platform_device *pdev)
 {
 }
 
+// 设备收到dsa报文的处理入口
 static int dsa_switch_rcv(struct sk_buff *skb, struct net_device *dev,
 			  struct packet_type *pt, struct net_device *orig_dev)
 {
+    /* 这个收到dsa报文的设备大概率寄生了一个dsa实例的
+     * 这里实际就是找到该dsa实例，进而调用rcv方法处理收到的dsa报文
+     */
 	struct dsa_switch_tree *dst = dev->dsa_ptr;
 
 	if (unlikely(dst == NULL)) {
@@ -1159,7 +1163,7 @@ static int __init dsa_init_module(void)
 	if (rc)
 		return rc;
 
-    // 注册具体的DSA协议
+    // 注册DSA报文接收处理方法到内核
 	dev_add_pack(&dsa_pack_type);
 
 	return 0;

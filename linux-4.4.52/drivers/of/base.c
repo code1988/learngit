@@ -2,6 +2,9 @@
  * Procedures for creating, accessing and interpreting the device tree.
  * 创建、访问和解释设备树的过程
  *
+ * 备注：
+ *      phandle是dts设备节点中一种特殊的属性，指向一个关联的dts设备节点，或者是一组关联的dts设备节点列表
+ *
  * Paul Mackerras	August 1996.
  * Copyright (C) 1996-2005 Paul Mackerras.
  *
