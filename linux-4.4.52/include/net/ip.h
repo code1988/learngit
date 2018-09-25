@@ -307,9 +307,11 @@ static inline bool ip_sk_ignore_df(const struct sock *sk)
 	       inet_sk(sk)->pmtudisc == IP_PMTUDISC_OMIT;
 }
 
+// 返回指定路由表项出口网络设备支持的mtu
 static inline unsigned int ip_dst_mtu_maybe_forward(const struct dst_entry *dst,
 						    bool forwarding)
 {
+    // 获取该路由表项关联的出口网络设备所属的net命名空间
 	struct net *net = dev_net(dst->dev);
 
 	if (net->ipv4.sysctl_ip_fwd_use_pmtu ||

@@ -39,24 +39,36 @@
 #include <net/route.h>
 #include <net/xfrm.h>
 
+/* 判断skb中承载的ipv4报文是否超出mtu大小
+ * @返回值：    true    - 超出
+ *              false   - 不超出
+ */
 static bool ip_exceeds_mtu(const struct sk_buff *skb, unsigned int mtu)
 {
+    // 如果skb中数据总厂不超过mtu，则肯定不超
 	if (skb->len <= mtu)
 		return false;
 
+    // 数据总长超出mtu的情况下，如果该ipv4报文中没有置位DF标志，意味着允许被分片，所以相当于不超
 	if (unlikely((ip_hdr(skb)->frag_off & htons(IP_DF)) == 0))
 		return false;
 
-	/* original fragment exceeds mtu and DF is set */
+    // 程序运行到这里意味着数据总长超出mtu、DF置位
+	/* original fragment exceeds mtu and DF is set 
+     * 如果分片的最大长度超过mtu，则判定超出
+     * */
 	if (unlikely(IPCB(skb)->frag_max_size > mtu))
 		return true;
 
+    // 如果该skb设置了忽略DF位，意味着允许被分片，所以也相当于不超
 	if (skb->ignore_df)
 		return false;
 
+    // 如果该skb支持gso，且gso数据包在L3层中的单个分段长不超过mtu，则认为不超
 	if (skb_is_gso(skb) && skb_gso_network_seglen(skb) <= mtu)
 		return false;
 
+    // 其他情况下都认为超出
 	return true;
 }
 
@@ -127,7 +139,9 @@ int ip_forward(struct sk_buff *skb)
 		goto sr_failed;
 
 	IPCB(skb)->flags |= IPSKB_FORWARDED;
+    // 获取该路由表项出口网络设备支持的mtu
 	mtu = ip_dst_mtu_maybe_forward(&rt->dst, true);
+    // 判断该ipv4报文是否超出mtu大小，对于超出的报文，这里会发送一个"目的不可达-需要分片"的icmp报文
 	if (ip_exceeds_mtu(skb, mtu)) {
 		IP_INC_STATS(net, IPSTATS_MIB_FRAGFAILS);
 		icmp_send(skb, ICMP_DEST_UNREACH, ICMP_FRAG_NEEDED,

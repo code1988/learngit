@@ -206,11 +206,14 @@ static int ip_local_deliver_finish(struct net *net, struct sock *sk, struct sk_b
         // ip层原始套接字处理入口
 		raw = raw_local_deliver(skb, protocol);
 
-        // 获取该ipv4协议注册的协议信息
 		ipprot = rcu_dereference(inet_protos[protocol]);
 		if (ipprot) {
+            // 以下是该ipv4报文对应的L4层协议匹配成功的情况
 			int ret;
 
+            /* 如果这类ipv4协议配置了策略检查的需求，则在这里进行ipsec策略检查
+             * 备注：4.4.52版本中所有基础ipv4协议的no_policy字段都为1
+             */
 			if (!ipprot->no_policy) {
 				if (!xfrm4_policy_check(NULL, XFRM_POLICY_IN, skb)) {
 					kfree_skb(skb);
@@ -218,6 +221,7 @@ static int ip_local_deliver_finish(struct net *net, struct sock *sk, struct sk_b
 				}
 				nf_reset(skb);
 			}
+            // 将该报文递交给上层(L4层)处理
 			ret = ipprot->handler(skb);
 			if (ret < 0) {
 				protocol = -ret;
@@ -225,6 +229,10 @@ static int ip_local_deliver_finish(struct net *net, struct sock *sk, struct sk_b
 			}
 			IP_INC_STATS_BH(net, IPSTATS_MIB_INDELIVERS);
 		} else {
+            // 以下是该ipv4报文对应的L4层协议未支持的情况
+            /* 如果用户进程没有注册该未知L4层协议的ip层原始套接字，则进行ipsec策略检查，只有通过检查的才会发送目的不可达的icmp消息;
+             * 如果用户进程注册了该未知L4层协议的ip层原始套接字，就变相认为该L4层协议已知，所以不会发目的不可达的icmp消息
+             */
 			if (!raw) {
 				if (xfrm4_policy_check(NULL, XFRM_POLICY_IN, skb)) {
 					IP_INC_STATS_BH(net, IPSTATS_MIB_INUNKNOWNPROTOS);

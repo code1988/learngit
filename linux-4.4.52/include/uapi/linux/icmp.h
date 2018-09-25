@@ -39,9 +39,12 @@
 /* Codes for UNREACH. 目的不可达类消息的细分类型 */
 #define ICMP_NET_UNREACH	0	/* Network Unreachable		*/
 #define ICMP_HOST_UNREACH	1	/* Host Unreachable		*/
-#define ICMP_PROT_UNREACH	2	/* Protocol Unreachable	协议不可达(ip头中协议字段的协议号不支持)	*/
-#define ICMP_PORT_UNREACH	3	/* Port Unreachable		*/
-#define ICMP_FRAG_NEEDED	4	/* Fragmentation Needed/DF set	*/
+#define ICMP_PROT_UNREACH	2	/* Protocol Unreachable	
+                                   协议不可达(ipv4头中协议字段的协议号不支持)	*/
+#define ICMP_PORT_UNREACH	3	/* Port Unreachable		
+                                   端口不可达(收到的udp报文找不到匹配的套接字，但报文校验和正确) */
+#define ICMP_FRAG_NEEDED	4	/* Fragmentation Needed/DF set	
+                                   需要分片(转发ipv4报文时，如果其长度超过了出口网络设备的mtu,且该ipv4头中没有设置DF位) */
 #define ICMP_SR_FAILED		5	/* Source Route failed		*/
 #define ICMP_NET_UNKNOWN	6
 #define ICMP_HOST_UNKNOWN	7

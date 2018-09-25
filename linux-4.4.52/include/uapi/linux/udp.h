@@ -19,11 +19,12 @@
 
 #include <linux/types.h>
 
+// udp头结构
 struct udphdr {
-	__be16	source;
-	__be16	dest;
+	__be16	source; // 源端口号
+	__be16	dest;   // 目的端口号
 	__be16	len;
-	__sum16	check;
+	__sum16	check;  // 校验和
 };
 
 /* UDP socket options */

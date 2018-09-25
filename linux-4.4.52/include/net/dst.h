@@ -34,7 +34,7 @@ struct sk_buff;
 struct dst_entry {
 	struct rcu_head		rcu_head;
 	struct dst_entry	*child;
-	struct net_device       *dev;       // 指向该路由的输出网络设备
+	struct net_device       *dev;       // 指向该路由的出口网络设备
 	struct  dst_ops	        *ops;
 	unsigned long		_metrics;
 	unsigned long           expires;

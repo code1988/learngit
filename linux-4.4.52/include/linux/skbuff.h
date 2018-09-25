@@ -3676,6 +3676,7 @@ static inline __sum16 gso_make_checksum(struct sk_buff *skb, __wsum res)
 	return csum_fold(partial);
 }
 
+// 判断该skb是否支持gso
 static inline bool skb_is_gso(const struct sk_buff *skb)
 {
 	return skb_shinfo(skb)->gso_size;
@@ -3751,6 +3752,7 @@ static inline bool skb_head_is_locked(const struct sk_buff *skb)
 
 /**
  * skb_gso_network_seglen - Return length of individual segments of a gso packet
+ * 返回一个gso数据包在L3层中的单个分段长
  *
  * @skb: GSO skb
  *
@@ -3761,6 +3763,7 @@ static inline bool skb_head_is_locked(const struct sk_buff *skb)
  */
 static inline unsigned int skb_gso_network_seglen(const struct sk_buff *skb)
 {
+    // 首先计算L3层头长
 	unsigned int hdr_len = skb_transport_header(skb) -
 			       skb_network_header(skb);
 	return hdr_len + skb_gso_transport_seglen(skb);

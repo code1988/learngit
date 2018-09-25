@@ -4308,6 +4308,7 @@ EXPORT_SYMBOL_GPL(skb_scrub_packet);
 
 /**
  * skb_gso_transport_seglen - Return length of individual segments of a gso packet
+ * 返回一个gso数据包在L4层中的单个分段长
  *
  * @skb: GSO skb
  *

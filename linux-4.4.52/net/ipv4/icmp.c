@@ -291,7 +291,10 @@ EXPORT_SYMBOL(icmp_global_allow);
 /*
  *	Send an ICMP frame.
  */
-
+/* 检查是否当前允许发送icmp报文，显然本函数用来实现icmp的速率限制功能
+ * @返回值：    true    - 允许发送
+ *              false   - 不允许发送
+ */
 static bool icmpv4_xrlim_allow(struct net *net, struct rtable *rt,
 			       struct flowi4 *fl4, int type, int code)
 {
@@ -568,6 +571,10 @@ relookup_failed:
 /*
  *	Send an ICMP message in response to a situation
  *	发送一个指定类型指定编号的icmpv4消息
+ *	@info   本参数只用于下列情况之一：
+ *	            对于ICMP_PARAMETERPROB类型消息，本参数表示ipv4头中发生分析问题的位置的偏移量;
+ *	            对于ICMP_DEST_UNREACH-ICMP_FRAG_NEEDED类型消息，本参数表示mtu
+ *	            对于ICMP_REDIRECT-ICMP_REDIR_HOST类型消息，本参数表示ipv4头中的目标ip地址
  *
  *	RFC 1122: 3.2.2	MUST send at least the IP header and 8 bytes of header.
  *		  MAY send more (we do).

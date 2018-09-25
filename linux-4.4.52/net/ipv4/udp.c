@@ -573,6 +573,7 @@ begin:
 }
 EXPORT_SYMBOL_GPL(__udp4_lib_lookup);
 
+// 根据源端口号和目的端口号在udp表中查找匹配的套接字
 static inline struct sock *__udp4_lib_lookup_skb(struct sk_buff *skb,
 						 __be16 sport, __be16 dport,
 						 struct udp_table *udptable)
@@ -1754,6 +1755,7 @@ static inline int udp4_csum_init(struct sk_buff *skb, struct udphdr *uh,
  *	All we need to do is get the socket, and then do a checksum.
  */
 
+// L4层真正处理ipv4-udp报文的地方(软中断上下文)
 int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
 		   int proto)
 {
@@ -1810,6 +1812,7 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
 		return __udp4_lib_mcast_deliver(net, skb, uh,
 						saddr, daddr, udptable, proto);
 
+    // 根据源端口号和目的端口号在udptable中查找匹配的套接字
 	sk = __udp4_lib_lookup_skb(skb, uh->source, uh->dest, udptable);
 	if (sk) {
 		int ret;
@@ -1829,15 +1832,20 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
 		return 0;
 	}
 
+    // 程序运行到这里意味着没有为该udpv4报文找到匹配的套接字
+    // 对该无主的udpv4报文进行ipsec策略检查
 	if (!xfrm4_policy_check(NULL, XFRM_POLICY_IN, skb))
 		goto drop;
 	nf_reset(skb);
 
-	/* No socket. Drop packet silently, if checksum is wrong */
+	/* No socket. Drop packet silently, if checksum is wrong 
+     * 如果该无主的udpv4报文校验和错误，则默默丢弃
+     * */
 	if (udp_lib_checksum_complete(skb))
 		goto csum_error;
 
 	UDP_INC_STATS_BH(net, UDP_MIB_NOPORTS, proto == IPPROTO_UDPLITE);
+    // 对于校验和正确的无主的udpv4报文，这里会发送一条"目的不可达-端口不可达"的icmpv4消息
 	icmp_send(skb, ICMP_DEST_UNREACH, ICMP_PORT_UNREACH, 0);
 
 	/*
@@ -2029,7 +2037,7 @@ void udp_v4_early_demux(struct sk_buff *skb)
 	}
 }
 
-// ipv4-udp报文网络层->传输层的入口函数
+// ipv4-udp报文网络层->传输层的入口函数(软中断上下文)(显然只是个封装)，被注册在icmp_protocol中
 int udp_rcv(struct sk_buff *skb)
 {
 	return __udp4_lib_rcv(skb, &udp_table, IPPROTO_UDP);

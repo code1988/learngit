@@ -1773,7 +1773,7 @@ static int __init inet_init(void)
 	/*
 	 *	Add all the base protocols.
      *	注册几个基本的基于ipv4的协议到内核中，包括ICMP、UDP、TCP、IGMP 
-     *	实际就是注册了这些协议报文从网络层->传输层的接口 
+     *	实际就是注册了这些协议报文从L3层->L4层的接口 
      */
 	if (inet_add_protocol(&icmp_protocol, IPPROTO_ICMP) < 0)
 		pr_crit("%s: Cannot add ICMP protocol\n", __func__);

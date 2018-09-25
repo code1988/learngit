@@ -42,7 +42,7 @@
  * */
 struct net_protocol {
 	void			(*early_demux)(struct sk_buff *skb);
-	int			(*handler)(struct sk_buff *skb);        // 收到该协议的报文时的处理方法，通常就是数据从网络层进入传输层的入口
+	int			(*handler)(struct sk_buff *skb);        // 收到该ipv4协议的报文时的处理方法，即报文从L3层进入L4层的入口
 	void			(*err_handler)(struct sk_buff *skb, u32 info);  // 收到该协议的错误报文时的处理方法
 	unsigned int		no_policy:1,                    // 1-无需执行IPsec策略检查;0-要进行IPsec策略检查
 				netns_ok:1,                             // 标识是否支持多网络命名空间 
