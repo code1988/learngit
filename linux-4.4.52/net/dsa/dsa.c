@@ -751,12 +751,12 @@ static int dsa_of_probe(struct device *dev)
 	if (!mdio)
 		return -EINVAL;
 
-    // 根据得到的mdio dts节点进一步获取对应的mdio设备
+    // 根据得到的mdio dts节点进一步获取对应的mdio总线设备
 	mdio_bus = of_mdio_find_bus(mdio);
 	if (!mdio_bus)
 		return -EPROBE_DEFER;
 
-    // 获取记录了以太网控制器信息的dts节点
+    // 获取跟该dsa dts节点关联的以太网控制器dts节点
 	ethernet = of_parse_phandle(np, "dsa,ethernet", 0);
 	if (!ethernet) {
 		ret = -EINVAL;

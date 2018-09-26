@@ -131,7 +131,7 @@ static inline const char *phy_modes(phy_interface_t interface)
 #define PHY_FORCE_TIMEOUT	10
 #define PHY_AN_TIMEOUT		10
 
-#define PHY_MAX_ADDR	32
+#define PHY_MAX_ADDR	32      // phy/switch的地址序号上限
 
 /* Used when trying to connect to a specific phy (mii bus id:phy device id) */
 #define PHY_ID_FMT "%s:%02x"
@@ -152,35 +152,42 @@ struct sk_buff;
 /*
  * The Bus class for PHYs.  Devices which provide access to
  * PHYs should register using this structure
+ * 定义了mii总线模型(实际也被视为一类设备)，用户必须要使用该总线才能访问phy
  */
 struct mii_bus {
 	struct module *owner;
-	const char *name;
-	char id[MII_BUS_ID_SIZE];
-	void *priv;
-	int (*read)(struct mii_bus *bus, int phy_id, int regnum);
-	int (*write)(struct mii_bus *bus, int phy_id, int regnum, u16 val);
+	const char *name;           // 该mii总线名
+	char id[MII_BUS_ID_SIZE];   // 该mii总线的字符串ID号
+	void *priv;                 // 该mii总线的私有空间(比如可能指向所属的switch实例) 
+	int (*read)(struct mii_bus *bus, int phy_id, int regnum);           // 该mii总线提供的读phy寄存器方法
+	int (*write)(struct mii_bus *bus, int phy_id, int regnum, u16 val); // 该mii总线提供的写phy寄存器方法
 	int (*reset)(struct mii_bus *bus);
 
 	/*
 	 * A lock to ensure that only one thing can read/write
 	 * the MDIO bus at a time
+     * 该互斥锁用于维护读/写操作
 	 */
 	struct mutex mdio_lock;
 
-	struct device *parent;
+	struct device *parent;  // 指向该mii-bus设备的宿主device结构
 	enum {
 		MDIOBUS_ALLOCATED = 1,
 		MDIOBUS_REGISTERED,
 		MDIOBUS_UNREGISTERED,
 		MDIOBUS_RELEASED,
-	} state;
-	struct device dev;
+	} state;                // 该mii总线当前状态
+	struct device dev;      // 封装的linux基本设备结构，所以mii-bus也被视为一种设备
 
-	/* list of all PHYs on bus */
+	/* list of all PHYs on bus 
+     * 这张表记录了该mii总线实际关联的phy设备
+     * */
 	struct phy_device *phy_map[PHY_MAX_ADDR];
 
-	/* PHY addresses to be ignored when probing */
+	/* PHY addresses to be ignored when probing 
+     * 该mii总线在扫描时需要忽略的phy地址集合
+     * 每一位代表一个phy地址，总共支持32个phy地址
+     * */
 	u32 phy_mask;
 
 	/* PHY addresses to ignore the TA/read failure */
@@ -195,6 +202,7 @@ struct mii_bus {
 #define to_mii_bus(d) container_of(d, struct mii_bus, dev)
 
 struct mii_bus *mdiobus_alloc_size(size_t);
+// 申请一个不带私有空间的mii-bus设备
 static inline struct mii_bus *mdiobus_alloc(void)
 {
 	return mdiobus_alloc_size(0);
@@ -328,6 +336,7 @@ struct phy_c45_device_ids {
 };
 
 /* phy_device: An instance of a PHY
+ * 定义了phy设备模型
  *
  * drv: Pointer to the driver for this PHY instance
  * bus: Pointer to the bus this PHY is on
@@ -366,9 +375,9 @@ struct phy_device {
 	/* And management functions */
 	struct phy_driver *drv;
 
-	struct mii_bus *bus;
+	struct mii_bus *bus;    // 指向该phy绑定的mii总线
 
-	struct device dev;
+	struct device dev;      // 封装的linux基本设备结构
 
 	u32 phy_id;
 
@@ -385,7 +394,9 @@ struct phy_device {
 
 	phy_interface_t interface;
 
-	/* Bus address of the PHY (0-31) */
+	/* Bus address of the PHY (0-31) 
+     * 32位的phy地址，也就是phy id(在DSA中也就是端口号)
+     * */
 	int addr;
 
 	/*
@@ -409,7 +420,7 @@ struct phy_device {
 	u32 advertising;
 	u32 lp_advertising;
 
-	int autoneg;
+	int autoneg;        // 标识是否使能自协商
 
 	int link_timeout;
 
