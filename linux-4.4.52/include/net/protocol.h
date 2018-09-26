@@ -38,7 +38,7 @@
 #define MAX_INET_PROTOS		256
 
 /* This is used to register protocols. 
- * 一个ipv4协议的信息结构
+ * 一个ipv4协议处理结构
  * */
 struct net_protocol {
 	void			(*early_demux)(struct sk_buff *skb);

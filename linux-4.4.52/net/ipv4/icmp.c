@@ -218,11 +218,13 @@ static inline struct sock *icmp_xmit_lock(struct net *net)
 {
 	struct sock *sk;
 
+    // 关闭软中断?
 	local_bh_disable();
 
     // 返回该net命名空间中当前cpu对应的icmp内核套接字
 	sk = icmp_sk(net);
 
+    // 对该icmp内核套接字上自旋锁
 	if (unlikely(!spin_trylock(&sk->sk_lock.slock))) {
 		/* This can happen if the output path signals a
 		 * dst_link_failure() for an outgoing ICMP packet.
@@ -360,7 +362,7 @@ static int icmp_glue_bits(void *from, char *to, int offset, int len, int odd,
 	return 0;
 }
 
-// 发送icmp报文
+// 发送icmp报文，icmp查询消息和错误消息最终都要调用本函数完成icmp报文发送
 static void icmp_push_reply(struct icmp_bxm *icmp_param,
 			    struct flowi4 *fl4,
 			    struct ipcm_cookie *ipc, struct rtable **rt)
@@ -368,7 +370,9 @@ static void icmp_push_reply(struct icmp_bxm *icmp_param,
 	struct sock *sk;
 	struct sk_buff *skb;
 
+    // 获取发送该icmp报文的内核icmp套接字
 	sk = icmp_sk(dev_net((*rt)->dst.dev));
+    // 将数据包递交给L3层
 	if (ip_append_data(sk, fl4, icmp_glue_bits, icmp_param,
 			   icmp_param->data_len+icmp_param->head_len,
 			   icmp_param->head_len,
@@ -570,7 +574,8 @@ relookup_failed:
 
 /*
  *	Send an ICMP message in response to a situation
- *	发送一个指定类型指定编号的icmpv4消息
+ *	发送一个指定类型指定编号的icmpv4错误消息
+ *	@skb_in 承载的是触发源消息
  *	@info   本参数只用于下列情况之一：
  *	            对于ICMP_PARAMETERPROB类型消息，本参数表示ipv4头中发生分析问题的位置的偏移量;
  *	            对于ICMP_DEST_UNREACH-ICMP_FRAG_NEEDED类型消息，本参数表示mtu
@@ -609,6 +614,7 @@ void icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info)
 	 */
 	iph = ip_hdr(skb_in);
 
+    // skb中原始数据合法性检查
 	if ((u8 *)iph < skb_in->head ||
 	    (skb_network_header(skb_in) + sizeof(*iph)) >
 	    skb_tail_pointer(skb_in))
@@ -616,6 +622,7 @@ void icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info)
 
 	/*
 	 *	No replies to physical multicast/broadcast
+     *	如果skb中原始报文的目的mac不是本机，意味着是mac组播或mac广播报文，则终止本次icmp发送
 	 */
 	if (skb_in->pkt_type != PACKET_HOST)
 		goto out;
@@ -629,12 +636,14 @@ void icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info)
 	/*
 	 *	Only reply to fragment 0. We byte re-order the constant
 	 *	mask for efficiency.
+     *	icmp只会针对分片偏移量为0的报文进行回复
 	 */
 	if (iph->frag_off & htons(IP_OFFSET))
 		goto out;
 
 	/*
 	 *	If we send an ICMP error to an ICMP error a mess would result..
+     *	如果收到原始报文是icmp错误消息，则不需要发送icmp错误消息
 	 */
 	if (icmp_pointers[type].error) {
 		/*
@@ -644,6 +653,7 @@ void icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info)
 		if (iph->protocol == IPPROTO_ICMP) {
 			u8 _inner_type, *itp;
 
+            // 获取原始icmp头中的type字段 
 			itp = skb_header_pointer(skb_in,
 						 skb_network_header(skb_in) +
 						 (iph->ihl << 2) +
@@ -658,6 +668,7 @@ void icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info)
 			/*
 			 *	Assume any unknown ICMP type is an error. This
 			 *	isn't specified by the RFC, but think about it..
+             *	如果原始icmp报文包含不支持的icmp类型，或者是icmp错误消息，都将终止本次icmp错误消息的发送
 			 */
 			if (*itp > NR_ICMP_TYPES ||
 			    icmp_pointers[*itp].error)
@@ -669,6 +680,7 @@ void icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info)
 	if (!icmp_param)
 		return;
 
+    // 获取出口网络设备所属net命名空间中当前cpu对应的icmp内核套接字
 	sk = icmp_xmit_lock(net);
 	if (!sk)
 		goto out_free;
@@ -698,7 +710,7 @@ void icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info)
 					  iph->tos;
 	mark = IP4_REPLY_MARK(net, skb_in->mark);
 
-    // 收集ip选项字段的信息
+    // 从原始ipv4报文中收集ip选项字段的信息
 	if (ip_options_echo(&icmp_param->replyopts.opt.opt, skb_in))
 		goto out_unlock;
 

@@ -1,7 +1,9 @@
 #ifndef _LINUX_IN_ROUTE_H
 #define _LINUX_IN_ROUTE_H
 
-/* IPv4 routing cache flags */
+/* IPv4 routing cache flags 
+ * 以下是ipv4路由表缓冲区标志，用于设置struct rtable->rt_flags
+ * */
 
 #define RTCF_DEAD	RTNH_F_DEAD
 #define RTCF_ONLINK	RTNH_F_ONLINK
@@ -20,10 +22,10 @@
 #define RTCF_DOREDIRECT 0x01000000
 #define RTCF_DIRECTSRC	0x04000000
 #define RTCF_DNAT	0x08000000
-#define RTCF_BROADCAST	0x10000000
-#define RTCF_MULTICAST	0x20000000
+#define RTCF_BROADCAST	0x10000000  // 路由结果类型为广播
+#define RTCF_MULTICAST	0x20000000  // 路由结果类型为组播
 #define RTCF_REJECT	0x40000000 /* unused */
-#define RTCF_LOCAL	0x80000000
+#define RTCF_LOCAL	0x80000000      // 路由使用本地环回接口
 
 #define RTCF_NAT	(RTCF_DNAT|RTCF_SNAT)
 

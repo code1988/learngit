@@ -66,7 +66,7 @@
 
 /* Codes for TIME_EXCEEDED. 超时类消息的细分类型 */
 #define ICMP_EXC_TTL		0	/* TTL count exceeded  TTL耗尽		*/
-#define ICMP_EXC_FRAGTIME	1	/* Fragment Reass time exceeded 分片回收超时	*/
+#define ICMP_EXC_FRAGTIME	1	/* Fragment Reass time exceeded 分片回收(重组)超时	*/
 
 // icmpv4报文头结构
 struct icmphdr {

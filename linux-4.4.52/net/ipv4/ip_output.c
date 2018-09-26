@@ -1160,6 +1160,7 @@ static int ip_setup_cork(struct sock *sk, struct inet_cork *cork,
  *	from many pieces of data. Each pieces will be holded on the socket
  *	until ip_push_pending_frames() is called. Each piece can be a page
  *	or non-page data.
+ *	L3层处理L4层下发的数据的入口函数
  *
  *	Not only UDP, other transport protocols - e.g. raw sockets - can use
  *	this interface potentially.

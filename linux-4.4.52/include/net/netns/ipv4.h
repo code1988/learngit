@@ -22,12 +22,15 @@ struct local_ports {
 	bool		warned;
 };
 
+// ping套接字权限配置集结构
 struct ping_group_range {
 	seqlock_t	lock;
 	kgid_t		range[2];
 };
 
-// 用于网络命名空间层面的ipv4信息管理块
+/* 网络命名空间层面的ipv4配置信息集合结构
+ * 备注：这个结构中大部分变量都对应了procfs条目
+ */
 struct netns_ipv4 {
 #ifdef CONFIG_SYSCTL
 	struct ctl_table_header	*forw_hdr;
@@ -69,12 +72,17 @@ struct netns_ipv4 {
 	struct xt_table		*nat_table;
 #endif
 
-	int sysctl_icmp_echo_ignore_all;        // 标识是否关闭ping应答功能(缺省为0)
-	int sysctl_icmp_echo_ignore_broadcasts; // 标识是否关闭广播/组播回应功能(缺省为1)
-	int sysctl_icmp_ignore_bogus_error_responses;
-	int sysctl_icmp_ratelimit;
-	int sysctl_icmp_ratemask;
-	int sysctl_icmp_errors_use_inbound_ifaddr;
+	int sysctl_icmp_echo_ignore_all;        // 标识是否关闭对ping请求报文的应答功能(缺省为0)
+	int sysctl_icmp_echo_ignore_broadcasts; // 标识是否关闭对ip广播/组播ping/时间戳请求报文的应答功能(缺省为1)
+	int sysctl_icmp_ignore_bogus_error_responses;   // 标识是否关闭告警信息"<IPv4Addr>sent an invalid ICMP type. . ."
+	int sysctl_icmp_ratelimit;              /* 对于类型与icmp速率掩码匹配的的icmp报文，将其最大速率限制为该值
+                                               该值为0表示禁用速率限制(缺省为1*HZ) */
+	int sysctl_icmp_ratemask;               /* 指定要进行速率限制的icmp消息类型集合，掩码格式，每位代表一种icmp消息类型
+                                               (缺省为0x1818,即对应了4种icmp消息类型：
+                                               ICMP_PARAMETERPROB、ICMP_TIME_EXCEEDED、ICMP_SOURCE_QUENCH、ICMP_DEST_UNREACH) */
+	int sysctl_icmp_errors_use_inbound_ifaddr;  /* 0表示发送icmp错误消息时将使用出口网络设备的主地址
+                                                   非0表示发送icmp错误消息时将使用收到的引起该icmp错误的数据包的入口网络设备的主地址
+                                                   (缺省为0) */
 
 	struct local_ports ip_local_ports;
 
@@ -92,7 +100,8 @@ struct netns_ipv4 {
 	int sysctl_tcp_probe_threshold;
 	u32 sysctl_tcp_probe_interval;
 
-	struct ping_group_range ping_group_range;
+	struct ping_group_range ping_group_range;   /* ping套接字的权限配置集
+                                                   (缺省为"1 0"，意味着任何用户（包括root用户）都不允许创建ping套接字) */
 
 	atomic_t dev_addr_genid;
 

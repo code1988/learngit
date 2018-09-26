@@ -1536,14 +1536,14 @@ EXPORT_SYMBOL_GPL(snmp_fold_field64);
 #endif
 
 #ifdef CONFIG_IP_MULTICAST
-// 定义了一个IGMPv4协议的信息结构
+// 定义了IGMPv4协议处理方法
 static const struct net_protocol igmp_protocol = {
 	.handler =	igmp_rcv,
 	.netns_ok =	1,
 };
 #endif
 
-// 定义了一个ipv4-tcp协议的信息结构
+// 定义了ipv4-tcp协议处理方法
 static const struct net_protocol tcp_protocol = {
 	.early_demux	=	tcp_v4_early_demux,
 	.handler	=	tcp_v4_rcv,
@@ -1553,7 +1553,7 @@ static const struct net_protocol tcp_protocol = {
 	.icmp_strict_tag_validation = 1,
 };
 
-// 定义了一个ipv4-udp协议的信息结构
+// 定义了ipv4-udp协议处理方法
 static const struct net_protocol udp_protocol = {
 	.early_demux =	udp_v4_early_demux,
 	.handler =	udp_rcv,
@@ -1562,7 +1562,7 @@ static const struct net_protocol udp_protocol = {
 	.netns_ok =	1,
 };
 
-// 定义了一个ICMPv4协议的信息结构
+// 定义了ICMPv4协议处理方法
 static const struct net_protocol icmp_protocol = {
 	.handler =	icmp_rcv,
 	.err_handler =	icmp_err,

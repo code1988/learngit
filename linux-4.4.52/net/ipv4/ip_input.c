@@ -221,7 +221,9 @@ static int ip_local_deliver_finish(struct net *net, struct sock *sk, struct sk_b
 				}
 				nf_reset(skb);
 			}
-            // 将该报文递交给上层(L4层)处理
+            /* 将该报文递交给上层(L4层)处理
+             * 如udp_rcv、tcp_v4_rcv、igmp_rcv、icmp_rcv等
+             */
 			ret = ipprot->handler(skb);
 			if (ret < 0) {
 				protocol = -ret;
