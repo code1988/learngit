@@ -674,6 +674,8 @@ static struct device_node *__of_get_next_child(const struct device_node *node,
 
 /**
  *	of_get_next_child - Iterate a node childs
+ *	返回下一个子节点
+ *	本函数跟下面那个of_get_next_available_child的区别在于，本函数返回每个遍历到的节点
  *	@node:	parent node
  *	@prev:	previous child of the parent node, or NULL to get first
  *
@@ -696,6 +698,8 @@ EXPORT_SYMBOL(of_get_next_child);
 
 /**
  *	of_get_next_available_child - Find the next available child node
+ *	返回下一个可用的子节点
+ *	本函数跟上面那个of_get_next_child的区别在于，本函数会跳过那些状态为disabled的节点
  *	@node:	parent node
  *	@prev:	previous child of the parent node, or NULL to get first
  *

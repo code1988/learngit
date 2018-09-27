@@ -28,15 +28,15 @@ enum dsa_tag_protocol {
 	DSA_TAG_PROTO_BRCM,
 };
 
-#define DSA_MAX_SWITCHES	4   // DSA驱动支持的最大交换机数量
-#define DSA_MAX_PORTS		12  // DSA驱动支持的最大端口数
+#define DSA_MAX_SWITCHES	4   // 每个DSA实例支持的最大switch数量
+#define DSA_MAX_PORTS		12  // 每个DSA实例支持的最大端口数
 
 // 用于描述switch的配置信息
 struct dsa_chip_data {
 	/*
 	 * How to access the switch configuration registers.
 	 */
-	struct device	*host_dev;  // 指向该switch使用的mii总线
+	struct device	*host_dev;  // 指向该switch使用的mii设备
 	int		sw_addr;            // switch地址序号，来自"switch"dts节点中的"reg"属性，最大不超过PHY_MAX_ADDR
 
 	/* set to size of eeprom if supported by the switch */
@@ -45,6 +45,7 @@ struct dsa_chip_data {
 	/* Device tree node pointer for this specific switch chip
 	 * used during switch setup in case additional properties
 	 * and resources needs to be used
+     * 指向该switch实例对应的dts节点
 	 */
 	struct device_node *of_node;
 
@@ -77,14 +78,14 @@ struct dsa_platform_data {
      * 指向该DSA实例的宿主device
 	 */
 	struct device	*netdev;
-	struct net_device *of_netdev;
+	struct net_device *of_netdev;   // 指向该DSA实例的宿主网络接口
 
 	/*
 	 * Info structs describing each of the switch chips
 	 * connected via this network interface.
 	 */
-	int		nr_chips;               // 级联switch数量
-	struct dsa_chip_data	*chip;  // 所有级联switch配置信息的描述集合
+	int		nr_chips;               // 该DSA实例实际管理的级联switch数量
+	struct dsa_chip_data	*chip;  // 这些级联switch配置信息的描述集合
 };
 
 struct packet_type;

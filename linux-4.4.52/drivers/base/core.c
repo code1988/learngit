@@ -938,6 +938,7 @@ static void device_remove_class_symlinks(struct device *dev)
 
 /**
  * dev_set_name - set a device name
+ * 通过格式化字符串设置设备名
  * @dev: device
  * @fmt: format string for the device's name
  */
@@ -1001,6 +1002,7 @@ static void device_remove_sys_dev_entry(struct device *dev)
 	}
 }
 
+// 初始化device中私有数据管理块
 int device_private_init(struct device *dev)
 {
 	dev->p = kzalloc(sizeof(*dev->p), GFP_KERNEL);
@@ -1015,6 +1017,7 @@ int device_private_init(struct device *dev)
 
 /**
  * device_add - add device to device hierarchy.
+ * 将设备加入到linux设备模型中
  * @dev: device.
  *
  * This is part 2 of device_register(), though may be called
@@ -1184,6 +1187,7 @@ EXPORT_SYMBOL_GPL(device_add);
 
 /**
  * device_register - register a device with the system.
+ * 将指定设备注册到内核(实际包括初始化该设备、将该设备插入全局的设备链表两步操作)
  * @dev: pointer to the device structure
  *
  * This happens in two clean steps - initialize the device
@@ -1209,6 +1213,7 @@ EXPORT_SYMBOL_GPL(device_register);
 
 /**
  * get_device - increment reference count for device.
+ * 对指定device的引用计数加1
  * @dev: device.
  *
  * This simply forwards the call to kobject_get(), though
@@ -1223,6 +1228,7 @@ EXPORT_SYMBOL_GPL(get_device);
 
 /**
  * put_device - decrement reference count.
+ * 对指定device的引用计数减1
  * @dev: device in question.
  */
 void put_device(struct device *dev)

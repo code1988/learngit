@@ -1,6 +1,7 @@
 /*
  * net/dsa/dsa.c - Hardware switch handling
- * 其实这部分dsa驱动不应该放在net目录下，而是应该合并到drivers/net/dsa中
+ * dsa驱动核心框架
+ * 其实不应该放在net目录下，而是应该合并到drivers/net/dsa中
  * Copyright (c) 2008-2009 Marvell Semiconductor
  * Copyright (c) 2013 Florian Fainelli <florian@openwrt.org>
  *
@@ -778,13 +779,14 @@ static int dsa_of_probe(struct device *dev)
 	}
 
 	dev->platform_data = pd;                            // 将DSA配置块跟DSA设备关联
-	pd->of_netdev = ethernet_dev;                       // 将DSA的宿主device设置为上面获取到的以太网控制器设备
-	pd->nr_chips = of_get_available_child_count(np);    // 获取该DSA的dts节点中配置的switch数量
+	pd->of_netdev = ethernet_dev;                       // 将DSA的宿主网络接口设置为上面获取到的以太网控制器
+	pd->nr_chips = of_get_available_child_count(np);    // 获取该DSA配置的有效switch数量
 
+    // 确保一个DSA实例实际管理的switch数量不超上限
 	if (pd->nr_chips > DSA_MAX_SWITCHES)
 		pd->nr_chips = DSA_MAX_SWITCHES;
 
-    // 创建并初始化switch配置控制块
+    // 创建一张列表用于存放每个switch对应的配置控制块
 	pd->chip = kcalloc(pd->nr_chips, sizeof(struct dsa_chip_data),
 			   GFP_KERNEL);
 	if (!pd->chip) {
@@ -793,6 +795,7 @@ static int dsa_of_probe(struct device *dev)
 	}
 
 	chip_index = -1;
+    // 遍历每个switch的dts节点，从中获取相关参数填充到对应的配置控制块中
 	for_each_available_child_of_node(np, child) {
 		chip_index++;
 		cd = &pd->chip[chip_index];
@@ -800,7 +803,7 @@ static int dsa_of_probe(struct device *dev)
 		cd->of_node = child;
 
 		/* When assigning the host device, increment its refcount 
-         * 所有switch共用同一个mdio设备
+         * 默认所有switch共用同一个mdio设备
          * */
 		cd->host_dev = get_device(&mdio_bus->dev);
 
@@ -813,9 +816,11 @@ static int dsa_of_probe(struct device *dev)
 		if (cd->sw_addr >= PHY_MAX_ADDR)
 			continue;
 
+        // 如果该switch支持eeprom则记录其长度
 		if (!of_property_read_u32(child, "eeprom-length", &eeprom_len))
 			cd->eeprom_len = eeprom_len;
 
+        // 获取跟该dsa dts节点关联的mdio dts节点
 		mdio = of_parse_phandle(child, "mii-bus", 0);
 		if (mdio) {
 			mdio_bus_switch = of_mdio_find_bus(mdio);

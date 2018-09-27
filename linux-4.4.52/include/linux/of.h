@@ -844,6 +844,9 @@ static inline bool of_property_read_bool(const struct device_node *np,
 	return prop ? true : false;
 }
 
+/* 从指定dts节点中获取指定属性的u8类型值
+ * @返回值： 成功则返回0
+ */
 static inline int of_property_read_u8(const struct device_node *np,
 				       const char *propname,
 				       u8 *out_value)
@@ -851,6 +854,9 @@ static inline int of_property_read_u8(const struct device_node *np,
 	return of_property_read_u8_array(np, propname, out_value, 1);
 }
 
+/* 从指定dts节点中获取指定属性的u16类型值
+ * @返回值： 成功则返回0
+ */
 static inline int of_property_read_u16(const struct device_node *np,
 				       const char *propname,
 				       u16 *out_value)
@@ -858,6 +864,9 @@ static inline int of_property_read_u16(const struct device_node *np,
 	return of_property_read_u16_array(np, propname, out_value, 1);
 }
 
+/* 从指定dts节点中获取指定属性的u32类型值
+ * @返回值： 成功则返回0
+ */
 static inline int of_property_read_u32(const struct device_node *np,
 				       const char *propname,
 				       u32 *out_value)
@@ -900,9 +909,11 @@ static inline int of_property_read_s32(const struct device_node *np,
 	for (dn = of_find_matching_node_and_match(NULL, matches, match); \
 	     dn; dn = of_find_matching_node_and_match(dn, matches, match))
 
+// 遍历每个子节点
 #define for_each_child_of_node(parent, child) \
 	for (child = of_get_next_child(parent, NULL); child != NULL; \
 	     child = of_get_next_child(parent, child))
+// 遍历每个可用的子节点
 #define for_each_available_child_of_node(parent, child) \
 	for (child = of_get_next_available_child(parent, NULL); child != NULL; \
 	     child = of_get_next_available_child(parent, child))
@@ -923,6 +934,7 @@ static inline int of_get_child_count(const struct device_node *np)
 	return num;
 }
 
+// 获取指定dts节点中可用的子dts节点(status = "okay")数量
 static inline int of_get_available_child_count(const struct device_node *np)
 {
 	struct device_node *child;
