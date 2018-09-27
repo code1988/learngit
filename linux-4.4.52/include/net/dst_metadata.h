@@ -37,6 +37,7 @@ static inline struct ip_tunnel_info *skb_tunnel_info(struct sk_buff *skb)
 	return NULL;
 }
 
+// 检查skb是否关联了一个有效的dst_entry
 static inline bool skb_valid_dst(const struct sk_buff *skb)
 {
 	struct dst_entry *dst = skb_dst(skb);

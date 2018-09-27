@@ -386,7 +386,7 @@ static inline struct list_head *ptype_head(const struct packet_type *pt)
 
 /**
  *	dev_add_pack - add packet handler
- *	注册一个指定的以太网协议包处理接口到内核(这是泛L3层协议收包操作的注册接口)
+ *	注册一个指定的以太网协议包处理接口到内核(这是泛L3层协议收包方法的注册接口)
  *	@pt: packet type declaration
  *
  *	Add a protocol handler to the networking stack. The passed &packet_type

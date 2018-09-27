@@ -352,7 +352,8 @@ struct skb_shared_info {
 	/*
 	 * Warning : all fields before dataref are cleared in __alloc_skb()
 	 */
-	atomic_t	dataref;    // 记录了所在skb的数据区被引用(也成为被共享)的次数，显然，被克隆时，该值递增
+	atomic_t	dataref;    /* [15~0]:记录了所在skb的数据区被引用(也称为被共享)的次数，显然，被克隆时，该值递增
+                               */
 
 	/* Intermediate layers must ensure that destructor_arg
 	 * remains valid until skb destructor */
@@ -574,7 +575,7 @@ struct sk_buff {
 		};
 		struct rb_node	rbnode; /* used in netem & tcp stack */
 	};
-	struct sock		*sk;        // 指向该sbk所属的套接字
+	struct sock		*sk;        // 指向该sbk当前所属的套接字
 	struct net_device	*dev;   // 指向该skb当前所属的网络设备
 
 	/*
@@ -588,10 +589,12 @@ struct sk_buff {
                                                其中,剩余空间可被各层网络模块自定义，比如：
                                                     netlink用它存储参数控制块netlink_skb_parms
                                                     bridge用它存储入口参数控制块br_input_skb_cb
-                                                    ip用它存储inet_skb_parm 
+                                                    ip用它存储ip报文的参数控制块inet_skb_parm 
                                             */
 	unsigned long		_skb_refdst;        // 该套接字关联的dst_entry地址 | norefcount位 联合组成
-	void			(*destructor)(struct sk_buff *skb);
+	void			(*destructor)(struct sk_buff *skb); /* 该skb的析构函数，具体由拥有该skb的套接字指定，
+                                                           调用本函数后，该skb将不再属于原套接字.
+                                                           一个孤儿skb的skb->sk和skb->destructor都为NULL */
 #ifdef CONFIG_XFRM
 	struct	sec_path	*sp;
 #endif
@@ -611,7 +614,8 @@ struct sk_buff {
 	 */
 	kmemcheck_bitfield_begin(flags1);
 	__u16			queue_mapping;
-	__u8			cloned:1,   // 标识该skb是否被克隆，或者标识该skb是克隆出来的，也就意味着克隆时，自身skb和克隆skb的该标志位都要置1 
+	__u8			cloned:1,   /* 标识该skb是否被克隆，或者标识该skb是克隆出来的，
+                                   也就意味着克隆时，原始skb和克隆skb的该标志位都要置1 */
 				nohdr:1,
 				fclone:2,       // 标识该skb克隆相关的信息，取值 SKB_FCLONE_*
 				peeked:1,       // 标识该skb是否有被预读过(MSG_PEEK)
@@ -761,7 +765,7 @@ static inline bool skb_pfmemalloc(const struct sk_buff *skb)
 
 /**
  * skb_dst - returns skb dst_entry
- * 返回该skb关联的目的入口
+ * 返回该skb关联的dst_entry
  * @skb: buffer
  *
  * Returns skb dst_entry, regardless of reference taken or not.
@@ -779,6 +783,7 @@ static inline struct dst_entry *skb_dst(const struct sk_buff *skb)
 
 /**
  * skb_dst_set - sets skb dst
+ * 将skb和指定的dst_entry关联起来
  * @skb: buffer
  * @dst: dst entry
  *
@@ -853,13 +858,16 @@ struct sk_buff *alloc_skb_with_frags(unsigned long header_len,
 				     int *errcode,
 				     gfp_t gfp_mask);
 
-/* Layout of fast clones : [skb1][skb2][fclone_ref] */
+/* Layout of fast clones : [skb1][skb2][fclone_ref] 
+ * 快速克隆对象的抽象结构
+ * */
 struct sk_buff_fclones {
-	struct sk_buff	skb1;
+	struct sk_buff	skb1;   // 父skb
 
-	struct sk_buff	skb2;
+	struct sk_buff	skb2;   // 克隆skb
 
-	atomic_t	fclone_ref;
+	atomic_t	fclone_ref; /* 1：表示该快速克隆对象尚未经历克隆
+                               2: 表示该快速克隆对象已经经历克隆 */
 };
 
 /**
@@ -2312,6 +2320,7 @@ static inline void pskb_trim_unique(struct sk_buff *skb, unsigned int len)
 
 /**
  *	skb_orphan - orphan a buffer
+ *	使指定skb成为孤儿，即不再被任何套接字拥有
  *	@skb: buffer to orphan
  *
  *	If a buffer currently has an owner then we call the owner's
@@ -2671,6 +2680,8 @@ static inline int skb_try_make_writable(struct sk_buff *skb,
 }
 
 /* skb_cow的具体实现
+ * @headroom    需要的headroom大小
+ * @cloned      标识该skb是否是克隆的
  *
  * 备注：除了headroom的空间大小可能会根据delta值扩展，数据包缓冲区的其他部分空间都是不变的
  */
@@ -2679,9 +2690,11 @@ static inline int __skb_cow(struct sk_buff *skb, unsigned int headroom,
 {
 	int delta = 0;
 
+    // 计算不足的headroom大小
 	if (headroom > skb_headroom(skb))
 		delta = headroom - skb_headroom(skb);
 
+    // 只要headroom不足或者该skb是克隆的，都会对该skb数据缓冲区进行调整
 	if (delta || cloned)
 		return pskb_expand_head(skb, ALIGN(delta, NET_SKB_PAD), 0,
 					GFP_ATOMIC);
@@ -2690,9 +2703,10 @@ static inline int __skb_cow(struct sk_buff *skb, unsigned int headroom,
 
 /**
  *	skb_cow - copy header of skb when it is required
+ *	确保skb的headroom不小于指定长且skb不处于克隆状态
  *	这里会判断2个条件：该skb的headroom空间是否足够；该skb是否是clone的
  *	    如果是headroom空间不够这里就会扩展数据包缓冲区，增加的空间作为headroom
- *	    如果是clone的，就触发copy-on-write机制，即分配一个新的数据包缓冲区并转储旧缓冲区中的数据
+ *	    如果是clone的，就触发copy-on-write机制，即分配新的线性数据缓冲区和分片数据缓冲区并转储旧缓冲区中的数据
  *	@skb: buffer to cow
  *	@headroom: needed headroom
  *
@@ -2901,6 +2915,7 @@ static inline unsigned char *skb_push_rcsum(struct sk_buff *skb,
 
 /**
  *	pskb_trim_rcsum - trim received skb and update checksum
+ *	将skb中当前承载的数据总长裁剪为len
  *	@skb: buffer to trim
  *	@len: new length
  *

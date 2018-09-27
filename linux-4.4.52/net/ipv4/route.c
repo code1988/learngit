@@ -1919,6 +1919,7 @@ local_input:
 			rt_add_uncached_list(rth);
 		}
 	}
+    // 将skb和dst_entry关联起来
 	skb_dst_set(skb, &rth->dst);
 	err = 0;
 	goto out;
@@ -1954,6 +1955,7 @@ martian_source:
 	goto out;
 }
 
+// 在路由选择子系统中查找一个合适dst_entry跟skb关联起来
 int ip_route_input_noref(struct sk_buff *skb, __be32 daddr, __be32 saddr,
 			 u8 tos, struct net_device *dev)
 {

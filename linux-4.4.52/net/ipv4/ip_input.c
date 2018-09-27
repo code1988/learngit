@@ -256,7 +256,8 @@ static int ip_local_deliver_finish(struct net *net, struct sock *sk, struct sk_b
 
 /*
  * 	Deliver IP Packets to the higher protocol layers.
- * 	将收到的ip报文传递给本机的上层协议
+ * 	将收到的ipv4报文递交给本机的上层协议，这意味着ipv4报文的目的ip是本机
+ * 	备注：本函数由路由选择子系统调用
  */
 int ip_local_deliver(struct sk_buff *skb)
 {
@@ -271,11 +272,13 @@ int ip_local_deliver(struct sk_buff *skb)
 			return 0;
 	}
 
+    // 在调用ip_local_deliver_finish之前需要经过一个netfilter钩子NF_INET_LOCAL_IN
 	return NF_HOOK(NFPROTO_IPV4, NF_INET_LOCAL_IN,
 		       net, NULL, skb, skb->dev, NULL,
 		       ip_local_deliver_finish);
 }
 
+// 解析并处理ipv4报文中的ip选项字段
 static inline bool ip_rcv_options(struct sk_buff *skb)
 {
 	struct ip_options *opt;
@@ -328,6 +331,7 @@ drop:
 int sysctl_ip_early_demux __read_mostly = 1;
 EXPORT_SYMBOL(sysctl_ip_early_demux);
 
+// 真正的ipv4协议报文处理入口
 static int ip_rcv_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
 {
 	const struct iphdr *iph = ip_hdr(skb);
@@ -348,6 +352,8 @@ static int ip_rcv_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
 	/*
 	 *	Initialise the virtual path cache for the packet. It describes
 	 *	how the packet travels inside Linux networking.
+     *	如果该skb没有关联一个有效的dst_entry，就在路由选择子系统中执行查找，并选择一个合适的dst_entry关联起来
+     *	备注：这实际上就是一个路由过程
 	 */
 	if (!skb_valid_dst(skb)) {
 		int err = ip_route_input_noref(skb, iph->daddr, iph->saddr,
@@ -358,6 +364,7 @@ static int ip_rcv_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
 			goto drop;
 		}
 	}
+    // 显然，程序运行到这里意味着路由结束
 
 #ifdef CONFIG_IP_ROUTE_CLASSID
 	if (unlikely(skb_dst(skb)->tclassid)) {
@@ -370,15 +377,18 @@ static int ip_rcv_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
 	}
 #endif
 
+    // ipv4头长超20意味着包含了选项字段，这里就对ip选项进行处理
 	if (iph->ihl > 5 && ip_rcv_options(skb))
 		goto drop;
 
+    // 获取该skb关联的路由表项
 	rt = skb_rtable(skb);
 	if (rt->rt_type == RTN_MULTICAST) {
 		IP_UPD_PO_STATS_BH(net, IPSTATS_MIB_INMCAST, skb->len);
 	} else if (rt->rt_type == RTN_BROADCAST)
 		IP_UPD_PO_STATS_BH(net, IPSTATS_MIB_INBCAST, skb->len);
 
+    // 最后调用该skb关联的出口表项中的input方法，完成对该ipv4报文的转发或递交给本机L4层
 	return dst_input(skb);
 
 drop:
@@ -388,7 +398,11 @@ drop:
 
 /*
  * 	Main IP Receive routine.
- * 	ip报文从L2层进入L3层的入口，该函数被注册在ip_packet_type中
+ * 	ipv4协议报文从L2层进入L3层的入口，该函数被注册在ip_packet_type中
+ * 	@skb    承载了ipv4报文的skb
+ * 	@dev    当前跟该skb关联的网络设备
+ * 	@pt     指向ipv4协议报文处理方法
+ * 	@orig_dev   最初收到该ipv4报文的网络设备
  */
 int ip_rcv(struct sk_buff *skb, struct net_device *dev, struct packet_type *pt, struct net_device *orig_dev)
 {
@@ -398,23 +412,27 @@ int ip_rcv(struct sk_buff *skb, struct net_device *dev, struct packet_type *pt, 
 
 	/* When the interface is in promisc. mode, drop all the crap
 	 * that it receives, do not try to analyse it.
+     * 网络设备在开启混杂模式的情况下会接收发往其他主机的报文，但标准的协议栈流程不会处理这些报文
 	 */
 	if (skb->pkt_type == PACKET_OTHERHOST)
 		goto drop;
 
-
+    // 获取当前跟该skb关联的网络设备所属的net命名空间
 	net = dev_net(dev);
 	IP_UPD_PO_STATS_BH(net, IPSTATS_MIB_IN, skb->len);
 
+    // 检查该skb结构是否被超过1个用户使用中，如果是则clone一份出来，否则直接返回该skb
 	skb = skb_share_check(skb, GFP_ATOMIC);
 	if (!skb) {
 		IP_INC_STATS_BH(net, IPSTATS_MIB_INDISCARDS);
 		goto out;
 	}
 
+    // 确保ipv4最小头位于skb的线性缓冲区中
 	if (!pskb_may_pull(skb, sizeof(struct iphdr)))
 		goto inhdr_error;
 
+    // 获取ipv4头
 	iph = ip_hdr(skb);
 
 	/*
@@ -428,6 +446,7 @@ int ip_rcv(struct sk_buff *skb, struct net_device *dev, struct packet_type *pt, 
 	 *	4.	Doesn't have a bogus length
 	 */
 
+    // 检查ipv4头长和版本号是否合法
 	if (iph->ihl < 5 || iph->version != 4)
 		goto inhdr_error;
 
@@ -438,14 +457,18 @@ int ip_rcv(struct sk_buff *skb, struct net_device *dev, struct packet_type *pt, 
 			IPSTATS_MIB_NOECTPKTS + (iph->tos & INET_ECN_MASK),
 			max_t(unsigned short, 1, skb_shinfo(skb)->gso_segs));
 
+    // 确保ipv4完整头位于skb的线性缓冲区中
 	if (!pskb_may_pull(skb, iph->ihl*4))
 		goto inhdr_error;
 
+    // 更新ipv4头位置(因为在上一步中缓冲区可能发生变化)
 	iph = ip_hdr(skb);
 
+    // 检查ipv4头校验和是否正确
 	if (unlikely(ip_fast_csum((u8 *)iph, iph->ihl)))
 		goto csum_error;
 
+    // 检查ipv4头在内的报文总长是否合法
 	len = ntohs(iph->tot_len);
 	if (skb->len < len) {
 		IP_INC_STATS_BH(net, IPSTATS_MIB_INTRUNCATEDPKTS);
@@ -456,20 +479,27 @@ int ip_rcv(struct sk_buff *skb, struct net_device *dev, struct packet_type *pt, 
 	/* Our transport medium may have padded the buffer out. Now we know it
 	 * is IP we can trim to the true length of the frame.
 	 * Note this now means skb->len holds ntohs(iph->tot_len).
+     * 将skb中当前承载的数据总长裁剪为ipv4头在内的报文总长
 	 */
 	if (pskb_trim_rcsum(skb, len)) {
 		IP_INC_STATS_BH(net, IPSTATS_MIB_INDISCARDS);
 		goto drop;
 	}
 
+    // 更新传输层头位置
 	skb->transport_header = skb->network_header + iph->ihl*4;
 
-	/* Remove any debris in the socket control block */
+	/* Remove any debris in the socket control block 
+     * 清空该ipv4报文关联的控制块
+     * */
 	memset(IPCB(skb), 0, sizeof(struct inet_skb_parm));
 
-	/* Must drop socket now because of tproxy. */
+	/* Must drop socket now because of tproxy. 
+     * 使该skb成为孤儿，即不再被任何套接字拥有
+     * */
 	skb_orphan(skb);
 
+    // 在调用ip_rcv_finish之前需要经过一个netfilter钩子NF_INET_PRE_ROUTING
 	return NF_HOOK(NFPROTO_IPV4, NF_INET_PRE_ROUTING,
 		       net, NULL, skb, dev, NULL,
 		       ip_rcv_finish);

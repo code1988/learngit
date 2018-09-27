@@ -30,7 +30,7 @@
 
 struct sk_buff;
 
-// 定义了目的入口结构
+// 定义了出口表项结构，代表了路由选择子系统的查找结果
 struct dst_entry {
 	struct rcu_head		rcu_head;
 	struct dst_entry	*child;
@@ -45,7 +45,9 @@ struct dst_entry {
 #else
 	void			*__pad1;
 #endif
-	int			(*input)(struct sk_buff *);
+	int			(*input)(struct sk_buff *); /* 如果需要对数据包进行转发，则路由选择子系统在查找时会注册ip_forward回调；
+                                               如果数据包的目的ip为当前主机，则路由选择子系统在查找时会注册ip_local_deliver回调;
+                                               如果是ip组播数据包，则有可能注册为ip_mr_input回调 */
 	int			(*output)(struct net *net, struct sock *sk, struct sk_buff *skb);
 
 	unsigned short		flags;
@@ -303,6 +305,9 @@ static inline void __skb_dst_copy(struct sk_buff *nskb, unsigned long refdst)
 		dst_clone(skb_dst(nskb));
 }
 
+/* 将旧skb的dst_entry拷贝给新skb
+ * 备注：实际还拷贝了norefcount位
+ */
 static inline void skb_dst_copy(struct sk_buff *nskb, const struct sk_buff *oskb)
 {
 	__skb_dst_copy(nskb, oskb->_skb_refdst);
@@ -493,7 +498,9 @@ static inline int dst_output(struct net *net, struct sock *sk, struct sk_buff *s
 	return skb_dst(skb)->output(net, sk, skb);
 }
 
-/* Input packet from network to transport.  */
+/* Input packet from network to transport.  
+ * 调用skb关联的出口表项中的input方法，完成对该ipv4报文的转发或递交给本机L4层
+ * */
 static inline int dst_input(struct sk_buff *skb)
 {
 	return skb_dst(skb)->input(skb);

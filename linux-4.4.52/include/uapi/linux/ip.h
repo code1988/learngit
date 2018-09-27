@@ -82,26 +82,31 @@
 
 #define IPV4_BEET_PHMAXLEN 8
 
-// ip头结构
+// ipv4头结构
 struct iphdr {
 #if defined(__LITTLE_ENDIAN_BITFIELD)
-	__u8	ihl:4,
-		version:4;
+	__u8	ihl:4,          // ipv4头长，4字节为单位
+		version:4;          // ipv4固定为4，ipv6固定为6
 #elif defined (__BIG_ENDIAN_BITFIELD)
 	__u8	version:4,
   		ihl:4;
 #else
 #error	"Please fix <asm/byteorder.h>"
 #endif
-	__u8	tos;
-	__be16	tot_len;
-	__be16	id;
-	__be16	frag_off;       // [15]:CE位 [14]:DF位 [13]:MF位 [12~0]:分段偏移量
-	__u8	ttl;
-	__u8	protocol;
-	__sum16	check;
-	__be32	saddr;
-	__be32	daddr;
+	__u8	tos;            // 服务类型，[7~2]:区分服务(DSCP) [1~0]:显式拥塞通知(ECN)
+	__be16	tot_len;        // 包括ipv4头在内的数据包总长
+	__be16	id;             /* id号用于标识ipv4头，
+                               对数据进行分片时所有分片的id号必须相同；
+                               重组时根据分片的id号进行重组 */
+	__be16	frag_off;       /* [15]:CE位,表示拥塞
+                               [14]:DF位,表示不分片 
+                               [13]:MF位,表示后面还有其他分片 
+                               [12~0]:分段偏移量 */
+	__u8	ttl;            // 存活时间，ipv4报文每经过一次转发ttl减1
+	__u8	protocol;       // L4层协议，IPPROTO_*
+	__sum16	check;          // ipv4头校验和
+	__be32	saddr;          // 源ip
+	__be32	daddr;          // 目的ip
 	/*The options start here. */
 };
 

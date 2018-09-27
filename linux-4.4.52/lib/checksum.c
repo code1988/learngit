@@ -106,6 +106,8 @@ out:
 /*
  *	This is a version of ip_compute_csum() optimized for IP headers,
  *	which always checksum on 4 octet boundaries.
+ *	计算ip头校验和
+ *	@ihl    4字节为单位
  */
 __sum16 ip_fast_csum(const void *iph, unsigned int ihl)
 {

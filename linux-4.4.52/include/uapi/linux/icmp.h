@@ -50,7 +50,8 @@
 #define ICMP_HOST_UNKNOWN	7
 #define ICMP_HOST_ISOLATED	8
 #define ICMP_NET_ANO		9
-#define ICMP_HOST_ANO		10
+#define ICMP_HOST_ANO		10  /* 目标主机被管理员禁止访问(比如目标主机被设置了一条规则：
+                                   iptables -A INPUT -j REJECT --reject-with icmp-host-prohibited ) */
 #define ICMP_NET_UNR_TOS	11
 #define ICMP_HOST_UNR_TOS	12
 #define ICMP_PKT_FILTERED	13	/* Packet filtered */

@@ -857,7 +857,9 @@ static void __copy_skb_header(struct sk_buff *new, const struct sk_buff *old)
 /*
  * You should not add any new code to this function.  Add it to
  * __copy_skb_header above instead.
- * 对克隆父skb和子skb参数进行设置
+ * 对原始skb和对应的克隆skb参数进行设置
+ * @n   新克隆的skb
+ * @skb 原始skb
  *
  * 备注：需要特别关注的是
  *          父、子skb的cloned标志位都置1
@@ -974,7 +976,10 @@ EXPORT_SYMBOL_GPL(skb_copy_ubufs);
 
 /**
  *	skb_clone	-	duplicate an sk_buff
- *	clone操作仅仅复制了sk_buff结构本身，至于组成整个"网络数据包元"的另外2个部分：sk_buff承载的数据区和分片结构体、分片结构体指向的数据区，都是共享的
+ *	clone操作仅仅复制了sk_buff结构本身，至于组成整个"网络数据包元"的另外2个部分：
+ *	        sk_buff承载的数据区和分片结构体;
+ *	        分片结构体指向的数据区
+ *	都是共享的.
  *	@skb: buffer to clone 指向需要被克隆的父skb
  *	@gfp_mask: allocation priority
  *	@返回值：新克隆出来的子skb
@@ -990,6 +995,7 @@ EXPORT_SYMBOL_GPL(skb_copy_ubufs);
 
 struct sk_buff *skb_clone(struct sk_buff *skb, gfp_t gfp_mask)
 {
+    // 根据原skb计算得到所在的快速克隆布局的地址
 	struct sk_buff_fclones *fclones = container_of(skb,
 						       struct sk_buff_fclones,
 						       skb1);
@@ -1000,11 +1006,13 @@ struct sk_buff *skb_clone(struct sk_buff *skb, gfp_t gfp_mask)
 
 	if (skb->fclone == SKB_FCLONE_ORIG &&
 	    atomic_read(&fclones->fclone_ref) == 1) {
+        /* 如果要克隆的skb为分配自skbuff_fclone_cache缓存池的原始skb，
+         * 且所属的快速克隆对象尚未经历克隆，则只需要简单的将该快速克隆对象中的skb2用作新克隆的skb即可
+         */
 		n = &fclones->skb2;
 		atomic_set(&fclones->fclone_ref, 2);
 	} else {
-        /* 其他情况下该skb都是在skbuff_head_cache缓存池上分配
-         */
+        // 其他情况下该skb都是在skbuff_head_cache缓存池上分配
 		if (skb_pfmemalloc(skb))
 			gfp_mask |= __GFP_MEMALLOC;
 

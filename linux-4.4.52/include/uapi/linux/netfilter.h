@@ -43,12 +43,13 @@
 #define NF_VERDICT_BITS 16
 #endif
 
+// 定义了netfilter在L3层中的5个钩子点(ipv4/ipv6共用)
 enum nf_inet_hooks {
-	NF_INET_PRE_ROUTING,
-	NF_INET_LOCAL_IN,
-	NF_INET_FORWARD,
-	NF_INET_LOCAL_OUT,
-	NF_INET_POST_ROUTING,
+	NF_INET_PRE_ROUTING,    // 该钩子点位于ip_rcv末尾，表示进入ip路由前执行过滤
+	NF_INET_LOCAL_IN,       // 该钩子点位于ip_local_deliver末尾，表示进入本机L4前执行过滤
+	NF_INET_FORWARD,        // 该钩子点位于ip_forward末尾，表示执行ip转发前执行过滤
+	NF_INET_LOCAL_OUT,      // 该钩子点位于__ip_local_out末尾，表示离开本机L4前执行过滤
+	NF_INET_POST_ROUTING,   // 该钩子点位于ip_output/ip_mc_output末尾，表示离开ip路由前执行过滤
 	NF_INET_NUMHOOKS
 };
 

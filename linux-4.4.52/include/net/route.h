@@ -49,7 +49,7 @@
 struct fib_nh;
 struct fib_info;
 struct uncached_list;
-// 定义了ip路由表项结构，实质就是对目的入口的封装
+// 定义了ip路由表项结构，实质就是对出口表项的封装
 struct rtable {
 	struct dst_entry	dst;        // 封装的目的入口结构
 

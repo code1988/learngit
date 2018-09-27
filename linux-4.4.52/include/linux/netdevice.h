@@ -2059,7 +2059,7 @@ static inline struct sk_buff **call_gro_receive(gro_receive_t cb,
 	return cb(head, skb);
 }
 
-// 描述了一个以太网协议抽象(这里的以太网协议包括了DSA)
+// 描述了一个以太网协议处理方法的结构(这里的以太网协议包括了DSA)
 struct packet_type {
 	__be16			type;	/* This is really htons(ether_type).  该以太网协议号 */
 	struct net_device	*dev;	/* NULL is wildcarded here	     

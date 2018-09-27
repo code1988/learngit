@@ -1717,7 +1717,7 @@ static int __init ipv4_offload_init(void)
 
 fs_initcall(ipv4_offload_init);
 
-// 定义了IP协议抽象
+// 定义了IP协议处理方法
 static struct packet_type ip_packet_type __read_mostly = {
 	.type = cpu_to_be16(ETH_P_IP),
 	.func = ip_rcv,
@@ -1822,7 +1822,7 @@ static int __init inet_init(void)
 
 	/*
 	 *	Set the ICMP layer up
-     *	icmpv4模块初始化
+     *	icmpv4协议初始化
 	 */
 	if (icmp_init() < 0)
 		panic("Failed to create the ICMP control socket.\n");
@@ -1848,6 +1848,7 @@ static int __init inet_init(void)
 
 	ipfrag_init();
 
+    // 注册ipv4协议数据包处理方法到内核
 	dev_add_pack(&ip_packet_type);
 
 	ip_tunnel_core_init();
