@@ -39,7 +39,9 @@ struct dsa_chip_data {
 	struct device	*host_dev;  // 指向该switch使用的mii设备
 	int		sw_addr;            // switch地址序号，来自"switch"dts节点中的"reg"属性，最大不超过PHY_MAX_ADDR
 
-	/* set to size of eeprom if supported by the switch */
+	/* set to size of eeprom if supported by the switch 
+     * 如果该switch支持eeprom则这里记录了eeprom大小
+     * */
 	int		eeprom_len;
 
 	/* Device tree node pointer for this specific switch chip
@@ -55,10 +57,12 @@ struct dsa_chip_data {
 	 * "dsa" to indicate that this port is a DSA link to
 	 * another switch, NULL to indicate the port is unused,
 	 * or any other string to indicate this is a physical port.
-     * 记录了switch每个端口的名字
+     * 这张表记录了该switch每个端口的名字，端口名可自定义，但有2个特殊的保留端口名：
+     *      "cpu" - 意味着这是一个连接cpu的端口
+     *      "dsa" - 意味着这是一个级联其他switch用的dsa口
 	 */
 	char		*port_names[DSA_MAX_PORTS];
-	struct device_node *port_dn[DSA_MAX_PORTS];
+	struct device_node *port_dn[DSA_MAX_PORTS]; // 这张表记录了该switch每个端口的dts节点
 
 	/*
 	 * An array (with nr_chips elements) of which element [a]
@@ -75,10 +79,11 @@ struct dsa_platform_data {
 	/*
 	 * Reference to a Linux network interface that connects
 	 * to the root switch chip of the tree.
-     * 指向该DSA实例的宿主device
+     * 指向该DSA实例的宿主device或宿主网络接口(比如"eth0")
+     * 备注：以下两个字段实际似乎任用其一即可
 	 */
 	struct device	*netdev;
-	struct net_device *of_netdev;   // 指向该DSA实例的宿主网络接口
+	struct net_device *of_netdev;   
 
 	/*
 	 * Info structs describing each of the switch chips

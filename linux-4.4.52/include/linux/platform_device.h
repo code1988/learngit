@@ -205,12 +205,13 @@ extern void platform_driver_unregister(struct platform_driver *);
 extern int __platform_driver_probe(struct platform_driver *driver,
 		int (*probe)(struct platform_device *), struct module *module);
 
+// 返回指定platform设备底层device中绑定的驱动层数据
 static inline void *platform_get_drvdata(const struct platform_device *pdev)
 {
 	return dev_get_drvdata(&pdev->dev);
 }
 
-// 将私有数据data记录到platform设备底层device的私有数据块中
+// 绑定驱动层数据到指定platform设备底层device中
 static inline void platform_set_drvdata(struct platform_device *pdev,
 					void *data)
 {

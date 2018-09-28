@@ -810,7 +810,8 @@ struct device {
 					   core doesn't touch it 
                        指向针对该device的具体板卡相关的数据(比如struct dsa_platform_data结构) */
 	void		*driver_data;	/* Driver data, set and get with
-					   dev_set/get_drvdata */
+					   dev_set/get_drvdata 
+                       指向该device关联的驱动层数据(比如dsa_switch_tree) */
 	struct dev_pm_info	power;
 	struct dev_pm_domain	*pm_domain;
 
@@ -924,11 +925,13 @@ static inline void dev_set_msi_domain(struct device *dev, struct irq_domain *d)
 #endif
 }
 
+// 获取指定device绑定的驱动层数据
 static inline void *dev_get_drvdata(const struct device *dev)
 {
 	return dev->driver_data;
 }
 
+// 为指定device绑定驱动层数据
 static inline void dev_set_drvdata(struct device *dev, void *data)
 {
 	dev->driver_data = data;

@@ -685,6 +685,13 @@ static int dsa_of_setup_routing_table(struct dsa_platform_data *pd,
 	return 0;
 }
 
+/* 获取指定端口配置的级联信息，如果存在级联情况，则会设置关于switch的路由表
+ * 备注：
+ * switch级联口特征：
+ *          该端口必须命名为"dsa";
+ *          该端口dts节点中必须包含一个名为"link"的phandle;
+ *          该phandle至少包含1个成员
+ */
 static int dsa_of_probe_links(struct dsa_platform_data *pd,
 			      struct dsa_chip_data *cd,
 			      int chip_index, int port_index,
@@ -697,6 +704,7 @@ static int dsa_of_probe_links(struct dsa_platform_data *pd,
 
 	for (link_index = 0;; link_index++) {
         // 获取记录了链路信息的dts节点(用于级联情况)
+        // 获取跟该端口 dts节点关联的mdio dts节点
 		link = of_parse_phandle(port, "link", link_index);
 		if (!link)
 			break;
@@ -803,7 +811,7 @@ static int dsa_of_probe(struct device *dev)
 		cd->of_node = child;
 
 		/* When assigning the host device, increment its refcount 
-         * 默认所有switch共用同一个mdio设备
+         * 默认所有switch共用同一条mii总线，所以每个switch都要持有一下该mii总线设备
          * */
 		cd->host_dev = get_device(&mdio_bus->dev);
 
@@ -820,7 +828,7 @@ static int dsa_of_probe(struct device *dev)
 		if (!of_property_read_u32(child, "eeprom-length", &eeprom_len))
 			cd->eeprom_len = eeprom_len;
 
-        // 获取跟该dsa dts节点关联的mdio dts节点
+        // 如果该switch配置了独立的mii总线，则改用该mii总线
 		mdio = of_parse_phandle(child, "mii-bus", 0);
 		if (mdio) {
 			mdio_bus_switch = of_mdio_find_bus(mdio);
@@ -837,8 +845,9 @@ static int dsa_of_probe(struct device *dev)
 			cd->host_dev = &mdio_bus_switch->dev;
 		}
 
+        // 遍历该switch中每个端口的dts节点
 		for_each_available_child_of_node(child, port) {
-            // 获取该switch每个端口的物理地址序号
+            // 获取该端口的物理地址序号，也就是物理端口号
 			port_reg = of_get_property(port, "reg", NULL);
 			if (!port_reg)
 				continue;
@@ -847,7 +856,7 @@ static int dsa_of_probe(struct device *dev)
 			if (port_index >= DSA_MAX_PORTS)
 				break;
 
-            // 获取该switch每个端口名
+            // 获取该端口名
 			port_name = of_get_property(port, "label", NULL);
 			if (!port_name)
 				continue;
@@ -861,6 +870,7 @@ static int dsa_of_probe(struct device *dev)
 				goto out_free_chip;
 			}
 
+            // 获取该端口配置的级联信息，如果存在级联情况，则会设置关于switch的路由表
 			ret = dsa_of_probe_links(pd, cd, chip_index,
 						 port_index, port, port_name);
 			if (ret)
@@ -870,7 +880,10 @@ static int dsa_of_probe(struct device *dev)
 	}
 
 	/* The individual chips hold their own refcount on the mdio bus,
-	 * so drop ours */
+	 * so drop ours 
+     * 最后需要释放一次持有的mii总线设备
+     * 显然对于只包含1个switch的dsa实例来说，就表示不增不减
+     * */
 	put_device(&mdio_bus->dev);
 
 	return 0;
@@ -995,7 +1008,7 @@ static int dsa_probe(struct platform_device *pdev)
 	if (pd == NULL || (pd->netdev == NULL && pd->of_netdev == NULL))
 		return -EINVAL;
 
-    // 获取宿主device的父结构netdev
+    // 获取宿主网络接口
 	if (pd->of_netdev) {
 		dev = pd->of_netdev;
 		dev_hold(dev);
@@ -1021,7 +1034,7 @@ static int dsa_probe(struct platform_device *pdev)
 		goto out;
 	}
 
-    // 将DSA实例作为私有数据记录到该DSA设备底层device的私有数据块中 
+    // 将DSA实例作为驱动层数据绑定到该DSA设备底层device中 
 	platform_set_drvdata(pdev, dst);
 
 	ret = dsa_setup_dst(dst, dev, &pdev->dev, pd);
