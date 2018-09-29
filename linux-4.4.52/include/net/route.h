@@ -54,7 +54,7 @@ struct rtable {
 	struct dst_entry	dst;        // 封装的目的入口结构
 
 	int			rt_genid;
-	unsigned int		rt_flags;   // 该路由表项属性集合，RTCF_*
+	unsigned int		rt_flags;   // 该路由表项选择结果，RTCF_*
 	__u16			rt_type;        // 该路由表项类型RTN_*
 	__u8			rt_is_input;
 	__u8			rt_uses_gateway;

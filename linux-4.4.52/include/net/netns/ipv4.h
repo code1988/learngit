@@ -39,7 +39,7 @@ struct netns_ipv4 {
 	struct ctl_table_header *route_hdr;
 	struct ctl_table_header *xfrm4_hdr;
 #endif
-	struct ipv4_devconf	*devconf_all;
+	struct ipv4_devconf	*devconf_all;       // 网络命名空间层面的ipv4相关配置参数
 	struct ipv4_devconf	*devconf_dflt;
 #ifdef CONFIG_IP_MULTIPLE_TABLES
 	struct fib_rules_ops	*rules_ops;

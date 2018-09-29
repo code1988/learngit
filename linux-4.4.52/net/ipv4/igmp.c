@@ -2569,7 +2569,10 @@ void ip_mc_drop_socket(struct sock *sk)
 	rtnl_unlock();
 }
 
-/* called with rcu_read_lock() */
+/* called with rcu_read_lock() 
+ * 检查指定网络设备是否属于目标组播地址指定的组播组
+ * @mc_addr 目标组播组
+ * */
 int ip_check_mc_rcu(struct in_device *in_dev, __be32 mc_addr, __be32 src_addr, u8 proto)
 {
 	struct ip_mc_list *im;
@@ -2577,6 +2580,7 @@ int ip_check_mc_rcu(struct in_device *in_dev, __be32 mc_addr, __be32 src_addr, u
 	struct ip_sf_list *psf;
 	int rv = 0;
 
+    // 根据目标主播组在该网络设备中查找匹配的组播组节点
 	mc_hash = rcu_dereference(in_dev->mc_hash);
 	if (mc_hash) {
 		u32 hash = hash_32((__force u32)mc_addr, MC_HASH_SZ_LOG);
@@ -2594,9 +2598,11 @@ int ip_check_mc_rcu(struct in_device *in_dev, __be32 mc_addr, __be32 src_addr, u
 		}
 	}
 	if (im && proto == IPPROTO_IGMP) {
+        // 如果成功匹配到，且为igmp报文，则判定属于
 		rv = 1;
 	} else if (im) {
 		if (src_addr) {
+            // 如果成功匹配到，且指定了报文源ip，则需要进一步对源ip进行匹配
 			for (psf = im->sources; psf; psf = psf->sf_next) {
 				if (psf->sf_inaddr == src_addr)
 					break;
@@ -2608,6 +2614,7 @@ int ip_check_mc_rcu(struct in_device *in_dev, __be32 mc_addr, __be32 src_addr, u
 			else
 				rv = im->sfcount[MCAST_EXCLUDE] != 0;
 		} else
+            // 如果成功匹配到，且报文源ip未指定，也判定为属于
 			rv = 1; /* unspecified source; tentatively allow */
 	}
 	return rv;

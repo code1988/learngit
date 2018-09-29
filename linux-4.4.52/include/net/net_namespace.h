@@ -93,7 +93,7 @@ struct net {
 	struct list_head	rules_ops;
 
 
-	struct net_device       *loopback_dev;          /* The loopback */
+	struct net_device       *loopback_dev;          /* The loopback  该net命名空间中的环回接口 */
 	struct netns_core	core;
 	struct netns_mib	mib;
 	struct netns_packet	packet;

@@ -46,7 +46,8 @@ struct dst_entry {
 	void			*__pad1;
 #endif
 	int			(*input)(struct sk_buff *); /* 如果需要对数据包进行转发，则路由选择子系统在查找时会注册ip_forward回调；
-                                               如果数据包的目的ip为当前主机，则路由选择子系统在查找时会注册ip_local_deliver回调;
+                                               如果数据包的目的ip为当前主机，或者当前网络设备属于目标组播组，则路由选择
+                                               子系统在查找时会注册ip_local_deliver回调;
                                                如果是ip组播数据包，则有可能注册为ip_mr_input回调 */
 	int			(*output)(struct net *net, struct sock *sk, struct sk_buff *skb);
 

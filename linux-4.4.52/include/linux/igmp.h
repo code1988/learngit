@@ -66,26 +66,28 @@ struct ip_mc_socklist {
 	struct rcu_head		rcu;
 };
 
+// 定义了组播组支持的源ip节点
 struct ip_sf_list {
-	struct ip_sf_list	*sf_next;
-	__be32			sf_inaddr;
+	struct ip_sf_list	*sf_next;   // 指向下一个源ip节点
+	__be32			sf_inaddr;      // 该节点记录的源ip地址
 	unsigned long		sf_count[2];	/* include/exclude counts */
 	unsigned char		sf_gsresp;	/* include in g & s response? */
 	unsigned char		sf_oldin;	/* change state */
 	unsigned char		sf_crcount;	/* retrans. left to send */
 };
 
+// 定义了ip组播节点结构，也代表了一个组播组
 struct ip_mc_list {
-	struct in_device	*interface;
-	__be32			multiaddr;
+	struct in_device	*interface; // 该组播组所属的网络设备
+	__be32			multiaddr;      // 该节点记录的组播组地址
 	unsigned int		sfmode;
-	struct ip_sf_list	*sources;
+	struct ip_sf_list	*sources;   // 该组播组支持的源ip链表
 	struct ip_sf_list	*tomb;
 	unsigned long		sfcount[2];
 	union {
 		struct ip_mc_list *next;
 		struct ip_mc_list __rcu *next_rcu;
-	};
+	};  // 指向所在hash桶的下一个节点
 	struct ip_mc_list __rcu *next_hash;
 	struct timer_list	timer;
 	int			users;

@@ -25,7 +25,10 @@
 #define RTCF_BROADCAST	0x10000000  // 路由结果类型为广播
 #define RTCF_MULTICAST	0x20000000  // 路由结果类型为组播
 #define RTCF_REJECT	0x40000000 /* unused */
-#define RTCF_LOCAL	0x80000000      // 路由使用本地环回接口
+#define RTCF_LOCAL	0x80000000      /* 路由结果类型为本地，有2种情况都会置上该标志：
+                                            单播ipv4报文目的ip为本机；
+                                            组播ipv4报文目的组播组
+                                       */
 
 #define RTCF_NAT	(RTCF_DNAT|RTCF_SNAT)
 

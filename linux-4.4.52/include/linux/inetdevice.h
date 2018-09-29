@@ -14,20 +14,22 @@
 
 struct ipv4_devconf {
 	void	*sysctl;
-	int	data[IPV4_DEVCONF_MAX];
+	int	data[IPV4_DEVCONF_MAX]; // IPV4_DEVCONF_*
 	DECLARE_BITMAP(state, IPV4_DEVCONF_MAX);
 };
 
 #define MC_HASH_SZ_LOG 9
 
+// 本结构主要保存了用户态对一个网络设备的配置信息
 struct in_device {
-	struct net_device	*dev;
+	struct net_device	*dev;   // 指向关联的netdev
 	atomic_t		refcnt;
 	int			dead;
-	struct in_ifaddr	*ifa_list;	/* IP ifaddr chain		*/
+	struct in_ifaddr	*ifa_list;	/* IP ifaddr chain 该网络设备配置的ip地址链	*/
 
-	struct ip_mc_list __rcu	*mc_list;	/* IP multicast filter chain    */
-	struct ip_mc_list __rcu	* __rcu *mc_hash;
+	struct ip_mc_list __rcu	*mc_list;	/* IP multicast filter chain  
+                                           这张链表记录了该网络设备所属的组播组信息(这张链表只会在mc_hash为空的情况下使用) */
+	struct ip_mc_list __rcu	* __rcu *mc_hash;   // 这张hash表记录了该网络设备所属的组播组信息，键值为组播组地址
 
 	int			mc_count;	/* Number of installed mcasts	*/
 	spinlock_t		mc_tomb_lock;
@@ -41,8 +43,8 @@ struct in_device {
 	struct timer_list	mr_gq_timer;	/* general query timer */
 	struct timer_list	mr_ifc_timer;	/* interface change timer */
 
-	struct neigh_parms	*arp_parms;
-	struct ipv4_devconf	cnf;
+	struct neigh_parms	*arp_parms;     // 该网络设备配置的arp参数
+	struct ipv4_devconf	cnf;            // 该网络设备配置的ipv4相关参数
 	struct rcu_head		rcu_head;
 };
 

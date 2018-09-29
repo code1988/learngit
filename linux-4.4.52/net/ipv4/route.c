@@ -1441,6 +1441,7 @@ static void rt_set_nexthop(struct rtable *rt, __be32 daddr,
 #endif
 }
 
+// 根据传入的参数创建路由表项
 static struct rtable *rt_dst_alloc(struct net_device *dev,
 				   unsigned int flags, u16 type,
 				   bool nopolicy, bool noxfrm, bool will_cache)
@@ -1465,6 +1466,7 @@ static struct rtable *rt_dst_alloc(struct net_device *dev,
 		INIT_LIST_HEAD(&rt->rt_uncached);
 
 		rt->dst.output = ip_output;
+        // 如果路由结果为需要递交给本地上层协议，则注册对应的回调
 		if (flags & RTCF_LOCAL)
 			rt->dst.input = ip_local_deliver;
 	}
@@ -1472,7 +1474,10 @@ static struct rtable *rt_dst_alloc(struct net_device *dev,
 	return rt;
 }
 
-/* called in rcu_read_lock() section */
+/* called in rcu_read_lock() section 
+ * 组播路由流程的入口
+ * @our     标识当前网络设备是否属于目标组播组
+ * */
 static int ip_route_input_mc(struct sk_buff *skb, __be32 daddr, __be32 saddr,
 				u8 tos, struct net_device *dev, int our)
 {
@@ -1487,10 +1492,12 @@ static int ip_route_input_mc(struct sk_buff *skb, __be32 daddr, __be32 saddr,
 	if (!in_dev)
 		return -EINVAL;
 
+    // 确保源ip不是组播或广播地址，同时确保传入的是ipv4报文
 	if (ipv4_is_multicast(saddr) || ipv4_is_lbcast(saddr) ||
 	    skb->protocol != htons(ETH_P_IP))
 		goto e_inval;
 
+    // 确保源ip不是本地环回地址，且IPV4_DEVCONF_ROUTE_LOCALNET没有置位
 	if (ipv4_is_loopback(saddr) && !IN_DEV_ROUTE_LOCALNET(in_dev))
 		goto e_inval;
 
@@ -1503,9 +1510,11 @@ static int ip_route_input_mc(struct sk_buff *skb, __be32 daddr, __be32 saddr,
 		if (err < 0)
 			goto e_err;
 	}
+    // 如果当前网络设备属于目标组播组，则路由结果中会附加递交本地上层协议的标识
 	if (our)
 		flags |= RTCF_LOCAL;
 
+    // 创建路由表项
 	rth = rt_dst_alloc(dev_net(dev)->loopback_dev, flags, RTN_MULTICAST,
 			   IN_DEV_CONF_GET(in_dev, NOPOLICY), false, false);
 	if (!rth)
@@ -1523,6 +1532,7 @@ static int ip_route_input_mc(struct sk_buff *skb, __be32 daddr, __be32 saddr,
 #endif
 	RT_CACHE_STAT_INC(in_slow_mc);
 
+    // 将该skb和新创建的路由表项关联起来
 	skb_dst_set(skb, &rth->dst);
 	return 0;
 
@@ -1762,6 +1772,7 @@ static int ip_mkroute_input(struct sk_buff *skb,
  *	NOTE. We drop all the packets that has local source
  *	addresses, because every properly looped back packet
  *	must have correct destination already attached by output routine.
+ *	对单播ipv4报文进行路由选择的入口
  *
  *	Such approach solves two big problems:
  *	1. Not simplex devices are handled properly.
@@ -1955,7 +1966,9 @@ martian_source:
 	goto out;
 }
 
-// 在路由选择子系统中查找一个合适dst_entry跟skb关联起来
+/* 在路由选择子系统中查找一个合适dst_entry跟skb关联起来
+ * 备注：本函数实际就是ipv4报文进行路由选择的过程
+ */
 int ip_route_input_noref(struct sk_buff *skb, __be32 daddr, __be32 saddr,
 			 u8 tos, struct net_device *dev)
 {
@@ -1973,13 +1986,16 @@ int ip_route_input_noref(struct sk_buff *skb, __be32 daddr, __be32 saddr,
 	   comparing with route cache reject entries.
 	   Note, that multicast routers are not affected, because
 	   route cache entry is created eventually.
+       如果该ipv4报文是一个ip组播报文，则进入组播路由流程
 	 */
 	if (ipv4_is_multicast(daddr)) {
 		struct in_device *in_dev = __in_dev_get_rcu(dev);
 
 		if (in_dev) {
+            // 检查该网络设备是否属于目标组播地址指定的组播组
 			int our = ip_check_mc_rcu(in_dev, daddr, saddr,
 						  ip_hdr(skb)->protocol);
+            // 如果该网络设备属于目标组播组，就会真正进入组播路由流程
 			if (our
 #ifdef CONFIG_IP_MROUTE
 				||
@@ -1996,6 +2012,8 @@ int ip_route_input_noref(struct sk_buff *skb, __be32 daddr, __be32 saddr,
 		rcu_read_unlock();
 		return -EINVAL;
 	}
+
+    // 程序运行到这里意味着收到的是一个单播ipv4报文
 	res = ip_route_input_slow(skb, daddr, saddr, tos, dev);
 	rcu_read_unlock();
 	return res;

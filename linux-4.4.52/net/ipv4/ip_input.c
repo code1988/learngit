@@ -256,8 +256,8 @@ static int ip_local_deliver_finish(struct net *net, struct sock *sk, struct sk_b
 
 /*
  * 	Deliver IP Packets to the higher protocol layers.
- * 	将收到的ipv4报文递交给本机的上层协议，这意味着ipv4报文的目的ip是本机
- * 	备注：本函数由路由选择子系统调用
+ * 	将收到的ipv4报文递交给本机的上层协议
+ * 	备注：只要路由选择结果中设置了RTCF_LOCAL标志，就会将本函数注册给对应的路由表项
  */
 int ip_local_deliver(struct sk_buff *skb)
 {

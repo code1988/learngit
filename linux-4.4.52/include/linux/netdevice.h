@@ -1332,7 +1332,8 @@ enum netdev_priv_flags {
 
 /**
  *	struct net_device - The DEVICE structure.
- *	定义了网络设备模型
+ *	定义了网络设备模型结构
+ *	备注：这个结构主要用于内核自身(驱动、协议栈等)对网络设备的操作
  *
  *		Actually, this whole structure is a big mistake.  It mixes I/O
  *		data with strictly "high-level" data, and it has to know about
@@ -1668,7 +1669,7 @@ struct net_device {
 	struct tipc_bearer __rcu *tipc_ptr;
 #endif
 	void 			*atalk_ptr;
-	struct in_device __rcu	*ip_ptr;
+	struct in_device __rcu	*ip_ptr;    // 指向跟该netdev关联的in_device结构
 	struct dn_dev __rcu     *dn_ptr;
 	struct inet6_dev __rcu	*ip6_ptr;
 	void			*ax25_ptr;

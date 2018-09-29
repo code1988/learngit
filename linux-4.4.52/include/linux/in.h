@@ -39,27 +39,32 @@ static inline int proto_ports_offset(int proto)
 	}
 }
 
+// 检查是否是本地环回地址(环回地址头8位固定为01111111)
 static inline bool ipv4_is_loopback(__be32 addr)
 {
 	return (addr & htonl(0xff000000)) == htonl(0x7f000000);
 }
 
+// 检查是否是组播ip地址(组播ip地址头4位固定为1110)
 static inline bool ipv4_is_multicast(__be32 addr)
 {
 	return (addr & htonl(0xf0000000)) == htonl(0xe0000000);
 }
 
+// 检查是否是本地组播ip地址(本地组播ip地址格式固定为224.0.0.x)
 static inline bool ipv4_is_local_multicast(__be32 addr)
 {
 	return (addr & htonl(0xffffff00)) == htonl(0xe0000000);
 }
 
+// 检查是否是255.255.255.255
 static inline bool ipv4_is_lbcast(__be32 addr)
 {
 	/* limited broadcast */
 	return addr == htonl(INADDR_BROADCAST);
 }
 
+// 检查头4位是否全0
 static inline bool ipv4_is_zeronet(__be32 addr)
 {
 	return (addr & htonl(0xff000000)) == htonl(0x00000000);
