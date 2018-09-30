@@ -166,6 +166,7 @@ json_boolean_create(bool b)
     return json_create(b ? JSON_TRUE : JSON_FALSE);
 }
 
+// 创建字符串类型的json对象(传入的字符串不能是栈上分配的)
 struct json *
 json_string_create_nocopy(char *s)
 {
@@ -174,6 +175,7 @@ json_string_create_nocopy(char *s)
     return json;
 }
 
+// 创建字符串类型的json对象
 struct json *
 json_string_create(const char *s)
 {
@@ -211,6 +213,10 @@ json_array_trim(struct json *array_)
     }
 }
 
+/* 创建数组类型的json对象
+ * @elements    记录了数组元素的数组
+ * @n           数组元素数量
+ */
 struct json *
 json_array_create(struct json **elements, size_t n)
 {
@@ -248,6 +254,7 @@ json_array_create_3(struct json *elem0, struct json *elem1, struct json *elem2)
     return json_array_create(elems, 3);
 }
 
+// 创建对象类型的json对象
 struct json *
 json_object_create(void)
 {
@@ -257,6 +264,7 @@ json_object_create(void)
     return json;
 }
 
+// 创建整形类型的json对象
 struct json *
 json_integer_create(long long int integer)
 {
@@ -273,6 +281,7 @@ json_real_create(double real)
     return json;
 }
 
+// 将一个json对象放入一个对象类型的json对象
 void
 json_object_put(struct json *json, const char *name, struct json *value)
 {
@@ -1427,6 +1436,7 @@ json_parser_input(struct json_parser *p, struct json_token *token)
     ds_clear(&p->buffer);
 }
 
+// 创建指定类型的json对象
 static struct json *
 json_create(enum json_type type)
 {

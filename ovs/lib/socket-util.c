@@ -242,6 +242,7 @@ lookup_hostname(const char *host_name, struct in_addr *addr)
     }
 }
 
+// 套接字连接完成
 int
 check_connection_completion(int fd)
 {

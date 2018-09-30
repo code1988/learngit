@@ -24,12 +24,14 @@
 
 /* Active stream connection.
  *
- * This structure should be treated as opaque by implementation. */
+ * This structure should be treated as opaque by implementation. 
+ * 定义了stream结构抽象,用于客户端端管理连接成功后的流
+ * */
 struct stream {
-    const struct stream_class *class;
-    int state;
-    int error;
-    char *name;
+    const struct stream_class *class;   // 指向这类stream共用的方法集合
+    int state;      // 这条stream流当前状态
+    int error;      // 这条stream流当前的errno，显然没错就是0
+    char *name;     // 这条stream流名称,"type:args"格式
     char *peer_id;
 };
 
@@ -41,6 +43,7 @@ static inline void stream_assert_class(const struct stream *stream,
     ovs_assert(stream->class == class);
 }
 
+// 定义了一类stream的行为抽象
 struct stream_class {
     /* Prefix for connection names, e.g. "tcp", "ssl", "unix". */
     const char *name;
@@ -127,7 +130,7 @@ struct stream_class {
 };
 
 /* Passive listener for incoming stream connections.
- * 定义了pstream结构抽象,用于管理远端流的连接请求
+ * 定义了pstream结构抽象,用于服务端管理远端流的连接请求
  * This structure should be treated as opaque by stream implementations. */
 struct pstream {
     const struct pstream_class *class;  // 指向该pstream所属的类,通常都是fd_pstream_class
@@ -143,7 +146,7 @@ static inline void pstream_assert_class(const struct pstream *pstream,
     ovs_assert(pstream->class == class);
 }
 
-// 定义了pstream的类描述
+// 定义了一类pstream的行为抽象
 struct pstream_class {
     /* Prefix for connection names, e.g. "ptcp", "pssl", "punix". 
      * 类名

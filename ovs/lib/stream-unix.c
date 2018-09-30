@@ -38,7 +38,10 @@
 VLOG_DEFINE_THIS_MODULE(stream_unix);
 
 /* Active UNIX socket. */
-
+/* 创建unix-domain客户端套接字，并发起连接
+ * @name    "type:args"格式
+ * @suffix  unix-domain服务端套接字地址
+ */
 static int
 unix_open(const char *name, char *suffix, struct stream **streamp,
           uint8_t dscp OVS_UNUSED)
@@ -47,6 +50,7 @@ unix_open(const char *name, char *suffix, struct stream **streamp,
     int fd;
 
     connect_path = abs_file_name(ovs_rundir(), suffix);
+    // 创建UNIX域客户端非阻塞套接字，并发起连接
     fd = make_unix_socket(SOCK_STREAM, true, NULL, connect_path);
 
     if (fd < 0) {
@@ -61,6 +65,7 @@ unix_open(const char *name, char *suffix, struct stream **streamp,
                          AF_UNIX, streamp);
 }
 
+// unix类stream共用的方法集合
 const struct stream_class unix_stream_class = {
     "unix",                     /* name */
     false,                      /* needs_probes */

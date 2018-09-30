@@ -53,6 +53,7 @@ enum stream_state {
     SCS_DISCONNECTED            /* Connection failed or connection closed.  stream连接失败或连接关闭 */
 };
 
+// 这张表定义了ovs支持的所有stream方法
 static const struct stream_class *stream_classes[] = {
     &tcp_stream_class,
 #ifndef _WIN32
@@ -168,7 +169,9 @@ stream_usage(const char *name, bool active, bool passive,
 /* Given 'name', a stream name in the form "TYPE:ARGS", stores the class
  * named "TYPE" into '*classp' and returns 0.  Returns EAFNOSUPPORT and stores
  * a null pointer into '*classp' if 'name' is in the wrong form or if no such
- * class exists. */
+ * class exists. 
+ * 根据传入的name查找这类stream对应的行为实例
+ * */
 static int
 stream_lookup_class(const char *name, const struct stream_class **classp)
 {
@@ -205,6 +208,9 @@ stream_verify_name(const char *name)
 /* Attempts to connect a stream to a remote peer.  'name' is a connection name
  * in the form "TYPE:ARGS", where TYPE is an active stream class's name and
  * ARGS are stream class-specific.
+ * 创建一个客户端套接字并连接到指定的服务端
+ * @name    "type:args"格式，用于指明协议类型以及对应的套接字地址
+ * @streamp 用于存放连接成功后创建的连接管理块
  *
  * Returns 0 if successful, otherwise a positive errno value.  If successful,
  * stores a pointer to the new connection in '*streamp', otherwise a null
@@ -219,7 +225,9 @@ stream_open(const char *name, struct stream **streamp, uint8_t dscp)
 
     COVERAGE_INC(stream_open);
 
-    /* Look up the class. */
+    /* Look up the class. 
+     * 根据传入的name查找这类stream方法实例
+     * */
     error = stream_lookup_class(name, &class);
     if (!class) {
         goto error;
@@ -227,6 +235,7 @@ stream_open(const char *name, struct stream **streamp, uint8_t dscp)
 
     /* Call class's "open" function. */
     suffix_copy = xstrdup(strchr(name, ':') + 1);
+    // 调用这类stream的open方法创建对应的套接字并发起连接
     error = class->open(name, suffix_copy, &stream, dscp);
     free(suffix_copy);
     if (error) {
@@ -248,6 +257,7 @@ error:
  * successful, otherwise a positive errno value other than EAGAIN or
  * EINPROGRESS.  If successful, leaves '*streamp' untouched; on error, closes
  * '*streamp' and sets '*streamp' to null.
+ * 阻塞等待直到连接成功或出错
  *
  * Typical usage:
  *   error = stream_open_block(stream_open("tcp:1.2.3.4:5", &stream), &stream);
@@ -259,6 +269,7 @@ stream_open_block(int error, struct stream **streamp)
 
     fatal_signal_run();
 
+    // 一直尝试连接操作，直到成功或出错
     if (!error) {
         while ((error = stream_connect(stream)) == EAGAIN) {
             stream_run(stream);

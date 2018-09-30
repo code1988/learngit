@@ -175,7 +175,7 @@ struct inet_sock {
 	__be16			inet_sport;
 	__u16			inet_id;
 
-	struct ip_options_rcu __rcu	*inet_opt;
+	struct ip_options_rcu __rcu	*inet_opt;  // ip选项
 	int			rx_dst_ifindex;
 	__u8			tos;        // 用于设置ip头中的TOS字段
 	__u8			min_ttl;

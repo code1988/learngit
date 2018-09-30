@@ -242,6 +242,7 @@ jsonrpc_log_msg(const struct jsonrpc *rpc, const char *title,
 
 /* Schedules 'msg' to be sent on 'rpc' and returns 'rpc''s status (as with
  * jsonrpc_get_status()).
+ * 发送jsonrpc消息
  *
  * If 'msg' cannot be sent immediately, it is appended to a buffer.  The caller
  * is responsible for ensuring that the amount of buffered data is somehow
@@ -398,6 +399,7 @@ jsonrpc_recv_wait(struct jsonrpc *rpc)
 /* Sends 'msg' on 'rpc' and waits for it to be successfully queued to the
  * underlying stream.  Returns 0 if 'msg' was sent successfully, otherwise a
  * status value (see jsonrpc_get_status()).
+ * 发送jsonrpc消息并等待发送成功
  *
  * Always takes ownership of 'msg', regardless of success. */
 int
@@ -445,6 +447,7 @@ jsonrpc_recv_block(struct jsonrpc *rpc, struct jsonrpc_msg **msgp)
  * successful, in which case '*replyp' is set to the reply, which the caller
  * must eventually free with jsonrpc_msg_destroy().  Otherwise returns a status
  * value (see jsonrpc_get_status()).
+ * 发送jsonrpc消息并等待回复消息
  *
  * Discards any message received on 'rpc' that is not a reply to 'request'
  * (based on message id).
@@ -547,7 +550,7 @@ jsonrpc_cleanup(struct jsonrpc *rpc)
     rpc->backlog = 0;
     rpc->output_count = 0;
 }
-
+// 根据传入的参数创建一体哦啊jsonrpc消息
 static struct jsonrpc_msg *
 jsonrpc_create(enum jsonrpc_msg_type type, const char *method,
                 struct json *params, struct json *result, struct json *error,
@@ -563,6 +566,7 @@ jsonrpc_create(enum jsonrpc_msg_type type, const char *method,
     return msg;
 }
 
+// 为jsonrpc分配一个唯一id，记录在一个json对象中
 static struct json *
 jsonrpc_create_id(void)
 {
@@ -573,10 +577,12 @@ jsonrpc_create_id(void)
     return json_integer_create(id);
 }
 
+// 根据传入的参数创建一条jsonrpc请求消息
 struct jsonrpc_msg *
 jsonrpc_create_request(const char *method, struct json *params,
                        struct json **idp)
 {
+    // 首先为这条jsonrpc消息申请一个唯一id
     struct json *id = jsonrpc_create_id();
     if (idp) {
         *idp = json_clone(id);
@@ -761,6 +767,7 @@ exit:
     return error;
 }
 
+// 将jsonrpc消息中的内容转换成一个json对象
 struct json *
 jsonrpc_msg_to_json(struct jsonrpc_msg *m)
 {

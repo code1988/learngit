@@ -222,6 +222,7 @@ connect_to_target(const char *target)
         socket_name = xstrdup(target);
     }
 
+    // 创建一个unixctl客户端对象，这里面包括了connect过程
     error = unixctl_client_create(socket_name, &client);
     if (error) {
         ovs_fatal(error, "cannot connect to \"%s\"", socket_name);

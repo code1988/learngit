@@ -185,7 +185,9 @@ search_name_array(const char *target, const char *const *names, size_t n_names)
     return i;
 }
 
-/* Returns the name for logging level 'level'. */
+/* Returns the name for logging level 'level'. 
+ * 根据日志级别号索引对应的日志级别名
+ * */
 const char *
 vlog_get_level_name(enum vlog_level level)
 {
@@ -194,7 +196,9 @@ vlog_get_level_name(enum vlog_level level)
 }
 
 /* Returns the logging level with the given 'name', or VLL_N_LEVELS if 'name'
- * is not the name of a logging level. */
+ * is not the name of a logging level. 
+ * 根据日志级别名在支持的级别列表中索引对应的级别序号
+ * */
 enum vlog_level
 vlog_get_level_val(const char *name)
 {
@@ -210,7 +214,9 @@ vlog_get_destination_name(enum vlog_destination destination)
 }
 
 /* Returns the logging destination named 'name', or VLF_N_DESTINATIONS if
- * 'name' is not the name of a logging destination. */
+ * 'name' is not the name of a logging destination. 
+ * 根据输出对象名在支持列表中索引对应的输出对象
+ * */
 enum vlog_destination
 vlog_get_destination_val(const char *name)
 {
@@ -502,7 +508,11 @@ vlog_change_owner_unix(uid_t user, gid_t group)
 #endif
 
 /* Set debugging levels.  Returns null if successful, otherwise an error
- * message that the caller must free(). */
+ * message that the caller must free(). 
+ * 设置日志输出级别
+ * @s_  字符串格式为"模块名：输出目的地：输出级别"
+ * 备注： 返回的msg如果不是NULL，则调用者需要负责释放内存
+ * */
 char *
 vlog_set_levels_from_string(const char *s_)
 {
@@ -596,7 +606,7 @@ vlog_set_levels_from_string_assert(const char *s)
 
 /* If 'arg' is null, configure maximum verbosity.  Otherwise, sets
  * configuration according to 'arg' (see vlog_set_levels_from_string()). 
- * 设置vlog相关信息
+ * 设置vlog输出级别相关信息
  * @arg     "xxx:xxx"格式,如果传入NULL则将所有输出对象的输出阈值设为最低(最大程度输出)
  * */
 void

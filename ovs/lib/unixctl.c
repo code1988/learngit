@@ -504,6 +504,9 @@ unixctl_server_destroy(struct unixctl_server *server)
 /* On POSIX based systems, connects to a unixctl server socket.  'path' should
  * be the name of a unixctl server socket.  If it does not start with '/', it
  * will be prefixed with the rundir (e.g. /usr/local/var/run/openvswitch).
+ * 创建一个unixctl客户端对象，这里面包括了connect过程
+ * @path    unixctl服务端套接字地址
+ * @client  用于存放创建成功的客户端对象，也就是一个jsonrpc对象
  *
  * On Windows, connects to a local named pipe. A file which resides in
  * 'path' is used to mimic the behavior of a Unix domain socket.
@@ -518,6 +521,7 @@ unixctl_client_create(const char *path, struct jsonrpc **client)
     struct stream *stream;
     int error;
 
+    // 计算unixctl服务端套接字地址的绝对路径
 #ifdef _WIN32
     abs_path = xstrdup(path);
 #else
@@ -527,6 +531,7 @@ unixctl_client_create(const char *path, struct jsonrpc **client)
 
     *client = NULL;
 
+    // 创建unixctl客户端套接字并发起连接，一直等待直到连接成功或出错
     error = stream_open_block(stream_open(unix_path, &stream, DSCP_DEFAULT),
                               &stream);
     free(unix_path);
@@ -537,6 +542,7 @@ unixctl_client_create(const char *path, struct jsonrpc **client)
         return error;
     }
 
+    // 为连接成功的stream创建对应的jsonrpc对象
     *client = jsonrpc_open(stream);
     return 0;
 }
@@ -546,7 +552,14 @@ unixctl_client_create(const char *path, struct jsonrpc **client)
  * and sets '*result', or '*err' (not both) to the result or error the server
  * returned.  Otherwise, sets '*result' and '*err' to NULL and returns a
  * positive errno value.  The caller is responsible for freeing '*result' or
- * '*err' if not NULL. */
+ * '*err' if not NULL. 
+ * 本函数完成了unixctl客户端和服务端交互
+ * @command 命令名
+ * @argc    该命令的参数数量
+ * @argv    该命令的参数列表
+ *
+ * 备注：调用者需要负责释放result或err指向的内存
+ * */
 int
 unixctl_client_transact(struct jsonrpc *client, const char *command, int argc,
                         char *argv[], char **result, char **err)
@@ -558,13 +571,17 @@ unixctl_client_transact(struct jsonrpc *client, const char *command, int argc,
     *result = NULL;
     *err = NULL;
 
+    // 创建json对象列表，每个json对象用于存放一个字符串格式的命令参数
     json_args = xmalloc(argc * sizeof *json_args);
     for (i = 0; i < argc; i++) {
         json_args[i] = json_string_create(argv[i]);
     }
+    // 创建数组类型的json对象，其元素就是命令参数
     params = json_array_create(json_args, argc);
+    // 为这条命令创建一条对应的jsonrpc请求消息
     request = jsonrpc_create_request(command, params, NULL);
 
+    // 真正和unixctl服务端完成交互的地方
     error = jsonrpc_transact_block(client, request, &reply);
     if (error) {
         VLOG_WARN("error communicating with %s: %s", jsonrpc_get_name(client),

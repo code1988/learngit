@@ -134,6 +134,7 @@ static inline int ip_select_ttl(struct inet_sock *inet, struct dst_entry *dst)
 /*
  *		Add an ip header to a skbuff and send it out.
  *
+ *	L3层处理L4层下发数据的辅助方法，主要用于发送tcpv4下发的syn ack消息
  */
 int ip_build_and_send_pkt(struct sk_buff *skb, const struct sock *sk,
 			  __be32 saddr, __be32 daddr, struct ip_options_rcu *opt)
@@ -379,7 +380,9 @@ static void ip_copy_addrs(struct iphdr *iph, const struct flowi4 *fl4)
 	       sizeof(fl4->saddr) + sizeof(fl4->daddr));
 }
 
-/* Note: skb->sk can be different from sk, in case of tunnels */
+/* Note: skb->sk can be different from sk, in case of tunnels 
+ * L3层处理L4层下发数据的主要方法之一，供那些自己处理分片的上层协议(如tcpv4)调用
+ * */
 int ip_queue_xmit(struct sock *sk, struct sk_buff *skb, struct flowi *fl)
 {
 	struct inet_sock *inet = inet_sk(sk);
@@ -1160,7 +1163,8 @@ static int ip_setup_cork(struct sock *sk, struct inet_cork *cork,
  *	from many pieces of data. Each pieces will be holded on the socket
  *	until ip_push_pending_frames() is called. Each piece can be a page
  *	or non-page data.
- *	L3层处理L4层下发的数据的入口函数
+ *	L3层处理L4层下发数据的主要方法之一，供那些不处理分片的上层协议(如udpv4、icmpv4、ip层原始套接字等)调用
+ *	备注：本函数实际不发送数据包，只准备数据包，实际发送该数据包的方法是ip_push_pending_frames
  *
  *	Not only UDP, other transport protocols - e.g. raw sockets - can use
  *	this interface potentially.
@@ -1456,6 +1460,7 @@ int ip_send_skb(struct net *net, struct sk_buff *skb)
 	return err;
 }
 
+// 发送由ip_append_data构建的ip报文
 int ip_push_pending_frames(struct sock *sk, struct flowi4 *fl4)
 {
 	struct sk_buff *skb;
