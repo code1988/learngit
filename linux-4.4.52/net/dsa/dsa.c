@@ -52,8 +52,8 @@ void unregister_switch_driver(struct dsa_switch_driver *drv)
 }
 EXPORT_SYMBOL_GPL(unregister_switch_driver);
 
-/* 通过mii-bus设备探测指定的switch是否存在
- * @bus     mii-bus设备，探测动作将通过该设备发出
+/* 通过mii总线探测指定的switch是否存在
+ * @bus     mii设备，探测动作将通过该设备发出
  * @sw_addr 要探测的switch的地址序号
  * @_name   用于存放探测到的switch名
  * @返回值  探测成功则返回对应的switch驱动，失败则返回NULL
@@ -68,7 +68,7 @@ dsa_switch_probe(struct device *host_dev, int sw_addr, char **_name)
 	ret = NULL;
 	name = NULL;
 
-    // 依次遍历已经注册的所有switch驱动，执行其中的probe操作，如果探测成功则会将探测到的switch名存放在_name中
+    // 依次遍历已经注册的switch驱动，执行其probe操作，如果探测成功则会将探测到的switch名存放在_name中
 	mutex_lock(&dsa_switch_drivers_mutex);
 	list_for_each(list, &dsa_switch_drivers) {
 		struct dsa_switch_driver *drv;
@@ -223,6 +223,7 @@ static int dsa_cpu_dsa_setup(struct dsa_switch *ds, struct net_device *master)
 	return 0;
 }
 
+// 真正完成指定switch实例的构建
 static int dsa_switch_setup_one(struct dsa_switch *ds, struct device *parent)
 {
 	struct dsa_switch_driver *drv = ds->drv;
@@ -234,7 +235,7 @@ static int dsa_switch_setup_one(struct dsa_switch *ds, struct device *parent)
 
 	/*
 	 * Validate supplied switch configuration.
-     * 检查提供给该switch的配置信息是否有效
+     * 检查提供给该switch的端口信息是否有效
 	 */
 	for (i = 0; i < DSA_MAX_PORTS; i++) {
 		char *name;
@@ -244,7 +245,7 @@ static int dsa_switch_setup_one(struct dsa_switch *ds, struct device *parent)
 			continue;
 
 		if (!strcmp(name, "cpu")) {
-            // 如果端口名为"cpu"，意味着是switch上是连接cpu的端口，一个DSA实例中只允许存在一个cpu口
+            // 如果端口名为"cpu"，意味着是switch上连接cpu的端口，一个DSA实例中只允许存在一个cpu口
 			if (dst->cpu_switch != -1) {
 				netdev_err(dst->master_netdev,
 					   "multiple cpu ports?!\n");
@@ -254,7 +255,7 @@ static int dsa_switch_setup_one(struct dsa_switch *ds, struct device *parent)
 			dst->cpu_switch = index;
 			dst->cpu_port = i;
 		} else if (!strcmp(name, "dsa")) {
-            // 如果端口名为"dsa"，意味着该端口开启了dsa功能
+            // 如果端口名为"dsa"，意味着该端口开启了dsa功能，是个级联口
 			ds->dsa_port_mask |= 1 << i;
 		} else {
             // 除了"cpu"和"dsa"端口，其他端口都是普通的物理口
@@ -395,11 +396,11 @@ out:
 	return ret;
 }
 
-/* 根据传入的信息创建一个完整的switch实例
+/* 根据传入的信息构建一个switch实例
  * @dst     该switch实例所属的DSA实例
  * @index   该switch的序号，不级联情况下就是0
  * @parent  该switch实例所属的DSA设备
- * @bus     该switch实例使用的主mii-bus
+ * @bus     该switch实例使用的主mii设备
  */
 static struct dsa_switch *
 dsa_switch_setup(struct dsa_switch_tree *dst, int index,
@@ -413,7 +414,7 @@ dsa_switch_setup(struct dsa_switch_tree *dst, int index,
 
 	/*
 	 * Probe for switch model.
-     * 通过指定的mii-bus设备探测指定的switch是否存在
+     * 通过指定的mii总线探测指定的switch是否存在，并返回匹配到的switch驱动
 	 */
 	drv = dsa_switch_probe(host_dev, pd->sw_addr, &name);
 	if (drv == NULL) {
@@ -440,6 +441,7 @@ dsa_switch_setup(struct dsa_switch_tree *dst, int index,
 	ds->tag_protocol = drv->tag_protocol;
 	ds->master_dev = host_dev;
 
+    // 真正完成该switch实例的构建
 	ret = dsa_switch_setup_one(ds, parent);
 	if (ret)
 		return ERR_PTR(ret);
@@ -922,6 +924,12 @@ static inline void dsa_of_remove(struct device *dev)
 }
 #endif
 
+/* 构建一个DSA实例
+ * @dst     指向要被初始化的DSA实例
+ * @dev     指向该DSA实例的宿主网络接口
+ * @parent  指向该DSA实例所属的DSA设备
+ * @pd      指向该DSA实例的配置信息
+ */
 static int dsa_setup_dst(struct dsa_switch_tree *dst, struct net_device *dev,
 			 struct device *parent, struct dsa_platform_data *pd)
 {
@@ -933,11 +941,10 @@ static int dsa_setup_dst(struct dsa_switch_tree *dst, struct net_device *dev,
 	dst->cpu_switch = -1;
 	dst->cpu_port = -1;
 
-    // 创建配置的每个switch实例(不级联就是1个)
+    // 创建该DSA管理的每个switch实例(不级联就是1个)
 	for (i = 0; i < pd->nr_chips; i++) {
 		struct dsa_switch *ds;
 
-        // 创建完整的switch实例
 		ds = dsa_switch_setup(dst, i, parent, pd->chip[i].host_dev);
 		if (IS_ERR(ds)) {
 			netdev_err(dev, "[%d]: couldn't create dsa switch instance (error %ld)\n",
@@ -1026,7 +1033,7 @@ static int dsa_probe(struct platform_device *pdev)
 		goto out;
 	}
 
-    // 创建并初始化DSA实例
+    // 为DSA实例申请一块内存
 	dst = devm_kzalloc(&pdev->dev, sizeof(*dst), GFP_KERNEL);
 	if (dst == NULL) {
 		dev_put(dev);
@@ -1037,6 +1044,7 @@ static int dsa_probe(struct platform_device *pdev)
     // 将DSA实例作为驱动层数据绑定到该DSA设备底层device中 
 	platform_set_drvdata(pdev, dst);
 
+    // 构建该DSA实例
 	ret = dsa_setup_dst(dst, dev, &pdev->dev, pd);
 	if (ret)
 		goto out;

@@ -29,7 +29,7 @@ enum dsa_tag_protocol {
 };
 
 #define DSA_MAX_SWITCHES	4   // 每个DSA实例支持的最大switch数量
-#define DSA_MAX_PORTS		12  // 每个DSA实例支持的最大端口数
+#define DSA_MAX_PORTS		12  // 每个switch实例支持的最大端口数
 
 // 用于描述switch的配置信息
 struct dsa_chip_data {
@@ -89,13 +89,13 @@ struct dsa_platform_data {
 	 * Info structs describing each of the switch chips
 	 * connected via this network interface.
 	 */
-	int		nr_chips;               // 该DSA实例实际管理的级联switch数量
-	struct dsa_chip_data	*chip;  // 这些级联switch配置信息的描述集合
+	int		nr_chips;               // 该DSA实例实际管理的switch数量
+	struct dsa_chip_data	*chip;  // 这张表记录了该DSA实例包含的所有switch的配置信息
 };
 
 struct packet_type;
 
-// DSA实例，被记录在DSA设备device->p->driver_data，并和跟宿主netdev->dsa_ptr关联
+// DSA实例，既作为驱动层数据跟DSA设备device->driver_data关联，又跟宿主netdev->dsa_ptr关联
 struct dsa_switch_tree {
 	/*
 	 * Configuration data for the platform device that owns
@@ -107,7 +107,7 @@ struct dsa_switch_tree {
 	/*
 	 * Reference to network device to use, and which tagging
 	 * protocol to use.
-     * 指向该DSA实例的宿主netdev
+     * 指向该DSA实例的宿主网络接口(比如"eth0")
 	 */
 	struct net_device	*master_netdev;
 	int			(*rcv)(struct sk_buff *skb,
@@ -119,7 +119,7 @@ struct dsa_switch_tree {
 	/*
 	 * The switch and port to which the CPU is attached.
 	 */
-	s8			cpu_switch;                 // CPU口所属的switch序号
+	s8			cpu_switch;                 // CPU口所属switch的序号
 	s8			cpu_port;                   // CPU口在所属switch上对应的端口序号
 
 	/*
@@ -143,7 +143,7 @@ struct dsa_switch {
      * 指向该switch所属的DSA实例
 	 */
 	struct dsa_switch_tree	*dst;
-	int			index;              // 分配给该switch的序号
+	int			index;              // 该switch在所属DSA实例中的序号
 
 	/*
 	 * Tagging protocol understood by this switch
@@ -164,7 +164,7 @@ struct dsa_switch {
 
 	/*
 	 * Reference to host device to use.
-     * 指向该switch使用的主mii-bus设备
+     * 指向该switch使用的主mii总线
 	 */
 	struct device		*master_dev;
 
@@ -179,8 +179,8 @@ struct dsa_switch {
 	/*
 	 * Slave mii_bus and devices for the individual ports.
 	 */
-	u32			dsa_port_mask;                  // 开启了dsa功能的端口集合
-	u32			phys_port_mask;                 // 物理口集合
+	u32			dsa_port_mask;                  // 开启了dsa功能的端口集合，位图结构
+	u32			phys_port_mask;                 // 普通物理口集合，位图结构
 	u32			phys_mii_mask;
 	struct mii_bus		*slave_mii_bus;         // 指向该switch使用的从mii-bus设备(创建该switch时创建，执行读写操作最终还是要通过主mii-bus来完成)
 	struct net_device	*ports[DSA_MAX_PORTS];  // 该switch包含的所有端口对应的netdev集合
@@ -238,7 +238,7 @@ struct dsa_switch_driver {
 	/*
 	 * Probing and setup.
 	 */
-	char	*(*probe)(struct device *host_dev, int sw_addr);    // 通过mii-bus设备发起对指定switch的探测操作
+	char	*(*probe)(struct device *host_dev, int sw_addr);    // 通过指定mii总线发起对指定switch的探测操作
 	int	(*setup)(struct dsa_switch *ds);                        // 初始化探测到的switch
 	int	(*set_addr)(struct dsa_switch *ds, u8 *addr);
 	u32	(*get_phy_flags)(struct dsa_switch *ds, int port);
