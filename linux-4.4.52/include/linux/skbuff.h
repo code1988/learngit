@@ -200,9 +200,11 @@ struct nf_bridge_info {
 };
 #endif
 
-// 定义了套接字的接收队列头
+// 定义了套接字的接收/发送队列头
 struct sk_buff_head {
-	/* These two members must be first. */
+	/* These two members must be first. 
+     * 队列为空时这两个字段都指向该队列头
+     * */
 	struct sk_buff	*next;
 	struct sk_buff	*prev;
 
@@ -589,9 +591,9 @@ struct sk_buff {
                                                其中,剩余空间可被各层网络模块自定义，比如：
                                                     netlink用它存储参数控制块netlink_skb_parms
                                                     bridge用它存储入口参数控制块br_input_skb_cb
-                                                    ip用它存储ip报文的参数控制块inet_skb_parm 
-                                            */
-	unsigned long		_skb_refdst;        // 该套接字关联的dst_entry地址 | norefcount位 联合组成
+                                                    ip用它存储ip报文的参数控制块inet_skb_parm */
+	unsigned long		_skb_refdst;        /* 该套接字关联的出口路由表项
+                                               实际由dst_entry地址 | norefcount位 联合组成 */
 	void			(*destructor)(struct sk_buff *skb); /* 该skb的析构函数，具体由拥有该skb的套接字指定，
                                                            调用本函数后，该skb将不再属于原套接字.
                                                            一个孤儿skb的skb->sk和skb->destructor都为NULL */
@@ -642,7 +644,9 @@ struct sk_buff {
 	__u8			__pkt_type_offset[0];
 	__u8			pkt_type:3;     // 标识该skb中承载的包类型(比如PACKET_MULTICAST)，取值 PACKET_*
 	__u8			pfmemalloc:1;
-	__u8			ignore_df:1;
+	__u8			ignore_df:1;    /* 标识该skb是否忽略DF位
+                                     * 该标志位的优先级高于套接字设置的pmtu控制模式和该skb的出口路由表项相关设置
+                                     */
 	__u8			nfctinfo:3;
 
 	__u8			nf_trace:1;
@@ -718,7 +722,7 @@ struct sk_buff {
 	__u16			inner_network_header;
 	__u16			inner_mac_header;
 
-	__be16			protocol;           // 记录了该skb中承载的以太网帧协议ID(如ETH_P_8021Q、ETH_P_802_2等)
+	__be16			protocol;           // 记录了该skb中承载的以太网帧协议ID(如ETH_P_*等)
 	__u16			transport_header;   // 记录了协议栈的transport layer相对缓冲区头部的偏移量
 	__u16			network_header;     // 记录了协议栈的network layer(如果存在LLC则指向LLC首地址)相对缓冲区头部的偏移量
 	__u16			mac_header;         // 记录了mac地址相对缓冲区头部的偏移量
@@ -765,7 +769,7 @@ static inline bool skb_pfmemalloc(const struct sk_buff *skb)
 
 /**
  * skb_dst - returns skb dst_entry
- * 返回该skb关联的dst_entry
+ * 返回该skb关联的出口路由表项
  * @skb: buffer
  *
  * Returns skb dst_entry, regardless of reference taken or not.
@@ -797,7 +801,7 @@ static inline void skb_dst_set(struct sk_buff *skb, struct dst_entry *dst)
 
 /**
  * skb_dst_set_noref - sets skb dst, hopefully, without taking reference
- * 设置skb的SKB_DST_NOREF标识
+ * 设置skb的出口路由表项(附带SKB_DST_NOREF标识)
  * @skb: buffer
  * @dst: dst entry
  *
@@ -3693,7 +3697,7 @@ static inline __sum16 gso_make_checksum(struct sk_buff *skb, __wsum res)
 	return csum_fold(partial);
 }
 
-// 判断该skb是否支持gso
+// 判断该skb是否启用了gso
 static inline bool skb_is_gso(const struct sk_buff *skb)
 {
 	return skb_shinfo(skb)->gso_size;

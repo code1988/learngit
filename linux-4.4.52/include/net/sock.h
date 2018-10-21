@@ -407,13 +407,15 @@ struct sock {
 	atomic_t		sk_wmem_alloc;      // 已经申请尚未发送的数据大小
 	atomic_t		sk_omem_alloc;
 	int			sk_sndbuf;              // 发送缓冲区大小
-	struct sk_buff_head	sk_write_queue;
+	struct sk_buff_head	sk_write_queue; // 该套接字的发送队列头，队列的成员就是skb
 	kmemcheck_bitfield_begin(flags);
 	unsigned int		sk_shutdown  : 2,
 				sk_no_check_tx : 1,
 				sk_no_check_rx : 1,
 				sk_userlocks : 4,
-				sk_protocol  : 8,       // 记录了该sock对应的协议族下的具体协议类型(比如NETLINK_ROUTE)
+				sk_protocol  : 8,       /* 记录了该sock对应的协议族下的具体协议类型
+                                         * 比如AF_NETLINK中对应的NETLINK_*、AF_INET中对应的IPPROTO_*
+                                         */
 				sk_type      : 16;
 #define SK_PROTOCOL_MAX U8_MAX
 	kmemcheck_bitfield_end(flags);

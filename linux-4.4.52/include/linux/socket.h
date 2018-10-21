@@ -273,8 +273,10 @@ struct ucred {
 #define MSG_DONTROUTE	4
 #define MSG_TRYHARD     4       /* Synonym for MSG_DONTROUTE for DECnet */
 #define MSG_CTRUNC	8
-#define MSG_PROBE	0x10	/* Do not send. Only probe path f.e. for MTU */
-#define MSG_TRUNC	0x20    // 设置到recv系列系统调用中时表示返回实际包的长度，即使指定的缓冲区太小;返回数据的属性中设置了该标志表示数据包由于长度超限而被截断了
+#define MSG_PROBE	0x10	/* Do not send. Only probe path f.e. for MTU 
+                               只用于设置send系列系统调用，表示实际不发送数据包(这么做通常是为了探测mtu) */
+#define MSG_TRUNC	0x20    /* 设置到recv系列系统调用中时表示返回实际包的长度，即使指定的缓冲区太小;
+                               返回数据的属性中设置了该标志表示数据包由于长度超限而被截断了 */
 #define MSG_DONTWAIT	0x40	/* Nonblocking io		 */
 #define MSG_EOR         0x80	/* End of record */
 #define MSG_WAITALL	0x100	/* Wait for a full request */

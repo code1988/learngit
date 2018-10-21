@@ -137,7 +137,7 @@ struct ipv6_pinfo;
 struct rtable;
 
 /** struct inet_sock - representation of INET sockets
- * ipv4/ipv6共用的套接字结构
+ * ipv4/ipv6共用的套接字描述
  *
  * @sk - ancestor class
  * @pinet6 - pointer to IPv6 control block
@@ -170,17 +170,17 @@ struct inet_sock {
 #define inet_num		sk.__sk_common.skc_num
 
 	__be32			inet_saddr;
-	__s16			uc_ttl;
+	__s16			uc_ttl;                 // 单播ttl值
 	__u16			cmsg_flags;
 	__be16			inet_sport;
 	__u16			inet_id;
 
-	struct ip_options_rcu __rcu	*inet_opt;  // ip选项
+	struct ip_options_rcu __rcu	*inet_opt;  // 该套接字关联的ip选项
 	int			rx_dst_ifindex;
-	__u8			tos;        // 用于设置ip头中的TOS字段
+	__u8			tos;                    // 用于设置ip头中的TOS字段
 	__u8			min_ttl;
-	__u8			mc_ttl;
-	__u8			pmtudisc;   // pmtu发现的控制模式
+	__u8			mc_ttl;                 // 组播ttl值
+	__u8			pmtudisc;               // pmtu发现的控制模式，IP_PMTUDISC_*
 	__u8			recverr:1,
 				is_icsk:1,
 				freebind:1,

@@ -88,7 +88,9 @@ ip_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
 	    unsigned int mtu,
 	    int (*output)(struct net *, struct sock *, struct sk_buff *));
 
-/* Generate a checksum for an outgoing IP datagram. */
+/* Generate a checksum for an outgoing IP datagram. 
+ * 生成输出报文的ipv4头校验和
+ * */
 void ip_send_check(struct iphdr *iph)
 {
 	iph->check = 0;
@@ -96,20 +98,24 @@ void ip_send_check(struct iphdr *iph)
 }
 EXPORT_SYMBOL(ip_send_check);
 
+// 发送来自本地上层的ipv4报文
 int __ip_local_out(struct net *net, struct sock *sk, struct sk_buff *skb)
 {
 	struct iphdr *iph = ip_hdr(skb);
 
 	iph->tot_len = htons(skb->len);
+    // 生成输出报文的ipv4头校验和
 	ip_send_check(iph);
 
 	skb->protocol = htons(ETH_P_IP);
 
+    // 通过netfilter之后，最后将ipv4报文递交给出口路由
 	return nf_hook(NFPROTO_IPV4, NF_INET_LOCAL_OUT,
 		       net, sk, skb, NULL, skb_dst(skb)->dev,
 		       dst_output);
 }
 
+// 发送来自本地上层的ipv4报文(显然只是个封装)
 int ip_local_out(struct net *net, struct sock *sk, struct sk_buff *skb)
 {
 	int err;
@@ -122,6 +128,7 @@ int ip_local_out(struct net *net, struct sock *sk, struct sk_buff *skb)
 }
 EXPORT_SYMBOL_GPL(ip_local_out);
 
+// 根据套接字和出口路由表项计算ttl值
 static inline int ip_select_ttl(struct inet_sock *inet, struct dst_entry *dst)
 {
 	int ttl = inet->uc_ttl;
@@ -176,6 +183,10 @@ int ip_build_and_send_pkt(struct sk_buff *skb, const struct sock *sk,
 }
 EXPORT_SYMBOL_GPL(ip_build_and_send_pkt);
 
+/* 将符合出口mtu的ipv4报文从对应的出口设备完成发送
+ * 备注：本函数是没有开启gso模式下的ipv4报文发送流程；
+ *       进入本函数的ipv4报文要么经过了分片，要么无需分片
+ */
 static int ip_finish_output2(struct net *net, struct sock *sk, struct sk_buff *skb)
 {
 	struct dst_entry *dst = skb_dst(skb);
@@ -224,6 +235,7 @@ static int ip_finish_output2(struct net *net, struct sock *sk, struct sk_buff *s
 	return -EINVAL;
 }
 
+// gso模式下将ipv4报文从出口设备发送
 static int ip_finish_output_gso(struct net *net, struct sock *sk,
 				struct sk_buff *skb, unsigned int mtu)
 {
@@ -268,6 +280,7 @@ static int ip_finish_output_gso(struct net *net, struct sock *sk,
 	return ret;
 }
 
+// 将ipv4报文从对应的出口设备完成发送
 static int ip_finish_output(struct net *net, struct sock *sk, struct sk_buff *skb)
 {
 	unsigned int mtu;
@@ -279,16 +292,21 @@ static int ip_finish_output(struct net *net, struct sock *sk, struct sk_buff *sk
 		return dst_output(net, sk, skb);
 	}
 #endif
+    // 返回该skb的有效mtu值
 	mtu = ip_skb_dst_mtu(skb);
+    // 如果该skb启用了gso功能，则进入gso下的发送流程
 	if (skb_is_gso(skb))
 		return ip_finish_output_gso(net, sk, skb, mtu);
 
+    // 没有启用gso的情况下，如果报文长度超过mtu值，或者直接设置了pmtu标记，就需要进行分片后再发送
 	if (skb->len > mtu || (IPCB(skb)->flags & IPSKB_FRAG_PMTU))
 		return ip_fragment(net, sk, skb, mtu, ip_finish_output2);
 
+    // 最后将不需要分片的ipv4报文通过出口设备完成发送
 	return ip_finish_output2(net, sk, skb);
 }
 
+// 将组播ipv4报文递交给对应的出口设备完成发送
 int ip_mc_output(struct net *net, struct sock *sk, struct sk_buff *skb)
 {
 	struct rtable *rt = skb_rtable(skb);
@@ -351,12 +369,15 @@ int ip_mc_output(struct net *net, struct sock *sk, struct sk_buff *skb)
 			    !(IPCB(skb)->flags & IPSKB_REROUTED));
 }
 
+// 将单播ipv4报文递交给对应的出口设备完成发送
 int ip_output(struct net *net, struct sock *sk, struct sk_buff *skb)
 {
+    // 首先获取对应的出口设备
 	struct net_device *dev = skb_dst(skb)->dev;
 
 	IP_UPD_PO_STATS(net, IPSTATS_MIB_OUT, skb->len);
 
+    // 然后将该skb递交给出口设备
 	skb->dev = dev;
 	skb->protocol = htons(ETH_P_IP);
 
@@ -371,6 +392,7 @@ int ip_output(struct net *net, struct sock *sk, struct sk_buff *skb)
  * Equivalent to :
  *   iph->saddr = fl4->saddr;
  *   iph->daddr = fl4->daddr;
+ * 拷贝源ip和目的ip
  */
 static void ip_copy_addrs(struct iphdr *iph, const struct flowi4 *fl4)
 {
@@ -435,16 +457,23 @@ int ip_queue_xmit(struct sock *sk, struct sk_buff *skb, struct flowi *fl)
 		sk_setup_caps(sk, &rt->dst);
 	}
 
-    // 设置skb的SKB_DST_NOREF标识
+    // 程序运行到这里意味着已经为该skb找到了出口路由表项
+    // 设置该为skb的出口路由表项(附带SKB_DST_NOREF标识)
 	skb_dst_set_noref(skb, &rt->dst);
 
 packet_routed:
+    // 如果该套接字设置了ip选项，且is_strictroute和rt_uses_gateway标志都被置位，则丢弃数据包
 	if (inet_opt && inet_opt->opt.is_strictroute && rt->rt_uses_gateway)
 		goto no_route;
 
-	/* OK, we know where to send it, allocate and build IP header. */
+	/* OK, we know where to send it, allocate and build IP header. 
+     * 开始构建ipv4头
+     * */
+    // 将data指针前移ipv4头长度，如果该套接字设置了ip选项，还需要再前移ip选项长度 
 	skb_push(skb, sizeof(struct iphdr) + (inet_opt ? inet_opt->opt.optlen : 0));
+    // 将当前data指针位置设为network layer头部，也就是ipv4头
 	skb_reset_network_header(skb);
+    // 填充ipv4头中的各字段
 	iph = ip_hdr(skb);
 	*((__be16 *)iph) = htons((4 << 12) | (5 << 8) | (inet->tos & 0xff));
 	if (ip_dont_fragment(sk, &rt->dst) && !skb->ignore_df)
@@ -456,12 +485,13 @@ packet_routed:
 	ip_copy_addrs(iph, fl4);
 
 	/* Transport layer set skb->h.foo itself. */
-
+    // 如果该套接字设置了ip选项，则构建报文ip选项字段
 	if (inet_opt && inet_opt->opt.optlen) {
 		iph->ihl += inet_opt->opt.optlen >> 2;
 		ip_options_build(skb, &inet_opt->opt, inet->inet_daddr, rt, 0);
 	}
 
+    // 设置ipv4头中的id字段
 	ip_select_ident_segs(net, skb, sk,
 			     skb_shinfo(skb)->gso_segs ?: 1);
 
@@ -469,6 +499,7 @@ packet_routed:
 	skb->priority = sk->sk_priority;
 	skb->mark = sk->sk_mark;
 
+    // ipv4报文组装完毕，执行发送
 	res = ip_local_out(net, sk, skb);
 	rcu_read_unlock();
 	return res;
@@ -504,6 +535,7 @@ static void ip_copy_metadata(struct sk_buff *to, struct sk_buff *from)
 	skb_copy_secmark(to, from);
 }
 
+// 完成ip分片操作
 static int ip_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
 		       unsigned int mtu,
 		       int (*output)(struct net *, struct sock *, struct sk_buff *))
@@ -876,6 +908,9 @@ append:
 				       (length - transhdrlen));
 }
 
+/*	L3层处理L4层下发数据的主要方法之一，供那些不处理分片的上层协议(如udpv4、icmpv4、ip层原始套接字等)调用
+ *	备注：本函数实际不发送数据包，只准备数据包，实际发送该数据包的方法是ip_push_pending_frames
+ */
 static int __ip_append_data(struct sock *sk,
 			    struct flowi4 *fl4,
 			    struct sk_buff_head *queue,
@@ -1071,6 +1106,7 @@ alloc_new_skb:
 		if (copy > length)
 			copy = length;
 
+        // 根据出口网络设备是否设置了NETIF_F_SG而使用不同的方法处理分段
 		if (!(rt->dst.dev->features&NETIF_F_SG)) {
 			unsigned int off;
 
@@ -1189,6 +1225,7 @@ int ip_append_data(struct sock *sk, struct flowi4 *fl4,
 	struct inet_sock *inet = inet_sk(sk);
 	int err;
 
+    // 如果本次发送设置了MSG_PROBE标志，意味着实际不需要发送该数据包，所以直接返回
 	if (flags&MSG_PROBE)
 		return 0;
 

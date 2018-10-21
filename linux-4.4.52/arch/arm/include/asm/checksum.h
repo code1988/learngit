@@ -55,7 +55,7 @@ static inline __sum16 csum_fold(__wsum sum)
 /*
  *	This is a version of ip_compute_csum() optimized for IP headers,
  *	which always checksum on 4 octet boundaries.
- *	检查ip头校验和是否正确
+ *	计算ip头校验和
  */
 static inline __sum16
 ip_fast_csum(const void *iph, unsigned int ihl)

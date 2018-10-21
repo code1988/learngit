@@ -280,11 +280,17 @@ int ip_decrease_ttl(struct iphdr *iph)
 	return --iph->ttl;
 }
 
+// 检查是否要设置DF位
 static inline
 int ip_dont_fragment(const struct sock *sk, const struct dst_entry *dst)
 {
 	u8 pmtudisc = READ_ONCE(inet_sk(sk)->pmtudisc);
 
+    /* 满足以下2种条件之一就意味着要设置DF位：
+     *      该套接字的pmtu发现模式为IP_PMTUDISC_DO;
+     *      该套接字的pmtu发现模式为IP_PMTUDISC_WANT，且该出口路由表项没有锁定mtu
+     * 否则就不设置DF位
+     */
 	return  pmtudisc == IP_PMTUDISC_DO ||
 		(pmtudisc == IP_PMTUDISC_WANT &&
 		 !(dst_metric_locked(dst, RTAX_MTU)));
@@ -296,6 +302,7 @@ static inline bool ip_sk_accept_pmtu(const struct sock *sk)
 	       inet_sk(sk)->pmtudisc != IP_PMTUDISC_OMIT;
 }
 
+// 判断套接字是否使用pmtu发现功能(小于3的pmtu发现模式都被判为使用)
 static inline bool ip_sk_use_pmtu(const struct sock *sk)
 {
 	return inet_sk(sk)->pmtudisc < IP_PMTUDISC_PROBE;
@@ -322,6 +329,7 @@ static inline unsigned int ip_dst_mtu_maybe_forward(const struct dst_entry *dst,
 	return min(dst->dev->mtu, IP_MAX_MTU);
 }
 
+// 返回指定skb的有效mtu值
 static inline unsigned int ip_skb_dst_mtu(const struct sk_buff *skb)
 {
 	struct sock *sk = skb->sk;
@@ -338,6 +346,7 @@ static inline unsigned int ip_skb_dst_mtu(const struct sk_buff *skb)
 u32 ip_idents_reserve(u32 hash, int segs);
 void __ip_select_ident(struct net *net, struct iphdr *iph, int segs);
 
+// 设置ipv4头中的id字段
 static inline void ip_select_ident_segs(struct net *net, struct sk_buff *skb,
 					struct sock *sk, int segs)
 {
