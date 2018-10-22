@@ -49,12 +49,16 @@ struct fwnode_handle;
 struct iommu_ops;
 struct iommu_group;
 
+// 定义了总线的属性单元结构，总线的属性单元会被导出到/sys/bus目录下的每个具体的总线目录中
 struct bus_attribute {
-	struct attribute	attr;
+	struct attribute	attr;   // 封装的属性基类
+    // 读该总线属性对应的sysfs文件的方法 
 	ssize_t (*show)(struct bus_type *bus, char *buf);
+    // 写该总线属性对应的sysfs文件的方法 
 	ssize_t (*store)(struct bus_type *bus, const char *buf, size_t count);
 };
 
+// 用于定义一条具体的总线属性
 #define BUS_ATTR(_name, _mode, _show, _store)	\
 	struct bus_attribute bus_attr_##_name = __ATTR(_name, _mode, _show, _store)
 #define BUS_ATTR_RW(_name) \
@@ -121,7 +125,8 @@ struct bus_type {
 	const struct attribute_group **dev_groups;
 	const struct attribute_group **drv_groups;
 
-	int (*match)(struct device *dev, struct device_driver *drv);
+    // 该总线上有设备或驱动加入时都会调用match方法对另一半进行匹配，一旦匹配成功，对应驱动的probe方法才会被调用
+	int (*match)(struct device *dev, struct device_driver *drv);    
 	int (*uevent)(struct device *dev, struct kobj_uevent_env *env);
 	int (*probe)(struct device *dev);
 	int (*remove)(struct device *dev);
@@ -271,7 +276,7 @@ enum probe_type {
  */
 struct device_driver {
 	const char		*name;      // 驱动名
-	struct bus_type		*bus;   // 所属总线
+	struct bus_type		*bus;   // 指向该驱动所属的总线
 
 	struct module		*owner;
 	const char		*mod_name;	/* used for built-in modules */
@@ -306,6 +311,7 @@ extern void wait_for_device_probe(void);
 
 /* sysfs interface for exporting driver attributes */
 
+// 定义了驱动的属性单元结构
 struct driver_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct device_driver *driver, char *buf);
@@ -313,6 +319,7 @@ struct driver_attribute {
 			 size_t count);
 };
 
+// 用于定义一条具体的驱动属性
 #define DRIVER_ATTR(_name, _mode, _show, _store) \
 	struct driver_attribute driver_attr_##_name = __ATTR(_name, _mode, _show, _store)
 #define DRIVER_ATTR_RW(_name) \
@@ -462,11 +469,11 @@ extern struct device *class_find_device(struct class *class,
 					int (*match)(struct device *, const void *));
 
 struct class_attribute {
-	struct attribute attr;
+	struct attribute attr;                  // 封装的属性基类
 	ssize_t (*show)(struct class *class, struct class_attribute *attr,
-			char *buf);
+			char *buf);                     // 读该驱动属性对应的sysfs文件的方法
 	ssize_t (*store)(struct class *class, struct class_attribute *attr,
-			const char *buf, size_t count);
+			const char *buf, size_t count); // 写该驱动属性对应的sysfs文件的方法
 };
 
 #define CLASS_ATTR(_name, _mode, _show, _store) \
@@ -556,12 +563,13 @@ struct device_type {
 };
 
 /* interface for exporting device attributes */
+// 定义了设备的属性单元结构
 struct device_attribute {
-	struct attribute	attr;
+	struct attribute	attr;                   // 封装的属性基类
 	ssize_t (*show)(struct device *dev, struct device_attribute *attr,
-			char *buf);
+			char *buf);                         // 读该设备属性对应的sysfs文件的方法
 	ssize_t (*store)(struct device *dev, struct device_attribute *attr,
-			 const char *buf, size_t count);
+			 const char *buf, size_t count);    // 写该设备属性对应的sysfs文件的方法
 };
 
 struct dev_ext_attribute {
@@ -582,6 +590,7 @@ ssize_t device_show_bool(struct device *dev, struct device_attribute *attr,
 ssize_t device_store_bool(struct device *dev, struct device_attribute *attr,
 			 const char *buf, size_t count);
 
+// 用于定义一条具体的设备属性
 #define DEVICE_ATTR(_name, _mode, _show, _store) \
 	struct device_attribute dev_attr_##_name = __ATTR(_name, _mode, _show, _store)
 #define DEVICE_ATTR_RW(_name) \
@@ -794,7 +803,7 @@ struct device {
 					 * its driver.
 					 */
 
-	struct bus_type	*bus;		/* type of bus device is on     指向所属的总线 */
+	struct bus_type	*bus;		/* type of bus device is on     指向该设备所属的总线 */
 	struct device_driver *driver;	/* which driver has allocated this
 					   device */
 	void		*platform_data;	/* Platform specific data, device
