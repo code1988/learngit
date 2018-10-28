@@ -57,8 +57,8 @@ static struct class *watchdog_class;
  */
 
 static DEFINE_MUTEX(wtd_deferred_reg_mutex);
-static LIST_HEAD(wtd_deferred_reg_list);
-static bool wtd_deferred_reg_done;
+static LIST_HEAD(wtd_deferred_reg_list);    // 初始化过程中需要延迟注册的看门狗设备链
+static bool wtd_deferred_reg_done;          // 标识是否已经完成延迟注册
 
 static int watchdog_deferred_registration_add(struct watchdog_device *wdd)
 {
@@ -82,6 +82,7 @@ static void watchdog_deferred_registration_del(struct watchdog_device *wdd)
 	}
 }
 
+// 检查看门狗最小和最大超时值是否合法
 static void watchdog_check_min_max_timeout(struct watchdog_device *wdd)
 {
 	/*
@@ -137,6 +138,7 @@ int watchdog_init_timeout(struct watchdog_device *wdd,
 }
 EXPORT_SYMBOL_GPL(watchdog_init_timeout);
 
+// 正常流程注册一个看门狗设备
 static int __watchdog_register_device(struct watchdog_device *wdd)
 {
 	int ret, id = -1, devno;
@@ -148,6 +150,7 @@ static int __watchdog_register_device(struct watchdog_device *wdd)
 	if (wdd->ops->start == NULL || wdd->ops->stop == NULL)
 		return -EINVAL;
 
+    // 检查看门狗最小和最大超时值是否合法
 	watchdog_check_min_max_timeout(wdd);
 
 	/*
@@ -222,6 +225,7 @@ int watchdog_register_device(struct watchdog_device *wdd)
 	int ret;
 
 	mutex_lock(&wtd_deferred_reg_mutex);
+    // 如果已经完成延迟注册，则按正常流程注册该看门狗设备；否则将该看门狗设备加入延迟设备链
 	if (wtd_deferred_reg_done)
 		ret = __watchdog_register_device(wdd);
 	else
@@ -268,6 +272,7 @@ void watchdog_unregister_device(struct watchdog_device *wdd)
 
 EXPORT_SYMBOL_GPL(watchdog_unregister_device);
 
+// 注册挂在wtd_deferred_reg_list延迟链表上的看门狗设备
 static int __init watchdog_deferred_registration(void)
 {
 	mutex_lock(&wtd_deferred_reg_mutex);
@@ -303,6 +308,7 @@ static int __init watchdog_init(void)
 		return err;
 	}
 
+    // 注册挂在wtd_deferred_reg_list延迟链表上的看门狗设备
 	watchdog_deferred_registration();
 	return 0;
 }

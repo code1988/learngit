@@ -55,6 +55,7 @@
 struct device;
 struct attribute_group;
 
+// 用于描述一个杂项设备的结构
 struct miscdevice  {
 	int minor;
 	const char *name;

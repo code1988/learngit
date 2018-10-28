@@ -45,7 +45,7 @@
 #include "watchdog_core.h"
 
 /* the dev_t structure to store the dynamically allocated watchdog devices */
-static dev_t watchdog_devt;     // 定义了全局的动态分配的看门狗设备号
+static dev_t watchdog_devt;     // 定义了全局的动态分配的一段看门狗设备号起始点
 /* the watchdog device behind /dev/watchdog */
 static struct watchdog_device *old_wdd;
 
@@ -508,6 +508,7 @@ static const struct file_operations watchdog_fops = {
 	.release	= watchdog_release,
 };
 
+// 定义了一个看门狗杂项设备
 static struct miscdevice watchdog_miscdev = {
 	.minor		= WATCHDOG_MINOR,
 	.name		= "watchdog",
@@ -516,6 +517,7 @@ static struct miscdevice watchdog_miscdev = {
 
 /*
  *	watchdog_dev_register: register a watchdog device
+ *	注册一个看门狗设备
  *	@wdd: watchdog device
  *
  *	Register a watchdog device including handling the legacy
