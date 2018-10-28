@@ -45,7 +45,7 @@
 #include "watchdog_core.h"
 
 /* the dev_t structure to store the dynamically allocated watchdog devices */
-static dev_t watchdog_devt;
+static dev_t watchdog_devt;     // 定义了全局的动态分配的看门狗设备号
 /* the watchdog device behind /dev/watchdog */
 static struct watchdog_device *old_wdd;
 
@@ -583,6 +583,7 @@ int watchdog_dev_unregister(struct watchdog_device *wdd)
 
 /*
  *	watchdog_dev_init: init dev part of watchdog core
+ *	为看门狗类设备注册一段设备号
  *
  *	Allocate a range of chardev nodes to use for watchdog devices
  */

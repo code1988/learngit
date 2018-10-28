@@ -222,7 +222,7 @@ extern bool initcall_debug;
 #define arch_initcall(fn)		__define_initcall(fn, 3)        // 包含的模块：板卡初始化函数(customize_machine)、板卡pin-control驱动
 #define arch_initcall_sync(fn)		__define_initcall(fn, 3s)
 #define subsys_initcall(fn)		__define_initcall(fn, 4)
-#define subsys_initcall_sync(fn)	__define_initcall(fn, 4s)
+#define subsys_initcall_sync(fn)	__define_initcall(fn, 4s)   // 包含的模块：watchdog
 #define fs_initcall(fn)			__define_initcall(fn, 5)        // 包含的模块：inet_init
 #define fs_initcall_sync(fn)		__define_initcall(fn, 5s)
 #define rootfs_initcall(fn)		__define_initcall(fn, rootfs)

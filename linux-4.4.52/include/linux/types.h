@@ -11,8 +11,8 @@
 
 typedef __u32 __kernel_dev_t;
 
-typedef __kernel_fd_set		fd_set;
-typedef __kernel_dev_t		dev_t;
+typedef __kernel_fd_set		fd_set;     // 文件描述符变量类型
+typedef __kernel_dev_t		dev_t;      // 设备号变量类型，[31-20]为主设备号，[19-0]为次设备号
 typedef __kernel_ino_t		ino_t;
 typedef __kernel_mode_t		mode_t;
 typedef unsigned short		umode_t;

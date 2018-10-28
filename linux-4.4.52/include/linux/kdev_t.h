@@ -6,9 +6,9 @@
 #define MINORBITS	20
 #define MINORMASK	((1U << MINORBITS) - 1)
 
-#define MAJOR(dev)	((unsigned int) ((dev) >> MINORBITS))
-#define MINOR(dev)	((unsigned int) ((dev) & MINORMASK))
-#define MKDEV(ma,mi)	(((ma) << MINORBITS) | (mi))
+#define MAJOR(dev)	((unsigned int) ((dev) >> MINORBITS))   // 该宏用于获取主设备号
+#define MINOR(dev)	((unsigned int) ((dev) & MINORMASK))    // 该宏用于获取次设备号
+#define MKDEV(ma,mi)	(((ma) << MINORBITS) | (mi))        // 该宏根据传入的主设备号和次设备号计算完整的设备号
 
 #define print_dev_t(buffer, dev)					\
 	sprintf((buffer), "%u:%u\n", MAJOR(dev), MINOR(dev))

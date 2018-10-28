@@ -9,12 +9,13 @@ struct file_operations;
 struct inode;
 struct module;
 
+// 用于描述一个字符设备的结构 
 struct cdev {
-	struct kobject kobj;
+	struct kobject kobj;                // 该字符设备关联的kobject对象
 	struct module *owner;
-	const struct file_operations *ops;
+	const struct file_operations *ops;  // 该字符设备关联的文件形式操作接口集合
 	struct list_head list;
-	dev_t dev;
+	dev_t dev;                          // 该字符设备的设备号
 	unsigned int count;
 };
 

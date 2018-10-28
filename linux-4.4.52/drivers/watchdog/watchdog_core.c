@@ -207,6 +207,7 @@ static int __watchdog_register_device(struct watchdog_device *wdd)
 
 /**
  * watchdog_register_device() - register a watchdog device
+ * 注册一个指定的看门狗设备
  * @wdd: watchdog device
  *
  * Register a watchdog device with the kernel so that the
@@ -283,16 +284,19 @@ static int __init watchdog_deferred_registration(void)
 	return 0;
 }
 
+// 看门狗模块初始化
 static int __init watchdog_init(void)
 {
 	int err;
 
+    // 创建一个看门狗设备类对象
 	watchdog_class = class_create(THIS_MODULE, "watchdog");
 	if (IS_ERR(watchdog_class)) {
 		pr_err("couldn't create class\n");
 		return PTR_ERR(watchdog_class);
 	}
 
+    // 为看门狗类设备注册一段设备号
 	err = watchdog_dev_init();
 	if (err < 0) {
 		class_destroy(watchdog_class);

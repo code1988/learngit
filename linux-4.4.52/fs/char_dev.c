@@ -28,12 +28,13 @@ static struct kobj_map *cdev_map;
 
 static DEFINE_MUTEX(chrdevs_lock);
 
+// 文件内部使用的字符设备结构
 static struct char_device_struct {
 	struct char_device_struct *next;
-	unsigned int major;
-	unsigned int baseminor;
-	int minorct;
-	char name[64];
+	unsigned int major;     // 该字符设备的主设备号
+	unsigned int baseminor; // 该字符设备的起始次设备号
+	int minorct;            // 该字符设备包含的次设备号数量
+	char name[64];          // 该字符设备名
 	struct cdev *cdev;		/* will die */
 } *chrdevs[CHRDEV_MAJOR_HASH_SIZE];
 
@@ -61,12 +62,14 @@ void chrdev_show(struct seq_file *f, off_t offset)
 
 /*
  * Register a single major with a specified minor range.
+ * 为指定字符设备注册一段设备号
  *
  * If major == 0 this functions will dynamically allocate a major and return
  * its number.
  *
  * If major > 0 this function will attempt to reserve the passed range of
  * minors and will return zero on success.
+ * @major   传入0表示动态分配主设备号；传入正整数表示注册一段指定的设备号
  *
  * Returns a -ve errno on failure.
  */
@@ -164,9 +167,10 @@ __unregister_chrdev_region(unsigned major, unsigned baseminor, int minorct)
 
 /**
  * register_chrdev_region() - register a range of device numbers
+ * 为指定字符设备注册一段指定的设备号
  * @from: the first in the desired range of device numbers; must include
- *        the major number.
- * @count: the number of consecutive device numbers required
+ *        the major number.     请求的起始设备号
+ * @count: the number of consecutive device numbers required    请求的连续的设备号范围
  * @name: the name of the device or driver.
  *
  * Return value is zero on success, a negative error code on failure.
@@ -198,14 +202,17 @@ fail:
 
 /**
  * alloc_chrdev_region() - register a range of char device numbers
- * @dev: output parameter for first assigned number
- * @baseminor: first of the requested range of minor numbers
- * @count: the number of minor numbers required
- * @name: the name of the associated device or driver
+ * 为指定字符设备注册一段设备号(设备号由内核动态分配)
+ * @dev: output parameter for first assigned number             用于存放动态分配的第一个设备号
+ * @baseminor: first of the requested range of minor numbers    请求分配的起始次设备号
+ * @count: the number of minor numbers required                 请求分配的次设备号数量
+ * @name: the name of the associated device or driver           字符设备名
  *
  * Allocates a range of char device numbers.  The major number will be
  * chosen dynamically, and returned (along with the first minor number)
  * in @dev.  Returns zero or a negative error code.
+ *
+ * 备注：真正动态分配的显然只是主设备号
  */
 int alloc_chrdev_region(dev_t *dev, unsigned baseminor, unsigned count,
 			const char *name)
@@ -529,6 +536,7 @@ struct cdev *cdev_alloc(void)
 
 /**
  * cdev_init() - initialize a cdev structure
+ * 初始化一个字符设备结构
  * @cdev: the structure to initialize
  * @fops: the file_operations for this device
  *
