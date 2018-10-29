@@ -15,8 +15,8 @@ struct cdev {
 	struct module *owner;
 	const struct file_operations *ops;  // 该字符设备关联的文件形式操作接口集合
 	struct list_head list;
-	dev_t dev;                          // 该字符设备的设备号
-	unsigned int count;
+	dev_t dev;                          // 分配给该字符设备的起始设备号
+	unsigned int count;                 // 分配给该字符设备的连续设备号长度
 };
 
 void cdev_init(struct cdev *, const struct file_operations *);

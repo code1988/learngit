@@ -166,6 +166,7 @@ static const struct file_operations misc_fops = {
 
 /**
  *	misc_register	-	register a miscellaneous device
+ *	注册一个杂项设备到内核
  *	@misc: device structure
  *
  *	Register a miscellaneous device with the kernel. If the minor

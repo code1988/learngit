@@ -24,9 +24,9 @@
 
 #include "internal.h"
 
-static struct kobj_map *cdev_map;
+static struct kobj_map *cdev_map;       // 定义了全局的字符设备号管理对象
 
-static DEFINE_MUTEX(chrdevs_lock);
+static DEFINE_MUTEX(chrdevs_lock);      // 定义了用于维护cdev_map内部成员的互斥锁
 
 // 文件内部使用的字符设备结构
 static struct char_device_struct {
@@ -448,10 +448,11 @@ static int exact_lock(dev_t dev, void *data)
 
 /**
  * cdev_add() - add a char device to the system
+ * 将一个字符设备注册到内核
  * @p: the cdev structure for the device
- * @dev: the first device number for which this device is responsible
+ * @dev: the first device number for which this device is responsible   起始设备号
  * @count: the number of consecutive minor numbers corresponding to this
- *         device
+ *         device   该字符设备连续设备号数量
  *
  * cdev_add() adds the device represented by @p to the system, making it
  * live immediately.  A negative error code is returned on failure.
@@ -538,7 +539,7 @@ struct cdev *cdev_alloc(void)
  * cdev_init() - initialize a cdev structure
  * 初始化一个字符设备结构
  * @cdev: the structure to initialize
- * @fops: the file_operations for this device
+ * @fops: the file_operations for this device   指向需要和该字符设备关联的fops
  *
  * Initializes @cdev, remembering @fops, making it ready to add to the
  * system with cdev_add().
@@ -551,6 +552,7 @@ void cdev_init(struct cdev *cdev, const struct file_operations *fops)
 	cdev->ops = fops;
 }
 
+// cdev_map对象中每个设备号管理单元默认都绑定了该get方法
 static struct kobject *base_probe(dev_t dev, int *part, void *data)
 {
 	if (request_module("char-major-%d-%d", MAJOR(dev), MINOR(dev)) > 0)
@@ -559,6 +561,7 @@ static struct kobject *base_probe(dev_t dev, int *part, void *data)
 	return NULL;
 }
 
+// 字符设备子系统初始化，实质就是创建字符设备号管理对象
 void __init chrdev_init(void)
 {
 	cdev_map = kobj_map_init(base_probe, &chrdevs_lock);

@@ -3447,6 +3447,7 @@ void __init vfs_caches_init_early(void)
 	inode_init_early();
 }
 
+// vfs缓存初始化(在start_kernel中被调用)
 void __init vfs_caches_init(void)
 {
 	names_cachep = kmem_cache_create("names_cache", PATH_MAX, 0,
@@ -3458,5 +3459,6 @@ void __init vfs_caches_init(void)
 	files_maxfiles_init();
 	mnt_init();
 	bdev_cache_init();
+    // 字符设备子系统初始化
 	chrdev_init();
 }

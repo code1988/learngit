@@ -79,7 +79,7 @@ struct watchdog_ops {
  * touched.
  */
 struct watchdog_device {
-	int id;                             // 唯一标识该看门狗的id 
+	int id;                             // 唯一标识该看门狗的id(实际就是次设备号)
 	struct cdev cdev;                   // 封装的基类字符设备模型
 	struct device *dev;                 // 封装的基类设备模型
 	struct device *parent;              

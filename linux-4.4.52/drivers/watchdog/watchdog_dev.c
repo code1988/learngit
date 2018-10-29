@@ -500,6 +500,7 @@ static int watchdog_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
+// 定义了看门狗杂项设备提供给文件系统的接口集合
 static const struct file_operations watchdog_fops = {
 	.owner		= THIS_MODULE,
 	.write		= watchdog_write,
@@ -517,7 +518,7 @@ static struct miscdevice watchdog_miscdev = {
 
 /*
  *	watchdog_dev_register: register a watchdog device
- *	注册一个看门狗设备
+ *	注册一个看门狗字符设备到内核
  *	@wdd: watchdog device
  *
  *	Register a watchdog device including handling the legacy
@@ -529,6 +530,7 @@ int watchdog_dev_register(struct watchdog_device *wdd)
 {
 	int err, devno;
 
+    // 如果看门狗设备的id为0,则额外注册一个看门狗杂项设备到内核
 	if (wdd->id == 0) {
 		old_wdd = wdd;
 		watchdog_miscdev.parent = wdd->parent;
@@ -544,7 +546,9 @@ int watchdog_dev_register(struct watchdog_device *wdd)
 		}
 	}
 
-	/* Fill in the data structures */
+	/* Fill in the data structures 
+     * 初始化看门狗字符设备
+     * */
 	devno = MKDEV(MAJOR(watchdog_devt), wdd->id);
 	cdev_init(&wdd->cdev, &watchdog_fops);
 	wdd->cdev.owner = wdd->ops->owner;

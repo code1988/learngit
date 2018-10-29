@@ -16,6 +16,7 @@
 #include <linux/kobject.h>
 #include <linux/kobj_map.h>
 
+// 用来管理一段设备号的结构
 struct kobj_map {
 	struct probe {
 		struct probe *next;
@@ -132,6 +133,7 @@ retry:
 	return NULL;
 }
 
+// 创建一个kobj_map对象
 struct kobj_map *kobj_map_init(kobj_probe_t *base_probe, struct mutex *lock)
 {
 	struct kobj_map *p = kmalloc(sizeof(struct kobj_map), GFP_KERNEL);

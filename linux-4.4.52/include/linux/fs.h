@@ -1633,6 +1633,7 @@ struct block_device_operations;
 
 struct iov_iter;
 
+// 用于文件系统中的接口集合结构
 struct file_operations {
 	struct module *owner;
 	loff_t (*llseek) (struct file *, loff_t, int);

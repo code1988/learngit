@@ -312,6 +312,7 @@ EXPORT_SYMBOL(kobject_set_name);
 
 /**
  * kobject_init - initialize a kobject structure
+ * 初始化一个kobject结构
  * @kobj: pointer to the kobject to initialize
  * @ktype: pointer to the ktype for this kobject.
  *
