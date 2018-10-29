@@ -354,8 +354,7 @@ struct skb_shared_info {
 	/*
 	 * Warning : all fields before dataref are cleared in __alloc_skb()
 	 */
-	atomic_t	dataref;    /* [15~0]:记录了所在skb的数据区被引用(也称为被共享)的次数，显然，被克隆时，该值递增
-                               */
+	atomic_t	dataref;    /* [15~0]:记录了所在skb的数据区被引用(也称为被共享)的次数，显然，被克隆时，该值递增 */
 
 	/* Intermediate layers must ensure that destructor_arg
 	 * remains valid until skb destructor */
