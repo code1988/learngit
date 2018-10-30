@@ -222,6 +222,7 @@ static const struct regmap_config imx2_wdt_regmap_config = {
 	.max_register = 0x8,
 };
 
+// imx系列隶属于platform总线的watchdog驱动匹配回调函数
 static int __init imx2_wdt_probe(struct platform_device *pdev)
 {
 	struct imx2_wdt_device *wdev;
@@ -412,6 +413,7 @@ static const struct of_device_id imx2_wdt_dt_ids[] = {
 };
 MODULE_DEVICE_TABLE(of, imx2_wdt_dt_ids);
 
+// imx系列隶属于platform总线的watchdog驱动描述符
 static struct platform_driver imx2_wdt_driver = {
 	.remove		= __exit_p(imx2_wdt_remove),
 	.shutdown	= imx2_wdt_shutdown,
@@ -422,6 +424,7 @@ static struct platform_driver imx2_wdt_driver = {
 	},
 };
 
+// imx系列隶属于platform总线的watchdog驱动注册和注销接口
 module_platform_driver_probe(imx2_wdt_driver, imx2_wdt_probe);
 
 MODULE_AUTHOR("Wolfram Sang");
