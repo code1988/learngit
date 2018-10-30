@@ -41,7 +41,7 @@
 #include "watchdog_core.h"	/* For watchdog_dev_register/... */
 
 static DEFINE_IDA(watchdog_ida);
-static struct class *watchdog_class;
+static struct class *watchdog_class;    // 指向一个全局的看门狗设备类对象
 
 /*
  * Deferred Registration infrastructure.
@@ -60,6 +60,7 @@ static DEFINE_MUTEX(wtd_deferred_reg_mutex);
 static LIST_HEAD(wtd_deferred_reg_list);    // 初始化过程中需要延迟注册的看门狗设备链
 static bool wtd_deferred_reg_done;          // 标识是否已经完成延迟注册
 
+// 将指定的看门狗设备加入延迟设备链
 static int watchdog_deferred_registration_add(struct watchdog_device *wdd)
 {
 	list_add_tail(&wdd->deferred,
@@ -176,6 +177,7 @@ static int __watchdog_register_device(struct watchdog_device *wdd)
 		return id;
 	wdd->id = id;
 
+    //	注册该看门狗设备到内核
 	ret = watchdog_dev_register(wdd);
 	if (ret) {
 		ida_simple_remove(&watchdog_ida, id);
@@ -195,6 +197,7 @@ static int __watchdog_register_device(struct watchdog_device *wdd)
 		}
 	}
 
+    // 为该看门狗设备创建一个对应的device对象
 	devno = wdd->cdev.dev;
 	wdd->dev = device_create(watchdog_class, wdd->parent, devno,
 					NULL, "watchdog%d", wdd->id);
@@ -294,7 +297,7 @@ static int __init watchdog_init(void)
 {
 	int err;
 
-    // 创建一个看门狗设备类对象
+    // 创建一个全局的看门狗设备类对象
 	watchdog_class = class_create(THIS_MODULE, "watchdog");
 	if (IS_ERR(watchdog_class)) {
 		pr_err("couldn't create class\n");

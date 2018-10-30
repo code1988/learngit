@@ -19,13 +19,14 @@
 
 struct mfd_cell;
 
+// 定义了platform设备模型
 struct platform_device {
-	const char	*name;
+	const char	*name;          // 设备名
 	int		id;
 	bool		id_auto;
-	struct device	dev;
-	u32		num_resources;
-	struct resource	*resource;
+	struct device	dev;        // 封装的linux基本设备结构
+	u32		num_resources;      // 该设备拥有的资源数量
+	struct resource	*resource;  // 该设备拥有的资源列表
 
 	const struct platform_device_id	*id_entry;
 	char *driver_override; /* Driver name to force a match */
@@ -171,13 +172,14 @@ extern int platform_device_add(struct platform_device *pdev);
 extern void platform_device_del(struct platform_device *pdev);
 extern void platform_device_put(struct platform_device *pdev);
 
+// 定义了platform驱动模型
 struct platform_driver {
 	int (*probe)(struct platform_device *);
 	int (*remove)(struct platform_device *);
 	void (*shutdown)(struct platform_device *);
 	int (*suspend)(struct platform_device *, pm_message_t state);
 	int (*resume)(struct platform_device *);
-	struct device_driver driver;
+	struct device_driver driver;                // 封装的linux基本设备驱动结构
 	const struct platform_device_id *id_table;
 	bool prevent_deferred_probe;
 };
@@ -187,6 +189,7 @@ struct platform_driver {
 
 /*
  * use a macro to avoid include chaining to get THIS_MODULE
+ * 封装的platform驱动注册函数
  */
 #define platform_driver_register(drv) \
 	__platform_driver_register(drv, THIS_MODULE)
@@ -207,6 +210,7 @@ static inline void *platform_get_drvdata(const struct platform_device *pdev)
 	return dev_get_drvdata(&pdev->dev);
 }
 
+// 将私有数据data记录到platform设备底层device的私有数据块中
 static inline void platform_set_drvdata(struct platform_device *pdev,
 					void *data)
 {
@@ -217,6 +221,19 @@ static inline void platform_set_drvdata(struct platform_device *pdev,
  * anything special in module init/exit.  This eliminates a lot of
  * boilerplate.  Each module may only use this macro once, and
  * calling it replaces module_init() and module_exit()
+ *
+ * 这个宏封装了platform总线驱动基本格式，包括module_init()和module_exit()，以及对应的int和exit函数
+ * 展开后其实就是：
+ *          static int __init __platform_driver##_init(void)
+ *          {
+ *              return platform_driver_register(&(__platform_driver));
+ *          }
+ *          static void __exit __platform_driver##_exit(void) 
+ *          {
+ *              platform_driver_unregister(&(__platform_driver)); 
+ *          }
+ *          module_init(__platform_driver##_init);
+ *          module_exit(__platform_driver##_exit);
  */
 #define module_platform_driver(__platform_driver) \
 	module_driver(__platform_driver, platform_driver_register, \

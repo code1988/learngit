@@ -1138,6 +1138,7 @@ EXPORT_SYMBOL(generic_file_open);
  * file descriptors. The function is not supposed to ever fail, the only
  * reason it returns an 'int' and not 'void' is so that it can be plugged
  * directly into file_operations structure.
+ * 将指定的文件设置为不允许seek操作
  */
 int nonseekable_open(struct inode *inode, struct file *filp)
 {

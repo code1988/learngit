@@ -615,7 +615,7 @@ struct inode {
 		const unsigned int i_nlink;
 		unsigned int __i_nlink;
 	};
-	dev_t			i_rdev;
+	dev_t			i_rdev;     // 设备号
 	loff_t			i_size;
 	struct timespec		i_atime;
 	struct timespec		i_mtime;
@@ -1636,19 +1636,19 @@ struct iov_iter;
 // 用于文件系统中的接口集合结构
 struct file_operations {
 	struct module *owner;
-	loff_t (*llseek) (struct file *, loff_t, int);
-	ssize_t (*read) (struct file *, char __user *, size_t, loff_t *);
-	ssize_t (*write) (struct file *, const char __user *, size_t, loff_t *);
+	loff_t (*llseek) (struct file *, loff_t, int);                          // 对应用户空间的lseek
+	ssize_t (*read) (struct file *, char __user *, size_t, loff_t *);       // 对应用户空间的read
+	ssize_t (*write) (struct file *, const char __user *, size_t, loff_t *);// 对应用户空间的write
 	ssize_t (*read_iter) (struct kiocb *, struct iov_iter *);
 	ssize_t (*write_iter) (struct kiocb *, struct iov_iter *);
 	int (*iterate) (struct file *, struct dir_context *);
-	unsigned int (*poll) (struct file *, struct poll_table_struct *);
-	long (*unlocked_ioctl) (struct file *, unsigned int, unsigned long);
+	unsigned int (*poll) (struct file *, struct poll_table_struct *);       // 对应用户空间的select/poll
+	long (*unlocked_ioctl) (struct file *, unsigned int, unsigned long);    // 对应用户空间的fcntl
 	long (*compat_ioctl) (struct file *, unsigned int, unsigned long);
-	int (*mmap) (struct file *, struct vm_area_struct *);
-	int (*open) (struct inode *, struct file *);
+	int (*mmap) (struct file *, struct vm_area_struct *);                   // 对应用户空间的mmap
+	int (*open) (struct inode *, struct file *);                            // 对应用户空间的open
 	int (*flush) (struct file *, fl_owner_t id);
-	int (*release) (struct inode *, struct file *);
+	int (*release) (struct inode *, struct file *);                         // 对应用户空间的close
 	int (*fsync) (struct file *, loff_t, loff_t, int datasync);
 	int (*aio_fsync) (struct kiocb *, int datasync);
 	int (*fasync) (int, struct file *, int);

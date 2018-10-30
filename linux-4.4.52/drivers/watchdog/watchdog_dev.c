@@ -44,13 +44,18 @@
 
 #include "watchdog_core.h"
 
-/* the dev_t structure to store the dynamically allocated watchdog devices */
-static dev_t watchdog_devt;     // 定义了全局的动态分配的一段看门狗设备号起始点
-/* the watchdog device behind /dev/watchdog */
+/* the dev_t structure to store the dynamically allocated watchdog devices 
+ * 定义了全局的动态分配的一段看门狗起始设备号
+ * */
+static dev_t watchdog_devt;     
+/* the watchdog device behind /dev/watchdog 
+ * 旧的看门狗实现只会创建一个固定的杂项看门狗设备/dev/watchdog
+ * */
 static struct watchdog_device *old_wdd;
 
 /*
  *	watchdog_ping: ping the watchdog.
+ *	执行一次喂狗操作
  *	@wdd: the watchdog device to ping
  *
  *	If the watchdog has no own ping operation then it needs to be
@@ -65,14 +70,17 @@ static int watchdog_ping(struct watchdog_device *wdd)
 
 	mutex_lock(&wdd->lock);
 
+    // 确保该看门狗没有被注销
 	if (test_bit(WDOG_UNREGISTERED, &wdd->status)) {
 		err = -ENODEV;
 		goto out_ping;
 	}
 
+    // 确保该看门狗处于运行状态
 	if (!watchdog_active(wdd))
 		goto out_ping;
 
+    // 如果该看门狗设备注册了ping方法，则执行该方法完成喂狗；否则通过重启看门狗完成喂狗
 	if (wdd->ops->ping)
 		err = wdd->ops->ping(wdd);	/* ping the watchdog */
 	else
@@ -85,6 +93,7 @@ out_ping:
 
 /*
  *	watchdog_start: wrapper to start the watchdog.
+ *	启动指定看门狗设备
  *	@wdd: the watchdog device to start
  *
  *	Start the watchdog if it is not active and mark it active.
@@ -98,14 +107,17 @@ static int watchdog_start(struct watchdog_device *wdd)
 
 	mutex_lock(&wdd->lock);
 
+    // 确保该看门狗没有被注销
 	if (test_bit(WDOG_UNREGISTERED, &wdd->status)) {
 		err = -ENODEV;
 		goto out_start;
 	}
 
+    // 如果该看门狗已经处于运行状态，则直接返回
 	if (watchdog_active(wdd))
 		goto out_start;
 
+    // 调用该看门狗设备的start方法来真正完成启动
 	err = wdd->ops->start(wdd);
 	if (err == 0)
 		set_bit(WDOG_ACTIVE, &wdd->status);
@@ -117,6 +129,7 @@ out_start:
 
 /*
  *	watchdog_stop: wrapper to stop the watchdog.
+ *	停止指定看门狗设备
  *	@wdd: the watchdog device to stop
  *
  *	Stop the watchdog if it is still active and unmark it active.
@@ -131,20 +144,24 @@ static int watchdog_stop(struct watchdog_device *wdd)
 
 	mutex_lock(&wdd->lock);
 
+    // 确保该看门狗没有被注销
 	if (test_bit(WDOG_UNREGISTERED, &wdd->status)) {
 		err = -ENODEV;
 		goto out_stop;
 	}
 
+    // 确保该看门狗处于运行状态
 	if (!watchdog_active(wdd))
 		goto out_stop;
 
+    // 确保该看门狗没有处于无路可走的状态
 	if (test_bit(WDOG_NO_WAY_OUT, &wdd->status)) {
 		dev_info(wdd->dev, "nowayout prevents watchdog being stopped!\n");
 		err = -EBUSY;
 		goto out_stop;
 	}
 
+    // 调用该看门狗设备的stop方法来真正完成停止
 	err = wdd->ops->stop(wdd);
 	if (err == 0)
 		clear_bit(WDOG_ACTIVE, &wdd->status);
@@ -156,8 +173,9 @@ out_stop:
 
 /*
  *	watchdog_get_status: wrapper to get the watchdog status
+ *	获取指定看门狗当前状态集合
  *	@wdd: the watchdog device to get the status from
- *	@status: the status of the watchdog device
+ *	@status: the status of the watchdog device      用于存放该看门狗的当前状态
  *
  *	Get the watchdog's status flags.
  */
@@ -173,11 +191,13 @@ static int watchdog_get_status(struct watchdog_device *wdd,
 
 	mutex_lock(&wdd->lock);
 
+    // 确保该看门狗没有被注销
 	if (test_bit(WDOG_UNREGISTERED, &wdd->status)) {
 		err = -ENODEV;
 		goto out_status;
 	}
 
+    // 调用该看门狗设备的status方法来真正获取状态
 	*status = wdd->ops->status(wdd);
 
 out_status:
@@ -187,6 +207,7 @@ out_status:
 
 /*
  *	watchdog_set_timeout: set the watchdog timer timeout
+ *	设置指定看门狗的定时器超时值
  *	@wdd: the watchdog device to set the timeout for
  *	@timeout: timeout to set in seconds
  */
@@ -199,16 +220,19 @@ static int watchdog_set_timeout(struct watchdog_device *wdd,
 	if (!wdd->ops->set_timeout || !(wdd->info->options & WDIOF_SETTIMEOUT))
 		return -EOPNOTSUPP;
 
+    // 确保要设置的超时值合法
 	if (watchdog_timeout_invalid(wdd, timeout))
 		return -EINVAL;
 
 	mutex_lock(&wdd->lock);
 
+    // 确保该看门狗没有被注销
 	if (test_bit(WDOG_UNREGISTERED, &wdd->status)) {
 		err = -ENODEV;
 		goto out_timeout;
 	}
 
+    // 调用该看门狗设备的set_timeout方法来真正完成超时值设置
 	err = wdd->ops->set_timeout(wdd, timeout);
 
 out_timeout:
@@ -218,6 +242,7 @@ out_timeout:
 
 /*
  *	watchdog_get_timeleft: wrapper to get the time left before a reboot
+ *	获取指定看门狗距离超时的剩余时间
  *	@wdd: the watchdog device to get the remaining time from
  *	@timeleft: the time that's left
  *
@@ -235,11 +260,13 @@ static int watchdog_get_timeleft(struct watchdog_device *wdd,
 
 	mutex_lock(&wdd->lock);
 
+    // 确保该看门狗没有被注销
 	if (test_bit(WDOG_UNREGISTERED, &wdd->status)) {
 		err = -ENODEV;
 		goto out_timeleft;
 	}
 
+    // 调用该看门狗设备的get_timeout方法来真正完成剩余时间获取
 	*timeleft = wdd->ops->get_timeleft(wdd);
 
 out_timeleft:
@@ -278,6 +305,7 @@ out_ioctl:
 
 /*
  *	watchdog_write: writes to the watchdog.
+ *	看门狗设备文件的write方法，实质就是执行一次喂狗操作
  *	@file: file from VFS
  *	@data: user address of data
  *	@len: length of data
@@ -286,6 +314,7 @@ out_ioctl:
  *	A write to a watchdog device is defined as a keepalive ping.
  *	Writing the magic 'V' sequence allows the next close to turn
  *	off the watchdog (if 'nowayout' is not set).
+ *	对看门狗设备文件的写入操作被认为是一次保活操作
  */
 
 static ssize_t watchdog_write(struct file *file, const char __user *data,
@@ -305,7 +334,9 @@ static ssize_t watchdog_write(struct file *file, const char __user *data,
 	 */
 	clear_bit(WDOG_ALLOW_RELEASE, &wdd->status);
 
-	/* scan to see whether or not we got the magic character */
+	/* scan to see whether or not we got the magic character 
+     * 如果写入的数据中存在'V'字符，则该看门狗设备会被设置WDOG_ALLOW_RELEASE标志
+     * */
 	for (i = 0; i != len; i++) {
 		if (get_user(c, data + i))
 			return -EFAULT;
@@ -313,7 +344,9 @@ static ssize_t watchdog_write(struct file *file, const char __user *data,
 			set_bit(WDOG_ALLOW_RELEASE, &wdd->status);
 	}
 
-	/* someone wrote to us, so we send the watchdog a keepalive ping */
+	/* someone wrote to us, so we send the watchdog a keepalive ping 
+     * 执行一次保活操作
+     * */
 	err = watchdog_ping(wdd);
 	if (err < 0)
 		return err;
@@ -323,6 +356,7 @@ static ssize_t watchdog_write(struct file *file, const char __user *data,
 
 /*
  *	watchdog_ioctl: handle the different ioctl's for the watchdog device.
+ *	看门狗设备的ioctl接口
  *	@file: file handle to the device
  *	@cmd: watchdog command
  *	@arg: argument pointer
@@ -403,6 +437,7 @@ static long watchdog_ioctl(struct file *file, unsigned int cmd,
 
 /*
  *	watchdog_open: open the /dev/watchdog* devices.
+ *	看门狗设备文件的open方法，实质就是启动对应的看门狗
  *	@inode: inode of device
  *	@file: file handle to device
  *
@@ -416,13 +451,17 @@ static int watchdog_open(struct inode *inode, struct file *file)
 	int err = -EBUSY;
 	struct watchdog_device *wdd;
 
-	/* Get the corresponding watchdog device */
+	/* Get the corresponding watchdog device 
+     * 根据设备号判断打开的是旧式看门狗还是新式看门狗
+     * */
 	if (imajor(inode) == MISC_MAJOR)
 		wdd = old_wdd;
 	else
 		wdd = container_of(inode->i_cdev, struct watchdog_device, cdev);
 
-	/* the watchdog is single open! */
+	/* the watchdog is single open! 
+     * 确保该看门狗设备文件只会被同时打开一次
+     * */
 	if (test_and_set_bit(WDOG_DEV_OPEN, &wdd->status))
 		return -EBUSY;
 
@@ -433,16 +472,20 @@ static int watchdog_open(struct inode *inode, struct file *file)
 	if (!try_module_get(wdd->ops->owner))
 		goto out;
 
+    // 启动该看门狗设备
 	err = watchdog_start(wdd);
 	if (err < 0)
 		goto out_mod;
 
+    // 将该打开的看门狗文件对象和看门狗设备对象绑定
 	file->private_data = wdd;
 
 	if (wdd->ops->ref)
 		wdd->ops->ref(wdd);
 
-	/* dev/watchdog is a virtual (and thus non-seekable) filesystem */
+	/* dev/watchdog is a virtual (and thus non-seekable) filesystem 
+     * 将该看门狗文件设置为不允许seek操作
+     * */
 	return nonseekable_open(inode, file);
 
 out_mod:
@@ -454,6 +497,7 @@ out:
 
 /*
  *	watchdog_release: release the watchdog device.
+ *	看门狗设备文件的release(即close)方法
  *	@inode: inode of device
  *	@file: file handle to device
  *
@@ -471,6 +515,9 @@ static int watchdog_release(struct inode *inode, struct file *file)
 	 * We only stop the watchdog if we received the magic character
 	 * or if WDIOF_MAGICCLOSE is not set. If nowayout was set then
 	 * watchdog_stop will fail.
+     * 已经启动的看门狗只有在两种情况下才会停止：
+     *      [1]. 看门狗设置WDOG_ALLOW_RELEASE标志   -> 看门狗文件close
+     *      [2]. 看门狗清除WDIOF_MAGICCLOSE标志     -> 看门狗文件close
 	 */
 	if (!test_bit(WDOG_ACTIVE, &wdd->status))
 		err = 0;
@@ -478,7 +525,9 @@ static int watchdog_release(struct inode *inode, struct file *file)
 		 !(wdd->info->options & WDIOF_MAGICCLOSE))
 		err = watchdog_stop(wdd);
 
-	/* If the watchdog was not stopped, send a keepalive ping */
+	/* If the watchdog was not stopped, send a keepalive ping 
+     * 如果看门狗停止失败，则需要进行一次喂狗
+     * */
 	if (err < 0) {
 		mutex_lock(&wdd->lock);
 		if (!test_bit(WDOG_UNREGISTERED, &wdd->status))
@@ -490,7 +539,9 @@ static int watchdog_release(struct inode *inode, struct file *file)
 	/* Allow the owner module to be unloaded again */
 	module_put(wdd->ops->owner);
 
-	/* make sure that /dev/watchdog can be re-opened */
+	/* make sure that /dev/watchdog can be re-opened 
+     * 清除WDOG_DEV_OPEN标志，使该看门狗文件可以被重新打开
+     * */
 	clear_bit(WDOG_DEV_OPEN, &wdd->status);
 
 	/* Note wdd may be gone after this, do not use after this! */
@@ -500,7 +551,7 @@ static int watchdog_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
-// 定义了看门狗杂项设备提供给文件系统的接口集合
+// 定义了看门狗设备提供给文件系统的接口集合(看门狗杂项设备和字符设备共用这套接口)
 static const struct file_operations watchdog_fops = {
 	.owner		= THIS_MODULE,
 	.write		= watchdog_write,
@@ -518,7 +569,7 @@ static struct miscdevice watchdog_miscdev = {
 
 /*
  *	watchdog_dev_register: register a watchdog device
- *	注册一个看门狗字符设备到内核
+ *	注册一个看门狗设备到内核
  *	@wdd: watchdog device
  *
  *	Register a watchdog device including handling the legacy
@@ -530,7 +581,9 @@ int watchdog_dev_register(struct watchdog_device *wdd)
 {
 	int err, devno;
 
-    // 如果看门狗设备的id为0,则额外注册一个看门狗杂项设备到内核
+    /* 如果看门狗设备的id为0,则额外注册一个看门狗杂项设备到内核
+     * 备注：注册这个看门狗杂项设备(/dev/watchdog)实际是为了向前兼容
+     */
 	if (wdd->id == 0) {
 		old_wdd = wdd;
 		watchdog_miscdev.parent = wdd->parent;
@@ -553,7 +606,9 @@ int watchdog_dev_register(struct watchdog_device *wdd)
 	cdev_init(&wdd->cdev, &watchdog_fops);
 	wdd->cdev.owner = wdd->ops->owner;
 
-	/* Add the device */
+	/* Add the device 
+     * 将看门狗字符设备设备注册到内核
+     * */
 	err  = cdev_add(&wdd->cdev, devno, 1);
 	if (err) {
 		pr_err("watchdog%d unable to add device %d:%d\n",

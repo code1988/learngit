@@ -18,6 +18,7 @@ struct watchdog_ops;
 struct watchdog_device;
 
 /** struct watchdog_ops - The watchdog-devices operations
+ * 定义了看门狗设备的驱动接口结构
  *
  * @owner:	The module owner.
  * @start:	The routine for starting the watchdog device.
@@ -38,13 +39,13 @@ struct watchdog_device;
 struct watchdog_ops {
 	struct module *owner;
 	/* mandatory operations */
-	int (*start)(struct watchdog_device *);
-	int (*stop)(struct watchdog_device *);
+	int (*start)(struct watchdog_device *); // 该看门狗设备的启动方法(在没有注册ping方法时也用于完成喂狗操作)
+	int (*stop)(struct watchdog_device *);  // 该看门狗设备的停止方法
 	/* optional operations */
-	int (*ping)(struct watchdog_device *);
-	unsigned int (*status)(struct watchdog_device *);
-	int (*set_timeout)(struct watchdog_device *, unsigned int);
-	unsigned int (*get_timeleft)(struct watchdog_device *);
+	int (*ping)(struct watchdog_device *);  // 该看门狗设备的喂狗方法
+	unsigned int (*status)(struct watchdog_device *);               // 该看门狗设备查看当前状态方法
+	int (*set_timeout)(struct watchdog_device *, unsigned int);     // 该看门狗设备设置超时时间方法
+	unsigned int (*get_timeleft)(struct watchdog_device *);         // 该看门狗设备获取距离超时的剩余时间方法
 	void (*ref)(struct watchdog_device *);
 	void (*unref)(struct watchdog_device *);
 	long (*ioctl)(struct watchdog_device *, unsigned int, unsigned long);
@@ -79,11 +80,11 @@ struct watchdog_ops {
  * touched.
  */
 struct watchdog_device {
-	int id;                             // 唯一标识该看门狗的id(实际就是次设备号)
+	int id;                             // 唯一标识该看门狗的id(0~MAX_DOGS)
 	struct cdev cdev;                   // 封装的基类字符设备模型
-	struct device *dev;                 // 封装的基类设备模型
-	struct device *parent;              
-	const struct watchdog_info *info;
+	struct device *dev;                 // 封装的基类device模型
+	struct device *parent;              // 指向该看门狗设备的父设备            
+	const struct watchdog_info *info;   // 指向该看门狗的信息块(可供用于空间使用)
 	const struct watchdog_ops *ops;
 	unsigned int bootstatus;
 	unsigned int timeout;               // 该看门狗当前设置的超时值
@@ -91,20 +92,22 @@ struct watchdog_device {
 	unsigned int max_timeout;           // 支持的最大超时值
 	void *driver_data;
 	struct mutex lock;                  // 用于维护该看门狗内部成员的互斥锁，对外不透明
-	unsigned long status;
+	unsigned long status;               // 该看门狗当前状态集合(仅供内部使用)
 /* Bit numbers for status flags */
-#define WDOG_ACTIVE		0	/* Is the watchdog running/active */
-#define WDOG_DEV_OPEN		1	/* Opened via /dev/watchdog ? */
+#define WDOG_ACTIVE		0	/* Is the watchdog running/active       标识该看门狗是否处于运行状态 */
+#define WDOG_DEV_OPEN		1	/* Opened via /dev/watchdog ?       标识该看门狗设备文件是否处于open状态 */
 #define WDOG_ALLOW_RELEASE	2	/* Did we receive the magic char ? */
-#define WDOG_NO_WAY_OUT		3	/* Is 'nowayout' feature set ? */
-#define WDOG_UNREGISTERED	4	/* Has the device been unregistered */
+#define WDOG_NO_WAY_OUT		3	/* Is 'nowayout' feature set ?      标识该看门狗是否处于无路可走的状态 */
+#define WDOG_UNREGISTERED	4	/* Has the device been unregistered 标识该看门狗是否已经被注销 */
 	struct list_head deferred;
 };
 
 #define WATCHDOG_NOWAYOUT		IS_BUILTIN(CONFIG_WATCHDOG_NOWAYOUT)
 #define WATCHDOG_NOWAYOUT_INIT_STATUS	(WATCHDOG_NOWAYOUT << WDOG_NO_WAY_OUT)
 
-/* Use the following function to check whether or not the watchdog is active */
+/* Use the following function to check whether or not the watchdog is active 
+ * 检查指定看门狗是否处于运行状态
+ * */
 static inline bool watchdog_active(struct watchdog_device *wdd)
 {
 	return test_bit(WDOG_ACTIVE, &wdd->status);
@@ -117,7 +120,9 @@ static inline void watchdog_set_nowayout(struct watchdog_device *wdd, bool noway
 		set_bit(WDOG_NO_WAY_OUT, &wdd->status);
 }
 
-/* Use the following function to check if a timeout value is invalid */
+/* Use the following function to check if a timeout value is invalid 
+ * 检查指定超时值是否合法
+ * */
 static inline bool watchdog_timeout_invalid(struct watchdog_device *wdd, unsigned int t)
 {
 	/*

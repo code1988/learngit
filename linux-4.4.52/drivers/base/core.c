@@ -1772,11 +1772,12 @@ EXPORT_SYMBOL_GPL(device_create_vargs);
 
 /**
  * device_create - creates a device and registers it with sysfs
- * @class: pointer to the struct class that this device should be registered to
+ * 根据传入的参数创建一个device对象，并将该设备注册到sysfs中
+ * @class: pointer to the struct class that this device should be registered to     指向该device所属的设备类
  * @parent: pointer to the parent struct device of this new device, if any
  * @devt: the dev_t for the char device to be added
  * @drvdata: the data to be added to the device for callbacks
- * @fmt: string for the device's name
+ * @fmt: string for the device's name       标识设备名的格式化字符串
  *
  * This function can be used by char device classes.  A struct device
  * will be created in sysfs, registered to the specified class.

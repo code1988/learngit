@@ -26,19 +26,21 @@
 
 static struct kobj_map *cdev_map;       // 定义了全局的字符设备号管理对象
 
-static DEFINE_MUTEX(chrdevs_lock);      // 定义了用于维护cdev_map内部成员的互斥锁
+static DEFINE_MUTEX(chrdevs_lock);      // 定义了用于维护cdev_map和chrdevs内部成员的互斥锁
 
-// 文件内部使用的字符设备结构
+// 定义了字符设备节点结构
 static struct char_device_struct {
-	struct char_device_struct *next;
+	struct char_device_struct *next;    // 指向同一个hash桶中的下一个节点
 	unsigned int major;     // 该字符设备的主设备号
 	unsigned int baseminor; // 该字符设备的起始次设备号
 	int minorct;            // 该字符设备包含的次设备号数量
 	char name[64];          // 该字符设备名
 	struct cdev *cdev;		/* will die */
-} *chrdevs[CHRDEV_MAJOR_HASH_SIZE];
+} *chrdevs[CHRDEV_MAJOR_HASH_SIZE];     // 这张hash表记录了内核中所有已经注册的字符设备，键值为主设备号
 
-/* index in the above */
+/* index in the above  
+ * 计算主设备号的hash值
+ * */
 static inline int major_to_index(unsigned major)
 {
 	return major % CHRDEV_MAJOR_HASH_SIZE;
@@ -62,14 +64,16 @@ void chrdev_show(struct seq_file *f, off_t offset)
 
 /*
  * Register a single major with a specified minor range.
- * 为指定字符设备注册一段设备号
+ * 注册一段设备号，实质就是创建一个对应的节点并插入全局的hash表chrdevs
  *
  * If major == 0 this functions will dynamically allocate a major and return
  * its number.
  *
  * If major > 0 this function will attempt to reserve the passed range of
  * minors and will return zero on success.
- * @major   传入0表示动态分配主设备号；传入正整数表示注册一段指定的设备号
+ * @major       传入0表示动态分配主设备号；传入正整数表示注册一段指定范围的设备号
+ * @baseminor   起始次设备号
+ * @minorct     次设备号数量
  *
  * Returns a -ve errno on failure.
  */
@@ -87,7 +91,9 @@ __register_chrdev_region(unsigned int major, unsigned int baseminor,
 
 	mutex_lock(&chrdevs_lock);
 
-	/* temporary */
+	/* temporary 
+     * 动态分配主设备号的实质就是取一个最大的尚未使用的主设备号，不过其范围只能是1~254
+     * */
 	if (major == 0) {
 		for (i = ARRAY_SIZE(chrdevs)-1; i > 0; i--) {
 			if (chrdevs[i] == NULL)
@@ -106,6 +112,7 @@ __register_chrdev_region(unsigned int major, unsigned int baseminor,
 	cd->minorct = minorct;
 	strlcpy(cd->name, name, sizeof(cd->name));
 
+    // 插入hash表chrdevs
 	i = major_to_index(major);
 
 	for (cp = &chrdevs[i]; *cp; cp = &(*cp)->next)
@@ -167,11 +174,11 @@ __unregister_chrdev_region(unsigned major, unsigned baseminor, int minorct)
 
 /**
  * register_chrdev_region() - register a range of device numbers
- * 为指定字符设备注册一段指定的设备号
+ * 申请一段指定范围的设备号
  * @from: the first in the desired range of device numbers; must include
- *        the major number.     请求的起始设备号
- * @count: the number of consecutive device numbers required    请求的连续的设备号范围
- * @name: the name of the device or driver.
+ *        the major number.                                     请求的起始设备号
+ * @count: the number of consecutive device numbers required    连续的设备号范围
+ * @name: the name of the device or driver.                     这段设备号关联的设备类型名
  *
  * Return value is zero on success, a negative error code on failure.
  */
@@ -202,8 +209,8 @@ fail:
 
 /**
  * alloc_chrdev_region() - register a range of char device numbers
- * 为指定字符设备注册一段设备号(设备号由内核动态分配)
- * @dev: output parameter for first assigned number             用于存放动态分配的第一个设备号
+ * 申请一段设备号(设备号由内核动态分配)
+ * @dev: output parameter for first assigned number             用于存放动态分配的起始设备号
  * @baseminor: first of the requested range of minor numbers    请求分配的起始次设备号
  * @count: the number of minor numbers required                 请求分配的次设备号数量
  * @name: the name of the associated device or driver           字符设备名
@@ -282,6 +289,7 @@ out2:
 
 /**
  * unregister_chrdev_region() - unregister a range of device numbers
+ * 释放一段之前申请的设备号
  * @from: the first in the range of numbers to unregister
  * @count: the number of device numbers to unregister
  *
@@ -434,6 +442,7 @@ const struct file_operations def_chr_fops = {
 	.llseek = noop_llseek,
 };
 
+// 字符设备获取kobject对象的方法
 static struct kobject *exact_match(dev_t dev, int *part, void *data)
 {
 	struct cdev *p = data;
@@ -448,7 +457,7 @@ static int exact_lock(dev_t dev, void *data)
 
 /**
  * cdev_add() - add a char device to the system
- * 将一个字符设备注册到内核
+ * 将一个字符设备注册到内核，实质就是将其设备号保存到cdev_map中
  * @p: the cdev structure for the device
  * @dev: the first device number for which this device is responsible   起始设备号
  * @count: the number of consecutive minor numbers corresponding to this
@@ -456,6 +465,8 @@ static int exact_lock(dev_t dev, void *data)
  *
  * cdev_add() adds the device represented by @p to the system, making it
  * live immediately.  A negative error code is returned on failure.
+ *
+ * 备注：调用者需要确保已经拥有这段设备号
  */
 int cdev_add(struct cdev *p, dev_t dev, unsigned count)
 {
@@ -464,6 +475,7 @@ int cdev_add(struct cdev *p, dev_t dev, unsigned count)
 	p->dev = dev;
 	p->count = count;
 
+    // 将该字符设备包含的一组设备号保存到字符设备管理对象cdev_map中
 	error = kobj_map(cdev_map, dev, count, NULL,
 			 exact_match, exact_lock, p);
 	if (error)
@@ -474,6 +486,7 @@ int cdev_add(struct cdev *p, dev_t dev, unsigned count)
 	return 0;
 }
 
+// 从cdev_map中删除一段设备号
 static void cdev_unmap(dev_t dev, unsigned count)
 {
 	kobj_unmap(cdev_map, dev, count);
@@ -481,6 +494,7 @@ static void cdev_unmap(dev_t dev, unsigned count)
 
 /**
  * cdev_del() - remove a cdev from the system
+ * 从内核中删除一个字符设备，实质就是将其设备号从cdev_map中删除
  * @p: the cdev structure to be removed
  *
  * cdev_del() removes @p from the system, possibly freeing the structure
@@ -493,6 +507,7 @@ void cdev_del(struct cdev *p)
 }
 
 
+// 为cdev类型kobject定义的缺省销毁方式
 static void cdev_default_release(struct kobject *kobj)
 {
 	struct cdev *p = container_of(kobj, struct cdev, kobj);
@@ -502,6 +517,7 @@ static void cdev_default_release(struct kobject *kobj)
 	kobject_put(parent);
 }
 
+// 为cdev类型kobject定义的动态销毁方式
 static void cdev_dynamic_release(struct kobject *kobj)
 {
 	struct cdev *p = container_of(kobj, struct cdev, kobj);
@@ -512,16 +528,19 @@ static void cdev_dynamic_release(struct kobject *kobj)
 	kobject_put(parent);
 }
 
+// 为字符设备定义的缺省kobj_type
 static struct kobj_type ktype_cdev_default = {
 	.release	= cdev_default_release,
 };
 
+// 为字符设备定义的动态方式kobj_type
 static struct kobj_type ktype_cdev_dynamic = {
 	.release	= cdev_dynamic_release,
 };
 
 /**
  * cdev_alloc() - allocate a cdev structure
+ * 分配一个字符设备结构
  *
  * Allocates and returns a cdev structure, or NULL on failure.
  */
@@ -530,6 +549,7 @@ struct cdev *cdev_alloc(void)
 	struct cdev *p = kzalloc(sizeof(struct cdev), GFP_KERNEL);
 	if (p) {
 		INIT_LIST_HEAD(&p->list);
+        // 显然动态分配的cdev在初始化其kobject时需要适配动态销毁方式
 		kobject_init(&p->kobj, &ktype_cdev_dynamic);
 	}
 	return p;
@@ -537,9 +557,9 @@ struct cdev *cdev_alloc(void)
 
 /**
  * cdev_init() - initialize a cdev structure
- * 初始化一个字符设备结构
+ * 初始化传入的字符设备结构
  * @cdev: the structure to initialize
- * @fops: the file_operations for this device   指向需要和该字符设备关联的fops
+ * @fops: the file_operations for this device   指向需要和该字符设备绑定的fops
  *
  * Initializes @cdev, remembering @fops, making it ready to add to the
  * system with cdev_add().
@@ -548,11 +568,12 @@ void cdev_init(struct cdev *cdev, const struct file_operations *fops)
 {
 	memset(cdev, 0, sizeof *cdev);
 	INIT_LIST_HEAD(&cdev->list);
+    // 已经存在的cdev在初始化其kobject时采用缺省销毁方式
 	kobject_init(&cdev->kobj, &ktype_cdev_default);
 	cdev->ops = fops;
 }
 
-// cdev_map对象中每个设备号管理单元默认都绑定了该get方法
+// cdev_map对象中每个设备号管理单元默认都绑定了该get方法，但实际都会被exact_match替代
 static struct kobject *base_probe(dev_t dev, int *part, void *data)
 {
 	if (request_module("char-major-%d-%d", MAJOR(dev), MINOR(dev)) > 0)

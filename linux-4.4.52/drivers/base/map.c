@@ -16,24 +16,31 @@
 #include <linux/kobject.h>
 #include <linux/kobj_map.h>
 
-// 用来管理一段设备号的结构
+// 定义了设备号管理对象结构
 struct kobj_map {
 	struct probe {
 		struct probe *next;
-		dev_t dev;
+		dev_t dev;      // 设备号
 		unsigned long range;
 		struct module *owner;
-		kobj_probe_t *get;
+		kobj_probe_t *get;  // 获取这段设备号关联的kobject对象的方法
 		int (*lock)(dev_t, void *);
-		void *data;
-	} *probes[255];
-	struct mutex *lock;
+		void *data;     // 这段设备号相关自定义数据(比如在字符设备号管理对象cdev_map中，这里指向具体的字符设备结构struct cdev)
+	} *probes[255];     /* 这是一个255长度的hash桶，键值为主设备号，通过取余计算hash值
+                           每个hash桶中节点按照range值从小到大排列 */
+	struct mutex *lock; // 用于维护该设备号管理对象内部成员的互斥锁
 };
 
+/* 将一段设备号保存到指定的kobj_map对象中
+ * @dev     起始设备号
+ * @range   设备号范围
+ * @data    跟这段设备号相关的自定义数据
+ */
 int kobj_map(struct kobj_map *domain, dev_t dev, unsigned long range,
 	     struct module *module, kobj_probe_t *probe,
 	     int (*lock)(dev_t, void *), void *data)
 {
+    // 首先计算这段设备号跨越的主设备号数量
 	unsigned n = MAJOR(dev + range - 1) - MAJOR(dev) + 1;
 	unsigned index = MAJOR(dev);
 	unsigned i;
@@ -42,6 +49,7 @@ int kobj_map(struct kobj_map *domain, dev_t dev, unsigned long range,
 	if (n > 255)
 		n = 255;
 
+    // 创建一个数组，元素为struct probe，数量为主设备号数量，并对每个元素填充一组相同的数据
 	p = kmalloc_array(n, sizeof(struct probe), GFP_KERNEL);
 	if (p == NULL)
 		return -ENOMEM;
@@ -55,6 +63,7 @@ int kobj_map(struct kobj_map *domain, dev_t dev, unsigned long range,
 		p->data = data;
 	}
 	mutex_lock(domain->lock);
+    // 将数组中的每个元素插入hash桶中
 	for (i = 0, p -= n; i < n; i++, p++, index++) {
 		struct probe **s = &domain->probes[index % 255];
 		while (*s && (*s)->range < range)
@@ -66,6 +75,10 @@ int kobj_map(struct kobj_map *domain, dev_t dev, unsigned long range,
 	return 0;
 }
 
+/* 从指定的kobj_map对象中删除一段设备号
+ * @dev     起始设备号
+ * @range   设备号范围
+ */
 void kobj_unmap(struct kobj_map *domain, dev_t dev, unsigned long range)
 {
 	unsigned n = MAJOR(dev + range - 1) - MAJOR(dev) + 1;
@@ -93,6 +106,9 @@ void kobj_unmap(struct kobj_map *domain, dev_t dev, unsigned long range)
 	kfree(found);
 }
 
+/* 根据设备号在指定kobj_map对象中查找该设备对应的kobject对象
+ * @index   用于存放该设备号到起始设备号的偏移量
+ */
 struct kobject *kobj_lookup(struct kobj_map *domain, dev_t dev, int *index)
 {
 	struct kobject *kobj;
@@ -149,6 +165,7 @@ struct kobj_map *kobj_map_init(kobj_probe_t *base_probe, struct mutex *lock)
 	base->dev = 1;
 	base->range = ~0;
 	base->get = base_probe;
+    // 刚初始化的kobj_map对象，其每个probes指针都指向同一个base
 	for (i = 0; i < 255; i++)
 		p->probes[i] = base;
 	p->lock = lock;

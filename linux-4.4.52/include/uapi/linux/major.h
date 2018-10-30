@@ -4,6 +4,7 @@
 /*
  * This file has definitions for major device numbers.
  * For the device number assignments, see Documentation/devices.txt.
+ * 下面是预分配的主设备号
  */
 
 #define UNNAMED_MAJOR		0
