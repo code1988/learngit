@@ -2132,6 +2132,7 @@ static const struct dev_pm_ops imx_serial_port_pm_ops = {
 	.resume = imx_serial_port_resume,
 };
 
+// imx系列隶属于platform总线的串口驱动描述符
 static struct platform_driver serial_imx_driver = {
 	.probe		= serial_imx_probe,
 	.remove		= serial_imx_remove,
@@ -2144,6 +2145,7 @@ static struct platform_driver serial_imx_driver = {
 	},
 };
 
+// imx系列串口模块驱动初始化入口
 static int __init imx_serial_init(void)
 {
 	int ret = uart_register_driver(&imx_reg);

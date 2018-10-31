@@ -1946,6 +1946,7 @@ static int lpuart_resume(struct device *dev)
 
 static SIMPLE_DEV_PM_OPS(lpuart_pm_ops, lpuart_suspend, lpuart_resume);
 
+// imx系列隶属于platform总线的lpuart驱动描述符
 static struct platform_driver lpuart_driver = {
 	.probe		= lpuart_probe,
 	.remove		= lpuart_remove,
@@ -1956,6 +1957,7 @@ static struct platform_driver lpuart_driver = {
 	},
 };
 
+// imx系列lpuart模块驱动初始化入口
 static int __init lpuart_serial_init(void)
 {
 	int ret = uart_register_driver(&lpuart_reg);

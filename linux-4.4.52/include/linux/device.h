@@ -1345,6 +1345,7 @@ extern long sysfs_deprecated;
  * special in module init/exit. This eliminates a lot of boilerplate.
  * Each module may only use this macro once, and calling it replaces
  * module_init() and module_exit().
+ * 这个宏将以模块形式加载&卸载驱动的接口封装成了通用模板，包括module_init()和module_exit()，以及对应的init和exit函数
  *
  * @__driver: driver name
  * @__register: register function for this driver type
@@ -1353,6 +1354,8 @@ extern long sysfs_deprecated;
  *
  * Use this macro to construct bus specific macros for registering
  * drivers, and do not use it on its own.
+ *
+ * 备注：必须基于该宏进一步封装一层具体总线下的通用模板(如module_platform_driver)，也就是说该宏不能独立使用
  */
 #define module_driver(__driver, __register, __unregister, ...) \
 static int __init __driver##_init(void) \
@@ -1373,6 +1376,7 @@ module_exit(__driver##_exit);
  * device_initcall (or in some cases, the legacy __initcall).  This is
  * meant to be a direct parallel of module_driver() above but without
  * the __exit stuff that is not used for builtin cases.
+ * 这个宏将内建在内核image中的驱动加载接口封装成了通用模板，包括device_initcall()和对应的init函数
  *
  * @__driver: driver name
  * @__register: register function for this driver type
@@ -1380,6 +1384,7 @@ module_exit(__driver##_exit);
  *
  * Use this macro to construct bus specific macros for registering
  * drivers, and do not use it on its own.
+ * 备注：必须基于该宏进一步封装一层具体总线下的通用模板(如builtin_platform_driver)，也就是说该宏不能独立使用
  */
 #define builtin_driver(__driver, __register, ...) \
 static int __init __driver##_init(void) \

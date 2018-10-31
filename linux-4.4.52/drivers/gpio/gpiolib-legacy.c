@@ -5,6 +5,10 @@
 
 #include "gpiolib.h"
 
+/* 释放由gpio_request申请到的gpio
+ *
+ * 备注:旧式接口,实际也是通过基于描述符的接口实现
+ */
 void gpio_free(unsigned gpio)
 {
 	gpiod_free(gpio_to_desc(gpio));
@@ -13,6 +17,7 @@ EXPORT_SYMBOL_GPL(gpio_free);
 
 /**
  * gpio_request_one - request a single GPIO with initial configuration
+ * 申请和配置单个gpio
  * @gpio:	the GPIO number
  * @flags:	GPIO configuration as specified by GPIOF_*
  * @label:	a literal description string of this GPIO
@@ -64,6 +69,10 @@ int gpio_request_one(unsigned gpio, unsigned long flags, const char *label)
 }
 EXPORT_SYMBOL_GPL(gpio_request_one);
 
+/* 向内核申请指定gpio，只有成功申请到后才可以使用该gpio
+ *
+ * 备注:旧式接口,实际也是通过基于描述符的接口实现
+ */
 int gpio_request(unsigned gpio, const char *label)
 {
 	struct gpio_desc *desc = gpio_to_desc(gpio);
@@ -78,6 +87,7 @@ EXPORT_SYMBOL_GPL(gpio_request);
 
 /**
  * gpio_request_array - request multiple GPIOs in a single call
+ * 申请和配置一组gpio
  * @array:	array of the 'struct gpio'
  * @num:	how many GPIOs in the array
  */

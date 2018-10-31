@@ -1853,6 +1853,7 @@ static int sdma_remove(struct platform_device *pdev)
 	return 0;
 }
 
+// imx系列隶属于platform总线的sdma驱动描述符
 static struct platform_driver sdma_driver = {
 	.driver		= {
 		.name	= "imx-sdma",
@@ -1863,6 +1864,7 @@ static struct platform_driver sdma_driver = {
 	.probe		= sdma_probe,
 };
 
+// imx系列隶属于platform总线的sdma驱动加载&卸载接口
 module_platform_driver(sdma_driver);
 
 MODULE_AUTHOR("Sascha Hauer, Pengutronix <s.hauer@pengutronix.de>");

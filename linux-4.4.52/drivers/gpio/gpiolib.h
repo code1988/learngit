@@ -83,22 +83,27 @@ struct gpio_desc *gpiochip_get_desc(struct gpio_chip *chip, u16 hwnum);
 extern struct spinlock gpio_lock;
 extern struct list_head gpio_chips;
 
+// 定义了gpio描述符
 struct gpio_desc {
-	struct gpio_chip	*chip;
-	unsigned long		flags;
+	struct gpio_chip	*chip;      // 指向该gpio所属的gpio控制器
+	unsigned long		flags;      // 记录了该gpio配置的属性集合
 /* flag symbols are bit numbers */
-#define FLAG_REQUESTED	0
-#define FLAG_IS_OUT	1
+#define FLAG_REQUESTED	0           // 标识该gpio是否已经被申请
+#define FLAG_IS_OUT	1               // 标识该gpio当前是否处于输出状态
 #define FLAG_EXPORT	2	/* protected by sysfs_lock */
 #define FLAG_SYSFS	3	/* exported via /sys/class/gpio/control */
-#define FLAG_ACTIVE_LOW	6	/* value has active low */
-#define FLAG_OPEN_DRAIN	7	/* Gpio is open drain type */
-#define FLAG_OPEN_SOURCE 8	/* Gpio is open source type */
-#define FLAG_USED_AS_IRQ 9	/* GPIO is connected to an IRQ */
+#define FLAG_ACTIVE_LOW	6	/* value has active low 
+                               标识该gpio是否将low映射为active状态 */
+#define FLAG_OPEN_DRAIN	7	/* Gpio is open drain type 
+                               标识该gpio是否设置为开漏模式 */
+#define FLAG_OPEN_SOURCE 8	/* Gpio is open source type 
+                               标识该gpio是否设置为open source模式 */
+#define FLAG_USED_AS_IRQ 9	/* GPIO is connected to an IRQ 
+                               标识该gpio当前是否连接到一个中断号 */
 #define FLAG_IS_HOGGED	11	/* GPIO is hogged */
 
 	/* Connection label */
-	const char		*label;
+	const char		*label;     // 可在被申请时设置
 	/* Name of the GPIO */
 	const char		*name;
 };
@@ -110,6 +115,7 @@ int gpiod_hog(struct gpio_desc *desc, const char *name,
 
 /*
  * Return the GPIO number of the passed descriptor relative to its chip
+ * 返回指定gpio在所属gpio控制器中的相对编号
  */
 static int __maybe_unused gpio_chip_hwgpio(const struct gpio_desc *desc)
 {

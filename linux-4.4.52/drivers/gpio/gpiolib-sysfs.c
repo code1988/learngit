@@ -531,8 +531,10 @@ static struct class gpio_class = {
 
 /**
  * gpiod_export - export a GPIO through sysfs
+ * 导出指定gpio到用户空间的sysfs(前提是该gpio已经申请成功)
  * @gpio: gpio to make available, already requested
  * @direction_may_change: true if userspace may change gpio direction
+ *                        标识是否允许用户空间改变输入/输出模式
  * Context: arch_initcall or later
  *
  * When drivers want to make a GPIO accessible to userspace after they
@@ -669,6 +671,7 @@ EXPORT_SYMBOL_GPL(gpiod_export_link);
 
 /**
  * gpiod_unexport - reverse effect of gpio_export()
+ * 撤销指定gpio导出到用户空间的sysfs
  * @gpio: gpio to make unavailable
  *
  * This is implicit on gpio_free().
@@ -766,12 +769,17 @@ void gpiochip_sysfs_unregister(struct gpio_chip *chip)
 	}
 }
 
+/* 初始化用户空间sysfs中的gpio目录
+ *
+ * 备注：本函数的启动优先级需要高于arch_initcall
+ */
 static int __init gpiolib_sysfs_init(void)
 {
 	int		status;
 	unsigned long	flags;
 	struct gpio_chip *chip;
 
+    // 注册gpio设备类到内核
 	status = class_register(&gpio_class);
 	if (status < 0)
 		return status;
@@ -781,6 +789,7 @@ static int __init gpiolib_sysfs_init(void)
 	 *
 	 * We run before arch_initcall() so chip->dev nodes can have
 	 * registered, and so arch_initcall() can always gpio_export().
+     * 遍历启动期间那些很早就注册了的gpio控制器，将其导出到用户空间sysfs
 	 */
 	spin_lock_irqsave(&gpio_lock, flags);
 	list_for_each_entry(chip, &gpio_chips, list) {

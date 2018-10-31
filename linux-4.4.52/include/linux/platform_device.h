@@ -174,7 +174,7 @@ extern void platform_device_put(struct platform_device *pdev);
 
 // 定义了platform驱动模型
 struct platform_driver {
-	int (*probe)(struct platform_device *);
+	int (*probe)(struct platform_device *);     // 该驱动探测到匹配的设备后会调用本方法
 	int (*remove)(struct platform_device *);
 	void (*shutdown)(struct platform_device *);
 	int (*suspend)(struct platform_device *, pm_message_t state);
@@ -222,18 +222,18 @@ static inline void platform_set_drvdata(struct platform_device *pdev,
  * boilerplate.  Each module may only use this macro once, and
  * calling it replaces module_init() and module_exit()
  *
- * 这个宏封装了platform总线驱动模块加载卸载流程，包括module_init()和module_exit()，以及对应的init和exit函数
+ * 这个宏将platform总线下以模块形式加载&卸载驱动的接口封装成了通用模板，包括module_init()和module_exit()，以及对应的init和exit函数
  * 展开后其实就是：
- *          static int __init __platform_driver##_init(void)
+ *          static int __init __platform_driver ## _init(void)
  *          {
  *              return platform_driver_register(&(__platform_driver));
  *          }
- *          static void __exit __platform_driver##_exit(void) 
+ *          static void __exit __platform_driver ## _exit(void) 
  *          {
  *              platform_driver_unregister(&(__platform_driver)); 
  *          }
- *          module_init(__platform_driver##_init);
- *          module_exit(__platform_driver##_exit);
+ *          module_init(__platform_driver ## _init);
+ *          module_exit(__platform_driver ## _exit);
  */
 #define module_platform_driver(__platform_driver) \
 	module_driver(__platform_driver, platform_driver_register, \
@@ -244,6 +244,14 @@ static inline void platform_set_drvdata(struct platform_device *pdev,
  * boilerplate.  Each driver may only use this macro once, and
  * calling it replaces device_initcall().  Note this is meant to be
  * a parallel of module_platform_driver() above, but w/o _exit stuff.
+ *
+ * 这个宏将platform总线下那些内建在内核image中的驱动加载接口封装成了通用模板，包括device_initcall()和对应的init函数
+ * 展开后其实就是：
+ *          static int __init __platform_driver ## _init(void) 
+ *          { 
+ *              return platform_driver_register(&(__platform_driver));
+ *          }
+ *          device_initcall(__platform_driver ## _init);
  */
 #define builtin_platform_driver(__platform_driver) \
 	builtin_driver(__platform_driver, platform_driver_register)
@@ -252,6 +260,7 @@ static inline void platform_set_drvdata(struct platform_device *pdev,
  * anything special in module init/exit.  This eliminates a lot of
  * boilerplate.  Each module may only use this macro once, and
  * calling it replaces module_init() and module_exit()
+ * 这个宏跟module_platform_driver相比，实际就是在驱动加载时多了一步绑定prob回调的操作
  */
 #define module_platform_driver_probe(__platform_driver, __platform_probe) \
 static int __init __platform_driver##_init(void) \
@@ -271,6 +280,7 @@ module_exit(__platform_driver##_exit);
  * driver may only use this macro once, and using it replaces device_initcall.
  * This is meant to be a parallel of module_platform_driver_probe above, but
  * without the __exit parts.
+ * 这个宏跟builtin_platform_driver相比，实际就是在驱动加载时多了一步绑定prob回调的操作
  */
 #define builtin_platform_driver_probe(__platform_driver, __platform_probe) \
 static int __init __platform_driver##_init(void) \

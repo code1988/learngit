@@ -59,6 +59,12 @@ static int mv88e6xxx_reg_wait_ready(struct mii_bus *bus, int sw_addr)
 	return -ETIMEDOUT;
 }
 
+/* mv88e6xxx系列switch通过主mii-bus设备读switch寄存器
+ * @bus     - 需要通过mdio设备进行读操作
+ * @sw_addr - 指定了需要进行读操作的switch
+ * @addr    - 指定端口
+ * @reg     - 指定端口的指定寄存器
+ */
 static int __mv88e6xxx_reg_read(struct mii_bus *bus, int sw_addr, int addr,
 				int reg)
 {
@@ -111,18 +117,33 @@ static int _mv88e6xxx_reg_read(struct dsa_switch *ds, int addr, int reg)
 	return ret;
 }
 
+/* mv88e6xxx系列switch读指定端口上的指定寄存器(封装了相应的锁操作)
+ * @ds      - 要操作的switch实例
+ * @addr    - 指定端口
+ * @reg     - 指定端口上的指定寄存器
+ *
+ * 备注：这里的锁操作对于非级联方案没用
+ */
 int mv88e6xxx_reg_read(struct dsa_switch *ds, int addr, int reg)
 {
 	struct mv88e6xxx_priv_state *ps = ds_to_priv(ds);
 	int ret;
 
 	mutex_lock(&ps->smi_mutex);
+    // 显然读操作最终都要通过主mii-bus设备来进行
 	ret = _mv88e6xxx_reg_read(ds, addr, reg);
 	mutex_unlock(&ps->smi_mutex);
 
 	return ret;
 }
 
+/* mv88e6xxx系列switch通过主mii-bus设备写switch寄存器
+ * @bus     - 需要通过mdio设备进行写操作
+ * @sw_addr - 指定了需要进行读操作的switch
+ * @addr    - 指定端口
+ * @reg     - 指定端口的指定寄存器
+ * @val     - 要写入的16位值
+ */
 static int __mv88e6xxx_reg_write(struct mii_bus *bus, int sw_addr, int addr,
 				 int reg, u16 val)
 {
@@ -171,18 +192,28 @@ static int _mv88e6xxx_reg_write(struct dsa_switch *ds, int addr, int reg,
 	return __mv88e6xxx_reg_write(bus, ds->pd->sw_addr, addr, reg, val);
 }
 
+/* mv88e6xxx系列switch写指定端口上的指定寄存器(封装了相应的锁操作)
+ * @ds      - 要操作的switch实例
+ * @addr    - 指定端口
+ * @reg     - 指定端口上的指定寄存器
+ * @val     - 要写入的16位值
+ *
+ * 备注：这里的锁操作对于非级联方案没用
+ */
 int mv88e6xxx_reg_write(struct dsa_switch *ds, int addr, int reg, u16 val)
 {
 	struct mv88e6xxx_priv_state *ps = ds_to_priv(ds);
 	int ret;
 
 	mutex_lock(&ps->smi_mutex);
+    // 显然写操作最终都要通过主mii-bus设备来进行
 	ret = _mv88e6xxx_reg_write(ds, addr, reg, val);
 	mutex_unlock(&ps->smi_mutex);
 
 	return ret;
 }
 
+// mv88e6xxx系列switch直接设置MAC地址
 int mv88e6xxx_set_addr_direct(struct dsa_switch *ds, u8 *addr)
 {
 	REG_WRITE(REG_GLOBAL, GLOBAL_MAC_01, (addr[0] << 8) | addr[1]);
@@ -192,6 +223,7 @@ int mv88e6xxx_set_addr_direct(struct dsa_switch *ds, u8 *addr)
 	return 0;
 }
 
+// mv88e6xxx系列switch间接设置MAC地址
 int mv88e6xxx_set_addr_indirect(struct dsa_switch *ds, u8 *addr)
 {
 	int i;
@@ -342,6 +374,11 @@ void mv88e6xxx_ppu_state_init(struct dsa_switch *ds)
 	ps->ppu_timer.function = mv88e6xxx_ppu_reenable_timer;
 }
 
+/* mv88e6xxx系列switch读switch寄存器(ppu方式)
+ * @ds      - 要操作的switch实例
+ * @addr    - switch的指定端口/全局地址
+ * @regnum  - switch的指定端口/全局的寄存器地址序号
+ */
 int mv88e6xxx_phy_read_ppu(struct dsa_switch *ds, int addr, int regnum)
 {
 	int ret;
@@ -355,6 +392,12 @@ int mv88e6xxx_phy_read_ppu(struct dsa_switch *ds, int addr, int regnum)
 	return ret;
 }
 
+/* mv88e6xxx系列switch写switch寄存器(ppu方式)
+ * @ds      - 要操作的switch实例
+ * @addr    - switch的指定端口/全局地址
+ * @regnum  - switch的指定端口/全局的寄存器地址序号
+ * @val     - 要写入的值
+ */
 int mv88e6xxx_phy_write_ppu(struct dsa_switch *ds, int addr,
 			    int regnum, u16 val)
 {
@@ -741,6 +784,7 @@ static void _mv88e6xxx_get_ethtool_stats(struct dsa_switch *ds,
 }
 
 /* All the statistics in the table */
+// mv88e6xxx系列switch获取统计项名
 void
 mv88e6xxx_get_strings(struct dsa_switch *ds, int port, uint8_t *data)
 {
@@ -759,6 +803,12 @@ int mv88e6xxx_get_sset_count(struct dsa_switch *ds)
 	return ARRAY_SIZE(mv88e6xxx_hw_stats) - 3;
 }
 
+/* mv88e6xxx系列switch获取指定端口的统计信息
+ * @nr_stats    统计项数量
+ * @stats       整张统计项目表
+ * @port        要统计的端口
+ * @data        用于存放统计值的列表缓存，存放顺序跟统计项目表对应
+ */
 void
 mv88e6xxx_get_ethtool_stats(struct dsa_switch *ds,
 			    int port, uint64_t *data)
@@ -2192,6 +2242,7 @@ int mv88e6xxx_setup_common(struct dsa_switch *ds)
 
 	mutex_init(&ps->smi_mutex);
 
+    // 读取该switch的产品编号
 	ps->id = REG_READ(REG_PORT(0), PORT_SWITCH_ID) & 0xfff0;
 
 	INIT_WORK(&ps->bridge_work, mv88e6xxx_bridge_work);
@@ -2402,6 +2453,11 @@ static int mv88e6xxx_port_to_phy_addr(struct dsa_switch *ds, int port)
 	return -EINVAL;
 }
 
+/* mv88e6xxx系列switch读switch寄存器(非ppu方式)
+ * @ds      - 要操作的switch实例
+ * @addr    - switch的指定端口/全局地址
+ * @regnum  - switch的指定端口/全局的寄存器地址序号
+ */
 int
 mv88e6xxx_phy_read(struct dsa_switch *ds, int port, int regnum)
 {
@@ -2418,6 +2474,12 @@ mv88e6xxx_phy_read(struct dsa_switch *ds, int port, int regnum)
 	return ret;
 }
 
+/* mv88e6xxx系列switch写switch寄存器(非ppu方式)
+ * @ds      - 要操作的switch实例
+ * @addr    - switch的指定端口/全局地址
+ * @regnum  - switch的指定端口/全局的寄存器地址序号
+ * @val     - 要写入的值
+ */
 int
 mv88e6xxx_phy_write(struct dsa_switch *ds, int port, int regnum, u16 val)
 {
@@ -2603,6 +2665,7 @@ char *mv88e6xxx_lookup_name(struct device *host_dev, int sw_addr,
 	if (!bus)
 		return NULL;
 
+    // 读取switch-id寄存器值，mv88e6131系列的产品编号位于 [15-4]bit
 	ret = __mv88e6xxx_reg_read(bus, sw_addr, REG_PORT(0), PORT_SWITCH_ID);
 	if (ret < 0)
 		return NULL;
@@ -2625,6 +2688,7 @@ char *mv88e6xxx_lookup_name(struct device *host_dev, int sw_addr,
 	return NULL;
 }
 
+// mv88e6系列switch模块驱动统一注册接口
 static int __init mv88e6xxx_init(void)
 {
 #if IS_ENABLED(CONFIG_NET_DSA_MV88E6131)
@@ -2643,6 +2707,7 @@ static int __init mv88e6xxx_init(void)
 }
 module_init(mv88e6xxx_init);
 
+// mv88e6系列switch模块驱动统一注销接口
 static void __exit mv88e6xxx_cleanup(void)
 {
 #if IS_ENABLED(CONFIG_NET_DSA_MV88E6171)

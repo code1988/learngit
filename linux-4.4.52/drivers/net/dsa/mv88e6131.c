@@ -25,12 +25,22 @@ static const struct mv88e6xxx_switch_id mv88e6131_table[] = {
 	{ PORT_SWITCH_ID_6185, "Marvell 88E6185" },
 };
 
+/* mv88e6131系列switch执行探测指定switch的操作
+ * //@bus     - 探测操作最终需要通过mdio设备进行
+ * @sw_addr - 需要探测的switch地址序号
+ *
+ * @返回值  成功探测到该switch则返回switch名，探测失败则返回NULL
+ */
 static char *mv88e6131_probe(struct device *host_dev, int sw_addr)
 {
 	return mv88e6xxx_lookup_name(host_dev, sw_addr, mv88e6131_table,
 				     ARRAY_SIZE(mv88e6131_table));
 }
 
+/* mv88e6131系列switch执行全局参数初始化操作
+ * 包括使能PHY轮寻、设置缺省的MAC老化时间、使能地址学习、配置映射寄存器优先级、设置vlan协议类型、
+ * 禁止ARP镜像、禁止端口级联、IGMP/ARP设为高优先级等
+ */
 static int mv88e6131_setup_global(struct dsa_switch *ds)
 {
 	u32 upstream_port = dsa_upstream_port(ds);
@@ -86,6 +96,9 @@ static int mv88e6131_setup_global(struct dsa_switch *ds)
 	return 0;
 }
 
+/* mv88e6131系列switch执行初始化操作
+ * @ds  要操作的switch实例
+ */
 static int mv88e6131_setup(struct dsa_switch *ds)
 {
 	struct mv88e6xxx_priv_state *ps = ds_to_priv(ds);
@@ -113,27 +126,37 @@ static int mv88e6131_setup(struct dsa_switch *ds)
 		return -ENODEV;
 	}
 
+    // 对该switch执行复位操作
 	ret = mv88e6xxx_switch_reset(ds, false);
 	if (ret < 0)
 		return ret;
 
+    // 对该switch执行全局参数初始化操作
 	ret = mv88e6131_setup_global(ds);
 	if (ret < 0)
 		return ret;
 
+    // 对该switch所有端口参数执行初始化
 	return mv88e6xxx_setup_ports(ds);
 }
 
+// mv88e6131系列返回switch物理端口对应的phy地址(该系列端口号就是phy地址)
 static int mv88e6131_port_to_phy_addr(struct dsa_switch *ds, int port)
 {
 	struct mv88e6xxx_priv_state *ps = ds_to_priv(ds);
 
+    // 检查端口是否合法(该系列不超过11个端口)
 	if (port >= 0 && port < ps->num_ports)
 		return port;
 
 	return -EINVAL;
 }
 
+/* mv88e6131系列switch读指定端口的指定寄存器的接口(将作为DSA从mii-bus设备的读操作驱动)
+ * @ds      要操作的switch实例
+ * @port    要操作的端口号
+ * @regnum  端口上的寄存器序号
+ */
 static int
 mv88e6131_phy_read(struct dsa_switch *ds, int port, int regnum)
 {
@@ -145,6 +168,12 @@ mv88e6131_phy_read(struct dsa_switch *ds, int port, int regnum)
 	return mv88e6xxx_phy_read_ppu(ds, addr, regnum);
 }
 
+/* mv88e6131系列switch写指定端口的指定寄存器的接口(将作为DSA从mii-bus设备的写操作驱动)
+ * @ds      要操作的switch实例
+ * @port    要操作的端口号
+ * @regnum  端口上的寄存器序号
+ * @val     要写入的值
+ */
 static int
 mv88e6131_phy_write(struct dsa_switch *ds,
 			      int port, int regnum, u16 val)
@@ -157,8 +186,9 @@ mv88e6131_phy_write(struct dsa_switch *ds,
 	return mv88e6xxx_phy_write_ppu(ds, addr, regnum, val);
 }
 
+// 定义了mv88e6131系列共用的switch驱动
 struct dsa_switch_driver mv88e6131_switch_driver = {
-	.tag_protocol		= DSA_TAG_PROTO_DSA,
+	.tag_protocol		= DSA_TAG_PROTO_DSA,    // 该switch驱动使用ETH_P_DSA协议
 	.priv_size		= sizeof(struct mv88e6xxx_priv_state),
 	.probe			= mv88e6131_probe,
 	.setup			= mv88e6131_setup,

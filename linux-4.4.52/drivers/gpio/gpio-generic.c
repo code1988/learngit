@@ -82,11 +82,13 @@ static unsigned long bgpio_read16(void __iomem *reg)
 	return readw(reg);
 }
 
+// 写32位gpio寄存器(小端)
 static void bgpio_write32(void __iomem *reg, unsigned long data)
 {
 	writel(data, reg);
 }
 
+// 读32位gpio寄存器(小端)
 static unsigned long bgpio_read32(void __iomem *reg)
 {
 	return readl(reg);
@@ -124,6 +126,7 @@ static unsigned long bgpio_read32be(void __iomem *reg)
 	return ioread32be(reg);
 }
 
+// 根据gpio编号返回对应的寄存器位
 static unsigned long bgpio_pin2mask(struct bgpio_chip *bgc, unsigned int pin)
 {
 	return 1 << pin;
@@ -146,6 +149,7 @@ static int bgpio_get_set(struct gpio_chip *gc, unsigned int gpio)
 		return !!(bgc->read_reg(bgc->reg_dat) & pinmask);
 }
 
+// gpio_chip->get的唯一方法
 static int bgpio_get(struct gpio_chip *gc, unsigned int gpio)
 {
 	struct bgpio_chip *bgc = to_bgpio_chip(gc);
@@ -157,6 +161,7 @@ static void bgpio_set_none(struct gpio_chip *gc, unsigned int gpio, int val)
 {
 }
 
+// gpio_chip->set方法之一,当bgc->reg_set和bgc->reg_clr都没有设置时启用
 static void bgpio_set(struct gpio_chip *gc, unsigned int gpio, int val)
 {
 	struct bgpio_chip *bgc = to_bgpio_chip(gc);
@@ -175,6 +180,7 @@ static void bgpio_set(struct gpio_chip *gc, unsigned int gpio, int val)
 	spin_unlock_irqrestore(&bgc->lock, flags);
 }
 
+// gpio_chip->set方法之一,当bgc->reg_set和bgc->reg_clr同时设置时启用
 static void bgpio_set_with_clear(struct gpio_chip *gc, unsigned int gpio,
 				 int val)
 {
@@ -187,6 +193,7 @@ static void bgpio_set_with_clear(struct gpio_chip *gc, unsigned int gpio,
 		bgc->write_reg(bgc->reg_clr, mask);
 }
 
+// gpio_chip->set方法之一,当只有bgc->reg_set设置时启用
 static void bgpio_set_set(struct gpio_chip *gc, unsigned int gpio, int val)
 {
 	struct bgpio_chip *bgc = to_bgpio_chip(gc);
@@ -278,6 +285,7 @@ static void bgpio_set_multiple_with_clear(struct gpio_chip *gc,
 		bgc->write_reg(bgc->reg_clr, clear_mask);
 }
 
+// gpio_chip->direction_input方法之一,当bgc->reg_dir没有设置时启用
 static int bgpio_simple_dir_in(struct gpio_chip *gc, unsigned int gpio)
 {
 	return 0;
@@ -289,6 +297,7 @@ static int bgpio_dir_out_err(struct gpio_chip *gc, unsigned int gpio,
 	return -EINVAL;
 }
 
+// gpio_chip->direction_output方法之一,当bgc->reg_dir没有设置时启用
 static int bgpio_simple_dir_out(struct gpio_chip *gc, unsigned int gpio,
 				int val)
 {
@@ -297,6 +306,7 @@ static int bgpio_simple_dir_out(struct gpio_chip *gc, unsigned int gpio,
 	return 0;
 }
 
+// gpio_chip->direction_input方法之一,当bgc->reg_dir设置为输出寄存器时启用
 static int bgpio_dir_in(struct gpio_chip *gc, unsigned int gpio)
 {
 	struct bgpio_chip *bgc = to_bgpio_chip(gc);
@@ -320,6 +330,7 @@ static int bgpio_get_dir(struct gpio_chip *gc, unsigned int gpio)
 	       GPIOF_DIR_OUT : GPIOF_DIR_IN;
 }
 
+// gpio_chip->direction_output方法之一,当bgc->reg_dir设置为输出寄存器时启用
 static int bgpio_dir_out(struct gpio_chip *gc, unsigned int gpio, int val)
 {
 	struct bgpio_chip *bgc = to_bgpio_chip(gc);
@@ -337,6 +348,7 @@ static int bgpio_dir_out(struct gpio_chip *gc, unsigned int gpio, int val)
 	return 0;
 }
 
+// gpio_chip->direction_input方法之一,当bgc->reg_dir设置为输入寄存器时启用
 static int bgpio_dir_in_inv(struct gpio_chip *gc, unsigned int gpio)
 {
 	struct bgpio_chip *bgc = to_bgpio_chip(gc);
@@ -352,6 +364,7 @@ static int bgpio_dir_in_inv(struct gpio_chip *gc, unsigned int gpio)
 	return 0;
 }
 
+// gpio_chip->direction_output方法之一,当bgc->reg_dir设置为输入寄存器时启用
 static int bgpio_dir_out_inv(struct gpio_chip *gc, unsigned int gpio, int val)
 {
 	struct bgpio_chip *bgc = to_bgpio_chip(gc);
@@ -377,12 +390,17 @@ static int bgpio_get_dir_inv(struct gpio_chip *gc, unsigned int gpio)
 	       GPIOF_DIR_IN : GPIOF_DIR_OUT;
 }
 
+/* 为指定gpio控制器配置底层通用的寄存器read/write方法
+ * @bit_be  标识gpio寄存器内是否是大端格式
+ * @byte_be 标识gpio寄存器组之间是否是大端格式
+ */
 static int bgpio_setup_accessors(struct device *dev,
 				 struct bgpio_chip *bgc,
 				 bool bit_be,
 				 bool byte_be)
 {
 
+    // 根据gpio寄存器位长执行设置对应的read_reg和write_reg方法
 	switch (bgc->bits) {
 	case 8:
 		bgc->read_reg	= bgpio_read8;
@@ -431,6 +449,7 @@ static int bgpio_setup_accessors(struct device *dev,
 /*
  * Create the device and allocate the resources.  For setting GPIO's there are
  * three supported configurations:
+ * 为指定gpio控制器配置底层寄存器资源和基本的get/set方法
  *
  *	- single input/output register resource (named "dat").
  *	- set/clear pair (named "set" and "clr").
@@ -457,16 +476,20 @@ static int bgpio_setup_io(struct bgpio_chip *bgc,
 			  unsigned long flags)
 {
 
+    // reg_dat寄存器必须设置
 	bgc->reg_dat = dat;
 	if (!bgc->reg_dat)
 		return -EINVAL;
 
+    // 显然gpio_chip->set方法需要进行适配
 	if (set && clr) {
+        // 同时传入了set和clr寄存器的情况
 		bgc->reg_set = set;
 		bgc->reg_clr = clr;
 		bgc->gc.set = bgpio_set_with_clear;
 		bgc->gc.set_multiple = bgpio_set_multiple_with_clear;
 	} else if (set && !clr) {
+        // 只传入了set寄存器的情况
 		bgc->reg_set = set;
 		bgc->gc.set = bgpio_set_set;
 		bgc->gc.set_multiple = bgpio_set_multiple_set;
@@ -474,10 +497,12 @@ static int bgpio_setup_io(struct bgpio_chip *bgc,
 		bgc->gc.set = bgpio_set_none;
 		bgc->gc.set_multiple = NULL;
 	} else {
+        // 其他情况
 		bgc->gc.set = bgpio_set;
 		bgc->gc.set_multiple = bgpio_set_multiple;
 	}
 
+    // 3.14.38中gpio_chip->get方法唯一；4.4.52中显然不唯一
 	if (!(flags & BGPIOF_UNREADABLE_REG_SET) &&
 	    (flags & BGPIOF_READ_OUTPUT_REG_SET))
 		bgc->gc.get = bgpio_get_set;
@@ -487,24 +512,32 @@ static int bgpio_setup_io(struct bgpio_chip *bgc,
 	return 0;
 }
 
+/* 为指定gpio控制器配置底层方向设置寄存器资源和相关的方向设置方法
+ *
+ * 备注:这两个寄存器只允许配置其中一个
+ */
 static int bgpio_setup_direction(struct bgpio_chip *bgc,
 				 void __iomem *dirout,
 				 void __iomem *dirin,
 				 unsigned long flags)
 {
 	if (dirout && dirin) {
+        // 不允许同时传入
 		return -EINVAL;
 	} else if (dirout) {
+        // 只传入了dirout寄存器的情况
 		bgc->reg_dir = dirout;
 		bgc->gc.direction_output = bgpio_dir_out;
 		bgc->gc.direction_input = bgpio_dir_in;
 		bgc->gc.get_direction = bgpio_get_dir;
 	} else if (dirin) {
+        // 只传入了dirin寄存器的情况
 		bgc->reg_dir = dirin;
 		bgc->gc.direction_output = bgpio_dir_out_inv;
 		bgc->gc.direction_input = bgpio_dir_in_inv;
 		bgc->gc.get_direction = bgpio_get_dir_inv;
 	} else {
+        // 其他情况
 		if (flags & BGPIOF_NO_OUTPUT)
 			bgc->gc.direction_output = bgpio_dir_out_err;
 		else
@@ -530,6 +563,16 @@ int bgpio_remove(struct bgpio_chip *bgc)
 }
 EXPORT_SYMBOL_GPL(bgpio_remove);
 
+/* 初始化指定的基础内存映射gpio控制器
+ * @bgc     指向要初始化的gpio控制器
+ * @dev     指向该gpio控制器关联的device
+ * @sz      gpio寄存器长度(32位平台通常就是4) 
+ * @dat     pad status寄存器地址
+ * @set     data寄存器地址
+ * @clr     clear寄存器地址
+ * @dirout  输出寄存器地址
+ * @dirin   输入寄存器地址
+ */
 int bgpio_init(struct bgpio_chip *bgc, struct device *dev,
 	       unsigned long sz, void __iomem *dat, void __iomem *set,
 	       void __iomem *clr, void __iomem *dirout, void __iomem *dirin,
@@ -551,19 +594,23 @@ int bgpio_init(struct bgpio_chip *bgc, struct device *dev,
 	bgc->gc.ngpio = bgc->bits;
 	bgc->gc.request = bgpio_request;
 
+    // 为该gpio控制器配置底层寄存器资源和基本的get/set方法
 	ret = bgpio_setup_io(bgc, dat, set, clr, flags);
 	if (ret)
 		return ret;
 
+    // 为该gpio控制器配置底层通用的寄存器read/write方法
 	ret = bgpio_setup_accessors(dev, bgc, flags & BGPIOF_BIG_ENDIAN,
 				    flags & BGPIOF_BIG_ENDIAN_BYTE_ORDER);
 	if (ret)
 		return ret;
 
+    // 为该gpio控制器配置底层方向设置寄存器资源和相关的方向设置方法
 	ret = bgpio_setup_direction(bgc, dirout, dirin, flags);
 	if (ret)
 		return ret;
 
+    // 记录当前的data和dir值
 	bgc->data = bgc->read_reg(bgc->reg_dat);
 	if (bgc->gc.set == bgpio_set_set &&
 			!(flags & BGPIOF_UNREADABLE_REG_SET))

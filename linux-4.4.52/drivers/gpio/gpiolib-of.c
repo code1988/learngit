@@ -9,6 +9,11 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+ *
+ * GPIO模块的dts节点描述：
+ *                      属性名                      属性含义 
+ *                  "gpio-ranges"               定义了一组gpio配置信息
+ *                  "gpio-ranges-group-names"   跟"gpio-ranges"属性配套使用,用于配置名字
  */
 
 #include <linux/device.h>
@@ -419,10 +424,12 @@ static int of_gpiochip_add_pin_range(struct gpio_chip *chip)
 static int of_gpiochip_add_pin_range(struct gpio_chip *chip) { return 0; }
 #endif
 
+// 从指定gpio控制器关联的dts节点中获取相关配置信息(目前主要是获取了gpio-ranges属性)
 int of_gpiochip_add(struct gpio_chip *chip)
 {
 	int status;
 
+    // 该gpio控制器关联的dts节点还可以从对应的device处间接获取
 	if ((!chip->of_node) && (chip->dev))
 		chip->of_node = chip->dev->of_node;
 
@@ -434,10 +441,12 @@ int of_gpiochip_add(struct gpio_chip *chip)
 		chip->of_xlate = of_gpio_simple_xlate;
 	}
 
+    // 从该gpio控制器关联的dts节点中获取"gpio-ranges"相关信息
 	status = of_gpiochip_add_pin_range(chip);
 	if (status)
 		return status;
 
+    // 最后持有一下该dts节点
 	of_node_get(chip->of_node);
 
 	of_gpiochip_scan_gpios(chip);

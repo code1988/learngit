@@ -222,7 +222,7 @@ static const struct regmap_config imx2_wdt_regmap_config = {
 	.max_register = 0x8,
 };
 
-// imx系列隶属于platform总线的watchdog驱动匹配回调函数
+// imx系列隶属于platform总线的watchdog驱动匹配到合适设备后的回调函数
 static int __init imx2_wdt_probe(struct platform_device *pdev)
 {
 	struct imx2_wdt_device *wdev;

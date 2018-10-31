@@ -28,7 +28,7 @@
 #define SMI_CMD_OP_45_READ_DATA_INC	((3 << 10) | SMI_CMD_BUSY)
 #define SMI_DATA		0x01
 
-#define REG_PORT(p)		(0x10 + (p))
+#define REG_PORT(p)		(0x10 + (p))    // mv88e6131系列端口号-phy地址映射(6097F使用该映射关系，但6390X不是)
 #define PORT_STATUS		0x00
 #define PORT_STATUS_PAUSE_EN	BIT(15)
 #define PORT_STATUS_MY_PAUSE	BIT(14)
@@ -378,10 +378,12 @@ struct mv88e6xxx_vtu_stu_entry {
 	u8	data[DSA_MAX_PORTS];
 };
 
+// 定义了mv88e6xxx系列switch的私有空间结构(该空间是跟switch实例一起分配的)
 struct mv88e6xxx_priv_state {
 	/* When using multi-chip addressing, this mutex protects
 	 * access to the indirect access registers.  (In single-chip
 	 * mode, this mutex is effectively useless.)
+     * 这个锁只有级联模式下有用
 	 */
 	struct mutex	smi_mutex;
 
@@ -397,6 +399,7 @@ struct mv88e6xxx_priv_state {
 
 	/* This mutex serialises access to the statistics unit.
 	 * Hold this mutex over snapshot + dump sequences.
+     * 用于访问统计寄存器的互斥锁
 	 */
 	struct mutex	stats_mutex;
 
@@ -411,7 +414,8 @@ struct mv88e6xxx_priv_state {
 	 */
 	struct mutex eeprom_mutex;
 
-	int		id; /* switch product id */
+	int		id; /* switch product id 
+                   记录了该mavell switch的产品编号，比如6097F就是0x0990 */
 	int		num_ports;	/* number of switch ports */
 
 	unsigned long port_state_update_mask;
@@ -420,9 +424,10 @@ struct mv88e6xxx_priv_state {
 	struct work_struct bridge_work;
 };
 
+// 定义了mv88e6xxx系列switch统计项
 struct mv88e6xxx_hw_stat {
-	char string[ETH_GSTRING_LEN];
-	int sizeof_stat;
+	char string[ETH_GSTRING_LEN];   // 统计项名
+	int sizeof_stat;                // 统计项的值长度(字节)
 	int reg;
 };
 
@@ -502,6 +507,7 @@ extern struct dsa_switch_driver mv88e6123_61_65_switch_driver;
 extern struct dsa_switch_driver mv88e6352_switch_driver;
 extern struct dsa_switch_driver mv88e6171_switch_driver;
 
+// mv88e6xxx系列switch封装的读寄存器操作
 #define REG_READ(addr, reg)						\
 	({								\
 		int __ret;						\
@@ -512,6 +518,7 @@ extern struct dsa_switch_driver mv88e6171_switch_driver;
 		__ret;							\
 	})
 
+// mv88e6xxx系列switch封装的写寄存器操作
 #define REG_WRITE(addr, reg, val)					\
 	({								\
 		int __ret;						\

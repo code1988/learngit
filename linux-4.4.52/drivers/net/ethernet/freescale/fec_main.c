@@ -3315,6 +3315,7 @@ fec_enet_get_queue_num(struct platform_device *pdev, int *num_tx, int *num_rx)
 
 }
 
+// imx系列隶属于platform总线的网卡驱动匹配回调函数
 static int
 fec_probe(struct platform_device *pdev)
 {
@@ -3654,6 +3655,7 @@ static const struct dev_pm_ops fec_pm_ops = {
 	SET_RUNTIME_PM_OPS(fec_runtime_suspend, fec_runtime_resume, NULL)
 };
 
+// imx系列隶属于platform总线的网卡驱动描述符
 static struct platform_driver fec_driver = {
 	.driver	= {
 		.name	= DRIVER_NAME,
@@ -3665,6 +3667,7 @@ static struct platform_driver fec_driver = {
 	.remove	= fec_drv_remove,
 };
 
+// imx系列隶属于platform总线的网卡驱动注册和注销接口
 module_platform_driver(fec_driver);
 
 MODULE_ALIAS("platform:"DRIVER_NAME);

@@ -229,12 +229,13 @@ struct hda_device_id {
 
 /*
  * Struct used for matching a device
+ * driver支持的device描述，用于跟device进行匹配
  */
 struct of_device_id {
 	char	name[32];
 	char	type[32];
-	char	compatible[128];
-	const void *data;
+	char	compatible[128];// 该driver支持的device描述字符串
+	const void *data;       // 用于存储该device描述项的私有信息
 };
 
 /* VIO */

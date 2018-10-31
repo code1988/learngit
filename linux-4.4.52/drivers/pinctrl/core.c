@@ -1,5 +1,6 @@
 /*
  * Core driver for the pin control subsystem
+ * pinctrl子系统的核心驱动部分(其中包含了一部分GPIO子系统相关的后门接口)
  *
  * Copyright (C) 2011-2012 ST-Ericsson SA
  * Written on behalf of Linaro for ST-Ericsson
@@ -40,7 +41,9 @@
 
 static bool pinctrl_dummy_state;
 
-/* Mutex taken to protect pinctrl_list */
+/* Mutex taken to protect pinctrl_list 
+ * 定义了一个用于维护pinctrl_list操作的互斥锁
+ * */
 static DEFINE_MUTEX(pinctrl_list_mutex);
 
 /* Mutex taken to protect pinctrl_maps */
@@ -52,7 +55,9 @@ static DEFINE_MUTEX(pinctrldev_list_mutex);
 /* Global list of pin control devices (struct pinctrl_dev) */
 static LIST_HEAD(pinctrldev_list);
 
-/* List of pin controller handles (struct pinctrl) */
+/* List of pin controller handles (struct pinctrl) 
+ * 这张全局的链表记录了所有device对应的pinctrl句柄
+ * */
 static LIST_HEAD(pinctrl_list);
 
 /* List of pinctrl maps (struct pinctrl_maps) */
@@ -561,11 +566,13 @@ int pinctrl_get_group_selector(struct pinctrl_dev *pctldev,
 
 /**
  * pinctrl_request_gpio() - request a single pin to be used as GPIO
+ * 请求一个pin脚作为GPIO使用
  * @gpio: the GPIO pin number from the GPIO subsystem number space
  *
  * This function should *ONLY* be used from gpiolib-based GPIO drivers,
  * as part of their gpio_request() semantics, platforms and individual drivers
  * shall *NOT* request GPIO pins to be muxed in.
+ * 本函数是给GPIO子系统开的后门接口，只能被基于gpiolib的GPIO驱动调用，那些隶属于platform总线的驱动以及独立的驱动不应该调用本函数
  */
 int pinctrl_request_gpio(unsigned gpio)
 {
@@ -596,6 +603,7 @@ EXPORT_SYMBOL_GPL(pinctrl_request_gpio);
 
 /**
  * pinctrl_free_gpio() - free control on a single pin, currently used as GPIO
+ * 取消一个pin脚当前复用的GPIO功能(pinctrl_request_gpio的逆函数)
  * @gpio: the GPIO pin number from the GPIO subsystem number space
  *
  * This function should *ONLY* be used from gpiolib-based GPIO drivers,
@@ -624,6 +632,7 @@ void pinctrl_free_gpio(unsigned gpio)
 }
 EXPORT_SYMBOL_GPL(pinctrl_free_gpio);
 
+// 设置指定GPIO的方向
 static int pinctrl_gpio_direction(unsigned gpio, bool input)
 {
 	struct pinctrl_dev *pctldev;
@@ -649,11 +658,13 @@ static int pinctrl_gpio_direction(unsigned gpio, bool input)
 
 /**
  * pinctrl_gpio_direction_input() - request a GPIO pin to go into input mode
+ * 为指定GPIO设置input方向
  * @gpio: the GPIO pin number from the GPIO subsystem number space
  *
  * This function should *ONLY* be used from gpiolib-based GPIO drivers,
  * as part of their gpio_direction_input() semantics, platforms and individual
  * drivers shall *NOT* touch pin control GPIO calls.
+ * 本函数是给GPIO子系统开的后门接口，只能被基于gpiolib的GPIO驱动调用，那些隶属于platform总线的驱动以及独立的驱动不应该调用本函数
  */
 int pinctrl_gpio_direction_input(unsigned gpio)
 {
@@ -663,11 +674,13 @@ EXPORT_SYMBOL_GPL(pinctrl_gpio_direction_input);
 
 /**
  * pinctrl_gpio_direction_output() - request a GPIO pin to go into output mode
+ * 为指定GPIO设置output方向
  * @gpio: the GPIO pin number from the GPIO subsystem number space
  *
  * This function should *ONLY* be used from gpiolib-based GPIO drivers,
  * as part of their gpio_direction_output() semantics, platforms and individual
  * drivers shall *NOT* touch pin control GPIO calls.
+ * 本函数是给GPIO子系统开的后门接口，只能被基于gpiolib的GPIO驱动调用，那些隶属于platform总线的驱动以及独立的驱动不应该调用本函数
  */
 int pinctrl_gpio_direction_output(unsigned gpio)
 {
@@ -770,11 +783,14 @@ static int add_setting(struct pinctrl *p, struct pinctrl_map const *map)
 	return 0;
 }
 
+// 查找指定device是否已经创建了对应的pinctrl句柄
 static struct pinctrl *find_pinctrl(struct device *dev)
 {
 	struct pinctrl *p;
 
+    // 操作pinctrl_list需要上锁
 	mutex_lock(&pinctrl_list_mutex);
+    // 遍历pinctrl_list，查找是否存在该device关联的pinctrl句柄
 	list_for_each_entry(p, &pinctrl_list, node)
 		if (p->dev == dev) {
 			mutex_unlock(&pinctrl_list_mutex);
@@ -787,6 +803,7 @@ static struct pinctrl *find_pinctrl(struct device *dev)
 
 static void pinctrl_free(struct pinctrl *p, bool inlist);
 
+// 为指定device创建对应的pinctrl句柄
 static struct pinctrl *create_pinctrl(struct device *dev)
 {
 	struct pinctrl *p;
@@ -810,6 +827,7 @@ static struct pinctrl *create_pinctrl(struct device *dev)
 	INIT_LIST_HEAD(&p->states);
 	INIT_LIST_HEAD(&p->dt_maps);
 
+    // 从该device的dts节点中提取相应的pinctrl信息
 	ret = pinctrl_dt_to_map(p);
 	if (ret < 0) {
 		kfree(p);
@@ -865,7 +883,11 @@ static struct pinctrl *create_pinctrl(struct device *dev)
 
 /**
  * pinctrl_get() - retrieves the pinctrl handle for a device
+ * 获取指定device的pinctrl句柄(第一次调用本函数时会创建对应的pinctrl句柄)
  * @dev: the device to obtain the handle for
+ *
+ * 备注：调用本函数时该pinctrl句柄的引用计数会加1;
+ *       在pin控制器驱动首先完成probe安装后，其他模块驱动作为消费者，通常在其probe时，会调用本函数来获取关联的pinctrl句柄
  */
 struct pinctrl *pinctrl_get(struct device *dev)
 {
@@ -881,11 +903,13 @@ struct pinctrl *pinctrl_get(struct device *dev)
 	 */
 	p = find_pinctrl(dev);
 	if (p != NULL) {
+        // 如果该device的pinctrl句柄已经存在，则简单的将引用计数加1即可
 		dev_dbg(dev, "obtain a copy of previously claimed pinctrl\n");
 		kref_get(&p->users);
 		return p;
 	}
 
+    // 如果该device的pinctrl句柄尚未存在，则会在这里进行创建
 	return create_pinctrl(dev);
 }
 EXPORT_SYMBOL_GPL(pinctrl_get);
@@ -945,6 +969,7 @@ static void pinctrl_release(struct kref *kref)
 
 /**
  * pinctrl_put() - decrease use count on a previously claimed pinctrl handle
+ * 指定pin-control句柄的引用计数减1,当引用计数为0时则彻底释放该句柄
  * @p: the pinctrl handle to release
  */
 void pinctrl_put(struct pinctrl *p)
@@ -955,6 +980,7 @@ EXPORT_SYMBOL_GPL(pinctrl_put);
 
 /**
  * pinctrl_lookup_state() - retrieves a state handle from a pinctrl handle
+ * 根据状态名检索对应的pin-control状态描述符
  * @p: the pinctrl handle to retrieve the state from
  * @name: the state name to retrieve
  */
@@ -980,6 +1006,7 @@ EXPORT_SYMBOL_GPL(pinctrl_lookup_state);
 
 /**
  * pinctrl_select_state() - select/activate/program a pinctrl state to HW
+ * 通过指定的pinctrl句柄来设置相关的硬件，最终实现指定的pin/pin group状态
  * @p: the pinctrl handle for the device that requests configuration
  * @state: the state handle to select/activate/program
  */
@@ -1064,6 +1091,7 @@ static void devm_pinctrl_release(struct device *dev, void *res)
 
 /**
  * struct devm_pinctrl_get() - Resource managed pinctrl_get()
+ * 带自动垃圾回收版本的pinctrl_get
  * @dev: the device to obtain the handle for
  *
  * If there is a need to explicitly destroy the returned struct pinctrl,
@@ -1098,6 +1126,7 @@ static int devm_pinctrl_match(struct device *dev, void *res, void *data)
 
 /**
  * devm_pinctrl_put() - Resource managed pinctrl_put()
+ * 带自动垃圾回收版本的pinctrl_put
  * @p: the pinctrl handle to release
  *
  * Deallocate a struct pinctrl obtained via devm_pinctrl_get(). Normally
@@ -1727,6 +1756,7 @@ static int pinctrl_check_ops(struct pinctrl_dev *pctldev)
 
 /**
  * pinctrl_register() - register a pin controller device
+ * 注册一个指定的pin控制器到内核
  * @pctldesc: descriptor for this pin controller
  * @dev: parent device for this pin controller
  * @driver_data: private pin controller data for this pin controller
@@ -1861,6 +1891,7 @@ void pinctrl_unregister(struct pinctrl_dev *pctldev)
 }
 EXPORT_SYMBOL_GPL(pinctrl_unregister);
 
+// pinctrl子系统全局初始化入口
 static int __init pinctrl_init(void)
 {
 	pr_info("initialized pinctrl subsystem\n");
