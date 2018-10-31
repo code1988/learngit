@@ -116,6 +116,7 @@ EXPORT_SYMBOL(devm_iounmap);
 
 /**
  * devm_ioremap_resource() - check, request region, and ioremap resource
+ * 本接口封装了memory资源检查、申请、映射一系列动作
  * @dev: generic device to handle the resource for
  * @res: resource to be handled
  *
@@ -125,7 +126,7 @@ EXPORT_SYMBOL(devm_iounmap);
  *
  * Returns a pointer to the remapped memory or an ERR_PTR() encoded error code
  * on failure. Usage example:
- *
+ *  以下是本接口的典型用例：
  *	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
  *	base = devm_ioremap_resource(&pdev->dev, res);
  *	if (IS_ERR(base))
@@ -139,11 +140,13 @@ void __iomem *devm_ioremap_resource(struct device *dev, struct resource *res)
 
 	BUG_ON(!dev);
 
+    // 只有memory资源才能调用本函数
 	if (!res || resource_type(res) != IORESOURCE_MEM) {
 		dev_err(dev, "invalid resource\n");
 		return IOMEM_ERR_PTR(-EINVAL);
 	}
 
+    // 计算该memory资源的地址范围
 	size = resource_size(res);
 	name = res->name ?: dev_name(dev);
 

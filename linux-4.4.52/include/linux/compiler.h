@@ -1,15 +1,17 @@
 #ifndef __LINUX_COMPILER_H
 #define __LINUX_COMPILER_H
 
+// __ASSEMBLY__宏只在编译汇编代码时通过-D进行定义，而编译c代码时该宏不会被定义
 #ifndef __ASSEMBLY__
 
+// __CHECKER__宏只在编译内核时启用了sparse工具的情况下才会被定义，也就是说默认该宏不会被定义
 #ifdef __CHECKER__
-# define __user		__attribute__((noderef, address_space(1)))
-# define __kernel	__attribute__((address_space(0)))
-# define __safe		__attribute__((safe))
-# define __force	__attribute__((force))
-# define __nocast	__attribute__((nocast))
-# define __iomem	__attribute__((noderef, address_space(2)))
+# define __user		__attribute__((noderef, address_space(1)))  // 修饰的变量必须位于用户空间(1)
+# define __kernel	__attribute__((address_space(0)))           // 修饰的变量必须位于普通内核空间(0)
+# define __safe		__attribute__((safe))                       // 修饰的参数必定安全(无需进行非空检查)
+# define __force	__attribute__((force))                      // 用于修饰可以做强制类型转换的变量(无需报告警信息)
+# define __nocast	__attribute__((nocast))                     // 修饰的参数其形参和实参类型必须相同
+# define __iomem	__attribute__((noderef, address_space(2)))  // 修饰的变量必须位于设备地址映射空间(2)
 # define __must_hold(x)	__attribute__((context(x,1,1)))
 # define __acquires(x)	__attribute__((context(x,0,1)))
 # define __releases(x)	__attribute__((context(x,1,0)))

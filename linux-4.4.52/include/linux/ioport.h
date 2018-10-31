@@ -14,25 +14,26 @@
 /*
  * Resources are tree-like, allowing
  * nesting etc..
+ * 用于描述一个资源节点的结构
  */
 struct resource {
-	resource_size_t start;
-	resource_size_t end;
-	const char *name;
-	unsigned long flags;
-	struct resource *parent, *sibling, *child;
+	resource_size_t start;  // 起始地址
+	resource_size_t end;    // 结束地址
+	const char *name;       // 资源名                                    
+	unsigned long flags;    // 一系列标志位集合，IORESOURCE_*
+	struct resource *parent, *sibling, *child;  // 分别指向父节点、兄弟节点、子节点
 };
 
 /*
  * IO resources have these defined flags.
  */
-#define IORESOURCE_BITS		0x000000ff	/* Bus-specific bits */
+#define IORESOURCE_BITS		0x000000ff	/* Bus-specific bits    [7-0]字段用于描述资源关联的总线信息 */
 
-#define IORESOURCE_TYPE_BITS	0x00001f00	/* Resource type */
-#define IORESOURCE_IO		0x00000100	/* PCI/ISA I/O ports */
-#define IORESOURCE_MEM		0x00000200
+#define IORESOURCE_TYPE_BITS	0x00001f00	/* Resource type    [12-8]字段用于描述资源类型 */
+#define IORESOURCE_IO		0x00000100	/* PCI/ISA I/O ports    IO类型的资源 */
+#define IORESOURCE_MEM		0x00000200  // memory类型的资源
 #define IORESOURCE_REG		0x00000300	/* Register offsets */
-#define IORESOURCE_IRQ		0x00000400
+#define IORESOURCE_IRQ		0x00000400  // irq类型的资源
 #define IORESOURCE_DMA		0x00000800
 #define IORESOURCE_BUS		0x00001000
 
@@ -53,7 +54,7 @@ struct resource {
 #define IORESOURCE_DISABLED	0x10000000
 #define IORESOURCE_UNSET	0x20000000	/* No address assigned yet */
 #define IORESOURCE_AUTO		0x40000000
-#define IORESOURCE_BUSY		0x80000000	/* Driver has marked this resource busy */
+#define IORESOURCE_BUSY		0x80000000	/* Driver has marked this resource busy  标识该资源正处于申请中 */
 
 /* PnP IRQ specific bits (IORESOURCE_BITS) */
 #define IORESOURCE_IRQ_HIGHEDGE		(1<<0)
@@ -162,10 +163,12 @@ struct resource *lookup_resource(struct resource *root, resource_size_t start);
 int adjust_resource(struct resource *res, resource_size_t start,
 		    resource_size_t size);
 resource_size_t resource_alignment(struct resource *res);
+// 返回传入资源的地址范围
 static inline resource_size_t resource_size(const struct resource *res)
 {
 	return res->end - res->start + 1;
 }
+// 返回传入资源的类型
 static inline unsigned long resource_type(const struct resource *res)
 {
 	return res->flags & IORESOURCE_TYPE_BITS;
@@ -182,9 +185,11 @@ static inline bool resource_contains(struct resource *r1, struct resource *r2)
 
 
 /* Convenience shorthand with allocation */
+// 为一段I/O端口资源申请对应的内存空间
 #define request_region(start,n,name)		__request_region(&ioport_resource, (start), (n), (name), 0)
 #define request_muxed_region(start,n,name)	__request_region(&ioport_resource, (start), (n), (name), IORESOURCE_MUXED)
 #define __request_mem_region(start,n,name, excl) __request_region(&iomem_resource, (start), (n), (name), excl)
+// 为一段I/O内存资源申请对应的内存空间
 #define request_mem_region(start,n,name) __request_region(&iomem_resource, (start), (n), (name), 0)
 #define request_mem_region_exclusive(start,n,name) \
 	__request_region(&iomem_resource, (start), (n), (name), IORESOURCE_EXCLUSIVE)

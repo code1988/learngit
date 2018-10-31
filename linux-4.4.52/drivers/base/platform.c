@@ -59,15 +59,17 @@ void __weak arch_setup_pdev_archdata(struct platform_device *pdev)
 
 /**
  * platform_get_resource - get a resource for a device
+ * 返回指定platform设备的指定类型的资源
  * @dev: platform device
- * @type: resource type
- * @num: resource index
+ * @type: resource type     资源类型，可以是memory、IRQ等
+ * @num: resource index     资源的序号(比如0意味着返回第一个匹配到的资源)
  */
 struct resource *platform_get_resource(struct platform_device *dev,
 				       unsigned int type, unsigned int num)
 {
 	int i;
 
+    // 从该platform设备拥有的资源列表中查找匹配的资源
 	for (i = 0; i < dev->num_resources; i++) {
 		struct resource *r = &dev->resource[i];
 
@@ -80,6 +82,7 @@ EXPORT_SYMBOL_GPL(platform_get_resource);
 
 /**
  * platform_get_irq - get an IRQ for a device
+ * 获取指定platfrom设备的指定中断号
  * @dev: platform device
  * @num: IRQ number index
  */
@@ -562,6 +565,7 @@ static void platform_drv_shutdown(struct device *_dev)
 
 /**
  * __platform_driver_register - register a driver for platform-level devices
+ * 注册一个驱动到platform总线中
  * @drv: platform driver structure
  * @owner: owning module/driver
  */
@@ -1070,6 +1074,7 @@ static const struct dev_pm_ops platform_dev_pm_ops = {
 	USE_PLATFORM_PM_SLEEP_OPS
 };
 
+// 定义了platform总线
 struct bus_type platform_bus_type = {
 	.name		= "platform",
 	.dev_groups	= platform_dev_groups,

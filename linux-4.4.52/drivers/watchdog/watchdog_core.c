@@ -292,7 +292,7 @@ static int __init watchdog_deferred_registration(void)
 	return 0;
 }
 
-// 看门狗模块初始化
+// 看门狗子系统初始化
 static int __init watchdog_init(void)
 {
 	int err;

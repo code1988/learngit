@@ -796,7 +796,7 @@ struct device {
 	struct device_private	*p;
 
 	struct kobject kobj;    // 抽象了linux设备基本结构中的共性部分
-	const char		*init_name; /* initial name of the device */
+	const char		*init_name; /* initial name of the device  初始的设备名，当该设备的kobject创建完毕后，设备名是kobject名 */
 	const struct device_type *type;
 
 	struct mutex		mutex;	/* mutex to synchronize calls to

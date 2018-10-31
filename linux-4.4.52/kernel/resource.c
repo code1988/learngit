@@ -25,7 +25,7 @@
 #include <linux/resource_ext.h>
 #include <asm/io.h>
 
-
+// 定义了一个全局的I/O端口资源描述符，同时作为I/O端口资源树的root节点
 struct resource ioport_resource = {
 	.name	= "PCI IO",
 	.start	= 0,
@@ -34,6 +34,7 @@ struct resource ioport_resource = {
 };
 EXPORT_SYMBOL(ioport_resource);
 
+// 定义了一个全局的I/O内存资源描述符，同时作为I/O内存资源树的root节点
 struct resource iomem_resource = {
 	.name	= "PCI mem",
 	.start	= 0,
@@ -204,7 +205,14 @@ static struct resource *alloc_resource(gfp_t flags)
 	return res;
 }
 
-/* Return the conflict entry if you can't request it */
+/* Return the conflict entry if you can't request it 
+ * 在父资源的子节点中检查新资源是否存在冲突
+ * 如果冲突则返回冲突的资源；否则将新资源插入该资源树中并返回NULL
+ *
+ * 备注： 在本函数内部父资源是不变的；
+ *        在本函数内的查找范围只限于子节点那一层，不会进行递归查找；
+ *        不冲突情况下新资源将作为父资源的子节点插入，且插入原则是以地址范围从小到大排序
+ * */
 static struct resource * __request_resource(struct resource *root, struct resource *new)
 {
 	resource_size_t start = new->start;
@@ -213,6 +221,7 @@ static struct resource * __request_resource(struct resource *root, struct resour
 
 	if (end < start)
 		return root;
+    // 确保新资源在root资源范围内
 	if (start < root->start)
 		return root;
 	if (end > root->end)
@@ -1052,11 +1061,12 @@ static DECLARE_WAIT_QUEUE_HEAD(muxed_resource_wait);
 
 /**
  * __request_region - create a new busy resource region
- * @parent: parent resource descriptor
- * @start: resource start address
- * @n: resource region size
- * @name: reserving caller's ID string
- * @flags: IO resource flags
+ * 根据传入的参数创建一个I/O资源描述符，并从内核申请一段内存空间给该I/O资源
+ * @parent: parent resource descriptor  父资源描述符
+ * @start: resource start address       申请资源的起始地址
+ * @n: resource region size             申请资源的长度
+ * @name: reserving caller's ID string  申请资源名
+ * @flags: IO resource flags            申请资源属性
  */
 struct resource * __request_region(struct resource *parent,
 				   resource_size_t start, resource_size_t n,
@@ -1072,16 +1082,21 @@ struct resource * __request_region(struct resource *parent,
 	res->start = start;
 	res->end = start + n - 1;
 	res->flags = resource_type(parent);
-	res->flags |= IORESOURCE_BUSY | flags;
+	res->flags |= IORESOURCE_BUSY | flags;  // 申请中的资源都会设置busy标志
 
 	write_lock(&resource_lock);
 
 	for (;;) {
 		struct resource *conflict;
 
+        /* 在以父资源为root节点的资源树中检查当前申请的资源是否存在冲突
+         * 如果冲突则返回冲突的资源；否则将新资源插入该资源树中
+         */
 		conflict = __request_resource(parent, res);
 		if (!conflict)
 			break;
+        // 程序运行到这里意味着新申请的资源存在冲突
+        // 如果冲突资源不是父资源，且该冲突资源并未处于busy状态，则将该冲突资源作为父资源重新进行检查
 		if (conflict != parent) {
 			if (!(conflict->flags & IORESOURCE_BUSY)) {
 				parent = conflict;
