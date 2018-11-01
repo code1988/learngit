@@ -47,6 +47,7 @@ static inline unsigned short from32to16(unsigned int x)
 	return x;
 }
 
+// 计算一段内存的校验和
 static unsigned int do_csum(const unsigned char *buff, int len)
 {
 	int odd;
@@ -106,8 +107,9 @@ out:
 /*
  *	This is a version of ip_compute_csum() optimized for IP headers,
  *	which always checksum on 4 octet boundaries.
- *	计算ip头校验和
+ *	计算ip头校验和(快速计算版本)，也用于验证收到的ip头的校验和
  *	@ihl    4字节为单位
+ *	备注：用于计算外发包的校验和时，调用者需要事先对校验和字段清0
  */
 __sum16 ip_fast_csum(const void *iph, unsigned int ihl)
 {
@@ -119,6 +121,8 @@ EXPORT_SYMBOL(ip_fast_csum);
 /*
  * computes the checksum of a memory block at buff, length len,
  * and adds in "sum" (32-bit)
+ * 计算一段内存区域(比如一个分片)的校验和，并和传入的wsum进行累加，返回最终结果
+ * @len     传入长度必须是偶数(只有最后一个分片有可能是奇数)
  *
  * returns a 32-bit number suitable for feeding into itself
  * or csum_tcpudp_magic
@@ -144,6 +148,7 @@ EXPORT_SYMBOL(csum_partial);
 /*
  * this routine is used for miscellaneous IP-like checksums, mainly
  * in icmp.c
+ * 计算类似ip头校验和的通用接口(基于16位字进行计算)
  */
 __sum16 ip_compute_csum(const void *buff, int len)
 {

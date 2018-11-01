@@ -89,7 +89,7 @@ ip_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
 	    int (*output)(struct net *, struct sock *, struct sk_buff *));
 
 /* Generate a checksum for an outgoing IP datagram. 
- * 生成输出报文的ipv4头校验和
+ * 生成外发报文的ipv4头校验和
  * */
 void ip_send_check(struct iphdr *iph)
 {
@@ -535,16 +535,22 @@ static void ip_copy_metadata(struct sk_buff *to, struct sk_buff *from)
 	skb_copy_secmark(to, from);
 }
 
-// 完成ip分片操作
+// 首先检查是否允许分片，如果允许则完成ip分片发送操作
 static int ip_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
 		       unsigned int mtu,
 		       int (*output)(struct net *, struct sock *, struct sk_buff *))
 {
 	struct iphdr *iph = ip_hdr(skb);
 
+    // 如果该ipv4头中没有设置DF标志，则真正进行分片发送流程
 	if ((iph->frag_off & htons(IP_DF)) == 0)
 		return ip_do_fragment(net, sk, skb, output);
 
+    /* 程序运行到这里意味着ipv4头中设置了DF标志
+     * 这种情况下还要看其载体skb的相关设置来最终判断是否允许分片：
+     *          如果所在skb设置了忽略DF标志、且最大分片长度不超过出口mtu，则仍旧进行分片发送流程;
+     *          否则向发送方回复一条ICMP_DEST_UNREACH-ICMP_FRAG_NEEDED消息
+     */
 	if (unlikely(!skb->ignore_df ||
 		     (IPCB(skb)->frag_max_size &&
 		      IPCB(skb)->frag_max_size > mtu))) {
@@ -563,6 +569,7 @@ static int ip_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
  *	smaller pieces (each of size equal to IP header plus
  *	a block of the data of the original IP data part) that will yet fit in a
  *	single device frame, and queue such a frame for sending.
+ *	真正完成ip分片发送
  */
 
 int ip_do_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,

@@ -55,7 +55,8 @@ static inline __sum16 csum_fold(__wsum sum)
 /*
  *	This is a version of ip_compute_csum() optimized for IP headers,
  *	which always checksum on 4 octet boundaries.
- *	计算ip头校验和
+ *	计算ip头校验和(快速计算版本)，也用于验证收到的ip头的校验和
+ *	备注：用于计算外发包的校验和时，调用者需要事先对校验和字段清0
  */
 static inline __sum16
 ip_fast_csum(const void *iph, unsigned int ihl)
@@ -132,6 +133,7 @@ csum_tcpudp_magic(__be32 saddr, __be32 daddr, unsigned short len,
 /*
  * this routine is used for miscellaneous IP-like checksums, mainly
  * in icmp.c
+ * 计算类似ip头校验和的通用接口(基于16位字进行计算)
  */
 static inline __sum16
 ip_compute_csum(const void *buff, int len)

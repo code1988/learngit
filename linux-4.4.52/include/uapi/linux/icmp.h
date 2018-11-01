@@ -44,7 +44,8 @@
 #define ICMP_PORT_UNREACH	3	/* Port Unreachable		
                                    端口不可达(收到的udp报文找不到匹配的套接字，但报文校验和正确) */
 #define ICMP_FRAG_NEEDED	4	/* Fragmentation Needed/DF set	
-                                   需要分片(转发ipv4报文时，如果其长度超过了出口网络设备的mtu,且该ipv4头中没有设置DF位) */
+                                   需要分片(转发ipv4报文时，如果其长度超过了出口网络设备的mtu,
+                                   且该ipv4头中没有设置DF位,且系统没有设置忽略DF位的标志) */
 #define ICMP_SR_FAILED		5	/* Source Route failed		*/
 #define ICMP_NET_UNKNOWN	6
 #define ICMP_HOST_UNKNOWN	7

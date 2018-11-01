@@ -1,5 +1,6 @@
 /*
  * Network device features.
+ * 定义了网络设备的能力集(用来设置 net_device->features 成员)
  *
  *
  * This program is free software; you can redistribute it and/or
@@ -16,15 +17,21 @@ typedef u64 netdev_features_t;
 
 enum {
 	NETIF_F_SG_BIT,			/* Scatter/gather IO. */
-	NETIF_F_IP_CSUM_BIT,		/* Can checksum TCP/UDP over IPv4. */
+	NETIF_F_IP_CSUM_BIT,		/* Can checksum TCP/UDP over IPv4. 
+                                   标识该网络设备只能对基于ipv4的tcp/udp报文进行校验 */
 	__UNUSED_NETIF_F_1,
-	NETIF_F_HW_CSUM_BIT,		/* Can checksum all the packets. */
-	NETIF_F_IPV6_CSUM_BIT,		/* Can checksum TCP/UDP over IPV6 */
+	NETIF_F_HW_CSUM_BIT,		/* Can checksum all the packets. 
+                                   标识该网络设备能对收到的任何协议的帧进行校验 */
+	NETIF_F_IPV6_CSUM_BIT,		/* Can checksum TCP/UDP over IPV6 
+                                   标识该网络设备只能对基于ipv6的tcp/udp报文进行校验 */
 	NETIF_F_HIGHDMA_BIT,		/* Can DMA to high memory. */
 	NETIF_F_FRAGLIST_BIT,		/* Scatter/gather IO. */
-	NETIF_F_HW_VLAN_CTAG_TX_BIT,	/* Transmit VLAN CTAG HW acceleration */
-	NETIF_F_HW_VLAN_CTAG_RX_BIT,	/* Receive VLAN CTAG HW acceleration */
-	NETIF_F_HW_VLAN_CTAG_FILTER_BIT,/* Receive filtering on VLAN CTAGs */
+	NETIF_F_HW_VLAN_CTAG_TX_BIT,	/* Transmit VLAN CTAG HW acceleration 
+                                       置位了该标志就意味着该网络设备发送数据时支持对802.1q vlan的加速功能 */
+	NETIF_F_HW_VLAN_CTAG_RX_BIT,	/* Receive VLAN CTAG HW acceleration 
+                                       置位了该标志就意味着该网络设备接收数据时支持对802.1q vlan的加速功能 */
+	NETIF_F_HW_VLAN_CTAG_FILTER_BIT,/* Receive filtering on VLAN CTAGs 
+                                       置位了该标志就意味着该网络设备接收数据时支持对802.1q vlan tag的过滤功能 */
 	NETIF_F_VLAN_CHALLENGED_BIT,	/* Device cannot handle VLAN packets */
 	NETIF_F_GSO_BIT,		/* Enable software GSO. */
 	NETIF_F_LLTX_BIT,		/* LockLess TX - deprecated. Please */
@@ -40,7 +47,8 @@ enum {
 	NETIF_F_GSO_ROBUST_BIT,		/* ... ->SKB_GSO_DODGY */
 	NETIF_F_TSO_ECN_BIT,		/* ... TCP ECN support */
 	NETIF_F_TSO6_BIT,		/* ... TCPv6 segmentation */
-	NETIF_F_FSO_BIT,		/* ... FCoE segmentation */
+	NETIF_F_FSO_BIT,		/* ... FCoE segmentation 
+                                 */
 	NETIF_F_GSO_GRE_BIT,		/* ... GRE with TSO */
 	NETIF_F_GSO_GRE_CSUM_BIT,	/* ... GRE with csum with TSO */
 	NETIF_F_GSO_IPIP_BIT,		/* ... IPIP tunnel with TSO */
@@ -63,7 +71,8 @@ enum {
 	NETIF_F_RXALL_BIT,		/* Receive errored frames too */
 	NETIF_F_HW_VLAN_STAG_TX_BIT,	/* Transmit VLAN STAG HW acceleration */
 	NETIF_F_HW_VLAN_STAG_RX_BIT,	/* Receive VLAN STAG HW acceleration */
-	NETIF_F_HW_VLAN_STAG_FILTER_BIT,/* Receive filtering on VLAN STAGs */
+	NETIF_F_HW_VLAN_STAG_FILTER_BIT,/* Receive filtering on VLAN STAGs 
+                                       置位了该标志就意味着该网络设备接收数据时支持对802.1ad QinQ vlan tag的过滤功能 */
 	NETIF_F_HW_L2FW_DOFFLOAD_BIT,	/* Allow L2 Forwarding in Hardware */
 	NETIF_F_BUSY_POLL_BIT,		/* Busy poll */
 

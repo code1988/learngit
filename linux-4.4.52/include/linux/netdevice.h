@@ -1585,7 +1585,8 @@ struct net_device {
 		struct list_head lower; // lower链表中包含了该netdev的所有下级设备
 	} all_adj_list; // 定义了upper和lower两条邻接链表头节点(包含全部设备)
 
-	netdev_features_t	features;       // 当前在该netdev上已经使能的功能集合(定义在include/linux/netdevice_features.h中，取值NETIF_F_*)
+	netdev_features_t	features;       /* 该netdev的能力集
+                                           (显然在设备创建时就已经固定，定义在include/linux/netdevice_features.h中，取值NETIF_F_*) */
 	netdev_features_t	hw_features;    // 用户态可修改的功能集合
 	netdev_features_t	wanted_features;
 	netdev_features_t	vlan_features;  // 可以被vlan设备继承的功能集合

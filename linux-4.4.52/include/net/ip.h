@@ -270,7 +270,11 @@ static inline bool ip_is_fragment(const struct iphdr *iph)
 #include <net/dst.h>
 
 /* The function in 2.2 was invalid, producing wrong result for
- * check=0xFEFF. It was noticed by Arthur Skawina _year_ ago. --ANK(000625) */
+ * check=0xFEFF. It was noticed by Arthur Skawina _year_ ago. --ANK(000625) 
+ * ipv4头中ttl减1，并更新ipv4头的校验和(通常在ip报文转发时被调用)
+ *
+ * 备注：显然这种情况下不需要完全重新计算校验和
+ * */
 static inline
 int ip_decrease_ttl(struct iphdr *iph)
 {

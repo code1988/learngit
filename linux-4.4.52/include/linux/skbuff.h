@@ -39,7 +39,7 @@
 #include <linux/in6.h>
 #include <net/flow.h>
 
-/* A. Checksumming of received packets by device.
+/* A. Checksumming of received packets by device.   接收报文时这些校验模式的作用
  *
  * CHECKSUM_NONE:
  *
@@ -96,7 +96,7 @@
  *   packet that are after the checksum being offloaded are not considered to
  *   be verified.
  *
- * B. Checksumming on output.
+ * B. Checksumming on output.   外发报文时这些校验模式的作用
  *
  * CHECKSUM_NONE:
  *
@@ -133,10 +133,14 @@
  */
 
 /* Don't change this without changing skb_csum_unnecessary! */
-#define CHECKSUM_NONE		0
-#define CHECKSUM_UNNECESSARY	1   // 标识不需要计算校验和，在大流量应用场景中用于加快发包效率
-#define CHECKSUM_COMPLETE	2       // 标识由硬件计算了校验和，计算结果记录在skb->csum中
-#define CHECKSUM_PARTIAL	3
+#define CHECKSUM_NONE		0       /* 接收报文时用来标识校验失败；
+                                       外发报文时表示已经被上层协议校验过，或者无需校验 */
+#define CHECKSUM_UNNECESSARY	1   /* 接收报文时表示该报文由硬件网卡完成校验(通常只支持一些特定协议)，并且请忽略skb->csum字段值
+                                       外发报文时表示不需要硬件网卡计算校验和，在大流量应用场景中用于加快发包效率 */
+#define CHECKSUM_COMPLETE	2       // 该标志只用于接收报文时，表示由硬件网卡完成了整个报文的校验和计算，计算结果记录在skb->csum中
+#define CHECKSUM_PARTIAL	3       /* 接收报文时表示(csum_start + csum_offset)之前区域的的校验和已被验证通过；
+                                       外发报文时表示硬件网卡需要计算从csum_start开始长度为csum_offset区域的校验和，
+                                       校验和填充到(csum_start + csum_offset)位置 */
 
 /* Maximum value in skb->csum_level */
 #define SKB_MAX_CSUM_LEVEL	3
@@ -643,13 +647,13 @@ struct sk_buff {
 	__u8			__pkt_type_offset[0];
 	__u8			pkt_type:3;     // 标识该skb中承载的包类型(比如PACKET_MULTICAST)，取值 PACKET_*
 	__u8			pfmemalloc:1;
-	__u8			ignore_df:1;    /* 标识该skb是否忽略DF位
+	__u8			ignore_df:1;    /* 标识该skb是否忽略报文中的DF位
                                      * 该标志位的优先级高于套接字设置的pmtu控制模式和该skb的出口路由表项相关设置
                                      */
 	__u8			nfctinfo:3;
 
 	__u8			nf_trace:1;
-	__u8			ip_summed:2;    // 标识该skb是否需要计算校验和，CHECKSUM_*
+	__u8			ip_summed:2;    // 该skb使用的校验和计算方式，CHECKSUM_*
 	__u8			ooo_okay:1;
 	__u8			l4_hash:1;
 	__u8			sw_hash:1;
@@ -660,7 +664,7 @@ struct sk_buff {
 	/* Indicates the inner headers are valid in the skbuff. */
 	__u8			encapsulation:1;
 	__u8			encap_hdr_csum:1;
-	__u8			csum_valid:1;
+	__u8			csum_valid:1;   // 标识软件校验是否通过
 	__u8			csum_complete_sw:1;
 	__u8			csum_level:2;
 	__u8			csum_bad:1;
