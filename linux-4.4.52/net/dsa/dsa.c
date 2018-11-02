@@ -964,7 +964,7 @@ static int dsa_setup_dst(struct dsa_switch_tree *dst, struct net_device *dev,
 	return 0;
 }
 
-/* DSA驱动API: probe回调函数
+/* dsa驱动探测到匹配的设备后的回调函数，实际就是初始化探测到的dsa设备
  * @pdev    指向匹配到的DSA设备
  */
 static int dsa_probe(struct platform_device *pdev)

@@ -19,7 +19,7 @@
 
 struct mfd_cell;
 
-// 定义了platform设备模型
+// 定义了platform总线中的设备模型
 struct platform_device {
 	const char	*name;          // 设备名
 	int		id;

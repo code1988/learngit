@@ -49,6 +49,7 @@ extern __sum16 ip_fast_csum(const void *iph, unsigned int ihl);
 #ifndef csum_fold
 /*
  * Fold a partial checksum
+ * 计算取反(ip/tcp/udp/icmp校验和计算过程中的第二步)
  */
 static inline __sum16 csum_fold(__wsum csum)
 {

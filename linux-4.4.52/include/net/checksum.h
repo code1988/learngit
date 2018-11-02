@@ -58,6 +58,7 @@ static __inline__ __wsum csum_and_copy_to_user
 #endif
 
 #ifndef HAVE_ARCH_CSUM_ADD
+// 计算32位累加(ip/tcp/udp/icmp校验和计算过程中的第一步)
 static inline __wsum csum_add(__wsum csum, __wsum addend)
 {
 	u32 res = (__force u32)csum;
@@ -66,11 +67,13 @@ static inline __wsum csum_add(__wsum csum, __wsum addend)
 }
 #endif
 
+// 计算32位减法
 static inline __wsum csum_sub(__wsum csum, __wsum addend)
 {
 	return csum_add(csum, ~addend);
 }
 
+// 计算16位累加
 static inline __sum16 csum16_add(__sum16 csum, __be16 addend)
 {
 	u16 res = (__force u16)csum;
@@ -79,6 +82,7 @@ static inline __sum16 csum16_add(__sum16 csum, __be16 addend)
 	return (__force __sum16)(res + (res < (__force u16)addend));
 }
 
+// 计算16位减法
 static inline __sum16 csum16_sub(__sum16 csum, __be16 addend)
 {
 	return csum16_add(csum, ~addend);

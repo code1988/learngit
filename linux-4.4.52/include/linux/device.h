@@ -719,7 +719,7 @@ struct device_dma_parameters {
  * struct device - The basic device structure
  * 定义了linux设备模型中设备的基本结构
  *
- * 备注：实际驱动开发中基本不会直接使用该结构，因为内核在之上又封装了一层，如platform_device等
+ * 备注：本结构通常只作为基类嵌入在各类总线设备对象中(如platform_device)，也就是说实际不会单独使用该结构
  * @parent:	The device's "parent" device, the device to which it is attached.
  * 		In most cases, a parent device is some sort of bus or host
  * 		controller. If parent is NULL, the device, is a top-level device,

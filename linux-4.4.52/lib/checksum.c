@@ -158,6 +158,7 @@ EXPORT_SYMBOL(ip_compute_csum);
 
 /*
  * copy from fs while checksumming, otherwise like csum_partial
+ * 拷贝用户空间数据到内核空间，并计算校验和
  */
 __wsum
 csum_partial_copy_from_user(const void __user *src, void *dst, int len,
@@ -178,6 +179,7 @@ EXPORT_SYMBOL(csum_partial_copy_from_user);
 
 /*
  * copy from ds while checksumming, otherwise like csum_partial
+ * 内核空间拷贝数据并计算校验和
  */
 __wsum
 csum_partial_copy(const void *src, void *dst, int len, __wsum sum)
