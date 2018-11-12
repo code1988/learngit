@@ -21,6 +21,7 @@
  */
 #define NR_OPEN_DEFAULT BITS_PER_LONG
 
+// 定义了fd表结构，用于维护一个进程所有打开文件fd的信息
 struct fdtable {
 	unsigned int max_fds;
 	struct file __rcu **fd;      /* current fd array */
@@ -42,17 +43,21 @@ static inline bool fd_is_open(int fd, const struct fdtable *fdt)
 
 /*
  * Open file table structure
+ * 定义了文件表结构，用于维护一个进程所有打开文件的信息
  */
 struct files_struct {
   /*
    * read mostly part
    */
-	atomic_t count;
+	atomic_t count;                 // 该文件表的引用计数
 	bool resize_in_progress;
 	wait_queue_head_t resize_wait;
 
-	struct fdtable __rcu *fdt;
-	struct fdtable fdtab;
+    /* 只有当该进程打开文件数量超过默认上限时，才会动态申请内存
+     * 这是内核常用的一种优化策略，目的是避免频繁申请内存
+     */
+	struct fdtable __rcu *fdt;      // 指向关联的fd表，默认指向fdtab
+	struct fdtable fdtab;           // 默认使用的fd表
   /*
    * written part on a separate cache line in SMP
    */

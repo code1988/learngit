@@ -1377,6 +1377,9 @@ struct tlbflush_unmap_batch {
 	bool writable;
 };
 
+/* 进程控制块，用来管理一个进程的所有信息
+ * 用户态每个进程/线程在内核态中都对应了一个该结构
+ */
 struct task_struct {
 	volatile long state;	/* -1 unrunnable, 0 runnable, >0 stopped */
 	void *stack;
@@ -1499,7 +1502,8 @@ struct task_struct {
 	 */
 	struct list_head children;	/* list of my children */
 	struct list_head sibling;	/* linkage in my parent's children list */
-	struct task_struct *group_leader;	/* threadgroup leader */
+	struct task_struct *group_leader;	/* threadgroup leader 
+                                           指向所属线程组的leader，实际就是所在进程task_struct */
 
 	/*
 	 * ptraced is the list of tasks this task is using ptrace on.
@@ -1562,7 +1566,9 @@ struct task_struct {
 #endif
 /* filesystem information */
 	struct fs_struct *fs;
-/* open file information */
+/* open file information 
+ * 指向该进程关联的文件表，维护了该进程所有打开文件的信息
+ * */
 	struct files_struct *files;
 /* namespaces */
 	struct nsproxy *nsproxy;
