@@ -862,6 +862,7 @@ static inline int ra_has_index(struct file_ra_state *ra, pgoff_t index)
 		index <  ra->start + ra->size);
 }
 
+// 用于维护一个打开文件信息的结构
 struct file {
 	union {
 		struct llist_node	fu_llist;

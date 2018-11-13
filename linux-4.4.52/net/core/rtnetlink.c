@@ -57,14 +57,17 @@
 #include <net/rtnetlink.h>
 #include <net/net_namespace.h>
 
+// 定义了rtnetlink消息处理单元
 struct rtnl_link {
 	rtnl_doit_func		doit;
 	rtnl_dumpit_func	dumpit;
 	rtnl_calcit_func 	calcit;
 };
 
+// 定义了一个rtnl互斥锁
 static DEFINE_MUTEX(rtnl_mutex);
 
+// rtnl上锁
 void rtnl_lock(void)
 {
 	mutex_lock(&rtnl_mutex);
@@ -103,8 +106,10 @@ bool lockdep_rtnl_is_held(void)
 EXPORT_SYMBOL(lockdep_rtnl_is_held);
 #endif /* #ifdef CONFIG_PROVE_LOCKING */
 
+// 定义了一张包含rtnetlink所有已经注册的消息处理单元的表，这些消息处理单元按照所属协议族进行归类
 static struct rtnl_link *rtnl_msg_handlers[RTNL_FAMILY_MAX + 1];
 
+// rtnetlink消息type->index
 static inline int rtm_msgindex(int msgtype)
 {
 	int msgindex = msgtype - RTM_BASE;
@@ -119,6 +124,7 @@ static inline int rtm_msgindex(int msgtype)
 	return msgindex;
 }
 
+// 根据协议族和消息类型ID(无偏)，索引得到对应的doit函数
 static rtnl_doit_func rtnl_get_doit(int protocol, int msgindex)
 {
 	struct rtnl_link *tab;
@@ -128,12 +134,16 @@ static rtnl_doit_func rtnl_get_doit(int protocol, int msgindex)
 	else
 		tab = NULL;
 
+    /* 如果rtnl_msg_handlers表中没有注册指定协议族，或者该协议族下指定消息类型的doit回调函数未定义，
+     * 就会去rtnl_msg_handlers表中的PF_UNSPEC下寻找对应消息类型的doit回调函数
+     */
 	if (tab == NULL || tab[msgindex].doit == NULL)
 		tab = rtnl_msg_handlers[PF_UNSPEC];
 
 	return tab[msgindex].doit;
 }
 
+// 根据协议族和消息类型ID(无偏)，索引得到对应的dumpit函数
 static rtnl_dumpit_func rtnl_get_dumpit(int protocol, int msgindex)
 {
 	struct rtnl_link *tab;
@@ -143,12 +153,16 @@ static rtnl_dumpit_func rtnl_get_dumpit(int protocol, int msgindex)
 	else
 		tab = NULL;
 
+    /* 如果rtnl_msg_handlers表中没有注册指定协议族，或者该协议族下指定消息类型的dumpit回调函数未定义，
+     * 就会去rtnl_msg_handlers表中的PF_UNSPEC下寻找对应消息类型的dumpit回调函数
+     */
 	if (tab == NULL || tab[msgindex].dumpit == NULL)
 		tab = rtnl_msg_handlers[PF_UNSPEC];
 
 	return tab[msgindex].dumpit;
 }
 
+// 根据协议族和消息类型ID(无偏)，索引得到对应的calcit函数
 static rtnl_calcit_func rtnl_get_calcit(int protocol, int msgindex)
 {
 	struct rtnl_link *tab;
@@ -158,6 +172,9 @@ static rtnl_calcit_func rtnl_get_calcit(int protocol, int msgindex)
 	else
 		tab = NULL;
 
+    /* 如果rtnl_msg_handlers表中没有注册指定协议族，或者该协议族下指定消息类型的calcit回调函数未定义，
+     * 就会去rtnl_msg_handlers表中的PF_UNSPEC下寻找对应消息类型的calcit回调函数
+     */
 	if (tab == NULL || tab[msgindex].calcit == NULL)
 		tab = rtnl_msg_handlers[PF_UNSPEC];
 
@@ -166,19 +183,25 @@ static rtnl_calcit_func rtnl_get_calcit(int protocol, int msgindex)
 
 /**
  * __rtnl_register - Register a rtnetlink message type
- * @protocol: Protocol family or PF_UNSPEC
- * @msgtype: rtnetlink message type
- * @doit: Function pointer called for each request message
+ * 注册一条基于rtnetlink协议的具体消息(整个注册过程实际就是填充数组rtnl_msg_handlers的过程)
+ * @protocol: Protocol family or PF_UNSPEC  该消息所属的协议族
+ * @msgtype: rtnetlink message type         要注册的消息类型
+ * @doit: Function pointer called for each request message  
+ *        本函数指针用于带NLM_F_REQUEST标志的消息)
  * @dumpit: Function pointer called for each dump request (NLM_F_DUMP) message
+ *        本函数指针用于带NLM_F_REQUEST + NLM_F_DUMP标志的消息
  * @calcit: Function pointer to calc size of dump message
+ *        本函数指针用于计算带NLM_F_REQUEST + NLM_F_DUMP标志的消息的返回消息长度
  *
  * Registers the specified function pointers (at least one of them has
  * to be non-NULL) to be called whenever a request message for the
  * specified protocol family and message type is received.
+ * 3个函数指针必须确保至少有1个非空
  *
  * The special protocol family PF_UNSPEC may be used to define fallback
  * function pointers for the case when no entry for the specific protocol
  * family exists.
+ * 标记为PF_UNSPEC的那些消息是为了以备那些找不到指定协议族的同名消息使用
  *
  * Returns 0 on success or a negative error code.
  */
@@ -189,9 +212,12 @@ int __rtnl_register(int protocol, int msgtype,
 	struct rtnl_link *tab;
 	int msgindex;
 
+    // 协议族合法性检测
 	BUG_ON(protocol < 0 || protocol > RTNL_FAMILY_MAX);
+    // 获取netlink消息index
 	msgindex = rtm_msgindex(msgtype);
 
+    // 根据协议族索引得到对应的rtnl_link地址,如果该协议族首次被注册，需要先申请RTM_NR_MSGTYPES数量的rtnl_link空间
 	tab = rtnl_msg_handlers[protocol];
 	if (tab == NULL) {
 		tab = kcalloc(RTM_NR_MSGTYPES, sizeof(*tab), GFP_KERNEL);
@@ -216,6 +242,7 @@ EXPORT_SYMBOL_GPL(__rtnl_register);
 
 /**
  * rtnl_register - Register a rtnetlink message type
+ * 注册一条基于rtnetlink协议的具体消息(带出错打印)
  *
  * Identical to __rtnl_register() but panics on failure. This is useful
  * as failure of this function is very unlikely, it can only happen due
@@ -274,8 +301,9 @@ void rtnl_unregister_all(int protocol)
 }
 EXPORT_SYMBOL_GPL(rtnl_unregister_all);
 
-static LIST_HEAD(link_ops);
+static LIST_HEAD(link_ops); // 创建并初始化一个link_ops链表头，用于管理所有已经注册的rtnl_link_ops
 
+// 遍历link_ops链表，根据标识符查找对应的rtnl_link_ops
 static const struct rtnl_link_ops *rtnl_link_ops_get(const char *kind)
 {
 	const struct rtnl_link_ops *ops;
@@ -294,11 +322,13 @@ static const struct rtnl_link_ops *rtnl_link_ops_get(const char *kind)
  * The caller must hold the rtnl_mutex. This function should be used
  * by drivers that create devices during module initialization. It
  * must be called before registering the devices.
+ * 备注： 本函数必须在具体的设备被创建之前执行，也就是应该在具体设备所属的功能模块初始化时被执行
  *
  * Returns 0 on success or a negative error code.
  */
 int __rtnl_link_register(struct rtnl_link_ops *ops)
 {
+    // 注册之前先要检查link_ops链表中是否已经存在相同的ops
 	if (rtnl_link_ops_get(ops->kind))
 		return -EEXIST;
 
@@ -306,10 +336,12 @@ int __rtnl_link_register(struct rtnl_link_ops *ops)
 	 * does not have that filled up, it is not possible
 	 * to use the ops for creating device. So do not
 	 * fill up dellink as well. That disables rtnl_dellink.
+     * 如果没有自定义dellink函数，这里会设置缺省函数
 	 */
 	if (ops->setup && !ops->dellink)
 		ops->dellink = unregister_netdevice_queue;
 
+    // 将ops插入link_ops链表
 	list_add_tail(&ops->list, &link_ops);
 	return 0;
 }
@@ -317,8 +349,10 @@ EXPORT_SYMBOL_GPL(__rtnl_link_register);
 
 /**
  * rtnl_link_register - Register rtnl_link_ops with rtnetlink.
+ * 将具体功能模块的rtnl_link_ops集合注册到rtnetlink中
  * @ops: struct rtnl_link_ops * to register
  *
+ * 备注： 实际就是插入link_ops链表
  * Returns 0 on success or a negative error code.
  */
 int rtnl_link_register(struct rtnl_link_ops *ops)
@@ -631,6 +665,9 @@ int rtnetlink_send(struct sk_buff *skb, struct net *net, u32 pid, unsigned int g
 	return err;
 }
 
+/* 向用户进程发送rtnetlink单播消息
+ * @pid     该单播消息的目的地址
+ */
 int rtnl_unicast(struct sk_buff *skb, struct net *net, u32 pid)
 {
 	struct sock *rtnl = net->rtnl;
@@ -639,12 +676,20 @@ int rtnl_unicast(struct sk_buff *skb, struct net *net, u32 pid)
 }
 EXPORT_SYMBOL(rtnl_unicast);
 
+/* 发送指定skb中的rtnetlink消息通知
+ * @skb     承载了rtnetlink消息的skb
+ * @net     要发送该消息的net命名空间
+ * @pid     该消息的发送方，0表示由内核发出
+ * @group   如果通过组播通道发送，则这里传入组播ID，0意味着发送单播
+ * @nlh     
+ */
 void rtnl_notify(struct sk_buff *skb, struct net *net, u32 pid, u32 group,
 		 struct nlmsghdr *nlh, gfp_t flags)
 {
 	struct sock *rtnl = net->rtnl;
 	int report = 0;
 
+    // 判断是否需要回显
 	if (nlh)
 		report = nlmsg_report(nlh);
 
@@ -872,6 +917,7 @@ static size_t rtnl_port_size(const struct net_device *dev,
 		return port_self_size;
 }
 
+// 计算rtnetlink协议使用ifinfomsg结构的消息长度
 static noinline size_t if_nlmsg_size(const struct net_device *dev,
 				     u32 ext_filter_mask)
 {
@@ -1191,6 +1237,7 @@ static int rtnl_fill_link_ifmap(struct sk_buff *skb, struct net_device *dev)
 	return 0;
 }
 
+// 填充指定skb中的完整rtnetlink消息
 static int rtnl_fill_ifinfo(struct sk_buff *skb, struct net_device *dev,
 			    int type, u32 pid, u32 seq, u32 change,
 			    unsigned int flags, u32 ext_filter_mask)
@@ -1202,10 +1249,12 @@ static int rtnl_fill_ifinfo(struct sk_buff *skb, struct net_device *dev,
 	struct net_device *upper_dev = netdev_master_upper_dev_get(dev);
 
 	ASSERT_RTNL();
+    // 首先添加一个netlink消息外壳到skb
 	nlh = nlmsg_put(skb, pid, seq, type, sizeof(*ifm), flags);
 	if (nlh == NULL)
 		return -EMSGSIZE;
 
+    // 接着按ifinfomsg格式填充族头
 	ifm = nlmsg_data(nlh);
 	ifm->ifi_family = AF_UNSPEC;
 	ifm->__ifi_pad = 0;
@@ -1214,6 +1263,7 @@ static int rtnl_fill_ifinfo(struct sk_buff *skb, struct net_device *dev,
 	ifm->ifi_flags = dev_get_flags(dev);
 	ifm->ifi_change = change;
 
+    // 然后填充一系列属性
 	if (nla_put_string(skb, IFLA_IFNAME, dev->name) ||
 	    nla_put_u32(skb, IFLA_TXQLEN, dev->tx_queue_len) ||
 	    nla_put_u8(skb, IFLA_OPERSTATE,
@@ -1340,6 +1390,7 @@ nla_put_failure:
 	return -EMSGSIZE;
 }
 
+// 定义了一张rtnetlink消息属性必须满足的策略表
 static const struct nla_policy ifla_policy[IFLA_MAX+1] = {
 	[IFLA_IFNAME]		= { .type = NLA_STRING, .len = IFNAMSIZ-1 },
 	[IFLA_ADDRESS]		= { .type = NLA_BINARY, .len = MAX_ADDR_LEN },
@@ -2407,6 +2458,7 @@ out_unregister:
 	}
 }
 
+// 获取普通意义上的端口(不一定只限于桥)link状态
 static int rtnl_getlink(struct sk_buff *skb, struct nlmsghdr* nlh)
 {
 	struct net *net = sock_net(skb->sk);
@@ -2418,17 +2470,22 @@ static int rtnl_getlink(struct sk_buff *skb, struct nlmsghdr* nlh)
 	int err;
 	u32 ext_filter_mask = 0;
 
+    // 根据既定的每种类型的策略解析rtnetlink-RTM_GETLINK消息,解析出来的每条子消息分别存入tb数组对应位置
 	err = nlmsg_parse(nlh, sizeof(*ifm), tb, IFLA_MAX, ifla_policy);
 	if (err < 0)
 		return err;
 
+    // 获取接口名
 	if (tb[IFLA_IFNAME])
 		nla_strlcpy(ifname, tb[IFLA_IFNAME], IFNAMSIZ);
 
+    // 获取额外的标志字段
 	if (tb[IFLA_EXT_MASK])
 		ext_filter_mask = nla_get_u32(tb[IFLA_EXT_MASK]);
 
+    // 获取ifinfomsg格式的族头
 	ifm = nlmsg_data(nlh);
+    // 根据端口号或接口名索引对应的设备
 	if (ifm->ifi_index > 0)
 		dev = __dev_get_by_index(net, ifm->ifi_index);
 	else if (tb[IFLA_IFNAME])
@@ -2436,13 +2493,16 @@ static int rtnl_getlink(struct sk_buff *skb, struct nlmsghdr* nlh)
 	else
 		return -EINVAL;
 
+    // 索引失败直接返回
 	if (dev == NULL)
 		return -ENODEV;
 
+    // 申请一个新的netlink消息空间
 	nskb = nlmsg_new(if_nlmsg_size(dev, ext_filter_mask), GFP_KERNEL);
 	if (nskb == NULL)
 		return -ENOBUFS;
 
+    // 填充一个族头为ifinfomsg格式的netlink消息(进程号、序号沿用收到的netlink消息里的)
 	err = rtnl_fill_ifinfo(nskb, dev, RTM_NEWLINK, NETLINK_CB(skb).portid,
 			       nlh->nlmsg_seq, 0, 0, ext_filter_mask);
 	if (err < 0) {
@@ -2450,6 +2510,7 @@ static int rtnl_getlink(struct sk_buff *skb, struct nlmsghdr* nlh)
 		WARN_ON(err == -EMSGSIZE);
 		kfree_skb(nskb);
 	} else
+        // 将组好的rtnetlink消息单播回发给请求的用户进程
 		err = rtnl_unicast(nskb, net, NETLINK_CB(skb).portid);
 
 	return err;
@@ -2548,6 +2609,11 @@ void rtmsg_ifinfo_send(struct sk_buff *skb, struct net_device *dev, gfp_t flags)
 	rtnl_notify(skb, net, 0, RTNLGRP_LINK, NULL, flags);
 }
 
+/* 指定netdev发送网卡接口相关的rtnetlink组播消息通知到用户空间
+ * @type    rtnetlink协议支持的消息类型
+ * @dev     发送该rtnetlink消息的设备
+ * @change
+ */
 void rtmsg_ifinfo(int type, struct net_device *dev, unsigned int change,
 		  gfp_t flags)
 {
@@ -2556,8 +2622,10 @@ void rtmsg_ifinfo(int type, struct net_device *dev, unsigned int change,
 	if (dev->reg_state != NETREG_REGISTERED)
 		return;
 
+    // 申请一个用于承载使用ifinfomsg结构的rtnetlink消息的skb，然后填充该rtnetlink消息
 	skb = rtmsg_ifinfo_build_skb(type, dev, change, flags);
 	if (skb)
+        // 通过RTNLGRP_LINK组播通道，将组装完毕的rtnetlink消息发往用户空间
 		rtmsg_ifinfo_send(skb, dev, flags);
 }
 EXPORT_SYMBOL(rtmsg_ifinfo);
@@ -3094,16 +3162,27 @@ nla_put_failure:
 }
 EXPORT_SYMBOL_GPL(ndo_dflt_bridge_getlink);
 
+/* 获取桥端口的链路状态
+ *
+ * @skb - 这个skb是为netlink消息的接收方所有的，里面存储了接收方准备要回复的netlink消息
+ * @cb  - 这个当前有效操作集合实际上挂在netlink消息的发送方下面，里面的skb存储了当前正在处理的这条netlink消息
+ *
+ * 备注：本函数只会获取bridge端口，所以eth、lo这些不属于bridge的端口不会在这里被获取到
+ *       AF_BRIDGE + RTM_GETLINK消息的族头结构类型没有任何要求，一般就是使用最小族头rtgenmsg结构
+ */
 static int rtnl_bridge_getlink(struct sk_buff *skb, struct netlink_callback *cb)
 {
 	struct net *net = sock_net(skb->sk);
 	struct net_device *dev;
 	int idx = 0;
-	u32 portid = NETLINK_CB(cb->skb).portid;
-	u32 seq = cb->nlh->nlmsg_seq;
+	u32 portid = NETLINK_CB(cb->skb).portid;    // netlink消息发送方的单播地址
+	u32 seq = cb->nlh->nlmsg_seq;               // netlink消息中追踪用的序号
 	u32 filter_mask = 0;
 	int err;
 
+    /* 首先检查netlink消息的属性条目中是否存在IFLA_EXT_MASK项
+     * 如果存在该项，就提取相应的payload
+     */
 	if (nlmsg_len(cb->nlh) > sizeof(struct ifinfomsg)) {
 		struct nlattr *extfilt;
 
@@ -3118,6 +3197,7 @@ static int rtnl_bridge_getlink(struct sk_buff *skb, struct netlink_callback *cb)
 	}
 
 	rcu_read_lock();
+    // 遍历当前net命名空间下的所有网络设备，对每个bridge设备执行ndo_bridge_getlink获取所属端口的link状态
 	for_each_netdev_rcu(net, dev) {
 		const struct net_device_ops *ops = dev->netdev_ops;
 		struct net_device *br_dev = netdev_master_upper_dev_get(dev);
@@ -3198,6 +3278,13 @@ errout:
 	return err;
 }
 
+/* 设置桥端口的链路参数
+ *
+ * @skb     - 存储了该netlink消息的skb
+ * @nlh     - 一条完整的netlink-RTM_SETLINK消息
+ *
+ * 备注： AF_BRIDGE + RTM_SETLINK消息的族头使用的是ifinfomsg结构
+ */
 static int rtnl_bridge_setlink(struct sk_buff *skb, struct nlmsghdr *nlh)
 {
 	struct net *net = sock_net(skb->sk);
@@ -3208,6 +3295,7 @@ static int rtnl_bridge_setlink(struct sk_buff *skb, struct nlmsghdr *nlh)
 	u16 flags = 0;
 	bool have_flags = false;
 
+    // 首先是做一些参数合法性检测
 	if (nlmsg_len(nlh) < sizeof(*ifm))
 		return -EINVAL;
 
@@ -3215,12 +3303,16 @@ static int rtnl_bridge_setlink(struct sk_buff *skb, struct nlmsghdr *nlh)
 	if (ifm->ifi_family != AF_BRIDGE)
 		return -EPFNOSUPPORT;
 
+    // 通过接口序号查找对应的网络设备
 	dev = __dev_get_by_index(net, ifm->ifi_index);
 	if (!dev) {
 		pr_info("PF_BRIDGE: RTM_SETLINK with unknown ifindex\n");
 		return -ENODEV;
 	}
 
+    /* 检查netlink消息的一级属性条目中是否存在IFLA_AF_SPEC项
+     * 如果存在该项，就遍历嵌套的子属性，检查其子属性条目中是否存在IFLA_BRIDGE_FLAGS项
+     */
 	br_spec = nlmsg_find_attr(nlh, sizeof(struct ifinfomsg), IFLA_AF_SPEC);
 	if (br_spec) {
 		nla_for_each_nested(attr, br_spec, rem) {
@@ -3235,6 +3327,9 @@ static int rtnl_bridge_setlink(struct sk_buff *skb, struct nlmsghdr *nlh)
 		}
 	}
 
+    /* 如果二级属性条目中不存在IFLA_BRIDGE_FLAGS项，或者如果存在该条目但是其payload中存在BRIDGE_FLAGS_MASTER标志
+     * 就意味着这是一个lowwer设备，需要先找到它的upper设备，通常就是bridge设备，然后执行bridge设备的ndo_bridge_setlink回调
+     */
 	if (!flags || (flags & BRIDGE_FLAGS_MASTER)) {
 		struct net_device *br_dev = netdev_master_upper_dev_get(dev);
 
@@ -3250,6 +3345,9 @@ static int rtnl_bridge_setlink(struct sk_buff *skb, struct nlmsghdr *nlh)
 		flags &= ~BRIDGE_FLAGS_MASTER;
 	}
 
+    /* 如果二级属性条目中存在IFLA_BRIDGE_FLAGS项，并且其payload中存在BRIDGE_FLAGS_SELF标志
+     * 就意味着这是一个upper设备，通常就是bridge设备，直接执行其ndo_bridge_setlink回调即可
+     */
 	if ((flags & BRIDGE_FLAGS_SELF)) {
 		if (!dev->netdev_ops->ndo_bridge_setlink)
 			err = -EOPNOTSUPP;
@@ -3261,11 +3359,15 @@ static int rtnl_bridge_setlink(struct sk_buff *skb, struct nlmsghdr *nlh)
 
 			/* Generate event to notify upper layer of bridge
 			 * change
+             * 通过内核通知链通知bridge
 			 */
 			err = rtnl_bridge_notify(dev);
 		}
 	}
 
+    /* 以上代码意味着设备a既可以是设备b的lowwer设备，同时又可以是设备c的upper设备 */
+
+    // 如果二级属性条目中存在IFLA_BRIDGE_FLAGS项，会直接在该属性项位置更新掉原来的payload
 	if (have_flags)
 		memcpy(nla_data(attr), &flags, sizeof(flags));
 out:
@@ -3347,8 +3449,9 @@ out:
 	return err;
 }
 
-/* Process one rtnetlink message. */
-
+/* Process one rtnetlink message. 
+ * 处理一条完整的rtnetlink消息
+ * */
 static int rtnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
 {
 	struct net *net = sock_net(skb->sk);
@@ -3358,49 +3461,66 @@ static int rtnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
 	int type;
 	int err;
 
+    // rtnetlink消息类型合法性检测
 	type = nlh->nlmsg_type;
 	if (type > RTM_MAX)
 		return -EOPNOTSUPP;
 
+    // 计算得到不带偏移量的rtnetlink消息类型ID
 	type -= RTM_BASE;
 
-	/* All the messages must have at least 1 byte length */
+	/* All the messages must have at least 1 byte length 
+     * rtnetlink消息payload长度合法性检测，至少1字节长
+     * */
 	if (nlmsg_len(nlh) < sizeof(struct rtgenmsg))
 		return 0;
 
+    // 获取rtnetlink消息的地址族
 	family = ((struct rtgenmsg *)nlmsg_data(nlh))->rtgen_family;
+    // 计算得到消息的组号(4个一组)、消息的子类型ID
 	sz_idx = type>>2;
 	kind = type&3;
 
+    // 对于 RTM_GET* 以外的rtnetlink消息，需要做权限验证
 	if (kind != 2 && !netlink_net_capable(skb, CAP_NET_ADMIN))
 		return -EPERM;
 
+    // 对于 RTM_GET* 类型并且标记了NLM_F_DUMP的netlink消息,直接从这里开始执行dump分支操作去了
 	if (kind == 2 && nlh->nlmsg_flags&NLM_F_DUMP) {
 		struct sock *rtnl;
 		rtnl_dumpit_func dumpit;
 		rtnl_calcit_func calcit;
 		u16 min_dump_alloc = 0;
 
+        // 根据协议族和消息类型ID，索引得到对应的dumpit函数
 		dumpit = rtnl_get_dumpit(family, type);
 		if (dumpit == NULL)
 			return -EOPNOTSUPP;
+        /* 根据协议族和消息类型ID，索引得到对应的calcit函数,
+         * 然后执行calcit，得到dump操作需要的空间大小min_dump_alloc
+         */
 		calcit = rtnl_get_calcit(family, type);
 		if (calcit)
 			min_dump_alloc = calcit(skb, nlh);
 
 		__rtnl_unlock();
+        // 获取当前网络命名空间下，属于rtnetlink套接字的sock结构(就是在rtnetlink_net_init中创建并注册的)
 		rtnl = net->rtnl;
 		{
+            // 初始化一个dump操作控制块
 			struct netlink_dump_control c = {
 				.dump		= dumpit,
 				.min_dump_alloc	= min_dump_alloc,
 			};
+            // 执行dump操作了
 			err = netlink_dump_start(rtnl, skb, nlh, &c);
 		}
 		rtnl_lock();
 		return err;
 	}
 
+    // 程序运行到这里，意味着没有去执行dump分支操作
+    // 根据协议族和消息类型ID，索引得到对应的doit函数,然后执行doit
 	doit = rtnl_get_doit(family, type);
 	if (doit == NULL)
 		return -EOPNOTSUPP;
@@ -3408,6 +3528,7 @@ static int rtnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
 	return doit(skb, nlh);
 }
 
+// 接收处理从用户空间过来的rtnetlink消息(在netlink_unicast_kernel函数中被调用)
 static void rtnetlink_rcv(struct sk_buff *skb)
 {
 	rtnl_lock();
@@ -3441,11 +3562,16 @@ static int rtnetlink_event(struct notifier_block *this, unsigned long event, voi
 	return NOTIFY_DONE;
 }
 
+// rtnetlink 设备底层上报控制块(包含了底层上报回调函数)
 static struct notifier_block rtnetlink_dev_notifier = {
 	.notifier_call	= rtnetlink_event,
 };
 
 
+/* 具体的rtnetlink功能初始化(实际就是创建一个NETLINK_ROUTE协议的netlink套接字，并注册到当前网络命名空间)
+ * 
+ * 备注：这里实际的内容跟其他很多模块不一样，其他模块基本都是在proc文件系统中创建相应接口
+ */
 static int __net_init rtnetlink_net_init(struct net *net)
 {
 	struct sock *sk;
@@ -3453,34 +3579,42 @@ static int __net_init rtnetlink_net_init(struct net *net)
 		.groups		= RTNLGRP_MAX,
 		.input		= rtnetlink_rcv,
 		.cb_mutex	= &rtnl_mutex,
-		.flags		= NL_CFG_F_NONROOT_RECV,
+		.flags		= NL_CFG_F_NONROOT_RECV,    // 意味着非超级用户可以绑定到rtnetlink协议的多播组，但不能发送组播
 	};
 
+    // 内核创建一个NETLINK_ROUTE协议的netlink套接字
 	sk = netlink_kernel_create(net, NETLINK_ROUTE, &cfg);
 	if (!sk)
 		return -ENOMEM;
+    // 注册到当前网络命名空间
 	net->rtnl = sk;
 	return 0;
 }
 
+// 注销rtnetlink功能(实际就是从指定网络命名空间中注销一个NETLINK_ROUTE协议的netlink-socket)
 static void __net_exit rtnetlink_net_exit(struct net *net)
 {
 	netlink_kernel_release(net->rtnl);
 	net->rtnl = NULL;
 }
 
+// 定义一个rtnetlink网络操作块(包含rtnetlink网络初始化/结束函数)
 static struct pernet_operations rtnetlink_net_ops = {
 	.init = rtnetlink_net_init,
 	.exit = rtnetlink_net_exit,
 };
 
+// rtnetlink协议初始化(在netlink_proto_init中被调用) 
 void __init rtnetlink_init(void)
 {
+    // 将rtnetlink模块注册到每一个网络命名空间，并且执行了rtnetlink_net_init
 	if (register_pernet_subsys(&rtnetlink_net_ops))
 		panic("rtnetlink_init: cannot initialize rtnetlink\n");
 
+    // 注册网络设备底层上报控制块(包含了底层上报回调函数)
 	register_netdevice_notifier(&rtnetlink_dev_notifier);
 
+    // 注册一部分rtnetlink消息
 	rtnl_register(PF_UNSPEC, RTM_GETLINK, rtnl_getlink,
 		      rtnl_dump_ifinfo, rtnl_calcit);
 	rtnl_register(PF_UNSPEC, RTM_SETLINK, rtnl_setlink, NULL, NULL);

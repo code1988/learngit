@@ -463,9 +463,10 @@ void exit_files(struct task_struct *tsk)
 	}
 }
 
+// 定义了init进程的文件表
 struct files_struct init_files = {
 	.count		= ATOMIC_INIT(1),
-	.fdt		= &init_files.fdtab,
+	.fdt		= &init_files.fdtab,                    // fdt默认指向fdtab
 	.fdtab		= {
 		.max_fds	= NR_OPEN_DEFAULT,
 		.fd		= &init_files.fd_array[0],

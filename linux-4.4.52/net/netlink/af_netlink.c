@@ -1,5 +1,6 @@
 /*
  * NETLINK      Kernel-user communication protocol.
+ * netlink协议核心文件
  *
  * 		Authors:	Alan Cox <alan@lxorguk.ukuu.org.uk>
  * 				Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
@@ -75,22 +76,29 @@ struct listeners {
 	unsigned long		masks[0];
 };
 
-/* state bits */
-#define NETLINK_S_CONGESTED		0x0
+/* state bits 
+ * 用来设置netlink_sock->state
+ * */
+#define NETLINK_S_CONGESTED		0x0     // 拥挤标志
 
-/* flags */
-#define NETLINK_F_KERNEL_SOCKET		0x1
-#define NETLINK_F_RECV_PKTINFO		0x2
+/* flags 
+ * 用来标识netlink套接字的属性
+ * 用于netlink_sock->flags中
+ * */
+#define NETLINK_F_KERNEL_SOCKET		0x1     // 用来标识该netlink套接字是内核套接字
+#define NETLINK_F_RECV_PKTINFO		0x2     // 用来标识该netlink套接字支持接收辅助消息
 #define NETLINK_F_BROADCAST_SEND_ERROR	0x4
 #define NETLINK_F_RECV_NO_ENOBUFS	0x8
 #define NETLINK_F_LISTEN_ALL_NSID	0x10
 #define NETLINK_F_CAP_ACK		0x20
 
+// 判断该netlink套接字是否是内核套接字
 static inline int netlink_is_kernel(struct sock *sk)
 {
 	return nlk_sk(sk)->flags & NETLINK_F_KERNEL_SOCKET;
 }
 
+// 定义一张netlink接口总表，包含MAX_LINKS个元素，每个元素对应一种netlink协议,如NETLINK_ROUTE
 struct netlink_table *nl_table __read_mostly;
 EXPORT_SYMBOL_GPL(nl_table);
 
@@ -276,6 +284,7 @@ static void netlink_deliver_tap_kernel(struct sock *dst, struct sock *src,
 		netlink_deliver_tap(skb);
 }
 
+// 对指定netlink套接字设置缓冲区溢出状态
 static void netlink_overrun(struct sock *sk)
 {
 	struct netlink_sock *nlk = nlk_sk(sk);
@@ -287,19 +296,24 @@ static void netlink_overrun(struct sock *sk)
 			sk->sk_error_report(sk);
 		}
 	}
+    // 递增该netlink套接字的sk_drops计数值
 	atomic_inc(&sk->sk_drops);
 }
 
+// 条件合适的情况下唤醒指定netlink套接字的等待队列中的用户进程
 static void netlink_rcv_wake(struct sock *sk)
 {
 	struct netlink_sock *nlk = nlk_sk(sk);
 
+    // 如果该netlink套接字的接收队列已经为空，则清除该套接字的拥挤标志
 	if (skb_queue_empty(&sk->sk_receive_queue))
 		clear_bit(NETLINK_S_CONGESTED, &nlk->state);
+    // 如果确认拥挤标志已经被清除了，则唤醒等待队列中那些准备将netlink单播消息发送到该netlink套接字接收队列中的用户进程
 	if (!test_bit(NETLINK_S_CONGESTED, &nlk->state))
 		wake_up_interruptible(&nlk->wait);
 }
 
+// 根据内核是否配置了CONFIG_NETLINK_MMAP选项，来决定以下这些函数是否生效
 #ifdef CONFIG_NETLINK_MMAP
 static bool netlink_rx_is_mmaped(struct sock *sk)
 {
@@ -915,15 +929,20 @@ static void netlink_skb_destructor(struct sk_buff *skb)
 		sock_rfree(skb);
 }
 
+/* 设置该携带了netlink消息的skb为哪个netlink套接字所拥有
+ * @skb - 指向一个skb结构
+ * @sk  - 指向将会拥有该skb的sock结构，也就是netlink套接字
+ */
 static void netlink_skb_set_owner_r(struct sk_buff *skb, struct sock *sk)
 {
 	WARN_ON(skb->sk != NULL);
-	skb->sk = sk;
-	skb->destructor = netlink_skb_destructor;
-	atomic_add(skb->truesize, &sk->sk_rmem_alloc);
-	sk_mem_charge(sk, skb->truesize);
+	skb->sk = sk;                                   // 设置该skb属于指定的netlink套接字
+	skb->destructor = netlink_skb_destructor;       // 为该skb注册特定的析构函数
+	atomic_add(skb->truesize, &sk->sk_rmem_alloc);  // 该netlink套接字绑定了一个skb后，势必要增加其接收队列中的已使用空间大小
+	sk_mem_charge(sk, skb->truesize);               // 以及减少发送队列剩余可用空间大小
 }
 
+// netlink sock结构的析构函数
 static void netlink_sock_destruct(struct sock *sk)
 {
 	struct netlink_sock *nlk = nlk_sk(sk);
@@ -1032,6 +1051,7 @@ struct netlink_compare_arg
 #define netlink_compare_arg_len \
 	(offsetof(struct netlink_compare_arg, portid) + sizeof(u32))
 
+// 缺省的net命名空间比较函数，比较net是否相同，从而判断是否属于同一个网络命名空间
 static inline int netlink_compare(struct rhashtable_compare_arg *arg,
 				  const void *ptr)
 {
@@ -1070,12 +1090,14 @@ static int __netlink_insert(struct netlink_table *table, struct sock *sk)
 					    netlink_rhashtable_params);
 }
 
+// 根据protocol和portid查找对应的netlink套接字
 static struct sock *netlink_lookup(struct net *net, int protocol, u32 portid)
 {
 	struct netlink_table *table = &nl_table[protocol];
 	struct sock *sk;
 
 	rcu_read_lock();
+    // 根据portid计算的到对应的hash表项，并根据注册的比较函数遍历该表项，查找匹配节点
 	sk = __netlink_lookup(table, portid, net);
 	if (sk)
 		sock_hold(sk);
@@ -1086,6 +1108,7 @@ static struct sock *netlink_lookup(struct net *net, int protocol, u32 portid)
 
 static const struct proto_ops netlink_ops;
 
+// 更新套接字所属协议类型的监听集合
 static void
 netlink_update_listeners(struct sock *sk)
 {
@@ -1098,8 +1121,10 @@ netlink_update_listeners(struct sock *sk)
 	if (!listeners)
 		return;
 
+    // 以下的for实际应该只循环了1次
 	for (i = 0; i < NLGRPLONGS(tbl->groups); i++) {
 		mask = 0;
+        // 遍历该协议类型下的组播hash链表，收集所有关心的组播消息
 		sk_for_each_bound(sk, &tbl->mc_list) {
 			if (i < NLGRPLONGS(nlk_sk(sk)->ngroups))
 				mask |= nlk_sk(sk)->groups[i];
@@ -1110,6 +1135,8 @@ netlink_update_listeners(struct sock *sk)
 	 * makes sure updates are visible before bind or setsockopt return. */
 }
 
+/* 将netlink套接字添加到nl_table中的相应的hash表中
+ */
 static int netlink_insert(struct sock *sk, u32 portid)
 {
 	struct netlink_table *table = &nl_table[sk->sk_protocol];
@@ -1129,6 +1156,11 @@ static int netlink_insert(struct sock *sk, u32 portid)
 	nlk_sk(sk)->portid = portid;
 	sock_hold(sk);
 
+    /* 来自3.14.38的相关注释:
+     * 首先根据portid计算出将要插入的hash桶头节点
+     * 遍历链表，通过注册的compare函数判断对应net命名空间下是否存在相同portid的netlink套接字
+     * osk有效意味着已经有相同portid的netlink套接字注册在相同的net命名空间，所以不通过
+     */
 	err = __netlink_insert(table, sk);
 	if (err) {
 		/* In case the hashtable backend returns with -EBUSY
@@ -1144,6 +1176,7 @@ static int netlink_insert(struct sock *sk, u32 portid)
 
 	/* We need to ensure that the socket is hashed and visible. */
 	smp_wmb();
+    // 绑定成功后就在这里更新该netlink套接字单播地址
 	nlk_sk(sk)->bound = portid;
 
 err:
@@ -1172,12 +1205,18 @@ static void netlink_remove(struct sock *sk)
 	netlink_table_ungrab();
 }
 
+// 定义了一个所有netlink协议共有的proto结构
 static struct proto netlink_proto = {
 	.name	  = "NETLINK",
 	.owner	  = THIS_MODULE,
 	.obj_size = sizeof(struct netlink_sock),
 };
 
+/* 创建并初始化一个netlink_sock结构(其中包含了sock结构)
+ * 本函数是创建netlink套接字的核心，在2种情况下会被调用到：
+ *          1. 内核主动创建完全属于内核的netlink套接字时
+ *          2. 由用户进程调用socket()系统调用，从而在内核中创建属于用户进程的netlink套接字时
+ */
 static int __netlink_create(struct net *net, struct socket *sock,
 			    struct mutex *cb_mutex, int protocol,
 			    int kern)
@@ -1185,12 +1224,15 @@ static int __netlink_create(struct net *net, struct socket *sock,
 	struct sock *sk;
 	struct netlink_sock *nlk;
 
+    // netlink套接字和socket层netlink协议族的通用操作集合关联
 	sock->ops = &netlink_ops;
 
+    // 分配基于netlink协议的sock结构
 	sk = sk_alloc(net, PF_NETLINK, GFP_KERNEL, &netlink_proto, kern);
 	if (!sk)
 		return -ENOMEM;
 
+    // 初始化sock的发送接收队列、数据缓存、等待队列和互斥锁等
 	sock_init_data(sock, sk);
 
 	nlk = nlk_sk(sk);
@@ -1205,11 +1247,15 @@ static int __netlink_create(struct net *net, struct socket *sock,
 	mutex_init(&nlk->pg_vec_lock);
 #endif
 
-	sk->sk_destruct = netlink_sock_destruct;
+	sk->sk_destruct = netlink_sock_destruct;    // 设置netlink sock结构的析构函数
 	sk->sk_protocol = protocol;
 	return 0;
 }
 
+/* 应用层创建PF_NETLINK类型的套接字时就会在__sock_create中调用到这里
+ * 
+ * 备注：其实本函数只是创建了半个netlink套接字(sock结构)，另一半在__sock_create中创建(socket结构)
+ */
 static int netlink_create(struct net *net, struct socket *sock, int protocol,
 			  int kern)
 {
@@ -1220,14 +1266,18 @@ static int netlink_create(struct net *net, struct socket *sock, int protocol,
 	void (*unbind)(struct net *net, int group);
 	int err = 0;
 
+    // 首先将套接字状态标记为未连接
 	sock->state = SS_UNCONNECTED;
 
+    // netlink接口只支持SOCK_RAW和SOCK_DGRAM这两种套接字类型
 	if (sock->type != SOCK_RAW && sock->type != SOCK_DGRAM)
 		return -ESOCKTNOSUPPORT;
 
+    // 检查具体的协议类型是否有效
 	if (protocol < 0 || protocol >= MAX_LINKS)
 		return -EPROTONOSUPPORT;
 
+    // 以下这个锁区域主要是完成了几个赋值操作
 	netlink_lock_table();
 #ifdef CONFIG_MODULES
 	if (!nl_table[protocol].registered) {
@@ -1236,11 +1286,13 @@ static int netlink_create(struct net *net, struct socket *sock, int protocol,
 		netlink_lock_table();
 	}
 #endif
+    // 检查该协议类型的内核netlink套接字是否已经注册了，只有nl_table中已经注册的协议类型才能继续创建下去
 	if (nl_table[protocol].registered &&
 	    try_module_get(nl_table[protocol].module))
 		module = nl_table[protocol].module;
 	else
 		err = -EPROTONOSUPPORT;
+    // 取出内核netlink创建时注册的私有锁和bind函数，接下来就要用到了
 	cb_mutex = nl_table[protocol].cb_mutex;
 	bind = nl_table[protocol].bind;
 	unbind = nl_table[protocol].unbind;
@@ -1249,6 +1301,10 @@ static int netlink_create(struct net *net, struct socket *sock, int protocol,
 	if (err < 0)
 		goto out;
 
+    /* 创建并初始化一个协议类型相关的sock结构
+     *
+     * 备注：跟内核主动创建netlink套接字时不同的是，创建属于用户进程的netlink套接字似乎不再关心传入的net命名空间
+     */
 	err = __netlink_create(net, sock, cb_mutex, protocol, kern);
 	if (err < 0)
 		goto out_module;
@@ -1257,6 +1313,7 @@ static int netlink_create(struct net *net, struct socket *sock, int protocol,
 	sock_prot_inuse_add(net, &netlink_proto, 1);
 	local_bh_enable();
 
+    // 最后对netlink套接字相关参数进行赋值
 	nlk = nlk_sk(sock->sk);
 	nlk->module = module;
 	nlk->netlink_bind = bind;
@@ -1362,16 +1419,21 @@ static int netlink_release(struct socket *sock)
 	return 0;
 }
 
+// 内核将一个netlink套接字自动绑定到某个单播地址上
 static int netlink_autobind(struct socket *sock)
 {
 	struct sock *sk = sock->sk;
 	struct net *net = sock_net(sk);
 	struct netlink_table *table = &nl_table[sk->sk_protocol];
-	s32 portid = task_tgid_vnr(current);
+	s32 portid = task_tgid_vnr(current);    // 获取当前进程ID
 	int err;
 	s32 rover = -4096;
 	bool ok;
 
+    /* 首先尝试用当前进程ID作为绑定的单播地址；
+     * 如果当前进程ID已经绑过其他的相同协议类型的netlink套接字，则选用rover为基准进行查找，直到找到可用的值
+     * 最后用找到的可用值作为该netlink的单播地址，执行绑定操作
+     */
 retry:
 	cond_resched();
 	rcu_read_lock();
@@ -1388,6 +1450,7 @@ retry:
 		goto retry;
 	}
 
+    // 根据找到的portid完成绑定
 	err = netlink_insert(sk, portid);
 	if (err == -EADDRINUSE)
 		goto retry;
@@ -1466,24 +1529,37 @@ bool netlink_net_capable(const struct sk_buff *skb, int cap)
 }
 EXPORT_SYMBOL(netlink_net_capable);
 
+/* 判断该netlink套接字所属的具体协议类型是否具有flag标识的某项权限
+ * 
+ * 备注：对于超级用户，flag标识的权限都开放；对于非超级用户，则只有已经被设置为允许的操作才开放
+ */
 static inline int netlink_allowed(const struct socket *sock, unsigned int flag)
 {
 	return (nl_table[sock->sk->sk_protocol].flags & flag) ||
 		ns_capable(sock_net(sock->sk)->user_ns, CAP_NET_ADMIN);
 }
 
+// 将指定netlink套接字加入所属netlink协议类型的多播hash链表
 static void
 netlink_update_subscriptions(struct sock *sk, unsigned int subscriptions)
 {
 	struct netlink_sock *nlk = nlk_sk(sk);
 
 	if (nlk->subscriptions && !subscriptions)
+        /* 如果该netlink套接字有阅订过组播消息，并且当前传入组播数量为0,
+         * 意味不再阅订组播，所以需要将该netlink套接字从组播hash桶中删除
+         */
 		__sk_del_bind_node(sk);
 	else if (!nlk->subscriptions && subscriptions)
+        /* 如果该netlink套接字第一次阅订组播消息，
+         * 那么将该netlink套接字作为一个普通节点插入头节点list对应的hash桶中
+         */
 		sk_add_bind_node(sk, &nl_table[sk->sk_protocol].mc_list);
+    // 更新该netlink套接字阅订的组播数量
 	nlk->subscriptions = subscriptions;
 }
 
+// 为指定套接字分配组播空间
 static int netlink_realloc_groups(struct sock *sk)
 {
 	struct netlink_sock *nlk = nlk_sk(sk);
@@ -1510,6 +1586,7 @@ static int netlink_realloc_groups(struct sock *sk)
 	memset((char *)new_groups + NLGRPSZ(nlk->ngroups), 0,
 	       NLGRPSZ(groups) - NLGRPSZ(nlk->ngroups));
 
+    // 记录下分配的组播空间信息
 	nlk->groups = new_groups;
 	nlk->ngroups = groups;
  out_unlock:
@@ -1531,6 +1608,11 @@ static void netlink_undo_bind(int group, long unsigned int groups,
 			nlk->netlink_unbind(sock_net(sk), undo + 1);
 }
 
+/* 用户态对netlink接口的套接字执行系统调用bind()时就会进入到这里
+ * @sock    - 要绑定的socket结构，也就是套接字
+ * @addr    - 要绑定的套接字地址
+ * @addr_len- 套接字地址长度
+ */
 static int netlink_bind(struct socket *sock, struct sockaddr *addr,
 			int addr_len)
 {
@@ -1542,21 +1624,30 @@ static int netlink_bind(struct socket *sock, struct sockaddr *addr,
 	long unsigned int groups = nladdr->nl_groups;
 	bool bound;
 
+    // 首先是入参合法性检测
 	if (addr_len < sizeof(struct sockaddr_nl))
 		return -EINVAL;
 
 	if (nladdr->nl_family != AF_NETLINK)
 		return -EINVAL;
 
-	/* Only superuser is allowed to listen multicasts */
+	/* Only superuser is allowed to listen multicasts 
+     * 如果传入的套接字地址中指定了要监听的组播，需要判断该套接字是否具有监听组播的权限
+     * 备注：上面的英文描述有问题，实际不只是root用户
+     * */
 	if (groups) {
 		if (!netlink_allowed(sock, NL_CFG_F_NONROOT_RECV))
 			return -EPERM;
+        // 为该套接字分配组播空间
 		err = netlink_realloc_groups(sk);
 		if (err)
 			return err;
 	}
 
+     /* 需要注意的一点就是，如果netlink套接字已经绑定在一个地址上，就不能再绑到一个新的地址.
+     *      对于尚未绑定的netlink套接字，这时候如果传入的套接字地址中指定了要绑定的单播地址就用该地址绑定;
+     *      如果没有指定就自动绑定一个
+     */
 	bound = nlk->bound;
 	if (bound) {
 		/* Ensure nlk->portid is up-to-date. */
@@ -1566,6 +1657,7 @@ static int netlink_bind(struct socket *sock, struct sockaddr *addr,
 			return -EINVAL;
 	}
 
+    // 如果具体的netlink协议类型注册了私有的bind函数，并且用户态指定了要绑定的组播地址，则在这里调用该私有的bind函数
 	if (nlk->netlink_bind && groups) {
 		int group;
 
@@ -1584,6 +1676,7 @@ static int netlink_bind(struct socket *sock, struct sockaddr *addr,
 	 * using any of the bound attributes.
 	 */
 	if (!bound) {
+        // 绑定netlink套接字的过程，其实就是将其加入nl_table的过程
 		err = nladdr->nl_pid ?
 			netlink_insert(sk, nladdr->nl_pid) :
 			netlink_autobind(sock);
@@ -1593,14 +1686,19 @@ static int netlink_bind(struct socket *sock, struct sockaddr *addr,
 		}
 	}
 
+    // 如果用户态没有指定组播地址，并且没有分配组播的内存，那么bind工作就到此结束了
 	if (!groups && (nlk->groups == NULL || !(u32)nlk->groups[0]))
 		return 0;
 
+    // 程序运行到这里意味着用户态指定了需要绑定的组播地址
 	netlink_table_grab();
+    // 将指定套接字加入所属netlink协议类型的多播hash链表
 	netlink_update_subscriptions(sk, nlk->subscriptions +
 					 hweight32(groups) -
 					 hweight32(nlk->groups[0]));
+    // 保存组播地址mask值到开头申请的组播空间
 	nlk->groups[0] = (nlk->groups[0] & ~0xffffffffUL) | groups;
+    // 更新套接字所属协议类型的监听集合
 	netlink_update_listeners(sk);
 	netlink_table_ungrab();
 
@@ -1667,16 +1765,24 @@ static int netlink_getname(struct socket *sock, struct sockaddr *addr,
 	return 0;
 }
 
+/* 根据源sock结构和目的单播地址，得到目的sock结构
+ *
+ * @ssk         - 源sock结构
+ * @portid      - 目的单播地址
+ */
 static struct sock *netlink_getsockbyportid(struct sock *ssk, u32 portid)
 {
 	struct sock *sock;
 	struct netlink_sock *nlk;
 
+    // 根据protocol和portid查找对应的netlink套接字，也就是目的netlink套接字
 	sock = netlink_lookup(sock_net(ssk), ssk->sk_protocol, portid);
 	if (!sock)
 		return ERR_PTR(-ECONNREFUSED);
 
-	/* Don't bother queuing skb if kernel socket has no input function */
+	/* Don't bother queuing skb if kernel socket has no input function 
+     * 对于已经处于connect状态的目的netlink套接字，还需要确认两端是否匹配
+     * */
 	nlk = nlk_sk(sock);
 	if (sock->sk_state == NETLINK_CONNECTED &&
 	    nlk->dst_portid != nlk_sk(ssk)->portid) {
@@ -1702,6 +1808,12 @@ struct sock *netlink_getsockbyfilp(struct file *filp)
 	return sock;
 }
 
+/* 分配一个用于承载netlink消息的skb
+ * @size    - 要分配的skb数据缓冲区大小
+ * @broadcast   - 目的组播地址
+ *
+ * 备注：跟netlink_alloc_skb的区别在于本函数用于分配大尺寸skb数据缓冲区
+ */
 static struct sk_buff *netlink_alloc_large_skb(unsigned int size,
 					       int broadcast)
 {
@@ -1729,6 +1841,12 @@ static struct sk_buff *netlink_alloc_large_skb(unsigned int size,
 
 /*
  * Attach a skb to a netlink socket.
+ * 将一个指定skb绑定到一个指定的属于用户进程的netlink套接字上
+ * @sk      - 指向目的sock结构
+ * @skb     - 属于发送方的承载了netlink消息的skb
+ * @timeo   - 指向一个超时时间
+ * @ssk     - 指向源sock结构
+ *
  * The caller must hold a reference to the destination socket. On error, the
  * reference is dropped. The skb is not send to the destination, just all
  * all error checks are performed and memory in the queue is reserved.
@@ -1742,13 +1860,23 @@ int netlink_attachskb(struct sock *sk, struct sk_buff *skb,
 {
 	struct netlink_sock *nlk;
 
+    // 获取目的netlink套接字，也就是目的用户进程netlink套接字
 	nlk = nlk_sk(sk);
 
+    /* 在没有内核使能CONFIG_NETLINK_MMAP配置选项时，
+     * 如果目的netlink套接字上已经接收尚未处理的数据大小超过了接收缓冲区大小，或者目的netlink套接字被设置了拥挤标志，
+     * 意味着该sbk不能立即被目的netlink套接字接收，需要加入等待队列
+     */
 	if ((atomic_read(&sk->sk_rmem_alloc) > sk->sk_rcvbuf ||
 	     test_bit(NETLINK_S_CONGESTED, &nlk->state)) &&
 	    !netlink_skb_is_mmaped(skb)) {
+        // 申请一个等待队列
 		DECLARE_WAITQUEUE(wait, current);
+        // 如果传入的超时时间为0,意味着非阻塞调用，则丢弃这条netlink消息，并返回EAGAIN
 		if (!*timeo) {
+            /* 如果该netlink消息对应的源sock结构不存在，或者该netlink消息来自kernel，
+             * 则对目的netlink套接字设置缓冲区溢出状态
+             */
 			if (!ssk || netlink_is_kernel(ssk))
 				netlink_overrun(sk);
 			sock_put(sk);
@@ -1756,15 +1884,22 @@ int netlink_attachskb(struct sock *sk, struct sk_buff *skb,
 			return -EAGAIN;
 		}
 
+        // 程序运行到这里意味着是阻塞调用
+        // 改变当前进程状态为可中断
 		__set_current_state(TASK_INTERRUPTIBLE);
+        // 将目的netlink套接字加入等待队列（同时意味着进入睡眠，猜测）
 		add_wait_queue(&nlk->wait, &wait);
 
+        // 程序到这里意味着被唤醒了(猜测)
+        // 如果接收条件还是不满足，则要计算剩余的超时时间
 		if ((atomic_read(&sk->sk_rmem_alloc) > sk->sk_rcvbuf ||
 		     test_bit(NETLINK_S_CONGESTED, &nlk->state)) &&
 		    !sock_flag(sk, SOCK_DEAD))
 			*timeo = schedule_timeout(*timeo);
 
+        // 改变当前进程状态为运行
 		__set_current_state(TASK_RUNNING);
+        // 将目的netlink套接字从等待队列中删除
 		remove_wait_queue(&nlk->wait, &wait);
 		sock_put(sk);
 
@@ -1772,14 +1907,27 @@ int netlink_attachskb(struct sock *sk, struct sk_buff *skb,
 			kfree_skb(skb);
 			return sock_intr_errno(*timeo);
 		}
+        // 返回1,意味着还将要再次调用本函数
 		return 1;
 	}
+    // 设置该skb的所有者是目的用户进程netlink套接字，这里才是真正的绑定操作，上面都是前奏
 	netlink_skb_set_owner_r(skb, sk);
 	return 0;
 }
 
+/* 将指定skb发送到指定用户进程netlink套接字，换句话说，实际也就是将该skb放入了该套接字的接收队列中
+ * @sk  - 指向一个用户进程netlink套接字
+ * @skb - 指向一个承载了netlink消息的skb
+ *
+ * 备注：该skb调用本函数前已经绑定到该用户进程netlink套接字
+ *       之所以说组播消息不支持发往内核的根本原因就在本函数中：
+ *              本函数最后通过调用sk_data_ready钩子函数来通知所在套接字接收组播消息，
+ *              而内核netlink套接字实际屏蔽了这个钩子函数，也就意味着永远无法接收到组播消息
+ */
+static int __netlink_sendskb(struct sock *sk, struct sk_buff *skb)
 static int __netlink_sendskb(struct sock *sk, struct sk_buff *skb)
 {
+    // 这里可以知道，成功时的返回值就是skb中承载的netlink消息长度 
 	int len = skb->len;
 
 	netlink_deliver_tap(skb);
@@ -1791,11 +1939,19 @@ static int __netlink_sendskb(struct sock *sk, struct sk_buff *skb)
 		netlink_ring_set_copied(sk, skb);
 	else
 #endif /* CONFIG_NETLINK_MMAP */
+        // 将skb放入该netlink套接字接收队列末尾
 		skb_queue_tail(&sk->sk_receive_queue, skb);
+    // 执行该netlink套接字的sk_data_ready回调，用于通知其有数据接收到
 	sk->sk_data_ready(sk);
 	return len;
 }
 
+/* 将指定skb发送到目的用户进程netlink套接字
+ * @sk  - 目的netlink套接字
+ * @skb - 指向一个承载了netlink消息的skb
+ *
+ * 备注：该skb调用本函数前已经绑定到该用户进程netlink套接字
+ */
 int netlink_sendskb(struct sock *sk, struct sk_buff *skb)
 {
 	int len = __netlink_sendskb(sk, skb);
@@ -1810,6 +1966,7 @@ void netlink_detachskb(struct sock *sk, struct sk_buff *skb)
 	sock_put(sk);
 }
 
+// 重新调整skb数据区大小
 static struct sk_buff *netlink_trim(struct sk_buff *skb, gfp_t allocation)
 {
 	int delta;
@@ -1819,9 +1976,11 @@ static struct sk_buff *netlink_trim(struct sk_buff *skb, gfp_t allocation)
 		return skb;
 
 	delta = skb->end - skb->tail;
+    // 如果原本skb的数据区是在vmalloc中，或者数据区的剩余部分很小，就不做处理直接返回了
 	if (is_vmalloc_addr(skb->head) || delta * 2 < skb->truesize)
 		return skb;
 
+    // 如果该skb的数据包缓冲区被其他skb共用，这里就要clone出一个新的skb结构
 	if (skb_shared(skb)) {
 		struct sk_buff *nskb = skb_clone(skb, allocation);
 		if (!nskb)
@@ -1830,33 +1989,64 @@ static struct sk_buff *netlink_trim(struct sk_buff *skb, gfp_t allocation)
 		skb = nskb;
 	}
 
+    // 重新调整该skb的数据包缓冲区的tailroom大小
 	if (!pskb_expand_head(skb, 0, -delta, allocation))
 		skb->truesize -= delta;
 
 	return skb;
 }
 
+/* 将单播netlink消息发往内核
+ *
+ * @sk  - 目的sock结构
+ * @skb - 属于发送方的承载了netlink消息的skb
+ * @ssk - 源sock结构
+ *
+ * 备注：本函数只会在一种情况下被调用到：
+ *                  用户进程   --单播--> kernel 
+ *       skb的所有者在本函数中发生了变化
+ */
 static int netlink_unicast_kernel(struct sock *sk, struct sk_buff *skb,
 				  struct sock *ssk)
 {
 	int ret;
+    // 获取目的netlink套接字，也就是内核netlink套接字
 	struct netlink_sock *nlk = nlk_sk(sk);
 
 	ret = -ECONNREFUSED;
+    // 检查内核netlink套接字是否注册了netlink_rcv回调(就是各个协议在创建内核netlink套接字时通常会传入的input函数)
 	if (nlk->netlink_rcv != NULL) {
 		ret = skb->len;
+        // 设置该skb的所有者是内核的netlink套接字
 		netlink_skb_set_owner_r(skb, sk);
+        // 保存该netlink消息的源sock结构
 		NETLINK_CB(skb).sk = ssk;
+        // netlink tap机制暂略
 		netlink_deliver_tap_kernel(sk, ssk, skb);
+        // 调用内核netlink套接字的协议类型相关的netlink_rcv钩子来处理收到的消息
+        // 到这里，意味着发往内核的netlink消息已经被成功接收
 		nlk->netlink_rcv(skb);
 		consume_skb(skb);
 	} else {
+        // 如果指定的内核netlink套接字没有注册netlink_rcv回调，就直接丢弃所有收到的netlink消息
 		kfree_skb(skb);
 	}
 	sock_put(sk);
 	return ret;
 }
 
+/* 发送netlink单播消息
+ *
+ * @ssk         - 源sock结构
+ * @skb         - 属于发送方的承载了netlink消息的skb
+ * @portid      - 目的单播地址
+ * @nonblock    - 1：非阻塞调用，2：阻塞调用
+ *
+ * 备注: 以下3种情况都会调用到本函数：
+ *          [1]. kernel     --单播--> 用户进程
+ *          [2]. 用户进程   --单播--> kernel
+ *          [3]. 用户进程a  --单播--> 用户进程b
+ */
 int netlink_unicast(struct sock *ssk, struct sk_buff *skb,
 		    u32 portid, int nonblock)
 {
@@ -1864,18 +2054,24 @@ int netlink_unicast(struct sock *ssk, struct sk_buff *skb,
 	int err;
 	long timeo;
 
+    // 重新调整skb数据区大小
 	skb = netlink_trim(skb, gfp_any());
 
+    // 计算发送超时时间
 	timeo = sock_sndtimeo(ssk, nonblock);
 retry:
+    // 根据源sock结构和目的单播地址，得到目的sock结构
 	sk = netlink_getsockbyportid(ssk, portid);
 	if (IS_ERR(sk)) {
 		kfree_skb(skb);
 		return PTR_ERR(sk);
 	}
+    // 如果该目的netlink套接字属于内核，则进入第 [2] 种情况下的分支
 	if (netlink_is_kernel(sk))
 		return netlink_unicast_kernel(sk, skb, ssk);
 
+    // 程序运行到这里，意味着以下属于第 [1]/[3] 种情况下的分支
+    // 对于发往用户进程的单播消息都要调用BPF过滤
 	if (sk_filter(sk, skb)) {
 		err = skb->len;
 		kfree_skb(skb);
@@ -1883,16 +2079,27 @@ retry:
 		return err;
 	}
 
+    // 将该skb绑定到用户进程netlink套接字上，如果成功，skb的所有者也从这里开始变更为目的用户进程netlink套接字
 	err = netlink_attachskb(sk, skb, &timeo, ssk);
+    // 如果返回值是1，意味着要重新尝试绑定操作
 	if (err == 1)
 		goto retry;
 	if (err)
 		return err;
 
+    // 将该skb发送到目的用户进程netlink套接字
 	return netlink_sendskb(sk, skb);
 }
 EXPORT_SYMBOL(netlink_unicast);
 
+/* 分配一个用于承载netlink消息的skb结构
+ *
+ * @ssk     - netlink消息的源sock结构
+ * @size    - 将要创建的skb数据缓冲区大小
+ * @dst_portid  - netlink消息的目的单播地址
+ *
+ * 备注：跟netlink_alloc_large_skb的区别在于本函数用于小尺寸skb数据缓冲区(猜测)
+ */
 struct sk_buff *__netlink_alloc_skb(struct sock *ssk, unsigned int size,
 				    unsigned int ldiff, u32 dst_portid,
 				    gfp_t gfp_mask)
@@ -1904,6 +2111,7 @@ struct sk_buff *__netlink_alloc_skb(struct sock *ssk, unsigned int size,
 	struct netlink_ring *ring;
 	struct nl_mmap_hdr *hdr;
 
+    // 根据源sock结构和目的单播地址，得到目的sock结构
 	sk = netlink_getsockbyportid(ssk, dst_portid);
 	if (IS_ERR(sk))
 		goto out;
@@ -1985,47 +2193,70 @@ int netlink_has_listeners(struct sock *sk, unsigned int group)
 }
 EXPORT_SYMBOL_GPL(netlink_has_listeners);
 
+/* 将携带了netlink组播消息的skb发送到指定目的用户进程netlink套接字
+ * @返回值      -1  :套接字接收条件不满足
+ *              0   :netlink组播消息发送成功，套接字已经接收但尚未处理数据长度小于等于其接收缓冲的1/2 
+ *              1   :netlink组播消息发送成功，套接字已经接收但尚未处理数据长度大于其接收缓冲的1/2(这种情况似乎意味着套接字处于拥挤状态)
+ *
+ * 备注：到本函数这里，已经确定了传入的netlink套接字跟组播消息匹配正确；
+ *       netlink组播消息不支持阻塞
+ */
 static int netlink_broadcast_deliver(struct sock *sk, struct sk_buff *skb)
 {
 	struct netlink_sock *nlk = nlk_sk(sk);
 
+    // 判断该netlink套接字是否满足接收条件
 	if (atomic_read(&sk->sk_rmem_alloc) <= sk->sk_rcvbuf &&
 	    !test_bit(NETLINK_S_CONGESTED, &nlk->state)) {
+        // 如果满足接收条件，则设置skb的所有者是该netlink套接字
 		netlink_skb_set_owner_r(skb, sk);
+        // 将skb发送到该netlink套接字,实际也就是将该skb放入了该套接字的接收队列中
 		__netlink_sendskb(sk, skb);
+        // 这里最后判断该netlink套接字的已经接收尚未处理数据长度是否大于其接收缓冲的1/2
 		return atomic_read(&sk->sk_rmem_alloc) > (sk->sk_rcvbuf >> 1);
 	}
+    // 程序运行到这里意味着接收条件不满足
 	return -1;
 }
 
+// 定义了一条netlink组播消息的管理块
 struct netlink_broadcast_data {
-	struct sock *exclude_sk;
-	struct net *net;
-	u32 portid;
-	u32 group;
-	int failure;
-	int delivery_failure;
-	int congested;
-	int delivered;
-	gfp_t allocation;
-	struct sk_buff *skb, *skb2;
+	struct sock *exclude_sk;    // 指向消息的源sock
+	struct net *net;            // 指向消息所在的net命名空间
+	u32 portid;                 // 记录了消息的目的单播地址
+	u32 group;                  // 记录了消息的目的组播地址
+	int failure;                // 传送失败置1
+	int delivery_failure;       // 传送失败置1
+	int congested;              // 标示了目的套接字是否处于拥挤状态
+	int delivered;              // 传送成功置1
+	gfp_t allocation;                                                        
+	struct sk_buff *skb, *skb2; // @skb - 指向一个承载了netlink组播消息的skb
 	int (*tx_filter)(struct sock *dsk, struct sk_buff *skb, void *data);
 	void *tx_data;
 };
 
+/* 尝试向指定用户进程netlink套接字发送组播消息
+ * @sk  - 指向一个sock结构，对应一个用户进程netlink套接字
+ * @p   - 指向一个netlink组播消息的管理块
+ *
+ * 备注：传入的这个netlink套接字跟组播消息属于同一种netlink协议类型，并且这个套接字开启了组播阅订，除了这些，其他信息(比如阅订了具体哪些组播)都是不确定的
+ */
 static void do_one_broadcast(struct sock *sk,
 				    struct netlink_broadcast_data *p)
 {
 	struct netlink_sock *nlk = nlk_sk(sk);
 	int val;
 
+    // 如果源sock和目的sock是同一个则直接返回
 	if (p->exclude_sk == sk)
 		return;
 
+    // 如果目的单播地址就是该netlink套接字，或者目的组播地址超出了该netlink套接字的上限，或者该netlink套接字没有阅订这条组播消息，都直接返回
 	if (nlk->portid == p->portid || p->group - 1 >= nlk->ngroups ||
 	    !test_bit(p->group - 1, nlk->groups))
 		return;
 
+    // 如果两者不属于同一个net命名空间，则直接返回
 	if (!net_eq(sock_net(sk), p->net)) {
 		if (!(nlk->flags & NETLINK_F_LISTEN_ALL_NSID))
 			return;
@@ -2038,12 +2269,14 @@ static void do_one_broadcast(struct sock *sk,
 			return;
 	}
 
+    // 如果netlink组播消息的管理块携带了failure标志, 则对该netlink套接字设置缓冲区溢出状态
 	if (p->failure) {
 		netlink_overrun(sk);
 		return;
 	}
 
 	sock_hold(sk);
+    // 设置skb2，其内容来自skb
 	if (p->skb2 == NULL) {
 		if (skb_shared(p->skb)) {
 			p->skb2 = skb_clone(p->skb, p->allocation);
@@ -2057,6 +2290,7 @@ static void do_one_broadcast(struct sock *sk,
 		}
 	}
 	if (p->skb2 == NULL) {
+        // 到这里如果skb2还是NULL，意味着上一步中clone失败
 		netlink_overrun(sk);
 		/* Clone failed. Notify ALL listeners. */
 		p->failure = 1;
@@ -2065,40 +2299,54 @@ static void do_one_broadcast(struct sock *sk,
 		goto out;
 	}
 	if (p->tx_filter && p->tx_filter(sk, p->skb2, p->tx_data)) {
+        // 如果传入了发送过滤器，但是过滤不通过，释放skb2
 		kfree_skb(p->skb2);
 		p->skb2 = NULL;
 		goto out;
 	}
 	if (sk_filter(sk, p->skb2)) {
+        // 如果BPF过滤不通过，释放skb2
 		kfree_skb(p->skb2);
 		p->skb2 = NULL;
 		goto out;
 	}
 	NETLINK_CB(p->skb2).nsid = peernet2id(sock_net(sk), p->net);
 	NETLINK_CB(p->skb2).nsid_is_set = true;
+    // 将承载了组播消息的skb发送到该用户进程netlink套接字
 	val = netlink_broadcast_deliver(sk, p->skb2);
 	if (val < 0) {
 		netlink_overrun(sk);
 		if (nlk->flags & NETLINK_F_BROADCAST_SEND_ERROR)
 			p->delivery_failure = 1;
 	} else {
+        // 发送成功最终会进入这里
 		p->congested |= val;
 		p->delivered = 1;
-		p->skb2 = NULL;
+		p->skb2 = NULL;     // 这里没有释放skb2，而是在上层函数进行释放，原因是因为上层遍历时可能要反复进入本函数，所以skb2要被反复用到
 	}
 out:
 	sock_put(sk);
 }
 
+/* 发送netlink组播消息
+ * @ssk         - 源sock结构
+ * @skb         - 属于发送方的承载了netlink消息的skb
+ * @portid      - 目的单播地址
+ * @group       - 目的组播地址
+ * @filter      - 指向一个过滤器
+ * @filter_data - 指向一个传递给过滤器的参数
+ */
 int netlink_broadcast_filtered(struct sock *ssk, struct sk_buff *skb, u32 portid,
 	u32 group, gfp_t allocation,
 	int (*filter)(struct sock *dsk, struct sk_buff *skb, void *data),
 	void *filter_data)
 {
+    // 获取源sock所在net命名空间
 	struct net *net = sock_net(ssk);
 	struct netlink_broadcast_data info;
 	struct sock *sk;
 
+    // 重新调整skb数据区大小
 	skb = netlink_trim(skb, allocation);
 
 	info.exclude_sk = ssk;
@@ -2119,19 +2367,25 @@ int netlink_broadcast_filtered(struct sock *ssk, struct sk_buff *skb, u32 portid
 
 	netlink_lock_table();
 
+    // 遍历该netlink套接字所在协议类型中所有阅订了组播功能的套接字，然后尝试向其发送该组播消息
 	sk_for_each_bound(sk, &nl_table[ssk->sk_protocol].mc_list)
 		do_one_broadcast(sk, &info);
 
+    // 至此，netlink组播消息已经发送完毕
+    // 释放skb结构
 	consume_skb(skb);
 
 	netlink_unlock_table();
 
+    // 发送失败处理
 	if (info.delivery_failure) {
 		kfree_skb(info.skb2);
 		return -ENOBUFS;
 	}
+    // 释放skb2结构
 	consume_skb(info.skb2);
 
+    // 发送成功处理
 	if (info.delivered) {
 		if (info.congested && gfpflags_allow_blocking(allocation))
 			yield();
@@ -2141,6 +2395,16 @@ int netlink_broadcast_filtered(struct sock *ssk, struct sk_buff *skb, u32 portid
 }
 EXPORT_SYMBOL(netlink_broadcast_filtered);
 
+/* 发送netlink组播消息(显然这只是个封装)
+ * @ssk         - 指向源sock结构
+ * @skb         - 属于发送方的承载了netlink消息的skb
+ * @portid      - 目的单播地址(?)
+ * @group       - 目的组播地址
+ *
+ * 备注: 以下2种情况都会调用到本函数：
+ *          [1]. 用户进程   --组播--> 用户进程
+ *          [2]. kernel     --组播--> 用户进程
+ */
 int netlink_broadcast(struct sock *ssk, struct sk_buff *skb, u32 portid,
 		      u32 group, gfp_t allocation)
 {
@@ -2422,6 +2686,7 @@ static int netlink_getsockopt(struct socket *sock, int level, int optname,
 	return err;
 }
 
+// 填充netlink辅助消息
 static void netlink_cmsg_recv_pktinfo(struct msghdr *msg, struct sk_buff *skb)
 {
 	struct nl_pktinfo info;
@@ -2440,11 +2705,16 @@ static void netlink_cmsg_listen_all_nsid(struct sock *sk, struct msghdr *msg,
 		 &NETLINK_CB(skb).nsid);
 }
 
+/* 用户态对netlink接口的套接字执行系统调用sendmsg()时就会进入到这里
+ * @sock    - 指向用户进程的netlink套接字，也就是发送方的
+ * @msg     - 承载了发送方传递的netlink消息
+ * @len     - netlink消息长度
+ */
 static int netlink_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 {
 	struct sock *sk = sock->sk;
 	struct netlink_sock *nlk = nlk_sk(sk);
-	DECLARE_SOCKADDR(struct sockaddr_nl *, addr, msg->msg_name);
+	DECLARE_SOCKADDR(struct sockaddr_nl *, addr, msg->msg_name);    // 显然，这里定义的addr指向netlink消息的目的地址
 	u32 dst_portid;
 	u32 dst_group;
 	struct sk_buff *skb;
@@ -2452,6 +2722,7 @@ static int netlink_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 	struct scm_cookie scm;
 	u32 netlink_skb_flags = 0;
 
+    // netlink消息不支持传输带外数据
 	if (msg->msg_flags&MSG_OOB)
 		return -EOPNOTSUPP;
 
@@ -2461,20 +2732,24 @@ static int netlink_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 
 	if (msg->msg_namelen) {
 		err = -EINVAL;
+        // 如果用户进程指定了目的地址，则对其进行合法性检测，然后从中获取单播地址和组播地址
 		if (addr->nl_family != AF_NETLINK)
 			goto out;
 		dst_portid = addr->nl_pid;
 		dst_group = ffs(addr->nl_groups);
 		err =  -EPERM;
+        // 如果有设置目的组播地址，或者目的单播地址不是发往kernel，就需要检查具体的netlink协议是否支持
 		if ((dst_group || dst_portid) &&
 		    !netlink_allowed(sock, NL_CFG_F_NONROOT_SEND))
 			goto out;
 		netlink_skb_flags |= NETLINK_SKB_DST;
 	} else {
+        // 如果用户进程没有指定目的地址，则使用该netlink套接字默认的(缺省都是0,可以通过connect系统调用指定)
 		dst_portid = nlk->dst_portid;
 		dst_group = nlk->dst_group;
 	}
 
+    // 如果该netlink套接字还没有被绑定过，首先执行动态绑定
 	if (!nlk->bound) {
 		err = netlink_autobind(sock);
 		if (err)
@@ -2486,6 +2761,7 @@ static int netlink_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 
 	/* It's a really convoluted way for userland to ask for mmaped
 	 * sendmsg(), but that's what we've got...
+     * 以下这部分只有当内核配置了CONFIG_NETLINK_MMAP选项才生效
 	 */
 	if (netlink_tx_is_mmaped(sk) &&
 	    iter_is_iovec(&msg->msg_iter) &&
@@ -2496,35 +2772,43 @@ static int netlink_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 		goto out;
 	}
 
+    // 检查需要发送的数据长度是否合法
 	err = -EMSGSIZE;
 	if (len > sk->sk_sndbuf - 32)
 		goto out;
+    // 分配skb结构空间
 	err = -ENOBUFS;
 	skb = netlink_alloc_large_skb(len, dst_group);
 	if (skb == NULL)
 		goto out;
 
+    // 初始化这个skb中的cb字段
 	NETLINK_CB(skb).portid	= nlk->portid;
 	NETLINK_CB(skb).dst_group = dst_group;
 	NETLINK_CB(skb).creds	= scm.creds;
 	NETLINK_CB(skb).flags	= netlink_skb_flags;
 
+    // 将数据从msg_iov拷贝到skb中
 	err = -EFAULT;
 	if (memcpy_from_msg(skb_put(skb, len), msg, len)) {
 		kfree_skb(skb);
 		goto out;
 	}
 
+    // 执行LSM模块，略过
 	err = security_netlink_send(sk, skb);
 	if (err) {
 		kfree_skb(skb);
 		goto out;
 	}
 
+    // 至此，netlink消息已经被放入新创建的sbk中，接下来，内核根据单播还是组播消息，执行了不同的发送流程
+    // 发送netlink组播消息
 	if (dst_group) {
 		atomic_inc(&skb->users);
 		netlink_broadcast(sk, skb, dst_portid, dst_group, GFP_KERNEL);
 	}
+    // 发送netlink单播消息
 	err = netlink_unicast(sk, skb, dst_portid, msg->msg_flags&MSG_DONTWAIT);
 
 out:
@@ -2532,6 +2816,12 @@ out:
 	return err;
 }
 
+/* 用户态对netlink接口的套接字执行系统调用recvmsg()时就会进入到这里
+ * @sock    - 指向用户进程的netlink套接字，也就是接收方的
+ * @msg     - 用于存放接收到的netlink消息
+ * @len     - 用户空间支持的netlink消息接收长度上限
+ * @flags   - 跟本次接收操作有关的标志位集合(主要来源于用户空间)
+ */
 static int netlink_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
 			   int flags)
 {
@@ -2543,15 +2833,18 @@ static int netlink_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
 	struct sk_buff *skb, *data_skb;
 	int err, ret;
 
+    // netlink消息不支持接收带外数据
 	if (flags&MSG_OOB)
 		return -EOPNOTSUPP;
 
 	copied = 0;
 
+    // 从套接字的接收队列中获取一个skb
 	skb = skb_recv_datagram(sk, flags, noblock, &err);
 	if (skb == NULL)
 		goto out;
 
+    // 程序运行到这里意味着已经获取到一个skb
 	data_skb = skb;
 
 #ifdef CONFIG_COMPAT_NETLINK_MESSAGES
@@ -2576,15 +2869,19 @@ static int netlink_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
 	nlk->max_recvmsg_len = min_t(size_t, nlk->max_recvmsg_len,
 				     SKB_WITH_OVERHEAD(32768));
 
+    // 如果收到的skb中承载的netlink消息长度大于用户空间接收缓存的最大长度，则设置MSG_TRUNC标志，并将实际接收长度改为接收缓存的长度
 	copied = data_skb->len;
 	if (len < copied) {
 		msg->msg_flags |= MSG_TRUNC;
 		copied = len;
 	}
 
+    // 计算transport layer相对缓冲区头部的偏移量(目前不知道干嘛用)
 	skb_reset_transport_header(data_skb);
+    // 将skb中的数据拷贝到iovec结构的数据缓冲区
 	err = skb_copy_datagram_msg(data_skb, 0, msg, copied);
 
+    // 填充返回给用户进程的地址信息
 	if (msg->msg_name) {
 		DECLARE_SOCKADDR(struct sockaddr_nl *, addr, msg->msg_name);
 		addr->nl_family = AF_NETLINK;
@@ -2594,6 +2891,7 @@ static int netlink_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
 		msg->msg_namelen = sizeof(*addr);
 	}
 
+    // 处理netlink辅助消息
 	if (nlk->flags & NETLINK_F_RECV_PKTINFO)
 		netlink_cmsg_recv_pktinfo(msg, skb);
 	if (nlk->flags & NETLINK_F_LISTEN_ALL_NSID)
@@ -2601,11 +2899,14 @@ static int netlink_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
 
 	memset(&scm, 0, sizeof(scm));
 	scm.creds = *NETLINK_CREDS(skb);
+    // 如果用户进程recvmsg传入了MSG_TRUNC标志，这里重新将返回的长度值改为skb实际收到的数据长度
 	if (flags & MSG_TRUNC)
 		copied = data_skb->len;
 
+    // 释放承载了该netlink消息的skb
 	skb_free_datagram(sk, skb);
 
+    // 如果有需要还要执行dump操作(执行dump操作的通常是内核，用户进程执行dump操作需要进行确认)
 	if (nlk->cb_running &&
 	    atomic_read(&sk->sk_rmem_alloc) <= sk->sk_rcvbuf / 2) {
 		ret = netlink_dump(sk);
@@ -2617,10 +2918,13 @@ static int netlink_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
 
 	scm_recv(sock, msg, &scm, flags);
 out:
+    // 正常情况下，程序运行到这里意味着一个承载了netlink消息的skb已经处理完毕
+    // 条件合适的情况下唤醒该netlink套接字的等待队列中的用户进程
 	netlink_rcv_wake(sk);
 	return err ? : copied;
 }
 
+// 从2.6.24版本开始，这个函数被作废了，意味着内核不支持组播消息接收
 static void netlink_data_ready(struct sock *sk)
 {
 	BUG();
@@ -2630,8 +2934,8 @@ static void netlink_data_ready(struct sock *sk)
  *	We export these functions to other modules. They provide a
  *	complete set of kernel non-blocking support for message
  *	queueing.
+ *  内核用于创建一个具体协议(如NETLINK_ROUTE)的netlink套接字,成功返回创建的sock结构
  */
-
 struct sock *
 __netlink_kernel_create(struct net *net, int unit, struct module *module,
 			struct netlink_kernel_cfg *cfg)
@@ -2648,34 +2952,55 @@ __netlink_kernel_create(struct net *net, int unit, struct module *module,
 	if (unit < 0 || unit >= MAX_LINKS)
 		return NULL;
 
+    // 首先是创建并初始化一个socket结构
 	if (sock_create_lite(PF_NETLINK, SOCK_DGRAM, unit, &sock))
 		return NULL;
 
+    /* 然后是创建并初始化一个sock结构
+     *
+     * 备注： 这里要注意的是，首先使用了init_net缺省网络命名空间来创建sock结构，然后再转回到当前的网络命名空间
+     *        从上面的注释来看，这么做的原因大概是无法对当前的网络命名空间执行get_net()操作(__netlink_create->sk_alloc中有调用到)
+     */
 	if (__netlink_create(net, sock, cb_mutex, unit, 1) < 0)
 		goto out_sock_release_nosk;
 
 	sk = sock->sk;
 
+    // 这里可以看出，内核默认支持最少32个组播地址
 	if (!cfg || cfg->groups < 32)
 		groups = 32;
 	else
 		groups = cfg->groups;
 
+    // 分配linsters的空间
 	listeners = kzalloc(sizeof(*listeners) + NLGRPSZ(groups), GFP_KERNEL);
 	if (!listeners)
 		goto out_sock_release;
 
+    /* 从2.6.24版本开始，netlink_data_ready这个函数被作废了
+     * 意味着内核netlink套接字屏蔽了sk_data_ready回调，
+     * 通观整个netlink模块可知，netlink组播消息传递过程中会调用到该回调，
+     * 这也就是说，内核netlink套接字不可能会收到组播消息
+     */
 	sk->sk_data_ready = netlink_data_ready;
+    // 如果某个具体的netlink协议配置了消息处理函数，就将其注册到netlink套接字的对应位置
 	if (cfg && cfg->input)
 		nlk_sk(sk)->netlink_rcv = cfg->input;
 
+    /* 将创建的netlink套接字添加到nl_table对应表项中的hash表中
+     * 由于本函数创建的都是内核nelink套接字，所以portid 固定为 0
+     */
 	if (netlink_insert(sk, 0))
 		goto out_sock_release;
 
 	nlk = nlk_sk(sk);
-	nlk->flags |= NETLINK_F_KERNEL_SOCKET;
+	nlk->flags |= NETLINK_F_KERNEL_SOCKET;  // 标记这是个内核netlink套接字
 
 	netlink_table_grab();
+    /* 判断该协议类型是否已经注册过了，如果没有则在这里初始化nl_table对应的表项，如果有就不再初始化该表项了
+     *
+     * 个人的初步猜测：基于不同的net命名空间，相同协议类型的内核netlink套接字可以对应创建多个
+     */
 	if (!nl_table[unit].registered) {
 		nl_table[unit].groups = groups;
 		rcu_assign_pointer(nl_table[unit].listeners, listeners);
@@ -2690,6 +3015,7 @@ __netlink_kernel_create(struct net *net, int unit, struct module *module,
 		}
 		nl_table[unit].registered = 1;
 	} else {
+        // 多个相同协议类型的内核netlink套接字为何在这里取消listeners空间?
 		kfree(listeners);
 		nl_table[unit].registered++;
 	}
@@ -2707,6 +3033,7 @@ out_sock_release_nosk:
 }
 EXPORT_SYMBOL(__netlink_kernel_create);
 
+// 内核用于注销一个具体协议(如NETLINK_ROUTE)的netlink套接字
 void
 netlink_kernel_release(struct sock *sk)
 {
@@ -2717,11 +3044,16 @@ netlink_kernel_release(struct sock *sk)
 }
 EXPORT_SYMBOL(netlink_kernel_release);
 
+/* 修改具体netlink协议的组播组数量
+ * @sk      必须是内核netlink套接字
+ * @groups  要修改的组播组数量
+ */
 int __netlink_change_ngroups(struct sock *sk, unsigned int groups)
 {
 	struct listeners *new, *old;
-	struct netlink_table *tbl = &nl_table[sk->sk_protocol];
+	struct netlink_table *tbl = &nl_table[sk->sk_protocol]; // 获取该内核netlink套接字所属的具体netlink协议表项
 
+    // 组播组数量不小于32
 	if (groups < 32)
 		groups = 32;
 
@@ -2742,6 +3074,7 @@ int __netlink_change_ngroups(struct sock *sk, unsigned int groups)
 
 /**
  * netlink_change_ngroups - change number of multicast groups
+ * 修改具体netlink协议的组播组数量(显然只是个封装)
  *
  * This changes the number of multicast groups that are available
  * on a certain netlink family. Note that it is not possible to
@@ -2750,7 +3083,9 @@ int __netlink_change_ngroups(struct sock *sk, unsigned int groups)
  * number of groups is reduced.
  *
  * @sk: The kernel netlink socket, as returned by netlink_kernel_create().
+ *      内核netlink套接字 
  * @groups: The new number of groups.
+ *          要修改的组播组数量
  */
 int netlink_change_ngroups(struct sock *sk, unsigned int groups)
 {
@@ -2772,6 +3107,15 @@ void __netlink_clear_multicast_users(struct sock *ksk, unsigned int group)
 		netlink_update_socket_mc(nlk_sk(sk), group, 0);
 }
 
+/* 添加一个netlink消息外壳到skb，包括netlink消息头(将填充) + netlink消息payload(不填充)
+ *
+ * @skb:    用于承载该netlink消息的skb
+ * @portid: 该netlink消息的目的单播地址
+ * @seq:    该netlink消息序号
+ * @type:   该netlink消息类型(如果是genetlink协议，这里就是族ID)
+ * @len:    该netlink消息payload长度
+ * @flags:  该netlink消息要附加的标志集合
+ */
 struct nlmsghdr *
 __nlmsg_put(struct sk_buff *skb, u32 portid, u32 seq, int type, int len, int flags)
 {
@@ -2793,6 +3137,9 @@ EXPORT_SYMBOL(__nlmsg_put);
 /*
  * It looks a bit ugly.
  * It would be better to create kernel thread.
+ * 实际执行dump操作了，很多操作都重复进行，确实丑陋
+ *
+ * @sk  - 指向netlink消息的源sock结构
  */
 
 static int netlink_dump(struct sock *sk)
@@ -2824,6 +3171,7 @@ static int netlink_dump(struct sock *sk)
 	cb = &nlk->cb;
 	alloc_min_size = max_t(int, cb->min_dump_alloc, NLMSG_GOODSIZE);
 
+    // 这里创建了一个新的skb，用于存储回复用的netlink消息
 	if (alloc_min_size < nlk->max_recvmsg_len) {
 		alloc_size = nlk->max_recvmsg_len;
 		skb = netlink_alloc_skb(sk, alloc_size, nlk->portid,
@@ -2849,8 +3197,10 @@ static int netlink_dump(struct sock *sk)
 	 * single netdev. The outcome is MSG_TRUNC error.
 	 */
 	skb_reserve(skb, skb_tailroom(skb) - alloc_size);
+    // 设置该携带了netlink消息的skb为最初的源netlink套接字所拥有
 	netlink_skb_set_owner_r(skb, sk);
 
+    // 这里终于真正执行了dumpit函数...
 	len = cb->dump(skb, cb);
 
 	if (len > 0) {
@@ -2893,6 +3243,16 @@ errout_skb:
 	return err;
 }
 
+/* dump操作前的准备工作
+ *
+ * @ssk     - 这个sock结构也就是对应了一个netlink套接字
+ * @skb     - 存储了netlink消息的skb
+ * @nlh     - 一条完整的netlink消息
+ * @control - 用于dump操作的控制块，里面主要记录了dump回调函数和dump的数据空间大小
+ *
+ * 备注：需要注意的是，ssk表示接收到该netlink消息并进行处理的一方
+ *       而函数内的sk代表的是发送该netlink消息的一方
+ */
 int __netlink_dump_start(struct sock *ssk, struct sk_buff *skb,
 			 const struct nlmsghdr *nlh,
 			 struct netlink_dump_control *control)
@@ -2913,15 +3273,19 @@ int __netlink_dump_start(struct sock *ssk, struct sk_buff *skb,
 	} else
 		atomic_inc(&skb->users);
 
+    // 根据protocol和portid查找对应的源netlink套接字(其实netlink_skb_parms结构中的sk字段就已经记录了源sock结构，这里没必要多此一举)
 	sk = netlink_lookup(sock_net(ssk), ssk->sk_protocol, NETLINK_CB(skb).portid);
 	if (sk == NULL) {
 		ret = -ECONNREFUSED;
 		goto error_free;
 	}
 
+    // 注意，以下的所有操作都是基于源netlink套接字！
 	nlk = nlk_sk(sk);
 	mutex_lock(nlk->cb_mutex);
-	/* A dump is in progress... */
+	/* A dump is in progress... 
+     * 每个源netlink套接字同时只能处理一个dump操作
+     * */
 	if (nlk->cb_running) {
 		ret = -EBUSY;
 		goto error_unlock;
@@ -2932,6 +3296,7 @@ int __netlink_dump_start(struct sock *ssk, struct sk_buff *skb,
 		goto error_unlock;
 	}
 
+    // 设置该netlink套接字当前有效的操作集合
 	cb = &nlk->cb;
 	memset(cb, 0, sizeof(*cb));
 	cb->dump = control->dump;
@@ -2942,10 +3307,12 @@ int __netlink_dump_start(struct sock *ssk, struct sk_buff *skb,
 	cb->min_dump_alloc = control->min_dump_alloc;
 	cb->skb = skb;
 
+    // 标记源netlink套接字正处于dump操作中
 	nlk->cb_running = true;
 
 	mutex_unlock(nlk->cb_mutex);
 
+    // 执行实际的dump操作
 	ret = netlink_dump(sk);
 	sock_put(sk);
 
@@ -3005,38 +3372,48 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err)
 }
 EXPORT_SYMBOL(netlink_ack);
 
+// 处理收到的netlink消息
 int netlink_rcv_skb(struct sk_buff *skb, int (*cb)(struct sk_buff *,
 						     struct nlmsghdr *))
 {
 	struct nlmsghdr *nlh;
 	int err;
 
+    // 逐条解析netlink消息
 	while (skb->len >= nlmsg_total_size(0)) {
 		int msglen;
 
 		nlh = nlmsg_hdr(skb);
 		err = 0;
 
+        // 从长度方面对消息进行合法性检测，有问题的直接丢弃
 		if (nlh->nlmsg_len < NLMSG_HDRLEN || skb->len < nlh->nlmsg_len)
 			return 0;
 
-		/* Only requests are handled by the kernel */
+		/* Only requests are handled by the kernel 
+         * kernel只处理带NLM_F_REQUEST标记的消息，不然就直接尝试返回一个errno=0的ack
+         * */
 		if (!(nlh->nlmsg_flags & NLM_F_REQUEST))
 			goto ack;
 
-		/* Skip control messages */
+		/* Skip control messages 
+         * kernel不处理netlink控制消息，所以直接尝试返回一个errno=0的ack
+         * */
 		if (nlh->nlmsg_type < NLMSG_MIN_TYPE)
 			goto ack;
 
+        // 基于某个指定的netlink协议对该消息做进一步处理
 		err = cb(skb, nlh);
 		if (err == -EINTR)
 			goto skip;
 
 ack:
+        // 设置了NLM_F_ACK标志或者处理过程中出现错误，kernel都会回一个ack给用户空间
 		if (nlh->nlmsg_flags & NLM_F_ACK || err)
 			netlink_ack(skb, nlh, err);
 
 skip:
+        // skb的读指针掠过这条处理完毕的netlink消息
 		msglen = NLMSG_ALIGN(nlh->nlmsg_len);
 		if (msglen > skb->len)
 			msglen = skb->len;
@@ -3049,11 +3426,12 @@ EXPORT_SYMBOL(netlink_rcv_skb);
 
 /**
  * nlmsg_notify - send a notification netlink message
- * @sk: netlink socket to use
- * @skb: notification message
- * @portid: destination netlink portid for reports or 0
- * @group: destination multicast group or 0
- * @report: 1 to report back, 0 to disable
+ * 发送指定skb中的netlink消息通知给用户空间
+ * @sk: netlink socket to use       发送该消息使用的内核netlink接口类套接字
+ * @skb: notification message       承载了netlink消息的skb
+ * @portid: destination netlink portid for reports or 0 如果需要回显，这里传入用于回显的目的地址
+ * @group: destination multicast group or 0 使用的组播通道，0表示不走组播
+ * @report: 1 to report back, 0 to disable  标识是否需要回显
  * @flags: allocation flags
  */
 int nlmsg_notify(struct sock *sk, struct sk_buff *skb, u32 portid,
@@ -3061,9 +3439,11 @@ int nlmsg_notify(struct sock *sk, struct sk_buff *skb, u32 portid,
 {
 	int err = 0;
 
+    // 如果传入了组播通道号，则发送组播消息
 	if (group) {
 		int exclude_portid = 0;
 
+        // 组播消息需要排除回显的目的地址
 		if (report) {
 			atomic_inc(&skb->users);
 			exclude_portid = portid;
@@ -3074,6 +3454,7 @@ int nlmsg_notify(struct sock *sk, struct sk_buff *skb, u32 portid,
 		err = nlmsg_multicast(sk, skb, exclude_portid, group, flags);
 	}
 
+    // 如果需要回显，则单独发单播到目的地址
 	if (report) {
 		int err2;
 
@@ -3246,6 +3627,7 @@ int netlink_unregister_notifier(struct notifier_block *nb)
 }
 EXPORT_SYMBOL(netlink_unregister_notifier);
 
+// 定义了socket层netlink协议族共用的操作集合
 static const struct proto_ops netlink_ops = {
 	.family =	PF_NETLINK,
 	.owner =	THIS_MODULE,
@@ -3267,21 +3649,25 @@ static const struct proto_ops netlink_ops = {
 	.sendpage =	sock_no_sendpage,
 };
 
+// 定义了一个netlink协议族操作集合(主要包含netlink接口创建函数)
 static const struct net_proto_family netlink_family_ops = {
 	.family = PF_NETLINK,
 	.create = netlink_create,
 	.owner	= THIS_MODULE,	/* for consistency 8) */
 };
 
+// 具体的netlink功能初始化(实际就是创建proc文件系统下的netlink接口)
 static int __net_init netlink_net_init(struct net *net)
 {
 #ifdef CONFIG_PROC_FS
+    // proc文件系统下创建/proc/net/netlink文件(文件属性:普通文件 + 只读)
 	if (!proc_create("netlink", 0, net->proc_net, &netlink_seq_fops))
 		return -ENOMEM;
 #endif
 	return 0;
 }
 
+// netlink功能注销
 static void __net_exit netlink_net_exit(struct net *net)
 {
 #ifdef CONFIG_PROC_FS
@@ -3289,6 +3675,7 @@ static void __net_exit netlink_net_exit(struct net *net)
 #endif
 }
 
+// 创建并注册NETLINK_USERSOCK协议到nl_table中
 static void __init netlink_add_usersock_entry(void)
 {
 	struct listeners *listeners;
@@ -3309,6 +3696,7 @@ static void __init netlink_add_usersock_entry(void)
 	netlink_table_ungrab();
 }
 
+// 定义了netlink模块在网络命名空间层面的操作集合
 static struct pernet_operations __net_initdata netlink_net_ops = {
 	.init = netlink_net_init,
 	.exit = netlink_net_exit,
@@ -3331,21 +3719,29 @@ static const struct rhashtable_params netlink_rhashtable_params = {
 	.automatic_shrinking = true,
 };
 
+/* 内核netlink功能模块初始化
+ * 备注：内核在这里默认创建了两种协议类型的netlink：NETLINK_USERSOCK和NETLINK_ROUTE
+ */
 static int __init netlink_proto_init(void)
 {
 	int i;
+    // 向内核的proto_list链表注册所有netlink协议共有的proto结构，至此所有从socket层下来的netlink消息都可以通过该接口到达相应的传输层
 	int err = proto_register(&netlink_proto, 0);
 
 	if (err != 0)
 		goto out;
 
+    // 确保netlink参数控制块大小不超过通用的socket buffer预留的控制块大小
 	BUILD_BUG_ON(sizeof(struct netlink_skb_parms) > FIELD_SIZEOF(struct sk_buff, cb));
 
+    // 创建了一张MAX_LINKS长度的nl_table表，这张表是整个netlink功能模块的核心，每种协议类型占一个表项
 	nl_table = kcalloc(MAX_LINKS, sizeof(*nl_table), GFP_KERNEL);
 	if (!nl_table)
 		goto panic;
 
+    // 给nl_table表每个表项申请一张hash表并且注册缺省的net命名空间比较函数
 	for (i = 0; i < MAX_LINKS; i++) {
+        // 每张hash表默认都会创建1个初始bucket，实际也就是存放一个链表头指针
 		if (rhashtable_init(&nl_table[i].hash,
 				    &netlink_rhashtable_params) < 0) {
 			while (--i > 0)
@@ -3355,13 +3751,22 @@ static int __init netlink_proto_init(void)
 		}
 	}
 
+    // 初始化netlink_tap_all链表头
 	INIT_LIST_HEAD(&netlink_tap_all);
 
+    // 创建并注册NETLINK_USERSOCK协议到nl_table中
 	netlink_add_usersock_entry();
 
+    /* 注册netlink协议族操作集合到内核中(主要包含netlink接口创建函数)
+     * 后续，应用层创建netlink类型的socket时就会调用这里注册的create函数
+     */
 	sock_register(&netlink_family_ops);
+    /* 将netlink模块注册到每一个网络命名空间，并且执行了netlink_net_init
+     * 需要注意的是，由于netlink_net_ops.size = 0，意味着netlink模块没有私有空间
+     */
 	register_pernet_subsys(&netlink_net_ops);
 	/* The netlink device handler may be needed early. */
+    // 创建并注册NETLINK_ROUTE协议到nl_table中
 	rtnetlink_init();
 out:
 	return err;
@@ -3369,4 +3774,6 @@ panic:
 	panic("netlink_init: Cannot allocate nl_table\n");
 }
 
+// 将netlink_proto_init函数放入".initcall1.init" section
+// init/main.c 中的do_initcalls函数调用
 core_initcall(netlink_proto_init);

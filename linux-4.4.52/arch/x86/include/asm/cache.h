@@ -3,7 +3,9 @@
 
 #include <linux/linkage.h>
 
-/* L1 cache line size */
+/* L1 cache line size 
+ * L1 CACHE容量值，实际X86和ARM架构通常都是64字节
+ * */
 #define L1_CACHE_SHIFT	(CONFIG_X86_L1_CACHE_SHIFT)
 #define L1_CACHE_BYTES	(1 << L1_CACHE_SHIFT)
 

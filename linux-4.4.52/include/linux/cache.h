@@ -5,6 +5,7 @@
 #include <asm/cache.h>
 
 #ifndef L1_CACHE_ALIGN
+// 返回数据x按照L1 CACHE长度(通常就是64字节)对齐后的值
 #define L1_CACHE_ALIGN(x) __ALIGN_KERNEL(x, L1_CACHE_BYTES)
 #endif
 
@@ -17,6 +18,7 @@
 #endif
 
 #ifndef ____cacheline_aligned
+// 修饰的数据结构或变量将按照cacheline长度对齐
 #define ____cacheline_aligned __attribute__((__aligned__(SMP_CACHE_BYTES)))
 #endif
 
@@ -29,6 +31,7 @@
 #endif
 
 #ifndef __cacheline_aligned
+// 修饰的变量将按照cacheline长度对齐，且该变量将放入内核.data段的cacheline_aligned子段中
 #define __cacheline_aligned					\
   __attribute__((__aligned__(SMP_CACHE_BYTES),			\
 		 __section__(".data..cacheline_aligned")))

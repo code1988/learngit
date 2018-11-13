@@ -34,8 +34,8 @@ struct netlink_sock {
 	unsigned long		state;  // 3.14.38版本中只用来设置拥挤标志
 	wait_queue_head_t	wait;   // 该netlink套接字的等待队列，当接收队列拥挤时，那些继续发送netlink单播消息到该套接字的用户发送进程将会加入等待队列
                                 // (组播消息和来自内核的单播消息都是非阻塞的，所以不会加入等待队列)
-	bool			cb_running; // 用来标志该netlink套接字是否处于dump操作中
-	struct netlink_callback	cb; // 用来记录该netlink套接字当前有效的操作集合
+	bool			cb_running;     // 用来标志该netlink套接字是否处于dump操作中
+	struct netlink_callback	cb;     // 用来记录该netlink套接字当前有效的操作集合
 	struct mutex		*cb_mutex;  // 这把锁在内核netlink套接字创建时传入，相同协议类型的netlink套接字共用一把锁
 	struct mutex		cb_def_mutex;
 	void			(*netlink_rcv)(struct sk_buff *skb);    // 指向具体协议类型特有的input回调函数(只对内核netlink套接字有意义)

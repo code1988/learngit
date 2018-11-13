@@ -25,6 +25,7 @@ static inline int rtnl_msg_family(const struct nlmsghdr *nlh)
 
 /**
  *	struct rtnl_link_ops - rtnetlink link operations
+ *	定义一个rtnetlink接口的link操作集合结构
  *
  *	@list: Used internally
  *	@kind: Identifier
@@ -51,29 +52,29 @@ static inline int rtnl_msg_family(const struct nlmsghdr *nlh)
 struct rtnl_link_ops {
 	struct list_head	list;
 
-	const char		*kind;
+	const char		*kind;      // 用于标识这组操作集合，通常就是本集合服务的具体功能模块名
+                                                                                            
+	size_t			priv_size;  // 记录具体网络设备的私有空间大小(net_device-->priv)
+	void			(*setup)(struct net_device *dev);   // 函数用于具体网络设备的初始化
 
-	size_t			priv_size;
-	void			(*setup)(struct net_device *dev);
-
-	int			maxtype;
-	const struct nla_policy	*policy;
+	int			maxtype;                                // 记录了跟具体网络设备有关的一个属性类型的最大数量
+	const struct nla_policy	*policy;                    // 指向一个针对具体网络设备属性施加的策略组
 	int			(*validate)(struct nlattr *tb[],
-					    struct nlattr *data[]);
-
-	int			(*newlink)(struct net *src_net,
-					   struct net_device *dev,
-					   struct nlattr *tb[],
-					   struct nlattr *data[]);
+					    struct nlattr *data[]);         // 指向一个可选的验证函数，用于验证netlink参数有效性
+                                                                                                      
+	int			(*newlink)(struct net *src_net, 
+					   struct net_device *dev,                                                        
+					   struct nlattr *tb[],                                                           
+					   struct nlattr *data[]);          // 函数用于配置并注册一个新设备
 	int			(*changelink)(struct net_device *dev,
 					      struct nlattr *tb[],
-					      struct nlattr *data[]);
+					      struct nlattr *data[]);       // 函数用于对一个已经存在的设备进行参数修改
 	void			(*dellink)(struct net_device *dev,
-					   struct list_head *head);
+					   struct list_head *head);         // 函数用于注销一个设备
 
-	size_t			(*get_size)(const struct net_device *dev);
+	size_t			(*get_size)(const struct net_device *dev);  // 函数用于计算转储设备netlink属性所需空间大小
 	int			(*fill_info)(struct sk_buff *skb,
-					     const struct net_device *dev);
+					     const struct net_device *dev); // 函数用于转储设备netlink属性
 
 	size_t			(*get_xstats_size)(const struct net_device *dev);
 	int			(*fill_xstats)(struct sk_buff *skb,

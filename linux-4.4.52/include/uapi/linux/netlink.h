@@ -5,9 +5,15 @@
 #include <linux/socket.h> /* for __kernel_sa_family_t */
 #include <linux/types.h>
 
-#define NETLINK_ROUTE		0	/* Routing/device hook				*/
+/* netlink协议，除了以下预定义的之外，还可以自定义，目前上限MAX_LINKS个
+ * 备注： 不推荐添加自定义协议类型这种方式（万一日后该协议ID被纳入标准），
+ *        正确的做法是使用NETLINK_GENERIC自行扩展
+ */
+#define NETLINK_ROUTE		0	/* Routing/device hook			
+                                   这种类型的netlink协议是当初设计netlink协议的初衷，所以在netlink初始化中就也顺便完成对它的初始化 */
 #define NETLINK_UNUSED		1	/* Unused number				*/
-#define NETLINK_USERSOCK	2	/* Reserved for user mode socket protocols 	*/
+#define NETLINK_USERSOCK	2	/* Reserved for user mode socket protocols 	
+                                   用于应用层进程间通信 */
 #define NETLINK_FIREWALL	3	/* Unused number, formerly ip_queue		*/
 #define NETLINK_SOCK_DIAG	4	/* socket monitoring				*/
 #define NETLINK_NFLOG		5	/* netfilter/iptables ULOG */
@@ -21,7 +27,7 @@
 #define NETLINK_IP6_FW		13
 #define NETLINK_DNRTMSG		14	/* DECnet routing messages */
 #define NETLINK_KOBJECT_UEVENT	15	/* Kernel messages to userspace */
-#define NETLINK_GENERIC		16
+#define NETLINK_GENERIC		16  // 通用的netlink协议类型，便于用户自行扩展子协议类型
 /* leave room for NETLINK_DM (DM Events) */
 #define NETLINK_SCSITRANSPORT	18	/* SCSI Transports */
 #define NETLINK_ECRYPTFS	19
@@ -30,8 +36,9 @@
 
 #define NETLINK_INET_DIAG	NETLINK_SOCK_DIAG
 
-#define MAX_LINKS 32		
+#define MAX_LINKS 32		    // netlink协议上限
 
+// netlink地址格式
 struct sockaddr_nl {
 	__kernel_sa_family_t	nl_family;	/* AF_NETLINK	*/
 	unsigned short	nl_pad;		/* zero		*/
@@ -39,17 +46,25 @@ struct sockaddr_nl {
        	__u32		nl_groups;	/* multicast groups mask */
 };
 
+// netlink消息头
 struct nlmsghdr {
-	__u32		nlmsg_len;	/* Length of message including header */
-	__u16		nlmsg_type;	/* Message content */
-	__u16		nlmsg_flags;	/* Additional flags */
-	__u32		nlmsg_seq;	/* Sequence number */
-	__u32		nlmsg_pid;	/* Sending process port ID */
+	__u32		nlmsg_len;	/* Length of message including header 
+                               netlink消息头 + 填充 + payload */
+	__u16		nlmsg_type;	/* Message content 
+                               netlink消息类型 */
+	__u16		nlmsg_flags;/* Additional flags
+                               附加的标志位,定义见下面的 NLM_F_* */
+	__u32		nlmsg_seq;	/* Sequence number 
+                               序号（用于追踪） */
+	__u32		nlmsg_pid;	/* Sending process port ID
+                               进程ID（用于追踪）*/
 };
 
 /* Flags values */
 
-#define NLM_F_REQUEST		1	/* It is request message. 	*/
+#define NLM_F_REQUEST		1	/* It is request message. 	
+                                   表示这是一个请求消息。
+                                   所有用户首先发起的消息都要设置该标志，可以和GET request和NEW request系列标志组合 */
 #define NLM_F_MULTI		2	/* Multipart message, terminated by NLMSG_DONE */
 #define NLM_F_ACK		4	/* Reply with ack, with zero or error code */
 #define NLM_F_ECHO		8	/* Echo this request 		*/
@@ -57,8 +72,11 @@ struct nlmsghdr {
 #define NLM_F_DUMP_FILTERED	32	/* Dump was filtered as requested */
 
 /* Modifiers to GET request */
-#define NLM_F_ROOT	0x100	/* specify tree	root	*/
-#define NLM_F_MATCH	0x200	/* return all matching	*/
+#define NLM_F_ROOT	0x100	/* specify tree	root
+                               表示被请求的数据应当整体返回用户应用，而不是一条一条返回
+                               有该标志的request通常导致响应的消息设置NLM_F_MULTI标志 */
+#define NLM_F_MATCH	0x200	/* return all matching
+                               表示会返回所有匹配的数据 */
 #define NLM_F_ATOMIC	0x400	/* atomic GET		*/
 #define NLM_F_DUMP	(NLM_F_ROOT|NLM_F_MATCH)
 
@@ -77,26 +95,33 @@ struct nlmsghdr {
    Check		NLM_F_EXCL
  */
 
+// netlink消息长度需要4字节对齐
 #define NLMSG_ALIGNTO	4U
-#define NLMSG_ALIGN(len) ( ((len)+NLMSG_ALIGNTO-1) & ~(NLMSG_ALIGNTO-1) )
-#define NLMSG_HDRLEN	 ((int) NLMSG_ALIGN(sizeof(struct nlmsghdr)))
-#define NLMSG_LENGTH(len) ((len) + NLMSG_HDRLEN)
-#define NLMSG_SPACE(len) NLMSG_ALIGN(NLMSG_LENGTH(len))
-#define NLMSG_DATA(nlh)  ((void*)(((char*)nlh) + NLMSG_LENGTH(0)))
+#define NLMSG_ALIGN(len) ( ((len)+NLMSG_ALIGNTO-1) & ~(NLMSG_ALIGNTO-1) )   // NLMSG_ALIGNTO字节对齐
+#define NLMSG_HDRLEN	 ((int) NLMSG_ALIGN(sizeof(struct nlmsghdr)))       // netlink消息头 + 填充
+#define NLMSG_LENGTH(len) ((len) + NLMSG_HDRLEN)                            // netlink消息头 + 填充 + len
+#define NLMSG_SPACE(len) NLMSG_ALIGN(NLMSG_LENGTH(len))                     // netlink消息头 + 填充 + len + 填充
+#define NLMSG_DATA(nlh)  ((void*)(((char*)nlh) + NLMSG_LENGTH(0)))          // netlink消息payload首地址
+// 下一条netlink消息
 #define NLMSG_NEXT(nlh,len)	 ((len) -= NLMSG_ALIGN((nlh)->nlmsg_len), \
 				  (struct nlmsghdr*)(((char*)(nlh)) + NLMSG_ALIGN((nlh)->nlmsg_len)))
+// 单独一条netlink消息合法性检测
 #define NLMSG_OK(nlh,len) ((len) >= (int)sizeof(struct nlmsghdr) && \
 			   (nlh)->nlmsg_len >= sizeof(struct nlmsghdr) && \
 			   (nlh)->nlmsg_len <= (len))
+// 如果len = 0则意味着计算netlink消息payload长度，如果len取sizeof(family-header)意味着计算attributes长度
 #define NLMSG_PAYLOAD(nlh,len) ((nlh)->nlmsg_len - NLMSG_SPACE((len)))
 
+// 以下几个是netlink预定义的控制消息
 #define NLMSG_NOOP		0x1	/* Nothing.		*/
 #define NLMSG_ERROR		0x2	/* Error		*/
 #define NLMSG_DONE		0x3	/* End of a dump	*/
 #define NLMSG_OVERRUN		0x4	/* Data lost		*/
 
-#define NLMSG_MIN_TYPE		0x10	/* < 0x10: reserved control messages */
+#define NLMSG_MIN_TYPE		0x10	/* < 0x10: reserved control messages 
+                                       这里保留了0x10数量的控制消息，意味着除了以上这些，还可以自定义一部分 */
 
+// NLMSG_ERROR错误消息的数据结构，位于NLMSG_DATA(nlh)地址上
 struct nlmsgerr {
 	int		error;
 	struct nlmsghdr msg;
@@ -113,6 +138,7 @@ struct nlmsgerr {
 #define NETLINK_LIST_MEMBERSHIPS	9
 #define NETLINK_CAP_ACK			10
 
+// 定义了netlink的辅助消息结构，实际只是包含了一个group成员
 struct nl_pktinfo {
 	__u32	group;
 };
@@ -162,9 +188,10 @@ enum {
  *  <-------------- nlattr->nla_len -------------->
  */
 
+// netlink消息attributes结构中的标准头格式
 struct nlattr {
-	__u16           nla_len;
-	__u16           nla_type;
+	__u16           nla_len;    // 属性头 + 填充 + payload (不包含尾部padding)
+	__u16           nla_type;   // 属性类型
 };
 
 /*
@@ -181,9 +208,10 @@ struct nlattr {
 #define NLA_F_NET_BYTEORDER	(1 << 14)
 #define NLA_TYPE_MASK		~(NLA_F_NESTED | NLA_F_NET_BYTEORDER)
 
+// netlink属性长度也是4字节对齐
 #define NLA_ALIGNTO		4
 #define NLA_ALIGN(len)		(((len) + NLA_ALIGNTO - 1) & ~(NLA_ALIGNTO - 1))
-#define NLA_HDRLEN		((int) NLA_ALIGN(sizeof(struct nlattr)))
+#define NLA_HDRLEN		((int) NLA_ALIGN(sizeof(struct nlattr)))    // 计算属性头占用的空间: 属性头 + padding
 
 
 #endif /* _UAPI__LINUX_NETLINK_H */

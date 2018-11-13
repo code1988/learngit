@@ -78,7 +78,8 @@ struct listeners {
  * */
 #define NETLINK_CONGESTED	0x0     // 拥挤标志
 
-/* flags 用来标识netlink套接字的属性
+/* flags 
+ * 用来标识netlink套接字的属性
  * 用于netlink_sock->flags中
  * */
 #define NETLINK_KERNEL_SOCKET	0x1     // 用来标识该netlink套接字是内核套接字

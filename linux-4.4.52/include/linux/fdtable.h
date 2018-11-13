@@ -23,11 +23,13 @@
 
 // 定义了fd表结构，用于维护一个进程所有打开文件fd的信息
 struct fdtable {
-	unsigned int max_fds;
-	struct file __rcu **fd;      /* current fd array */
-	unsigned long *close_on_exec;
-	unsigned long *open_fds;
-	unsigned long *full_fds_bits;
+	unsigned int max_fds;           // 当前支持的打开fd数量上限，默认是NR_OPEN_DEFAULT，可动态扩增
+	struct file __rcu **fd;      /* current fd array  
+                                    指向当前有效的file表，这张表维护了该进程所有打开文件的信息
+                                    默认指向fd_array */
+	unsigned long *close_on_exec;   // 指向当前有效的设置了close-on-exec标识的fd位图，默认指向close_on_exec_init
+	unsigned long *open_fds;        // 指向当前有效的所有打开文件fd位图，默认指向open_fds_init
+	unsigned long *full_fds_bits;   
 	struct rcu_head rcu;
 };
 
@@ -56,17 +58,19 @@ struct files_struct {
     /* 只有当该进程打开文件数量超过默认上限时，才会动态申请内存
      * 这是内核常用的一种优化策略，目的是避免频繁申请内存
      */
-	struct fdtable __rcu *fdt;      // 指向关联的fd表，默认指向fdtab
-	struct fdtable fdtab;           // 默认使用的fd表
+	struct fdtable __rcu *fdt;      // 指向当前有效的fd表，默认指向fdtab
+	struct fdtable fdtab;           // 默认使用的fd表，一旦超出容量则改用动态分配
   /*
    * written part on a separate cache line in SMP
+   * 将频繁写区域的起始位置按照cacheline对齐，使得文件表结构的上下两部分分别位于不同的cacheline
+   * 这是内核常用的一种优化策略，目的是尽量减少多CPU同时访问同一文件表时的fail share问题
    */
-	spinlock_t file_lock ____cacheline_aligned_in_smp;
-	int next_fd;
-	unsigned long close_on_exec_init[1];
-	unsigned long open_fds_init[1];
+	spinlock_t file_lock ____cacheline_aligned_in_smp;  // 用于维护该文件表的自旋锁
+	int next_fd;                                        // 下一个空闲的fd
+	unsigned long close_on_exec_init[1];                // 默认使用的设置了close-on-exec标识的fd位图，一旦超出容量则改用动态分配
+	unsigned long open_fds_init[1];                     // 默认使用的所有打开文件fd位图，一旦超出容量则改用动态分配
 	unsigned long full_fds_bits_init[1];
-	struct file __rcu * fd_array[NR_OPEN_DEFAULT];
+	struct file __rcu * fd_array[NR_OPEN_DEFAULT];      // 默认使用的file表，一旦超出容量则改用动态分配
 };
 
 struct file_operations;
