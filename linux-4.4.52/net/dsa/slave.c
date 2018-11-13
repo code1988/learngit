@@ -1234,6 +1234,7 @@ static int dsa_slave_master_changed(struct net_device *dev)
 	return err;
 }
 
+// DSA设备相关事件触发后的处理函数
 int dsa_slave_netdevice_event(struct notifier_block *unused,
 			      unsigned long event, void *ptr)
 {

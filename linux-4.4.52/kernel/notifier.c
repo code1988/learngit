@@ -336,6 +336,7 @@ EXPORT_SYMBOL_GPL(blocking_notifier_call_chain);
 
 /**
  *	raw_notifier_chain_register - Add notifier to a raw notifier chain
+ *	往一条原始通知链中添加一个通知单元
  *	@nh: Pointer to head of the raw notifier chain
  *	@n: New entry in notifier chain
  *

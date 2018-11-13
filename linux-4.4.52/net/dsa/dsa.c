@@ -1080,6 +1080,7 @@ static struct packet_type dsa_pack_type __read_mostly = {
 	.func	= dsa_switch_rcv,
 };
 
+// 定义了一个为DSA驱动子系统服务的通知单元，专门用于监听网络设备事件
 static struct notifier_block dsa_netdevice_nb __read_mostly = {
 	.notifier_call	= dsa_slave_netdevice_event,
 };
@@ -1144,11 +1145,12 @@ static struct platform_driver dsa_driver = {
 	},
 };
 
-// 通用DSA驱动初始化入口
+// DSA驱动子系统初始化入口
 static int __init dsa_init_module(void)
 {
 	int rc;
 
+    // 将为DSA驱动子系统服务的通知单元注册到网络设备通知链中
 	register_netdevice_notifier(&dsa_netdevice_nb);
 
     // 将DSA驱动注册到platform总线中
@@ -1163,7 +1165,7 @@ static int __init dsa_init_module(void)
 }
 module_init(dsa_init_module);
 
-// 通用DSA驱动卸载入口
+// DSA驱动子系统卸载入口
 static void __exit dsa_cleanup_module(void)
 {
 	unregister_netdevice_notifier(&dsa_netdevice_nb);

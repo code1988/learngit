@@ -52,7 +52,7 @@ typedef	int (*notifier_fn_t)(struct notifier_block *nb,
 
 // 组成通知链的节点
 struct notifier_block {
-	notifier_fn_t notifier_call;        // 当相应事件发生时应该调用的函数，由被通知方提供，比如bridge
+	notifier_fn_t notifier_call;        // 当相应事件发生时应该调用的函数，由被通知方提供，比如bridge、dsa
 	struct notifier_block __rcu *next;
 	int priority;                       // 回调函数优先级，默认为0
 };
