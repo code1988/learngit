@@ -189,7 +189,7 @@ struct platform_driver {
 
 /*
  * use a macro to avoid include chaining to get THIS_MODULE
- * 封装的platform驱动注册函数
+ * 注册一个驱动到platform总线中
  */
 #define platform_driver_register(drv) \
 	__platform_driver_register(drv, THIS_MODULE)

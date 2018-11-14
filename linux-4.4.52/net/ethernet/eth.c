@@ -142,7 +142,7 @@ EXPORT_SYMBOL(eth_get_headlen);
 
 /**
  * eth_type_trans - determine the packet's protocol ID.
- * 判断接收到的帧的协议类型
+ * 获取帧的以太网协议类型
  * @skb: received socket data
  * @dev: receiving network device
  *
@@ -181,7 +181,8 @@ __be16 eth_type_trans(struct sk_buff *skb, struct net_device *dev)
 	 * at all, so we check here whether one of those tagging
 	 * variants has been configured on the receiving interface,
 	 * and if so, set skb->protocol without looking at the packet.
-     * 检查该接收设备是否开启了DSA功能
+     * 由于一些dsa实现中并未在报文中设计一个以太网类型字段，
+     * 所以这里改为检查该接收设备是否开启了DSA功能，从而决定是否设置skb->protocol为dsa协议
 	 */
 	if (unlikely(netdev_uses_dsa(dev)))
 		return htons(ETH_P_XDSA);

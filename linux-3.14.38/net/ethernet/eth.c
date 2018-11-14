@@ -147,7 +147,7 @@ EXPORT_SYMBOL(eth_rebuild_header);
 
 /**
  * eth_type_trans - determine the packet's protocol ID.
- * 判断接收到的帧的协议类型
+ * 获取帧的以太网协议类型
  * @skb: received socket data   
  * @dev: receiving network device
  *

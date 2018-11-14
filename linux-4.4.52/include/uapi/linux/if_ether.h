@@ -127,13 +127,14 @@
 #define ETH_P_ECONET	0x0018		/* Acorn Econet			*/
 #define ETH_P_HDLC	0x0019		/* HDLC frames			*/
 #define ETH_P_ARCNET	0x001A		/* 1A for ArcNet :-)            */
-#define ETH_P_DSA	0x001B		/* Distributed Switch Arch.	*/
+#define ETH_P_DSA	0x001B		/* Distributed Switch Arch.  
+                                   4.4.52以后实际已经不再使用该协议号来标识dsa报文 */
 #define ETH_P_TRAILER	0x001C		/* Trailer switch tagging	*/
 #define ETH_P_PHONET	0x00F5		/* Nokia Phonet frames          */
 #define ETH_P_IEEE802154 0x00F6		/* IEEE802.15.4 frame		*/
 #define ETH_P_CAIF	0x00F7		/* ST-Ericsson CAIF protocol	*/
 #define ETH_P_XDSA	0x00F8		/* Multiplexed DSA protocol	
-                                   交换机DSA协议 */
+                                   4.4.52以后统一使用该协议号来标识dsa报文 */
 
 /*
  *	This is an Ethernet frame header.
