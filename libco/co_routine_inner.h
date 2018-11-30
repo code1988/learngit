@@ -45,13 +45,13 @@ struct stShareStack_t
 };
 
 
-
+// 用于描述一个协程的结构
 struct stCoRoutine_t
 {
-	stCoRoutineEnv_t *env;
-	pfn_co_routine_t pfn;
-	void *arg;
-	coctx_t ctx;
+	stCoRoutineEnv_t *env;  // 指向该协程所属的协程执行环境
+	pfn_co_routine_t pfn;   // 该协程的主函数
+	void *arg;              // 传递给该协程主函数的自定义参数
+	coctx_t ctx;            // 用于协程切换时保存cpu上下文
 
 	char cStart;
 	char cEnd;
@@ -62,7 +62,7 @@ struct stCoRoutine_t
 	void *pvEnv;
 
 	//char sRunStack[ 1024 * 128 ];
-	stStackMem_t* stack_mem;
+	stStackMem_t* stack_mem;    // 指向该协程运行时的栈内存
 
 
 	//save satck buffer while confilct on same stack_buffer;

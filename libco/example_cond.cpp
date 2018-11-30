@@ -22,6 +22,7 @@
 #include <queue>
 #include "co_routine.h"
 using namespace std;
+// 生产者-消费者模型中的产品
 struct stTask_t
 {
 	int id;
@@ -43,6 +44,7 @@ void* Producer(void* args)
 		env->task_queue.push(task);
 		printf("%s:%d produce task %d\n", __func__, __LINE__, task->id);
 		co_cond_signal(env->cond);
+        // 这里纯粹将poll作为定时器使用，控制Producer协程1s生产一个产品
 		poll(NULL, 0, 1000);
 	}
 	return NULL;
@@ -55,6 +57,9 @@ void* Consumer(void* args)
 	{
 		if (env->task_queue.empty())
 		{
+            /* 一直等待条件直到触发，等待期间会将cpu让回给调用者
+             * 而本函数返回时意味着cpu的使用权又回到了Consumer协程这里
+             */
 			co_cond_timedwait(env->cond, -1);
 			continue;
 		}

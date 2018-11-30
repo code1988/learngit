@@ -48,15 +48,19 @@ using namespace std;
 stCoRoutine_t *GetCurrCo( stCoRoutineEnv_t *env );
 struct stCoEpoll_t;
 
+/* 用于描述协程执行环境的结构
+ * 协程执行环境跟线程一一对应，一个协程一旦创建便跟创建时所在线程对应的协程执行环境绑定，
+ * 之后不允许在不同协程执行环境间迁移
+ */
 struct stCoRoutineEnv_t
 {
-	stCoRoutine_t *pCallStack[ 128 ];
+	stCoRoutine_t *pCallStack[ 128 ];   // 该环境中的协程栈，深度固定为128，意味着最多嵌套调用128个协程
 	int iCallStackSize;
-	stCoEpoll_t *pEpoll;
+	stCoEpoll_t *pEpoll;                // 指向一个epoll的封装结构
 
 	//for copy stack log lastco and nextco
-	stCoRoutine_t* pending_co;
-	stCoRoutine_t* occupy_co;
+	stCoRoutine_t* pending_co;          // 指向前一个被挂起的协程
+	stCoRoutine_t* occupy_co;           // 指向当前运行的协程
 };
 //int socket(int domain, int type, int protocol);
 void co_log_err( const char *fmt,... )
@@ -309,6 +313,7 @@ static stStackMem_t* co_get_stackmem(stShareStack_t* share_stack)
 // ----------------------------------------------------------------------------
 struct stTimeoutItemLink_t;
 struct stTimeoutItem_t;
+// 定义了一个epoll的封装结构
 struct stCoEpoll_t
 {
 	int iEpollFd;
@@ -518,6 +523,11 @@ struct stCoRoutine_t *co_create_env( stCoRoutineEnv_t * env, const stCoRoutineAt
 	return lp;
 }
 
+/* 根据传入的参数创建一个协程
+ *
+ * 备注：显然本接口风格跟pthread_create完全一致，
+ *       但需要注意的是，本接口创建一个协程后，并未立即启动该协程
+ */
 int co_create( stCoRoutine_t **ppco,const stCoRoutineAttr_t *attr,pfn_co_routine_t pfn,void *arg )
 {
 	if( !co_get_curr_thread_env() ) 
@@ -528,6 +538,7 @@ int co_create( stCoRoutine_t **ppco,const stCoRoutineAttr_t *attr,pfn_co_routine
 	*ppco = co;
 	return 0;
 }
+// 销毁指定的协程
 void co_free( stCoRoutine_t *co )
 {
     if (!co->cIsShareStack) 
@@ -544,6 +555,7 @@ void co_release( stCoRoutine_t *co )
 
 void co_swap(stCoRoutine_t* curr, stCoRoutine_t* pending_co);
 
+// 启动指定协程，也意味着将cpu控制权交给该协程
 void co_resume( stCoRoutine_t *co )
 {
 	stCoRoutineEnv_t *env = co->env;
@@ -1109,7 +1121,9 @@ int co_cond_broadcast( stCoCond_t *si )
 	return 0;
 }
 
-
+/* 等待条件触发
+ * @ms  最长等待时间，-1表示一直等待直到条件触发
+ */
 int co_cond_timedwait( stCoCond_t *link,int ms )
 {
 	stCoCondItem_t* psi = (stCoCondItem_t*)calloc(1, sizeof(stCoCondItem_t));

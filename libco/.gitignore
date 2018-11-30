@@ -3,6 +3,7 @@ CMakeFiles
 *.cmake
 *.a
 *.so
+*.o
 *.dylib
 install_manifest.txt
 tags
