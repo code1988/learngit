@@ -7,3 +7,11 @@ CMakeFiles
 *.dylib
 install_manifest.txt
 tags
+example_closure
+example_cond
+example_copystack
+example_echocli
+example_echosvr
+example_poll
+example_specific
+example_thread
