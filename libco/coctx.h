@@ -29,7 +29,7 @@ struct coctx_param_t
 struct coctx_t
 {
 #if defined(__i386__)
-	void *regs[ 8 ];
+	void *regs[ 8 ];    // ebp、esp、eip和其他通用寄存器
 #else
 	void *regs[ 14 ];
 #endif

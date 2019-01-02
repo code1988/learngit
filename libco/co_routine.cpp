@@ -49,16 +49,17 @@ stCoRoutine_t *GetCurrCo( stCoRoutineEnv_t *env );
 struct stCoEpoll_t;
 
 /* 用于描述协程执行环境的结构
- * 协程执行环境跟线程一一对应，一个协程一旦创建便跟创建时所在线程对应的协程执行环境绑定，
- * 之后不允许在不同协程执行环境间迁移
+ * 协程执行环境跟线程一一对应，即同属于一个线程的所有协程共享同一个协程环境
+ * 一个协程一旦创建便跟创建时所在线程对应的协程执行环境绑定，之后不允许在不同协程执行环境间迁移
  */
 struct stCoRoutineEnv_t
 {
 	stCoRoutine_t *pCallStack[ 128 ];   // 该环境中的协程栈，深度固定为128，意味着最多嵌套调用128个协程
-	int iCallStackSize;
+	int iCallStackSize;                 // 当前的实际栈深
 	stCoEpoll_t *pEpoll;                // 指向一个epoll的封装结构
 
 	//for copy stack log lastco and nextco
+    // 在不使用共享栈模式时以下两个都是空指针
 	stCoRoutine_t* pending_co;          // 指向前一个被挂起的协程
 	stCoRoutine_t* occupy_co;           // 指向当前运行的协程
 };
@@ -118,6 +119,7 @@ static unsigned long long GetTickMS()
 #endif
 }
 
+// linux下实际返回的是线程ID
 static pid_t GetPid()
 {
     static __thread pid_t pid = 0;
@@ -530,6 +532,7 @@ struct stCoRoutine_t *co_create_env( stCoRoutineEnv_t * env, const stCoRoutineAt
  */
 int co_create( stCoRoutine_t **ppco,const stCoRoutineAttr_t *attr,pfn_co_routine_t pfn,void *arg )
 {
+    // 如果当前线程对应的协程执行环境尚未创建，则首先
 	if( !co_get_curr_thread_env() ) 
 	{
 		co_init_curr_thread_env();
@@ -713,6 +716,10 @@ static short EpollEvent2Poll( uint32_t events )
 	return e;
 }
 
+/* 这张表记录了该进程中跟每个线程对应的协程执行环境
+ * 通过线程ID索引
+ * 显然最多支持200K个线程
+ */
 static stCoRoutineEnv_t* g_arrCoEnvPerThread[ 204800 ] = { 0 };
 void co_init_curr_thread_env()
 {
@@ -734,6 +741,8 @@ void co_init_curr_thread_env()
 	stCoEpoll_t *ev = AllocEpoll();
 	SetEpoll( env,ev );
 }
+
+// 返回当前线程对应的协程执行环境
 stCoRoutineEnv_t *co_get_curr_thread_env()
 {
 	return g_arrCoEnvPerThread[ GetPid() ];
@@ -1093,6 +1102,7 @@ static void OnSignalProcessEvent( stTimeoutItem_t * ap )
 }
 
 stCoCondItem_t *co_cond_pop( stCoCond_t *link );
+// 发出指定条件成立的信号
 int co_cond_signal( stCoCond_t *si )
 {
 	stCoCondItem_t * sp = co_cond_pop( si );
@@ -1106,6 +1116,7 @@ int co_cond_signal( stCoCond_t *si )
 
 	return 0;
 }
+// 广播指定条件成立的信号
 int co_cond_broadcast( stCoCond_t *si )
 {
 	for(;;)
@@ -1121,7 +1132,7 @@ int co_cond_broadcast( stCoCond_t *si )
 	return 0;
 }
 
-/* 等待条件触发
+/* 等待条件成立的信号
  * @ms  最长等待时间，-1表示一直等待直到条件触发
  */
 int co_cond_timedwait( stCoCond_t *link,int ms )

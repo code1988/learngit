@@ -28,10 +28,11 @@
 struct stCoRoutine_t;
 struct stShareStack_t;
 
+// 用于描述协程属性的结构
 struct stCoRoutineAttr_t
 {
-	int stack_size;
-	stShareStack_t*  share_stack;
+	int stack_size;                 // 指定协程的栈大小，默认为128k
+	stShareStack_t*  share_stack;   // 指定协程的共享栈，默认为NULL，表示不启用共享栈模式
 	stCoRoutineAttr_t()
 	{
 		stack_size = 128 * 1024;

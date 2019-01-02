@@ -27,15 +27,17 @@ struct stCoSpec_t
 	void *value;
 };
 
+// 用于描述一个协程运行时的栈内存结构
 struct stStackMem_t
 {
-	stCoRoutine_t* occupy_co;
+	stCoRoutine_t* occupy_co;   // 指向所属的协程控制块
 	int stack_size;
 	char* stack_bp; //stack_buffer + stack_size
 	char* stack_buffer;
 
 };
 
+// 用于描述协程共享栈的结构
 struct stShareStack_t
 {
 	unsigned int alloc_idx;
@@ -59,7 +61,7 @@ struct stCoRoutine_t
 	char cEnableSysHook;
 	char cIsShareStack;
 
-	void *pvEnv;
+	void *pvEnv;            // 指向保存的环境变量
 
 	//char sRunStack[ 1024 * 128 ];
 	stStackMem_t* stack_mem;    // 指向该协程运行时的栈内存

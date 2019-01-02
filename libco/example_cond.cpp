@@ -30,7 +30,7 @@ struct stTask_t
 struct stEnv_t
 {
 	stCoCond_t* cond;
-	queue<stTask_t*> task_queue;
+	queue<stTask_t*> task_queue;    // 队列，元素为指向产品(stTask_t)的指针
 };
 void* Producer(void* args)
 {
