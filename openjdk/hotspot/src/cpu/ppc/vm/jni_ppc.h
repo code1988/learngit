@@ -40,7 +40,7 @@
   #define JNIIMPORT
 #endif
 
-#define JNICALL
+#define JNICALL     // 用于标识jni接口
 
 typedef int jint;
 

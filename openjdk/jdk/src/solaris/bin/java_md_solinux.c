@@ -836,6 +836,7 @@ GetJREPath(char *path, jint pathsize, const char * arch, jboolean speculative)
     return JNI_FALSE;
 }
 
+// 加载jvm动态库libjvm.so
 jboolean
 LoadJavaVM(const char *jvmpath, InvocationFunctions *ifn)
 {
@@ -843,6 +844,7 @@ LoadJavaVM(const char *jvmpath, InvocationFunctions *ifn)
 
     JLI_TraceLauncher("JVM path is %s\n", jvmpath);
 
+    // 加载libjvm.so
     libjvm = dlopen(jvmpath, RTLD_NOW + RTLD_GLOBAL);
     if (libjvm == NULL) {
 #if defined(__solaris__) && defined(__sparc) && !defined(_LP64) /* i.e. 32-bit sparc */
@@ -895,6 +897,7 @@ LoadJavaVM(const char *jvmpath, InvocationFunctions *ifn)
         return JNI_FALSE;
     }
 
+    // 注册3个特殊的jni接口
     ifn->CreateJavaVM = (CreateJavaVM_t)
         dlsym(libjvm, "JNI_CreateJavaVM");
     if (ifn->CreateJavaVM == NULL) {
@@ -1082,6 +1085,7 @@ void SetJavaLauncherPlatformProps() {
 #endif /* __linux__ */
 }
 
+// 初始化jvm的入口
 int
 JVMInit(InvocationFunctions* ifn, jlong threadStackSize,
         int argc, char **argv,

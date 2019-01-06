@@ -5279,6 +5279,7 @@ HS_DTRACE_PROBE_DECL3(hotspot_jni, GetCreatedJavaVMs__entry, \
 HS_DTRACE_PROBE_DECL1(hotspot_jni, GetCreatedJavaVMs__return, jint);
 #endif /* !USDT2 */
 
+// 获取当前运行的一组jvm，实际是获取每个jvm对应的jni接口集合
 _JNI_IMPORT_OR_EXPORT_ jint JNICALL JNI_GetCreatedJavaVMs(JavaVM **vm_buf, jsize bufLen, jsize *numVMs) {
   // See bug 4367188, the wrapper can sometimes cause VM crashes
   // JNIWrapper("GetCreatedJavaVMs");

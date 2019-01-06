@@ -76,15 +76,15 @@
 
 /*
  * Pointers to the needed JNI invocation API, initialized by LoadJavaVM.
+ * 定义了一组特殊的JNI接口集合，这些接口会在LoadJavaVM函数中被初始化
  */
 typedef jint (JNICALL *CreateJavaVM_t)(JavaVM **pvm, void **env, void *args);
 typedef jint (JNICALL *GetDefaultJavaVMInitArgs_t)(void *args);
 typedef jint (JNICALL *GetCreatedJavaVMs_t)(JavaVM **vmBuf, jsize bufLen, jsize *nVMs);
-
 typedef struct {
-    CreateJavaVM_t CreateJavaVM;
-    GetDefaultJavaVMInitArgs_t GetDefaultJavaVMInitArgs;
-    GetCreatedJavaVMs_t GetCreatedJavaVMs;
+    CreateJavaVM_t CreateJavaVM;    // 创建jvm:JNI_CreateJavaVM
+    GetDefaultJavaVMInitArgs_t GetDefaultJavaVMInitArgs;    // JNI_GetDefaultJavaVMInitArgs
+    GetCreatedJavaVMs_t GetCreatedJavaVMs;  // 获取当前运行的一组jvm:JNI_GetCreatedJavaVMs
 } InvocationFunctions;
 
 int

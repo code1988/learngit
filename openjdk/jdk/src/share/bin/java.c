@@ -170,6 +170,7 @@ static jlong initialHeapSize    = 0;  /* inital heap size */
 
 /*
  * Entry point.
+ * main函数中被调用，jvm启动总入口
  */
 int
 JLI_Launch(int argc, char ** argv,              /* main argc, argc */
@@ -250,6 +251,7 @@ JLI_Launch(int argc, char ** argv,              /* main argc, argc */
         start = CounterGet();
     }
 
+    // 加载jvm动态库libjvm.so
     if (!LoadJavaVM(jvmpath, &ifn)) {
         return(6);
     }
@@ -301,6 +303,7 @@ JLI_Launch(int argc, char ** argv,              /* main argc, argc */
     /* set the -Dsun.java.launcher.* platform properties */
     SetJavaLauncherPlatformProps();
 
+    // 最后进入初始化jvm的入口
     return JVMInit(&ifn, threadStackSize, argc, argv, mode, what, ret);
 }
 /*
@@ -350,6 +353,7 @@ JLI_Launch(int argc, char ** argv,              /* main argc, argc */
         } \
     } while (JNI_FALSE)
 
+// 这是一个新线程的主函数，也是真正初始化jvm并执行java应用程序的地方
 int JNICALL
 JavaMain(void * _args)
 {
@@ -371,7 +375,9 @@ JavaMain(void * _args)
 
     RegisterThread();
 
-    /* Initialize the virtual machine */
+    /* Initialize the virtual machine 
+     * 真正开始初始化jvm
+     * */
     start = CounterGet();
     if (!InitializeJVM(&vm, &env, &ifn)) {
         JLI_ReportErrorMessage(JVM_ERROR1);
@@ -1203,6 +1209,7 @@ ParseArguments(int *pargc, char ***pargv,
 /*
  * Initializes the Java Virtual Machine. Also frees options array when
  * finished.
+ * 真正初始化jvm的地方
  */
 static jboolean
 InitializeJVM(JavaVM **pvm, JNIEnv **penv, InvocationFunctions *ifn)
@@ -1990,6 +1997,7 @@ IsWildCardEnabled()
     return _wc_enabled;
 }
 
+// 创建一个新的线程用于执行JavaMain
 int
 ContinueInNewThread(InvocationFunctions* ifn, jlong threadStackSize,
                     int argc, char **argv,
