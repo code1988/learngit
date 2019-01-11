@@ -41,11 +41,11 @@
 #include "gc_implementation/parNew/parOopClosures.hpp"
 #endif // INCLUDE_ALL_GCS
 
-//
-// A Klass provides:
-//  1: language level class object (method dictionary etc.)
-//  2: provide vm dispatch behavior for the object
-// Both functions are combined into one C++ class.
+/* A Klass provides:
+ * 1: language level class object (method dictionary etc.)
+ * 2: provide vm dispatch behavior for the object
+ * Both functions are combined into one C++ class.
+ */
 
 // One reason for the oop/klass dichotomy in the implementation is
 // that we don't want a C++ vtbl pointer in every object.  Thus,

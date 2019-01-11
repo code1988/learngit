@@ -46,10 +46,10 @@ enum {
   JVM_CONSTANT_InternalMax              = 105   // Last implementation tag
 };
 
-
+// 用于描述常量池中一个常量标签的结构
 class constantTag VALUE_OBJ_CLASS_SPEC {
  private:
-  jbyte _tag;
+  jbyte _tag;   // 用于标识该常量标签的属性，JVM_CONSTANT_*
  public:
   bool is_klass() const             { return _tag == JVM_CONSTANT_Class; }
   bool is_field () const            { return _tag == JVM_CONSTANT_Fieldref; }
@@ -65,6 +65,7 @@ class constantTag VALUE_OBJ_CLASS_SPEC {
 
   bool is_invalid() const           { return _tag == JVM_CONSTANT_Invalid; }
 
+  // 判断该常量标签对应的是否是一个未解析的klass
   bool is_unresolved_klass() const {
     return _tag == JVM_CONSTANT_UnresolvedClass || _tag == JVM_CONSTANT_UnresolvedClassInError;
   }

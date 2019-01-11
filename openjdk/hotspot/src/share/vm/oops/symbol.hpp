@@ -113,6 +113,7 @@ class SymbolBase : public MetaspaceObj {
   int            _identity_hash;
 };
 
+// 用于描述一个符号对象的结构
 class Symbol : private SymbolBase {
   friend class VMStructs;
   friend class SymbolTable;

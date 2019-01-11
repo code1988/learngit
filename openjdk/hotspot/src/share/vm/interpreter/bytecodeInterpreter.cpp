@@ -2176,9 +2176,11 @@ run:
           UPDATE_PC_AND_TOS_AND_CONTINUE(3, count);
         }
 
-      CASE(_new): {
+      CASE(_new): {     // 解释new指令的流程
         u2 index = Bytes::get_Java_u2(pc+1);
+        // 获取常量池
         ConstantPool* constants = istate->method()->constants();
+        // 确保常量池中对应存放的是已解析的类
         if (!constants->tag_at(index).is_unresolved_klass()) {
           // Make sure klass is initialized and doesn't have a finalizer
           Klass* entry = constants->slot_at(index).get_klass();

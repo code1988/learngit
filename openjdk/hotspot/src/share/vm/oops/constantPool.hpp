@@ -50,6 +50,7 @@
 
 // A constantPool is an array containing class constants as described in the
 // class file.
+// 常量池实际就是一个数组，包含了class文件中描述的类中常量信息
 //
 // Most of the constant pool entries are written during class parsing, which
 // is safe.  For klass types, the constant pool entry is
@@ -59,8 +60,11 @@
 
 class SymbolHashMap;
 
+// 用于描述常量池中的一个slot的结构
 class CPSlot VALUE_OBJ_CLASS_SPEC {
-  intptr_t _ptr;
+  intptr_t _ptr;    /* [31-1]字段表示该slot中存放的symbol/klass对象的首地址，显然这个地址的特点是最低位为0
+                       [0]位置标识该slot中的symbol/klass是否已经解析，置1表示未解析，置0表示已解析
+                       */
  public:
   CPSlot(intptr_t ptr): _ptr(ptr) {}
   CPSlot(Klass* ptr): _ptr((intptr_t)ptr) {}
@@ -70,10 +74,16 @@ class CPSlot VALUE_OBJ_CLASS_SPEC {
   bool is_resolved()   { return (_ptr & 1) == 0; }
   bool is_unresolved() { return (_ptr & 1) == 1; }
 
+  /* 返回该slot中存放的symbol对象
+   * 备注： 一个存放了symbol对象的slot必须是未解析的
+   */
   Symbol* get_symbol() {
     assert(is_unresolved(), "bad call");
     return (Symbol*)(_ptr & ~1);
   }
+  /* 返回该slot中存放的klass对象
+   * 备注： 一个存放了klass对象的slot必须是已解析的
+   */
   Klass* get_klass() {
     assert(is_resolved(), "bad call");
     return (Klass*)_ptr;
@@ -81,6 +91,7 @@ class CPSlot VALUE_OBJ_CLASS_SPEC {
 };
 
 class KlassSizeStats;
+// 用于描述常量池的结构
 class ConstantPool : public Metadata {
   friend class VMStructs;
   friend class BytecodeInterpreter;  // Directly extracts an oop in the pool for fast instanceof/checkcast
@@ -125,6 +136,7 @@ class ConstantPool : public Metadata {
  private:
   intptr_t* base() const { return (intptr_t*) (((char*) this) + sizeof(ConstantPool)); }
 
+  // 从常量池中检索指定位置的slot
   CPSlot slot_at(int which) {
     assert(is_within_bounds(which), "index out of bounds");
     // Uses volatile because the klass slot changes without a lock.
@@ -341,12 +353,10 @@ class ConstantPool : public Metadata {
     *int_at_addr(which) = ((jint) signature_index<<16) | name_index;  // Not so nice
   }
 
-  // Tag query
-
+  // Tag query  检索常量池中指定位置上的常量标签对象
   constantTag tag_at(int which) const { return (constantTag)tags()->at_acquire(which); }
 
   // Fetching constants
-
   Klass* klass_at(int which, TRAPS) {
     constantPoolHandle h_this(THREAD, this);
     return klass_at_impl(h_this, which, CHECK_NULL);
