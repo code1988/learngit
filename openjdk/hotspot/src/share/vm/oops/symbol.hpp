@@ -113,7 +113,7 @@ class SymbolBase : public MetaspaceObj {
   int            _identity_hash;
 };
 
-// 用于描述一个符号对象的结构
+// 用于描述一个符号对象的整体结构，该结构和klass一样只会从元空间分配，其他详见上面
 class Symbol : private SymbolBase {
   friend class VMStructs;
   friend class SymbolTable;

@@ -28,17 +28,17 @@
 #include "memory/universe.inline.hpp"
 #include "oops/oop.hpp"
 
-// arrayOopDesc is the abstract baseclass for all arrays.  It doesn't
-// declare pure virtual to enforce this because that would allocate a vtbl
-// in each instance, which we don't want.
+/* arrayOopDesc is the abstract baseclass for all arrays.  It doesn't
+ * declare pure virtual to enforce this because that would allocate a vtbl
+ * in each instance, which we don't want.
+ * 用于描述数组对象的基类
 
-// The layout of array Oops is:
-//
-//  markOop
-//  Klass*    // 32 bits if compressed but declared 64 in LP64.
-//  length    // shares klass memory or allocated after declared fields.
+ * The layout of array Oops is:
 
-
+ * markOop
+ * Klass*    // 32 bits if compressed but declared 64 in LP64.
+ * length    // shares klass memory or allocated after declared fields.
+ */
 class arrayOopDesc : public oopDesc {
   friend class VMStructs;
 
@@ -61,9 +61,12 @@ class arrayOopDesc : public oopDesc {
   }
 
  public:
-  // The _length field is not declared in C++.  It is allocated after the
-  // declared nonstatic fields in arrayOopDesc if not compressed, otherwise
-  // it occupies the second half of the _klass field in oopDesc.
+  /* The _length field is not declared in C++.  It is allocated after the
+   * declared nonstatic fields in arrayOopDesc if not compressed, otherwise
+   * it occupies the second half of the _klass field in oopDesc.
+   * 计算_length字段的偏移量
+   * 类指针压缩功能关闭时该字段就紧接着arrayOopDesc存放，开启时该字段占用了基类oopDesc中_klass字段的后半部空间
+   */
   static int length_offset_in_bytes() {
     return UseCompressedClassPointers ? klass_gap_offset_in_bytes() :
                                sizeof(arrayOopDesc);
@@ -82,11 +85,13 @@ class arrayOopDesc : public oopDesc {
   // Tells whether index is within bounds.
   bool is_within_bounds(int index) const        { return 0 <= index && index < length(); }
 
-  // Accessors for instance variable which is not a C++ declared nonstatic
-  // field.
+  /* Accessors for instance variable which is not a C++ declared nonstatic field.
+   * 返回该数组对象包含的元素个数
+   */
   int length() const {
     return *(int*)(((intptr_t)this) + length_offset_in_bytes());
   }
+  // 设置该数组对象包含的元素个数
   void set_length(int length) {
     *(int*)(((intptr_t)this) + length_offset_in_bytes()) = length;
   }

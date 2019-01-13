@@ -234,13 +234,15 @@ class _ValueObj {
 };
 
 
-// Base class for objects stored in Metaspace.
-// Calling delete will result in fatal error.
-//
-// Do not inherit from something with a vptr because this class does
-// not introduce one.  This class is used to allocate both shared read-only
-// and shared read-write classes.
-//
+/* Base class for objects stored in Metaspace.
+ * Calling delete will result in fatal error.
+ * 用于描述所有存储在元空间中对象的基类
+
+ * Do not inherit from something with a vptr because this class does
+ * not introduce one.  This class is used to allocate both shared read-only
+ * and shared read-write classes.
+ */
+
 
 class ClassLoaderData;
 

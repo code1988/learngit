@@ -101,6 +101,9 @@ class WorkerThread;
 //   - JavaThread
 //   - WatcherThread
 
+/* 用于描述线程的基类结构
+ * 由此派生的子类包括NamedThread、JavaThread、WatcherThread
+ */
 class Thread: public ThreadShadow {
   friend class VMStructs;
  private:

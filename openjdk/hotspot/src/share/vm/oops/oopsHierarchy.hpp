@@ -40,14 +40,13 @@ typedef juint  narrowKlass;
 typedef void* OopOrNarrowOopStar;
 typedef class   markOopDesc*                markOop;
 
+// 以下这个预编译开关决定了oop是否直接指向oopDesc
 #ifndef CHECK_UNHANDLED_OOPS
-
 typedef class oopDesc*                            oop;
 typedef class   instanceOopDesc*            instanceOop;
 typedef class   arrayOopDesc*                    arrayOop;
 typedef class     objArrayOopDesc*            objArrayOop;
 typedef class     typeArrayOopDesc*            typeArrayOop;
-
 #else
 
 // When CHECK_UNHANDLED_OOPS is defined, an "oop" is a class with a

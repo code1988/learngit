@@ -92,6 +92,10 @@ class ParCompactionManager;
 class KlassSizeStats;
 class fieldDescriptor;
 
+/* 用于描述Java中类的基类结构
+ * 该结构和symbol一样只会从元空间分配，其他详见上面
+ * 由此派生的子类包括InstanceKlass,ArrayKlass
+ */
 class Klass : public Metadata {
   friend class VMStructs;
  protected:
@@ -135,8 +139,10 @@ class Klass : public Metadata {
   // secondary supers, else is &_primary_supers[depth()].
   juint       _super_check_offset;
 
-  // Class name.  Instance classes: java/lang/String, etc.  Array classes: [I,
-  // [Ljava/lang/String;, etc.  Set to zero for all other kinds of classes.
+  /* Class name.  Instance classes: java/lang/String, etc.  Array classes: [I,
+   * [Ljava/lang/String;, etc.  Set to zero for all other kinds of classes.
+   * 指向存放了该类名的symbol对象
+   */
   Symbol*     _name;
 
   // Cache of last observed secondary supertype
@@ -147,14 +153,22 @@ class Klass : public Metadata {
   Klass*      _primary_supers[_primary_super_limit];
   // java/lang/Class instance mirroring this class
   oop       _java_mirror;
-  // Superclass
+  /* Superclass
+   * 指向该类的父类
+   */
   Klass*      _super;
-  // First subclass (NULL if none); _subklass->next_sibling() is next one
+  /* First subclass (NULL if none); _subklass->next_sibling() is next one
+   * 指向该类的第一个子类
+   */
   Klass*      _subklass;
-  // Sibling link (or NULL); links all subklasses of a klass
+  /* Sibling link (or NULL); links all subklasses of a klass
+   * 指向该类的下一个兄弟类
+   */
   Klass*      _next_sibling;
 
-  // All klasses loaded by a class loader are chained through these links
+  /* All klasses loaded by a class loader are chained through these links
+   * 所有由同一个加载器加载的类由该字段链接成一张链表
+   */
   Klass*      _next_link;
 
   // The VM's representation of the ClassLoader used to load this class.

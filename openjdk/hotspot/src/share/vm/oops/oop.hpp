@@ -56,6 +56,10 @@ class CMSIsAliveClosure;
 class PSPromotionManager;
 class ParCompactionManager;
 
+/* 用于描述类对象的基类结构
+ * 由此派生的子类有instanceOopDesc、arrayOopDesc、objArrayOopDesc、typeArrayOopDesc
+ * 类对象由头部和实例字段组成，其中头部又由_mark和_metadata两部分组成
+ */
 class oopDesc {
   friend class VMStructs;
  private:
@@ -63,7 +67,7 @@ class oopDesc {
   union _metadata {
     Klass*      _klass;
     narrowKlass _compressed_klass;
-  } _metadata;
+  } _metadata;  // 这个字段用于关联该类对象对应的klass，使用union的目的是在64位系统上实现指针压缩减少空间占用
 
   // Fast access to barrier set.  Must be initialized.
   static BarrierSet* _bs;
@@ -95,7 +99,9 @@ class oopDesc {
   void set_klass_to_list_ptr(oop k);
   oop list_ptr_from_klass();
 
-  // size of object header, aligned to platform wordSize
+  /* size of object header, aligned to platform wordSize
+   * 返回对象头长(度量单位为HeapWordSize)
+   */
   static int header_size()          { return sizeof(oopDesc)/HeapWordSize; }
 
   // Returns whether this is an instance of k or an instance of a subclass of k

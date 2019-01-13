@@ -135,6 +135,7 @@ class OopMapBlock VALUE_OBJ_CLASS_SPEC {
 
 struct JvmtiCachedClassFileData;
 
+// 用于描述Java中普通类的结构，其他的详见上面
 class InstanceKlass: public Klass {
   friend class VMStructs;
   friend class ClassFileParser;
@@ -171,9 +172,9 @@ class InstanceKlass: public Klass {
     allocated,                          // allocated (but not yet linked)
     loaded,                             // loaded and inserted in class hierarchy (but not linked yet)
     linked,                             // successfully linked/verified (but not initialized yet)
-    being_initialized,                  // currently running class initializer
-    fully_initialized,                  // initialized (successfull final state)
-    initialization_error                // error happened during initialization
+    being_initialized,                  // currently running class initializer   标识Java类正在进行初始化
+    fully_initialized,                  // initialized (successfull final state) 标识Java类已经完成所有初始化
+    initialization_error                // error happened during initialization  标识Java类初始化失败
   };
 
   static int number_of_instance_classes() { return _total_instanceKlass_count; }
@@ -262,7 +263,7 @@ class InstanceKlass: public Klass {
   // Class states are defined as ClassState (see above).
   // Place the _init_state here to utilize the unused 2-byte after
   // _idnum_allocated_count.
-  u1              _init_state;                    // state of class
+  u1              _init_state;                    // state of class 用于记录该Java普通类跟初始化相关的状态
   u1              _reference_type;                // reference type
 
   JvmtiCachedClassFieldMap* _jvmti_cached_class_field_map;  // JVMTI: used during heap iteration
@@ -453,6 +454,7 @@ class InstanceKlass: public Klass {
   // initialization state
   bool is_loaded() const                   { return _init_state >= loaded; }
   bool is_linked() const                   { return _init_state >= linked; }
+  // 判断该Java普通类是否已经初始化完毕
   bool is_initialized() const              { return _init_state == fully_initialized; }
   bool is_not_initialized() const          { return _init_state <  being_initialized; }
   bool is_being_initialized() const        { return _init_state == being_initialized; }
@@ -963,7 +965,9 @@ class InstanceKlass: public Klass {
     }
   }
 
-  // Use this to return the size of an instance in heap words:
+  /* Use this to return the size of an instance in heap words:
+   * 返回该Java普通类对象的长度(度量单位为HeapWordSize)
+   */
   int size_helper() const {
     return layout_helper_to_size_helper(layout_helper());
   }

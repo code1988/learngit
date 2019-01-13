@@ -31,11 +31,13 @@
 
 class GlobalTLABStats;
 
-// ThreadLocalAllocBuffer: a descriptor for thread-local storage used by
-// the threads for allocation.
-//            It is thread-private at any time, but maybe multiplexed over
-//            time across multiple threads. The park()/unpark() pair is
-//            used to make it available for such multiplexing.
+/* ThreadLocalAllocBuffer: a descriptor for thread-local storage used by
+ * the threads for allocation.
+ * 用于描述TLAB的结构
+ *           It is thread-private at any time, but maybe multiplexed over
+ *           time across multiple threads. The park()/unpark() pair is
+ *           used to make it available for such multiplexing.
+ */
 class ThreadLocalAllocBuffer: public CHeapObj<mtThread> {
   friend class VMStructs;
 private:
