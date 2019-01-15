@@ -73,7 +73,7 @@ typedef jobject jthread;
 typedef jobject jthreadGroup;
 typedef jlong jlocation;
 struct _jrawMonitorID;
-typedef struct _jrawMonitorID *jrawMonitorID;
+typedef struct _jrawMonitorID *jrawMonitorID;           // 用于唯一标识一个监视器对象
 typedef struct JNINativeInterface_ jniNativeInterface;
 
     /* Constants */
@@ -332,8 +332,7 @@ enum {
     JVMTI_RESOURCE_EXHAUSTED_THREADS = 0x0004
 };
 
-    /* Errors */
-
+/* Errors */
 typedef enum {
     JVMTI_ERROR_NONE = 0,
     JVMTI_ERROR_INVALID_THREAD = 10,
@@ -661,6 +660,7 @@ struct _jvmtiAddrLocationMap {
     jlocation location;
 };
 
+// jvmti支持配置的能力集
 typedef struct {
     unsigned int can_tag_objects : 1;
     unsigned int can_generate_field_modification_events : 1;
@@ -693,7 +693,7 @@ typedef struct {
     unsigned int can_generate_monitor_events : 1;
     unsigned int can_generate_vm_object_alloc_events : 1;
     unsigned int can_generate_native_method_bind_events : 1;
-    unsigned int can_generate_garbage_collection_events : 1;
+    unsigned int can_generate_garbage_collection_events : 1;    // 生成GC事件能力的开关
     unsigned int can_generate_object_free_events : 1;
     unsigned int can_force_early_return : 1;
     unsigned int can_get_owned_monitor_stack_depth_info : 1;
@@ -921,8 +921,9 @@ typedef void (JNICALL *jvmtiEventVMStart)
     (jvmtiEnv *jvmti_env,
      JNIEnv* jni_env);
 
-    /* Event Callback Structure */
-
+/* Event Callback Structure 
+ * jvmti支持的事件回调集
+ * */
 typedef struct {
                               /*   50 : VM Initialization Event */
     jvmtiEventVMInit VMInit;
@@ -997,8 +998,9 @@ typedef struct {
 } jvmtiEventCallbacks;
 
 
-    /* Function Interface */
-
+/* Function Interface 
+ * 用于描述jvmti执行环境的结构
+ * */
 typedef struct jvmtiInterface_1_ {
 
   /*   1 :  RESERVED */

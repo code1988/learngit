@@ -347,8 +347,12 @@ JvmtiEnv::SetNativeMethodPrefixes(jint prefix_count, char** prefixes) {
   // Event Management functions
   //
 
-// callbacks - NULL is a valid value, must be checked
-// size_of_callbacks - pre-checked to be greater than or equal to 0
+/* 注册jvmti支持的事件回调集
+ * callbacks - NULL is a valid value, must be checked
+ * size_of_callbacks - pre-checked to be greater than or equal to 0
+ *
+ * 备注：注册的事件需要被启用才生效
+ */
 jvmtiError
 JvmtiEnv::SetEventCallbacks(const jvmtiEventCallbacks* callbacks, jint size_of_callbacks) {
   JvmtiEventController::set_event_callbacks(this, callbacks, size_of_callbacks);
@@ -356,7 +360,11 @@ JvmtiEnv::SetEventCallbacks(const jvmtiEventCallbacks* callbacks, jint size_of_c
 } /* end SetEventCallbacks */
 
 
-// event_thread - NULL is a valid value, must be checked
+/* 启用/禁用指定事件的jvmti回调通知
+ * event_thread - NULL is a valid value, must be checked
+ *
+ * 备注：启用的前提是该事件的回调函数已经注册
+ */
 jvmtiError
 JvmtiEnv::SetEventNotificationMode(jvmtiEventMode mode, jvmtiEvent event_type, jthread event_thread,   ...) {
   JavaThread* java_thread = NULL;
@@ -413,7 +421,9 @@ JvmtiEnv::GetPotentialCapabilities(jvmtiCapabilities* capabilities_ptr) {
 } /* end GetPotentialCapabilities */
 
 
-// capabilities_ptr - pre-checked for NULL
+/* capabilities_ptr - pre-checked for NULL
+ * 以追加方式添加jvmti能力集
+ */
 jvmtiError
 JvmtiEnv::AddCapabilities(const jvmtiCapabilities* capabilities_ptr) {
   return JvmtiManageCapabilities::add_capabilities(get_capabilities(),
@@ -2949,8 +2959,10 @@ JvmtiEnv::IsMethodObsolete(Method* method_oop, jboolean* is_obsolete_ptr) {
   // Raw Monitor functions
   //
 
-// name - pre-checked for NULL
-// monitor_ptr - pre-checked for NULL
+/* 创建一个监视器
+ * name - pre-checked for NULL          监视器名
+ * monitor_ptr - pre-checked for NULL   用于存放创建的监视器对象
+ */
 jvmtiError
 JvmtiEnv::CreateRawMonitor(const char* name, jrawMonitorID* monitor_ptr) {
   JvmtiRawMonitor* rmonitor = new JvmtiRawMonitor(name);

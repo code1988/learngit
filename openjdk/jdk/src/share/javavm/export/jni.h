@@ -211,6 +211,7 @@ typedef JavaVM_ JavaVM;
 typedef const struct JNIInvokeInterface_ *JavaVM;
 #endif
 
+// 导出给agentlib使用的jni执行环境
 struct JNINativeInterface_ {
     void *reserved0;
     void *reserved1;
@@ -1887,18 +1888,19 @@ typedef struct JavaVMAttachArgs {
 
 /* End VM-specific. */
 
+// 导出给agentlib使用的一组原始jni接口
 struct JNIInvokeInterface_ {
     void *reserved0;
     void *reserved1;
     void *reserved2;
 
-    jint (JNICALL *DestroyJavaVM)(JavaVM *vm);
+    jint (JNICALL *DestroyJavaVM)(JavaVM *vm);  // 指向jni_DestroyJavaVM
 
     jint (JNICALL *AttachCurrentThread)(JavaVM *vm, void **penv, void *args);
 
     jint (JNICALL *DetachCurrentThread)(JavaVM *vm);
 
-    jint (JNICALL *GetEnv)(JavaVM *vm, void **penv, jint version);
+    jint (JNICALL *GetEnv)(JavaVM *vm, void **penv, jint version);  // 指向jni_GetEnv
 
     jint (JNICALL *AttachCurrentThreadAsDaemon)(JavaVM *vm, void **penv, void *args);
 };

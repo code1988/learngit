@@ -5566,6 +5566,7 @@ DT_RETURN_MARK_DECL(GetEnv, jint
                     , HOTSPOT_JNI_GETENV_RETURN(_ret_ref));
 #endif /* USDT2 */
 
+// 获取指定版本的jvmti环境指针
 jint JNICALL jni_GetEnv(JavaVM *vm, void **penv, jint version) {
 #ifndef USDT2
   DTRACE_PROBE3(hotspot_jni, GetEnv__entry, vm, penv, version);

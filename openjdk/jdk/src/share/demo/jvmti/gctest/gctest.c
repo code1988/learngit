@@ -155,20 +155,26 @@ Agent_OnLoad(JavaVM *vm, char *options, void *reserved)
     jvmtiCapabilities   capabilities;
     jvmtiEventCallbacks callbacks;
 
-    /* Get JVMTI environment */
+    /* Get JVMTI environment 
+     * 首先获取1.2.1版本的jvmti环境指针
+     * */
     rc = (*vm)->GetEnv(vm, (void **)&jvmti, JVMTI_VERSION);
     if (rc != JNI_OK) {
         fatal_error("ERROR: Unable to create jvmtiEnv, rc=%d\n", rc);
         return -1;
     }
 
-    /* Get/Add JVMTI capabilities */
+    /* Get/Add JVMTI capabilities 
+     * 添加生成GC事件的能力
+     * */
     (void)memset(&capabilities, 0, sizeof(capabilities));
     capabilities.can_generate_garbage_collection_events = 1;
     err = (*jvmti)->AddCapabilities(jvmti, &capabilities);
     check_jvmti_error(jvmti, err, "add capabilities");
 
-    /* Set callbacks and enable event notifications */
+    /* Set callbacks and enable event notifications 
+     * 注册并启用VM初始化事件、GC启动事件、GC结束事件
+     * */
     memset(&callbacks, 0, sizeof(callbacks));
     callbacks.VMInit                  = &vm_init;
     callbacks.GarbageCollectionStart  = &gc_start;
@@ -185,7 +191,9 @@ Agent_OnLoad(JavaVM *vm, char *options, void *reserved)
                         JVMTI_EVENT_GARBAGE_COLLECTION_FINISH, NULL);
     check_jvmti_error(jvmti, err, "set event notification");
 
-    /* Create the necessary raw monitor */
+    /* Create the necessary raw monitor 
+     * 创建一个用于同步的监视器
+     * */
     err = (*jvmti)->CreateRawMonitor(jvmti, "lock", &lock);
     check_jvmti_error(jvmti, err, "create raw monitor");
     return 0;

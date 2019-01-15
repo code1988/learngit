@@ -1903,7 +1903,6 @@ struct JNIInvokeInterface_ {
     jint (JNICALL *AttachCurrentThreadAsDaemon)(JavaVM *vm, void **penv, void *args);
 };
 
-// 本地调用的jni接口集合
 struct JavaVM_ {
     const struct JNIInvokeInterface_ *functions;
 #ifdef __cplusplus
