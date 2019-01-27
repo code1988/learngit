@@ -31,6 +31,7 @@
 //
 // Note that the mark is not a real oop but just a word.
 // It is placed in the oop hierarchy for historical reasons.
+// 本结构其实只是一个word而不是一个真正的oop，只是出于历史原因才被置于oop层次中
 //
 // Bit-format of an object header (most significant first, big endian layout below):
 //
@@ -101,6 +102,7 @@ class BasicLock;
 class ObjectMonitor;
 class JavaThread;
 
+// 用于描述对象头主体部分的结构，其他详见上面
 class markOopDesc: public oopDesc {
  private:
   // Conversion

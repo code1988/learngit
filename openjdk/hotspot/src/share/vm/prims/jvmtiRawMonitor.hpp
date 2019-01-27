@@ -28,13 +28,14 @@
 #include "runtime/objectMonitor.hpp"
 #include "utilities/growableArray.hpp"
 
-//
-// class JvmtiRawMonitor
-//
-// Used by JVMTI methods: All RawMonitor methods (CreateRawMonitor, EnterRawMonitor, etc.)
-//
-// Wrapper for ObjectMonitor class that saves the Monitor's name
-//
+/*
+ class JvmtiRawMonitor
+ jvm内部用于描述jvmti原始监视器的结构
+
+ Used by JVMTI methods: All RawMonitor methods (CreateRawMonitor, EnterRawMonitor, etc.)
+
+ Wrapper for ObjectMonitor class that saves the Monitor's name
+ */
 
 class JvmtiRawMonitor : public ObjectMonitor  {
 private:

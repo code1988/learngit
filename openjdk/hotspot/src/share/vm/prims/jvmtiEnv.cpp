@@ -73,6 +73,7 @@ JvmtiEnv::JvmtiEnv(jint version) : JvmtiEnvBase(version) {
 JvmtiEnv::~JvmtiEnv() {
 }
 
+// 创建一个jvm内部的jvmti执行环境
 JvmtiEnv*
 JvmtiEnv::create_a_jvmti(jint version) {
   return new JvmtiEnv(version);
@@ -347,7 +348,7 @@ JvmtiEnv::SetNativeMethodPrefixes(jint prefix_count, char** prefixes) {
   // Event Management functions
   //
 
-/* 注册jvmti支持的事件回调集
+/* 往当前jvmti环境中注册事件回调集
  * callbacks - NULL is a valid value, must be checked
  * size_of_callbacks - pre-checked to be greater than or equal to 0
  *
@@ -360,10 +361,21 @@ JvmtiEnv::SetEventCallbacks(const jvmtiEventCallbacks* callbacks, jint size_of_c
 } /* end SetEventCallbacks */
 
 
-/* 启用/禁用指定事件的jvmti回调通知
+/* 在当前jvmti环境中启用/禁用指定事件通知
  * event_thread - NULL is a valid value, must be checked
+ *                NULL表示对该事件做全局层面处理，否则只会在目标线程内生效
  *
- * 备注：启用的前提是该事件的回调函数已经注册
+ * 备注：事件启用的前提是已经使能了对应的能力;
+ *       启用的事件通知需要被注册回调才生效;
+ *       该函数无法在线程层面操作以下事件：
+ *              VM_INIT
+ *              VM_START
+ *              VM_DEATH
+ *              THREAD_START
+ *              COMPILED_METHOD_LOAD
+ *              COMPILED_METHOD_UNLOAD 
+ *              DYNAMIC_CODE_GENERATED 
+ *              DATA_DUMP_REQUEST 
  */
 jvmtiError
 JvmtiEnv::SetEventNotificationMode(jvmtiEventMode mode, jvmtiEvent event_type, jthread event_thread,   ...) {
@@ -407,11 +419,13 @@ JvmtiEnv::SetEventNotificationMode(jvmtiEventMode mode, jvmtiEvent event_type, j
   return JVMTI_ERROR_NONE;
 } /* end SetEventNotificationMode */
 
-  //
-  // Capability functions
-  //
+//
+// Capability functions
+//
 
-// capabilities_ptr - pre-checked for NULL
+/* 获取当前jvmti环境可启用的能力集
+ * capabilities_ptr - pre-checked for NULL
+ */
 jvmtiError
 JvmtiEnv::GetPotentialCapabilities(jvmtiCapabilities* capabilities_ptr) {
   JvmtiManageCapabilities::get_potential_capabilities(get_capabilities(),
@@ -422,7 +436,7 @@ JvmtiEnv::GetPotentialCapabilities(jvmtiCapabilities* capabilities_ptr) {
 
 
 /* capabilities_ptr - pre-checked for NULL
- * 以追加方式添加jvmti能力集
+ * 往当前jvmti环境添加jvmti能力集
  */
 jvmtiError
 JvmtiEnv::AddCapabilities(const jvmtiCapabilities* capabilities_ptr) {
@@ -433,7 +447,9 @@ JvmtiEnv::AddCapabilities(const jvmtiCapabilities* capabilities_ptr) {
 } /* end AddCapabilities */
 
 
-// capabilities_ptr - pre-checked for NULL
+/* 从当前jvmti环境中去除指定的已开启能力集
+ * capabilities_ptr - pre-checked for NULL
+ */
 jvmtiError
 JvmtiEnv::RelinquishCapabilities(const jvmtiCapabilities* capabilities_ptr) {
   JvmtiManageCapabilities::relinquish_capabilities(get_capabilities(), capabilities_ptr, get_capabilities());
@@ -441,7 +457,9 @@ JvmtiEnv::RelinquishCapabilities(const jvmtiCapabilities* capabilities_ptr) {
 } /* end RelinquishCapabilities */
 
 
-// capabilities_ptr - pre-checked for NULL
+/* 获取当前jvmti环境中已启用的能力集
+ * capabilities_ptr - pre-checked for NULL
+ */
 jvmtiError
 JvmtiEnv::GetCapabilities(jvmtiCapabilities* capabilities_ptr) {
   JvmtiManageCapabilities::copy_capabilities(get_capabilities(), capabilities_ptr);
@@ -1115,10 +1133,16 @@ JvmtiEnv::GetCurrentContendedMonitor(JavaThread* java_thread, jobject* monitor_p
 } /* end GetCurrentContendedMonitor */
 
 
-// Threads_lock NOT held
-// thread - NOT pre-checked
-// proc - pre-checked for NULL
-// arg - NULL is a valid value, must be checked
+/* 运行jvmti代理线程
+ * Threads_lock NOT held
+ * thread - NOT pre-checked     要运行的线程对象
+ * proc - pre-checked for NULL  线程的主函数
+ * arg - NULL is a valid value, must be checked 传递给线程主函数的参数
+ * @priority    jvm内部的线程优先级
+ *
+ * 备注：如果事先开启了THREAD_START事件通知，就会触发该事件;
+ *       在Java中看不到这个线程，但可以在jvmti中看到，比如可以通过GetAllThreads获取
+ */
 jvmtiError
 JvmtiEnv::RunAgentThread(jthread thread, jvmtiStartFunction proc, const void* arg, jint priority) {
   oop thread_oop = JNIHandles::resolve_external_guard(thread);
@@ -2959,9 +2983,9 @@ JvmtiEnv::IsMethodObsolete(Method* method_oop, jboolean* is_obsolete_ptr) {
   // Raw Monitor functions
   //
 
-/* 创建一个监视器
+/* 在当前jvmti环境中创建一个jvmti原始监视器
  * name - pre-checked for NULL          监视器名
- * monitor_ptr - pre-checked for NULL   用于存放创建的监视器对象
+ * monitor_ptr - pre-checked for NULL   用于存放创建的监视器
  */
 jvmtiError
 JvmtiEnv::CreateRawMonitor(const char* name, jrawMonitorID* monitor_ptr) {
@@ -2974,7 +2998,12 @@ JvmtiEnv::CreateRawMonitor(const char* name, jrawMonitorID* monitor_ptr) {
 } /* end CreateRawMonitor */
 
 
-// rmonitor - pre-checked for validity
+/* 销毁一个jvmti原始监视器
+ * rmonitor - pre-checked for validity
+ *
+ * 备注：若当前线程已经进入了该监视器，则在销毁之前，会先使当前线程退出监视器；
+ *       若已经有其他线程进入了该监视器，则销毁失败
+ */
 jvmtiError
 JvmtiEnv::DestroyRawMonitor(JvmtiRawMonitor * rmonitor) {
   if (Threads::number_of_threads() == 0) {
@@ -3016,7 +3045,9 @@ JvmtiEnv::DestroyRawMonitor(JvmtiRawMonitor * rmonitor) {
 } /* end DestroyRawMonitor */
 
 
-// rmonitor - pre-checked for validity
+/* 当前线程进入指定jvmti原始监视器
+ * rmonitor - pre-checked for validity
+ */
 jvmtiError
 JvmtiEnv::RawMonitorEnter(JvmtiRawMonitor * rmonitor) {
   if (Threads::number_of_threads() == 0) {
@@ -3079,7 +3110,11 @@ JvmtiEnv::RawMonitorEnter(JvmtiRawMonitor * rmonitor) {
 } /* end RawMonitorEnter */
 
 
-// rmonitor - pre-checked for validity
+/* 当前线程退出一个已经持有的jvmti原始监视器
+ * rmonitor - pre-checked for validity
+ *
+ * 备注：退出一个当前线程并未持有的监视器会返回失败
+ */
 jvmtiError
 JvmtiEnv::RawMonitorExit(JvmtiRawMonitor * rmonitor) {
   jvmtiError err = JVMTI_ERROR_NONE;
@@ -3122,7 +3157,12 @@ JvmtiEnv::RawMonitorExit(JvmtiRawMonitor * rmonitor) {
 } /* end RawMonitorExit */
 
 
-// rmonitor - pre-checked for validity
+/* 当前线程等待一个已经持有的监视器的唤醒通知
+ * rmonitor - pre-checked for validity
+ * @millis  指定等待超时时间，0表示永远等待直到被唤醒
+ *
+ * 备注：等待一个当前线程并未持有的监视器会返回失败
+ */
 jvmtiError
 JvmtiEnv::RawMonitorWait(JvmtiRawMonitor * rmonitor, jlong millis) {
   int r = 0;
@@ -3181,7 +3221,11 @@ JvmtiEnv::RawMonitorWait(JvmtiRawMonitor * rmonitor, jlong millis) {
 } /* end RawMonitorWait */
 
 
-// rmonitor - pre-checked for validity
+/* 当前线程唤醒等待在目标监视器上的某个线程
+ * rmonitor - pre-checked for validity
+ *
+ * 备注：发起唤醒的前提是当前线程持有该监视器
+ */
 jvmtiError
 JvmtiEnv::RawMonitorNotify(JvmtiRawMonitor * rmonitor) {
   int r = 0;
@@ -3212,7 +3256,11 @@ JvmtiEnv::RawMonitorNotify(JvmtiRawMonitor * rmonitor) {
 } /* end RawMonitorNotify */
 
 
-// rmonitor - pre-checked for validity
+/* 当前线程唤醒等待在目标监视器上的所有线程
+ * rmonitor - pre-checked for validity
+ *
+ * 备注：发起唤醒的前提是当前线程持有该监视器
+ */
 jvmtiError
 JvmtiEnv::RawMonitorNotifyAll(JvmtiRawMonitor * rmonitor) {
   int r = 0;

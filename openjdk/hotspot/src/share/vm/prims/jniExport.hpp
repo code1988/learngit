@@ -30,7 +30,7 @@
 
 class JniExportedInterface {
 public:
-    // 导出jvmti环境指针的方法
+    // 获取给agentlib使用的jvmti环境指针
     static bool GetExportedInterface(JavaVM* vm, void** penv, jint version, jint* iface) {
         if (JvmtiExport::is_jvmti_version(version)) {
             *iface = JvmtiExport::get_jvmti_interface(vm, penv, version);

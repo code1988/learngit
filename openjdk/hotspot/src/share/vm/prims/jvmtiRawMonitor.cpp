@@ -51,7 +51,6 @@ is running. Raw monitor transition will not work");
 //
 // class JvmtiRawMonitor
 //
-
 JvmtiRawMonitor::JvmtiRawMonitor(const char *name) {
 #ifdef ASSERT
   _name = strcpy(NEW_C_HEAP_ARRAY(char, strlen(name) + 1, mtInternal), name);

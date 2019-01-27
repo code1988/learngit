@@ -49,10 +49,11 @@ class JvmtiTagMap;
 
 
 
-// One JvmtiEnv object is created per jvmti attachment;
-// done via JNI GetEnv() call. Multiple attachments are
-// allowed in jvmti.
-
+/* One JvmtiEnv object is created per jvmti attachment;
+ * done via JNI GetEnv() call. Multiple attachments are
+ * allowed in jvmti.
+ * jvm内部用于描述jvmti环境的基类结构
+ */
 class JvmtiEnvBase : public CHeapObj<mtInternal> {
 
  private:
@@ -62,7 +63,7 @@ class JvmtiEnvBase : public CHeapObj<mtInternal> {
 #endif // INCLUDE_JVMTI
 
   static bool              _globally_initialized;
-  static jvmtiPhase        _phase;
+  static jvmtiPhase        _phase;      // 整个jvmti模块在jvm中所处的运行阶段
   static volatile int      _dying_thread_env_iteration_count;
 
  public:
@@ -89,7 +90,7 @@ class JvmtiEnvBase : public CHeapObj<mtInternal> {
       BAD_MAGIC      = 0xDEAD
   };
 
-  jvmtiEnv _jvmti_external;
+  jvmtiEnv _jvmti_external;                     // 该jvm内部jvmti环境关联的提供给agentlib使用的jvmti环境
   jint _magic;
   jint _version;  // version value passed to JNI GetEnv()
   JvmtiEnvBase* _next;
@@ -99,8 +100,8 @@ class JvmtiEnvBase : public CHeapObj<mtInternal> {
   jvmtiExtEventCallbacks _ext_event_callbacks;
   JvmtiTagMap* _tag_map;
   JvmtiEnvEventEnable _env_event_enable;
-  jvmtiCapabilities _current_capabilities;
-  jvmtiCapabilities _prohibited_capabilities;
+  jvmtiCapabilities _current_capabilities;      // 该jvmti环境当前启用的能力集
+  jvmtiCapabilities _prohibited_capabilities;   // 该jvmti环境禁用的能力集
   volatile bool _class_file_load_hook_ever_enabled;
   static volatile bool _needs_clean_up;
   char** _native_method_prefixes;

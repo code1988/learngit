@@ -959,7 +959,7 @@ JvmtiEventController::set_user_enabled(JvmtiEnvBase *env, JavaThread *thread, jv
   }
 }
 
-
+// 往指定jvmti环境中注册事件回调集
 void
 JvmtiEventController::set_event_callbacks(JvmtiEnvBase *env,
                                           const jvmtiEventCallbacks* callbacks,

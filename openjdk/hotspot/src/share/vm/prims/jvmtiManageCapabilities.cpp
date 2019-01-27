@@ -214,7 +214,7 @@ bool JvmtiManageCapabilities::has_some(const jvmtiCapabilities *a) {
   return false;
 }
 
-
+// 拷贝能力集
 void JvmtiManageCapabilities::copy_capabilities(const jvmtiCapabilities *from, jvmtiCapabilities *to) {
   char *ap = (char *)from;
   char *resultp = (char *)to;
@@ -225,6 +225,11 @@ void JvmtiManageCapabilities::copy_capabilities(const jvmtiCapabilities *from, j
 }
 
 
+/* 获取可启用的能力集
+ * @current     当前启用的能力集
+ * @prohibited  禁用的能力集
+ * @result      用于存放可启用的能力集
+ */
 void JvmtiManageCapabilities::get_potential_capabilities(const jvmtiCapabilities *current,
                                                          const jvmtiCapabilities *prohibited,
                                                          jvmtiCapabilities *result) {
@@ -244,6 +249,12 @@ void JvmtiManageCapabilities::get_potential_capabilities(const jvmtiCapabilities
   }
 }
 
+/* 添加jvmti能力集
+ * @current     当前启用的能力集
+ * @prohibited  禁用的能力集
+ * @desired     要添加的能力集
+ * @result      用于存放添加后的能力集
+ */
 jvmtiError JvmtiManageCapabilities::add_capabilities(const jvmtiCapabilities *current,
                                                      const jvmtiCapabilities *prohibited,
                                                      const jvmtiCapabilities *desired,
@@ -280,7 +291,11 @@ jvmtiError JvmtiManageCapabilities::add_capabilities(const jvmtiCapabilities *cu
   return JVMTI_ERROR_NONE;
 }
 
-
+/* 去除指定能力集
+ * @current     当前启用的能力集
+ * @unwanted    要去除的能力集
+ * @result      用于存放去除后的能力集
+ */
 void JvmtiManageCapabilities::relinquish_capabilities(const jvmtiCapabilities *current,
                                                       const jvmtiCapabilities *unwanted,
                                                       jvmtiCapabilities *result) {

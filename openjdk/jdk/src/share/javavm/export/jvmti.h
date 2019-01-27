@@ -72,8 +72,9 @@ typedef const struct jvmtiInterface_1_ *jvmtiEnv;
 typedef jobject jthread;
 typedef jobject jthreadGroup;
 typedef jlong jlocation;
-struct _jrawMonitorID;
-typedef struct _jrawMonitorID *jrawMonitorID;           // 用于唯一标识一个监视器对象
+struct _jrawMonitorID;                      
+typedef struct _jrawMonitorID *jrawMonitorID;           /* 用于唯一标识一个监视器
+                                                           实际存放的是jvm内部对应JvmtiRawMonitor的地址 */
 typedef struct JNINativeInterface_ jniNativeInterface;
 
     /* Constants */
@@ -112,8 +113,7 @@ enum {
     JVMTI_JAVA_LANG_THREAD_STATE_TIMED_WAITING = JVMTI_THREAD_STATE_ALIVE | JVMTI_THREAD_STATE_WAITING | JVMTI_THREAD_STATE_WAITING_WITH_TIMEOUT
 };
 
-    /* Thread Priority Constants */
-
+/* Thread Priority Constants */
 enum {
     JVMTI_THREAD_MIN_PRIORITY = 1,
     JVMTI_THREAD_NORM_PRIORITY = 5,
@@ -386,8 +386,9 @@ typedef enum {
     JVMTI_ERROR_MAX = 116
 } jvmtiError;
 
-    /* Event IDs */
-
+/* Event IDs 
+ * 备注：一部分事件只能全局启用或全局禁用
+ * */
 typedef enum {
     JVMTI_MIN_EVENT_TYPE_VAL = 50,
     JVMTI_EVENT_VM_INIT = 50,
@@ -660,54 +661,58 @@ struct _jvmtiAddrLocationMap {
     jlocation location;
 };
 
-// jvmti支持配置的能力集
+/* jvmti环境提供的能力集
+ *
+ * 备注：有些能力只能同时被一个jvmti环境开启
+ *       有些能力只能在OnLoad阶段开启
+ */
 typedef struct {
-    unsigned int can_tag_objects : 1;
-    unsigned int can_generate_field_modification_events : 1;
-    unsigned int can_generate_field_access_events : 1;
-    unsigned int can_get_bytecodes : 1;
-    unsigned int can_get_synthetic_attribute : 1;
-    unsigned int can_get_owned_monitor_info : 1;
-    unsigned int can_get_current_contended_monitor : 1;
-    unsigned int can_get_monitor_info : 1;
-    unsigned int can_pop_frame : 1;
-    unsigned int can_redefine_classes : 1;
-    unsigned int can_signal_thread : 1;
-    unsigned int can_get_source_file_name : 1;
-    unsigned int can_get_line_numbers : 1;
-    unsigned int can_get_source_debug_extension : 1;
-    unsigned int can_access_local_variables : 1;
-    unsigned int can_maintain_original_method_order : 1;
-    unsigned int can_generate_single_step_events : 1;
-    unsigned int can_generate_exception_events : 1;
-    unsigned int can_generate_frame_pop_events : 1;
-    unsigned int can_generate_breakpoint_events : 1;
-    unsigned int can_suspend : 1;
-    unsigned int can_redefine_any_class : 1;
-    unsigned int can_get_current_thread_cpu_time : 1;
-    unsigned int can_get_thread_cpu_time : 1;
-    unsigned int can_generate_method_entry_events : 1;
-    unsigned int can_generate_method_exit_events : 1;
-    unsigned int can_generate_all_class_hook_events : 1;
-    unsigned int can_generate_compiled_method_load_events : 1;
-    unsigned int can_generate_monitor_events : 1;
-    unsigned int can_generate_vm_object_alloc_events : 1;
-    unsigned int can_generate_native_method_bind_events : 1;
-    unsigned int can_generate_garbage_collection_events : 1;    // 生成GC事件能力的开关
-    unsigned int can_generate_object_free_events : 1;
-    unsigned int can_force_early_return : 1;
-    unsigned int can_get_owned_monitor_stack_depth_info : 1;
-    unsigned int can_get_constant_pool : 1;
-    unsigned int can_set_native_method_prefix : 1;
-    unsigned int can_retransform_classes : 1;
-    unsigned int can_retransform_any_class : 1;
-    unsigned int can_generate_resource_exhaustion_heap_events : 1;
-    unsigned int can_generate_resource_exhaustion_threads_events : 1;
-    unsigned int : 7;
-    unsigned int : 16;
-    unsigned int : 16;
-    unsigned int : 16;
-    unsigned int : 16;
+    unsigned int can_tag_objects : 1;                       // 标识能否获取/设置对象标签
+    unsigned int can_generate_field_modification_events : 1;// 标识能否生成属性修改事件
+    unsigned int can_generate_field_access_events : 1;      // 标识能否生成属性访问事件
+    unsigned int can_get_bytecodes : 1;                     // 标识能否获取方法字节码
+    unsigned int can_get_synthetic_attribute : 1;           // 标识能否测试方法/属性为合成的
+    unsigned int can_get_owned_monitor_info : 1;            // 标识能否获取线程持有的监视器对象
+    unsigned int can_get_current_contended_monitor : 1;     // 标识能否获取线程当前正在竞争的监视器对象
+    unsigned int can_get_monitor_info : 1;                  // 标识能否获取监视器对象关联的监视器信息
+    unsigned int can_pop_frame : 1;                         // 标识能否从栈上弹出栈帧
+    unsigned int can_redefine_classes : 1;                  // 标识能否重定义类
+    unsigned int can_signal_thread : 1;                     // 标识能否中止线程?
+    unsigned int can_get_source_file_name : 1;              // 标识能否获取类的源文件名
+    unsigned int can_get_line_numbers : 1;                  // 标识能否获取方法的行号表
+    unsigned int can_get_source_debug_extension : 1;        // 标识能否获取类的调试信息
+    unsigned int can_access_local_variables : 1;            // 标识能否获取/设置局部变量
+    unsigned int can_maintain_original_method_order : 1;    // 标识能否按照类文件中的出现顺序返回方法表
+    unsigned int can_generate_single_step_events : 1;       // 标识能否生成单步事件
+    unsigned int can_generate_exception_events : 1;         // 标识能否生成异常事件
+    unsigned int can_generate_frame_pop_events : 1;         // 标识能否生成栈帧弹出事件
+    unsigned int can_generate_breakpoint_events : 1;        // 标识能否生成断点事件
+    unsigned int can_suspend : 1;                           // 标识能否挂起/恢复线程
+    unsigned int can_redefine_any_class : 1;                // 标识能否修改(转换或重定义)任何非原生、非数组的类
+    unsigned int can_get_current_thread_cpu_time : 1;       // 标识能否获取当前线程的cpu时间
+    unsigned int can_get_thread_cpu_time : 1;               // 标识能否获取线程的cpu时间
+    unsigned int can_generate_method_entry_events : 1;          // 标识能否在进入方法时生成事件
+    unsigned int can_generate_method_exit_events : 1;           // 标识能否在退出方法时生成事件 
+    unsigned int can_generate_all_class_hook_events : 1;        // 标识能否在每个类加载时生成事件
+    unsigned int can_generate_compiled_method_load_events : 1;  // 标识能否在方法被编译/卸载时生成事件
+    unsigned int can_generate_monitor_events : 1;               // 标识能否在监视器活动时生成事件
+    unsigned int can_generate_vm_object_alloc_events : 1;       // 标识能否在jvm为对象分配内存时生成事件
+    unsigned int can_generate_native_method_bind_events : 1;    // 标识能否在本地方法被绑到其具体实现时生成事件
+    unsigned int can_generate_garbage_collection_events : 1;    // 标识能否在GC开始/结束时生成事件
+    unsigned int can_generate_object_free_events : 1;           // 标识能否在每个对象被释放内存时生成事件
+    unsigned int can_force_early_return : 1;                    // 标识能否从方法提前返回
+    unsigned int can_get_owned_monitor_stack_depth_info : 1;    // 标识能否获取线程持有的监视器对象及其栈深信息
+    unsigned int can_get_constant_pool : 1;                     // 标识能否获取类的常量池信息
+    unsigned int can_set_native_method_prefix : 1;              // 标识能否设置本地方法前缀
+    unsigned int can_retransform_classes : 1;                   // 标识能否转换类
+    unsigned int can_retransform_any_class : 1;                 // 标识能否转换任意类
+    unsigned int can_generate_resource_exhaustion_heap_events : 1;      // 标识能否在jvm无法从堆分配内存时生成事件
+    unsigned int can_generate_resource_exhaustion_threads_events : 1;   // 标识能否在jvm无法创建线程时生成事件
+    unsigned int : 7;                                           
+    unsigned int : 16;                                          
+    unsigned int : 16;                                          
+    unsigned int : 16;                                          
+    unsigned int : 16;                                          
     unsigned int : 16;
 } jvmtiCapabilities;
 

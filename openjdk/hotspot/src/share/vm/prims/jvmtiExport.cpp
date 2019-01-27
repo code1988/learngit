@@ -349,17 +349,21 @@ address JvmtiExport::get_field_modification_count_addr() {
 // Functions needed by java.lang.instrument for starting up javaagent.
 ///////////////////////////////////////////////////////////////
 
+/* 获取给agentlib使用的jvmti环境指针
+ * @penv    用于存放获取的jvmti环境指针
+ * @version 指定jvmti版本
+ */
 jint
 JvmtiExport::get_jvmti_interface(JavaVM *jvm, void **penv, jint version) {
-  // The JVMTI_VERSION_INTERFACE_JVMTI part of the version number
-  // has already been validated in JNI GetEnv().
-  int major, minor, micro;
+    // The JVMTI_VERSION_INTERFACE_JVMTI part of the version number
+    // has already been validated in JNI GetEnv().
+    int major, minor, micro;
 
-  // micro version doesn't matter here (yet?)
-  decode_version_values(version, &major, &minor, &micro);
-  switch (major) {
+    // micro version doesn't matter here (yet?)
+    decode_version_values(version, &major, &minor, &micro);
+    switch (major) {
     case 1:
-      switch (minor) {
+        switch (minor) {
         case 0:  // version 1.0.<micro> is recognized
         case 1:  // version 1.1.<micro> is recognized
         case 2:  // version 1.2.<micro> is recognized
@@ -367,34 +371,36 @@ JvmtiExport::get_jvmti_interface(JavaVM *jvm, void **penv, jint version) {
 
         default:
           return JNI_EVERSION;  // unsupported minor version number
-      }
-      break;
+        }
+        break;
     default:
-      return JNI_EVERSION;  // unsupported major version number
-  }
+        return JNI_EVERSION;  // unsupported major version number
+    }
 
-  if (JvmtiEnv::get_phase() == JVMTI_PHASE_LIVE) {
+    if (JvmtiEnv::get_phase() == JVMTI_PHASE_LIVE) {
     JavaThread* current_thread = (JavaThread*) ThreadLocalStorage::thread();
-    // transition code: native to VM
-    ThreadInVMfromNative __tiv(current_thread);
-    VM_ENTRY_BASE(jvmtiEnv*, JvmtiExport::get_jvmti_interface, current_thread)
-    debug_only(VMNativeEntryWrapper __vew;)
+        /* transition code: native to VM
+         * 如果整体的jvmti模块处于Live阶段，则首先需要将线程转换到本地模式，然后创建一个jvm内部的jvmti执行环境
+         */
+        ThreadInVMfromNative __tiv(current_thread);
+        VM_ENTRY_BASE(jvmtiEnv*, JvmtiExport::get_jvmti_interface, current_thread)
+        debug_only(VMNativeEntryWrapper __vew;)
 
-    JvmtiEnv *jvmti_env = JvmtiEnv::create_a_jvmti(version);
-    *penv = jvmti_env->jvmti_external();  // actual type is jvmtiEnv* -- not to be confused with JvmtiEnv*
-    return JNI_OK;
-
-  } else if (JvmtiEnv::get_phase() == JVMTI_PHASE_ONLOAD) {
-    // not live, no thread to transition
-    JvmtiEnv *jvmti_env = JvmtiEnv::create_a_jvmti(version);
-    *penv = jvmti_env->jvmti_external();  // actual type is jvmtiEnv* -- not to be confused with JvmtiEnv*
-    return JNI_OK;
-
-  } else {
-    // Called at the wrong time
-    *penv = NULL;
-    return JNI_EDETACHED;
-  }
+        JvmtiEnv *jvmti_env = JvmtiEnv::create_a_jvmti(version);
+        *penv = jvmti_env->jvmti_external();  // actual type is jvmtiEnv* -- not to be confused with JvmtiEnv*
+        return JNI_OK;
+    } else if (JvmtiEnv::get_phase() == JVMTI_PHASE_ONLOAD) {
+        /* not live, no thread to transition
+         * 如果整体的jvmti模块处于OnLoad阶段，则没有需要转换的线程，直接创建一个jvm内部的jvmti执行环境
+         */
+        JvmtiEnv *jvmti_env = JvmtiEnv::create_a_jvmti(version);
+        *penv = jvmti_env->jvmti_external();  // actual type is jvmtiEnv* -- not to be confused with JvmtiEnv*
+        return JNI_OK;
+    } else {
+        // Called at the wrong time
+        *penv = NULL;
+        return JNI_EDETACHED;
+    }
 }
 
 

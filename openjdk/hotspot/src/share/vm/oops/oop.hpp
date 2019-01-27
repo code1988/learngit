@@ -63,7 +63,7 @@ class ParCompactionManager;
 class oopDesc {
   friend class VMStructs;
  private:
-  volatile markOop  _mark;
+  volatile markOop  _mark;  // 指向该类对象的对象头主体部分
   union _metadata {
     Klass*      _klass;
     narrowKlass _compressed_klass;
