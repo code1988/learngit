@@ -48,6 +48,11 @@ public class ObjectHeap {
     DEBUG = System.getProperty("sun.jvm.hotspot.oops.ObjectHeap.DEBUG") != null;
   }
 
+  /* 以下两组Address和TypeArrayKlass一一对应，用来描述8个原生类型的Klass信息
+   * 以boolArrayKlass为例，
+   * +Handle表示JVM内部boolArray的Klass实例的地址，
+   * +Obj表示在JAVA空间为boolArray的Klass创建的对应实例
+   */
   private Address              boolArrayKlassHandle;
   private Address              byteArrayKlassHandle;
   private Address              charArrayKlassHandle;
@@ -70,6 +75,7 @@ public class ObjectHeap {
     // Lookup the roots in the object hierarchy.
     Type universeType = db.lookupType("Universe");
 
+    // 获取8个原生类型在JVM中的Klass地址，并在Java中创建一一对应的实例
     boolArrayKlassHandle      = universeType.getAddressField("_boolArrayKlassObj").getValue();
     boolArrayKlassObj         = new TypeArrayKlass(boolArrayKlassHandle);
 
@@ -95,6 +101,7 @@ public class ObjectHeap {
     doubleArrayKlassObj       = new TypeArrayKlass(doubleArrayKlassHandle);
   }
 
+  // 创建一个ObjectHeap实例
   public ObjectHeap(TypeDataBase db) throws WrongTypeException {
     // Get commonly used sizes of basic types
     oopSize     = VM.getVM().getOopSize();

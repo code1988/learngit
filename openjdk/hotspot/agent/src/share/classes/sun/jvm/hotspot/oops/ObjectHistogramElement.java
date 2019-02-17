@@ -29,11 +29,12 @@ import java.util.*;
 import sun.jvm.hotspot.memory.*;
 import sun.jvm.hotspot.runtime.*;
 
+// 用于描述一个Klass对象关联的一组信息的结构
 public class ObjectHistogramElement {
 
   private Klass klass;
-  private long  count; // Number of instances of klass
-  private long  size;  // Total size of all these instances
+  private long  count; // Number of instances of klass          记录了该Klass包含的实例数量
+  private long  size;  // Total size of all these instances     记录了该Klass包含的实例的总大小
 
   public ObjectHistogramElement(Klass k) {
      klass = k;
@@ -41,6 +42,7 @@ public class ObjectHistogramElement {
      size  = 0;
   }
 
+  // 更新该Klass的一组信息
   public void updateWith(Oop obj) {
     count = count + 1;
     size  = size  + obj.getObjectSize();

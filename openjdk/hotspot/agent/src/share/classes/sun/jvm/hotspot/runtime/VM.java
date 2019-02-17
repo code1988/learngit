@@ -43,6 +43,8 @@ import sun.jvm.hotspot.runtime.*;
     universe, object heap, interpreter, etc. It is a Singleton and
     must be initialized with a call to initialize() before calling
     getVM(). </P>
+    这个类封装了JVM的全局状态，包括universe、object heap、interpreter等
+    这个类只能创建一个实例
 
     <P> Many auxiliary classes (i.e., most of the VMObjects) keep
     needed field offsets in the form of static Field objects. In a
@@ -65,18 +67,18 @@ import sun.jvm.hotspot.runtime.*;
 */
 
 public class VM {
-  private static VM    soleInstance;
+  private static VM    soleInstance;    // 这个类的唯一一个实例
   private static List  vmInitializedObservers = new ArrayList();
   private List         vmResumedObservers   = new ArrayList();
   private List         vmSuspendedObservers = new ArrayList();
-  private TypeDataBase db;
+  private TypeDataBase db;              // 这个db记录了JVM中的所有类信息
   private boolean      isBigEndian;
   /** This is only present if in a debugging system */
   private JVMDebugger  debugger;
   private long         stackBias;
   private long         logAddressSize;
   private Universe     universe;
-  private ObjectHeap   heap;
+  private ObjectHeap   heap;            // 指向包含所有实例信息的heap对象
   private SymbolTable  symbols;
   private StringTable  strings;
   private SystemDictionary dict;
@@ -577,6 +579,7 @@ public class VM {
     return universe;
   }
 
+  // 获取ObjectHeap对象，没有就创建一个
   public ObjectHeap  getObjectHeap() {
     if (heap == null) {
       heap = new ObjectHeap(db);

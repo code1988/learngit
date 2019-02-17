@@ -27,17 +27,24 @@ package sun.jvm.hotspot.oops;
 import java.io.*;
 import java.util.*;
 
+// 用于描述一个Heap访问器的结构
 public class ObjectHistogram implements HeapVisitor {
 
   public ObjectHistogram() { map = new HashMap(); }
 
-  private HashMap map;
+  private HashMap map;      // 这个map记录了每个Klass的一组相关信息，键值为Klass实例
 
   public void prologue(long size) {}
 
+  /* 优化点：
+   * 第一次创建一个节点时存在重复查找的过程，可以合并成一次
+   */
   public boolean doObj(Oop obj) {
-    Klass klass = obj.getKlass();
+    // 获取该oop的Klass   
+    Klass klass = obj.getKlass();       
+    // 如果该Klass尚未包含在map中，则先创建对应的元素并插入
     if (!map.containsKey(klass)) map.put(klass, new ObjectHistogramElement(klass));
+    // 更新该Klass对应的那组信息
     ((ObjectHistogramElement) map.get(klass)).updateWith(obj);
         return false;
   }
