@@ -1,7 +1,9 @@
 #ifndef _LINUX_ELF_EM_H
 #define _LINUX_ELF_EM_H
 
-/* These constants define the various ELF target machines */
+/* These constants define the various ELF target machines 
+ * 机器类型，用于ELF文件e_machine字段
+ * */
 #define EM_NONE		0
 #define EM_M32		1
 #define EM_SPARC	2
