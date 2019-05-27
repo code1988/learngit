@@ -21,14 +21,15 @@ typedef __u32	Elf64_Word;
 typedef __u64	Elf64_Xword;
 typedef __s64	Elf64_Sxword;
 
-/* These constants are for the segment types stored in the image headers */
+/* These constants are for the segment types stored in the image headers
+ * segment类型，也就是program类型 */
 #define PT_NULL    0
-#define PT_LOAD    1                // 标识这是个可加载的program
+#define PT_LOAD    1                // 标识这是个可加载的segment，一个runtime程序中通常存在多个LOAD segment
 #define PT_DYNAMIC 2
 #define PT_INTERP  3
 #define PT_NOTE    4
 #define PT_SHLIB   5
-#define PT_PHDR    6
+#define PT_PHDR    6                // 标识这个segment存放的是program头列表
 #define PT_TLS     7               /* Thread local storage segment */
 #define PT_LOOS    0x60000000      /* OS-specific */
 #define PT_HIOS    0x6fffffff      /* OS-specific */
@@ -117,15 +118,17 @@ typedef __s64	Elf64_Sxword;
 #define DT_HIPROC	0x7fffffff
 
 /* This info is needed when parsing the symbol table */
-#define STB_LOCAL  0
-#define STB_GLOBAL 1
-#define STB_WEAK   2
+// 符号绑定信息
+#define STB_LOCAL  0    // 局部符号，外部不可见
+#define STB_GLOBAL 1    // 全局符号，外部不可见
+#define STB_WEAK   2    // 弱引用
 
-#define STT_NOTYPE  0
-#define STT_OBJECT  1
-#define STT_FUNC    2
-#define STT_SECTION 3
-#define STT_FILE    4
+// 符号类型
+#define STT_NOTYPE  0   // 未知类型
+#define STT_OBJECT  1   // 该符号是个数据对象，比如变量、数组等
+#define STT_FUNC    2   // 该符号是个函数
+#define STT_SECTION 3   // 该符号是个section名，这种符号只能是STB_LOCAL
+#define STT_FILE    4   // 该符号是个文件名，这种符号只能是STB_LOCAL
 #define STT_COMMON  5
 #define STT_TLS     6
 
@@ -190,13 +193,19 @@ typedef struct elf32_sym{
     Elf32_Half	st_shndx;
 } Elf32_Sym;
 
+// 64位符号结构，是组成符号表的元素
 typedef struct elf64_sym {
-    Elf64_Word st_name;		/* Symbol name, index in string tbl */
-    unsigned char	st_info;	/* Type and binding attributes */
+    Elf64_Word st_name;		    /* Symbol name, index in string tbl
+                                   该符号名序号 */
+    unsigned char	st_info;	/* Type and binding attributes
+                                   该符号类型[3-0]和绑定信息[31-4], 比如STT_SECTION | (STB_LOCAL << 4) */
     unsigned char	st_other;	/* No defined meaning, 0 */
-    Elf64_Half st_shndx;		/* Associated section index */
-    Elf64_Addr st_value;		/* Value of the symbol */
-    Elf64_Xword st_size;		/* Associated symbol size */
+    Elf64_Half st_shndx;		/* Associated section index
+                                   该符号所在的section */
+    Elf64_Addr st_value;		/* Value of the symbol
+                                   该符号的值，具体含义跟符号类型有关 */
+    Elf64_Xword st_size;		/* Associated symbol size
+                                   符号大小，具体含义也是跟符号类型有关 */
 } Elf64_Sym;
 
 
@@ -240,7 +249,7 @@ typedef struct elf64_hdr {
     Elf64_Half e_phnum;     // program头数量
     Elf64_Half e_shentsize; // section头大小
     Elf64_Half e_shnum;     // section头数量
-    Elf64_Half e_shstrndx;  // 字符串表所属的section在section头列表中的序号
+    Elf64_Half e_shstrndx;  // 名为".shstrtab"的字符串表在section头列表中的序号
 } Elf64_Ehdr;
 
 /* These constants define the permissions on sections in the program
@@ -264,7 +273,8 @@ typedef struct elf32_phdr{
 typedef struct elf64_phdr {
     Elf64_Word p_type;      // 该program类型，比如PT_LOAD
     Elf64_Word p_flags;
-    Elf64_Off p_offset;		/* Segment file offset */
+    Elf64_Off p_offset;		/* Segment file offset 
+                               该program在ELF文件中的偏移量 */
     Elf64_Addr p_vaddr;		/* Segment virtual address 
                                该program在内存中的起始地址
                                开启PIE后，该地址只是一个相对动态基址的偏移量 */
@@ -278,14 +288,19 @@ typedef struct elf64_phdr {
 #define SHT_NULL	0       // 无效section，一般section头列表中第一个section都是无效段
 #define SHT_PROGBITS	1   // 程序section，".text"、".data"、".rodata"等都是这种类型
 #define SHT_SYMTAB	2       // 表示该section为符号表，通常名为".symtab"
-#define SHT_STRTAB	3       // 表示该section为字符串表，".strtab"、".shstrtab"、".dynstr"都是这种类型
+#define SHT_STRTAB	3       /* 表示该section为字符串表
+                               ".strtab"    - 用来保存普通字符串，通常就是符号名
+                               ".shstrtab"  - 专门用来保存section名
+                               ".dynstr"    - 专门用来保存动态链接需要用到的符号名 */
 #define SHT_RELA	4       // 表示该section用来存放重定位信息
 #define SHT_HASH	5       // 表示该section是指定符号表的hash表，通常名为".gnu.hash"
 #define SHT_DYNAMIC	6       // 表示该section用来存放动态链接信息, 通常名为".dynamic"
 #define SHT_NOTE	7       /* 表示该section用来存放提示性信息, 
                                ".note.gnu.build-id" 可以唯一标识该ELF文件，常用来匹配对应的外部debuginfo文件 */
 #define SHT_NOBITS	8       // 表示该section在ELF文件中没有实际内容，比如".bss"
-#define SHT_REL		9       // 表示该section用来存放重定位信息，".rel.dyn"、".rel.plt"、".rel.text"等都是这种类型
+#define SHT_REL		9       /* 表示该section为重定位表，section名通常以".rel."作为前缀
+                               每个需要重定位的代码段或数据段，都会有一个相应的重定位表
+                               ".rel.dyn"、".rel.plt"、".rel.text"等都是这种类型 */
 #define SHT_SHLIB	10      
 #define SHT_DYNSYM	11      /* 表示该section为动态链接的符号表，通常名为".dynsym"
                                这些符号都是本ELF文件用到，但定义在其他ELF文件 */
@@ -295,19 +310,23 @@ typedef struct elf64_phdr {
 #define SHT_LOUSER	0x80000000
 #define SHT_HIUSER	0xffffffff
 
-/* sh_flags */
-#define SHF_WRITE	0x1
-#define SHF_ALLOC	0x2
-#define SHF_EXECINSTR	0x4
+/* sh_flags 
+ * section的标志位表示该section在进程虚拟地址空间中的属性 */
+#define SHF_WRITE	0x1             // 标识该section在进程空间中可写
+#define SHF_ALLOC	0x2             /* 标识该section在进程空间中需要分配空间
+                                       像代码段、数据段和.bss段都会有这个标志，
+                                       而有些包含指示或控制信息的section(如debug相关的sections)不需要在进程中分配空间，所以一般不会有这个标志 */
+#define SHF_EXECINSTR	0x4         // 标识该section在进程空间中可被执行
 #define SHF_MASKPROC	0xf0000000
 
-/* special section indexes */
-#define SHN_UNDEF	0
+/* special section indexes 
+ * 几个特殊的section序号，st_shndx */
+#define SHN_UNDEF	0           // 表示该符号未定义，通常表示该符号在本目标文件被引用，但定义在其他目标文件中
 #define SHN_LORESERVE	0xff00
 #define SHN_LOPROC	0xff00
 #define SHN_HIPROC	0xff1f
-#define SHN_ABS		0xfff1
-#define SHN_COMMON	0xfff2
+#define SHN_ABS		0xfff1      // 表示该符号是一个绝对的值，STT_FILE通常就对应这种类型
+#define SHN_COMMON	0xfff2      // 通常".bss"中的全局(非static)符号就对应这种类型
 #define SHN_HIRESERVE	0xffff
 
 typedef struct elf32_shdr {
@@ -330,7 +349,7 @@ typedef struct elf64_shdr {
     Elf64_Word sh_type;		/* Type of section 
                                该section类型 */
     Elf64_Xword sh_flags;	/* Miscellaneous section attributes 
-                               该section属性集合 */
+                               该section标志位集合 */
     Elf64_Addr sh_addr;		/* Section virtual addr at execution 
                                如果该section可加载，则为该section在进程地址空间中的虚拟地址, 
                                当然开启PIE后，该地址只是一个相对动态基址的偏移量;
@@ -341,8 +360,17 @@ typedef struct elf64_shdr {
     Elf64_Xword sh_size;	/* Size of section in bytes 
                                该section的大小 */
     Elf64_Word sh_link;		/* Index of another section 
-                               该section链接的另一个section */
-    Elf64_Word sh_info;		/* Additional section information */
+                               当该section为某些特定的类型时，该字段用来从section头列表中定位依赖的section:
+                                    SHT_DYNAMIC - 用来索引依赖的字符串表
+                                    SHT_HASH    - 用来索引依赖的符号表
+                                    SHT_REL[A]  - 用来索引依赖的符号表
+                                    SHT_SYMTAB  - 用来索引依赖的字符串表
+                                    SHT_DYNSYM  - 用来索引依赖的字符串表
+                               否则无意义 */
+    Elf64_Word sh_info;		/* Additional section information
+                               当该section为某些特定的类型时，该字段用来从section头列表中定位作用的section:
+                                    SHT_REL[A]  - 用来索引该重定位表作用的section
+                               否则无意义 */
     Elf64_Xword sh_addralign;	/* Section alignment 
                                    如果该section的地址有对齐要求，则该值表示对齐值(指数值)，比如该值为3表示8字节对齐;
                                    否则该值为0或1表示无意义 */
