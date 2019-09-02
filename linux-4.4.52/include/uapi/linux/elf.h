@@ -118,12 +118,12 @@ typedef __s64	Elf64_Sxword;
 #define DT_HIPROC	0x7fffffff
 
 /* This info is needed when parsing the symbol table */
-// 符号绑定信息
+// 符号绑定信息, st_info高28位 
 #define STB_LOCAL  0    // 局部符号，外部不可见
 #define STB_GLOBAL 1    // 全局符号，外部不可见
 #define STB_WEAK   2    // 弱引用
 
-// 符号类型
+// 符号类型, st_info低4位
 #define STT_NOTYPE  0   // 未知类型
 #define STT_OBJECT  1   // 该符号是个数据对象，比如变量、数组等
 #define STT_FUNC    2   // 该符号是个函数
@@ -159,6 +159,7 @@ typedef struct {
 #define ELF32_R_SYM(x) ((x) >> 8)
 #define ELF32_R_TYPE(x) ((x) & 0xff)
 
+// 64位环境上，高32位表示重定位入口的符号在符号表中的下标，低32位表示重定位入口的类型
 #define ELF64_R_SYM(i)			((i) >> 32)
 #define ELF64_R_TYPE(i)			((i) & 0xffffffff)
 
@@ -167,8 +168,12 @@ typedef struct elf32_rel {
     Elf32_Word	r_info;
 } Elf32_Rel;
 
+// 64位重定位入口结构，是组成重定位表的元素
 typedef struct elf64_rel {
-    Elf64_Addr r_offset;	/* Location at which to apply the action */
+    Elf64_Addr r_offset;	/* Location at which to apply the action 
+                               在可重定位文件中，表示该重定位入口相对于所在section起始位置的偏移量
+                               在可执行文件和共享对象文件中，表示该重定位入口的虚拟地址 
+                               开启PIE后，则表示一个相对动态基址的偏移量 */
     Elf64_Xword r_info;	/* index and type of relocation */
 } Elf64_Rel;
 
@@ -201,7 +206,7 @@ typedef struct elf64_sym {
                                    该符号类型[3-0]和绑定信息[31-4], 比如STT_SECTION | (STB_LOCAL << 4) */
     unsigned char	st_other;	/* No defined meaning, 0 */
     Elf64_Half st_shndx;		/* Associated section index
-                                   该符号所在的section */
+                                   该符号所在的section序号，有一些保留的section序号 */
     Elf64_Addr st_value;		/* Value of the symbol
                                    该符号的值，具体含义跟符号类型有关 */
     Elf64_Xword st_size;		/* Associated symbol size
@@ -326,7 +331,7 @@ typedef struct elf64_phdr {
 #define SHN_LOPROC	0xff00
 #define SHN_HIPROC	0xff1f
 #define SHN_ABS		0xfff1      // 表示该符号是一个绝对的值，STT_FILE通常就对应这种类型
-#define SHN_COMMON	0xfff2      // 通常".bss"中的全局(非static)符号就对应这种类型
+#define SHN_COMMON	0xfff2      // 通常".bss"中的全局(非static)符号就对应这种类型?
 #define SHN_HIRESERVE	0xffff
 
 typedef struct elf32_shdr {

@@ -17,6 +17,7 @@ typedef elf_greg_t elf_gregset_t[ELF_NGREG];
 
 typedef struct user_i387_struct elf_fpregset_t;
 
+// 以下是x86平台上ELF中重定位入口的类型定义
 #ifdef __i386__
 
 typedef struct user_fxsr_struct elf_fpxregset_t;
@@ -45,8 +46,10 @@ typedef struct user_fxsr_struct elf_fpxregset_t;
 
 /* x86-64 relocation types */
 #define R_X86_64_NONE		0	/* No reloc */
-#define R_X86_64_64		1	/* Direct 64 bit  */
-#define R_X86_64_PC32		2	/* PC relative 32 bit signed */
+#define R_X86_64_64		1	    /* Direct 64 bit  
+                                   绝对近址64位寻址 */
+#define R_X86_64_PC32		2	/* PC relative 32 bit signed
+                                   相对近址32位(带符号)寻址 */
 #define R_X86_64_GOT32		3	/* 32 bit GOT entry */
 #define R_X86_64_PLT32		4	/* 32 bit PLT address */
 #define R_X86_64_COPY		5	/* Copy symbol at runtime */
