@@ -1,0 +1,31 @@
+gdb启动时会自动导入一个名为"gdb"的python模块    
+
+gdb.PYTHONDIR
+    当前python目录的字符串，作用类似环境变量PATH
+
+gdb.execute(command [, from_tty = False, to_string = False])
+    执行字符串格式的gdb命令，带2个可选参数
+    from_tty, 用来指定这条gdb命令的标准输入
+    to_string, 用来将这条gdb命令的输出内容重定向到字符串
+
+gdb.breakpoints()
+    返回一个集合，集合中记录了当前所有断点对象
+
+gdb.parameter(parameter)
+    获取一个字符串格式的gdb参数的配置值（show命令展示的就是gdb参数)，并转换成合适类型的python值返回
+
+gdb.history(number)
+    获取一个指定的gdb历史值(gdb的print命令会产生历史值$number)，并封装成一个gdb.Value对象返回
+
+gdb.parse_and_eval(expression)
+    解析并执行字符串格式的python表达式，并将结果封装成一个gdb.Value对象返回
+
+gdb.find_pc_line(pc)
+    获取pc地址上的指令所在的文件行号(显然该功能需要调试信息支持)，并将结果封装成一个gdb.Symtab_and_line对象返回
+
+gdb.post_event(event)
+    将一个callable对象注册到gdb的事件队列，随后由gdb负责回调(按注册顺序)
+
+gdb.write(string[, stream])
+
+
