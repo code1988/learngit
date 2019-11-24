@@ -19,6 +19,7 @@ gdb.history(number)
 
 gdb.parse_and_eval(expression)
     解析并执行字符串格式的python表达式，并将结果封装成一个gdb.Value对象返回
+    利用这个API可以获取代码中的目标变量
 
 gdb.find_pc_line(pc)
     获取pc地址上的指令所在的文件行号(显然该功能需要调试信息支持)，并将结果封装成一个gdb.Symtab_and_line对象返回
@@ -26,6 +27,71 @@ gdb.find_pc_line(pc)
 gdb.post_event(event)
     将一个callable对象注册到gdb的事件队列，随后由gdb负责回调(按注册顺序)
 
-gdb.write(string[, stream])
+gdb.write(string[, stream = gdb.STDOUT])
+    打印一个字符串，带1个可选参数
+    stream, 用来指定输出流的目的位置，另外可选gdb.STDERR/gdb.STDLOG
 
+gdb.solib_name(address)
+    以字符串格式返回目标地址所处的共享库名
 
+gdb.GdbError(string)
+    配合raise，用来从命令或函数中终止，并抛出一条字符串格式的异常信息(不输出调用栈)
+
+gdb.lookup_type(name[, block])
+    根据类型名查找对应的类型, 并封装成一个gdb.Type对象返回
+    block, 默认全局搜索，如果指定了block则只在该作用域中搜索
+
+一个gdb.Type对象有如下几种属性：
+    .code       该gdb.Type对象的type id, TYPE_CODE_*
+    .name       该gdb.Type对象的类型名(struct类型无法显示)
+    .sizeof     该gdb.Type对象大小，单位byte
+    .tag        该gdb.Type对象的tag名，tag名就是struct、enum、union后面的那部分
+
+gdb.Type有如下几种实例方法:
+    .fields()           返回该gdb.Type对象的字段集合，集合中的每个字段被封装成gdb.Field对象
+                        对于结构体、类、枚举类型的gdb.Type对象，也可以使用python字典语法访问其字段对象(gdb.Field)
+    .strip_typedefs()   返回该gdb.Type对象剥掉typedef后的真实gdb.Type对象
+    .pointer()          返回该gdb.Type对象的指针gdb.Type对象
+    .reference()        返回该gdb.Type对象的引用gdb.Type对象
+    .const()            返回该gdb.Type对象的const gdb.Type对象
+    .volatile()         返回该gdb.Type对象的volatile gdb.Type对象
+
+gdb.Type对象又被gdb分为以下几类：
+    gdb.TYPE_CODE_PTR       1       指针
+    gdb.TYPE_CODE_ARRAY     2       数组
+    gdb.TYPE_CODE_STRUCT    3       struct
+    gdb.TYPE_CODE_UNION     4       union
+    gdb.TYPE_CODE_ENUM      5       enum
+    gdb.TYPE_CODE_FUNC      7       函数
+    gdb.TYPE_CODE_INT       8       整型
+    gdb.TYPE_CODE_FLT       9       浮点型
+    gdb.TYPE_CODE_VOID      10      void
+    gdb.TYPE_CODE_STRING    13      字符串，这种类型只面向那些定义了字符串类型的语言(显然不包括C语言)
+    gdb.TYPE_CODE_CHAR      20      char
+    gdb.TYPE_CODE_BOOL      21      bool
+    gdb.TYPE_CODE_TYPEDEF   23      typedef
+    gdb.TYPE_CODE_INTERNAL_FUNCTION   27      typedef
+
+一个gdb.Field对象有如下几种属性：
+    .bitpos         该字段在所属gdb.Type对象中的偏移量，单位bit
+                    这个属性不适用于枚举字段和C++中的静态字段
+    .enumval        显然该属性只适用于枚举字段，表示枚举值
+    .name           该字段名
+    .artificial     如果该字段是编译器额外加进去的，则该属性为True，否则默认就是False
+    .is_base_class  如果该字段类型是C++的基类结构，则该属性为True，否则默认就是False
+    .bitsize        这个属性只适用于位域，表示该位域的位长，除此之外都为0(这类字段大小可以通过Type的sizeof属性获取)
+    .type           该字段的类型, 也就是gdb.Type对象
+
+一个gdb.Value对象有如下几种属性：
+    .address            该变量的地址，封装成一个gdb.Value对象返回
+    .is_optimized_out   如果该变量被编译器优化掉则返回true
+    .type               该变量的类型，封装成一个gdb.Value对象返回
+gdb.Value有如下几种实例方法：
+    .cas(<type>)        将该变量强转成目标类型(以gdb.Type格式传入)，并封装成一个gdb.Value对象返回
+    .dereference()      只支持对该指针变量进行解引用，并将解引用后的值封装成一个gdb.Value对象返回
+    .referenced_value() 如果该变量是引用类型则返回被引用的变量，如果该变量是指针类型则返回被指向的的变量，返回值均封装成一个gdb.Value对象
+    .reference()        返回该变量的引用
+    .const_value()      返回该变量的const版本
+    .string()           将该字符串变量转换成Python字符串
+    
+gdb.pretty_printers 全局的pretty_printer列表, 可以将自定义的pretty_printer注册到这张表中
