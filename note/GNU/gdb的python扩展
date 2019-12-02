@@ -94,4 +94,15 @@ gdb.Value有如下几种实例方法：
     .const_value()      返回该变量的const版本
     .string()           将该字符串变量转换成Python字符串
     
-gdb.pretty_printers 全局的pretty_printer列表, 可以将自定义的pretty_printer注册到这张表中
+gdb.pretty_printers 全局的pretty_printer列表, 可以将自定义的pretty_printer探测函数注册到这张表中
+    注册方法：
+            gdb.pretty_printers.append(<探测函数>)
+    探测函数格式：
+            入参: gdb.Value封装的要打印的变量
+            返回值: 匹配成功则构造自定义的pretty_printer对象返回，否则返回None 
+    探测函数实现思路: 
+            通常通过type属性来获取目标变量的类型, 然后跟期望类型进行比对，比对成功则构造自定义的pretty_printer对象返回，否则返回None 
+自定义的pretty_printer对象需要实现以下几个方法：
+    __init__(self, val)     构造函数，val表示一个gdb.Value封装的要打印的变量
+    to_string(self)         返回一个字符串作为该变量的打印结果
+
