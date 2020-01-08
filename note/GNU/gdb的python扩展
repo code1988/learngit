@@ -41,6 +41,8 @@ gdb.lookup_type(name[, block])
     根据类型名查找对应的类型, 并封装成一个gdb.Type对象返回
     block, 默认全局搜索，如果指定了block则只在该作用域中搜索
 
+
+
 一个gdb.Type对象有如下几种属性：
     .code       该gdb.Type对象的type id, TYPE_CODE_*
     .name       该gdb.Type对象的类型名(struct类型无法显示)
@@ -87,13 +89,49 @@ gdb.Type对象又被gdb分为以下几类：
     .is_optimized_out   如果该变量被编译器优化掉则返回true
     .type               该变量的类型，封装成一个gdb.Value对象返回
 gdb.Value有如下几种实例方法：
-    .cas(<type>)        将该变量强转成目标类型(以gdb.Type格式传入)，并封装成一个gdb.Value对象返回
+    .cast(<type>)       将该变量强转成目标类型(以gdb.Type格式传入)，并封装成一个gdb.Value对象返回
     .dereference()      只支持对该指针变量进行解引用，并将解引用后的值封装成一个gdb.Value对象返回
     .referenced_value() 如果该变量是引用类型则返回被引用的变量，如果该变量是指针类型则返回被指向的的变量，返回值均封装成一个gdb.Value对象
     .reference()        返回该变量的引用
     .const_value()      返回该变量的const版本
     .string()           将该字符串变量转换成Python字符串
     
+
+gdb.selected_thread()   
+    获取当前选中的线程，并封装成一个gdb.InferiorThread对象返回
+gdb.InferiorThread对象用来描述一个线程，有如下几种属性：
+    .name               该线程名，可修改
+    .num/.global_num    gdb分配的线程ID
+    .ptid               三元组：进程PID，该线程LWPID，该线程TID(一般为0)
+gdb.InferiorThread有如下几种实例方法:
+    .is_vaild()         判断该线程当前是否有效，调用其他的线程实例方法前必须确保该线程有效
+    .switch()           将该线程设置为当前选中线程
+
+
+gdb.selected_frame()
+    获取当前选中的栈帧，并封装成一个gdb.Frame对象返回
+gdb.newest_frame()
+    获取当前选中线程最顶上那个栈帧，并封装成一个gdb.Frame对象返回
+gdb.Frame对象用来描述一个栈帧，有如下几种实例方法：
+    .is_vaild()         判断该栈帧当前是否有效，调用其他的栈帧实例方法前必须确保该栈帧有效
+    .name()             返回字符串格式的栈帧名，如果不存在则返回None
+    .architecture()     获取该栈帧的布局信息，并封装成一个gdb.Architecture对象返回
+    .type()             返回该栈帧的类型，包括：
+                        gdb.NORMAL_FRAME    普通栈帧
+                        gdb.INLINE_FRAME    内联栈帧
+                        gdb.SIGTRAMP_FRAME  信号捕获函数的上一栈帧，这帧由内核构造
+    .pc()               返回该栈帧的pc值
+    .block()            返回该栈帧的block对象gdb.Block，只有代调试信息的程序才有block，所以没有调试信息的程序这里就会抛异常
+    .function()         返回该栈帧的symbol对象gdb.Symbol
+    .older()            返回该栈帧的前一栈帧对象gdb.Frame
+    .newer()            返回该栈帧的后一栈帧对象gdb.Frame
+    .find_sal()         返回该栈帧的gdb.Symtab_and_line
+    .read_register(register)        返回该栈帧中目标寄存器的值对象gdb.Value   
+                                    入参是字符串格式的寄存器名
+    .read_var(variable[, block])    返回该栈帧中目标变量的值
+                                    variable是字符串格式或gdb.Symbol对象的目标变量名
+                                    block是可选参数，缺省在当前block中找，否则在指定block中找
+
 gdb.pretty_printers 全局的pretty_printer列表, 可以将自定义的pretty_printer探测函数注册到这张表中
     注册方法：
             gdb.pretty_printers.append(<探测函数>)
@@ -103,6 +141,22 @@ gdb.pretty_printers 全局的pretty_printer列表, 可以将自定义的pretty_p
     探测函数实现思路: 
             通常通过type属性来获取目标变量的类型, 然后跟期望类型进行比对，比对成功则构造自定义的pretty_printer对象返回，否则返回None 
 自定义的pretty_printer对象需要实现以下几个方法：
-    __init__(self, val)     构造函数，val表示一个gdb.Value封装的要打印的变量
-    to_string(self)         返回一个字符串作为该变量的打印结果
+    .__init__(self, val)     构造函数，val表示一个gdb.Value封装的要打印的变量
+    .to_string(self)         返回一个字符串作为该变量的打印结果
+    .children(self)          可选，gdb会在to_string后调用children，通常用来打印结构体、类的成员
+                             本函数返回一个迭代器，迭代器每次迭代返回名-值形式的元组
+    .display_hint(self)      可选，暗示输出的样式，可以返回"array"、"map"、"string"之一
+
+通过继承gdb.Command类，可以实现自定义的gdb命令，其中命令中的注释会自动提取为该命令的帮助信息，以下是几个需要实现的方法：
+    .__init__(name, command_class[, completer_class[, prefix]])     这是父类gdb.Command所需的构造函数，通过子类的构造函数调用
+                                                                    name    字符串格式的命令名，如果包含多个单词则表示这是一个包含前缀命令的多级命令
+                                                                    command_class   用来告诉gdb如何对该命令进行归类，通常使用COMMAND_USER即可
+                                                                    completer_class 可选参数，用来告诉gdb如何结束命令，默认gdb调用complete方法，COMPLETE_* 
+                                                                    prefix          可选参数，标识这是否是一个前缀命令，默认为False
+    .dont_repeat()                  默认一个命令执行后再敲回车就会重复执行，本方法用来使该命令禁用这种行为
+    .invoke(argument, from_tty)     在gdb中调用该命令时就会自动调用该方法，可以通过抛异常的方式返回错误信息
+                                    argument    字符串格式的参数集，通过调用gdb.string_to_argv(argument)可以将整个字符串分割成字符串数组
+                                    from_tty    标识该命令是否从终端键入
+
+
 
