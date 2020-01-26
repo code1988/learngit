@@ -4,7 +4,8 @@
 #include <asm/auxvec.h>
 
 /* Symbolic values for the entries in the auxiliary table
-   put on the initial stack */
+   put on the initial stack 
+   定义了core文件中的NOTE段中的NT_AUXV条目中的子条目 */
 #define AT_NULL   0	/* end of vector */
 #define AT_IGNORE 1	/* entry should be ignored */
 #define AT_EXECFD 2	/* file descriptor of program */
@@ -14,7 +15,8 @@
 #define AT_PAGESZ 6	/* system page size */
 #define AT_BASE   7	/* base address of interpreter */
 #define AT_FLAGS  8	/* flags */
-#define AT_ENTRY  9	/* entry point of program */
+#define AT_ENTRY  9	/* entry point of program 
+                       表示这个子条目记录的是程序的入口地址 */
 #define AT_NOTELF 10	/* program is not ELF */
 #define AT_UID    11	/* real uid */
 #define AT_EUID   12	/* effective uid */

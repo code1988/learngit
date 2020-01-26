@@ -25,6 +25,14 @@
      *
      * 备注 : 初始化之后，attr中存放的就是线程属性的默认值;
      *        不允许对已经初始化的线程属性对象重复进行初始化
+     *        事后需要销毁
+     */
+
+    /* API  : int pthread_getattr_np(pthread_t thread, pthread_attr_t *attr)
+     * 描述 : 获取目标线程当前的属性
+     * @attr    - 用来存放获取的属性
+     * 备注 : 无法用本函数去获取系统主线程的属性
+     *        事后需要销毁
      */
 
     /* API  : int pthread_attr_destroy(pthread_attr_t *attr) 

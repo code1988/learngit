@@ -22,12 +22,13 @@ typedef __u64	Elf64_Xword;
 typedef __s64	Elf64_Sxword;
 
 /* These constants are for the segment types stored in the image headers
- * segment类型，也就是program类型 */
+ * 定义了ELF文件中的程序头的类型 */
 #define PT_NULL    0
-#define PT_LOAD    1                // 标识这是个可加载的segment，一个runtime程序中通常存在多个LOAD segment
-#define PT_DYNAMIC 2
-#define PT_INTERP  3
-#define PT_NOTE    4
+#define PT_LOAD    1                /* 标识这是个可加载到内存中的段，主要包含的是程序指令和数据
+                                       一个runtime程序中通常存在多个LOAD段 */
+#define PT_DYNAMIC 2                // 这个段存放了该ELF文件所有动态链接section
+#define PT_INTERP  3                // 这个段是可执行文件和pie属性的可执行文件特有的，表明了运行该程序所需要的程序解释器，比如/lib/ld-linux.so.2等
+#define PT_NOTE    4                // 这个段是core文件特有的，主要包含线程信息和寄存器信息
 #define PT_SHLIB   5
 #define PT_PHDR    6                // 标识这个segment存放的是program头列表
 #define PT_TLS     7               /* Thread local storage segment */
@@ -94,7 +95,7 @@ typedef __s64	Elf64_Sxword;
 #define DT_RELSZ	18
 #define DT_RELENT	19
 #define DT_PLTREL	20
-#define DT_DEBUG	21
+#define DT_DEBUG	21      // 如果可执行文件的".dynamic"中存在这个类型的条目，实际运行时该条目的值是之乡struct r_debug的指针
 #define DT_TEXTREL	22
 #define DT_JMPREL	23
 #define DT_ENCODING	32
@@ -147,12 +148,14 @@ typedef struct dynamic{
     } d_un;
 } Elf32_Dyn;
 
+// 用于描述".dynamic"中的一个条目，".dynamic"通常由多个该结构排列组成
 typedef struct {
-    Elf64_Sxword d_tag;		/* entry tag value */
+    Elf64_Sxword d_tag;		/* entry tag value 
+                               该条目的标签，决定了该条目的类型 */
     union {
         Elf64_Xword d_val;
         Elf64_Addr d_ptr;
-    } d_un;
+    } d_un;     // 实际使用哪个由d_tag决定
 } Elf64_Dyn;
 
 /* The following are used with relocations */
@@ -198,19 +201,21 @@ typedef struct elf32_sym{
     Elf32_Half	st_shndx;
 } Elf32_Sym;
 
-// 64位符号结构，是组成符号表的元素
+// 用于描述64位ELF文件中".symtab"和".dynsym"中的一个符号条目，这两张符号表通常由多个该结构排列组成
 typedef struct elf64_sym {
     Elf64_Word st_name;		    /* Symbol name, index in string tbl
-                                   该符号名序号 */
+                                   该符号名在字符串表中的索引号 */
     unsigned char	st_info;	/* Type and binding attributes
                                    该符号类型[3-0]和绑定信息[31-4], 比如STT_SECTION | (STB_LOCAL << 4) */
     unsigned char	st_other;	/* No defined meaning, 0 */
     Elf64_Half st_shndx;		/* Associated section index
                                    该符号所在的section序号，有一些保留的section序号 */
     Elf64_Addr st_value;		/* Value of the symbol
-                                   该符号的值，具体含义跟符号类型有关 */
+                                   该符号在内存中的地址值
+                                   显然根伪基址概念一样，在关闭ASLR前提下，对于可执行程序来说就是实际内存中的地址；
+                                   而对动态库来说该值只是基于动态库加载位置的偏移量 */
     Elf64_Xword st_size;		/* Associated symbol size
-                                   符号大小，具体含义也是跟符号类型有关 */
+                                   符号大小，具体含义跟符号类型有关 */
 } Elf64_Sym;
 
 
@@ -242,10 +247,10 @@ typedef struct elf64_hdr {
     Elf64_Half e_machine;   // 机器类型，比如EM_386
     Elf64_Word e_version;
     Elf64_Addr e_entry;		/* Entry point virtual address 
-                               程序入口点虚拟地址
-                               开启PIE后，该地址只是一个相对动态基址的偏移量 */
+                               程序入口地址
+                               开启PIE后，该地址只是一个相对所在程序段基址的偏移量 */
     Elf64_Off e_phoff;		/* Program header table file offset 
-                               program头列表起始偏移量 */
+                               程序头列表起始偏移量 */
     Elf64_Off e_shoff;		/* Section header table file offset 
                                section头列表起始偏移量 */
     Elf64_Word e_flags;
@@ -274,26 +279,29 @@ typedef struct elf32_phdr{
     Elf32_Word	p_align;
 } Elf32_Phdr;
 
-// 64位program头结构
+// 64位程序头结构
 typedef struct elf64_phdr {
-    Elf64_Word p_type;      // 该program类型，比如PT_LOAD
-    Elf64_Word p_flags;
+    Elf64_Word p_type;      // 该程序头的类型，比如PT_LOAD
+    Elf64_Word p_flags;     // 该程序头对应的段的访问权限标志集，比如PF_R
     Elf64_Off p_offset;		/* Segment file offset 
-                               该program在ELF文件中的偏移量 */
+                               该程序头对应的段在ELF文件中的起始偏移量 */
     Elf64_Addr p_vaddr;		/* Segment virtual address 
-                               该program在内存中的起始地址
+                               该程序头对应的段在内存中的虚拟地址
                                开启PIE后，该地址只是一个相对动态基址的偏移量 */
     Elf64_Addr p_paddr;		/* Segment physical address */
-    Elf64_Xword p_filesz;		/* Segment size in file */
-    Elf64_Xword p_memsz;		/* Segment size in memory */
+    Elf64_Xword p_filesz;		/* Segment size in file
+                                   该程序头对应的段在该ELF文件中的大小
+                                   0通常表示core文件并没有保存其内容(core文件不保存代码段)，意味着调试时需要将源程序ELF文件中对应位置的内容加载进来 */
+    Elf64_Xword p_memsz;		/* Segment size in memory
+                                   该程序头对应的段在内存中占用的地址空间大小 */
     Elf64_Xword p_align;		/* Segment alignment, file & memory */
 } Elf64_Phdr;
 
 /* section类型 sh_type */
 #define SHT_NULL	0       // 无效section，一般section头列表中第一个section都是无效段
 #define SHT_PROGBITS	1   // 程序section，".text"、".data"、".rodata"等都是这种类型
-#define SHT_SYMTAB	2       // 表示该section为符号表，通常名为".symtab"
-#define SHT_STRTAB	3       /* 表示该section为字符串表
+#define SHT_SYMTAB	2       // 表示该section是一张名为".symtab"的符号表，实质就是一个Elf64_Sym数组
+#define SHT_STRTAB	3       /* 表示该section是一张字符串表
                                ".strtab"    - 用来保存普通字符串，通常就是符号名
                                ".shstrtab"  - 专门用来保存section名
                                ".dynstr"    - 专门用来保存动态链接需要用到的符号名 */
@@ -302,7 +310,7 @@ typedef struct elf64_phdr {
 #define SHT_DYNAMIC	6       // 表示该section用来存放动态链接信息, 通常名为".dynamic"
 #define SHT_NOTE	7       /* 表示该section用来存放提示性信息, 
                                ".note.gnu.build-id" 可以唯一标识该ELF文件，常用来匹配对应的外部debuginfo文件 */
-#define SHT_NOBITS	8       // 表示该section在ELF文件中没有实际内容，比如".bss"
+#define SHT_NOBITS	8       // 这种section不含数据，也不占用ELF文件空间，比如".bss"
 #define SHT_REL		9       /* 表示该section为重定位表，section名通常以".rel."作为前缀
                                每个需要重定位的代码段或数据段，都会有一个相应的重定位表
                                ".rel.dyn"、".rel.plt"、".rel.text"等都是这种类型 */
@@ -347,14 +355,14 @@ typedef struct elf32_shdr {
     Elf32_Word	sh_entsize;
 } Elf32_Shdr;
 
-// section头结构
+// 64位ELF文件的section头结构
 typedef struct elf64_shdr {
     Elf64_Word sh_name;		/* Section name, index in string tbl 
-                               该section名字符串在名为".shstrtab"的section中的偏移量 */
+                               该section名在名为".shstrtab"的字符串表中的偏移量 */
     Elf64_Word sh_type;		/* Type of section 
                                该section类型 */
     Elf64_Xword sh_flags;	/* Miscellaneous section attributes 
-                               该section标志位集合 */
+                               该section标志位集合, 主要是该section在进程中执行时的权限信息 */
     Elf64_Addr sh_addr;		/* Section virtual addr at execution 
                                如果该section可加载，则为该section在进程地址空间中的虚拟地址, 
                                当然开启PIE后，该地址只是一个相对动态基址的偏移量;
@@ -394,7 +402,7 @@ typedef struct elf64_shdr {
 #define	EI_OSABI	7
 #define	EI_PAD		8
 
-#define	ELFMAG0		0x7f		/* EI_MAG */
+#define	ELFMAG0		0x7f		/* EI_MAG 魔术字占用4字节 */
 #define	ELFMAG1		'E'
 #define	ELFMAG2		'L'
 #define	ELFMAG3		'F'
@@ -406,15 +414,15 @@ typedef struct elf64_shdr {
 #define	ELFCLASS64	2
 #define	ELFCLASSNUM	3
 
-#define ELFDATANONE	0		/* e_ident[EI_DATA] */
+#define ELFDATANONE	0		/* e_ident[EI_DATA] 大小端占用1个字节 */
 #define ELFDATA2LSB	1
 #define ELFDATA2MSB	2
 
-#define EV_NONE		0		/* e_version, EI_VERSION */
+#define EV_NONE		0		/* e_version, EI_VERSION 版本号占用1个字节 */
 #define EV_CURRENT	1
 #define EV_NUM		2
 
-#define ELFOSABI_NONE	0
+#define ELFOSABI_NONE	0   // OS类型占用1个字节
 #define ELFOSABI_LINUX	3
 
 #ifndef ELF_OSABI
@@ -425,12 +433,13 @@ typedef struct elf64_shdr {
  * Notes used in ET_CORE. Architectures export some of the arch register sets
  * using the corresponding note types via the PTRACE_GETREGSET and
  * PTRACE_SETREGSET requests.
+ * 定义了NOTE段中的NOTE条目存放的数据类型
  */
-#define NT_PRSTATUS	1
+#define NT_PRSTATUS	1       // 表示该条目存放的是一个线程的相关信息，显然一个NOTE段中可能会有多个这个段
 #define NT_PRFPREG	2
 #define NT_PRPSINFO	3
 #define NT_TASKSTRUCT	4
-#define NT_AUXV		6
+#define NT_AUXV		6       // 表示该条目存放的是一些辅助信息，比如".dynamic"的地址，一个NOTE段中只会有一个这个段
 /*
  * Note to userspace developers: size of NT_SIGINFO note may increase
  * in the future to accomodate more fields, don't assume it is fixed!
@@ -472,11 +481,16 @@ typedef struct elf32_note {
     Elf32_Word	n_type;		/* Content type */
 } Elf32_Nhdr;
 
-/* Note header in a PT_NOTE section */
+/* Note header in a PT_NOTE section 
+ * 一个PT_NOTE/SHT_NOTE中又是由多个条目组成，而本结构就是每个条目的头结构
+ * */
 typedef struct elf64_note {
-    Elf64_Word n_namesz;	/* Name size */
-    Elf64_Word n_descsz;	/* Content size */
-    Elf64_Word n_type;	/* Content type */
+    Elf64_Word n_namesz;	/* Name size 
+                               该NOTE条目的名字长 */
+    Elf64_Word n_descsz;	/* Content size 
+                               该NOTE条目的数据长 */
+    Elf64_Word n_type;	/* Content type 
+                           该NOTE条目的数据类型，比如NT_PRSTATUS */
 } Elf64_Nhdr;
 
 #endif /* _UAPI_LINUX_ELF_H */

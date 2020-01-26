@@ -68,7 +68,7 @@
         struct sigaction {
             union {
                 void (*sa_handler)(int);                        // SIG_IGN/SIG_DFL/自定义的信号捕捉函数地址(显然不能传递除了信号ID之外的任何信息)，这是默认的信号捕捉函数字段 
-                void (*sa_sigaction)(int,siginfo_t *,void *);   // 这个信号捕捉函数可以通过siginfo_t传递产生该信号的原因信息，只有当sa_flags中设置了SA_SIGINFO标志时才会启用该字段
+                void (*sa_sigaction)(int,siginfo_t *,void *context);   // 这个信号捕捉函数可以通过siginfo_t传递产生该信号的原因信息，只有当sa_flags中设置了SA_SIGINFO标志时才会启用该字段
             }_u;
 	        sigset_t sa_mask;   // 该信号的阻塞集(只在信号捕捉函数运行期间生效)，缺省情况下，触发信号捕捉函数的该信号会被自动添加进阻塞集中，从而避免了同种信号嵌套触发
             int sa_flags;       // 修改信号行为的一系列选项集合
@@ -79,13 +79,26 @@
         SA_INTERRUPT    该选项会使由此信号中断的系统调用不自动重启动(这也是目前linux平台上的缺省处理方式)
         SA_RESTART      该选项会使由此信号中断的系统调用自动重启动
         SA_RESETHAND    该选项会使系统执行指定信号的捕捉函数后，重置该信号的处理方式为 SIG_DFL
-        信号捕捉函数sa_sigaction中用到了siginfo_t结构(具体格式跟平台相关)，以下只罗列了部分常用字段:
+        信号捕捉函数sa_sigaction中，siginfo_t结构(具体格式跟平台相关)包含了信号产生原因的有关信息，以下只罗列了部分通用字段:
         typedef struct siginfo {
             int si_signo;           // 信号ID
             int si_code;            // 信号产生的原因码，跟具体信号ID关联，具体的原因码详见APUE-P281
+            void *si_addr           // 若信号是SIGILL、SIGBUS、SIGSEGV，则该字段记录了触发该信号的内存地址(因为这类信号产生通常根访问非法内存地址有关)
             union sigval si_value;  // 这个字段主要由用户进程调用sigqueue函数传递过来，可以是一个int变量或void指针
         }siginfo_t;
-
+        信号捕捉函数sa_sigaction中，context参数可被强转为ucontext_t结构(具体格式跟实现有关)，其包含了信号触发时进程的上下文，以下只罗列了部分通用字段：
+        typedef struct ucontext_t {
+            stack_t uc_stack    /* 该字段记录了当前上下文使用的栈信息，至少包含这几个成员：
+                                   void *ss_sp  栈基址
+                                   size_t ss_size   栈大小 */
+            mcontext_t uc_mcontext  /* 该字段保存了一组信号触发那一刻的寄存器信息(对于SIGSEGV等信号来说，特别记录了触发crash的pc值)
+                                       x86平台主要包含成员：
+                                            gregset_t gregs;
+                                       aarch64平台主要包含成员：
+                                            unsigned long long regs[31];
+                                            unsigned long long sp;
+                                            unsigned long long pc; */
+        } ucontext_t
     信号是否可靠只跟信号ID有关，与信号的安装函数无关，目前linux上的两个信号安装函数signal和sigaction都不能把SIGRTMIN之前的信号变成可靠信号，但都对SIGRTMIN之后的信号支持排队
 
 5. 信号发送和捕捉

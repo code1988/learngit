@@ -19,9 +19,9 @@
 #define rmb() alternative("lock; addl $0,0(%%esp)", "lfence", X86_FEATURE_XMM2)
 #define wmb() alternative("lock; addl $0,0(%%esp)", "sfence", X86_FEATURE_XMM)
 #else
-#define mb() 	asm volatile("mfence":::"memory")
-#define rmb()	asm volatile("lfence":::"memory")
-#define wmb()	asm volatile("sfence" ::: "memory")
+#define mb() 	asm volatile("mfence":::"memory")   // x64上的cpu全屏障
+#define rmb()	asm volatile("lfence":::"memory")   // x64上的cpu读屏障
+#define wmb()	asm volatile("sfence" ::: "memory") // x64上的cpu写屏障
 #endif
 
 #ifdef CONFIG_X86_PPRO_FENCE

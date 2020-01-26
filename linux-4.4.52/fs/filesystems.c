@@ -18,6 +18,7 @@
 
 /*
  * Handling of filesystem drivers list.
+ * 文件系统驱动链表file_systems操作规则
  * Rules:
  *	Inclusion to/removals from/scanning of list are protected by spinlock.
  *	During the unload module must call unregister_filesystem().
@@ -27,6 +28,8 @@
  *	The latter can be guaranteed by call of try_module_get(); if it
  *	returned 0 we must skip the element, otherwise we got the reference.
  *	Once the reference is obtained we can drop the spinlock.
+ *  只有在持有自旋锁file_systems_lock或持有目标节点的引用计数的情况下，才允许访问目标节点的信息
+ *  可以通过调用try_module_get方法来获取目标节点的引用计数
  */
 
 static struct file_system_type *file_systems;
@@ -43,6 +46,12 @@ void put_filesystem(struct file_system_type *fs)
 	module_put(fs->owner);
 }
 
+/* 在文件系统驱动链表中查找目标文件系统
+ * @name    基于目标文件系统类型名进行查找
+ * @返回值  如果链表为空则返回全局指针变量file_systems的地址；
+ *          否则返回一个next字段的地址，如果查找成功，则next地址上记录的是一个指向目标文件系统节点的指针，否则记录的是NULL
+ * 备注：经典的单链表操作模板
+ */
 static struct file_system_type **find_filesystem(const char *name, unsigned len)
 {
 	struct file_system_type **p;
@@ -55,7 +64,10 @@ static struct file_system_type **find_filesystem(const char *name, unsigned len)
 
 /**
  *	register_filesystem - register a new filesystem
+ *	注册一个文件系统，实质就是将该文件系统注册到全局的file_systems链表中
  *	@fs: the file system structure
+ *	     要注册的文件系统
+ *
  *
  *	Adds the file system passed to the list of file systems the kernel
  *	is aware of for mount and other syscalls. Returns 0 on success,
@@ -71,7 +83,9 @@ int register_filesystem(struct file_system_type * fs)
 	int res = 0;
 	struct file_system_type ** p;
 
+    // 文件系统类型名不能包含"."
 	BUG_ON(strchr(fs->name, '.'));
+    // 确保该文件系统尚未注册
 	if (fs->next)
 		return -EBUSY;
 	write_lock(&file_systems_lock);

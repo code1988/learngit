@@ -32,6 +32,8 @@ typedef elf_fpxregset_t fpxregset_t;
  * the SVR4 structure, but more Linuxy, with things that Linux does
  * not support and which gdb doesn't really use excluded.
  * Fields present but not used are marked with "XXX".
+ * core文件中NOTE段中的NT_PRSTATUS条目的数据区结构
+ * 一个NT_PRSTATUS条目实际记录了一个线程的相关信息
  */
 struct elf_prstatus
 {
@@ -59,7 +61,8 @@ struct elf_prstatus
 #if 0
 	long	pr_instr;		/* Current instruction */
 #endif
-	elf_gregset_t pr_reg;	/* GP registers */
+	elf_gregset_t pr_reg;	/* GP registers 
+                               该线程的一组寄存器快照 */
 #ifdef CONFIG_BINFMT_ELF_FDPIC
 	/* When using FDPIC, the loadmap addresses need to be communicated
 	 * to GDB in order for GDB to do the necessary relocations.  The

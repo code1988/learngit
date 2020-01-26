@@ -37,8 +37,8 @@
 	${parameter:+alt_value}	- 如果parameter被设置，那么返回的结果就是alt_value,否则返回null(parameter的值不会被改变!)
 	
 4. ${parameter?err_msg},${parameter:?err_msg}详解
-	${parameter+err_msg}	- 如果parameter被声明，那么返回设置值，否则打印err_msg错误信息
-	${parameter:+err_msg}	- 如果parameter被设置，那么返回设置值，否则打印err_msg错误信息
+	${parameter?err_msg}	- 如果parameter被声明，那么返回设置值，否则打印err_msg错误信息
+	${parameter:?err_msg}	- 如果parameter被设置，那么返回设置值，否则打印err_msg错误信息
 
 	备注：省略err_msg时，${parameter?}这种结构经常用于检查脚本中变量的设置情况
 
